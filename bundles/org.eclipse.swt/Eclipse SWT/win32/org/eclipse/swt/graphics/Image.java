@@ -89,7 +89,7 @@ public final class Image extends Resource implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 	/**
 	 * specifies the transparent pixel
@@ -219,17 +219,17 @@ public Image(Device device, Image srcImage, int flag) {
 			switch (type) {
 				case SWT.BITMAP:
 					/* Get the HDC for the device */
-					int hDC = device.internal_new_GC(null);
+					int /*long*/ hDC = device.internal_new_GC(null);
 					
 					/* Copy the bitmap */
-					int hdcSource = OS.CreateCompatibleDC(hDC);
-					int hdcDest = OS.CreateCompatibleDC(hDC);
-					int hOldSrc = OS.SelectObject(hdcSource, srcImage.handle);
+					int /*long*/ hdcSource = OS.CreateCompatibleDC(hDC);
+					int /*long*/ hdcDest = OS.CreateCompatibleDC(hDC);
+					int /*long*/ hOldSrc = OS.SelectObject(hdcSource, srcImage.handle);
 					BITMAP bm = new BITMAP();
 					OS.GetObject(srcImage.handle, BITMAP.sizeof, bm);
 					handle = OS.CreateCompatibleBitmap(hdcSource, rect.width, bm.bmBits != 0 ? -rect.height : rect.height);
 					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					int hOldDest = OS.SelectObject(hdcDest, handle);
+					int /*long*/ hOldDest = OS.SelectObject(hdcDest, handle);
 					OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
 					OS.SelectObject(hdcSource, hOldSrc);
 					OS.SelectObject(hdcDest, hOldDest);
@@ -583,14 +583,14 @@ public Image (Device device, String filename) {
 		int length = filename.length();
 		char[] chars = new char[length+1];
 		filename.getChars(0, length, chars, 0);
-		int bitmap = Gdip.Bitmap_new(chars, false);
+		int /*long*/ bitmap = Gdip.Bitmap_new(chars, false);
 		if (bitmap != 0) {
 			int error = SWT.ERROR_NO_HANDLES;
 			int status = Gdip.Image_GetLastStatus(bitmap);			
 			if (status == 0) {
 				if (filename.toLowerCase().endsWith(".ico")) {
 					this.type = SWT.ICON;
-					int[] hicon = new int[1];
+					int /*long*/[] hicon = new int /*long*/[1];
 					Gdip.Bitmap_GetHICON(bitmap, hicon);
 					this.handle = hicon[0];
 				} else {
@@ -621,10 +621,10 @@ public Image (Device device, String filename) {
 						* This performs better than getting the bits with Bitmap.LockBits(),
 						* but it cannot be used when there is transparency.
 						*/
-						int hDC = device.internal_new_GC(null);
-						int srcHDC = OS.CreateCompatibleDC(hDC);
-						int oldSrcBitmap = OS.SelectObject(srcHDC, this.handle);
-						int graphics = Gdip.Graphics_new(srcHDC);
+						int /*long*/ hDC = device.internal_new_GC(null);
+						int /*long*/ srcHDC = OS.CreateCompatibleDC(hDC);
+						int /*long*/ oldSrcBitmap = OS.SelectObject(srcHDC, this.handle);
+						int /*long*/ graphics = Gdip.Graphics_new(srcHDC);
 						if (graphics != 0) {
 							Rect rect = new Rect();
 							rect.Width = width;
@@ -641,13 +641,13 @@ public Image (Device device, String filename) {
 						OS.DeleteDC(srcHDC);
 						device.internal_dispose_GC(hDC, null);
 					} else {
-						int lockedBitmapData = Gdip.BitmapData_new();
+						int /*long*/ lockedBitmapData = Gdip.BitmapData_new();
 						if (lockedBitmapData != 0) {
 							Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
 							BitmapData bitmapData = new BitmapData();
 							Gdip.MoveMemory(bitmapData, lockedBitmapData);
 							int stride = bitmapData.Stride;
-							int pixels = bitmapData.Scan0;
+							int /*long*/ pixels = bitmapData.Scan0;
 							int depth = 0, scanlinePad = 4, transparentPixel = -1;
 							switch (bitmapData.PixelFormat) {
 								case Gdip.PixelFormat1bppIndexed: depth = 1; break;
@@ -667,8 +667,8 @@ public Image (Device device, String filename) {
 									case Gdip.PixelFormat4bppIndexed:
 									case Gdip.PixelFormat8bppIndexed:
 										int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
-										int hHeap = OS.GetProcessHeap();
-										int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
+										int /*long*/ hHeap = OS.GetProcessHeap();
+										int /*long*/ palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
 										if (palette == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 										Gdip.Image_GetPalette(bitmap, palette, paletteSize);
 										ColorPalette colorPalette = new ColorPalette();
@@ -734,7 +734,7 @@ public Image (Device device, String filename) {
  * Create a DIB from a DDB without using GetDIBits. Note that 
  * the DDB should not be selected into a HDC.
  */
-int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
+int /*long*/ createDIBFromDDB(int /*long*/ hDC, int /*long*/ hBitmap, int width, int height) {
 	
 	/* Determine the DDB depth */
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
@@ -825,15 +825,15 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 			offset += 4;
 		}
 	}
-	int[] pBits = new int[1];
-	int hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	int /*long*/[] pBits = new int /*long*/[1];
+	int /*long*/ hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	
 	/* Bitblt DDB into DIB */	
-	int hdcSource = OS.CreateCompatibleDC(hDC);
-	int hdcDest = OS.CreateCompatibleDC(hDC);
-	int hOldSrc = OS.SelectObject(hdcSource, hBitmap);
-	int hOldDest = OS.SelectObject(hdcDest, hDib);
+	int /*long*/ hdcSource = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hdcDest = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hOldSrc = OS.SelectObject(hdcSource, hBitmap);
+	int /*long*/ hOldDest = OS.SelectObject(hdcDest, hDib);
 	OS.BitBlt(hdcDest, 0, 0, width, height, hdcSource, 0, 0, OS.SRCCOPY);
 	OS.SelectObject(hdcSource, hOldSrc);
 	OS.SelectObject(hdcDest, hOldDest);
@@ -843,7 +843,7 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	return hDib;
 }
 
-int[] createGdipImage() {
+int /*long*/ [] createGdipImage() {
 	switch (type) {
 		case SWT.BITMAP: {
 			if (alpha != -1 || alphaData != null || transparentPixel != -1) {
@@ -851,13 +851,13 @@ int[] createGdipImage() {
 				OS.GetObject(handle, BITMAP.sizeof, bm);
 				int imgWidth = bm.bmWidth;
 				int imgHeight = bm.bmHeight;
-				int hDC = device.internal_new_GC(null);
-				int srcHdc = OS.CreateCompatibleDC(hDC);
-				int oldSrcBitmap = OS.SelectObject(srcHdc, handle);
-				int memHdc = OS.CreateCompatibleDC(hDC);
-				int memDib = createDIB(imgWidth, imgHeight, 32);
+				int /*long*/ hDC = device.internal_new_GC(null);
+				int /*long*/ srcHdc = OS.CreateCompatibleDC(hDC);
+				int /*long*/ oldSrcBitmap = OS.SelectObject(srcHdc, handle);
+				int /*long*/ memHdc = OS.CreateCompatibleDC(hDC);
+				int /*long*/ memDib = createDIB(imgWidth, imgHeight, 32);
 				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				int oldMemBitmap = OS.SelectObject(memHdc, memDib);	
+				int /*long*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);	
 				BITMAP dibBM = new BITMAP();
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
 				int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;	
@@ -933,13 +933,13 @@ int[] createGdipImage() {
 						}
 					}
 				}
-				int hHeap = OS.GetProcessHeap();
-				int pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
+				int /*long*/ hHeap = OS.GetProcessHeap();
+				int /*long*/ pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
 				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				OS.MoveMemory(pixels, srcData, sizeInBytes);
-				return new int[]{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels), pixels};
+				return new int /*long*/ []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels), pixels};
 			}
-			return new int[]{Gdip.Bitmap_new(handle, 0), 0};
+			return new int /*long*/ []{Gdip.Bitmap_new(handle, 0), 0};
 		}
 		case SWT.ICON: {
 			/*
@@ -953,21 +953,21 @@ int[] createGdipImage() {
 			} else {
 				OS.GetIconInfo(handle, iconInfo);
 			}
-			int hBitmap = iconInfo.hbmColor;
+			int /*long*/ hBitmap = iconInfo.hbmColor;
 			if (hBitmap == 0) hBitmap = iconInfo.hbmMask;
 			BITMAP bm = new BITMAP();
 			OS.GetObject(hBitmap, BITMAP.sizeof, bm);
 			int imgWidth = bm.bmWidth;
 			int imgHeight = hBitmap == iconInfo.hbmMask ? bm.bmHeight / 2 : bm.bmHeight;
-			int img = 0, pixels = 0;
+			int /*long*/ img = 0, pixels = 0;
 			if (imgWidth > imgHeight) {
-				int hDC = device.internal_new_GC(null);
-				int srcHdc = OS.CreateCompatibleDC(hDC);
-				int oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
-				int memHdc = OS.CreateCompatibleDC(hDC);
-				int memDib = createDIB(imgWidth, imgHeight, 32);
+				int /*long*/ hDC = device.internal_new_GC(null);
+				int /*long*/ srcHdc = OS.CreateCompatibleDC(hDC);
+				int /*long*/ oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
+				int /*long*/ memHdc = OS.CreateCompatibleDC(hDC);
+				int /*long*/ memDib = createDIB(imgWidth, imgHeight, 32);
 				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				int oldMemBitmap = OS.SelectObject(memHdc, memDib);	
+				int /*long*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);	
 				BITMAP dibBM = new BITMAP();
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
 			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, hBitmap == iconInfo.hbmMask ? imgHeight : 0, OS.SRCCOPY);
@@ -990,7 +990,7 @@ int[] createGdipImage() {
 				OS.SelectObject(srcHdc, oldSrcBitmap);
 				OS.DeleteObject(srcHdc);
 				device.internal_dispose_GC(hDC, null);
-				int hHeap = OS.GetProcessHeap();
+				int /*long*/ hHeap = OS.GetProcessHeap();
 				pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
 				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				OS.MoveMemory(pixels, srcData, srcData.length);
@@ -1000,7 +1000,7 @@ int[] createGdipImage() {
 			}
 			if (iconInfo.hbmColor != 0) OS.DeleteObject(iconInfo.hbmColor);
 			if (iconInfo.hbmMask != 0) OS.DeleteObject(iconInfo.hbmMask);
-			return new int[]{img, pixels};
+			return new int /*long*/ []{img, pixels};
 		}
 		default: SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
@@ -1068,13 +1068,13 @@ public Color getBackground() {
 	if (transparentPixel == -1) return null;
 
 	/* Get the HDC for the device */
-	int hDC = device.internal_new_GC(null);
+	int /*long*/ hDC = device.internal_new_GC(null);
 	
 	/* Compute the background color */
 	BITMAP bm = new BITMAP();		
 	OS.GetObject(handle, BITMAP.sizeof, bm);
-	int hdcMem = OS.CreateCompatibleDC(hDC);
-	int hOldObject = OS.SelectObject(hdcMem, handle);
+	int /*long*/ hdcMem = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hOldObject = OS.SelectObject(hdcMem, handle);
 	int red = 0, green = 0, blue = 0;
 	if (bm.bmBitsPixel <= 8)  {
 		if (OS.IsWinCE) {
@@ -1154,7 +1154,7 @@ public Rectangle getBounds() {
 			} else {
 				ICONINFO info = new ICONINFO();
 				OS.GetIconInfo(handle, info);
-				int hBitmap = info.hbmColor;
+				int /*long*/ hBitmap = info.hbmColor;
 				if (hBitmap == 0) hBitmap = info.hbmMask;
 				bm = new BITMAP();
 				OS.GetObject(hBitmap, BITMAP.sizeof, bm);
@@ -1194,7 +1194,7 @@ public ImageData getImageData() {
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetIconInfo(handle, info);
 			/* Get the basic BITMAP information */
-			int hBitmap = info.hbmColor;
+			int /*long*/ hBitmap = info.hbmColor;
 			if (hBitmap == 0) hBitmap = info.hbmMask;
 			bm = new BITMAP();
 			OS.GetObject(hBitmap, BITMAP.sizeof, bm);
@@ -1216,15 +1216,15 @@ public ImageData getImageData() {
 			OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 			
 			/* Get the HDC for the device */
-			int hDC = device.internal_new_GC(null);
+			int /*long*/ hDC = device.internal_new_GC(null);
 	
 			/* Create the DC and select the bitmap */
-			int hBitmapDC = OS.CreateCompatibleDC(hDC);
-			int hOldBitmap = OS.SelectObject(hBitmapDC, hBitmap);
+			int /*long*/ hBitmapDC = OS.CreateCompatibleDC(hDC);
+			int /*long*/ hOldBitmap = OS.SelectObject(hBitmapDC, hBitmap);
 			/* Select the palette if necessary */
-			int oldPalette = 0;
+			int /*long*/ oldPalette = 0;
 			if (depth <= 8) {
-				int hPalette = device.hPalette;
+				int /*long*/ hPalette = device.hPalette;
 				if (hPalette != 0) {
 					oldPalette = OS.SelectPalette(hBitmapDC, hPalette, false);
 					OS.RealizePalette(hBitmapDC);
@@ -1239,8 +1239,8 @@ public ImageData getImageData() {
 			imageSize = bmiHeader.biSizeImage;
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
-			int hHeap = OS.GetProcessHeap();
-			int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+			int /*long*/ hHeap = OS.GetProcessHeap();
+			int /*long*/ lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
 			if (lpvBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
@@ -1297,7 +1297,7 @@ public ImageData getImageData() {
 				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 				imageSize = bmiHeader.biSizeImage;
 				maskData = new byte[imageSize];
-				int lpvMaskBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+				int /*long*/ lpvMaskBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
 				if (lpvMaskBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, lpvMaskBits, bmi, OS.DIB_RGB_COLORS);
@@ -1346,14 +1346,14 @@ public ImageData getImageData() {
 			/* Find out whether this is a DIB or a DDB. */
 			boolean isDib = (bm.bmBits != 0);
 			/* Get the HDC for the device */
-			int hDC = device.internal_new_GC(null);
+			int /*long*/ hDC = device.internal_new_GC(null);
 
 			/*
 			* Feature in WinCE.  GetDIBits is not available in WinCE.  The
 			* workaround is to create a temporary DIB from the DDB and use
 			* the bmBits field of DIBSECTION to retrieve the image data.
 			*/
-			int handle = this.handle;
+			int /*long*/ handle = this.handle;
 			if (OS.IsWinCE) {
 				if (!isDib) {
 					boolean mustRestore = false;
@@ -1368,7 +1368,7 @@ public ImageData getImageData() {
 					}
 					handle = createDIBFromDDB(hDC, this.handle, width, height);
 					if (mustRestore) {
-						int hOldBitmap = OS.SelectObject(memGC.handle, this.handle);
+						int /*long*/ hOldBitmap = OS.SelectObject(memGC.handle, this.handle);
 						memGC.data.hNullBitmap = hOldBitmap;
 					}
 					isDib = true;
@@ -1404,12 +1404,12 @@ public ImageData getImageData() {
 			}
 			
 			/* Create the DC and select the bitmap */
-			int hBitmapDC = OS.CreateCompatibleDC(hDC);
-			int hOldBitmap = OS.SelectObject(hBitmapDC, handle);
+			int /*long*/ hBitmapDC = OS.CreateCompatibleDC(hDC);
+			int /*long*/ hOldBitmap = OS.SelectObject(hBitmapDC, handle);
 			/* Select the palette if necessary */
-			int oldPalette = 0;
+			int /*long*/ oldPalette = 0;
 			if (!isDib && depth <= 8) {
-				int hPalette = device.hPalette;
+				int /*long*/ hPalette = device.hPalette;
 				if (hPalette != 0) {
 					oldPalette = OS.SelectPalette(hBitmapDC, hPalette, false);
 					OS.RealizePalette(hBitmapDC);
@@ -1436,8 +1436,8 @@ public ImageData getImageData() {
 					OS.MoveMemory(data, bm.bmBits, imageSize);
 				}
 			} else {
-				int hHeap = OS.GetProcessHeap();
-				int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+				int /*long*/ hHeap = OS.GetProcessHeap();
+				int /*long*/ lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
 				if (lpvBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
@@ -1542,7 +1542,7 @@ public ImageData getImageData() {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 void init(Device device, int width, int height) {
@@ -1551,7 +1551,7 @@ void init(Device device, int width, int height) {
 	}
 	this.device = device;
 	type = SWT.BITMAP;
-	int hDC = device.internal_new_GC(null);
+	int /*long*/ hDC = device.internal_new_GC(null);
 	handle = OS.CreateCompatibleBitmap(hDC, width, height);
 	/*
 	* Feature in Windows.  CreateCompatibleBitmap() may fail
@@ -1566,8 +1566,8 @@ void init(Device device, int width, int height) {
 		handle = createDIB(width, height, depth);
 	}
 	if (handle != 0) {
-		int memDC = OS.CreateCompatibleDC(hDC);
-		int hOldBitmap = OS.SelectObject(memDC, handle);
+		int /*long*/ memDC = OS.CreateCompatibleDC(hDC);
+		int /*long*/ hOldBitmap = OS.SelectObject(memDC, handle);
 		OS.PatBlt(memDC, 0, 0, width, height, OS.PATCOPY);
 		OS.SelectObject(memDC, hOldBitmap);
 		OS.DeleteDC(memDC);
@@ -1578,7 +1578,7 @@ void init(Device device, int width, int height) {
 	}
 }
 
-static int createDIB(int width, int height, int depth) {
+static int /*long*/ createDIB(int width, int height, int depth) {
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 	bmiHeader.biWidth = width;
@@ -1610,7 +1610,7 @@ static int createDIB(int width, int height, int depth) {
 		bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
 	}
 
-	int[] pBits = new int[1];
+	int /*long*/[] pBits = new int /*long*/[1];
 	return OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 }
 
@@ -1626,12 +1626,12 @@ static int createDIB(int width, int height, int depth) {
  * if the regular GetIconInfo had been used.
  */
 static void GetIconInfo(Image image, ICONINFO info) {
-	int[] result = init(image.device, null, image.data);
+	int /*long*/ [] result = init(image.device, null, image.data);
 	info.hbmColor = result[0];
 	info.hbmMask = result[1];
 }
 
-static int[] init(Device device, Image image, ImageData i) {
+static int /*long*/ [] init(Device device, Image image, ImageData i) {
 	if (image != null) image.device = device;
 	
 	/*
@@ -1789,8 +1789,8 @@ static int[] init(Device device, Image image, ImageData i) {
 			offset += 4;
 		}
 	}
-	int[] pBits = new int[1];
-	int hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	int /*long*/[] pBits = new int /*long*/[1];
+	int /*long*/ hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	/* In case of a scanline pad other than 4, do the work to convert it */
 	byte[] data = i.data;
@@ -1799,17 +1799,17 @@ static int[] init(Device device, Image image, ImageData i) {
 	}
 	OS.MoveMemory(pBits[0], data, data.length);
 	
-	int[] result = null;
+	int /*long*/ [] result = null;
 	if (i.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
 		/* Get the HDC for the device */
-		int hDC = device.internal_new_GC(null);
+		int /*long*/ hDC = device.internal_new_GC(null);
 			
 		/* Create the color bitmap */
-		int hdcSrc = OS.CreateCompatibleDC(hDC);
+		int /*long*/ hdcSrc = OS.CreateCompatibleDC(hDC);
 		OS.SelectObject(hdcSrc, hDib);
-		int hBitmap = OS.CreateCompatibleBitmap(hDC, i.width, i.height);
+		int /*long*/ hBitmap = OS.CreateCompatibleBitmap(hDC, i.width, i.height);
 		if (hBitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int hdcDest = OS.CreateCompatibleDC(hDC);
+		int /*long*/ hdcDest = OS.CreateCompatibleDC(hDC);
 		OS.SelectObject(hdcDest, hBitmap);
 		OS.BitBlt(hdcDest, 0, 0, i.width, i.height, hdcSrc, 0, 0, OS.SRCCOPY);
 		
@@ -1818,7 +1818,7 @@ static int[] init(Device device, Image image, ImageData i) {
 			
 		/* Create the mask. Windows requires icon masks to have a scanline pad of 2. */
 		byte[] maskData = ImageData.convertPad(i.maskData, i.width, i.height, 1, i.maskPad, 2);
-		int hMask = OS.CreateBitmap(i.width, i.height, 1, 1, maskData);
+		int /*long*/ hMask = OS.CreateBitmap(i.width, i.height, 1, 1, maskData);
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
 		OS.SelectObject(hdcSrc, hMask);
 		OS.PatBlt(hdcSrc, 0, 0, i.width, i.height, OS.DSTINVERT);
@@ -1827,14 +1827,14 @@ static int[] init(Device device, Image image, ImageData i) {
 		OS.DeleteObject(hDib);
 		
 		if (image == null) {
-			result = new int[]{hBitmap, hMask}; 
+			result = new int /*long*/ []{hBitmap, hMask}; 
 		} else {
 			/* Create the icon */
 			ICONINFO info = new ICONINFO();
 			info.fIcon = true;
 			info.hbmColor = hBitmap;
 			info.hbmMask = hMask;
-			int hIcon = OS.CreateIconIndirect(info);
+			int /*long*/ hIcon = OS.CreateIconIndirect(info);
 			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.DeleteObject(hBitmap);
 			OS.DeleteObject(hMask);
@@ -1844,7 +1844,7 @@ static int[] init(Device device, Image image, ImageData i) {
 		}
 	} else {
 		if (image == null) {
-			result = new int[]{hDib};
+			result = new int /*long*/ []{hDib};
 		} else {
 			image.handle = hDib;
 			image.type = SWT.BITMAP;
@@ -1862,7 +1862,7 @@ static int[] init(Device device, Image image, ImageData i) {
 	return result;
 }
 
-static int[] init(Device device, Image image, ImageData source, ImageData mask) {
+static int /*long*/ [] init(Device device, Image image, ImageData source, ImageData mask) {
 	/* Create a temporary image and locate the black pixel */
 	ImageData imageData;
 	int blackIndex = 0;
@@ -1953,7 +1953,7 @@ void init(Device device, ImageData i) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Create a new GC that can draw into the image.
@@ -1964,8 +1964,8 @@ public int internal_new_GC (GCData data) {
 	}
 	
 	/* Create a compatible HDC for the device */
-	int hDC = device.internal_new_GC(null);
-	int imageDC = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hDC = device.internal_new_GC(null);
+	int /*long*/ imageDC = OS.CreateCompatibleDC(hDC);
 	device.internal_dispose_GC(hDC, null);
 	if (imageDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
@@ -1997,7 +1997,7 @@ public int internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int hDC, GCData data) {
+public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	OS.DeleteDC(hDC);
 }
 
@@ -2060,12 +2060,12 @@ public void setBackground(Color color) {
 	if (transparentPixel == -1) return;
 
 	/* Get the HDC for the device */
-	int hDC = device.internal_new_GC(null);
+	int /*long*/ hDC = device.internal_new_GC(null);
 	
 	/* Change the background color in the image */
 	BITMAP bm = new BITMAP();		
 	OS.GetObject(handle, BITMAP.sizeof, bm);
-	int hdcMem = OS.CreateCompatibleDC(hDC);
+	int /*long*/ hdcMem = OS.CreateCompatibleDC(hDC);
 	OS.SelectObject(hdcMem, handle);
 	int maxColors = 1 << bm.bmBitsPixel;
 	byte[] colors = new byte[maxColors * 4];
@@ -2109,7 +2109,7 @@ public String toString () {
  * @param handle the OS handle for the image
  * @return a new image object containing the specified device, type and handle
  */
-public static Image win32_new(Device device, int type, int handle) {
+public static Image win32_new(Device device, int type, int /*long*/ handle) {
 	if (device == null) device = Device.getDevice();
 	Image image = new Image();
 	image.type = type;

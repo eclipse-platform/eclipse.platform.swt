@@ -81,7 +81,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	// Allocate the memory because the caller (DropTarget) has not handed it in
 	// The caller of this method must release the data when it is done with it.
 	int byteCount = buffer.length() * TCHAR.sizeof;
-	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, DROPFILES.sizeof + byteCount);
+	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, DROPFILES.sizeof + byteCount);
 	OS.MoveMemory(newPtr, dropfiles, DROPFILES.sizeof);
 	OS.MoveMemory(newPtr + DROPFILES.sizeof, buffer, byteCount);
 	transferData.stgmedium = new STGMEDIUM();

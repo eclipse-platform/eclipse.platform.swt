@@ -100,7 +100,8 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int swFlags, hAccel, nAccel;
+	int swFlags, nAccel;
+	int /*long*/ hAccel;
 	boolean moved, resized, opened;
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
@@ -167,7 +168,7 @@ void _setMaximized (boolean maximized) {
 			if (OS.IsPPC) {
 				/* Leave space for the menu bar */
 				if (menuBar != null) {
-					int hwndCB = menuBar.hwndCB;
+					int /*long*/ hwndCB = menuBar.hwndCB;
 					RECT rectCB = new RECT ();
 					OS.GetWindowRect (hwndCB, rectCB);
 					height -= rectCB.bottom - rectCB.top;
@@ -291,7 +292,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefMDIChildProc (hwnd, msg, wParam, lParam);
 }
@@ -427,7 +428,7 @@ void createHandle () {
 	*/
 	if ((state & FOREIGN_HANDLE) == 0) {
 		if (!OS.IsWinCE) {
-			int hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
+			int /*long*/ hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
 			OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hIcon);
 		}
 	}
@@ -457,7 +458,7 @@ public void dispose () {
 	super.dispose ();
 }
 
-Menu findMenu (int hMenu) {
+Menu findMenu (int /*long*/ hMenu) {
 	if (menus == null) return null;
 	for (int i=0; i<menus.length; i++) {
 		Menu menu = menus [i];
@@ -513,7 +514,7 @@ public Rectangle getClientArea () {
 	if (OS.IsHPC) {
 		Rectangle rect = super.getClientArea ();
 		if (menuBar != null) {
-			int hwndCB = menuBar.hwndCB;
+			int /*long*/ hwndCB = menuBar.hwndCB;
 			int height = OS.CommandBar_Height (hwndCB);
 			rect.y += height;
 			rect.height = Math.max (0, rect.height - height);
@@ -961,7 +962,7 @@ void setImages (Image image, Image [] images) {
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = largeImage = null;
-	int hSmallIcon = 0, hLargeIcon = 0;
+	int /*long*/ hSmallIcon = 0, hLargeIcon = 0;
 	Image smallIcon = null, largeIcon = null;
 	if (image != null) {
 		smallIcon = largeIcon = image;
@@ -1162,7 +1163,7 @@ public void setMenuBar (Menu menu) {
 	} else {
 		if (menu != null) display.removeBar (menu);
 		menuBar = menu;
-		int hMenu = menuBar != null ? menuBar.handle: 0;
+		int /*long*/ hMenu = menuBar != null ? menuBar.handle: 0;
 		OS.SetMenu (handle, hMenu);
 	}
 	destroyAccelerators ();
@@ -1206,7 +1207,7 @@ void setParent () {
 	* undocumented and possibly dangerous Windows
 	* feature.
 	*/
-	int hwndParent = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
 	display.lockActiveWindow = true;
 	OS.SetParent (handle, hwndParent);
 	if (!OS.IsWindowVisible (hwndParent)) {
@@ -1215,7 +1216,7 @@ void setParent () {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	bits &= ~OS.WS_CHILD;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.WS_POPUP);
-	OS.SetWindowLong (handle, OS.GWL_ID, 0);
+	OS.SetWindowLongPtr (handle, OS.GWLP_ID, 0);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	display.lockActiveWindow = false;
@@ -1278,7 +1279,7 @@ void setSavedFocus (Control control) {
 
 void setSystemMenu () {
 	if (OS.IsWinCE) return;
-	int hMenu = OS.GetSystemMenu (handle, false);
+	int /*long*/ hMenu = OS.GetSystemMenu (handle, false);
 	if (hMenu == 0) return;
 	int oldCount = OS.GetMenuItemCount (hMenu);
 	if ((style & SWT.RESIZE) == 0) {
@@ -1355,7 +1356,7 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 		if (OS.IsHPC) {
 			if (menuBar != null) {
-				int hwndCB = menuBar.hwndCB;
+				int /*long*/ hwndCB = menuBar.hwndCB;
 				OS.CommandBar_DrawMenuBar (hwndCB, 0);
 			}
 		}
@@ -1454,13 +1455,13 @@ boolean translateMenuAccelerator (MSG msg) {
 boolean translateMDIAccelerator (MSG msg) {
 	if (!(this instanceof Shell)) {
 		Shell shell = getShell ();
-		int hwndMDIClient = shell.hwndMDIClient;
+		int /*long*/ hwndMDIClient = shell.hwndMDIClient;
 		if (hwndMDIClient != 0 && OS.TranslateMDISysAccel (hwndMDIClient, msg)) {
 			return true;
 		}
 		if (msg.message == OS.WM_KEYDOWN) {
 			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
-			switch (msg.wParam) {
+			switch ((int)/*64*/(msg.wParam)) {
 				case OS.VK_F4:
 					OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 					return true;
@@ -1470,7 +1471,7 @@ boolean translateMDIAccelerator (MSG msg) {
 			return false;
 		}
 		if (msg.message == OS.WM_SYSKEYDOWN) {
-			switch (msg.wParam) {
+			switch ((int)/*64*/(msg.wParam)) {
 				case OS.VK_F4:
 					OS.PostMessage (shell.handle, OS.WM_CLOSE, 0, 0);
 					return true;
@@ -1532,7 +1533,7 @@ int widgetExtStyle () {
 	return bits;
 }
 
-int widgetParent () {
+int /*long*/ widgetParent () {
 	Shell shell = getShell ();
 	return shell.hwndMDIClient ();
 }
@@ -1574,7 +1575,7 @@ int widgetStyle () {
 	return bits;
 }
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (msg) {
 		case Display.SWT_GETACCEL:
 		case Display.SWT_GETACCELCOUNT:
@@ -1584,7 +1585,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_ACTIVATE (int wParam, int lParam) {
+LRESULT WM_ACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1645,14 +1646,14 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_CLOSE (int wParam, int lParam) {
+LRESULT WM_CLOSE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_CLOSE (wParam, lParam);
 	if (result != null) return result;
 	if (isEnabled () && isActive ()) closeWidget ();
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_HOTKEY (int wParam, int lParam) {
+LRESULT WM_HOTKEY (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_HOTKEY (wParam, lParam);
 	if (result != null) return result;
 	if (OS.IsSP) {
@@ -1678,13 +1679,13 @@ LRESULT WM_HOTKEY (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	saveFocus ();
 	return result;
 }
 
-LRESULT WM_MOVE (int wParam, int lParam) {
+LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (moved) {
 		Point location = getLocation ();
 		if (location.x == oldX && location.y == oldY) {
@@ -1696,7 +1697,7 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 	return super.WM_MOVE (wParam, lParam);
 }
 
-LRESULT WM_NCACTIVATE (int wParam, int lParam) {
+LRESULT WM_NCACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_NCACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	if (wParam == 0) {
@@ -1716,13 +1717,13 @@ LRESULT WM_NCACTIVATE (int wParam, int lParam) {
 		}
 	}
 	if (!(this instanceof Shell)) {
-		int hwndShell = getShell().handle;
+		int /*long*/ hwndShell = getShell().handle;
 		OS.SendMessage (hwndShell, OS.WM_NCACTIVATE, wParam, lParam);
 	}
 	return result;
 }
 
-LRESULT WM_QUERYOPEN (int wParam, int lParam) {
+LRESULT WM_QUERYOPEN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_QUERYOPEN (wParam, lParam);
 	if (result != null) return result;
 	sendEvent (SWT.Deiconify);
@@ -1730,18 +1731,18 @@ LRESULT WM_QUERYOPEN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (savedFocus != this) restoreFocus ();
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	boolean changed = true;
 	if (resized) {
 		int newWidth = 0, newHeight = 0;
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.SIZE_RESTORED:
 			case OS.SIZE_MAXIMIZED:
 				newWidth = OS.LOWORD (lParam);
@@ -1770,11 +1771,11 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
 	if (!(this instanceof Shell)) {
-		int cmd = wParam & 0xFFF0;
+		int cmd = (int)/*64*/wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_CLOSE: {
 				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
@@ -1789,7 +1790,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	if (display.lockActiveWindow) {

@@ -45,7 +45,7 @@ public class ExpandBar extends Composite {
 	ExpandItem focusItem;
 	int spacing = 4;
 	int yCurrentScroll;
-	int hFont;
+	int /*long*/ hFont;
 	
 	
 /**
@@ -106,7 +106,7 @@ public void addExpandListener (ExpandListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -125,12 +125,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = 0, width = 0;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		if (itemCount > 0) {
-			int hDC = OS.GetDC (handle);
-			int hTheme = 0;
+			int /*long*/ hDC = OS.GetDC (handle);
+			int /*long*/ hTheme = 0;
 			if (isAppThemed ()) {
 				hTheme = display.hExplorerBarTheme ();
 			}
-			int hCurrentFont = 0, oldFont = 0;
+			int /*long*/ hCurrentFont = 0, oldFont = 0;
 			if (hTheme == 0) {
 				if (hFont != 0) {
 					hCurrentFont = hFont;
@@ -232,7 +232,7 @@ void destroyItem (ExpandItem item) {
 	layoutItems (index, true);
 }
 
-void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+void drawThemeBackground (int /*long*/ hDC, int /*long*/ hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
@@ -240,7 +240,7 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 }
 
 void drawWidget (GC gc, RECT clipRect) {
-	int hTheme = 0;
+	int /*long*/ hTheme = 0;
 	if (isAppThemed ()) {
 		hTheme = display.hExplorerBarTheme ();
 	}
@@ -253,10 +253,10 @@ void drawWidget (GC gc, RECT clipRect) {
 	}
 	boolean drawFocus = false;
 	if (handle == OS.GetFocus ()) {
-		int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+		int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 		drawFocus = (uiState & OS.UISF_HIDEFOCUS) == 0;
 	}
-	int hCaptionFont = 0, oldFont = 0;	
+	int /*long*/ hCaptionFont = 0, oldFont = 0;	
 	if (hTheme == 0) {
 		if (!OS.IsWinCE && hFont == 0) {
 			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
@@ -292,8 +292,8 @@ Control findThemeControl () {
 
 int getBandHeight () {
 	if (hFont == 0) return ExpandItem.CHEVRON_SIZE;
-	int hDC = OS.GetDC (handle);
-	int oldHFont = OS.SelectObject (hDC, hFont);
+	int /*long*/ hDC = OS.GetDC (handle);
+	int /*long*/ oldHFont = OS.SelectObject (hDC, hFont);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	OS.GetTextMetrics (hDC, lptm);
 	OS.SelectObject (hDC, oldHFont);
@@ -555,15 +555,15 @@ TCHAR windowClass () {
 	return display.windowClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return display.windowProc;
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	if (focusItem == null) return result;
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_SPACE:
 		case OS.VK_RETURN:
 			Event event = new Event ();
@@ -596,13 +596,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if (focusItem != null) focusItem.redraw (true);
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	int x = OS.GET_X_LPARAM (lParam);
@@ -621,7 +621,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (focusItem == null) return result;
@@ -652,7 +652,7 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	int x = OS.GET_X_LPARAM (lParam);
@@ -668,7 +668,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
 	GCData data = new GCData ();
 	data.ps = ps;
@@ -697,7 +697,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
@@ -710,7 +710,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETCURSOR (int wParam, int lParam) {
+LRESULT WM_SETCURSOR (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
 	int hitTest = (short) OS.LOWORD (lParam);
@@ -718,7 +718,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 		for (int i = 0; i < itemCount; i++) {
 			ExpandItem item = items [i];
 			if (item.hover) {
-				int hCursor = OS.LoadCursor (0, OS.IDC_HAND);
+				int /*long*/ hCursor = OS.LoadCursor (0, OS.IDC_HAND);
 				OS.SetCursor (hCursor);
 				return LRESULT.ONE;
 			}
@@ -727,13 +727,13 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (focusItem != null) focusItem.redraw (true);
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
@@ -747,7 +747,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, int lParam) {
+LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmScroll (bar, true, hwnd, msg, wParam, lParam);
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;

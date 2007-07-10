@@ -42,7 +42,7 @@ public class Label extends Control {
 	Image image;
 	static final int MARGIN = 4;
 	static final boolean IMAGE_AND_TEXT = false;
-	static final int LabelProc;
+	static final int /*long*/ LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -91,7 +91,7 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (LabelProc, hwnd, msg, wParam, lParam);
 }
@@ -136,9 +136,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	}
 	if (drawText) {
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		int oldFont = OS.SelectObject (hDC, newFont);
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		int /*long*/ oldFont = OS.SelectObject (hDC, newFont);
 		int length = OS.GetWindowTextLength (handle);
 		if (length == 0) {
 			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
@@ -425,11 +425,11 @@ TCHAR windowClass () {
 	return LabelClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return LabelProc;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -453,7 +453,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -479,7 +479,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	/*
 	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
@@ -499,13 +499,13 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	}
 	if (redraw) {
 		OS.InvalidateRect (handle, null, false);
-		int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+		int /*long*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
 		return new LRESULT (code);
 	}
 	return result;
 }
 
-LRESULT wmColorChild (int wParam, int lParam) {
+LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
@@ -527,7 +527,7 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsWinCE) {
 		boolean drawImage = image != null;
 		boolean drawSeparator = (style & SWT.SEPARATOR) != 0 && (style & SWT.SHADOW_NONE) == 0;
@@ -591,7 +591,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return super.WM_PAINT(wParam, lParam);
 }
 
-LRESULT wmDrawChild (int wParam, int lParam) {
+LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	drawBackground (struct.hDC);

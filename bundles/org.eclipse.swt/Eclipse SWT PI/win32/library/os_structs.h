@@ -779,6 +779,18 @@ void setNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct);
 #define NMTOOLBAR_sizeof() 0
 #endif
 
+#ifndef NO_NMTREEVIEW
+void cacheNMTREEVIEWFields(JNIEnv *env, jobject lpObject);
+NMTREEVIEW *getNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct);
+void setNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct);
+#define NMTREEVIEW_sizeof() sizeof(NMTREEVIEW)
+#else
+#define cacheNMTREEVIEWFields(a,b)
+#define getNMTREEVIEWFields(a,b,c) NULL
+#define setNMTREEVIEWFields(a,b,c)
+#define NMTREEVIEW_sizeof() 0
+#endif
+
 #ifndef NO_NMTTDISPINFO
 void cacheNMTTDISPINFOFields(JNIEnv *env, jobject lpObject);
 NMTTDISPINFO *getNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpStruct);

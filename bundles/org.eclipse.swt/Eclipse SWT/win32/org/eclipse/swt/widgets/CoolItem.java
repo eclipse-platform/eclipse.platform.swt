@@ -215,7 +215,7 @@ public Rectangle getBounds () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -239,7 +239,7 @@ Rectangle getClientArea () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT insetRect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, insetRect);
 	RECT rect = new RECT ();
@@ -327,8 +327,8 @@ public void setControl (Control control) {
 		this.control = null;
 	}
 	Control oldControl = this.control, newControl = control;
-	int hwnd = parent.handle;
-	int hwndChild = newControl != null ? control.topHandle () : 0;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hwndChild = newControl != null ? control.topHandle () : 0;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILD;
@@ -341,7 +341,7 @@ public void setControl (Control control) {
 	* moves the new child to the top of the Z-order.  The fix is
 	* to save and restore the visibility and Z-order.
 	*/	
-	int hwndAbove = 0;
+	int /*long*/ hwndAbove = 0;
 	if (newControl != null) {
 		hwndAbove = OS.GetWindow (hwndChild, OS.GW_HWNDPREV);
 	}		
@@ -372,7 +372,7 @@ public Point getPreferredSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Point (0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
@@ -402,7 +402,7 @@ public void setPreferredSize (int width, int height) {
 	width = Math.max (0, width);
 	height = Math.max (0, height);
 	ideal = true;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	int cxIdeal, cyMaxChild;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		cxIdeal = Math.max (0, height - parent.getMargin (index));
@@ -462,7 +462,7 @@ public Point getSize() {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) new Point (0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -504,7 +504,7 @@ public void setSize (int width, int height) {
 	if (index == -1) return;
 	width = Math.max (0, width);
 	height = Math.max (0, height);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	int cx, cyChild, cxIdeal;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		cx = height;
@@ -583,7 +583,7 @@ public Point getMinimumSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return new Point (0, 0);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
@@ -615,7 +615,7 @@ public void setMinimumSize (int width, int height) {
 	width = Math.max (0, width);
 	height = Math.max (0, height);
 	minimum = true;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	int cxMinChild, cyMinChild;
 	if ((parent.style & SWT.VERTICAL) != 0) {
 		cxMinChild = height;
@@ -661,7 +661,7 @@ public void setMinimumSize (Point size) {
 
 boolean getWrap() {
 	int index = parent.indexOf (this);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
@@ -671,7 +671,7 @@ boolean getWrap() {
 
 void setWrap(boolean wrap) {
 	int index = parent.indexOf (this);
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;

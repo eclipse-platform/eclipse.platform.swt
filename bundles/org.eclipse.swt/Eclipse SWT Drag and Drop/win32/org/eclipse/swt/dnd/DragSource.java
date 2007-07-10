@@ -238,23 +238,23 @@ private int AddRef() {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return QueryContinueDrag(args[0], args[1]);}
-		public int method4(int[] args) {return GiveFeedback(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return QueryContinueDrag((int)/*64*/args[0], (int)/*64*/args[1]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GiveFeedback((int)/*64*/args[0]);}
 	};
 	
 	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return GetData(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return GetData(args[0], args[1]);}
 		// method4 GetDataHere - not implemented
-		public int method5(int[] args) {return QueryGetData(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return QueryGetData(args[0]);}
 		// method6 GetCanonicalFormatEtc - not implemented
-		public int method7(int[] args) {return SetData(args[0], args[1], args[2]);}
-		public int method8(int[] args) {return EnumFormatEtc(args[0], args[1]);}
+		public int /*long*/ method7(int /*long*/[] args) {return SetData(args[0], args[1], (int)/*64*/args[2]);}
+		public int /*long*/ method8(int /*long*/[] args) {return EnumFormatEtc((int)/*64*/args[0], args[1]);}
 		// method9 DAdvise - not implemented
 		// method10 DUnadvise - not implemented
 		// method11 EnumDAdvise - not implemented
@@ -348,7 +348,7 @@ private void drag(Event dragEvent) {
  * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
  * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
  */
-private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
+private int EnumFormatEtc(int dwDirection, int /*long*/ ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
 
@@ -374,7 +374,7 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	}
 	enumFORMATETC.setFormats(formats);
 	
-	OS.MoveMemory(ppenumFormatetc, new int[] {enumFORMATETC.getAddress()}, 4);
+	OS.MoveMemory(ppenumFormatetc, new int /*long*/[] {enumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
 /**
@@ -387,7 +387,7 @@ public Control getControl() {
 	return control;
 }
 
-private int GetData(int pFormatetc, int pmedium) {
+private int GetData(int /*long*/ pFormatetc, int /*long*/ pmedium) {
 	/* Called by a data consumer to obtain data from a source data object. 
 	   The GetData method renders the data described in the specified FORMATETC 
 	   structure and transfers it through the specified STGMEDIUM structure. 
@@ -520,7 +520,7 @@ private int osToOp(int osOperation){
 	return operation;
 }
 
-private int QueryGetData(int pFormatetc) {
+private int QueryGetData(int /*long*/ pFormatetc) {
 	if (transferAgents == null) return COM.E_FAIL;
 	TransferData transferData = new TransferData();
 	transferData.formatetc = new FORMATETC();
@@ -541,25 +541,25 @@ private int QueryGetData(int pFormatetc) {
  * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
-private int QueryInterface(int riid, int ppvObject) {
+private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropSource)) {
-		OS.MoveMemory(ppvObject, new int[] {iDropSource.getAddress()}, 4);
+		OS.MoveMemory(ppvObject, new int /*long*/[] {iDropSource.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
 	if (COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
-		OS.MoveMemory(ppvObject, new int[] {iDataObject.getAddress()}, 4);
+		OS.MoveMemory(ppvObject, new int /*long*/[] {iDataObject.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	
-	OS.MoveMemory(ppvObject, new int[] {0}, 4);
+	OS.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -596,17 +596,18 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener(DND.DragEnd, listener);
 }
 
-private int SetData(int pFormatetc, int pmedium, int fRelease) {
+private int SetData(int /*long*/ pFormatetc, int /*long*/ pmedium, int fRelease) {
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
 	FORMATETC formatetc = new FORMATETC();
 	COM.MoveMemory(formatetc, pFormatetc, FORMATETC.sizeof);
 	if (formatetc.cfFormat == CFSTR_PERFORMEDDROPEFFECT && formatetc.tymed == COM.TYMED_HGLOBAL) {
 		STGMEDIUM stgmedium = new STGMEDIUM();
 		COM.MoveMemory(stgmedium, pmedium,STGMEDIUM.sizeof);
-		int[] ptrEffect = new int[1];
-		OS.MoveMemory(ptrEffect, stgmedium.unionField,4);
+		//TODO - this should be GlobalLock()
+		int /*long*/[] ptrEffect = new int /*long*/[1];
+		OS.MoveMemory(ptrEffect, stgmedium.unionField, OS.PTR_SIZEOF);
 		int[] effect = new int[1];
-		OS.MoveMemory(effect, ptrEffect[0],4);
+		OS.MoveMemory(effect, ptrEffect[0], 4);
 		dataEffect = osToOp(effect[0]);
 	}
 	if (fRelease == 1) {

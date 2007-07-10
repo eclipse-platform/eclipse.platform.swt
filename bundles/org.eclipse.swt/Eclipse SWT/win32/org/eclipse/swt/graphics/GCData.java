@@ -30,7 +30,7 @@ public final class GCData {
 	public int style, state = -1;
 	public int foreground = -1;
 	public int background = -1;
-	public int hFont;
+	public int /*long*/ hFont;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public int lineStyle = SWT.LINE_SOLID;
@@ -44,17 +44,17 @@ public final class GCData {
 	public int uiState = 0;
 
 	public Image image;
-	public int hPen, hOldPen;
-	public int hBrush, hOldBrush;
-	public int hNullBitmap;
-	public int hwnd;
+	public int /*long*/ hPen, hOldPen;
+	public int /*long*/ hBrush, hOldBrush;
+	public int /*long*/ hNullBitmap;
+	public int /*long*/ hwnd;
 	public PAINTSTRUCT ps;
 	public int layout = -1;
-	public int gdipGraphics;
-	public int gdipPen;
-	public int gdipBrush;
-	public int gdipFgBrush;
-	public int gdipBgBrush;
-	public int gdipFont;
+	public int /*long*/ gdipGraphics;
+	public int /*long*/ gdipPen;
+	public int /*long*/ gdipBrush;
+	public int /*long*/ gdipFgBrush;
+	public int /*long*/ gdipBgBrush;
+	public int /*long*/ gdipFont;
 	public float gdipXOffset, gdipYOffset;
 }

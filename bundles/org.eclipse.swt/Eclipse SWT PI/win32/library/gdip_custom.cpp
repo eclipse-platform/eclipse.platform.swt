@@ -213,13 +213,13 @@ fail:
 #endif
 
 #ifndef NO_GraphicsPath_1new___3I_3BII
-JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new___3I_3BII)
+JNIEXPORT SWT_PTR JNICALL Gdip_NATIVE(GraphicsPath_1new___3I_3BII)
 	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
 	Point *points = NULL;
 	jint *lparg0=NULL;
 	jbyte *lparg1=NULL;
-	jint rc = 0;
+	SWT_PTR rc = 0;
 	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1new___3I_3BII_FUNC);
 	if (arg0) if ((lparg0 = env->GetIntArrayElements(arg0, NULL)) == NULL) goto fail;
 	if (lparg0) {
@@ -231,7 +231,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new___3I_3BII)
 		}
 	}
 	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
-	rc = (jint)new GraphicsPath(points, (BYTE *)lparg1, arg2, (FillMode)arg3);
+	rc = (SWT_PTR)new GraphicsPath(points, (BYTE *)lparg1, arg2, (FillMode)arg3);
 fail:
 	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
 	if (lparg0 && points) delete points;

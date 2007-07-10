@@ -34,8 +34,10 @@ public class TableItem extends Item {
 	String [] strings;
 	Image [] images;
 	boolean checked, grayed, cached;
-	int imageIndent, background = -1, foreground = -1, font = -1;
-	int [] cellBackground, cellForeground, cellFont;
+	int imageIndent, background = -1, foreground = -1; 
+	int /*long*/ font = -1;
+	int [] cellBackground, cellForeground; 
+	int /*long*/[] cellFont;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -129,8 +131,10 @@ void clear () {
 	images = null;
 	imageIndent = 0;
 	checked = grayed = false;
-	background = foreground = font = -1;
-	cellBackground = cellForeground = cellFont = null;
+	font = -1;
+	background = foreground = -1;
+	cellFont = null; 
+	cellBackground = cellForeground = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
 
@@ -229,7 +233,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	return getBounds (row, column, getText, getImage, fullText, false, 0);
 }
 
-RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText, boolean fullImage, int hDC) {
+RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText, boolean fullImage, int /*long*/ hDC) {
 	if (!getText && !getImage) return new RECT ();
 	int columnCount = parent.getColumnCount ();
 	if (!(0 <= column && column < Math.max (1, columnCount))) {
@@ -237,25 +241,25 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	}
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
 	RECT rect = new RECT ();
-	int hwnd = parent.handle;
-	int bits = OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	int /*long*/ hwnd = parent.handle;
+	int bits = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if (column == 0 && (bits & OS.LVS_EX_FULLROWSELECT) == 0) {
 		if (parent.explorerTheme) {
 			rect.left = OS.LVIR_ICON;
 			parent.ignoreCustomDraw = true;
-			int code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect);
+			int /*long*/ code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect);
 			parent.ignoreCustomDraw = false;
 			if (code == 0) return new RECT ();
 			if (getText) {
 				int width = 0;
-				int hFont = cellFont != null ? cellFont [column] : -1;
+				int /*long*/ hFont = cellFont != null ? cellFont [column] : -1;
 				if (hFont == -1) hFont = font;
 				if (hFont == -1 && hDC == 0) {
 					TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-					width = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
+					width = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
 				} else {
 					TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
-					int textDC = hDC != 0 ? hDC : OS.GetDC (hwnd), oldFont = -1;
+					int /*long*/ textDC = hDC != 0 ? hDC : OS.GetDC (hwnd), oldFont = -1;
 					if (hDC == 0) {
 						if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 						oldFont = OS.SelectObject (textDC, hFont);
@@ -276,7 +280,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			if (getText) {
 				rect.left = OS.LVIR_SELECTBOUNDS;
 				parent.ignoreCustomDraw = true;
-				int code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+				int /*long*/ code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
 				parent.ignoreCustomDraw = false;
 				if (code == 0) return new RECT ();
 				if (!getImage) {
@@ -290,14 +294,14 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			} else {
 				rect.left = OS.LVIR_ICON;
 				parent.ignoreCustomDraw = true;
-				int code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+				int /*long*/ code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
 				parent.ignoreCustomDraw = false;
 				if (code == 0) return new RECT ();
 			}
 		}
 		if (fullText || fullImage) {
 			RECT headerRect = new RECT ();
-			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+			int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
 			OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
 			if (getText && fullText) rect.right = headerRect.right;
@@ -321,7 +325,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			*/
 			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
 			parent.ignoreCustomDraw = true;
-			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			int /*long*/ code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
 			parent.ignoreCustomDraw = false;
 			if (code == 0) return new RECT ();
 			/*
@@ -355,7 +359,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			}
 			if (column == 0 && fullImage) {
 				RECT headerRect = new RECT ();
-				int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+				int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
 				OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
 				rect.left = headerRect.left;
@@ -363,7 +367,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 		} else {
 			rect.left = OS.LVIR_ICON;
 			parent.ignoreCustomDraw = true;
-			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			int /*long*/ code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
 			parent.ignoreCustomDraw = false;
 			if (code == 0) return new RECT ();
 			if (!hasImage) rect.right = rect.left;
@@ -450,7 +454,7 @@ public Font getFont (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
-	int hFont = (cellFont != null) ? cellFont [index] : font;
+	int /*long*/ hFont = (cellFont != null) ? cellFont [index] : font;
 	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
 }
 
@@ -669,7 +673,7 @@ public Rectangle getTextBounds (int index) {
 
 void redraw () {
 	if (parent.currentItem == this || parent.drawCount != 0) return;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
@@ -678,7 +682,7 @@ void redraw () {
 
 void redraw (int column, boolean drawText, boolean drawImage) {
 	if (parent.currentItem == this || parent.drawCount != 0) return;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
@@ -695,7 +699,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;
 	images = null;
-	cellBackground = cellForeground = cellFont = null;
+	cellFont = null; 
+	cellBackground = cellForeground = null;
 }
 
 /**
@@ -825,7 +830,7 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int hFont = -1;
+	int /*long*/ hFont = -1;
 	if (font != null) {
 		parent.setCustomDraw (true);
 		hFont = font.handle;
@@ -847,7 +852,7 @@ public void setFont (Font font){
 	if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 		int itemIndex = parent.indexOf (this);
 		if (itemIndex != -1) {
-			int hwnd = parent.handle;
+			int /*long*/ hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT;
 			lvItem.iItem = itemIndex;
@@ -886,13 +891,13 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int hFont = -1;
+	int /*long*/ hFont = -1;
 	if (font != null) {
 		parent.setCustomDraw (true);
 		hFont = font.handle;
 	}
 	if (cellFont == null) {
-		cellFont = new int [count];
+		cellFont = new int /*long*/ [count];
 		for (int i = 0; i < count; i++) {
 			cellFont [i] = -1;
 		}
@@ -915,7 +920,7 @@ public void setFont (int index, Font font) {
 		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 			int itemIndex = parent.indexOf (this);
 			if (itemIndex != -1) {
-				int hwnd = parent.handle;
+				int /*long*/ hwnd = parent.handle;
 				LVITEM lvItem = new LVITEM ();
 				lvItem.mask = OS.LVIF_TEXT;
 				lvItem.iItem = itemIndex;
@@ -1124,7 +1129,7 @@ public void setImageIndent (int indent) {
 	} else {
 		int index = parent.indexOf (this);
 		if (index != -1) {
-			int hwnd = parent.handle;
+			int /*long*/ hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_INDENT;
 			lvItem.iItem = index;
@@ -1205,7 +1210,7 @@ public void setText (int index, String string) {
 		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 			int itemIndex = parent.indexOf (this);
 			if (itemIndex != -1) {
-				int hwnd = parent.handle;
+				int /*long*/ hwnd = parent.handle;
 				LVITEM lvItem = new LVITEM ();
 				lvItem.mask = OS.LVIF_TEXT;
 				lvItem.iItem = itemIndex;

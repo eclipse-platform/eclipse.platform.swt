@@ -29,7 +29,7 @@ class IE extends WebBrowser {
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int info;
-	int globalDispatch;
+	int /*long*/ globalDispatch;
 	String html;
 
 	static final int BeforeNavigate2 = 0xfa;
@@ -116,7 +116,7 @@ public void create(Composite parent, int style) {
 	*/
 	String progId = "Shell.Explorer";	//$NON-NLS-1$
 	TCHAR key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
-	int [] phkResult = new int [1];
+	int /*long*/ [] phkResult = new int /*long*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
 		int [] lpcbData = new int [1];
 		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
@@ -128,7 +128,7 @@ public void create(Composite parent, int style) {
 				if (clsid.equals (CLSID_SHELLEXPLORER1)) {
 					/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
 					key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
-					int [] phkResult2 = new int [1];
+					int /*long*/ [] phkResult2 = new int /*long*/ [1];
 					if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
 						/* specify that Shell.Explorer.2 is to be used */
 						OS.RegCloseKey (phkResult2 [0]);
@@ -207,7 +207,7 @@ public void create(Composite parent, int style) {
 						}
 						Variant cancel = event.arguments[6];
 						if (cancel != null) {
-							int pCancel = cancel.getByRef();
+							int /*long*/ pCancel = cancel.getByRef();
 							COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					   }					
 						break;
@@ -247,11 +247,11 @@ public void create(Composite parent, int style) {
 									* prepend the UTF-8 Byte Order Mark signature to the data.
 									*/
 									byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
-									int	hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
+									int /*long*/ hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
 									if (hGlobal != 0) {
 										OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
 										OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
-										int[] ppstm = new int[1];
+										int /*long*/ [] ppstm = new int /*long*/ [1];
 										/* 
 										* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
 										* If the call succeeds the buffer hGlobal is freed automatically
@@ -262,7 +262,7 @@ public void create(Composite parent, int style) {
 											int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
 											Variant pVarResult = auto.getProperty(rgdispid[0]);
 											IDispatch dispatchDocument = pVarResult.getDispatch();
-											int[] ppvObject = new int[1];
+											int /*long*/ [] ppvObject = new int /*long*/ [1];
 											int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
 											if (result == OS.S_OK) {
 												IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
@@ -352,7 +352,7 @@ public void create(Composite parent, int style) {
 					}
 					case NewWindow2: {
 						Variant cancel = event.arguments[1];
-						int pCancel = cancel.getByRef();
+						int /*long*/ pCancel = cancel.getByRef();
 						WindowEvent newEvent = new WindowEvent(browser);
 						newEvent.display = browser.getDisplay();
 						newEvent.widget = browser;
@@ -369,8 +369,8 @@ public void create(Composite parent, int style) {
 							Variant variant = new Variant(browser.auto);
 							IDispatch iDispatch = variant.getDispatch();
 							Variant ppDisp = event.arguments[0];
-							int byref = ppDisp.getByRef();
-							if (byref != 0) COM.MoveMemory(byref, new int[] {iDispatch.getAddress()}, 4);
+							int /*long*/ byref = ppDisp.getByRef();
+							if (byref != 0) COM.MoveMemory(byref, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 							/*
 							* This code is intentionally commented.  A Variant constructed from an
 							* OleAutomation object does not increase its reference count.  The IDispatch
@@ -512,7 +512,7 @@ public void create(Composite parent, int style) {
 							}
 						});
 						Variant cancel = event.arguments[1];
-						int pCancel = cancel.getByRef();
+						int /*long*/ pCancel = cancel.getByRef();
 						Variant arg1 = event.arguments[0];
 						boolean isChildWindow = arg1.getBoolean();
 						COM.MoveMemory(pCancel, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);

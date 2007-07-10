@@ -16,19 +16,19 @@ import java.lang.reflect.Method;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.*;
 
 /* AWT Imports */
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -55,9 +55,9 @@ public class SWT_AWT {
 	 */
 	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
-	static boolean loaded, swingInitialized;
+static boolean loaded, swingInitialized;
 
-static native final int getAWTHandle (Canvas canvas);
+static native final int /*long*/ getAWTHandle (Canvas canvas);
 
 static synchronized void loadLibrary () {
 	if (loaded) return;
@@ -135,7 +135,7 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int handle = parent.handle;	
+	int /*long*/ handle = parent.handle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
 	 * and other JREs take a long.  To handle this binary incompatibility, use
@@ -148,22 +148,19 @@ public static Frame new_Frame (final Composite parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
+	initializeSwing ();
+	Object value = null;
 	Constructor constructor = null;
 	try {
-		constructor = clazz.getConstructor (new Class [] {int.class});
+		constructor = clazz.getConstructor (new Class [] {int.class, boolean.class});
+		value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle), Boolean.TRUE});
 	} catch (Throwable e1) {
 		try {
-			constructor = clazz.getConstructor (new Class [] {long.class});
+			constructor = clazz.getConstructor (new Class [] {long.class, boolean.class});
+			value = constructor.newInstance (new Object [] {new Long (handle), Boolean.TRUE});
 		} catch (Throwable e2) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
-	}
-	initializeSwing ();
-	Object value = null;
-	try {
-		value = constructor.newInstance (new Object [] {new Integer (handle)});
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
 	final Frame frame = (Frame) value;
 	/*
@@ -303,7 +300,7 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int handle = 0;
+	int /*long*/ handle = 0;
 	try {
 		loadLibrary ();
 		handle = getAWTHandle (parent);

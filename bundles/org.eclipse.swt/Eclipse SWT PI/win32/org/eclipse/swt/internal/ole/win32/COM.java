@@ -679,6 +679,7 @@ public static final native int CONTROLINFO_sizeof();
 public static final native int COSERVERINFO_sizeof();
 public static final native int DISPPARAMS_sizeof();
 public static final native int DVTARGETDEVICE_sizeof();
+public static final native int ELEMDESC_sizeof();
 public static final native int EXCEPINFO_sizeof();
 public static final native int FORMATETC_sizeof();
 public static final native int FUNCDESC_sizeof();
@@ -689,6 +690,7 @@ public static final native int OLEINPLACEFRAMEINFO_sizeof();
 public static final native int STATSTG_sizeof();
 public static final native int STGMEDIUM_sizeof();
 public static final native int TYPEATTR_sizeof();
+public static final native int TYPEDESC_sizeof();
 public static final native int VARDESC_sizeof();
 public static final native int VARIANT_sizeof();
 }

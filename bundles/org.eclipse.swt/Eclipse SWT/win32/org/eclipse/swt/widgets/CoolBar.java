@@ -44,7 +44,7 @@ public class CoolBar extends Composite {
 	CoolItem [] originalItems;
 	boolean locked;
 	boolean ignoreResize;
-	static final int ReBarProc;
+	static final int /*long*/ ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
@@ -110,7 +110,7 @@ public CoolBar (Composite parent, int style) {
 	}
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ReBarProc, hwnd, msg, wParam, lParam);
 }
@@ -137,7 +137,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
 	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count != 0) {
 		ignoreResize = true;
 		boolean redraw = false;
@@ -216,12 +216,12 @@ void createHandle () {
 	* The control will not destroy a font that it did not
 	* create.
 	*/
-	int hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	int /*long*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
 void createItem (CoolItem item, int index) {
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;
@@ -230,8 +230,8 @@ void createItem (CoolItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	int hHeap = OS.GetProcessHeap ();
-	int lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
+	int /*long*/ hHeap = OS.GetProcessHeap ();
+	int /*long*/ lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
@@ -295,8 +295,8 @@ void createWidget () {
 }
 
 void destroyItem (CoolItem item) {
-	int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int index = (int)/*64*/OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count != 0) {
 		int lastIndex = getLastIndexOfRow (index);
 		if (index == lastIndex) {
@@ -360,7 +360,7 @@ void destroyItem (CoolItem item) {
 	originalItems = newOriginals;
 }
 
-void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+void drawThemeBackground (int /*long*/ hDC, int /*long*/ hwnd, RECT rect) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (background == -1 && (style & SWT.FLAT) != 0) {
 			Control control = findBackgroundControl ();
@@ -437,7 +437,7 @@ int getMargin (int index) {
  */
 public CoolItem getItem (int index) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -458,7 +458,7 @@ public CoolItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 }
 
 /**
@@ -484,7 +484,7 @@ public int getItemCount () {
  */
 public int [] getItemOrder () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	int [] indices = new int [count];
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -521,7 +521,7 @@ public int [] getItemOrder () {
  */
 public CoolItem [] getItems () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	CoolItem [] result = new CoolItem [count];
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -547,7 +547,7 @@ public CoolItem [] getItems () {
  */
 public Point [] getItemSizes () {
 	checkWidget ();	
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	Point [] sizes = new Point [count];
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -574,7 +574,7 @@ public Point [] getItemSizes () {
 }
 
 int getLastIndexOfRow (int index) {
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count == 0) return -1;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();	
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -589,7 +589,7 @@ int getLastIndexOfRow (int index) {
 }
 
 boolean isLastItemOfRow (int index) {
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (index + 1 == count) return true;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -664,7 +664,7 @@ public int indexOf (CoolItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	return OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
 }
 
 void resizeToPreferredWidth (int index) {
@@ -673,7 +673,7 @@ void resizeToPreferredWidth (int index) {
 	* with an index out of range, Windows GP's.  The
 	* fix is to ensure the index is in range.
 	*/
-	int count = OS.SendMessage(handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage(handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (0 <= index && index < count) {
 		REBARBANDINFO rbBand = new REBARBANDINFO();
 		rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -722,7 +722,7 @@ void removeControl (Control control) {
 void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.RB_SETBKCOLOR, 0, pixel);
-	setItemColors (OS.SendMessage (handle, OS.RB_GETTEXTCOLOR, 0, 0), pixel);
+	setItemColors ((int)/*64*/OS.SendMessage (handle, OS.RB_GETTEXTCOLOR, 0, 0), pixel);
 	/*
 	* Feature in Windows.  For some reason, Windows
 	* does not fully erase the coolbar area and coolbar
@@ -741,11 +741,11 @@ void setBackgroundPixel (int pixel) {
 void setForegroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultForeground ();
 	OS.SendMessage (handle, OS.RB_SETTEXTCOLOR, 0, pixel);
-	setItemColors (pixel, OS.SendMessage (handle, OS.RB_GETBKCOLOR, 0, 0));
+	setItemColors (pixel, (int)/*64*/OS.SendMessage (handle, OS.RB_GETBKCOLOR, 0, 0));
 }
 
 void setItemColors (int foreColor, int backColor) {
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_COLORS;
@@ -817,7 +817,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
  */
 void setItemOrder (int [] itemOrder) {
 	if (itemOrder == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int itemCount = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int itemCount = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
 	
 	/* Ensure that itemOrder does not contain any duplicates. */
@@ -833,7 +833,7 @@ void setItemOrder (int [] itemOrder) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	for (int i=0; i<itemOrder.length; i++) {
 		int id = originalItems [itemOrder [i]].id;
-		int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
+		int index = (int)/*64*/OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
 		if (index != i) {
 			int lastItemSrcRow = getLastIndexOfRow (index);
 			int lastItemDstRow = getLastIndexOfRow (i);									
@@ -876,7 +876,7 @@ void setItemOrder (int [] itemOrder) {
  */
 void setItemSizes (Point [] sizes) {
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (sizes.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -903,7 +903,7 @@ void setItemSizes (Point [] sizes) {
 public void setLocked (boolean locked) {
 	checkWidget ();
 	this.locked = locked;
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
@@ -974,11 +974,11 @@ TCHAR windowClass () {
 	return ReBarClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return ReBarProc;
 }
 
-LRESULT WM_COMMAND (int wParam, int lParam) {
+LRESULT WM_COMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the coolbar window
 	* proc processes WM_COMMAND, it forwards this
@@ -1002,7 +1002,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	/*
 	* Feature in Windows.  For some reason, Windows
@@ -1024,7 +1024,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
+LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When the cool bar window
 	* proc processes WM_NOTIFY, it forwards this
@@ -1048,7 +1048,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_SETREDRAW (int wParam, int lParam) {
+LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1072,7 +1072,7 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
 	Rectangle rect = getBounds ();		
-	int code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (!rect.equals (getBounds ())) {
 		parent.redraw (rect.x, rect.y, rect.width, rect.height, true);
@@ -1080,9 +1080,9 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreResize) {
-		int code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
+		int /*long*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
@@ -1095,7 +1095,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
 		case OS.RBN_BEGINDRAG: {
 			int pos = OS.GetMessagePos ();
@@ -1133,7 +1133,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			if (!ignoreResize) {
 				Point size = getSize ();
 				int border = getBorderWidth ();
-				int barHeight = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
+				int barHeight = (int)/*64*/OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
 				if ((style & SWT.VERTICAL) != 0) {
 					setSize (barHeight + 2 * border, size.y);
 				} else {

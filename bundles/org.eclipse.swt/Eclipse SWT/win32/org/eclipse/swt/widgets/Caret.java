@@ -80,10 +80,10 @@ void createWidget () {
 	}
 }
 
-int defaultFont () {
-	int hwnd = parent.handle;
-	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
-	int hFont = 0;
+int /*long*/ defaultFont () {
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
+	int /*long*/ hFont = 0;
 	if (hwndIME != 0) {
 		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
 	}
@@ -127,7 +127,7 @@ public Rectangle getBounds () {
 public Font getFont () {
 	checkWidget();
 	if (font == null) {
-		int hFont = defaultFont ();
+		int /*long*/ hFont = defaultFont ();
 		return Font.win32_new (display, hFont);
 	}
 	return font;
@@ -262,7 +262,7 @@ void resizeIME () {
 	if (!OS.IsDBLocale) return;
 	POINT ptCurrentPos = new POINT ();
 	if (!OS.GetCaretPos (ptCurrentPos)) return;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.GetClientRect (hwnd, rect);
 	COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
@@ -273,7 +273,7 @@ void resizeIME () {
 	lpCompForm.right = rect.right;
 	lpCompForm.top = rect.top;
 	lpCompForm.bottom = rect.bottom;
-	int hIMC = OS.ImmGetContext (hwnd);
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	OS.ImmSetCompositionWindow (hIMC, lpCompForm);
 	OS.ImmReleaseContext (hwnd, hIMC);
 }
@@ -293,9 +293,9 @@ void releaseWidget () {
 
 void resize () {
 	resized = false;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	OS.DestroyCaret ();		
-	int hBitmap = image != null ? image.handle : 0;
+	int /*long*/ hBitmap = image != null ? image.handle : 0;
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	OS.SetCaretPos (x, y);
 	OS.ShowCaret (hwnd);
@@ -305,8 +305,8 @@ void resize () {
 void restoreIMEFont () {
 	if (!OS.IsDBLocale) return;
 	if (oldFont == null) return;
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	OS.ImmSetCompositionFont (hIMC, oldFont);
 	OS.ImmReleaseContext (hwnd, hIMC);
 	oldFont = null;
@@ -363,8 +363,8 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
-	int hwnd = parent.handle;
-	int hBitmap = 0;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hBitmap = 0;
 	if (image != null) hBitmap = image.handle;
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	move ();
@@ -422,11 +422,11 @@ public void setImage (Image image) {
 
 void setIMEFont () {
 	if (!OS.IsDBLocale) return;
-	int hFont = 0;
+	int /*long*/ hFont = 0;
 	if (font != null) hFont = font.handle;
 	if (hFont == 0) hFont = defaultFont ();
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	/* Save the current IME font */
 	if (oldFont == null) {
 		oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
@@ -537,7 +537,7 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;
 	isVisible = visible;
-	int hwnd = parent.handle;
+	int /*long*/ hwnd = parent.handle;
 	if (OS.GetFocus () != hwnd) return;
 	if (!isVisible) {
 		OS.HideCaret (hwnd);

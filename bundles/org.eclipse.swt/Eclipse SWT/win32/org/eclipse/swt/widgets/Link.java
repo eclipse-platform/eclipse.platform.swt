@@ -42,9 +42,9 @@ public class Link extends Control {
 	String [] ids;
 	int [] mnemonics;
 	int focusIndex, mouseDownIndex;
-	int font;
+	int /*long*/ font;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
-	static final int LinkProc;
+	static final int /*long*/ LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
 		if (OS.COMCTL32_MAJOR >= 6) {
@@ -119,7 +119,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	if (LinkProc != 0) return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
@@ -131,9 +131,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width, height;
 	if (OS.COMCTL32_MAJOR >= 6) {
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		int oldFont = OS.SelectObject (hDC, newFont);
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		int /*long*/ oldFont = OS.SelectObject (hDC, newFont);
 		TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
@@ -623,16 +623,16 @@ TCHAR windowClass () {
 	return OS.COMCTL32_MAJOR >= 6 ? LinkClass : display.windowClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return LinkProc != 0 ? LinkProc : display.windowProc;
 }
 
-LRESULT WM_CHAR (int wParam, int lParam) {
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (focusIndex == -1) return result;
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case ' ':
 			case SWT.CR:
 				Event event = new Event ();
@@ -655,7 +655,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				break;
 		}
 	} else {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case ' ':
 			case SWT.CR:
 			case SWT.TAB:
@@ -665,7 +665,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				* This allows the application to cancel an operation that is normally
 				* performed in WM_KEYDOWN from WM_CHAR.
 				*/
-				int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+				int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 				return new LRESULT (code);
 		}
 		
@@ -673,10 +673,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
-	int index, count, code = 0;
+	int index, count;
+	int /*long*/ code = 0;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		LITEM item = new LITEM ();
 		item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
@@ -707,20 +708,20 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETFONT (int wParam, int lParam) {
+LRESULT WM_GETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETFONT (wParam, lParam);
 	if (result != null) return result;
-	int code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
 	if (font == 0) font = defaultFont ();
 	return new LRESULT (font);
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	if (OS.COMCTL32_MAJOR >= 6) {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.VK_SPACE:
 			case OS.VK_RETURN:
 			case OS.VK_TAB:
@@ -736,13 +737,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) redraw ();
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
@@ -780,7 +781,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
@@ -802,7 +803,7 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
 		int x = OS.GET_X_LPARAM (lParam);
@@ -837,7 +838,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		return super.WM_PAINT (wParam, lParam);
 	}
@@ -859,7 +860,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
 		RECT rect = new RECT ();
@@ -874,13 +875,13 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) redraw ();
 	return result;
 }
 
-LRESULT WM_SETFONT (int wParam, int lParam) {
+LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout.setFont (Font.win32_new (display, wParam));
 	}
@@ -888,7 +889,7 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
 		RECT rect = new RECT ();
@@ -899,7 +900,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmColorChild (int wParam, int lParam) {
+LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmColorChild (wParam, lParam);
 	/*
 	* Feature in Windows.  When a SysLink is disabled, it does
@@ -912,7 +913,7 @@ LRESULT wmColorChild (int wParam, int lParam) {
 			if (result == null) {
 				int backPixel = getBackgroundPixel ();
 				OS.SetBkColor (wParam, backPixel);
-				int hBrush = findBrush (backPixel, OS.BS_SOLID);
+				int /*long*/ hBrush = findBrush (backPixel, OS.BS_SOLID);
 				return new LRESULT (hBrush);
 			}
 		}
@@ -920,7 +921,7 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		switch (hdr.code) {
 			case OS.NM_RETURN:

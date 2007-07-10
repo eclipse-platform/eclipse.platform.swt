@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.ole.win32;
 public class VARDESC {
 	public int memid;
 	public int /*long*/ lpstrSchema;
-	public int /*long*/ oInst;
+	public int oInst;
 //	ELEMDESC elemdescVar
 //	TYPEDESC elemdescVar.tdesc
 	public int /*long*/ elemdescVar_tdesc_union;

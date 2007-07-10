@@ -48,7 +48,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Composite extends Scrollable {
 	Layout layout;
-	int font;
+	int /*long*/ font;
 	WINDOWPOS [] lpwp;
 	Control [] tabList;
 	int layoutCount, backgroundMode;
@@ -95,7 +95,7 @@ public Composite (Composite parent, int style) {
 
 Control [] _getChildren () {
 	int count = 0;
-	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	if (hwndChild == 0) return new Control [0];
 	while (hwndChild != 0) {
 		count++;
@@ -344,7 +344,7 @@ int getChildrenCount () {
 	* non-registered children.
 	*/
 	int count = 0;
-	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
 		count++;
 		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
@@ -668,7 +668,7 @@ void releaseChildren (boolean destroy) {
 void releaseWidget () {
 	super.releaseWidget ();
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+		int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 		if (hwndChild != 0) {
 			int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
 			if (threadId != OS.GetCurrentThreadId ()) {
@@ -700,7 +700,7 @@ void resizeChildren () {
 
 boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	if (pwp == null) return true;
-	int hdwp = 0;
+	int /*long*/ hdwp = 0;
 	if (defer) {
 		hdwp = OS.BeginDeferWindowPos (pwp.length);
 		if (hdwp == 0) return false;
@@ -730,7 +730,7 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	return true;
 }
 
-void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
+void resizeEmbeddedHandle(int /*long*/ embeddedHandle, int width, int height) {
 	if (embeddedHandle == 0) return;
 	int [] processID = new int [1];
 	int threadId = OS.GetWindowThreadProcessId (embeddedHandle, processID);
@@ -959,7 +959,7 @@ boolean translateMnemonic (Event event, Control control) {
 boolean translateTraversal (MSG msg) {
 	if ((state & CANVAS) != 0 ) {
 		if ((style & SWT.EMBEDDED) != 0) return false;
-		switch (msg.wParam) {
+		switch ((int)/*64*/msg.wParam) {
 			case OS.VK_UP:
 			case OS.VK_LEFT:
 			case OS.VK_DOWN:
@@ -1039,7 +1039,7 @@ int widgetStyle () {
 	return super.widgetStyle () | OS.WS_CLIPCHILDREN;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
@@ -1049,7 +1049,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
@@ -1064,16 +1064,16 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_GETFONT (int wParam, int lParam) {
+LRESULT WM_GETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_GETFONT (wParam, lParam);
 	if (result != null) return result;
-	int code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
 	if (font == 0) font = defaultFont ();
 	return new LRESULT (font);
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
@@ -1086,7 +1086,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_NCPAINT (int wParam, int lParam) {
+LRESULT WM_NCPAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_NCPAINT (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
@@ -1095,7 +1095,7 @@ LRESULT WM_NCPAINT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
+LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		if (OS.LOWORD (wParam) == OS.WM_CREATE) {
 			RECT rect = new RECT ();
@@ -1106,7 +1106,7 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	return super.WM_PARENTNOTIFY (wParam, lParam);
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((state & CANVAS) == 0 || (state & FOREIGN_HANDLE) != 0) {
 		return super.WM_PAINT (wParam, lParam);
 	}
@@ -1133,15 +1133,15 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			}
 		}
 		if (bufferedPaint) {
-			int hDC = OS.BeginPaint (handle, ps);
+			int /*long*/ hDC = OS.BeginPaint (handle, ps);
 			int width = ps.right - ps.left;
 			int height = ps.bottom - ps.top;
 			if (width != 0 && height != 0) {
-				int [] phdc = new int [1];
+				int /*long*/ [] phdc = new int /*long*/ [1];
 				int flags = OS.BPBF_COMPATIBLEBITMAP;
 				RECT prcTarget = new RECT ();
 				OS.SetRect (prcTarget, ps.left, ps.top, ps.right, ps.bottom);
-				int hBufferedPaint = OS.BeginBufferedPaint (hDC, prcTarget, flags, null, phdc);
+				int /*long*/ hBufferedPaint = OS.BeginBufferedPaint (hDC, prcTarget, flags, null, phdc);
 				GCData data = new GCData ();
 				if ((OS.GetLayout (hDC) & OS.LAYOUT_RTL) != 0) {
 					data.style = SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
@@ -1154,7 +1154,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				if (control == null) control = this;
 				data.background = control.getBackgroundPixel ();
 				data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-				data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 				if ((style & SWT.NO_BACKGROUND) != 0) {
 					/* This code is intentionally commented because it may be slow to copy bits from the screen */
 					//paintGC.copyArea (image, ps.left, ps.top);
@@ -1184,7 +1184,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			GC gc = GC.win32_new (this, data);
 
 			/* Get the system region for the paint HDC */
-			int sysRgn = 0;
+			int /*long*/ sysRgn = 0;
 			if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
 				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 				if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
@@ -1193,7 +1193,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 							int nBytes = OS.GetRegionData (sysRgn, 0, null);
 							int [] lpRgnData = new int [nBytes / 4];
 							OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-							int newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+							int /*long*/ newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
 							OS.DeleteObject (sysRgn);
 							sysRgn = newSysRgn;
 						}
@@ -1284,7 +1284,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			gc.dispose ();
 		}
 	} else {
-		int hDC = OS.BeginPaint (handle, ps);
+		int /*long*/ hDC = OS.BeginPaint (handle, ps);
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
@@ -1310,7 +1310,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
@@ -1329,7 +1329,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 			if (control == null) control = this;
 			data.background = control.getBackgroundPixel ();
 			data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+			data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			GC gc = GC.win32_new (wParam, data);
 			Event event = new Event ();
 			event.gc = gc;
@@ -1346,12 +1346,12 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFONT (int wParam, int lParam) {
+LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (lParam != 0) OS.InvalidateRect (handle, null, true);
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Begin deferred window positioning */
 	setResizeChildren (false);
@@ -1395,10 +1395,10 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
 		OS.SendMessage (hwndChild, OS.WM_SYSCOLORCHANGE, 0, 0);
 		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
@@ -1406,7 +1406,7 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
 	if (result != null) return result;
 		
@@ -1426,13 +1426,13 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	* redraw the non-client area.
 	*/
 	if (!OS.IsWinCE) {
-		int cmd = wParam & 0xFFF0;
+		int cmd = (int)/*64*/wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_HSCROLL:
 			case OS.SC_VSCROLL:
 				boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
 				boolean showVBar = verticalBar != null && verticalBar.getVisible ();
-				int code = callWindowProc (handle, OS.WM_SYSCOMMAND, wParam, lParam);
+				int /*long*/ code = callWindowProc (handle, OS.WM_SYSCOMMAND, wParam, lParam);
 				if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
 					(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
 						int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
@@ -1446,23 +1446,23 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) OS.InvalidateRect (handle, null, false);
 	return result;
 }
 
-LRESULT wmNCPaint (int hwnd, int wParam, int lParam) {
+LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 		if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
-			int code = 0;
+			int /*long*/ code = 0;
 			int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 			if ((bits2 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
 				code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
 			}
-			int hDC = OS.GetWindowDC (hwnd);
+			int /*long*/ hDC = OS.GetWindowDC (hwnd);
 			RECT rect = new RECT ();
 			OS.GetWindowRect (hwnd, rect);
 			rect.right -= rect.left;
@@ -1478,7 +1478,7 @@ LRESULT wmNCPaint (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
+LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	if (!OS.IsWinCE) {
 		switch (hdr.code) {
 			/*
@@ -1504,7 +1504,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 				* check if the parent is already on top and neither set or clear
 				* the topmost status of the tool tip.
 				*/
-				int hwndParent = hdr.hwndFrom;
+				int /*long*/ hwndParent = hdr.hwndFrom;
 				do {
 					hwndParent = OS.GetParent (hwndParent);
 					if (hwndParent == 0) break;
@@ -1514,7 +1514,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 				if (hwndParent != 0) break;
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+				int /*long*/ hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
 				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
 				display.lockActiveWindow = false;
 				break;
@@ -1553,7 +1553,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 					* Ensure that the orientation of the tool tip matches
 					* the orientation of the control.
 					*/
-					int hwnd = hdr.idFrom;
+					int /*long*/ hwnd = hdr.idFrom;
 					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
 						Control control = display.getControl (hwnd);
 						if (control != null) {

@@ -121,8 +121,8 @@ public class Accessible {
 			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return Next((int)args[0], args[1], args[2]);}
-			public int /*long*/ method4(int /*long*/[] args) {return Skip((int)args[0]);}
+			public int /*long*/ method3(int /*long*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
+			public int /*long*/ method4(int /*long*/[] args) {return Skip((int)/*64*/args[0]);}
 			public int /*long*/ method5(int /*long*/[] args) {return Reset();}
 			public int /*long*/ method6(int /*long*/[] args) {return Clone(args[0]);}
 		};
@@ -532,6 +532,7 @@ public class Accessible {
 		if (childID == ACC.CHILDID_NONE) {
 			return iaccessible.accHitTest(xLeft, yTop, pvarChild);
 		}
+		//TODO - use VARIANT structure
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarChild + 8, new int[] { childIDToOs(childID) }, 4);
 		return COM.S_OK;
@@ -558,7 +559,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.x = osLeft;
 		event.y = osTop;
 		event.width = osWidth;
@@ -606,7 +607,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getChild(event);
@@ -668,7 +669,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.result = osDefaultAction;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -705,7 +706,7 @@ public class Accessible {
 		}
 		
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.result = osDescription;
 		
 		// TEMPORARY CODE
@@ -758,6 +759,7 @@ public class Accessible {
 		int code = iaccessible.get_accFocus(pvarChild);
 		if (accessibleControlListeners.size() == 0) return code;
 		if (code == COM.S_OK) {
+			//TODO - use VARIANT structure
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarChild, 2);
 			if (pvt[0] == COM.VT_I4) {
@@ -819,7 +821,7 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.result = osHelp;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -863,7 +865,7 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.result = osKeyboardShortcut;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -899,7 +901,7 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.result = osName;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -935,6 +937,7 @@ public class Accessible {
 		// TEMPORARY CODE - process tree and table even if there are no apps listening
 		if (accessibleControlListeners.size() == 0 && !(control instanceof Tree || control instanceof Table)) return code;
 		if (code == COM.S_OK) {
+			//TODO - use VARIANT structure
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarRole, 2);
 			if (pvt[0] == COM.VT_I4) {
@@ -945,7 +948,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.detail = osToRole(osRole);
 		// TEMPORARY CODE
 		/* Currently our checkbox table and tree are emulated using state mask
@@ -977,6 +980,7 @@ public class Accessible {
 		int code = iaccessible.get_accSelection(pvarChildren);
 		if (accessibleControlListeners.size() == 0) return code;
 		if (code == COM.S_OK) {
+			//TODO - use VARIANT structure
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarChildren, 2);
 			if (pvt[0] == COM.VT_I4) {
@@ -1037,6 +1041,7 @@ public class Accessible {
 		// TEMPORARY CODE - process tree and table even if there are no apps listening
 		if (accessibleControlListeners.size() == 0 && !(control instanceof Tree || control instanceof Table)) return code;
 		if (code == COM.S_OK) {
+			//TODO - use VARIANT structure
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarState, 2);
 			if (pvt[0] == COM.VT_I4) {
@@ -1047,7 +1052,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.detail = osToState(osState);
 		// TEMPORARY CODE
 		/* Currently our checkbox table and tree are emulated using state mask
@@ -1107,7 +1112,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID((int)/*64*/v.lVal);
+		event.childID = osToChildID(v.lVal);
 		event.result = osValue;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -1199,13 +1204,14 @@ public class Accessible {
 				Object nextItem = nextItems[i];
 				if (nextItem instanceof Integer) {
 					int item = ((Integer) nextItem).intValue();
-					COM.MoveMemory(rgvar + i * 16, new short[] { COM.VT_I4 }, 2);
-					COM.MoveMemory(rgvar + i * 16 + 8, new int[] { item }, 4);
+					//TODO - use VARIANT struct
+					COM.MoveMemory(rgvar + i * VARIANT.sizeof, new short[] { COM.VT_I4 }, 2);
+					COM.MoveMemory(rgvar + i * VARIANT.sizeof + 8, new int[] { item }, 4);
 				} else {
 					Accessible accessible = (Accessible) nextItem;
 					accessible.AddRef();
-					COM.MoveMemory(rgvar + i * 16, new short[] { COM.VT_DISPATCH }, 2);
-					COM.MoveMemory(rgvar + i * 16 + 8, new int /*long*/[] { accessible.objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+					COM.MoveMemory(rgvar + i * VARIANT.sizeof, new short[] { COM.VT_DISPATCH }, 2);
+					COM.MoveMemory(rgvar + i * VARIANT.sizeof + 8, new int /*long*/[] { accessible.objIAccessible.getAddress() }, OS.PTR_SIZEOF);
 				}
 			}
 			if (pceltFetched != 0)
@@ -1274,10 +1280,10 @@ public class Accessible {
 			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
-			int[] pEnum = new int[1];
+			int /*long*/ [] pEnum = new int /*long*/ [1];
 			code = ienumvariant.Clone(pEnum);
 			ienumvariant.Release();
-			COM.MoveMemory(ppEnum, pEnum, 4);
+			COM.MoveMemory(ppEnum, pEnum, OS.PTR_SIZEOF);
 			return code;
 		}
 

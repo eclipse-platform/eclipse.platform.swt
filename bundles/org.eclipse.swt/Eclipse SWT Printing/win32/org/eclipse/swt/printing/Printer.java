@@ -46,7 +46,7 @@ public final class Printer extends Device {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 	/**
 	 * the printer data describing this printer
@@ -207,9 +207,9 @@ protected void create(DeviceData deviceData) {
 	/* Use the character encoding for the default locale */
 	TCHAR driver = new TCHAR(0, data.driver, true);
 	TCHAR device = new TCHAR(0, data.name, true);
-	int lpInitData = 0;
+	int /*long*/ lpInitData = 0;
 	byte buffer [] = data.otherData;
-	int hHeap = OS.GetProcessHeap();
+	int /*long*/ hHeap = OS.GetProcessHeap();
 	if (buffer != null && buffer.length != 0) {
 		/* If user setup info from a print dialog was specified, restore the DEVMODE struct. */
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
@@ -233,7 +233,7 @@ protected void create(DeviceData deviceData) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC(GCData data) {
+public int /*long*/ internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -263,7 +263,7 @@ public int internal_new_GC(GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC(int hDC, GCData data) {
+public void internal_dispose_GC(int /*long*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
@@ -292,8 +292,8 @@ public boolean startJob(String jobName) {
 	checkDevice();
 	DOCINFO di = new DOCINFO();
 	di.cbSize = DOCINFO.sizeof;
-	int hHeap = OS.GetProcessHeap();
-	int lpszDocName = 0;
+	int /*long*/ hHeap = OS.GetProcessHeap();
+	int /*long*/ lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, jobName, true);
@@ -302,7 +302,7 @@ public boolean startJob(String jobName) {
 		OS.MoveMemory(lpszDocName, buffer, byteCount);
 		di.lpszDocName = lpszDocName;
 	}
-	int lpszOutput = 0;
+	int /*long*/ lpszOutput = 0;
 	if (data.printToFile && data.fileName != null) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, data.fileName, true);

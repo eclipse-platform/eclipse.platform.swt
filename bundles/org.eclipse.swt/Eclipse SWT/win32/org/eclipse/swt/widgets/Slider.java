@@ -67,7 +67,7 @@ import org.eclipse.swt.events.*;
 public class Slider extends Control {
 	int increment, pageIncrement;
 	boolean ignoreFocus;
-	static final int ScrollBarProc;
+	static final int /*long*/ ScrollBarProc;
 	static final TCHAR ScrollBarClass = new TCHAR (0, "SCROLLBAR", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -148,7 +148,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows.  Windows runs a modal message
@@ -470,7 +470,7 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
-boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
+boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 	/*
 	* Feature in Windows.  Using SIF_DISABLENOSCROLL,
 	* SetScrollInfo () can change enabled and disabled
@@ -619,11 +619,11 @@ TCHAR windowClass () {
 	return ScrollBarClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return ScrollBarProc;
 }
 
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
  	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
  	if (result != null) return result;
  	if ((style & SWT.VERTICAL) != 0) return result;
@@ -637,11 +637,11 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
  	* in the operating system.
  	*/
 	if ((style & SWT.MIRRORED) != 0) {
-	 	switch (wParam) {
+	 	switch ((int)/*64*/wParam) {
 	 		case OS.VK_LEFT: 
 			case OS.VK_RIGHT: {
 				int key = wParam == OS.VK_LEFT ? OS.VK_RIGHT : OS.VK_LEFT;
-				int code = callWindowProc (handle, OS.WM_KEYDOWN, key, lParam);
+				int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, key, lParam);
 	 			return new LRESULT (code);
 	 		}
 	 	}
@@ -649,7 +649,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
  	return result;
 }
  
-LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
+LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
@@ -682,7 +682,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
@@ -715,12 +715,12 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreFocus) return null;
 	return super.WM_SETFOCUS (wParam, lParam);
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
+LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Do nothing when scrolling is ending */
 	int code = OS.LOWORD (wParam);

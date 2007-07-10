@@ -109,7 +109,8 @@ public class Display extends Device {
 	/* Windows and Events */
 	Event [] eventQueue;
 	Callback windowCallback;
-	int windowProc, threadId;
+	int /*long*/ windowProc;
+	int threadId;
 	TCHAR windowClass, windowShadowClass;
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
@@ -117,9 +118,10 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 
 	/* Widget Table */
+	int freeSlot;
 	int [] indexTable;
 	Control lastControl, lastGetControl;
-	int freeSlot, lastHwnd, lastGetHwnd;
+	int /*long*/ lastHwnd, lastGetHwnd;
 	Control [] controlTable;
 	static final int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
@@ -143,7 +145,7 @@ public class Display extends Device {
 	}
 	
 	/* XP Themes */
-	int hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
+	int /*long*/ hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
@@ -172,18 +174,18 @@ public class Display extends Device {
 	
 	/* Filter Hook */
 	Callback msgFilterCallback;
-	int msgFilterProc, filterHook;
+	int /*long*/ msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
 	boolean runDragDrop = true;
 	
 	/* Idle Hook */
 	Callback foregroundIdleCallback;
-	int foregroundIdleProc, idleHook;
+	int /*long*/ foregroundIdleProc, idleHook;
 	
 	/* Message Hook and Embedding */
 	boolean ignoreNextKey;
 	Callback getMsgCallback, embeddedCallback;
-	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
+	int /*long*/ getMsgProc, msgHook, embeddedHwnd, embeddedProc;
 	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
 	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
@@ -201,15 +203,16 @@ public class Display extends Device {
 	int nextTrayId;
 	
 	/* Timers */
-	int [] timerIds;
+	int /*long*/ [] timerIds;
 	Runnable [] timerList;
-	int nextTimerId = SETTINGS_ID + 1;
-	static final int SETTINGS_ID = 100;
+	int /*long*/ nextTimerId = SETTINGS_ID + 1;
+	static final int /*long*/ SETTINGS_ID = 100;
 	static final int SETTINGS_DELAY = 2000;
 	
 	/* Keyboard and Mouse */
 	RECT clickRect;
-	int clickCount, lastTime, lastButton, lastClickHwnd;
+	int clickCount, lastTime, lastButton;
+	int /*long*/ lastClickHwnd;
 	int lastKey, lastAscii, lastMouse;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
@@ -226,7 +229,7 @@ public class Display extends Device {
 	
 	/* Message Only Window */
 	Callback messageCallback;
-	int hwndMessage, messageProc;
+	int /*long*/ hwndMessage, messageProc;
 	
 	/* System Resources */
 	LOGFONT lfSystemFont;
@@ -240,7 +243,7 @@ public class Display extends Device {
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
 
 	/* Custom Colors for ChooseColor */
-	int lpCustColors;
+	int /*long*/ lpCustColors;
 
 	/* Sort Indicators */
 	Image upArrow, downArrow;
@@ -453,7 +456,7 @@ void addBar (Menu menu) {
 	bars [index] = menu;
 }
 
-void addControl (int handle, Control control) {
+void addControl (int /*long*/ handle, Control control) {
 	if (handle == 0) return;
 	if (freeSlot == -1) {
 		int length = (freeSlot = indexTable.length) + GROW_SIZE;
@@ -469,7 +472,7 @@ void addControl (int handle, Control control) {
 	if (USE_PROPERTY) {
 		OS.SetProp (handle, SWT_OBJECT_INDEX, freeSlot + 1);
 	} else {
-		OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
+		OS.SetWindowLongPtr (handle, OS.GWLP_USERDATA, freeSlot + 1);
 	}
 	int oldSlot = freeSlot;
 	freeSlot = indexTable [oldSlot];
@@ -741,8 +744,9 @@ protected void create (DeviceData data) {
 void createDisplay (DeviceData data) {
 }
 
-static int create32bitDIB (Image image) {
-	int transparentPixel = -1, alpha = -1, hMask = 0, hBitmap = 0;
+static int /*long*/ create32bitDIB (Image image) {
+	int transparentPixel = -1, alpha = -1;
+	int /*long*/ hMask = 0, hBitmap = 0;
 	byte[] alphaData = null;
 	switch (image.type) {
 		case SWT.ICON:
@@ -763,10 +767,10 @@ static int create32bitDIB (Image image) {
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
 	int imgWidth = bm.bmWidth;
 	int imgHeight = bm.bmHeight;
-	int hDC = OS.GetDC (0);
-	int srcHdc = OS.CreateCompatibleDC (hDC);
-	int oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
-	int memHdc = OS.CreateCompatibleDC (hDC);
+	int /*long*/ hDC = OS.GetDC (0);
+	int /*long*/ srcHdc = OS.CreateCompatibleDC (hDC);
+	int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
+	int /*long*/ memHdc = OS.CreateCompatibleDC (hDC);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 	bmiHeader.biWidth = imgWidth;
@@ -776,10 +780,10 @@ static int create32bitDIB (Image image) {
 	bmiHeader.biCompression = OS.BI_RGB;
 	byte []	bmi = new byte [BITMAPINFOHEADER.sizeof];
 	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-	int [] pBits = new int [1];
-	int memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	int /*long*/ [] pBits = new int /*long*/ [1];
+	int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int oldMemBitmap = OS.SelectObject (memHdc, memDib);
+	int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
 	BITMAP dibBM = new BITMAP ();
 	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
 	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
@@ -871,16 +875,15 @@ static int create32bitDIB (Image image) {
 	if (hMask != 0) OS.DeleteObject (hMask);
 	return memDib;
 }
-
-static int create32bitDIB (int hBitmap, int alpha, byte [] alphaData, int transparentPixel) {
+static int /*long*/ create32bitDIB (int /*long*/ hBitmap, int alpha, byte [] alphaData, int transparentPixel) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
 	int imgWidth = bm.bmWidth;
 	int imgHeight = bm.bmHeight;
-	int hDC = OS.GetDC (0);
-	int srcHdc = OS.CreateCompatibleDC (hDC);
-	int oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
-	int memHdc = OS.CreateCompatibleDC (hDC);
+	int /*long*/ hDC = OS.GetDC (0);
+	int /*long*/ srcHdc = OS.CreateCompatibleDC (hDC);
+	int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
+	int /*long*/ memHdc = OS.CreateCompatibleDC (hDC);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 	bmiHeader.biWidth = imgWidth;
@@ -890,10 +893,10 @@ static int create32bitDIB (int hBitmap, int alpha, byte [] alphaData, int transp
 	bmiHeader.biCompression = OS.BI_RGB;
 	byte []	bmi = new byte [BITMAPINFOHEADER.sizeof];
 	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-	int [] pBits = new int [1];
-	int memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	int /*long*/ [] pBits = new int /*long*/ [1];
+	int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int oldMemBitmap = OS.SelectObject (memHdc, memDib);
+	int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
 	BITMAP dibBM = new BITMAP ();
 	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
 	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
@@ -971,9 +974,9 @@ static Image createIcon (Image image) {
 		return new Image (device, data, mask);
 	}
 	int width = data.width, height = data.height;
-	int hMask, hBitmap;
-	int hDC = device.internal_new_GC (null);
-	int dstHdc = OS.CreateCompatibleDC (hDC), oldDstBitmap;
+	int /*long*/ hMask, hBitmap;
+	int /*long*/ hDC = device.internal_new_GC (null);
+	int /*long*/ dstHdc = OS.CreateCompatibleDC (hDC), oldDstBitmap;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		hBitmap = Display.create32bitDIB (image.handle, data.alpha, data.alphaData, data.transparentPixel);
 		hMask = OS.CreateBitmap (width, height, 1, 1, null);
@@ -984,8 +987,8 @@ static Image createIcon (Image image) {
 		/* Icons need black pixels where the mask is transparent */
 		hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
 		oldDstBitmap = OS.SelectObject (dstHdc, hBitmap);
-		int srcHdc = OS.CreateCompatibleDC (hDC);
-		int oldSrcBitmap = OS.SelectObject (srcHdc, image.handle);
+		int /*long*/ srcHdc = OS.CreateCompatibleDC (hDC);
+		int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, image.handle);
 		OS.PatBlt (dstHdc, 0, 0, width, height, OS.BLACKNESS);
 		OS.BitBlt (dstHdc, 0, 0, width, height, srcHdc, 0, 0, OS.SRCINVERT);
 		OS.SelectObject (srcHdc, hMask);
@@ -1002,14 +1005,14 @@ static Image createIcon (Image image) {
 	info.fIcon = true;
 	info.hbmColor = hBitmap;
 	info.hbmMask = hMask;
-	int hIcon = OS.CreateIconIndirect (info);
+	int /*long*/ hIcon = OS.CreateIconIndirect (info);
 	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.DeleteObject (hBitmap);
 	OS.DeleteObject (hMask);
 	return Image.win32_new (device, SWT.ICON, hIcon);
 }
 
-static int createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
+static int /*long*/ createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
 	int srcWidth = data.width;
 	int srcHeight = data.height;
 	ImageData mask = ImageData.internal_new (srcWidth, srcHeight, 1,
@@ -1021,13 +1024,13 @@ static int createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
 			mask.setPixel (x, y, (data.alphaData [ap++] & 0xff) <= 127 ? 1 : 0);
 		}
 	}
-	int hMask = OS.CreateBitmap (srcWidth, srcHeight, 1, 1, mask.data);
+	int /*long*/ hMask = OS.CreateBitmap (srcWidth, srcHeight, 1, 1, mask.data);
 	if (srcWidth != destWidth || srcHeight != destHeight) {
-		int hdc = OS.GetDC (0);
-		int hdc1 = OS.CreateCompatibleDC (hdc);
+		int /*long*/ hdc = OS.GetDC (0);
+		int /*long*/ hdc1 = OS.CreateCompatibleDC (hdc);
 		OS.SelectObject (hdc1, hMask);
-		int hdc2 = OS.CreateCompatibleDC (hdc);
-		int hMask2 = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
+		int /*long*/ hdc2 = OS.CreateCompatibleDC (hdc);
+		int /*long*/ hMask2 = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
 		OS.SelectObject (hdc2, hMask2);
 		if (!OS.IsWinCE) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
 		OS.StretchBlt (hdc2, 0, 0, destWidth, destHeight, hdc1, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
@@ -1102,14 +1105,14 @@ void drawMenuBars () {
 	bars = null;
 }
 
-int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
-	switch (msg) {
+int /*long*/ embeddedProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+	switch ((int)/*64*/msg) {
 		case SWT_KEYMSG: {
 			MSG keyMsg = new MSG ();
 			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
 			OS.TranslateMessage (keyMsg);
 			OS.DispatchMessage (keyMsg);
-			int hHeap = OS.GetProcessHeap ();
+			int /*long*/ hHeap = OS.GetProcessHeap ();
 			OS.HeapFree (hHeap, 0, lParam);
 			break;
 		}
@@ -1122,7 +1125,7 @@ int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		}
 	}
-	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	return OS.DefWindowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
 /**
@@ -1162,9 +1165,9 @@ boolean filterMessage (MSG msg) {
 	return false;
 }
 
-Control findControl (int handle) {
+Control findControl (int /*long*/ handle) {
 	if (handle == 0) return null;
-	int hwndOwner = 0;
+	int /*long*/ hwndOwner = 0;
 	do {
 		Control control = getControl (handle);
 		if (control != null) return control;
@@ -1192,7 +1195,7 @@ Control findControl (int handle) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Widget findWidget (int handle) {
+public Widget findWidget (int /*long*/ handle) {
 	checkDevice ();
 	return getControl (handle);
 }
@@ -1219,8 +1222,9 @@ public Widget findWidget (int handle) {
  * 
  * @since 3.1
  */
-public Widget findWidget (int handle, int id) {
+public Widget findWidget (int /*long*/ handle, int /*long*/ id) {
 	checkDevice ();
+	//TODO - should ids be long
 	Control control = getControl (handle);
 	return control != null ? control.findItem (id) : null;
 }
@@ -1242,15 +1246,16 @@ public Widget findWidget (int handle, int id) {
  * 
  * @since 3.3
  */
-public Widget findWidget (Widget widget, int id) {
+public Widget findWidget (Widget widget, int /*long*/ id) {
 	checkDevice ();
+	//TODO - should ids be long
 	if (widget instanceof Control) {
 		return findWidget (((Control) widget).handle, id);
 	}
 	return null;
 }
 
-int foregroundIdleProc (int code, int wParam, int lParam) {
+int /*long*/ foregroundIdleProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lParam) {
 	if (runMessages) {
 		if (code >= 0) {
 			if (getMessageCount () != 0) {
@@ -1261,7 +1266,7 @@ int foregroundIdleProc (int code, int wParam, int lParam) {
 			}
 		}
 	}
-	return OS.CallNextHookEx (idleHook, code, wParam, lParam);
+	return OS.CallNextHookEx (idleHook, (int)/*64*/code, wParam, lParam);
 }
 
 /**
@@ -1337,7 +1342,7 @@ public static synchronized Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 
-int getClickCount (int type, int button, int hwnd, int lParam) {
+int getClickCount (int type, int button, int /*long*/ hwnd, int /*long*/ lParam) {
 	switch (type) {
 		case SWT.MouseDown:
 			int doubleClick = OS.GetDoubleClickTime ();
@@ -1395,7 +1400,7 @@ public Rectangle getClientArea () {
 	return new Rectangle (x, y, width, height);
 }
 
-Control getControl (int handle) {
+Control getControl (int /*long*/ handle) {
 	if (handle == 0) return null;
 	if (lastControl != null && lastHwnd == handle) {
 		return lastControl;
@@ -1405,9 +1410,9 @@ Control getControl (int handle) {
 	}
 	int index;
 	if (USE_PROPERTY) {
-		index = OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
+		index = (int)/*64*/OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
 	} else {
-		index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+		index = (int)/*64*/OS.GetWindowLongPtr (handle, OS.GWLP_USERDATA) - 1;
 	}
 	if (0 <= index && index < controlTable.length) {
 		Control control = controlTable [index];
@@ -1693,7 +1698,7 @@ public int getIconDepth () {
 	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true); //$NON-NLS-1$
 
-	int [] phkResult = new int [1];
+	int /*long*/ [] phkResult = new int /*long*/ [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
@@ -1861,9 +1866,10 @@ int getLastEventTime () {
 	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
 }
 
-MenuItem getMenuItem (int id) {
+//TODO - should ids be long
+MenuItem getMenuItem (int /*long*/ _id) {
 	if (items == null) return null;
-	id = id - ID_START;
+	int id = (int)/*64*/_id - ID_START;
 	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
@@ -1902,7 +1908,7 @@ public Monitor [] getMonitors () {
 	}
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
-	int lpfnEnum = callback.getAddress ();
+	int /*long*/ lpfnEnum = callback.getAddress ();
 	if (lpfnEnum == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
@@ -1913,9 +1919,9 @@ public Monitor [] getMonitors () {
 	return result;
 }
 
-int getMsgProc (int code, int wParam, int lParam) {
+int /*long*/ getMsgProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lParam) {
 	if (embeddedHwnd == 0) {
-		int hInstance = OS.GetModuleHandle (null);
+		int /*long*/ hInstance = OS.GetModuleHandle (null);
 		embeddedHwnd = OS.CreateWindowEx (0,
 			windowClass,
 			null,
@@ -1928,7 +1934,7 @@ int getMsgProc (int code, int wParam, int lParam) {
 		embeddedCallback = new Callback (this, "embeddedProc", 4); //$NON-NLS-1$
 		embeddedProc = embeddedCallback.getAddress ();
 		if (embeddedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.SetWindowLong (embeddedHwnd, OS.GWL_WNDPROC, embeddedProc);
+		OS.SetWindowLongPtr (embeddedHwnd, OS.GWLP_WNDPROC, embeddedProc);
 	}
 	if (code >= 0 && wParam != OS.PM_NOREMOVE) {
 		MSG msg = new MSG ();
@@ -1940,8 +1946,8 @@ int getMsgProc (int code, int wParam, int lParam) {
 			case OS.WM_SYSKEYUP: {
 				Control control = findControl (msg.hwnd);
 				if (control != null) {
-					int hHeap = OS.GetProcessHeap ();
-					int keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
+					int /*long*/ hHeap = OS.GetProcessHeap ();
+					int /*long*/ keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
 					OS.MoveMemory (keyMsg, msg, MSG.sizeof);
 					OS.PostMessage (hwndMessage, SWT_KEYMSG, wParam, keyMsg);
 					msg.message = OS.WM_NULL;
@@ -1950,7 +1956,7 @@ int getMsgProc (int code, int wParam, int lParam) {
 			}
 		}
 	}
-	return OS.CallNextHookEx (msgHook, code, wParam, lParam);
+	return OS.CallNextHookEx (msgHook, (int)/*64*/code, wParam, lParam);
 }
 
 /**
@@ -1978,7 +1984,7 @@ public Monitor getPrimaryMonitor () {
 	}
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
-	int lpfnEnum = callback.getAddress ();
+	int /*long*/ lpfnEnum = callback.getAddress ();
 	if (lpfnEnum == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
@@ -2234,7 +2240,7 @@ public Cursor getSystemCursor (int id) {
 public Font getSystemFont () {
 	checkDevice ();
 	if (systemFont != null) return systemFont;
-	int hFont = 0;
+	int /*long*/ hFont = 0;
 	if (!OS.IsWinCE) {
 		NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
 		info.cbSize = NONCLIENTMETRICS.sizeof;
@@ -2280,23 +2286,23 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR: {
 			if (errorImage != null) return errorImage;
-			int hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int /*long*/ hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			return errorImage = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION: {
 			if (infoImage != null) return infoImage;
-			int hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int /*long*/ hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			return infoImage = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 		case SWT.ICON_QUESTION: {
 			if (questionImage != null) return questionImage;
-			int hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int /*long*/ hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			return questionImage = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 		case SWT.ICON_WARNING: {
 			if (warningIcon != null) return warningIcon;
-			int hIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int /*long*/ hIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			return warningIcon = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 	}
@@ -2336,27 +2342,27 @@ public Thread getThread () {
 	return thread;
 }
 
-int hButtonTheme () {
+int /*long*/ hButtonTheme () {
 	if (hButtonTheme != 0) return hButtonTheme;
 	return hButtonTheme = OS.OpenThemeData (hwndMessage, BUTTON);
 }
 
-int hEditTheme () {
+int /*long*/ hEditTheme () {
 	if (hEditTheme != 0) return hEditTheme;
 	return hEditTheme = OS.OpenThemeData (hwndMessage, EDIT);
 }
 
-int hExplorerBarTheme () {
+int /*long*/ hExplorerBarTheme () {
 	if (hExplorerBarTheme != 0) return hExplorerBarTheme;
 	return hExplorerBarTheme = OS.OpenThemeData (hwndMessage, EXPLORERBAR);
 }
 
-int hScrollBarTheme () {
+int /*long*/ hScrollBarTheme () {
 	if (hScrollBarTheme != 0) return hScrollBarTheme;
 	return hScrollBarTheme = OS.OpenThemeData (hwndMessage, SCROLLBAR);
 }
 
-int hTabTheme () {
+int /*long*/ hTabTheme () {
 	if (hTabTheme != 0) return hTabTheme;
 	return hTabTheme = OS.OpenThemeData (hwndMessage, TAB);
 }
@@ -2381,9 +2387,9 @@ int hTabTheme () {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	int hDC = OS.GetDC (0);
+	int /*long*/ hDC = OS.GetDC (0);
 	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -2424,8 +2430,8 @@ protected void init () {
 	WindowClassCount++;
 
 	/* Register the SWT window class */
-	int hHeap = OS.GetProcessHeap ();
-	int hInstance = OS.GetModuleHandle (null);
+	int /*long*/ hHeap = OS.GetProcessHeap ();
+	int /*long*/ hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
 	lpWndClass.hInstance = hInstance;
 	lpWndClass.lpfnWndProc = windowProc;
@@ -2458,7 +2464,7 @@ protected void init () {
 	messageCallback = new Callback (this, "messageProc", 4); //$NON-NLS-1$
 	messageProc = messageCallback.getAddress ();
 	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.SetWindowLong (hwndMessage, OS.GWL_WNDPROC, messageProc);
+	OS.SetWindowLongPtr (hwndMessage, OS.GWLP_WNDPROC, messageProc);
 
 	/* Create the filter hook */
 	if (!OS.IsWinCE) {
@@ -2508,7 +2514,7 @@ protected void init () {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int hDC, GCData data) {
+public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
 
@@ -2518,7 +2524,7 @@ boolean isXMouseActive () {
   	*/
 	boolean xMouseActive = false;
 	TCHAR key = new TCHAR (0, "Control Panel\\Desktop", true); //$NON-NLS-1$
-	int [] phKey = new int [1];
+	int /*long*/ [] phKey = new int /*long*/ [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, key, 0, OS.KEY_READ, phKey);
 	if (result == 0) {
 		TCHAR lpValueName = new TCHAR (0, "UserPreferencesMask", true); //$NON-NLS-1$
@@ -2617,8 +2623,8 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Point (x, y);
-	int hwndFrom = from != null ? from.handle : 0;
-	int hwndTo = to != null ? to.handle : 0;
+	int /*long*/ hwndFrom = from != null ? from.handle : 0;
+	int /*long*/ hwndTo = to != null ? to.handle : 0;
 	POINT point = new POINT ();
 	point.x = x;
 	point.y = y;
@@ -2711,8 +2717,8 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Rectangle (x, y, width, height); 
-	int hwndFrom = from != null ? from.handle : 0;
-	int hwndTo = to != null ? to.handle : 0;
+	int /*long*/ hwndFrom = from != null ? from.handle : 0;
+	int /*long*/ hwndTo = to != null ? to.handle : 0;
 	RECT rect = new RECT ();
 	rect.left = x;
 	rect.top  = y;
@@ -2763,8 +2769,8 @@ static char mbcsToWcs (int ch, int codePage) {
 	return unicode [0];
 }
 
-int messageProc (int hwnd, int msg, int wParam, int lParam) {
-	switch (msg) {
+int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+	switch ((int)/*64*/msg) {
 		case SWT_RUNASYNC: {
 			if (runMessagesInIdle) runAsyncMessages (false);
 			break;
@@ -2789,7 +2795,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 					case OS.WM_KEYDOWN:
 					case OS.WM_SYSKEYDOWN: {
 						if (!OS.IsWinCE) {
-							switch (keyMsg.wParam) {
+							switch ((int)/*64*/keyMsg.wParam) {
 								case OS.VK_SHIFT:
 								case OS.VK_MENU:
 								case OS.VK_CONTROL:
@@ -2803,7 +2809,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 									* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
 									* They should both be bit 32.  The fix is to test the right bit.
 									*/
-									int mapKey = OS.MapVirtualKey (keyMsg.wParam, 2);
+									int mapKey = OS.MapVirtualKey ((int)/*64*/keyMsg.wParam, 2);
 									if (mapKey != 0) {
 										accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
 										if (!accentKey) {
@@ -2841,7 +2847,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				switch (keyMsg.message) {
 					case OS.WM_KEYDOWN:
 					case OS.WM_SYSKEYDOWN: {
-						switch (keyMsg.wParam) {
+						switch ((int)/*64*/keyMsg.wParam) {
 							case OS.VK_SHIFT:
 							case OS.VK_MENU:
 							case OS.VK_CONTROL:
@@ -2858,7 +2864,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				}
 			}
 			if (consumed) {
-				int hHeap = OS.GetProcessHeap ();
+				int /*long*/ hHeap = OS.GetProcessHeap ();
 				OS.HeapFree (hHeap, 0, lParam);
 			} else {
 				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
@@ -2871,7 +2877,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				for (int i=0; i<items.length; i++) {
 					TrayItem item = items [i];
 					if (item != null && item.id == wParam) {
-						return item.messageProc (hwnd, msg, wParam, lParam);
+						return item.messageProc (hwnd, (int)/*64*/msg, wParam, lParam);
 					}
 				}
 			}
@@ -2902,12 +2908,12 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 					if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
 					Shell modal = modalDialogShell != null ? modalDialogShell : getModalShell ();
 					if (modal != null) {
-						int hwndModal = modal.handle;
+						int /*long*/ hwndModal = modal.handle;
 						if (OS.IsWindowEnabled (hwndModal)) {
 							modal.bringToTop ();
 							if (modal.isDisposed ()) break;
 						}
-						int hwndPopup = OS.GetLastActivePopup (hwndModal);
+						int /*long*/ hwndPopup = OS.GetLastActivePopup (hwndModal);
 						if (hwndPopup != 0 && hwndPopup != modal.handle) {
 							if (getControl (hwndPopup) == null) {
 								if (OS.IsWindowEnabled (hwndPopup)) {
@@ -2939,7 +2945,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		}
 		case OS.WM_SETTINGCHANGE: {
-			switch (wParam) {
+			switch ((int)/*64*/wParam) {
 				case 0:
 				case 1:
 				case OS.SPI_SETHIGHCONTRAST:
@@ -2968,7 +2974,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		}
 		default: {
-			if (msg == SWT_TASKBARCREATED) {
+			if ((int)/*64*/msg == SWT_TASKBARCREATED) {
 				if (tray != null) {
 					TrayItem [] items = tray.items;
 					for (int i=0; i<items.length; i++) {
@@ -2979,10 +2985,10 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 		}
 	}
-	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	return OS.DefWindowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
-int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
+int /*long*/ monitorEnumProc (int /*long*/ hmonitor, int /*long*/ hdc, int /*long*/ lprcMonitor, int /*long*/ dwData) {
 	if (monitorCount >= monitors.length) {
 		Monitor[] newMonitors = new Monitor [monitors.length + 4];
 		System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
@@ -3005,8 +3011,8 @@ int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
 	return 1;
 }
 
-int msgFilterProc (int code, int wParam, int lParam) {
-	switch (code) {
+int /*long*/ msgFilterProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lParam) {
+	switch ((int)/*64*/code) {
 		case OS.MSGF_COMMCTRL_BEGINDRAG: {
 			if (!runDragDrop) {
 				OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
@@ -3044,7 +3050,7 @@ int msgFilterProc (int code, int wParam, int lParam) {
 			break;
 		}
 	}
-	return OS.CallNextHookEx (filterHook, code, wParam, lParam);
+	return OS.CallNextHookEx (filterHook, (int)/*64*/code, wParam, lParam);
 }
 
 int numpadKey (int key) {
@@ -3157,10 +3163,11 @@ public boolean post (Event event) {
 				}
 			}
 			inputs.dwFlags = type == SWT.KeyUp ? OS.KEYEVENTF_KEYUP : 0;
-			int hHeap = OS.GetProcessHeap ();
-			int pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
+			int /*long*/ hHeap = OS.GetProcessHeap ();
+			int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
 			OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);
-			OS.MoveMemory (pInputs + 4, inputs, KEYBDINPUT.sizeof);
+			//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
+			OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, KEYBDINPUT.sizeof);
 			boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
 			OS.HeapFree (hHeap, 0, pInputs);
 			return result;
@@ -3221,10 +3228,11 @@ public boolean post (Event event) {
 					}
 				}
 			}
-			int hHeap = OS.GetProcessHeap ();
-			int pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
+			int /*long*/ hHeap = OS.GetProcessHeap ();
+			int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
 			OS.MoveMemory(pInputs, new int[] {OS.INPUT_MOUSE}, 4);
-			OS.MoveMemory (pInputs + 4, inputs, MOUSEINPUT.sizeof);
+			//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
+			OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, MOUSEINPUT.sizeof);
 			boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
 			OS.HeapFree (hHeap, 0, pInputs);
 			return result;
@@ -3401,8 +3409,8 @@ void releaseDisplay () {
 	messageProc = 0;
 	
 	/* Unregister the SWT window class */
-	int hHeap = OS.GetProcessHeap ();
-	int hInstance = OS.GetModuleHandle (null);
+	int /*long*/ hHeap = OS.GetProcessHeap ();
+	int /*long*/ hInstance = OS.GetModuleHandle (null);
 	OS.UnregisterClass (windowClass, hInstance);
 	
 	/* Unregister the SWT drop shadow window class */
@@ -3617,15 +3625,15 @@ void removeBar (Menu menu) {
 	}
 }
 
-Control removeControl (int handle) {
+Control removeControl (int /*long*/ handle) {
 	if (handle == 0) return null;
 	lastControl = lastGetControl = null;
 	Control control = null;
 	int index;
 	if (USE_PROPERTY) {
-		index = OS.RemoveProp (handle, SWT_OBJECT_INDEX) - 1;
+		index = (int)/*64*/OS.RemoveProp (handle, SWT_OBJECT_INDEX) - 1;
 	} else {
-		index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+		index = (int)/*64*/OS.GetWindowLongPtr (handle, OS.GWLP_USERDATA) - 1;
 	}
 	if (0 <= index && index < controlTable.length) {
 		control = controlTable [index];
@@ -3633,7 +3641,7 @@ Control removeControl (int handle) {
 		indexTable [index] = freeSlot;
 		freeSlot = index;
 		if (!USE_PROPERTY) {
-			OS.SetWindowLong (handle, OS.GWL_USERDATA, 0);
+			OS.SetWindowLongPtr (handle, OS.GWLP_USERDATA, 0);
 		}
 	}
 	return control;
@@ -3732,7 +3740,7 @@ void runSettings () {
 	}
 }
 
-boolean runTimer (int id) {
+boolean runTimer (int /*long*/ id) {
 	if (timerList != null && timerIds != null) {
 		int index = 0;
 		while (index <timerIds.length) {
@@ -4125,13 +4133,13 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timerIds == null) timerIds = new int [4];
+	if (timerIds == null) timerIds = new int /*long*/ [4];
 	int index = 0;
 	while (index < timerList.length) {
 		if (timerList [index] == runnable) break;
 		index++;
 	}
-	int timerId = 0;
+	int /*long*/ timerId = 0;
 	if (index != timerList.length) {
 		timerId = timerIds [index];
 		if (milliseconds < 0) {			
@@ -4152,12 +4160,12 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			Runnable [] newTimerList = new Runnable [timerList.length + 4];
 			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
 			timerList = newTimerList;
-			int [] newTimerIds = new int [timerIds.length + 4];
+			int /*long*/ [] newTimerIds = new int /*long*/ [timerIds.length + 4];
 			System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
 			timerIds = newTimerIds;
 		}
 	}
-	int newTimerID = OS.SetTimer (hwndMessage, timerId, milliseconds, 0);
+	int /*long*/ newTimerID = OS.SetTimer (hwndMessage, timerId, milliseconds, 0);
 	if (newTimerID != 0) {
 		timerList [index] = runnable;
 		timerIds [index] = newTimerID;
@@ -4190,7 +4198,7 @@ boolean translateMnemonic (MSG msg, Control control) {
 boolean translateTraversal (MSG msg, Control control) {
 	switch (msg.message) {
 		case OS.WM_KEYDOWN:
-			switch (msg.wParam) {
+			switch ((int)/*64*/msg.wParam) {
 				case OS.VK_RETURN:
 				case OS.VK_ESCAPE:
 				case OS.VK_TAB:
@@ -4204,7 +4212,7 @@ boolean translateTraversal (MSG msg, Control control) {
 			}
 			break;
 		case OS.WM_SYSKEYDOWN:
-			switch (msg.wParam) {
+			switch ((int)/*64*/msg.wParam) {
 				case OS.VK_MENU:
 					return control.translateTraversal (msg);
 			}
@@ -4325,7 +4333,7 @@ static int wcsToMbcs (char ch) {
 	return wcsToMbcs (ch, 0);
 }
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Adobe Reader 7.0.  For some reason, when Adobe
 	* Reader 7.0 is deactivated from within Internet Explorer,
@@ -4339,7 +4347,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	* consecutive WM_NCHITTEST messages to the same control without
 	* another message (normally WM_SETCURSOR) in between.
 	*/
-	if (msg == OS.WM_NCHITTEST) {
+	if ((int)/*64*/msg == OS.WM_NCHITTEST) {
 		if (hitCount++ >= 1024) {
 			try {Thread.sleep (1);} catch (Throwable t) {}
 		}
@@ -4347,23 +4355,23 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		hitCount = 0;
 	}
 	if (lastControl != null && lastHwnd == hwnd) {
-		return lastControl.windowProc (hwnd, msg, wParam, lParam);
+		return lastControl.windowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 	}
 	int index;
 	if (USE_PROPERTY) {
-		index = OS.GetProp (hwnd, SWT_OBJECT_INDEX) - 1;
+		index = (int)/*64*/OS.GetProp (hwnd, SWT_OBJECT_INDEX) - 1;
 	} else {
-		index = OS.GetWindowLong (hwnd, OS.GWL_USERDATA) - 1;
+		index = (int)/*64*/OS.GetWindowLongPtr (hwnd, OS.GWLP_USERDATA) - 1;
 	}
 	if (0 <= index && index < controlTable.length) {
 		Control control = controlTable [index];
 		if (control != null) {
 			lastHwnd = hwnd;
 			lastControl = control;
-			return control.windowProc (hwnd, msg, wParam, lParam);
+			return control.windowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 		}
 	}
-	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	return OS.DefWindowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
 static String withCrLf (String string) {

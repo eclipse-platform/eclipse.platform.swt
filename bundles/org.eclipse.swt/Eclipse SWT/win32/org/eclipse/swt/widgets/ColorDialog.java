@@ -90,8 +90,8 @@ public ColorDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-int CCHookProc (int hdlg, int uiMsg, int lParam, int lpData) {
-	switch (uiMsg) {
+int /*long*/ CCHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ lParam, int /*long*/ lpData) {
+	switch ((int)/*64*/uiMsg) {
 		case OS.WM_INITDIALOG: {
 			RECT rect = new RECT ();
 			OS.GetWindowRect (hdlg, rect);
@@ -149,17 +149,17 @@ public RGB getRGB () {
 public RGB open () {
 	
 	/* Get the owner HWND for the dialog */
-	int hwndOwner = parent.handle;
+	int /*long*/ hwndOwner = parent.handle;
 
 	/* Create the CCHookProc */
 	Callback callback = new Callback (this, "CCHookProc", 4); //$NON-NLS-1$
-	int lpfnHook = callback.getAddress ();
+	int /*long*/ lpfnHook = callback.getAddress ();
 	if (lpfnHook == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Allocate the Custom Colors */
 	display = parent.display;
 	if (display.lpCustColors == 0) {
-		int hHeap = OS.GetProcessHeap ();
+		int /*long*/ hHeap = OS.GetProcessHeap ();
 		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
 	}
 	
@@ -221,6 +221,7 @@ public RGB open () {
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 	
+	display = null;
 	if (!success) return null;
 	return rgb;
 }

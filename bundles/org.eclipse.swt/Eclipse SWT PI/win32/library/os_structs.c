@@ -3394,6 +3394,73 @@ void setNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct)
 }
 #endif
 
+#ifndef NO_NMTREEVIEW
+typedef struct NMTREEVIEW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hdr, action, itemOld, itemNew, ptDrag;
+} NMTREEVIEW_FID_CACHE;
+
+NMTREEVIEW_FID_CACHE NMTREEVIEWFc;
+
+void cacheNMTREEVIEWFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMTREEVIEWFc.cached) return;
+	NMTREEVIEWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMTREEVIEWFc.hdr = (*env)->GetFieldID(env, NMTREEVIEWFc.clazz, "hdr", "Lorg/eclipse/swt/internal/win32/NMHDR;");
+	NMTREEVIEWFc.action = (*env)->GetFieldID(env, NMTREEVIEWFc.clazz, "action", "I");
+	NMTREEVIEWFc.itemOld = (*env)->GetFieldID(env, NMTREEVIEWFc.clazz, "itemOld", "Lorg/eclipse/swt/internal/win32/TVITEM;");
+	NMTREEVIEWFc.itemNew = (*env)->GetFieldID(env, NMTREEVIEWFc.clazz, "itemNew", "Lorg/eclipse/swt/internal/win32/TVITEM;");
+	NMTREEVIEWFc.ptDrag = (*env)->GetFieldID(env, NMTREEVIEWFc.clazz, "ptDrag", "Lorg/eclipse/swt/internal/win32/POINT;");
+	NMTREEVIEWFc.cached = 1;
+}
+
+NMTREEVIEW *getNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct)
+{
+	if (!NMTREEVIEWFc.cached) cacheNMTREEVIEWFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.hdr);
+	if (lpObject1 != NULL) getNMHDRFields(env, lpObject1, &lpStruct->hdr);
+	}
+	lpStruct->action = (*env)->GetIntField(env, lpObject, NMTREEVIEWFc.action);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.itemOld);
+	if (lpObject1 != NULL) getTVITEMFields(env, lpObject1, &lpStruct->itemOld);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.itemNew);
+	if (lpObject1 != NULL) getTVITEMFields(env, lpObject1, &lpStruct->itemNew);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.ptDrag);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->ptDrag);
+	}
+	return lpStruct;
+}
+
+void setNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct)
+{
+	if (!NMTREEVIEWFc.cached) cacheNMTREEVIEWFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.hdr);
+	if (lpObject1 != NULL) setNMHDRFields(env, lpObject1, &lpStruct->hdr);
+	}
+	(*env)->SetIntField(env, lpObject, NMTREEVIEWFc.action, (jint)lpStruct->action);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.itemOld);
+	if (lpObject1 != NULL) setTVITEMFields(env, lpObject1, &lpStruct->itemOld);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.itemNew);
+	if (lpObject1 != NULL) setTVITEMFields(env, lpObject1, &lpStruct->itemNew);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTREEVIEWFc.ptDrag);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->ptDrag);
+	}
+}
+#endif
+
 #ifndef NO_NMTTDISPINFO
 typedef struct NMTTDISPINFO_FID_CACHE {
 	int cached;

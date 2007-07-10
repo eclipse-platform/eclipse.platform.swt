@@ -80,7 +80,7 @@ void clearArea (int x, int y, int width, int height) {
 	if (OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
 		OS.SetRect (rect, x, y, x + width, y + height);
-		int hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
+		int /*long*/ hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
 		drawBackground (hDC, rect);
 		OS.ReleaseDC (handle, hDC);
 	}
@@ -144,7 +144,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	int hDC = gc.handle;
+	int /*long*/ hDC = gc.handle;
 	int pixel = background == -1 ? gc.getBackground ().handle : -1;
 	drawBackground (hDC, rect, pixel);
 }
@@ -278,7 +278,7 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (msg == Display.SWT_RESTORECARET) {
 		if ((state & CANVAS) != 0) {
 			if (caret != null) {
@@ -291,7 +291,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
+LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_IME_COMPOSITION (wParam, lParam);
 	/*
 	* Bug in Windows.  On Korean Windows XP, the IME window
@@ -313,7 +313,7 @@ LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
 						lpCompForm.dwStyle = OS.CFS_POINT;
 						lpCompForm.x = ptCurrentPos.x;
 						lpCompForm.y = ptCurrentPos.y;
-						int hIMC = OS.ImmGetContext (handle);
+						int /*long*/ hIMC = OS.ImmGetContext (handle);
 						OS.ImmSetCompositionWindow (hIMC, lpCompForm);
 						OS.ImmReleaseContext (handle, hIMC);
 					}
@@ -324,7 +324,7 @@ LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
+LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) {
 		caret.setIMEFont ();
@@ -333,25 +333,25 @@ LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_KILLFOCUS (wParam, lParam);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_SIZE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) caret.resizeIME ();
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -366,7 +366,7 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	/*

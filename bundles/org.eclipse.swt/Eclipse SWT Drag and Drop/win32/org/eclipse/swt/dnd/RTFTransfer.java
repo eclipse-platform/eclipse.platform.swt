@@ -68,7 +68,7 @@ public void javaToNative (Object object, TransferData transferData){
 		transferData.result = COM.DV_E_STGMEDIUM;
 		return;
 	}
-	int lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
+	int /*long*/ lpMultiByteStr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
 	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -98,9 +98,9 @@ public Object nativeToJava(TransferData transferData){
 	transferData.result = data.GetData(formatetc, stgmedium);
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
-	int hMem = stgmedium.unionField;
+	int /*long*/ hMem = stgmedium.unionField;
 	try {
-		int lpMultiByteStr = OS.GlobalLock(hMem);
+		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
 			int codePage = OS.GetACP();

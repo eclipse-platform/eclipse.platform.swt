@@ -44,9 +44,9 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class DateTime extends Composite {
-	static final int DateTimeProc;
+	static final int /*long*/ DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
-	static final int CalendarProc;
+	static final int /*long*/ CalendarProc;
 	static final TCHAR CalendarClass = new TCHAR (0, OS.MONTHCAL_CLASS, true);
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
@@ -150,7 +150,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (windowProc (), hwnd, msg, wParam, lParam);
 }
@@ -183,8 +183,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = rect.bottom;
 		} else {
 			TCHAR buffer = new TCHAR (getCodePage (), 128);
-			int newFont, oldFont = 0;
-			int hDC = OS.GetDC (handle);
+			int /*long*/ newFont, oldFont = 0;
+			int /*long*/ hDC = OS.GetDC (handle);
 			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 			RECT rect = new RECT ();
@@ -764,11 +764,11 @@ TCHAR windowClass () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarClass : DateTimeClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarProc : DateTimeProc;
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
 		case OS.MCN_SELCHANGE: //SENT WHEN YOU SET IT?
 		case OS.DTN_DATETIMECHANGE:

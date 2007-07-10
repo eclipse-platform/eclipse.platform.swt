@@ -8,12 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.swt.internal.win32;
 
-/* Special sizeof's */
-#define ELEMDESC_sizeof() sizeof(ELEMDESC)
-#define TYPEDESC_sizeof() sizeof(TYPEDESC)
-
-/* Libraries for dynamic loaded functions */
-#define AccessibleObjectFromWindow_LIB "oleacc.dll"
-#define CreateStdAccessibleObject_LIB "oleacc.dll"
-#define LresultFromObject_LIB "oleacc.dll"
+public class NMTREEVIEW {
+	public NMHDR hdr = new NMHDR ();
+	public int action;
+	public TVITEM itemOld = new TVITEM ();
+	public TVITEM itemNew = new TVITEM ();
+	public POINT ptDrag = new POINT ();
+	public static final int sizeof = OS.NMTREEVIEW_sizeof ();
+}

@@ -92,7 +92,7 @@ public class TransferData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int pIDataObject;
+	public int /*long*/ pIDataObject;
 	
 	static boolean sameType(TransferData data1, TransferData data2) {
 		if (data1 == data2) return true;

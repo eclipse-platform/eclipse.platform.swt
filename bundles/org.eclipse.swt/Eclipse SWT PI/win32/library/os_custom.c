@@ -78,20 +78,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 }
 #endif
 
+#if (!defined(NO_SendMessageW__II_3I_3I) && !defined(SWT_PTR_SIZE_64)) || (!defined(SendMessageW__JI_3I_3I) && defined(SWT_PTR_SIZE_64))
 #ifdef SWT_PTR_SIZE_64
-#define SendMessageW__II_3I_3I SendMessageW__JI_3J_3J
-#define SendMessageW__II_3I_3I_FUNC SendMessageW__JI_3J_3J_FUNC
-#endif
-#ifndef NO_SendMessageW__II_3I_3I
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__JI_3I_3I)
+#else
 JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
-	(JNIEnv *env, jclass that, SWT_PTR arg0, jint arg1, SWT_PTRArray arg2, SWT_PTRArray arg3)
+#endif
+	(JNIEnv *env, jclass that, SWT_PTR arg0, jint arg1, jintArray arg2, jintArray arg3)
 {
-	SWT_PTR *lparg2=NULL;
-	SWT_PTR *lparg3=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
 	SWT_PTR rc;
+#ifdef SWT_PTR_SIZE_64
+	OS_NATIVE_ENTER(env, that, SendMessageW__JI_3I_3I_FUNC)
+#else
 	OS_NATIVE_ENTER(env, that, SendMessageW__II_3I_3I_FUNC)
-	if (arg2) if ((lparg2 = (*env)->GetSWT_PTRArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetSWT_PTRArrayElements(env, arg3, NULL)) == NULL) goto fail;
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 #ifdef _WIN32_WCE
 	/*
 	* Bug on WinCE.  SendMessage can fail (return 0) when being passed references
@@ -102,7 +106,7 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	switch (arg1) {
 		case EM_GETSEL:
 		case CB_GETEDITSEL: {
-			SWT_PTR wParam = 0, lParam = 0;
+			jint wParam = 0, lParam = 0;
 			SWT_PTR *lpwParam = NULL, *lplParam = NULL;
 			if (lparg2 != NULL) lpwParam = &wParam;
 			if (lparg3 != NULL) lplParam = &lParam;
@@ -118,9 +122,13 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 #endif
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseSWT_PTRArrayElements(env, arg2, lparg2, 0);
-	if (arg3 && lparg3) (*env)->ReleaseSWT_PTRArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+#ifdef SWT_PTR_SIZE_64
+	OS_NATIVE_EXIT(env, that, SendMessageW__JI_3I_3I_FUNC)
+#else
 	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)
+#endif
 	return rc;
 }
 #endif

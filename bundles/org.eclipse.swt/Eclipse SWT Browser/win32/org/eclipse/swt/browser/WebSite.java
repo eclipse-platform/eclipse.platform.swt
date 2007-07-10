@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -33,57 +34,63 @@ public WebSite(Composite parent, int style, String progId) {
 protected void createCOMInterfaces () {
 	super.createCOMInterfaces();
 	iDocHostUIHandler = new COMObject(new int[]{2, 0, 0, 4, 1, 5, 0, 0, 1, 1, 1, 3, 3, 2, 2, 1, 3, 2}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return ShowContextMenu(args[0], args[1], args[2], args[3]);}
-		public int method4(int[] args) {return GetHostInfo(args[0]);}
-		public int method5(int[] args) {return ShowUI(args[0], args[1], args[2], args[3], args[4]);}
-		public int method6(int[] args) {return HideUI();}
-		public int method7(int[] args) {return UpdateUI();}
-		public int method8(int[] args) {return EnableModeless(args[0]);}
-		public int method9(int[] args) {return OnDocWindowActivate(args[0]);}
-		public int method10(int[] args) {return OnFrameWindowActivate(args[0]);}
-		public int method11(int[] args) {return ResizeBorder(args[0], args[1], args[2]);}
-		public int method12(int[] args) {return TranslateAccelerator(args[0], args[1], args[2]);}
-		public int method13(int[] args) {return GetOptionKeyPath(args[0], args[1]);}
-		public int method14(int[] args) {return GetDropTarget(args[0], args[1]);}
-		public int method15(int[] args) {return GetExternal(args[0]);}
-		public int method16(int[] args) {return TranslateUrl(args[0], args[1], args[2]);}		
-		public int method17(int[] args) {return FilterDataObject(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return ShowContextMenu((int)/*64*/args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GetHostInfo(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return ShowUI((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method6(int /*long*/[] args) {return HideUI();}
+		public int /*long*/ method7(int /*long*/[] args) {return UpdateUI();}
+		public int /*long*/ method8(int /*long*/[] args) {return EnableModeless((int)/*64*/args[0]);}
+		public int /*long*/ method9(int /*long*/[] args) {return OnDocWindowActivate((int)/*64*/args[0]);}
+		public int /*long*/ method10(int /*long*/[] args) {return OnFrameWindowActivate((int)/*64*/args[0]);}
+		public int /*long*/ method11(int /*long*/[] args) {return ResizeBorder(args[0], args[1], (int)/*64*/args[2]);}
+		public int /*long*/ method12(int /*long*/[] args) {return TranslateAccelerator(args[0], args[1], (int)/*64*/args[2]);}
+		public int /*long*/ method13(int /*long*/[] args) {return GetOptionKeyPath(args[0], (int)/*64*/args[1]);}
+		public int /*long*/ method14(int /*long*/[] args) {return GetDropTarget(args[0], args[1]);}
+		public int /*long*/ method15(int /*long*/[] args) {return GetExternal(args[0]);}
+		public int /*long*/ method16(int /*long*/[] args) {return TranslateUrl((int)/*64*/args[0], args[1], args[2]);}		
+		public int /*long*/ method17(int /*long*/[] args) {return FilterDataObject(args[0], args[1]);}
 	};
-	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, 7}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return ShowMessage(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int method4(int[] args) {return ShowHelp(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, C.PTR_SIZEOF == 4 ? 7 : 6}){
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return ShowMessage(args[0], args[1], args[2], (int)/*64*/args[3], args[4], (int)/*64*/args[5], args[6]);}
+		public int /*long*/ method4(int /*long*/[] args) {
+			if (args.length == 7) {
+				return ShowHelp(args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4], (int)/*64*/args[5], args[6]);
+			} else {
+				return ShowHelp_64(args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5]);
+			}
+		}
 	};
 	iServiceProvider = new COMObject(new int[]{2, 0, 0, 3}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return QueryService(args[0], args[1], args[2]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return QueryService(args[0], args[1], args[2]);}
 	};
 	iInternetSecurityManager = new COMObject(new int[]{2, 0, 0, 1, 1, 3, 4, 8, 7, 3, 3}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return SetSecuritySite(args[0]);}
-		public int method4(int[] args) {return GetSecuritySite(args[0]);}
-		public int method5(int[] args) {return MapUrlToZone(args[0], args[1], args[2]);}
-		public int method6(int[] args) {return GetSecurityId(args[0], args[1], args[2], args[3]);}
-		public int method7(int[] args) {return ProcessUrlAction(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
-		public int method8(int[] args) {return QueryCustomPolicy(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int method9(int[] args) {return SetZoneMapping(args[0], args[1], args[2]);}
-		public int method10(int[] args) {return GetZoneMappings(args[0], args[1], args[2]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return SetSecuritySite(args[0]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GetSecuritySite(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return MapUrlToZone(args[0], args[1], (int)/*64*/args[2]);}
+		public int /*long*/ method6(int /*long*/[] args) {return GetSecurityId(args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method7(int /*long*/[] args) {return ProcessUrlAction(args[0], (int)/*64*/args[1], args[2], (int)/*64*/args[3], args[4], (int)/*64*/args[5], (int)/*64*/args[6], (int)/*64*/args[7]);}
+		public int /*long*/ method8(int /*long*/[] args) {return QueryCustomPolicy(args[0], args[1], args[2], args[3], args[4], (int)/*64*/args[5], (int)/*64*/args[6]);}
+		public int /*long*/ method9(int /*long*/[] args) {return SetZoneMapping((int)/*64*/args[0], args[1], (int)/*64*/args[2]);}
+		public int /*long*/ method10(int /*long*/[] args) {return GetZoneMappings((int)/*64*/args[0], args[1], (int)/*64*/args[2]);}
 	};
 	iOleCommandTarget = new COMObject(new int[]{2, 0, 0, 4, 5}) {
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}		
-		public int method3(int[] args) {return QueryStatus(args[0], args[1], args[2], args[3]);}		
-		public int method4(int[] args) {return Exec(args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}		
+		public int /*long*/ method3(int /*long*/[] args) {return QueryStatus(args[0], (int)/*64*/args[1], args[2], args[3]);}		
+		public int /*long*/ method4(int /*long*/[] args) {return Exec(args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3], args[4]);}
 	};
 }
 
@@ -116,38 +123,38 @@ protected int AddRef() {
 	return super.AddRef();
 }
 
-protected int QueryInterface(int riid, int ppvObject) {
+protected int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK) return result;
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIDocHostUIHandler)) {
-		COM.MoveMemory(ppvObject, new int[] {iDocHostUIHandler.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iDocHostUIHandler.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIDocHostShowUI)) {
-		COM.MoveMemory(ppvObject, new int[] {iDocHostShowUI.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iDocHostShowUI.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) {
-		COM.MoveMemory(ppvObject, new int[] {iServiceProvider.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iServiceProvider.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
     if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) {
-        COM.MoveMemory(ppvObject, new int[] {iInternetSecurityManager.getAddress()}, 4);
+        COM.MoveMemory(ppvObject, new int /*long*/[] {iInternetSecurityManager.getAddress()}, OS.PTR_SIZEOF);
         AddRef();
         return COM.S_OK;
     }
 	if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) {
-		COM.MoveMemory(ppvObject, new int[] {iOleCommandTarget.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iOleCommandTarget.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -157,26 +164,27 @@ int EnableModeless(int EnableModeless) {
 	return COM.E_NOTIMPL;
 }
 
-int FilterDataObject(int pDO, int ppDORet) {
+int FilterDataObject(int /*long*/ pDO, int /*long*/ ppDORet) {
 	return COM.E_NOTIMPL;
 }
 
-int GetDropTarget(int pDropTarget, int ppDropTarget) {
+int GetDropTarget(int /*long*/ pDropTarget, int /*long*/ ppDropTarget) {
 	return COM.E_NOTIMPL;
 }
 
-int GetExternal(int ppDispatch) {
-	OS.MoveMemory(ppDispatch, new int[] {0}, 4);
+int GetExternal(int /*long*/ ppDispatch) {
+	OS.MoveMemory(ppDispatch, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
 	return COM.S_FALSE;
 }
 
-int GetHostInfo(int pInfo) {
+int GetHostInfo(int /*long*/ pInfo) {
 	IE browser = (IE)((Browser)getParent().getParent()).webBrowser;
+	//TODO - use DOCHOSTUIINFO structure
 	OS.MoveMemory(pInfo + 4, new int[] {browser.info}, 4);
 	return COM.S_OK;
 }
 
-int GetOptionKeyPath(int pchKey, int dw) {
+int GetOptionKeyPath(int /*long*/ pchKey, int dw) {
 	return COM.E_NOTIMPL;
 }
 
@@ -197,11 +205,11 @@ protected int Release() {
 	return super.Release();
 }
 
-int ResizeBorder(int prcBorder, int pUIWindow, int fFrameWindow) {
+int ResizeBorder(int /*long*/ prcBorder, int /*long*/ pUIWindow, int fFrameWindow) {
 	return COM.E_NOTIMPL;
 }
 
-int ShowContextMenu(int dwID, int ppt, int pcmdtReserved, int pdispReserved) {
+int ShowContextMenu(int dwID, int /*long*/ ppt, int /*long*/ pcmdtReserved, int /*long*/ pdispReserved) {
 	Browser browser = (Browser)getParent().getParent();
 	Event event = new Event();
 	POINT pt = new POINT();
@@ -222,11 +230,11 @@ int ShowContextMenu(int dwID, int ppt, int pcmdtReserved, int pdispReserved) {
 	return COM.S_FALSE;
 }
 
-int ShowUI(int dwID, int pActiveObject, int pCommandTarget, int pFrame, int pDoc) {
+int ShowUI(int dwID, int /*long*/ pActiveObject, int /*long*/ pCommandTarget, int /*long*/ pFrame, int /*long*/ pDoc) {
 	return COM.S_FALSE;
 }
 
-int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
+int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCmdID) {
 	/*
 	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
 	* the Internet Explorer shortcuts (e.g. F5 for refresh).  This overrides the shortcuts
@@ -236,8 +244,8 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 	Menu menubar = getShell().getMenuBar();
 	if (menubar != null && !menubar.isDisposed() && menubar.isEnabled()) {
 		Shell shell = menubar.getShell();
-		int hwnd = shell.handle;
-		int hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
+		int /*long*/ hwnd = shell.handle;
+		int /*long*/ hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
 		if (hAccel != 0) {
 			MSG msg = new MSG();
 			OS.MoveMemory(msg, lpMsg, MSG.sizeof);
@@ -257,7 +265,7 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 	MSG msg = new MSG();
 	OS.MoveMemory(msg, lpMsg, MSG.sizeof);
 	if (msg.message == OS.WM_KEYDOWN) {
-		switch (msg.wParam) {
+		switch ((int)/*64*/msg.wParam) {
 			case OS.VK_N:
 			case OS.VK_O:
 				if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
@@ -283,7 +291,7 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 	return result;
 }
 
-int TranslateUrl(int dwTranslate, int pchURLIn, int ppchURLOut) {
+int TranslateUrl(int dwTranslate, int /*long*/ pchURLIn, int /*long*/ ppchURLOut) {
 	return COM.E_NOTIMPL;
 }
 
@@ -293,7 +301,7 @@ int UpdateUI() {
 
 /* IDocHostShowUI */
 
-int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstrHelpFile, int dwHelpContext, int plResult) {
+int ShowMessage(int /*long*/ hwnd, int /*long*/ lpstrText, int /*long*/ lpstrCaption, int dwType, int /*long*/ lpstrHelpFile, int dwHelpContext, int /*long*/ plResult) {
 	/*
 	* Feature on IE.  When IE navigates to a website that contains an ActiveX that is prevented from
 	* being executed, IE displays a message "Your current security settings prohibit running ActiveX 
@@ -306,7 +314,7 @@ int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstr
 	int IDS_MESSAGE_BOX_CAPTION = 8033;
 		if (lpstrText != 0) {
 		TCHAR lpLibFileName = new TCHAR (0, "SHDOCLC.DLL", true); //$NON-NLS-1$
-		int hModule = OS.LoadLibrary(lpLibFileName);
+		int /*long*/ hModule = OS.LoadLibrary(lpLibFileName);
 		if (hModule != 0) {
 			/* 
 			* Note.  lpstrText is a LPOLESTR, i.e. a null terminated unicode string LPWSTR, i.e. a WCHAR*.
@@ -334,12 +342,18 @@ int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstr
 	return COM.S_FALSE;
 }
 
+int ShowHelp_64(int /*long*/ hwnd, int /*long*/ pszHelpFile, int uCommand, int dwData, long pt, int /*long*/ pDispatchObjectHit) {
+	POINT point = new POINT();
+	OS.MoveMemory(point, new long[]{pt}, 8);
+	return ShowHelp(hwnd, pszHelpFile, uCommand, dwData, point.x, point.y, pDispatchObjectHit);
+}
+
 /* Note.  One of the arguments of ShowHelp is a POINT struct and not a pointer to a POINT struct. Because
  * of the way Callback gets int parameters from a va_list of C arguments 2 integer arguments must be declared,
  * ptMouse_x and ptMouse_y. Otherwise the Browser crashes when the user presses F1 to invoke
  * the help.
  */
-int ShowHelp(int hwnd, int pszHelpFile, int uCommand, int dwData, int ptMouse_x, int ptMouse_y, int pDispatchObjectHit) {
+int ShowHelp(int /*long*/ hwnd, int /*long*/ pszHelpFile, int uCommand, int dwData, int ptMouse_x, int ptMouse_y, int /*long*/ pDispatchObjectHit) {
 	Browser browser = (Browser)getParent().getParent();
 	Event event = new Event();
 	event.type = SWT.Help;
@@ -360,30 +374,30 @@ int ShowHelp(int hwnd, int pszHelpFile, int uCommand, int dwData, int ptMouse_x,
 
 /* IServiceProvider */
 
-int QueryService(int guidService, int riid, int ppvObject) {
+int QueryService(int /*long*/ guidService, int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) {
-		COM.MoveMemory(ppvObject, new int[] {iInternetSecurityManager.getAddress()}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {iInternetSecurityManager.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
 /* IInternetSecurityManager */
 
-int SetSecuritySite(int pSite) {
+int SetSecuritySite(int /*long*/ pSite) {
 	return IE.INET_E_DEFAULT_ACTION;
 }
 
-int GetSecuritySite(int ppSite) {
+int GetSecuritySite(int /*long*/ ppSite) {
 	return IE.INET_E_DEFAULT_ACTION;
 }
 
-int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {	
+int MapUrlToZone(int /*long*/ pwszUrl, int /*long*/ pdwZone, int dwFlags) {	
 	/*
 	* Feature in IE 6 sp1.  HTML rendered in memory
 	* does not enable local links but the exact same
@@ -396,11 +410,11 @@ int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
 	return COM.S_OK;
 }
 
-int GetSecurityId(int pwszUrl, int pbSecurityId, int pcbSecurityId, int dwReserved) {
+int GetSecurityId(int /*long*/ pwszUrl, int /*long*/ pbSecurityId, int /*long*/ pcbSecurityId, int /*long*/ dwReserved) {
 	return IE.INET_E_DEFAULT_ACTION;
 }
 
-int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int pContext, int cbContext, int dwFlags, int dwReserved) {
+int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, int cbPolicy, int /*long*/ pContext, int cbContext, int dwFlags, int dwReserved) {
 	/*
 	* Feature in IE 6 sp1.  HTML rendered in memory
 	* containing an OBJECT tag referring to a local file
@@ -444,24 +458,24 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 	return policy == IE.URLPOLICY_ALLOW ? COM.S_OK : COM.S_FALSE;
 }
 
-int QueryCustomPolicy(int pwszUrl, int guidKey, int ppPolicy, int pcbPolicy, int pContext, int cbContext, int dwReserved) {
+int QueryCustomPolicy(int /*long*/ pwszUrl, int /*long*/ guidKey, int /*long*/ ppPolicy, int /*long*/ pcbPolicy, int /*long*/ pContext, int cbContext, int dwReserved) {
 	return IE.INET_E_DEFAULT_ACTION;
 }
 
-int SetZoneMapping(int dwZone, int lpszPattern, int dwFlags) {
+int SetZoneMapping(int dwZone, int /*long*/ lpszPattern, int dwFlags) {
 	return IE.INET_E_DEFAULT_ACTION;
 }
 
-int GetZoneMappings(int dwZone, int ppenumString, int dwFlags) {
+int GetZoneMappings(int dwZone, int /*long*/ ppenumString, int dwFlags) {
 	return COM.E_NOTIMPL;
 }
 
 /* IOleCommandTarget */
-int QueryStatus(int pguidCmdGroup, int cCmds, int prgCmds, int pCmdText) {
+int QueryStatus(int /*long*/ pguidCmdGroup, int cCmds, int /*long*/ prgCmds, int /*long*/ pCmdText) {
 	return COM.E_NOTSUPPORTED;
 }
 
-int Exec(int pguidCmdGroup, int nCmdID, int nCmdExecOpt, int pvaIn, int pvaOut) {
+int Exec(int /*long*/ pguidCmdGroup, int nCmdID, int nCmdExecOpt, int /*long*/ pvaIn, int /*long*/ pvaOut) {
 	if (pguidCmdGroup != 0) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, pguidCmdGroup, GUID.sizeof);

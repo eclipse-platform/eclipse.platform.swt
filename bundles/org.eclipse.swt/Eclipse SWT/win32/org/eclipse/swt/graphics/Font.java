@@ -40,7 +40,7 @@ public final class Font extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -207,7 +207,7 @@ public FontData[] getFontData() {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 void init (Device device, FontData fd) {
@@ -260,7 +260,7 @@ public String toString () {
  * @param handle the handle for the font
  * @return a new font object containing the specified device and handle
  */
-public static Font win32_new(Device device, int handle) {
+public static Font win32_new(Device device, int /*long*/ handle) {
 	if (device == null) device = Device.getDevice();
 	Font font = new Font();
 	font.handle = handle;

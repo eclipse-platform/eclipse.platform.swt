@@ -261,10 +261,10 @@ public PrinterData open() {
 	
 	if (success) {
 		/* Get driver and device from the DEVNAMES struct */
-		int hMem = pd.hDevNames;
+		int /*long*/ hMem = pd.hDevNames;
 		/* Ensure size is a multiple of 2 bytes on UNICODE platforms */
 		int size = OS.GlobalSize(hMem) / TCHAR.sizeof * TCHAR.sizeof;
-		int ptr = OS.GlobalLock(hMem);
+		int /*long*/ ptr = OS.GlobalLock(hMem);
 		short[] offsets = new short[4];
 		OS.MoveMemory(offsets, ptr, 2 * offsets.length);
 		TCHAR buffer = new TCHAR(0, size);

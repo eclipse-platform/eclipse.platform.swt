@@ -40,7 +40,7 @@ public class Transform extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 /**
  * Constructs a new identity Transform.

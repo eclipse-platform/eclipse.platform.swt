@@ -79,7 +79,7 @@ public static Program findProgram (String extension) {
 	TCHAR key = new TCHAR (0, extension, true);
 	Program program = null;
 	if (OS.IsWinCE) {
-		int [] phkResult = new int [1];
+		int /*long*/ [] phkResult = new int /*long*/ [1];
 		if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 			return null;
 		}
@@ -148,7 +148,7 @@ public static String [] getExtensions () {
 static String getKeyValue (String string, boolean expand) {
 	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, string, true);
-	int [] phkResult = new int [1];
+	int /*long*/ [] phkResult = new int /*long*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
 	}
@@ -263,10 +263,10 @@ public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Use the character encoding for the default locale */
-	int hHeap = OS.GetProcessHeap ();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	TCHAR buffer = new TCHAR (0, fileName, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
-	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	int /*long*/ lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpFile, buffer, byteCount);
 	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
 	info.cbSize = SHELLEXECUTEINFO.sizeof;
@@ -307,11 +307,11 @@ public boolean execute (String fileName) {
 	}
 	if (append) fileName = " \"" + fileName + "\"";
 	String commandLine = prefix + fileName + suffix;
-	int hHeap = OS.GetProcessHeap ();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	/* Use the character encoding for the default locale */
 	TCHAR buffer = new TCHAR (0, commandLine, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
-	int lpCommandLine = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	int /*long*/ lpCommandLine = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpCommandLine, buffer, byteCount);
 	STARTUPINFO lpStartupInfo = new STARTUPINFO ();
 	lpStartupInfo.cb = STARTUPINFO.sizeof;
@@ -355,7 +355,7 @@ public ImageData getImageData () {
 	}
 	/* Use the character encoding for the default locale */
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
-	int [] phiconSmall = new int[1], phiconLarge = null;
+	int /*long*/ [] phiconSmall = new int /*long*/[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);

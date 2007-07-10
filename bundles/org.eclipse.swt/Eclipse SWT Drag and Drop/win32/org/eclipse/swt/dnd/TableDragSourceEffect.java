@@ -80,27 +80,27 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		Table table = (Table) control;
 		TableItem[] selection = table.getSelection();
 		if (selection.length == 0) return null;
-		int tableImageList = OS.SendMessage (table.handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+		int /*long*/ tableImageList = OS.SendMessage (table.handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 		if (tableImageList != 0) {
 			int count = Math.min(selection.length, 10);
 			Rectangle bounds = selection[0].getBounds(0);
 			for (int i = 1; i < count; i++) {
 				bounds = bounds.union(selection[i].getBounds(0));
 			}
-			int hDC = OS.GetDC(0);
-			int hDC1 = OS.CreateCompatibleDC(hDC);
-			int bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
-			int hOldBitmap = OS.SelectObject(hDC1, bitmap);
+			int /*long*/ hDC = OS.GetDC(0);
+			int /*long*/ hDC1 = OS.CreateCompatibleDC(hDC);
+			int /*long*/ bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
+			int /*long*/ hOldBitmap = OS.SelectObject(hDC1, bitmap);
 			RECT rect = new RECT();
 			rect.right = bounds.width;
 			rect.bottom = bounds.height;
-			int hBrush = OS.GetStockObject(OS.WHITE_BRUSH);
+			int /*long*/ hBrush = OS.GetStockObject(OS.WHITE_BRUSH);
 			OS.FillRect(hDC1, rect, hBrush);
 			for (int i = 0; i < count; i++) {
 				TableItem selected = selection[i];
 				Rectangle cell = selected.getBounds(0);
 				POINT pt = new POINT();
-				int imageList = OS.SendMessage (table.handle, OS.LVM_CREATEDRAGIMAGE, table.indexOf(selected), pt);
+				int /*long*/ imageList = OS.SendMessage (table.handle, OS.LVM_CREATEDRAGIMAGE, table.indexOf(selected), pt);
 				OS.ImageList_Draw(imageList, 0, hDC1, cell.x - bounds.x, cell.y - bounds.y, OS.ILD_SELECTED);
 				OS.ImageList_Destroy(imageList);
 			}

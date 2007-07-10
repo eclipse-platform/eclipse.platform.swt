@@ -89,7 +89,7 @@ OleAutomation(IDispatch idispatch) {
 	objIDispatch = idispatch;
 	objIDispatch.AddRef();
 	
-	int[] ppv = new int[1];
+	int /*long*/[] ppv = new int /*long*/[1];
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
@@ -110,7 +110,7 @@ OleAutomation(IDispatch idispatch) {
 	if (clientSite == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = clientSite.getAutomationObject();
 
-	int[] ppv = new int[1];
+	int /*long*/[] ppv = new int /*long*/[1];
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
@@ -136,7 +136,7 @@ public void dispose() {
 	objITypeInfo = null;
 
 }
-int getAddress() {	
+int /*long*/ getAddress() {	
 	return objIDispatch.getAddress();
 }
 public String getHelpFile(int dispId) {
@@ -155,7 +155,7 @@ public String getDocumentation(int dispId) {
 }
 public OlePropertyDescription getPropertyDescription(int index) {
 	if (objITypeInfo == null) return null;
-	int[] ppVarDesc = new int[1];
+	int /*long*/[] ppVarDesc = new int /*long*/[1];
 	int rc = objITypeInfo.GetVarDesc(index, ppVarDesc);
 	if (rc != OLE.S_OK) return null;
 	VARDESC vardesc = new VARDESC();
@@ -167,7 +167,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	data.type = vardesc.elemdescVar_tdesc_vt;
 	if (data.type == OLE.VT_PTR) {
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, vardesc.elemdescVar_tdesc_union + 4, 2);
+		COM.MoveMemory(vt, vardesc.elemdescVar_tdesc_union + OS.PTR_SIZEOF, 2);
 		data.type = vt[0];
 	}
 	data.flags = vardesc.wVarFlags;
@@ -180,7 +180,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
 }
 public OleFunctionDescription getFunctionDescription(int index) {
 	if (objITypeInfo == null) return null;
-	int[] ppFuncDesc = new int[1];
+	int /*long*/[] ppFuncDesc = new int /*long*/[1];
 	int rc = objITypeInfo.GetFuncDesc(index, ppFuncDesc);
 	if (rc != OLE.S_OK) return null;
 	FUNCDESC funcdesc = new FUNCDESC();
@@ -207,25 +207,26 @@ public OleFunctionDescription getFunctionDescription(int index) {
 		if (names.length > i + 1) {
 			data.args[i].name = names[i + 1];
 		}
+		//TODO 0- use structures
 		short[] vt = new short[1];	
-		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * 16 + 4, 2);				
+		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + OS.PTR_SIZEOF, 2);				
 		if (vt[0] == OLE.VT_PTR) {
-			int[] pTypedesc = new int[1];
-			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * 16, 4);
+			int /*long*/ [] pTypedesc = new int /*long*/ [1];
+			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), OS.PTR_SIZEOF);
 			short[] vt2 = new short[1];
-			COM.MoveMemory(vt2, pTypedesc[0] + 4, 2);
+			COM.MoveMemory(vt2, pTypedesc[0] + OS.PTR_SIZEOF, 2);
 			vt[0] = (short)(vt2[0] | COM.VT_BYREF);
 		}
 		data.args[i].type = vt[0];
 		short[] wParamFlags = new short[1];
-		COM.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * 16 + 12, 2);
+		COM.MoveMemory(wParamFlags, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + COM.TYPEDESC_sizeof () + OS.PTR_SIZEOF, 2);
 		data.args[i].flags = wParamFlags[0];	
 	}
 	
 	data.returnType = funcdesc.elemdescFunc_tdesc_vt;
 	if (data.returnType == OLE.VT_PTR) {
 		short[] vt = new short[1];
-		COM.MoveMemory(vt, funcdesc.elemdescFunc_tdesc_union + 4, 2);
+		COM.MoveMemory(vt, funcdesc.elemdescFunc_tdesc_union + OS.PTR_SIZEOF, 2);
 		data.returnType = vt[0];
 	}
 
@@ -234,7 +235,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
 }
 public TYPEATTR getTypeInfoAttributes() {
 	if (objITypeInfo == null) return null;
-	int[] ppTypeAttr = new int[1];
+	int /*long*/ [] ppTypeAttr = new int /*long*/ [1];
 	int rc = objITypeInfo.GetTypeAttr(ppTypeAttr);
 	if (rc != OLE.S_OK) return null;
 	TYPEATTR typeattr = new TYPEATTR();
@@ -407,11 +408,11 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 	// store arguments in rgvarg
 	if (rgvarg != null && rgvarg.length > 0) {
 		pDispParams.cArgs = rgvarg.length;
-		pDispParams.rgvarg = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, Variant.sizeof * rgvarg.length);
+		pDispParams.rgvarg = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, VARIANT.sizeof * rgvarg.length);
 		int offset = 0;
 		for (int i = rgvarg.length - 1; i >= 0 ; i--) {
 			rgvarg[i].getData(pDispParams.rgvarg + offset);
-			offset += Variant.sizeof;
+			offset += VARIANT.sizeof;
 		}
 	}
 
@@ -429,8 +430,8 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 	// invoke the method
 	EXCEPINFO excepInfo = new EXCEPINFO();
 	int[] pArgErr = new int[1];
-	int pVarResultAddress = 0;
-	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
+	int /*long*/ pVarResultAddress = 0;
+	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, wFlags, pDispParams, pVarResultAddress, excepInfo, pArgErr);
 
 	if (pVarResultAddress != 0){
@@ -447,7 +448,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 		int offset = 0;
 		for (int i = 0, length = rgvarg.length; i < length; i++){
 			COM.VariantClear(pDispParams.rgvarg + offset);
-			offset += Variant.sizeof;
+			offset += VARIANT.sizeof;
 		}
 		OS.GlobalFree(pDispParams.rgvarg);
 	}

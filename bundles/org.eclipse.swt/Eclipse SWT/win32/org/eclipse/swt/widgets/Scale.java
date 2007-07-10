@@ -37,7 +37,7 @@ import org.eclipse.swt.events.*;
 
 public class Scale extends Control {
 	boolean ignoreResize;
-	static final int TrackBarProc;
+	static final int /*long*/ TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -60,13 +60,13 @@ public class Scale extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int hInstance = OS.GetModuleHandle (null);
-		int hHeap = OS.GetProcessHeap ();
+		int /*long*/ hInstance = OS.GetModuleHandle (null);
+		int /*long*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
 		int byteCount = TrackBarClass.length () * TCHAR.sizeof;
-		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, TrackBarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
@@ -137,7 +137,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TrackBarProc, hwnd, msg, wParam, lParam);
 }
@@ -192,7 +192,7 @@ int defaultForeground () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
 }
 
 /**
@@ -207,7 +207,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 }
 
 /**
@@ -222,7 +222,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	return (int)OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
 }
 
 /**
@@ -239,7 +239,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
 }
 
 /**
@@ -254,7 +254,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 }
 
 /**
@@ -282,7 +282,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void setBackgroundImage (int hImage) {
+void setBackgroundImage (int /*long*/ hImage) {
 	super.setBackgroundImage (hImage);
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
@@ -324,8 +324,8 @@ void setBackgroundPixel (int pixel) {
 public void setIncrement (int increment) {
 	checkWidget ();
 	if (increment < 1) return;
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (increment > maximum - minimum) return;
 	OS.SendMessage (handle, OS.TBM_SETLINESIZE, 0, increment);
 }
@@ -345,7 +345,7 @@ public void setIncrement (int increment) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
 	if (0 <= minimum && minimum < value) {
 		OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 1, value);
 	}
@@ -366,7 +366,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (0 <= value && value < maximum) {
 		OS.SendMessage (handle, OS.TBM_SETRANGEMIN, 1, value);
 	}
@@ -388,8 +388,8 @@ public void setMinimum (int value) {
 public void setPageIncrement (int pageIncrement) {
 	checkWidget ();
 	if (pageIncrement < 1) return;
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (pageIncrement > maximum - minimum) return;
 	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, pageIncrement);
 	OS.SendMessage (handle, OS.TBM_SETTICFREQ, pageIncrement, 0);
@@ -421,11 +421,11 @@ TCHAR windowClass () {
 	return TrackBarClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return TrackBarProc;
 }
 
-LRESULT WM_PAINT (int wParam, int lParam) {
+LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
 	* is used to implement transparency and returns a NULL brush,
@@ -457,12 +457,12 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return super.WM_PAINT (wParam, lParam);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
+LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/* Do nothing when scrolling is ending */
 	int code = OS.LOWORD (wParam);

@@ -166,7 +166,7 @@ protected void javaToNative (Object object, TransferData transferData) {
 	// The caller of this method must release the data when it is done with it.
 	byte[] data = (byte[])object;
 	int size = data.length;
-	int newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, size);
+	int /*long*/ newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, size);
 	OS.MoveMemory(newPtr, data, size);	
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -198,10 +198,10 @@ protected Object nativeToJava(TransferData transferData) {
 	transferData.result = data.GetData(formatetc, stgmedium);
 	data.Release();
 	if (transferData.result != COM.S_OK) return null;
-	int hMem = stgmedium.unionField;
+	int /*long*/ hMem = stgmedium.unionField;
 	int size = OS.GlobalSize(hMem);
 	byte[] buffer = new byte[size];
-	int ptr = OS.GlobalLock(hMem);
+	int /*long*/ ptr = OS.GlobalLock(hMem);
 	OS.MoveMemory(buffer, ptr, size);
 	OS.GlobalUnlock(hMem);	
 	OS.GlobalFree(hMem);

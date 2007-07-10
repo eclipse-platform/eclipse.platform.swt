@@ -287,6 +287,18 @@ fail:
 }
 #endif
 
+#ifndef NO_ELEMDESC_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(ELEMDESC_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, ELEMDESC_1sizeof_FUNC);
+	rc = (jint)ELEMDESC_sizeof();
+	COM_NATIVE_EXIT(env, that, ELEMDESC_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_EXCEPINFO_1sizeof
 JNIEXPORT jint JNICALL COM_NATIVE(EXCEPINFO_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -1092,6 +1104,18 @@ JNIEXPORT jint JNICALL COM_NATIVE(TYPEATTR_1sizeof)
 	COM_NATIVE_ENTER(env, that, TYPEATTR_1sizeof_FUNC);
 	rc = (jint)TYPEATTR_sizeof();
 	COM_NATIVE_EXIT(env, that, TYPEATTR_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TYPEDESC_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(TYPEDESC_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, TYPEDESC_1sizeof_FUNC);
+	rc = (jint)TYPEDESC_sizeof();
+	COM_NATIVE_EXIT(env, that, TYPEDESC_1sizeof_FUNC);
 	return rc;
 }
 #endif

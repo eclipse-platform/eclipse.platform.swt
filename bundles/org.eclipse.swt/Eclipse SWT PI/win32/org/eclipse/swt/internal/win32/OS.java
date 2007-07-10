@@ -1705,10 +1705,10 @@ public class OS extends C {
 	public static final int TVIS_EXPANDED = 0x20;
 	public static final int TVIS_SELECTED = 0x2;
 	public static final int TVIS_STATEIMAGEMASK = 0xf000;
-	public static final int TVI_FIRST = 0xffff0001;
-	public static final int TVI_LAST = 0xffff0002;
-	public static final int TVI_ROOT = 0xffff0000;
-	public static final int TVI_SORT = 0xFFFF0003;
+	public static final int /*long*/ TVI_FIRST = -0x0FFFF;
+	public static final int /*long*/ TVI_LAST = -0x0FFFE;
+	public static final int /*long*/ TVI_ROOT = -0x10000;
+	public static final int /*long*/ TVI_SORT = -0x0FFFD;
 	public static final int TVM_CREATEDRAGIMAGE = TV_FIRST + 18;
 	public static final int TVM_DELETEITEM = 0x1101;
 	public static final int TVM_ENSUREVISIBLE = 0x1114;
@@ -2090,6 +2090,7 @@ public static final native int NMREBARCHEVRON_sizeof ();
 public static final native int NMREBARCHILDSIZE_sizeof ();
 public static final native int NMRGINFO_sizeof ();
 public static final native int NMTBHOTITEM_sizeof ();
+public static final native int NMTREEVIEW_sizeof ();
 public static final native int NMTOOLBAR_sizeof ();
 public static final native int NMTTDISPINFOA_sizeof ();
 public static final native int NMTTDISPINFOW_sizeof ();
@@ -2161,7 +2162,7 @@ public static final int /*long*/ AddFontResourceEx (TCHAR lpszFilename, int fl, 
 	return AddFontResourceExA (lpszFilename1, fl, pdv);
 }
 
-public static final int /*long*/ AssocQueryString(int flags, int str, TCHAR pszAssoc, TCHAR pszExtra, TCHAR pszOut, int[] pcchOut) {
+public static final int AssocQueryString(int flags, int str, TCHAR pszAssoc, TCHAR pszExtra, TCHAR pszOut, int[] pcchOut) {
 	if (IsUnicode) {
 		char [] pszAssoc1 = pszAssoc == null ? null : pszAssoc.chars;
 		char [] pszExtra1 = pszExtra == null ? null : pszExtra.chars;
@@ -2352,7 +2353,7 @@ public static final int /*long*/ FindWindow (TCHAR lpClassName, TCHAR lpWindowNa
 	return FindWindowA (lpClassName1, lpWindowName1);
 }
 
-public static final int FormatMessage (int dwFlags, int /*long*/ lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int /*long*/ Arguments) {
+public static final int FormatMessage (int dwFlags, int /*long*/ lpSource, int dwMessageId, int dwLanguageId, int /*long*/ [] lpBuffer, int nSize, int /*long*/ Arguments) {
 	if (IsUnicode) {
 		return FormatMessageW (dwFlags, lpSource, dwMessageId, dwLanguageId, lpBuffer, nSize, Arguments); 
 	}
@@ -3193,7 +3194,7 @@ public static final native int /*long*/ CreateFontIndirectA (LOGFONTA lplf);
 public static final native int /*long*/ CreateIconIndirect (ICONINFO lplf);
 public static final native int /*long*/ CreateMenu ();
 public static final native int /*long*/ CreatePalette (byte[] logPalette);
-public static final native int /*long*/ CreatePatternBrush (int /*long*/ colorRef);
+public static final native int /*long*/ CreatePatternBrush (int /*long*/ hbmp);
 public static final native int /*long*/ CreatePen (int fnPenStyle, int nWidth, int crColor);
 public static final native int /*long*/ CreatePolygonRgn(int[] lppt, int cPoints, int fnPolyFillMode);
 public static final native int /*long*/ CreatePopupMenu ();
@@ -3276,8 +3277,8 @@ public static final native int FillRect (int /*long*/ hDC, RECT lprc, int /*long
 public static final native boolean FillPath (int /*long*/ hdc);
 public static final native int /*long*/ FindWindowA (byte [] lpClassName, byte [] lpWindowName);
 public static final native int /*long*/ FindWindowW (char [] lpClassName, char [] lpWindowName);
-public static final native int FormatMessageA (int dwFlags, int /*long*/ lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int /*long*/ Arguments);
-public static final native int FormatMessageW (int dwFlags, int /*long*/ lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int /*long*/ Arguments);
+public static final native int FormatMessageA (int dwFlags, int /*long*/ lpSource, int dwMessageId, int dwLanguageId, int /*long*/ [] lpBuffer, int nSize, int /*long*/ Arguments);
+public static final native int FormatMessageW (int dwFlags, int /*long*/ lpSource, int dwMessageId, int dwLanguageId, int /*long*/ [] lpBuffer, int nSize, int /*long*/ Arguments);
 public static final native boolean FreeLibrary (int /*long*/ hLibModule);
 public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GET_WHEEL_DELTA_WPARAM(int /*long*/ wParam);
@@ -3443,7 +3444,7 @@ public static final native int GetWindowTextW (int /*long*/ hWnd, char [] lpStri
 public static final native int GetWindowTextA (int /*long*/ hWnd, byte [] lpString, int nMaxCount);
 public static final native int GetWindowTextLengthW (int /*long*/ hWnd);
 public static final native int GetWindowTextLengthA (int /*long*/ hWnd);
-public static final native int GetWindowTheme (int /*long*/ hWnd);
+public static final native int /*long*/ GetWindowTheme (int /*long*/ hWnd);
 public static final native int GetWindowThreadProcessId (int /*long*/ hWnd, int [] lpdwProcessId);
 public static final native boolean GetWorldTransform (int /*long*/ hdc, float[] lpXform);
 public static final native int GlobalAddAtomW (char [] lpString);
@@ -3521,7 +3522,7 @@ public static final native boolean IsWindowEnabled (int /*long*/ hWnd);
 public static final native boolean IsWindowVisible (int /*long*/ hWnd);
 public static final native boolean IsZoomed (int /*long*/ hWnd);
 public static final native boolean KillTimer (int /*long*/ hWnd, int /*long*/ uIDEvent);
-public static final native int LOWORD(int /*long*/ l);
+public static final native int LOWORD (int /*long*/ l);
 public static final native boolean LineTo (int /*long*/ hdc, int x1, int x2);
 public static final native int /*long*/ LoadBitmapW (int /*long*/ hInstance, int /*long*/ lpBitmapName);
 public static final native int /*long*/ LoadBitmapA (int /*long*/ hInstance, int /*long*/ lpBitmapName);
@@ -3588,11 +3589,13 @@ public static final native void MoveMemory (MINMAXINFO Destination, int /*long*/
 public static final native void MoveMemory (OFNOTIFY Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (OPENFILENAME Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (POINT Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (POINT Destination, long[] Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMRGINFO Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMCUSTOMDRAW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTBHOTITEM Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (NMTREEVIEW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTVITEMCHANGE Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMUPDOWN Destination, int /*long*/ Source, int Length);
@@ -3708,7 +3711,7 @@ public static final native int SelectClipRgn (int /*long*/ hdc, int /*long*/ hrg
 public static final native int /*long*/ SelectObject (int /*long*/ hDC, int /*long*/ HGDIObj);
 public static final native int /*long*/ SelectPalette (int /*long*/ hDC, int /*long*/ hpal, boolean bForceBackground);
 public static final native int SendInput (int nInputs, int /*long*/ pInputs, int cbSize);
-public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int  [] wParam, int [] lParam);
+public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ [] wParam, int /*long*/ lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, char [] lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, int [] lParam);

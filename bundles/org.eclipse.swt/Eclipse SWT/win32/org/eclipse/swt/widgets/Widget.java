@@ -198,7 +198,7 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	return 0;
 }
 
@@ -350,7 +350,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-int DeferWindowPos(int hWinPosInfo, int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags){
+int /*long*/ DeferWindowPos(int /*long*/ hWinPosInfo, int /*long*/ hWnd, int /*long*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags){
 	if (OS.IsWinCE) {
 		/*
 		* Feature in Windows.  On Windows CE, DeferWindowPos always causes
@@ -410,7 +410,7 @@ public void dispose () {
 	release (true);
 }
 
-boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
+boolean dragDetect (int /*long*/ hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
 	if (consume != null) consume [0] = false;
 	if (detect != null) detect [0] = true;
 	POINT pt = new POINT ();
@@ -436,7 +436,7 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
-Widget findItem (int id) {
+Widget findItem (int /*long*/ id) {
 	return null;
 }
 
@@ -674,7 +674,7 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-void mapEvent (int hwnd, Event event) {
+void mapEvent (int /*long*/ hwnd, Event event) {
 }
 
 GC new_GC (GCData data) {
@@ -965,23 +965,23 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
+boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	Event event = new Event ();
 	if (!setKeyState (event, type, wParam, lParam)) return true;
 	return sendKeyEvent (type, msg, wParam, lParam, event);
 }
 
-boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
+boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam, Event event) {
 	sendEvent (type, event);
 	if (isDisposed ()) return false;
 	return event.doit;
 }
 
-boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int lParam) {
+boolean sendMouseEvent (int type, int button, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	return sendMouseEvent (type, button, display.getClickCount (type, button, hwnd, lParam), 0, false, hwnd, msg, wParam, lParam);
 }
 
-boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int hwnd, int msg, int wParam, int lParam) {
+boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	event.button = button;
@@ -1146,7 +1146,7 @@ boolean setInputState (Event event, int type) {
 	return true;
 }
 
-boolean setKeyState (Event event, int type, int wParam, int lParam) {
+boolean setKeyState (Event event, int type, int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/*
 	* Feature in Windows.  When the user presses Ctrl+Backspace
@@ -1208,7 +1208,7 @@ boolean setKeyState (Event event, int type, int wParam, int lParam) {
 	return setInputState (event, type);
 }
 
-boolean SetWindowPos (int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
+boolean SetWindowPos (int /*long*/ hWnd, int /*long*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
 	if (OS.IsWinCE) {
 		/*
 		* Feature in Windows.  On Windows CE, SetWindowPos() always causes
@@ -1267,12 +1267,12 @@ public String toString () {
 	return getName () + " {" + string + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
-LRESULT wmCaptureChanged (int hwnd, int wParam, int lParam) {
+LRESULT wmCaptureChanged (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	display.captureChanged = true;
 	return null;
 }
 
-LRESULT wmChar (int hwnd, int wParam, int lParam) {
+LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Do not report a lead byte as a key pressed.
 	*/
@@ -1280,7 +1280,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) return null;
 	}
-	display.lastAscii = wParam;
+	display.lastAscii = (int)/*64*/wParam;
 	display.lastNull = wParam == 0;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
 		return LRESULT.ONE;
@@ -1289,7 +1289,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmContextMenu (int hwnd, int wParam, int lParam) {
+LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	if (wParam != hwnd) return null;
 	
 	/*
@@ -1336,10 +1336,10 @@ LRESULT wmContextMenu (int hwnd, int wParam, int lParam) {
 	return showMenu (x, y) ? LRESULT.ZERO : null;
 }
 
-LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
+LRESULT wmIMEChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	display.lastKey = 0;
-	display.lastAscii = wParam;
+	display.lastAscii = (int)/*64*/wParam;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ONE;
@@ -1350,10 +1350,10 @@ LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
 	return LRESULT.ONE;
 }
 
-LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
+LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/* Ignore repeating modifier keys by testing key down state */
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_SHIFT:
 		case OS.VK_MENU:
 		case OS.VK_CONTROL:
@@ -1387,7 +1387,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	*/
 	int mapKey = 0;
 	if (OS.IsWinCE) {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.VK_BACK: mapKey = SWT.BS; break;
 			case OS.VK_RETURN: mapKey = SWT.CR; break;
 			case OS.VK_DELETE: mapKey = SWT.DEL; break;
@@ -1395,7 +1395,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			case OS.VK_TAB: mapKey = SWT.TAB; break;
 		}
 	} else {
-		mapKey = OS.MapVirtualKey (wParam, 2);
+		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
 	}
 
 	/*
@@ -1425,7 +1425,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	if (OS.PeekMessage (msg, hwnd, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
 		display.lastDead = true;
 		display.lastVirtual = mapKey == 0;
-		display.lastKey = display.lastVirtual ? wParam : mapKey;
+		display.lastKey = display.lastVirtual ? (int)/*64*/wParam : mapKey;
 		return null;
 	}
 	
@@ -1462,9 +1462,9 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	* they are not virtual.  Therefore it is necessary to force
 	* numeric keypad keys to be virtual.
 	*/
-	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
+	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)/*64*/wParam) != 0;
 	if (display.lastVirtual) {
-		display.lastKey = wParam;
+		display.lastKey = (int)/*64*/wParam;
 		/*
 		* Feature in Windows.  The virtual key VK_DELETE is not
 		* treated as both a virtual key and an ASCII key by Windows.
@@ -1521,7 +1521,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 		* WM_CHAR.  If this is the case, issue the key down event from
 		* inside WM_CHAR.
 		*/
-		int asciiKey = display.asciiKey (wParam);
+		int asciiKey = display.asciiKey ((int)/*64*/wParam);
 		if (asciiKey != 0) {
 			/*
 			* When the user types Ctrl+Space, ToAscii () maps this to
@@ -1531,7 +1531,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			* issue the event from WM_CHAR.
 			*/
 			if (asciiKey == ' ') return null;
-			if (asciiKey != wParam) return null;
+			if (asciiKey != (int)/*64*/wParam) return null;
 			/*
 			* Feature in Windows. The virtual key VK_CANCEL is treated
 			* as both a virtual key and ASCII key by Windows.  This
@@ -1558,7 +1558,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 		* depend on the international keyboard.
 		*/
 	 	if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
-			display.lastAscii = display.shiftedKey (wParam);
+			display.lastAscii = display.shiftedKey ((int)/*64*/wParam);
 			if (display.lastAscii == 0) display.lastAscii = mapKey;
 	 	} else {
 	 		display.lastAscii = OS.CharLower ((short) mapKey);
@@ -1575,7 +1575,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
+LRESULT wmKeyUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	
 	/* Check for hardware keys */
@@ -1584,7 +1584,7 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 			display.lastKey = display.lastAscii = 0;
 			display.lastVirtual = display.lastNull = display.lastDead = false;
 			Event event = new Event ();
-			event.detail = wParam - OS.VK_APP1 + 1;
+			event.detail = (int)/*64*/wParam - OS.VK_APP1 + 1;
 			/* Check the bit 30 to get the key state */
 			int type = (lParam & 0x40000000) != 0 ? SWT.HardKeyUp : SWT.HardKeyDown;
 			if (setInputState (event, type)) sendEvent (type, event);
@@ -1615,7 +1615,7 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 	*/
 	int mapKey = 0;
 	if (OS.IsWinCE) {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.VK_BACK: mapKey = SWT.BS; break;
 			case OS.VK_RETURN: mapKey = SWT.CR; break;
 			case OS.VK_DELETE: mapKey = SWT.DEL; break;
@@ -1623,7 +1623,7 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 			case OS.VK_TAB: mapKey = SWT.TAB; break;
 		}
 	} else {
-		mapKey = OS.MapVirtualKey (wParam, 2);
+		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
 	}
 
 	/*
@@ -1649,9 +1649,9 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 	* they are not virtual.  Therefore it is necessary to force
 	* numeric keypad keys to be virtual.
 	*/
-	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
+	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)/*64*/wParam) != 0;
 	if (display.lastVirtual) {
-		display.lastKey = wParam;
+		display.lastKey = (int)/*64*/wParam;
 	} else {
 		/*
 		* Feature in Windows. The virtual key VK_CANCEL is treated
@@ -1677,8 +1677,8 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
-	int code = callWindowProc (hwnd, OS.WM_KILLFOCUS, wParam, lParam);
+LRESULT wmKillFocus (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ code = callWindowProc (hwnd, OS.WM_KILLFOCUS, wParam, lParam);
 	sendFocusEvent (SWT.FocusOut);
 	// widget could be disposed at this point
 	
@@ -1694,7 +1694,7 @@ LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
+LRESULT wmLButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. Windows sends the following
 	* messages when the user double clicks the mouse:
@@ -1723,7 +1723,7 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
+LRESULT wmLButtonDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	LRESULT result = null;
 	int x = OS.GET_X_LPARAM (lParam);
@@ -1811,7 +1811,7 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
+LRESULT wmLButtonUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	LRESULT result = null;
 	if (sendMouseEvent (SWT.MouseUp, 1, hwnd, OS.WM_LBUTTONUP, wParam, lParam)) {
@@ -1833,7 +1833,7 @@ LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
+LRESULT wmMButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. Windows sends the following
 	* messages when the user double clicks the mouse:
@@ -1862,7 +1862,7 @@ LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
+LRESULT wmMButtonDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	Display display = this.display;
 	display.captureChanged = false;
@@ -1877,7 +1877,7 @@ LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
+LRESULT wmMButtonUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	LRESULT result = null;
 	if (sendMouseEvent (SWT.MouseUp, 2, hwnd, OS.WM_MBUTTONUP, wParam, lParam)) {
@@ -1899,14 +1899,14 @@ LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmMouseHover (int hwnd, int wParam, int lParam) {
+LRESULT wmMouseHover (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	if (!sendMouseEvent (SWT.MouseHover, 0, hwnd, OS.WM_MOUSEHOVER, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
 	return null;
 }
 
-LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
+LRESULT wmMouseLeave (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	if (!hooks (SWT.MouseExit) && !filters (SWT.MouseExit)) return null;
 	int pos = OS.GetMessagePos ();
 	POINT pt = new POINT ();
@@ -1919,7 +1919,7 @@ LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
+LRESULT wmMouseMove (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	Display display = this.display;
 	int pos = OS.GetMessagePos ();
@@ -1971,7 +1971,7 @@ LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
+LRESULT wmMouseWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	if (!hooks (SWT.MouseWheel) && !filters (SWT.MouseWheel)) return null;
 	int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 	int [] value = new int [1];
@@ -1994,7 +1994,7 @@ LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmPaint (int hwnd, int wParam, int lParam) {
+LRESULT wmPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Exit early - don't draw the background */
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
@@ -2002,7 +2002,7 @@ LRESULT wmPaint (int hwnd, int wParam, int lParam) {
 	}
 	
 	/* Issue a paint event */
-	int result = 0;
+	int /*long*/ result = 0;
 	if (OS.IsWinCE) {
 		RECT rect = new RECT ();
 		OS.GetUpdateRect (hwnd, rect, false);
@@ -2040,7 +2040,7 @@ LRESULT wmPaint (int hwnd, int wParam, int lParam) {
 			gc.dispose ();
 		}
 	} else {
-		int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+		int /*long*/ rgn = OS.CreateRectRgn (0, 0, 0, 0);
 		OS.GetUpdateRgn (hwnd, rgn, false);
 		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
 		GCData data = new GCData ();
@@ -2053,7 +2053,7 @@ LRESULT wmPaint (int hwnd, int wParam, int lParam) {
 			int width = rect.right - rect.left;
 			int height = rect.bottom - rect.top;
 			if (width != 0 && height != 0) {
-				int hDC = gc.handle;
+				int /*long*/ hDC = gc.handle;
 				OS.SelectClipRgn (hDC, rgn);
 				OS.SetMetaRgn (hDC);
 				Event event = new Event ();
@@ -2075,7 +2075,7 @@ LRESULT wmPaint (int hwnd, int wParam, int lParam) {
 	return new LRESULT (result);
 }
 
-LRESULT wmPrint (int hwnd, int wParam, int lParam) {
+LRESULT wmPrint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  When WM_PRINT is used to print the contents
 	* of a control that has WS_EX_CLIENTEDGE, the old 3D border is
@@ -2086,7 +2086,7 @@ LRESULT wmPrint (int hwnd, int wParam, int lParam) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits & OS.WS_EX_CLIENTEDGE) != 0) {
-				int code = callWindowProc (hwnd, OS.WM_PRINT, wParam, lParam);
+				int /*long*/ code = callWindowProc (hwnd, OS.WM_PRINT, wParam, lParam);
 				RECT rect = new RECT ();
 				OS.GetWindowRect (hwnd, rect);
 				rect.right -= rect.left;
@@ -2102,7 +2102,7 @@ LRESULT wmPrint (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmRButtonDblClk (int hwnd, int wParam, int lParam) {
+LRESULT wmRButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. Windows sends the following
 	* messages when the user double clicks the mouse:
@@ -2131,7 +2131,7 @@ LRESULT wmRButtonDblClk (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
+LRESULT wmRButtonDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	Display display = this.display;
 	display.captureChanged = false;
@@ -2146,7 +2146,7 @@ LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
+LRESULT wmRButtonUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	LRESULT result = null;
 	if (sendMouseEvent (SWT.MouseUp, 3, hwnd, OS.WM_RBUTTONUP, wParam, lParam)) {
@@ -2170,8 +2170,8 @@ LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmSetFocus (int hwnd, int wParam, int lParam) {
-	int code = callWindowProc (hwnd, OS.WM_SETFOCUS, wParam, lParam);
+LRESULT wmSetFocus (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ code = callWindowProc (hwnd, OS.WM_SETFOCUS, wParam, lParam);
 	sendFocusEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 
@@ -2187,9 +2187,9 @@ LRESULT wmSetFocus (int hwnd, int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT wmSysChar (int hwnd, int wParam, int lParam) {
+LRESULT wmSysChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
-	display.lastAscii = wParam;
+	display.lastAscii = (int)/*64*/wParam;
 	display.lastNull = wParam == 0;
 
 	/* Do not issue a key down if a menu bar mnemonic was invoked */
@@ -2200,7 +2200,7 @@ LRESULT wmSysChar (int hwnd, int wParam, int lParam) {
 	/* Call the window proc to determine whether it is a system key or mnemonic */
 	boolean oldKeyHit = display.mnemonicKeyHit;
 	display.mnemonicKeyHit = true;
-	int result = callWindowProc (hwnd, OS.WM_SYSCHAR, wParam, lParam);
+	int /*long*/ result = callWindowProc (hwnd, OS.WM_SYSCHAR, wParam, lParam);
 	boolean consumed = false;
 	if (!display.mnemonicKeyHit) {
 		consumed = !sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
@@ -2211,7 +2211,7 @@ LRESULT wmSysChar (int hwnd, int wParam, int lParam) {
 	return consumed ? LRESULT.ONE : new LRESULT (result);
 }
 
-LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
+LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows.  When WM_SYSKEYDOWN is sent,
 	* the user pressed ALT+<key> or F10 to get to the
@@ -2226,9 +2226,9 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	}
 	
 	/* Ignore well known system keys */
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_F4: {
-			int hwndShell = hwnd;
+			int /*long*/ hwndShell = hwnd;
 			while (OS.GetParent (hwndShell) != 0) {
 				if (OS.GetWindow (hwndShell, OS.GW_OWNER) != 0) break;
 				hwndShell = OS.GetParent (hwndShell);
@@ -2239,7 +2239,7 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	}
 	
 	/* Ignore repeating modifier keys by testing key down state */
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_SHIFT:
 		case OS.VK_MENU:
 		case OS.VK_CONTROL:
@@ -2265,7 +2265,7 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	*/
 	int mapKey = 0;
 	if (OS.IsWinCE) {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 			case OS.VK_BACK: mapKey = SWT.BS; break;
 			case OS.VK_RETURN: mapKey = SWT.CR; break;
 			case OS.VK_DELETE: mapKey = SWT.DEL; break;
@@ -2273,11 +2273,11 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 			case OS.VK_TAB: mapKey = SWT.TAB; break;
 		}
 	} else {
-		mapKey = OS.MapVirtualKey (wParam, 2);
+		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
 	}
-	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
+	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)/*64*/wParam) != 0;
 	if (display.lastVirtual) {
-	 	display.lastKey = wParam;
+	 	display.lastKey = (int)/*64*/wParam;
 		/*
 		* Feature in Windows.  The virtual key VK_DELETE is not
 		* treated as both a virtual key and an ASCII key by Windows.
@@ -2334,11 +2334,11 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmSysKeyUp (int hwnd, int wParam, int lParam) {
+LRESULT wmSysKeyUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	return wmKeyUp (hwnd, wParam, lParam);
 }
 
-LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
+LRESULT wmXButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. Windows sends the following
 	* messages when the user double clicks the mouse:
@@ -2368,7 +2368,7 @@ LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
+LRESULT wmXButtonDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	Display display = this.display;
 	display.captureChanged = false;
@@ -2385,7 +2385,7 @@ LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
+LRESULT wmXButtonUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	LRESULT result = null;
 	int button = OS.HIWORD (wParam) == OS.XBUTTON1 ? 4 : 5;

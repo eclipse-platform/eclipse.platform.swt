@@ -51,7 +51,7 @@ public final class Cursor extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 	
 	boolean isIcon;
 	
@@ -184,7 +184,7 @@ public Cursor(Device device, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	int lpCursorName = 0;
+	int /*long*/ lpCursorName = 0;
 	switch (style) {
 		case SWT.CURSOR_HAND: 		lpCursorName = OS.IDC_HAND; break;
 		case SWT.CURSOR_ARROW: 		lpCursorName = OS.IDC_ARROW; break;
@@ -220,7 +220,7 @@ public Cursor(Device device, int style) {
 		int width = OS.GetSystemMetrics(OS.SM_CXCURSOR);
 		int height = OS.GetSystemMetrics(OS.SM_CYCURSOR);
 		if (width == 32 && height == 32) {
-			int hInst = OS.GetModuleHandle(null);
+			int /*long*/ hInst = OS.GetModuleHandle(null);
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			handle = OS.CreateCursor(hInst, 5, 0, 32, 32, HAND_SOURCE, HAND_MASK);
 
@@ -290,7 +290,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
 	
 	/* Create the cursor */
-	int hInst = OS.GetModuleHandle(null);
+	int /*long*/ hInst = OS.GetModuleHandle(null);
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -335,9 +335,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	ImageData mask = source.getTransparencyMask();
-	int[] result = Image.init(device, null, source, mask);
-	int hBitmap = result[0];
-	int hMask = result[1];
+	int /*long*/ [] result = Image.init(device, null, source, mask);
+	int /*long*/ hBitmap = result[0];
+	int /*long*/ hMask = result[1];
 	/* Create the icon */
 	ICONINFO info = new ICONINFO();
 	info.fIcon = false;
@@ -421,7 +421,7 @@ public boolean equals (Object object) {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 /**

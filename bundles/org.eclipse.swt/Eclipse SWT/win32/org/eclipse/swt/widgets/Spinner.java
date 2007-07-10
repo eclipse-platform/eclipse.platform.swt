@@ -37,12 +37,12 @@ import org.eclipse.swt.events.*;
  * @since 3.1
  */
 public class Spinner extends Composite {
-	int hwndText, hwndUpDown;
+	int /*long*/ hwndText, hwndUpDown;
 	boolean ignoreModify;
 	int pageIncrement, digits;
-	static final int EditProc;
+	static final int /*long*/ EditProc;
 	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
-	static final int UpDownProc;
+	static final int /*long*/ UpDownProc;
 	static final TCHAR UpDownClass = new TCHAR (0, OS.UPDOWN_CLASS, true);	
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -85,7 +85,7 @@ public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == hwndText) {
 		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
@@ -107,7 +107,7 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
-boolean checkHandle (int hwnd) {
+boolean checkHandle (int /*long*/ hwnd) {
 	return hwnd == handle || hwnd == hwndText || hwnd == hwndUpDown;
 }
 
@@ -118,7 +118,7 @@ protected void checkSubclass () {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-	int hInstance = OS.GetModuleHandle (null);
+	int /*long*/ hInstance = OS.GetModuleHandle (null);
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL | OS.WS_CLIPSIBLINGS;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
@@ -136,7 +136,7 @@ void createHandle () {
         hInstance,
         null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.SetWindowLong (hwndText, OS.GWL_ID, hwndText);
+	OS.SetWindowLongPtr (hwndText, OS.GWLP_ID, hwndText);
 	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY;
 	if ((style & SWT.WRAP) != 0) upDownStyle |= OS.UDS_WRAP;
 	if ((style & SWT.BORDER) != 0) {
@@ -159,9 +159,9 @@ void createHandle () {
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	SetWindowPos (hwndText, hwndUpDown, 0, 0, 0, 0, flags);
-	OS.SetWindowLong (hwndUpDown, OS.GWL_ID, hwndUpDown);
+	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_ID, hwndUpDown);
 	if (OS.IsDBLocale) {
-		int hIMC = OS.ImmGetContext (handle);
+		int /*long*/ hIMC = OS.ImmGetContext (handle);
 		OS.ImmAssociateContext (hwndText, hIMC);
 		OS.ImmAssociateContext (hwndUpDown, hIMC);		
 		OS.ImmReleaseContext (handle, hIMC);
@@ -258,7 +258,7 @@ void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-int borderHandle () {
+int /*long*/ borderHandle () {
 	return hwndText;
 }
 
@@ -266,8 +266,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-		int newFont, oldFont = 0;
-		int hDC = OS.GetDC (hwndText);
+		int /*long*/ newFont, oldFont = 0;
+		int /*long*/ hDC = OS.GetDC (hwndText);
 		newFont = OS.SendMessage (hwndText, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
@@ -328,7 +328,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	* the single-line text widget in an editable combo
 	* box.
 	*/
-	int margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
+	int /*long*/ margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
 	x -= OS.LOWORD (margins);
 	width += OS.LOWORD (margins) + OS.HIWORD (margins);
 	if ((style & SWT.BORDER) != 0) {
@@ -392,7 +392,7 @@ void deregister () {
 }
 
 boolean hasFocus () {
-	int hwndFocus = OS.GetFocus ();
+	int /*long*/ hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
 	if (hwndFocus == hwndText) return true;
 	if (hwndFocus == hwndUpDown) return true;
@@ -503,7 +503,7 @@ public int getSelection () {
 	if (OS.IsWinCE) {
 		return OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
-		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		return (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 }
 
@@ -659,7 +659,7 @@ void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
-boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
+boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam, Event event) {
 	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
 		return false;
 	}
@@ -742,7 +742,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return false;
 }
 
-void setBackgroundImage (int hBitmap) {
+void setBackgroundImage (int /*long*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	OS.InvalidateRect (hwndText, null, true);
 }
@@ -781,7 +781,7 @@ public void setDigits (int value) {
 	if (OS.IsWinCE) {
 		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	setSelection (pos, false, true, false);
 }
@@ -806,14 +806,14 @@ void setForegroundPixel (int pixel) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-	int hHeap = OS.GetProcessHeap ();
-	int count = OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 0, (UDACCEL)null);
-	int udaccels = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, UDACCEL.sizeof * count);
+	int /*long*/ hHeap = OS.GetProcessHeap ();
+	int count = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 0, (UDACCEL)null);
+	int /*long*/ udaccels = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, UDACCEL.sizeof * count);
 	OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, count, udaccels);
 	int first = -1;
 	UDACCEL udaccel = new UDACCEL ();
 	for (int i = 0; i < count; i++) {
-		int offset = udaccels + (i * UDACCEL.sizeof);
+		int /*long*/ offset = udaccels + (i * UDACCEL.sizeof);
 		OS.MoveMemory (udaccel, offset, UDACCEL.sizeof);
 		if (first == -1) first = udaccel.nInc;
 		udaccel.nInc  =  udaccel.nInc * value / first;
@@ -846,7 +846,7 @@ public void setMaximum (int value) {
 	if (OS.IsWinCE) {
 		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
 	if (pos > value) setSelection (value, true, true, false);
@@ -875,7 +875,7 @@ public void setMinimum (int value) {
 	if (OS.IsWinCE) {
 		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
 	if (pos < value) setSelection (value, true, true, false);
@@ -998,15 +998,15 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 
 void subclass () {
 	super.subclass ();
-	int newProc = display.windowProc;
-	OS.SetWindowLong (hwndText, OS.GWL_WNDPROC, newProc);
-	OS.SetWindowLong (hwndUpDown, OS.GWL_WNDPROC, newProc);
+	int /*long*/ newProc = display.windowProc;
+	OS.SetWindowLongPtr (hwndText, OS.GWLP_WNDPROC, newProc);
+	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_WNDPROC, newProc);
 }
 
 void unsubclass () {
 	super.unsubclass ();
-	OS.SetWindowLong (hwndText, OS.GWL_WNDPROC, EditProc);
-	OS.SetWindowLong (hwndUpDown, OS.GWL_WNDPROC, UpDownProc);
+	OS.SetWindowLongPtr (hwndText, OS.GWLP_WNDPROC, EditProc);
+	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_WNDPROC, UpDownProc);
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
@@ -1046,7 +1046,7 @@ int widgetExtStyle () {
 	return super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
 }
 
-int windowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (hwnd == hwndText || hwnd == hwndUpDown) {
 		LRESULT result = null;
 		switch (msg) {
@@ -1106,29 +1106,29 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	super.WM_ERASEBKGND (wParam, lParam);
 	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 
-LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
+LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	OS.SetFocus (hwndText);
 	return null;
 }
 
-LRESULT WM_SETFONT (int wParam, int lParam) {
+LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
 	OS.SendMessage (hwndText, OS.WM_SETFONT, wParam, lParam);
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	int width = OS.LOWORD (lParam), height = OS.HIWORD (lParam);
@@ -1141,7 +1141,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmChar (int hwnd, int wParam, int lParam) {
+LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmChar (hwnd, wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1151,7 +1151,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	* The fix is to look for these keys and not call
 	* the window proc.
 	*/
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case SWT.CR:
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH		
@@ -1161,7 +1161,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
+LRESULT wmClipboard (int /*long*/ hwndText, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
@@ -1211,11 +1211,11 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 			}
 			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 			if (msg == OS.WM_SETTEXT) {
-				int hHeap = OS.GetProcessHeap ();
+				int /*long*/ hHeap = OS.GetProcessHeap ();
 				int byteCount = buffer.length () * TCHAR.sizeof;
-				int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 				OS.MoveMemory (pszText, buffer, byteCount); 
-				int code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
+				int /*long*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
 				OS.HeapFree (hHeap, 0, pszText);
 				return new LRESULT (code);
 			} else {
@@ -1227,7 +1227,7 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmCommandChild (int wParam, int lParam) {
+LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.EN_CHANGE:
@@ -1238,7 +1238,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 				if (OS.IsWinCE) {
 					pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 				} else {
-					pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+					pos = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 				}
 				if (pos != value) setSelection (value, true, false, true);
 			}
@@ -1249,7 +1249,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
-LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
+LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	
@@ -1257,7 +1257,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	UDACCEL udaccel = new UDACCEL ();
 	OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, udaccel);
 	int delta = 0;
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_UP: delta = udaccel.nInc; break;
 		case OS.VK_DOWN: delta = -udaccel.nInc; break;
 		case OS.VK_PRIOR: delta = pageIncrement; break;
@@ -1269,7 +1269,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			if (OS.IsWinCE) {
 				value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 			} else {
-				value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+				value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 			}
 		}
 		int newValue = value + delta;
@@ -1284,7 +1284,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	}
 	
 	/*  Stop the edit control from moving the caret */
-	switch (wParam) {
+	switch ((int)/*64*/wParam) {
 		case OS.VK_UP:
 		case OS.VK_DOWN:
 			return LRESULT.ZERO;
@@ -1292,20 +1292,20 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
+LRESULT wmKillFocus (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	int value = getSelectionText ();
 	if (value == -1) {
 		if (OS.IsWinCE) {
 			value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 		} else {
-			value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+			value = (int)/*64*/OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 		}		
 		setSelection (value, false, true, false);
 	}
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
 		case OS.UDN_DELTAPOS:
 			NMUPDOWN lpnmud = new NMUPDOWN ();
@@ -1334,7 +1334,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
+LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.LOWORD (wParam);
 	switch (code) {
 		case OS.SB_THUMBPOSITION:

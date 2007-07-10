@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
  * @since 3.0
  */
 public final class Monitor {
-	int handle;
+	int /*long*/ handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
 	
@@ -78,7 +78,7 @@ public Rectangle getClientArea () {
  * @see #equals(Object)
  */
 public int hashCode () {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 }

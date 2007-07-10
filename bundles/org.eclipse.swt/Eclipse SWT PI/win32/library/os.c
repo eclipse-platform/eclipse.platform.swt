@@ -8632,6 +8632,20 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NMTREEVIEW _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setNMTREEVIEWFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2II_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -8755,6 +8769,37 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_POI
 fail:
 	if (arg0 && lparg0) setPOINTFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2_3JI
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2_3JI)
+	(JNIEnv *env, jclass that, jobject arg0, jlongArray arg1, jint arg2)
+{
+	POINT _arg0, *lparg0=NULL;
+	jlong *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2_3JI_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	}
+	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	if (arg0 && lparg0) setPOINTFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2_3JI_FUNC);
 }
 #endif
 
@@ -9396,6 +9441,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NMTOOLBAR_1sizeof)
 	OS_NATIVE_ENTER(env, that, NMTOOLBAR_1sizeof_FUNC);
 	rc = (jint)NMTOOLBAR_sizeof();
 	OS_NATIVE_EXIT(env, that, NMTOOLBAR_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NMTREEVIEW_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(NMTREEVIEW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NMTREEVIEW_1sizeof_FUNC);
+	rc = (jint)NMTREEVIEW_sizeof();
+	OS_NATIVE_EXIT(env, that, NMTREEVIEW_1sizeof_FUNC);
 	return rc;
 }
 #endif

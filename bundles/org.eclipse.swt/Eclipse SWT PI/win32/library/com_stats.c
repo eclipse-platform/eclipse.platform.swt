@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 152;
-int COM_nativeFunctionCallCount[152];
+int COM_nativeFunctionCount = 154;
+int COM_nativeFunctionCallCount[154];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CAUUID_1sizeof",
@@ -33,6 +33,7 @@ char * COM_nativeFunctionNames[] = {
 	"DISPPARAMS_1sizeof",
 	"DVTARGETDEVICE_1sizeof",
 	"DoDragDrop",
+	"ELEMDESC_1sizeof",
 	"EXCEPINFO_1sizeof",
 	"FORMATETC_1sizeof",
 	"FUNCDESC_1sizeof",
@@ -88,6 +89,7 @@ char * COM_nativeFunctionNames[] = {
 	"SysFreeString",
 	"SysStringByteLen",
 	"TYPEATTR_1sizeof",
+	"TYPEDESC_1sizeof",
 	"VARDESC_1sizeof",
 	"VARIANT_1sizeof",
 	"VariantChangeType",

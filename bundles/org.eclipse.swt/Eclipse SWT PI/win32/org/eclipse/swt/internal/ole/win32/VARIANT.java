@@ -15,6 +15,6 @@ public class VARIANT {
 	public short wReserved1;
 	public short wReserved2;
 	public short wReserved3;
-	public int /*long*/ lVal;
+	public int lVal;
 	public static final int sizeof = COM.VARIANT_sizeof();
 }

@@ -72,7 +72,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -106,7 +106,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int scrolledHandle = scrolledHandle ();
+	int /*long*/ scrolledHandle = scrolledHandle ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int bits1 = OS.GetWindowLong (scrolledHandle, OS.GWL_STYLE);
@@ -151,7 +151,7 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	int scrolledHandle = scrolledHandle ();
+	int /*long*/ scrolledHandle = scrolledHandle ();
 	OS.GetClientRect (scrolledHandle, rect);
 	int x = rect.left, y = rect.top;
 	int width = rect.right - rect.left;
@@ -209,7 +209,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
-int scrolledHandle () {
+int /*long*/ scrolledHandle () {
 	return handle;
 }
 
@@ -238,11 +238,11 @@ TCHAR windowClass () {
 	return display.windowClass;
 }
 
-int windowProc () {
+int /*long*/ windowProc () {
 	return display.windowProc;
 }
 
-LRESULT WM_HSCROLL (int wParam, int lParam) {
+LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
 	
@@ -259,7 +259,7 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
 	
@@ -308,7 +308,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	*/
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	int code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
 	if (verticalBar != null) {
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
@@ -328,15 +328,15 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
-	int code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 	super.WM_SIZE (wParam, lParam);
 	// widget may be disposed at this point
 	if (code == 0) return LRESULT.ZERO;
 	return new LRESULT (code);
 }
 
-LRESULT WM_VSCROLL (int wParam, int lParam) {
+LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -352,7 +352,7 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, int lParam) {
+LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	if (update) {
 		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
@@ -397,7 +397,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, 
 		}
 		OS.SetScrollInfo (hwnd, type, info, true);
 	} else {
-		int code = callWindowProc (hwnd, msg, wParam, lParam);
+		int /*long*/ code = callWindowProc (hwnd, msg, wParam, lParam);
 		result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
 	bar.wmScrollChild (wParam, lParam);
