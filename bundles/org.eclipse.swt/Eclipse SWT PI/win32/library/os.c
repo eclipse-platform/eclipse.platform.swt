@@ -603,6 +603,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintUnInit)
 }
 #endif
 
+#ifndef NO_CANDIDATEFORM_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CANDIDATEFORM_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CANDIDATEFORM_1sizeof_FUNC);
+	rc = (jint)CANDIDATEFORM_sizeof();
+	OS_NATIVE_EXIT(env, that, CANDIDATEFORM_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CHOOSECOLOR_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CHOOSECOLOR_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -6743,18 +6755,34 @@ fail:
 }
 #endif
 
-#ifndef NO_ImmGetCompositionStringW
-JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringW)
+#ifndef NO_ImmGetCompositionStringW__II_3CI
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringW__II_3CI)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3)
 {
 	jchar *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringW_FUNC);
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringW__II_3CI_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)ImmGetCompositionStringW((HIMC)arg0, arg1, (LPWSTR)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringW_FUNC);
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringW__II_3CI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImmGetCompositionStringW__II_3II
+JNIEXPORT jint JNICALL OS_NATIVE(ImmGetCompositionStringW__II_3II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ImmGetCompositionStringW__II_3II_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)ImmGetCompositionStringW((HIMC)arg0, arg1, (LPWSTR)lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, ImmGetCompositionStringW__II_3II_FUNC);
 	return rc;
 }
 #endif
@@ -6822,6 +6850,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmReleaseContext)
 	OS_NATIVE_ENTER(env, that, ImmReleaseContext_FUNC);
 	rc = (jboolean)ImmReleaseContext((HWND)arg0, (HIMC)arg1);
 	OS_NATIVE_EXIT(env, that, ImmReleaseContext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImmSetCandidateWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImmSetCandidateWindow)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CANDIDATEFORM _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImmSetCandidateWindow_FUNC);
+	if (arg1) if ((lparg1 = getCANDIDATEFORMFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)ImmSetCandidateWindow((HIMC)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) setCANDIDATEFORMFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, ImmSetCandidateWindow_FUNC);
 	return rc;
 }
 #endif

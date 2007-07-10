@@ -107,6 +107,18 @@ void setBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *
 #define BUTTON_IMAGELIST_sizeof() 0
 #endif
 
+#ifndef NO_CANDIDATEFORM
+void cacheCANDIDATEFORMFields(JNIEnv *env, jobject lpObject);
+CANDIDATEFORM *getCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStruct);
+void setCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStruct);
+#define CANDIDATEFORM_sizeof() sizeof(CANDIDATEFORM)
+#else
+#define cacheCANDIDATEFORMFields(a,b)
+#define getCANDIDATEFORMFields(a,b,c) NULL
+#define setCANDIDATEFORMFields(a,b,c)
+#define CANDIDATEFORM_sizeof() 0
+#endif
+
 #ifndef NO_CHOOSECOLOR
 void cacheCHOOSECOLORFields(JNIEnv *env, jobject lpObject);
 CHOOSECOLOR *getCHOOSECOLORFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpStruct);

@@ -392,6 +392,58 @@ void setBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *
 }
 #endif
 
+#ifndef NO_CANDIDATEFORM
+typedef struct CANDIDATEFORM_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwIndex, dwStyle, ptCurrentPos, rcArea;
+} CANDIDATEFORM_FID_CACHE;
+
+CANDIDATEFORM_FID_CACHE CANDIDATEFORMFc;
+
+void cacheCANDIDATEFORMFields(JNIEnv *env, jobject lpObject)
+{
+	if (CANDIDATEFORMFc.cached) return;
+	CANDIDATEFORMFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CANDIDATEFORMFc.dwIndex = (*env)->GetFieldID(env, CANDIDATEFORMFc.clazz, "dwIndex", "I");
+	CANDIDATEFORMFc.dwStyle = (*env)->GetFieldID(env, CANDIDATEFORMFc.clazz, "dwStyle", "I");
+	CANDIDATEFORMFc.ptCurrentPos = (*env)->GetFieldID(env, CANDIDATEFORMFc.clazz, "ptCurrentPos", "Lorg/eclipse/swt/internal/win32/POINT;");
+	CANDIDATEFORMFc.rcArea = (*env)->GetFieldID(env, CANDIDATEFORMFc.clazz, "rcArea", "Lorg/eclipse/swt/internal/win32/RECT;");
+	CANDIDATEFORMFc.cached = 1;
+}
+
+CANDIDATEFORM *getCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStruct)
+{
+	if (!CANDIDATEFORMFc.cached) cacheCANDIDATEFORMFields(env, lpObject);
+	lpStruct->dwIndex = (*env)->GetIntField(env, lpObject, CANDIDATEFORMFc.dwIndex);
+	lpStruct->dwStyle = (*env)->GetIntField(env, lpObject, CANDIDATEFORMFc.dwStyle);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CANDIDATEFORMFc.ptCurrentPos);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->ptCurrentPos);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CANDIDATEFORMFc.rcArea);
+	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->rcArea);
+	}
+	return lpStruct;
+}
+
+void setCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStruct)
+{
+	if (!CANDIDATEFORMFc.cached) cacheCANDIDATEFORMFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CANDIDATEFORMFc.dwIndex, (jint)lpStruct->dwIndex);
+	(*env)->SetIntField(env, lpObject, CANDIDATEFORMFc.dwStyle, (jint)lpStruct->dwStyle);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CANDIDATEFORMFc.ptCurrentPos);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->ptCurrentPos);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CANDIDATEFORMFc.rcArea);
+	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->rcArea);
+	}
+}
+#endif
+
 #ifndef NO_CHOOSECOLOR
 typedef struct CHOOSECOLOR_FID_CACHE {
 	int cached;

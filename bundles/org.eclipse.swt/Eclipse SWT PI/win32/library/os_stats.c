@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 891;
-int OS_nativeFunctionCallCount[891];
+int OS_nativeFunctionCount = 894;
+int OS_nativeFunctionCallCount[894];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -46,6 +46,7 @@ char * OS_nativeFunctionNames[] = {
 	"BufferedPaintInit",
 	"BufferedPaintSetAlpha",
 	"BufferedPaintUnInit",
+	"CANDIDATEFORM_1sizeof",
 	"CHOOSECOLOR_1sizeof",
 	"CHOOSEFONT_1sizeof",
 	"COMBOBOXINFO_1sizeof",
@@ -414,12 +415,14 @@ char * OS_nativeFunctionNames[] = {
 	"ImmGetCompositionFontA",
 	"ImmGetCompositionFontW",
 	"ImmGetCompositionStringA",
-	"ImmGetCompositionStringW",
+	"ImmGetCompositionStringW__II_3CI",
+	"ImmGetCompositionStringW__II_3II",
 	"ImmGetContext",
 	"ImmGetConversionStatus",
 	"ImmGetDefaultIMEWnd",
 	"ImmGetOpenStatus",
 	"ImmReleaseContext",
+	"ImmSetCandidateWindow",
 	"ImmSetCompositionFontA",
 	"ImmSetCompositionFontW",
 	"ImmSetCompositionWindow",

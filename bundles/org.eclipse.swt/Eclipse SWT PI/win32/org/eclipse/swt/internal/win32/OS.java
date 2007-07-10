@@ -248,6 +248,12 @@ public class OS extends C {
 	public static final int AW_HOR_NEGATIVE = 0x00000002;
 	public static final int AW_VER_POSITIVE = 0x00000004;
 	public static final int AW_VER_NEGATIVE = 0x00000008;
+	public static final int ATTR_INPUT = 0x00;
+	public static final int ATTR_TARGET_CONVERTED = 0x01;
+	public static final int ATTR_CONVERTED = 0x02;
+	public static final int ATTR_TARGET_NOTCONVERTED = 0x03;
+	public static final int ATTR_INPUT_ERROR = 0x04;
+	public static final int ATTR_FIXEDCONVERTED = 0x05;
 	public static final int BCM_FIRST = 0x1600;
 	public static final int BCM_GETIDEALSIZE = BCM_FIRST + 0x1;
 	public static final int BCM_GETIMAGELIST = BCM_FIRST + 0x3;
@@ -438,6 +444,7 @@ public class OS extends C {
 	public static final int CFM_WEIGHT = 0x400000;
 	public static final int CFS_POINT = 0x2;
 	public static final int CFS_RECT = 0x1;
+	public static final int CFS_CANDIDATEPOS = 0x0040;
 	public static final int CF_EFFECTS = 0x100;
 	public static final int CF_INITTOLOGFONTSTRUCT = 0x40;
 	public static final int CF_SCREENFONTS = 0x1;
@@ -643,6 +650,9 @@ public class OS extends C {
 	public static final int GBS_DISABLED = 2;
 	public static final int GCS_COMPSTR = 0x8;
 	public static final int GCS_RESULTSTR = 0x800;
+	public static final int GCS_COMPATTR = 0x0010;
+	public static final int GCS_COMPCLAUSE = 0x0020;
+	public static final int GCS_CURSORPOS = 0x0080;
 	public static final int GDT_VALID = 0;
 	public static final int GET_FEATURE_FROM_PROCESS = 0x2;
 	public static final int GLPS_CLOSED = 1;
@@ -1918,6 +1928,8 @@ public class OS extends C {
 	public static final int WM_HSCROLL = 0x114;
 	public static final int WM_IME_CHAR = 0x286;
 	public static final int WM_IME_COMPOSITION = 0x10f;
+	public static final int WM_IME_COMPOSITION_START = 0x010D;
+	public static final int WM_IME_ENDCOMPOSITION = 0x010E;
 	public static final int WM_INITDIALOG = 0x110;
 	public static final int WM_INITMENUPOPUP = 0x117;
 	public static final int WM_INPUTLANGCHANGE = 0x51;
@@ -2036,6 +2048,7 @@ public static final native int BLENDFUNCTION_sizeof ();
 public static final native int BP_PAINTPARAMS_sizeof ();
 public static final native int BROWSEINFO_sizeof ();
 public static final native int BUTTON_IMAGELIST_sizeof ();
+public static final native int CANDIDATEFORM_sizeof ();
 public static final native int CHOOSECOLOR_sizeof ();
 public static final native int CHOOSEFONT_sizeof ();
 public static final native int COMBOBOXINFO_sizeof ();
@@ -3499,6 +3512,7 @@ public static final native boolean ImmGetCompositionFontW (int /*long*/ hIMC, LO
 public static final native boolean ImmGetCompositionFontA (int /*long*/ hIMC, LOGFONTA lplf);
 public static final native int ImmGetCompositionStringW (int /*long*/ hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
 public static final native int ImmGetCompositionStringA (int /*long*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionStringW (int /*long*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
 public static final native int /*long*/ ImmGetContext (int /*long*/ hWnd);
 public static final native boolean ImmGetConversionStatus (int /*long*/ hIMC, int [] lpfdwConversion, int [] lpfdwSentence);
 public static final native int /*long*/ ImmGetDefaultIMEWnd (int /*long*/ hWnd);
@@ -3507,6 +3521,7 @@ public static final native boolean ImmReleaseContext (int /*long*/ hWnd, int /*l
 public static final native boolean ImmSetCompositionFontW (int /*long*/ hIMC, LOGFONTW lplf);
 public static final native boolean ImmSetCompositionFontA (int /*long*/ hIMC, LOGFONTA lplf);
 public static final native boolean ImmSetCompositionWindow (int /*long*/ hIMC, COMPOSITIONFORM lpCompForm);
+public static final native boolean ImmSetCandidateWindow (int /*long*/ hIMC, CANDIDATEFORM lpCandidate);
 public static final native boolean ImmSetConversionStatus (int /*long*/ hIMC, int fdwConversion, int dwSentence);
 public static final native boolean ImmSetOpenStatus (int /*long*/ hIMC, boolean fOpen);
 public static final native void InitCommonControls ();
