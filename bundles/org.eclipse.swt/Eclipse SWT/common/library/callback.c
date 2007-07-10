@@ -32,13 +32,6 @@ static int counter = 0;
 
 SWT_PTR callback(int index, ...);
 
-/*
-* Note that only x86 assembler is supported
-*/
-#if !(defined(__i386__) || defined(_M_IX86) || defined(_X86_))
-#undef USE_ASSEMBLER
-#endif
-
 #ifdef USE_ASSEMBLER
 
 #if !(defined (_WIN32) || defined (_WIN32_WCE))
@@ -60,7 +53,7 @@ static unsigned char *callbackCode = NULL;
  * Functions templates
  *
  * NOTE: If the maximum number of arguments changes (MAX_ARGS), the number
- *       of function templates has to change accordinglly.
+ *       of function templates has to change accordingly.
  */
 
 /* Function template with no arguments */
@@ -108,11 +101,157 @@ static unsigned char *callbackCode = NULL;
  * NOTE: If the maximum number of callbacks changes (MAX_CALLBACKS),
  *       this macro has to be updated. 
  */
-#ifdef REDUCED_CALLBACKS
-#define FN_BLOCK(args) FN_##args(0) FN_##args(1) FN_##args(2) FN_##args(3) FN_##args(4) FN_##args(5) FN_##args(6) FN_##args(7) FN_##args(8) FN_##args(9) FN_##args(10) FN_##args(11) FN_##args(12) FN_##args(13) FN_##args(14) FN_##args(15)
+#if MAX_CALLBACKS == 16
+#define FN_BLOCK(args) \
+	FN_##args(0) \
+	FN_##args(1) \
+	FN_##args(2) \
+	FN_##args(3) \
+	FN_##args(4) \
+	FN_##args(5) \
+	FN_##args(6) \
+	FN_##args(7) \
+	FN_##args(8) \
+	FN_##args(9) \
+	FN_##args(10) \
+	FN_##args(11) \
+	FN_##args(12) \
+	FN_##args(13) \
+	FN_##args(14) \
+	FN_##args(15)
+#elif MAX_CALLBACKS == 128
+#define FN_BLOCK(args) \
+	FN_##args(0) \
+	FN_##args(1) \
+	FN_##args(2) \
+	FN_##args(3) \
+	FN_##args(4) \
+	FN_##args(5) \
+	FN_##args(6) \
+	FN_##args(7) \
+	FN_##args(8) \
+	FN_##args(9) \
+	FN_##args(10) \
+	FN_##args(11) \
+	FN_##args(12) \
+	FN_##args(13) \
+	FN_##args(14) \
+	FN_##args(15) \
+	FN_##args(16) \
+	FN_##args(17) \
+	FN_##args(18) \
+	FN_##args(19) \
+	FN_##args(20) \
+	FN_##args(21) \
+	FN_##args(22) \
+	FN_##args(23) \
+	FN_##args(24) \
+	FN_##args(25) \
+	FN_##args(26) \
+	FN_##args(27) \
+	FN_##args(28) \
+	FN_##args(29) \
+	FN_##args(30) \
+	FN_##args(31) \
+	FN_##args(32) \
+	FN_##args(33) \
+	FN_##args(34) \
+	FN_##args(35) \
+	FN_##args(36) \
+	FN_##args(37) \
+	FN_##args(38) \
+	FN_##args(39) \
+	FN_##args(40) \
+	FN_##args(41) \
+	FN_##args(42) \
+	FN_##args(43) \
+	FN_##args(44) \
+	FN_##args(45) \
+	FN_##args(46) \
+	FN_##args(47) \
+	FN_##args(48) \
+	FN_##args(49) \
+	FN_##args(50) \
+	FN_##args(51) \
+	FN_##args(52) \
+	FN_##args(53) \
+	FN_##args(54) \
+	FN_##args(55) \
+	FN_##args(56) \
+	FN_##args(57) \
+	FN_##args(58) \
+	FN_##args(59) \
+	FN_##args(60) \
+	FN_##args(61) \
+	FN_##args(62) \
+	FN_##args(63) \
+	FN_##args(64) \
+	FN_##args(65) \
+	FN_##args(66) \
+	FN_##args(67) \
+	FN_##args(68) \
+	FN_##args(69) \
+	FN_##args(70) \
+	FN_##args(71) \
+	FN_##args(72) \
+	FN_##args(73) \
+	FN_##args(74) \
+	FN_##args(75) \
+	FN_##args(76) \
+	FN_##args(77) \
+	FN_##args(78) \
+	FN_##args(79) \
+	FN_##args(80) \
+	FN_##args(81) \
+	FN_##args(82) \
+	FN_##args(83) \
+	FN_##args(84) \
+	FN_##args(85) \
+	FN_##args(86) \
+	FN_##args(87) \
+	FN_##args(88) \
+	FN_##args(89) \
+	FN_##args(90) \
+	FN_##args(91) \
+	FN_##args(92) \
+	FN_##args(93) \
+	FN_##args(94) \
+	FN_##args(95) \
+	FN_##args(96) \
+	FN_##args(97) \
+	FN_##args(98) \
+	FN_##args(99) \
+	FN_##args(100) \
+	FN_##args(101) \
+	FN_##args(102) \
+	FN_##args(103) \
+	FN_##args(104) \
+	FN_##args(105) \
+	FN_##args(106) \
+	FN_##args(107) \
+	FN_##args(108) \
+	FN_##args(109) \
+	FN_##args(110) \
+	FN_##args(111) \
+	FN_##args(112) \
+	FN_##args(113) \
+	FN_##args(114) \
+	FN_##args(115) \
+	FN_##args(116) \
+	FN_##args(117) \
+	FN_##args(118) \
+	FN_##args(119) \
+	FN_##args(120) \
+	FN_##args(121) \
+	FN_##args(122) \
+	FN_##args(123) \
+	FN_##args(124) \
+	FN_##args(125) \
+	FN_##args(126) \
+	FN_##args(127)
 #else
-#define FN_BLOCK(args) FN_##args(0) FN_##args(1) FN_##args(2) FN_##args(3) FN_##args(4) FN_##args(5) FN_##args(6) FN_##args(7) FN_##args(8) FN_##args(9) FN_##args(10) FN_##args(11) FN_##args(12) FN_##args(13) FN_##args(14) FN_##args(15) FN_##args(16) FN_##args(17) FN_##args(18) FN_##args(19) FN_##args(20) FN_##args(21) FN_##args(22) FN_##args(23) FN_##args(24) FN_##args(25) FN_##args(26) FN_##args(27) FN_##args(28) FN_##args(29) FN_##args(30) FN_##args(31) FN_##args(32) FN_##args(33) FN_##args(34) FN_##args(35) FN_##args(36) FN_##args(37) FN_##args(38) FN_##args(39) FN_##args(40) FN_##args(41) FN_##args(42) FN_##args(43) FN_##args(44) FN_##args(45) FN_##args(46) FN_##args(47) FN_##args(48) FN_##args(49) FN_##args(50) FN_##args(51) FN_##args(52) FN_##args(53) FN_##args(54) FN_##args(55) FN_##args(56) FN_##args(57) FN_##args(58) FN_##args(59) FN_##args(60) FN_##args(61) FN_##args(62) FN_##args(63) FN_##args(64) FN_##args(65) FN_##args(66) FN_##args(67) FN_##args(68) FN_##args(69) FN_##args(70) FN_##args(71) FN_##args(72) FN_##args(73) FN_##args(74) FN_##args(75) FN_##args(76) FN_##args(77) FN_##args(78) FN_##args(79) FN_##args(80) FN_##args(81) FN_##args(82) FN_##args(83) FN_##args(84) FN_##args(85) FN_##args(86) FN_##args(87) FN_##args(88) FN_##args(89) FN_##args(90) FN_##args(91) FN_##args(92) FN_##args(93) FN_##args(94) FN_##args(95) FN_##args(96) FN_##args(97) FN_##args(98) FN_##args(99) FN_##args(100) FN_##args(101) FN_##args(102) FN_##args(103) FN_##args(104) FN_##args(105) FN_##args(106) FN_##args(107) FN_##args(108) FN_##args(109) FN_##args(110) FN_##args(111) FN_##args(112) FN_##args(113) FN_##args(114) FN_##args(115) FN_##args(116) FN_##args(117) FN_##args(118) FN_##args(119) FN_##args(120) FN_##args(121) FN_##args(122) FN_##args(123) FN_##args(124) FN_##args(125) FN_##args(126) FN_##args(127) 
-#endif /* REDUCED_CALLBACKS */
+#error Invalid MAX_CALLBACKS
+#endif /* MAX_CALLBACKS == 16 */
 
 /**
  * Define all callback functions.
@@ -139,13 +278,161 @@ FN_BLOCK(12)
  *
  * NOTE: If MAX_ARGS or MAX_CALLBACKS changes, the following has to be updated.
  */
-#ifdef REDUCED_CALLBACKS
-#define FN_A_BLOCK(args) {(SWT_PTR *)FN(0, args),(SWT_PTR *)FN(1, args),(SWT_PTR *)FN(2, args),(SWT_PTR *)FN(3, args),(SWT_PTR *)FN(4, args),(SWT_PTR *)FN(5, args),(SWT_PTR *)FN(6, args),(SWT_PTR *)FN(7, args),(SWT_PTR *)FN(8, args),(SWT_PTR *)FN(9, args),(SWT_PTR *)FN(10, args),(SWT_PTR *)FN(11, args),(SWT_PTR *)FN(12, args),(SWT_PTR *)FN(13, args),(SWT_PTR *)FN(14, args),(SWT_PTR *)FN(15, args)},
+#if MAX_CALLBACKS == 16
+#define FN_A_BLOCK(args) { \
+	(SWT_PTR)FN(0, args), \
+	(SWT_PTR)FN(1, args), \
+	(SWT_PTR)FN(2, args), \
+	(SWT_PTR)FN(3, args), \
+	(SWT_PTR)FN(4, args), \
+	(SWT_PTR)FN(5, args), \
+	(SWT_PTR)FN(6, args), \
+	(SWT_PTR)FN(7, args), \
+	(SWT_PTR)FN(8, args), \
+	(SWT_PTR)FN(9, args), \
+	(SWT_PTR)FN(10, args), \
+	(SWT_PTR)FN(11, args), \
+	(SWT_PTR)FN(12, args), \
+	(SWT_PTR)FN(13, args), \
+	(SWT_PTR)FN(14, args), \
+	(SWT_PTR)FN(15, args), \
+},
+#elif MAX_CALLBACKS == 128
+#define FN_A_BLOCK(args) { \
+	(SWT_PTR)FN(0, args), \
+	(SWT_PTR)FN(1, args), \
+	(SWT_PTR)FN(2, args), \
+	(SWT_PTR)FN(3, args), \
+	(SWT_PTR)FN(4, args), \
+	(SWT_PTR)FN(5, args), \
+	(SWT_PTR)FN(6, args), \
+	(SWT_PTR)FN(7, args), \
+	(SWT_PTR)FN(8, args), \
+	(SWT_PTR)FN(9, args), \
+	(SWT_PTR)FN(10, args), \
+	(SWT_PTR)FN(11, args), \
+	(SWT_PTR)FN(12, args), \
+	(SWT_PTR)FN(13, args), \
+	(SWT_PTR)FN(14, args), \
+	(SWT_PTR)FN(15, args), \
+	(SWT_PTR)FN(16, args), \
+	(SWT_PTR)FN(17, args), \
+	(SWT_PTR)FN(18, args), \
+	(SWT_PTR)FN(19, args), \
+	(SWT_PTR)FN(20, args), \
+	(SWT_PTR)FN(21, args), \
+	(SWT_PTR)FN(22, args), \
+	(SWT_PTR)FN(23, args), \
+	(SWT_PTR)FN(24, args), \
+	(SWT_PTR)FN(25, args), \
+	(SWT_PTR)FN(26, args), \
+	(SWT_PTR)FN(27, args), \
+	(SWT_PTR)FN(28, args), \
+	(SWT_PTR)FN(29, args), \
+	(SWT_PTR)FN(30, args), \
+	(SWT_PTR)FN(31, args), \
+	(SWT_PTR)FN(32, args), \
+	(SWT_PTR)FN(33, args), \
+	(SWT_PTR)FN(34, args), \
+	(SWT_PTR)FN(35, args), \
+	(SWT_PTR)FN(36, args), \
+	(SWT_PTR)FN(37, args), \
+	(SWT_PTR)FN(38, args), \
+	(SWT_PTR)FN(39, args), \
+	(SWT_PTR)FN(40, args), \
+	(SWT_PTR)FN(41, args), \
+	(SWT_PTR)FN(42, args), \
+	(SWT_PTR)FN(43, args), \
+	(SWT_PTR)FN(44, args), \
+	(SWT_PTR)FN(45, args), \
+	(SWT_PTR)FN(46, args), \
+	(SWT_PTR)FN(47, args), \
+	(SWT_PTR)FN(48, args), \
+	(SWT_PTR)FN(49, args), \
+	(SWT_PTR)FN(50, args), \
+	(SWT_PTR)FN(51, args), \
+	(SWT_PTR)FN(52, args), \
+	(SWT_PTR)FN(53, args), \
+	(SWT_PTR)FN(54, args), \
+	(SWT_PTR)FN(55, args), \
+	(SWT_PTR)FN(56, args), \
+	(SWT_PTR)FN(57, args), \
+	(SWT_PTR)FN(58, args), \
+	(SWT_PTR)FN(59, args), \
+	(SWT_PTR)FN(60, args), \
+	(SWT_PTR)FN(61, args), \
+	(SWT_PTR)FN(62, args), \
+	(SWT_PTR)FN(63, args), \
+	(SWT_PTR)FN(64, args), \
+	(SWT_PTR)FN(65, args), \
+	(SWT_PTR)FN(66, args), \
+	(SWT_PTR)FN(67, args), \
+	(SWT_PTR)FN(68, args), \
+	(SWT_PTR)FN(69, args), \
+	(SWT_PTR)FN(70, args), \
+	(SWT_PTR)FN(71, args), \
+	(SWT_PTR)FN(72, args), \
+	(SWT_PTR)FN(73, args), \
+	(SWT_PTR)FN(74, args), \
+	(SWT_PTR)FN(75, args), \
+	(SWT_PTR)FN(76, args), \
+	(SWT_PTR)FN(77, args), \
+	(SWT_PTR)FN(78, args), \
+	(SWT_PTR)FN(79, args), \
+	(SWT_PTR)FN(80, args), \
+	(SWT_PTR)FN(81, args), \
+	(SWT_PTR)FN(82, args), \
+	(SWT_PTR)FN(83, args), \
+	(SWT_PTR)FN(84, args), \
+	(SWT_PTR)FN(85, args), \
+	(SWT_PTR)FN(86, args), \
+	(SWT_PTR)FN(87, args), \
+	(SWT_PTR)FN(88, args), \
+	(SWT_PTR)FN(89, args), \
+	(SWT_PTR)FN(90, args), \
+	(SWT_PTR)FN(91, args), \
+	(SWT_PTR)FN(92, args), \
+	(SWT_PTR)FN(93, args), \
+	(SWT_PTR)FN(94, args), \
+	(SWT_PTR)FN(95, args), \
+	(SWT_PTR)FN(96, args), \
+	(SWT_PTR)FN(97, args), \
+	(SWT_PTR)FN(98, args), \
+	(SWT_PTR)FN(99, args), \
+	(SWT_PTR)FN(100, args), \
+	(SWT_PTR)FN(101, args), \
+	(SWT_PTR)FN(102, args), \
+	(SWT_PTR)FN(103, args), \
+	(SWT_PTR)FN(104, args), \
+	(SWT_PTR)FN(105, args), \
+	(SWT_PTR)FN(106, args), \
+	(SWT_PTR)FN(107, args), \
+	(SWT_PTR)FN(108, args), \
+	(SWT_PTR)FN(109, args), \
+	(SWT_PTR)FN(110, args), \
+	(SWT_PTR)FN(111, args), \
+	(SWT_PTR)FN(112, args), \
+	(SWT_PTR)FN(113, args), \
+	(SWT_PTR)FN(114, args), \
+	(SWT_PTR)FN(115, args), \
+	(SWT_PTR)FN(116, args), \
+	(SWT_PTR)FN(117, args), \
+	(SWT_PTR)FN(118, args), \
+	(SWT_PTR)FN(119, args), \
+	(SWT_PTR)FN(120, args), \
+	(SWT_PTR)FN(121, args), \
+	(SWT_PTR)FN(122, args), \
+	(SWT_PTR)FN(123, args), \
+	(SWT_PTR)FN(124, args), \
+	(SWT_PTR)FN(125, args), \
+	(SWT_PTR)FN(126, args), \
+	(SWT_PTR)FN(127, args), \
+},
 #else
-#define FN_A_BLOCK(args) {(SWT_PTR *)FN(0, args),(SWT_PTR *)FN(1, args),(SWT_PTR *)FN(2, args),(SWT_PTR *)FN(3, args),(SWT_PTR *)FN(4, args),(SWT_PTR *)FN(5, args),(SWT_PTR *)FN(6, args),(SWT_PTR *)FN(7, args),(SWT_PTR *)FN(8, args),(SWT_PTR *)FN(9, args),(SWT_PTR *)FN(10, args),(SWT_PTR *)FN(11, args),(SWT_PTR *)FN(12, args),(SWT_PTR *)FN(13, args),(SWT_PTR *)FN(14, args),(SWT_PTR *)FN(15, args),(SWT_PTR *)FN(16, args),(SWT_PTR *)FN(17, args),(SWT_PTR *)FN(18, args),(SWT_PTR *)FN(19, args),(SWT_PTR *)FN(20, args),(SWT_PTR *)FN(21, args),(SWT_PTR *)FN(22, args),(SWT_PTR *)FN(23, args),(SWT_PTR *)FN(24, args),(SWT_PTR *)FN(25, args),(SWT_PTR *)FN(26, args),(SWT_PTR *)FN(27, args),(SWT_PTR *)FN(28, args),(SWT_PTR *)FN(29, args),(SWT_PTR *)FN(30, args),(SWT_PTR *)FN(31, args),(SWT_PTR *)FN(32, args),(SWT_PTR *)FN(33, args),(SWT_PTR *)FN(34, args),(SWT_PTR *)FN(35, args),(SWT_PTR *)FN(36, args),(SWT_PTR *)FN(37, args),(SWT_PTR *)FN(38, args),(SWT_PTR *)FN(39, args),(SWT_PTR *)FN(40, args),(SWT_PTR *)FN(41, args),(SWT_PTR *)FN(42, args),(SWT_PTR *)FN(43, args),(SWT_PTR *)FN(44, args),(SWT_PTR *)FN(45, args),(SWT_PTR *)FN(46, args),(SWT_PTR *)FN(47, args),(SWT_PTR *)FN(48, args),(SWT_PTR *)FN(49, args),(SWT_PTR *)FN(50, args),(SWT_PTR *)FN(51, args),(SWT_PTR *)FN(52, args),(SWT_PTR *)FN(53, args),(SWT_PTR *)FN(54, args),(SWT_PTR *)FN(55, args),(SWT_PTR *)FN(56, args),(SWT_PTR *)FN(57, args),(SWT_PTR *)FN(58, args),(SWT_PTR *)FN(59, args),(SWT_PTR *)FN(60, args),(SWT_PTR *)FN(61, args),(SWT_PTR *)FN(62, args),(SWT_PTR *)FN(63, args),(SWT_PTR *)FN(64, args),(SWT_PTR *)FN(65, args),(SWT_PTR *)FN(66, args),(SWT_PTR *)FN(67, args),(SWT_PTR *)FN(68, args),(SWT_PTR *)FN(69, args),(SWT_PTR *)FN(70, args),(SWT_PTR *)FN(71, args),(SWT_PTR *)FN(72, args),(SWT_PTR *)FN(73, args),(SWT_PTR *)FN(74, args),(SWT_PTR *)FN(75, args),(SWT_PTR *)FN(76, args),(SWT_PTR *)FN(77, args),(SWT_PTR *)FN(78, args),(SWT_PTR *)FN(79, args),(SWT_PTR *)FN(80, args),(SWT_PTR *)FN(81, args),(SWT_PTR *)FN(82, args),(SWT_PTR *)FN(83, args),(SWT_PTR *)FN(84, args),(SWT_PTR *)FN(85, args),(SWT_PTR *)FN(86, args),(SWT_PTR *)FN(87, args),(SWT_PTR *)FN(88, args),(SWT_PTR *)FN(89, args),(SWT_PTR *)FN(90, args),(SWT_PTR *)FN(91, args),(SWT_PTR *)FN(92, args),(SWT_PTR *)FN(93, args),(SWT_PTR *)FN(94, args),(SWT_PTR *)FN(95, args),(SWT_PTR *)FN(96, args),(SWT_PTR *)FN(97, args),(SWT_PTR *)FN(98, args),(SWT_PTR *)FN(99, args),(SWT_PTR *)FN(100, args),(SWT_PTR *)FN(101, args),(SWT_PTR *)FN(102, args),(SWT_PTR *)FN(103, args),(SWT_PTR *)FN(104, args),(SWT_PTR *)FN(105, args),(SWT_PTR *)FN(106, args),(SWT_PTR *)FN(107, args),(SWT_PTR *)FN(108, args),(SWT_PTR *)FN(109, args),(SWT_PTR *)FN(110, args),(SWT_PTR *)FN(111, args),(SWT_PTR *)FN(112, args),(SWT_PTR *)FN(113, args),(SWT_PTR *)FN(114, args),(SWT_PTR *)FN(115, args),(SWT_PTR *)FN(116, args),(SWT_PTR *)FN(117, args),(SWT_PTR *)FN(118, args),(SWT_PTR *)FN(119, args),(SWT_PTR *)FN(120, args),(SWT_PTR *)FN(121, args),(SWT_PTR *)FN(122, args),(SWT_PTR *)FN(123, args),(SWT_PTR *)FN(124, args),(SWT_PTR *)FN(125, args),(SWT_PTR *)FN(126, args),(SWT_PTR *)FN(127, args)},
-#endif /* REDUCED_CALLBACKS */
+#error Invalid MAX_CALLBACKS
+#endif /* MAX_CALLBACKS == 16 */
 
-SWT_PTR * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = { 
+SWT_PTR fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = { 
 	FN_A_BLOCK(0)    
 	FN_A_BLOCK(1)    
 	FN_A_BLOCK(2)    

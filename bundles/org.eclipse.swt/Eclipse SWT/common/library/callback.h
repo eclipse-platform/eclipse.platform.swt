@@ -31,10 +31,17 @@
 #define RETURN_CAST
 #endif
 
+/*
+* Note that only x86 assembler is supported
+*/
+#if !(defined(__i386__) || defined(_M_IX86) || defined(_X86_))
+#undef USE_ASSEMBLER
+#endif
+
 #ifdef REDUCED_CALLBACKS
 #define MAX_CALLBACKS 16
 #else
-#if (defined(USE_ASSEMBLER) && (defined(__i386__) || defined(_M_IX86) || defined(_X86_)) && (defined (_WIN32) || defined (_WIN32_WCE)))
+#ifdef USE_ASSEMBLER
 #define MAX_CALLBACKS 256
 #else
 #define MAX_CALLBACKS 128
