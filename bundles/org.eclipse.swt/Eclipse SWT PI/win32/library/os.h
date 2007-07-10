@@ -83,6 +83,9 @@
 #define NO_OSVERSIONINFOEX
 #define NO_OSVERSIONINFOEXA
 #define NO_OSVERSIONINFOEXW
+#define NO_OUTLINETEXTMETRIC
+#define NO_OUTLINETEXTMETRICA
+#define NO_OUTLINETEXTMETRICW
 #define NO_PRINTDLG
 #define NO_SCRIPT_ANALYSIS
 #define NO_SCRIPT_CONTROL
@@ -240,6 +243,7 @@
 #define NO_GetLastActivePopup
 #define NO_GetLayout
 #define NO_GetLocaleInfoA
+#define NO_GetMapMode
 #define NO_GetMenu
 #define NO_GetMenuBarInfo
 #define NO_GetMenuDefaultItem
@@ -263,6 +267,8 @@
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2
 #define NO_GetOpenFileNameA
+#define NO_GetOutlineTextMetricsA
+#define NO_GetOutlineTextMetricsW
 #define NO_GetPath
 #define NO_GetPolyFillMode
 #define NO_GetProcessHeaps
