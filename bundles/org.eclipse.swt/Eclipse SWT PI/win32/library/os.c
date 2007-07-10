@@ -6862,7 +6862,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmSetCandidateWindow)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, ImmSetCandidateWindow_FUNC);
 	if (arg1) if ((lparg1 = getCANDIDATEFORMFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jboolean)ImmSetCandidateWindow(arg0, lparg1);
+	rc = (jboolean)ImmSetCandidateWindow((HIMC)arg0, lparg1);
 fail:
 	if (arg1 && lparg1) setCANDIDATEFORMFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, ImmSetCandidateWindow_FUNC);
