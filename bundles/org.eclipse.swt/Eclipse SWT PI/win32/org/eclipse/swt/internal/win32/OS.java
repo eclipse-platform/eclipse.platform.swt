@@ -2108,6 +2108,8 @@ public static final native int OSVERSIONINFOA_sizeof ();
 public static final native int OSVERSIONINFOW_sizeof ();
 public static final native int OSVERSIONINFOEXA_sizeof ();
 public static final native int OSVERSIONINFOEXW_sizeof ();
+public static final native int OUTLINETEXTMETRICA_sizeof ();
+public static final native int OUTLINETEXTMETRICW_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
@@ -2506,6 +2508,11 @@ public static final int GetObject (int /*long*/ hgdiobj, int cbBuffer, int /*lon
 public static final boolean GetOpenFileName (OPENFILENAME lpofn) {
 	if (IsUnicode) return GetOpenFileNameW (lpofn);
 	return GetOpenFileNameA (lpofn);
+}
+
+public static final int GetOutlineTextMetrics (int /*long*/ hdc, int cbData,  OUTLINETEXTMETRIC lpOTM) {
+	if (IsUnicode) return GetOutlineTextMetricsW (hdc, cbData, (OUTLINETEXTMETRICW)lpOTM);
+	return GetOutlineTextMetricsA (hdc, cbData, (OUTLINETEXTMETRICA)lpOTM);
 }
 
 public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHAR lpDefault, TCHAR lpReturnedString, int nSize) {
@@ -3358,6 +3365,7 @@ public static final native int GetThemeColor (int /*long*/ hTheme, int iPartId, 
 public static final native int GetThemeTextExtent (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
 public static final native int GetTextCharset (int /*long*/ hdc);
 public static final native int GetTickCount ();
+public static final native int GetMapMode (int /*long*/ hdc);
 public static final native int GetModuleFileNameW (int /*long*/ hModule, char [] lpFilename, int inSize);
 public static final native int GetModuleFileNameA (int /*long*/ hModule, byte [] lpFilename, int inSize);
 public static final native int /*long*/ GetModuleHandleW (char [] lpModuleName);
@@ -3381,6 +3389,8 @@ public static final native int GetObjectA (int /*long*/ hgdiobj, int cbBuffer, i
 public static final native int GetObjectW (int /*long*/ hgdiobj, int cbBuffer, int /*long*/ lpvObject);
 public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
+public static final native int GetOutlineTextMetricsW (int /*long*/ hdc, int cbData, OUTLINETEXTMETRICW lpOTM);
+public static final native int GetOutlineTextMetricsA (int /*long*/ hdc, int cbData, OUTLINETEXTMETRICA lpOTM);
 public static final native int GetPath (int /*long*/ hdc, int[] lpPoints, byte[] lpTypes, int nSize);
 public static final native int GetPaletteEntries (int /*long*/ hPalette, int iStartIndex, int nEntries, byte[] logPalette);
 public static final native int /*long*/ GetParent (int /*long*/ hWnd);
