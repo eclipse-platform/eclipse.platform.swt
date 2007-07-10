@@ -23,6 +23,7 @@ class IE extends WebBrowser {
 	OleControlSite site;
 	OleAutomation auto;
 	OleListener mouseListener;
+	OleAutomation[] documents = new OleAutomation[0];
 
 	boolean back, forward, navigate, delaySetText, ignoreDispose;
 	Point location;
@@ -167,6 +168,11 @@ public void create(Composite parent, int style) {
 					ignoreDispose = true;
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
+					unhookMouseListeners(documents);
+					for (int i = 0; i < documents.length; i++) {
+						documents[i].dispose();
+					}
+					documents = null;
 					mouseListener = null;
 					if (auto != null) auto.dispose();
 					auto = null;
@@ -208,8 +214,23 @@ public void create(Composite parent, int style) {
 						Variant cancel = event.arguments[6];
 						if (cancel != null) {
 							int pCancel = cancel.getByRef();
-							COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-					   }					
+							COM.MoveMemory(pCancel, new short[] {newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+						}
+						if (newEvent.doit) {
+							varResult = event.arguments[0];
+							IDispatch dispatch = varResult.getDispatch();
+							Variant variant = new Variant(auto);
+							IDispatch top = variant.getDispatch();
+							boolean isTop = top.getAddress() == dispatch.getAddress();
+							if (isTop) {
+								/* unhook mouse listeners and unref the last document(s) */
+								unhookMouseListeners(documents);
+								for (int i = 0; i < documents.length; i++) {
+									documents[i].dispose();
+								}
+								documents = new OleAutomation[0];
+							}
+						}
 						break;
 					}
 					case CommandStateChange: {
@@ -916,56 +937,44 @@ void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
 	}
 	final OleAutomation document = pVarResult.getAutomation();
 	pVarResult.dispose();
-	
-	OleListener stopListener = new OleListener () {
-		public void handleEvent(OleEvent event) {
-			unhookMouseListeners (document, isTop);
-			char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
-			GUID guid = new GUID();
-			if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
-				site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONSTOP, this);
-			}
-		}
-	};
 
 	/*
-	 * Feature of IE.  ONSTOP is fired for a document that is replaced by navigating to
-	 * a new document, but it is not fired for a document that is replaced by a Back or
-	 * Forward operation.  As a result, it's possible that the current document may
-	 * already have mouse listeners hooked on it from a previous viewing.  Unhook mouse
-	 * listeners from the current document before hooking our mouse listeners to ensure
-	 * that multiple sets of events will not be received.
+	 * In some cases, such as setting the Browser's content from a string,
+	 * NavigateComplete2 is received multiple times for a top-level document.
+	 * For cases like this, any previously-hooked mouse listeners must be
+	 * removed from the document before hooking the new set of listeners,
+	 * otherwise multiple sets of events will be received.  
 	 */
-	unhookMouseListeners (document, isTop);
-	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
-	GUID guid = new GUID();
-	if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
-		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONSTOP, stopListener);
-	}
+	unhookMouseListeners (new OleAutomation[] {document});
 
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONSTOP, stopListener);
 	/* ensure that enter/exit are only fired once, by the top-level document */
 	if (isTop) {
 		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
 		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
 	}
+
+	OleAutomation[] newDocuments = new OleAutomation[documents.length + 1];
+	System.arraycopy(documents, 0, newDocuments, 0, documents.length);
+	newDocuments[documents.length] = document;
+	documents = newDocuments;
 }
 
-void unhookMouseListeners(OleAutomation document, boolean isTop) {
+void unhookMouseListeners(OleAutomation[] documents) {
 	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
 	GUID guid = new GUID();
 	if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
-		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
-		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
-		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
-		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
-		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
-		if (isTop) {
+		for (int i = 0; i < documents.length; i++) {
+			OleAutomation document = documents[i];
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
 		}
