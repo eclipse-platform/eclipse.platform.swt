@@ -29,7 +29,10 @@
 #ifndef _WIN32_WCE
 #include <initguid.h>
 #include <oleacc.h>
+/* usp10.h has warnings at warning level 4 (64 bit) */ 
+#pragma warning( disable : 4214 )
 #include <usp10.h>
+#pragma warning( default : 4214 )
 #include <uxtheme.h>
 #include <vfw.h>
 #endif // _WIN32_WCE

@@ -6809,7 +6809,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmGetConversionStatus)
 	OS_NATIVE_ENTER(env, that, ImmGetConversionStatus_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)ImmGetConversionStatus((HIMC)arg0, lparg1, lparg2);
+	rc = (jboolean)ImmGetConversionStatus((HIMC)arg0, (LPDWORD)lparg1, (LPDWORD)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -6862,7 +6862,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmSetCandidateWindow)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, ImmSetCandidateWindow_FUNC);
 	if (arg1) if ((lparg1 = getCANDIDATEFORMFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jboolean)ImmSetCandidateWindow((HIMC)arg0, lparg1);
+	rc = (jboolean)ImmSetCandidateWindow(arg0, lparg1);
 fail:
 	if (arg1 && lparg1) setCANDIDATEFORMFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, ImmSetCandidateWindow_FUNC);
@@ -10316,7 +10316,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegEnumKeyExA)
 	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getFILETIMEFields(env, arg7, &_arg7)) == NULL) goto fail;
-	rc = (jint)RegEnumKeyExA((HKEY)arg0, arg1, (LPSTR)lparg2, lparg3, lparg4, (LPSTR)lparg5, lparg6, lparg7);
+	rc = (jint)RegEnumKeyExA((HKEY)arg0, arg1, (LPSTR)lparg2, (LPDWORD)lparg3, (LPDWORD)lparg4, (LPSTR)lparg5, (LPDWORD)lparg6, lparg7);
 fail:
 	if (arg7 && lparg7) setFILETIMEFields(env, arg7, lparg7);
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
@@ -10347,7 +10347,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegEnumKeyExW)
 	if (arg5) if ((lparg5 = (*env)->GetCharArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getFILETIMEFields(env, arg7, &_arg7)) == NULL) goto fail;
-	rc = (jint)RegEnumKeyExW((HKEY)arg0, arg1, (LPWSTR)lparg2, lparg3, lparg4, (LPWSTR)lparg5, lparg6, lparg7);
+	rc = (jint)RegEnumKeyExW((HKEY)arg0, arg1, (LPWSTR)lparg2, (LPDWORD)lparg3, (LPDWORD)lparg4, (LPWSTR)lparg5, (LPDWORD)lparg6, lparg7);
 fail:
 	if (arg7 && lparg7) setFILETIMEFields(env, arg7, lparg7);
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
@@ -10420,7 +10420,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryInfoKeyA)
 	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
 	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
 	if (arg10) if ((lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL)) == NULL) goto fail;
-	rc = (jint)RegQueryInfoKeyA((HKEY)arg0, (LPSTR)arg1, lparg2, (LPDWORD)arg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9, lparg10, (PFILETIME)arg11);
+	rc = (jint)RegQueryInfoKeyA((HKEY)arg0, (LPSTR)arg1, (LPDWORD)lparg2, (LPDWORD)arg3, (LPDWORD)lparg4, (LPDWORD)lparg5, (LPDWORD)lparg6, (LPDWORD)lparg7, (LPDWORD)lparg8, (LPDWORD)lparg9, (LPDWORD)lparg10, (PFILETIME)arg11);
 fail:
 	if (arg10 && lparg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
 	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
@@ -10457,7 +10457,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryInfoKeyW)
 	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
 	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
 	if (arg10) if ((lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL)) == NULL) goto fail;
-	rc = (jint)RegQueryInfoKeyW((HKEY)arg0, (LPWSTR)arg1, lparg2, (LPDWORD)arg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9, lparg10, (PFILETIME)arg11);
+	rc = (jint)RegQueryInfoKeyW((HKEY)arg0, (LPWSTR)arg1, (LPDWORD)lparg2, (LPDWORD)arg3, (LPDWORD)lparg4, (LPDWORD)lparg5, (LPDWORD)lparg6, (LPDWORD)lparg7, (LPDWORD)lparg8, (LPDWORD)lparg9, (LPDWORD)lparg10, (PFILETIME)arg11);
 fail:
 	if (arg10 && lparg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
 	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
@@ -10486,7 +10486,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA__I_3BI_3I_3B_3I)
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, (LPDWORD)lparg3, (LPBYTE)lparg4, (LPDWORD)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
@@ -10511,7 +10511,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA__I_3BI_3I_3I_3I)
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, (LPDWORD)lparg3, (LPBYTE)lparg4, (LPDWORD)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -10536,7 +10536,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW__I_3CI_3I_3C_3I)
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, (LPDWORD)lparg3, (LPBYTE)lparg4, (LPDWORD)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
@@ -10561,7 +10561,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW__I_3CI_3I_3I_3I)
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, (LPDWORD)lparg3, (LPBYTE)lparg4, (LPDWORD)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);

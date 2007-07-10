@@ -183,7 +183,7 @@ JNIEXPORT jint JNICALL WGL_NATIVE(wglGetLayerPaletteEntries)
 	jint rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglGetLayerPaletteEntries_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)wglGetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, lparg4);
+	rc = (jint)wglGetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, (COLORREF *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	WGL_NATIVE_EXIT(env, that, wglGetLayerPaletteEntries_FUNC);
@@ -239,7 +239,7 @@ JNIEXPORT jint JNICALL WGL_NATIVE(wglSetLayerPaletteEntries)
 	jint rc = 0;
 	WGL_NATIVE_ENTER(env, that, wglSetLayerPaletteEntries_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)wglSetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, lparg4);
+	rc = (jint)wglSetLayerPaletteEntries((HDC)arg0, arg1, arg2, arg3, (COLORREF *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	WGL_NATIVE_EXIT(env, that, wglSetLayerPaletteEntries_FUNC);

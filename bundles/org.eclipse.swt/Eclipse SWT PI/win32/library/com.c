@@ -279,7 +279,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(DoDragDrop)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, DoDragDrop_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)DoDragDrop((IDataObject *)arg0, (IDropSource *)arg1, arg2, lparg3);
+	rc = (jint)DoDragDrop((IDataObject *)arg0, (IDropSource *)arg1, arg2, (LPDWORD)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, DoDragDrop_FUNC);
