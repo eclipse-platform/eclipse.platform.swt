@@ -4092,6 +4092,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetMapMode
+JNIEXPORT jint JNICALL OS_NATIVE(GetMapMode)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetMapMode_FUNC);
+	rc = (jint)GetMapMode((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, GetMapMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetMenu
 JNIEXPORT jint JNICALL OS_NATIVE(GetMenu)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4692,6 +4704,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetOpenFileNameW)
 fail:
 	if (arg0 && lparg0) setOPENFILENAMEFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, GetOpenFileNameW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetOutlineTextMetricsA
+JNIEXPORT jint JNICALL OS_NATIVE(GetOutlineTextMetricsA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	OUTLINETEXTMETRICA _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetOutlineTextMetricsA_FUNC);
+	if (arg2) if ((lparg2 = getOUTLINETEXTMETRICAFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)GetOutlineTextMetricsA((HDC)arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setOUTLINETEXTMETRICAFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetOutlineTextMetricsA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetOutlineTextMetricsW
+JNIEXPORT jint JNICALL OS_NATIVE(GetOutlineTextMetricsW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	OUTLINETEXTMETRICW _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetOutlineTextMetricsW_FUNC);
+	if (arg2) if ((lparg2 = getOUTLINETEXTMETRICWFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)GetOutlineTextMetricsW((HDC)arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setOUTLINETEXTMETRICWFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetOutlineTextMetricsW_FUNC);
 	return rc;
 }
 #endif
@@ -9670,6 +9714,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(OSVERSIONINFOW_1sizeof)
 	OS_NATIVE_ENTER(env, that, OSVERSIONINFOW_1sizeof_FUNC);
 	rc = (jint)OSVERSIONINFOW_sizeof();
 	OS_NATIVE_EXIT(env, that, OSVERSIONINFOW_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICA_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(OUTLINETEXTMETRICA_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, OUTLINETEXTMETRICA_1sizeof_FUNC);
+	rc = (jint)OUTLINETEXTMETRICA_sizeof();
+	OS_NATIVE_EXIT(env, that, OUTLINETEXTMETRICA_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICW_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(OUTLINETEXTMETRICW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, OUTLINETEXTMETRICW_1sizeof_FUNC);
+	rc = (jint)OUTLINETEXTMETRICW_sizeof();
+	OS_NATIVE_EXIT(env, that, OUTLINETEXTMETRICW_1sizeof_FUNC);
 	return rc;
 }
 #endif

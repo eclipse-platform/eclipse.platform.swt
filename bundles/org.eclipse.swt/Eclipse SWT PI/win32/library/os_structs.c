@@ -4739,6 +4739,480 @@ void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpSt
 }
 #endif
 
+#ifndef NO_OUTLINETEXTMETRIC
+typedef struct OUTLINETEXTMETRIC_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID otmSize, otmFiller, otmPanoseNumber_bFamilyType, otmPanoseNumber_bSerifStyle, otmPanoseNumber_bWeight, otmPanoseNumber_bProportion, otmPanoseNumber_bContrast, otmPanoseNumber_bStrokeVariation, otmPanoseNumber_bArmStyle, otmPanoseNumber_bLetterform, otmPanoseNumber_bMidline, otmPanoseNumber_bXHeight, otmfsSelection, otmfsType, otmsCharSlopeRise, otmsCharSlopeRun, otmItalicAngle, otmEMSquare, otmAscent, otmDescent, otmLineGap, otmsCapEmHeight, otmsXHeight, otmrcFontBox, otmMacAscent, otmMacDescent, otmMacLineGap, otmusMinimumPPEM, otmptSubscriptSize, otmptSubscriptOffset, otmptSuperscriptSize, otmptSuperscriptOffset, otmsStrikeoutSize, otmsStrikeoutPosition, otmsUnderscoreSize, otmsUnderscorePosition, otmpFamilyName, otmpFaceName, otmpStyleName, otmpFullName;
+} OUTLINETEXTMETRIC_FID_CACHE;
+
+OUTLINETEXTMETRIC_FID_CACHE OUTLINETEXTMETRICFc;
+
+void cacheOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject)
+{
+	if (OUTLINETEXTMETRICFc.cached) return;
+	OUTLINETEXTMETRICFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OUTLINETEXTMETRICFc.otmSize = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmSize", "I");
+	OUTLINETEXTMETRICFc.otmFiller = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmFiller", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bFamilyType", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bSerifStyle", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bWeight", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bProportion", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bContrast", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bStrokeVariation", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bArmStyle", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bLetterform", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bMidline", "B");
+	OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmPanoseNumber_bXHeight", "B");
+	OUTLINETEXTMETRICFc.otmfsSelection = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmfsSelection", "I");
+	OUTLINETEXTMETRICFc.otmfsType = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmfsType", "I");
+	OUTLINETEXTMETRICFc.otmsCharSlopeRise = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsCharSlopeRise", "I");
+	OUTLINETEXTMETRICFc.otmsCharSlopeRun = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsCharSlopeRun", "I");
+	OUTLINETEXTMETRICFc.otmItalicAngle = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmItalicAngle", "I");
+	OUTLINETEXTMETRICFc.otmEMSquare = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmEMSquare", "I");
+	OUTLINETEXTMETRICFc.otmAscent = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmAscent", "I");
+	OUTLINETEXTMETRICFc.otmDescent = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmDescent", "I");
+	OUTLINETEXTMETRICFc.otmLineGap = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmLineGap", "I");
+	OUTLINETEXTMETRICFc.otmsCapEmHeight = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsCapEmHeight", "I");
+	OUTLINETEXTMETRICFc.otmsXHeight = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsXHeight", "I");
+	OUTLINETEXTMETRICFc.otmrcFontBox = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmrcFontBox", "Lorg/eclipse/swt/internal/win32/RECT;");
+	OUTLINETEXTMETRICFc.otmMacAscent = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmMacAscent", "I");
+	OUTLINETEXTMETRICFc.otmMacDescent = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmMacDescent", "I");
+	OUTLINETEXTMETRICFc.otmMacLineGap = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmMacLineGap", "I");
+	OUTLINETEXTMETRICFc.otmusMinimumPPEM = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmusMinimumPPEM", "I");
+	OUTLINETEXTMETRICFc.otmptSubscriptSize = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmptSubscriptSize", "Lorg/eclipse/swt/internal/win32/POINT;");
+	OUTLINETEXTMETRICFc.otmptSubscriptOffset = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmptSubscriptOffset", "Lorg/eclipse/swt/internal/win32/POINT;");
+	OUTLINETEXTMETRICFc.otmptSuperscriptSize = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmptSuperscriptSize", "Lorg/eclipse/swt/internal/win32/POINT;");
+	OUTLINETEXTMETRICFc.otmptSuperscriptOffset = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmptSuperscriptOffset", "Lorg/eclipse/swt/internal/win32/POINT;");
+	OUTLINETEXTMETRICFc.otmsStrikeoutSize = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsStrikeoutSize", "I");
+	OUTLINETEXTMETRICFc.otmsStrikeoutPosition = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsStrikeoutPosition", "I");
+	OUTLINETEXTMETRICFc.otmsUnderscoreSize = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsUnderscoreSize", "I");
+	OUTLINETEXTMETRICFc.otmsUnderscorePosition = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmsUnderscorePosition", "I");
+	OUTLINETEXTMETRICFc.otmpFamilyName = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmpFamilyName", "I");
+	OUTLINETEXTMETRICFc.otmpFaceName = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmpFaceName", "I");
+	OUTLINETEXTMETRICFc.otmpStyleName = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmpStyleName", "I");
+	OUTLINETEXTMETRICFc.otmpFullName = (*env)->GetFieldID(env, OUTLINETEXTMETRICFc.clazz, "otmpFullName", "I");
+	OUTLINETEXTMETRICFc.cached = 1;
+}
+
+OUTLINETEXTMETRIC *getOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct)
+{
+	if (!OUTLINETEXTMETRICFc.cached) cacheOUTLINETEXTMETRICFields(env, lpObject);
+	lpStruct->otmSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize);
+	lpStruct->otmFiller = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller);
+	lpStruct->otmPanoseNumber.bFamilyType = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType);
+	lpStruct->otmPanoseNumber.bSerifStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle);
+	lpStruct->otmPanoseNumber.bWeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight);
+	lpStruct->otmPanoseNumber.bProportion = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion);
+	lpStruct->otmPanoseNumber.bContrast = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast);
+	lpStruct->otmPanoseNumber.bStrokeVariation = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation);
+	lpStruct->otmPanoseNumber.bArmStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle);
+	lpStruct->otmPanoseNumber.bLetterform = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform);
+	lpStruct->otmPanoseNumber.bMidline = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline);
+	lpStruct->otmPanoseNumber.bXHeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight);
+	lpStruct->otmfsSelection = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection);
+	lpStruct->otmfsType = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType);
+	lpStruct->otmsCharSlopeRise = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise);
+	lpStruct->otmsCharSlopeRun = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun);
+	lpStruct->otmItalicAngle = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle);
+	lpStruct->otmEMSquare = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare);
+	lpStruct->otmAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent);
+	lpStruct->otmDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent);
+	lpStruct->otmLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap);
+	lpStruct->otmsCapEmHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight);
+	lpStruct->otmsXHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
+	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
+	}
+	lpStruct->otmMacAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent);
+	lpStruct->otmMacDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent);
+	lpStruct->otmMacLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap);
+	lpStruct->otmusMinimumPPEM = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
+	}
+	lpStruct->otmsStrikeoutSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize);
+	lpStruct->otmsStrikeoutPosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition);
+	lpStruct->otmsUnderscoreSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize);
+	lpStruct->otmsUnderscorePosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition);
+	lpStruct->otmpFamilyName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName);
+	lpStruct->otmpFaceName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName);
+	lpStruct->otmpStyleName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName);
+	lpStruct->otmpFullName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName);
+	return lpStruct;
+}
+
+void setOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct)
+{
+	if (!OUTLINETEXTMETRICFc.cached) cacheOUTLINETEXTMETRICFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize, (jint)lpStruct->otmSize);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller, (jbyte)lpStruct->otmFiller);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType, (jbyte)lpStruct->otmPanoseNumber.bFamilyType);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle, (jbyte)lpStruct->otmPanoseNumber.bSerifStyle);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight, (jbyte)lpStruct->otmPanoseNumber.bWeight);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion, (jbyte)lpStruct->otmPanoseNumber.bProportion);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast, (jbyte)lpStruct->otmPanoseNumber.bContrast);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation, (jbyte)lpStruct->otmPanoseNumber.bStrokeVariation);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle, (jbyte)lpStruct->otmPanoseNumber.bArmStyle);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform, (jbyte)lpStruct->otmPanoseNumber.bLetterform);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline, (jbyte)lpStruct->otmPanoseNumber.bMidline);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight, (jbyte)lpStruct->otmPanoseNumber.bXHeight);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection, (jint)lpStruct->otmfsSelection);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType, (jint)lpStruct->otmfsType);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise, (jint)lpStruct->otmsCharSlopeRise);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun, (jint)lpStruct->otmsCharSlopeRun);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle, (jint)lpStruct->otmItalicAngle);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare, (jint)lpStruct->otmEMSquare);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent, (jint)lpStruct->otmAscent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent, (jint)lpStruct->otmDescent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap, (jint)lpStruct->otmLineGap);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight, (jint)lpStruct->otmsCapEmHeight);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight, (jint)lpStruct->otmsXHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
+	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
+	}
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent, (jint)lpStruct->otmMacAscent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent, (jint)lpStruct->otmMacDescent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap, (jint)lpStruct->otmMacLineGap);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM, (jint)lpStruct->otmusMinimumPPEM);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
+	}
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize, (jint)lpStruct->otmsStrikeoutSize);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition, (jint)lpStruct->otmsStrikeoutPosition);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize, (jint)lpStruct->otmsUnderscoreSize);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition, (jint)lpStruct->otmsUnderscorePosition);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName, (jint)lpStruct->otmpFamilyName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName, (jint)lpStruct->otmpFaceName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName, (jint)lpStruct->otmpStyleName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName, (jint)lpStruct->otmpFullName);
+}
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICA
+typedef struct OUTLINETEXTMETRICA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID otmTextMetrics;
+} OUTLINETEXTMETRICA_FID_CACHE;
+
+OUTLINETEXTMETRICA_FID_CACHE OUTLINETEXTMETRICAFc;
+
+void cacheOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject)
+{
+	if (OUTLINETEXTMETRICAFc.cached) return;
+	cacheOUTLINETEXTMETRICFields(env, lpObject);
+	OUTLINETEXTMETRICAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OUTLINETEXTMETRICAFc.otmTextMetrics = (*env)->GetFieldID(env, OUTLINETEXTMETRICAFc.clazz, "otmTextMetrics", "Lorg/eclipse/swt/internal/win32/TEXTMETRICA;");
+	OUTLINETEXTMETRICAFc.cached = 1;
+}
+
+OUTLINETEXTMETRICA *getOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct)
+{
+	if (!OUTLINETEXTMETRICAFc.cached) cacheOUTLINETEXTMETRICAFields(env, lpObject);
+	lpStruct->otmSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize);
+	lpStruct->otmFiller = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller);
+	lpStruct->otmPanoseNumber.bFamilyType = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType);
+	lpStruct->otmPanoseNumber.bSerifStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle);
+	lpStruct->otmPanoseNumber.bWeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight);
+	lpStruct->otmPanoseNumber.bProportion = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion);
+	lpStruct->otmPanoseNumber.bContrast = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast);
+	lpStruct->otmPanoseNumber.bStrokeVariation = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation);
+	lpStruct->otmPanoseNumber.bArmStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle);
+	lpStruct->otmPanoseNumber.bLetterform = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform);
+	lpStruct->otmPanoseNumber.bMidline = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline);
+	lpStruct->otmPanoseNumber.bXHeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight);
+	lpStruct->otmfsSelection = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection);
+	lpStruct->otmfsType = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType);
+	lpStruct->otmsCharSlopeRise = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise);
+	lpStruct->otmsCharSlopeRun = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun);
+	lpStruct->otmItalicAngle = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle);
+	lpStruct->otmEMSquare = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare);
+	lpStruct->otmAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent);
+	lpStruct->otmDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent);
+	lpStruct->otmLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap);
+	lpStruct->otmsCapEmHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight);
+	lpStruct->otmsXHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
+	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
+	}
+	lpStruct->otmMacAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent);
+	lpStruct->otmMacDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent);
+	lpStruct->otmMacLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap);
+	lpStruct->otmusMinimumPPEM = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
+	}
+	lpStruct->otmsStrikeoutSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize);
+	lpStruct->otmsStrikeoutPosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition);
+	lpStruct->otmsUnderscoreSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize);
+	lpStruct->otmsUnderscorePosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition);
+	lpStruct->otmpFamilyName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName);
+	lpStruct->otmpFaceName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName);
+	lpStruct->otmpStyleName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName);
+	lpStruct->otmpFullName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICAFc.otmTextMetrics);
+	if (lpObject1 != NULL) getTEXTMETRICAFields(env, lpObject1, &lpStruct->otmTextMetrics);
+	}
+	return lpStruct;
+}
+
+void setOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct)
+{
+	if (!OUTLINETEXTMETRICAFc.cached) cacheOUTLINETEXTMETRICAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize, (jint)lpStruct->otmSize);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller, (jbyte)lpStruct->otmFiller);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType, (jbyte)lpStruct->otmPanoseNumber.bFamilyType);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle, (jbyte)lpStruct->otmPanoseNumber.bSerifStyle);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight, (jbyte)lpStruct->otmPanoseNumber.bWeight);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion, (jbyte)lpStruct->otmPanoseNumber.bProportion);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast, (jbyte)lpStruct->otmPanoseNumber.bContrast);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation, (jbyte)lpStruct->otmPanoseNumber.bStrokeVariation);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle, (jbyte)lpStruct->otmPanoseNumber.bArmStyle);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform, (jbyte)lpStruct->otmPanoseNumber.bLetterform);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline, (jbyte)lpStruct->otmPanoseNumber.bMidline);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight, (jbyte)lpStruct->otmPanoseNumber.bXHeight);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection, (jint)lpStruct->otmfsSelection);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType, (jint)lpStruct->otmfsType);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise, (jint)lpStruct->otmsCharSlopeRise);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun, (jint)lpStruct->otmsCharSlopeRun);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle, (jint)lpStruct->otmItalicAngle);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare, (jint)lpStruct->otmEMSquare);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent, (jint)lpStruct->otmAscent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent, (jint)lpStruct->otmDescent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap, (jint)lpStruct->otmLineGap);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight, (jint)lpStruct->otmsCapEmHeight);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight, (jint)lpStruct->otmsXHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
+	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
+	}
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent, (jint)lpStruct->otmMacAscent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent, (jint)lpStruct->otmMacDescent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap, (jint)lpStruct->otmMacLineGap);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM, (jint)lpStruct->otmusMinimumPPEM);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
+	}
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize, (jint)lpStruct->otmsStrikeoutSize);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition, (jint)lpStruct->otmsStrikeoutPosition);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize, (jint)lpStruct->otmsUnderscoreSize);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition, (jint)lpStruct->otmsUnderscorePosition);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName, (jint)lpStruct->otmpFamilyName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName, (jint)lpStruct->otmpFaceName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName, (jint)lpStruct->otmpStyleName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName, (jint)lpStruct->otmpFullName);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICAFc.otmTextMetrics);
+	if (lpObject1 != NULL) setTEXTMETRICAFields(env, lpObject1, &lpStruct->otmTextMetrics);
+	}
+}
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICW
+typedef struct OUTLINETEXTMETRICW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID otmTextMetrics;
+} OUTLINETEXTMETRICW_FID_CACHE;
+
+OUTLINETEXTMETRICW_FID_CACHE OUTLINETEXTMETRICWFc;
+
+void cacheOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject)
+{
+	if (OUTLINETEXTMETRICWFc.cached) return;
+	cacheOUTLINETEXTMETRICFields(env, lpObject);
+	OUTLINETEXTMETRICWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OUTLINETEXTMETRICWFc.otmTextMetrics = (*env)->GetFieldID(env, OUTLINETEXTMETRICWFc.clazz, "otmTextMetrics", "Lorg/eclipse/swt/internal/win32/TEXTMETRICW;");
+	OUTLINETEXTMETRICWFc.cached = 1;
+}
+
+OUTLINETEXTMETRICW *getOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct)
+{
+	if (!OUTLINETEXTMETRICWFc.cached) cacheOUTLINETEXTMETRICWFields(env, lpObject);
+	lpStruct->otmSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize);
+	lpStruct->otmFiller = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller);
+	lpStruct->otmPanoseNumber.bFamilyType = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType);
+	lpStruct->otmPanoseNumber.bSerifStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle);
+	lpStruct->otmPanoseNumber.bWeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight);
+	lpStruct->otmPanoseNumber.bProportion = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion);
+	lpStruct->otmPanoseNumber.bContrast = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast);
+	lpStruct->otmPanoseNumber.bStrokeVariation = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation);
+	lpStruct->otmPanoseNumber.bArmStyle = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle);
+	lpStruct->otmPanoseNumber.bLetterform = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform);
+	lpStruct->otmPanoseNumber.bMidline = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline);
+	lpStruct->otmPanoseNumber.bXHeight = (*env)->GetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight);
+	lpStruct->otmfsSelection = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection);
+	lpStruct->otmfsType = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType);
+	lpStruct->otmsCharSlopeRise = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise);
+	lpStruct->otmsCharSlopeRun = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun);
+	lpStruct->otmItalicAngle = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle);
+	lpStruct->otmEMSquare = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare);
+	lpStruct->otmAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent);
+	lpStruct->otmDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent);
+	lpStruct->otmLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap);
+	lpStruct->otmsCapEmHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight);
+	lpStruct->otmsXHeight = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
+	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
+	}
+	lpStruct->otmMacAscent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent);
+	lpStruct->otmMacDescent = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent);
+	lpStruct->otmMacLineGap = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap);
+	lpStruct->otmusMinimumPPEM = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
+	}
+	lpStruct->otmsStrikeoutSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize);
+	lpStruct->otmsStrikeoutPosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition);
+	lpStruct->otmsUnderscoreSize = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize);
+	lpStruct->otmsUnderscorePosition = (*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition);
+	lpStruct->otmpFamilyName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName);
+	lpStruct->otmpFaceName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName);
+	lpStruct->otmpStyleName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName);
+	lpStruct->otmpFullName = (PSTR)(*env)->GetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICWFc.otmTextMetrics);
+	if (lpObject1 != NULL) getTEXTMETRICWFields(env, lpObject1, &lpStruct->otmTextMetrics);
+	}
+	return lpStruct;
+}
+
+void setOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct)
+{
+	if (!OUTLINETEXTMETRICWFc.cached) cacheOUTLINETEXTMETRICWFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmSize, (jint)lpStruct->otmSize);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmFiller, (jbyte)lpStruct->otmFiller);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bFamilyType, (jbyte)lpStruct->otmPanoseNumber.bFamilyType);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bSerifStyle, (jbyte)lpStruct->otmPanoseNumber.bSerifStyle);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bWeight, (jbyte)lpStruct->otmPanoseNumber.bWeight);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bProportion, (jbyte)lpStruct->otmPanoseNumber.bProportion);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bContrast, (jbyte)lpStruct->otmPanoseNumber.bContrast);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bStrokeVariation, (jbyte)lpStruct->otmPanoseNumber.bStrokeVariation);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bArmStyle, (jbyte)lpStruct->otmPanoseNumber.bArmStyle);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bLetterform, (jbyte)lpStruct->otmPanoseNumber.bLetterform);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bMidline, (jbyte)lpStruct->otmPanoseNumber.bMidline);
+	(*env)->SetByteField(env, lpObject, OUTLINETEXTMETRICFc.otmPanoseNumber_bXHeight, (jbyte)lpStruct->otmPanoseNumber.bXHeight);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsSelection, (jint)lpStruct->otmfsSelection);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmfsType, (jint)lpStruct->otmfsType);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRise, (jint)lpStruct->otmsCharSlopeRise);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCharSlopeRun, (jint)lpStruct->otmsCharSlopeRun);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmItalicAngle, (jint)lpStruct->otmItalicAngle);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmEMSquare, (jint)lpStruct->otmEMSquare);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmAscent, (jint)lpStruct->otmAscent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmDescent, (jint)lpStruct->otmDescent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmLineGap, (jint)lpStruct->otmLineGap);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsCapEmHeight, (jint)lpStruct->otmsCapEmHeight);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsXHeight, (jint)lpStruct->otmsXHeight);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmrcFontBox);
+	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->otmrcFontBox);
+	}
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacAscent, (jint)lpStruct->otmMacAscent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacDescent, (jint)lpStruct->otmMacDescent);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmMacLineGap, (jint)lpStruct->otmMacLineGap);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmusMinimumPPEM, (jint)lpStruct->otmusMinimumPPEM);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptSize);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSubscriptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSubscriptOffset);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptSize);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptSize);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICFc.otmptSuperscriptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->otmptSuperscriptOffset);
+	}
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutSize, (jint)lpStruct->otmsStrikeoutSize);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsStrikeoutPosition, (jint)lpStruct->otmsStrikeoutPosition);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscoreSize, (jint)lpStruct->otmsUnderscoreSize);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmsUnderscorePosition, (jint)lpStruct->otmsUnderscorePosition);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFamilyName, (jint)lpStruct->otmpFamilyName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFaceName, (jint)lpStruct->otmpFaceName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpStyleName, (jint)lpStruct->otmpStyleName);
+	(*env)->SetIntField(env, lpObject, OUTLINETEXTMETRICFc.otmpFullName, (jint)lpStruct->otmpFullName);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, OUTLINETEXTMETRICWFc.otmTextMetrics);
+	if (lpObject1 != NULL) setTEXTMETRICWFields(env, lpObject1, &lpStruct->otmTextMetrics);
+	}
+}
+#endif
+
 #ifndef NO_PAINTSTRUCT
 typedef struct PAINTSTRUCT_FID_CACHE {
 	int cached;

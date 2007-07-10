@@ -1043,6 +1043,42 @@ void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpSt
 #define OSVERSIONINFOW_sizeof() 0
 #endif
 
+#ifndef NO_OUTLINETEXTMETRIC
+void cacheOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject);
+OUTLINETEXTMETRIC *getOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct);
+void setOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct);
+#define OUTLINETEXTMETRIC_sizeof() sizeof(OUTLINETEXTMETRIC)
+#else
+#define cacheOUTLINETEXTMETRICFields(a,b)
+#define getOUTLINETEXTMETRICFields(a,b,c) NULL
+#define setOUTLINETEXTMETRICFields(a,b,c)
+#define OUTLINETEXTMETRIC_sizeof() 0
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICA
+void cacheOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject);
+OUTLINETEXTMETRICA *getOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct);
+void setOUTLINETEXTMETRICAFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICA *lpStruct);
+#define OUTLINETEXTMETRICA_sizeof() sizeof(OUTLINETEXTMETRICA)
+#else
+#define cacheOUTLINETEXTMETRICAFields(a,b)
+#define getOUTLINETEXTMETRICAFields(a,b,c) NULL
+#define setOUTLINETEXTMETRICAFields(a,b,c)
+#define OUTLINETEXTMETRICA_sizeof() 0
+#endif
+
+#ifndef NO_OUTLINETEXTMETRICW
+void cacheOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject);
+OUTLINETEXTMETRICW *getOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct);
+void setOUTLINETEXTMETRICWFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRICW *lpStruct);
+#define OUTLINETEXTMETRICW_sizeof() sizeof(OUTLINETEXTMETRICW)
+#else
+#define cacheOUTLINETEXTMETRICWFields(a,b)
+#define getOUTLINETEXTMETRICWFields(a,b,c) NULL
+#define setOUTLINETEXTMETRICWFields(a,b,c)
+#define OUTLINETEXTMETRICW_sizeof() 0
+#endif
+
 #ifndef NO_PAINTSTRUCT
 void cachePAINTSTRUCTFields(JNIEnv *env, jobject lpObject);
 PAINTSTRUCT *getPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 886;
-int OS_nativeFunctionCallCount[886];
+int OS_nativeFunctionCount = 891;
+int OS_nativeFunctionCallCount[891];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -256,6 +256,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetLibraryHandle",
 	"GetLocaleInfoA",
 	"GetLocaleInfoW",
+	"GetMapMode",
 	"GetMenu",
 	"GetMenuBarInfo",
 	"GetMenuDefaultItem",
@@ -292,6 +293,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2",
 	"GetOpenFileNameA",
 	"GetOpenFileNameW",
+	"GetOutlineTextMetricsA",
+	"GetOutlineTextMetricsW",
 	"GetPaletteEntries",
 	"GetParent",
 	"GetPath",
@@ -609,6 +612,8 @@ char * OS_nativeFunctionNames[] = {
 	"OSVERSIONINFOEXA_1sizeof",
 	"OSVERSIONINFOEXW_1sizeof",
 	"OSVERSIONINFOW_1sizeof",
+	"OUTLINETEXTMETRICA_1sizeof",
+	"OUTLINETEXTMETRICW_1sizeof",
 	"OffsetRect",
 	"OffsetRgn",
 	"OleInitialize",
