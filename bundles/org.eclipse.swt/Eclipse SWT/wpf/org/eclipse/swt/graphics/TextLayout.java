@@ -1273,7 +1273,6 @@ int GetTextRun(int textSourceCharacterIndex) {
 }
 
 int GetPrecedingText(int textSourceCharacterIndexLimit) {
-	System.out.println("GetPrecedingText");
 	return 0;
 }
 
