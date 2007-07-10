@@ -258,7 +258,7 @@ void fillAccel (ACCEL accel) {
 				key = Display.wcsToMbcs ((char) key);
 				if (key == 0) return;
 				if (OS.IsWinCE) {
-					key = OS.CharUpper ((short) key);
+					key = (int)/*64*/OS.CharUpper ((short) key);
 				} else {
 					vKey = OS.VkKeyScan ((short) key) & 0xFF;
 					if (vKey == -1) {

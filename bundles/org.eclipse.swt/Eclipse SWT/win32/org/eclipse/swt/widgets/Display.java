@@ -696,7 +696,7 @@ void clearModal (Shell shell) {
 }
 
 int controlKey (int key) {
-	int upper = OS.CharUpper ((short) key);
+	int upper = (int)/*64*/OS.CharUpper ((short) key);
 	if (64 <= upper && upper <= 95) return upper & 0xBF;
 	return key;
 }
@@ -3153,7 +3153,7 @@ public boolean post (Event event) {
 					case SWT.LF: return false;
 					default: {
 						if (OS.IsWinCE) {
-							inputs.wVk = OS.CharUpper ((short) key);
+							inputs.wVk = (short)/*64*/OS.CharUpper ((short) key);
 						} else {
 							inputs.wVk = OS.VkKeyScan ((short) wcsToMbcs (key, 0));
 							if (inputs.wVk == -1) return false;

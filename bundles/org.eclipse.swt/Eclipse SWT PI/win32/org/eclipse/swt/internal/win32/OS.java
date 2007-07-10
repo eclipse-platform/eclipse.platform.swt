@@ -2195,12 +2195,12 @@ public static final int /*long*/ CallWindowProc (int /*long*/ lpPrevWndFunc, int
 	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 }
 
-public static final short CharUpper (short ch) {
+public static final int /*long*/ CharUpper (int /*long*/ ch) {
 	if (IsUnicode) return CharUpperW (ch);
 	return CharUpperA (ch);
 }
 
-public static final short CharLower (short ch) {
+public static final int /*long*/ CharLower (int /*long*/ ch) {
 	if (IsUnicode) return CharLowerW (ch);
 	return CharLowerA (ch);
 }
@@ -3169,10 +3169,10 @@ public static final native int Call (int /*long*/ address, DLLVERSIONINFO arg0);
 public static final native int /*long*/ CallNextHookEx(int /*long*/ hhk, int nCode, int /*long*/ wParam, int /*long*/ lParam);
 public static final native int /*long*/ CallWindowProcW (int /*long*/ lpPrevWndFunc, int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
 public static final native int /*long*/ CallWindowProcA (int /*long*/ lpPrevWndFunc, int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
-public static final native short CharLowerW (short ch);
-public static final native short CharLowerA (short ch);
-public static final native short CharUpperW (short ch);
-public static final native short CharUpperA (short ch);
+public static final native int /*long*/ CharLowerW (int /*long*/ ch);
+public static final native int /*long*/ CharLowerA (int /*long*/ ch);
+public static final native int /*long*/ CharUpperW (int /*long*/ ch);
+public static final native int /*long*/ CharUpperA (int /*long*/ ch);
 public static final native boolean CheckMenuItem (int /*long*/ hmenu, int uIDCheckItem, int uCheck); 
 public static final native boolean ChooseColorW (CHOOSECOLOR lpcc);
 public static final native boolean ChooseColorA (CHOOSECOLOR lpcc);

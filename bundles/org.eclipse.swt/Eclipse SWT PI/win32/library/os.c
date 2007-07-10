@@ -728,48 +728,48 @@ JNIEXPORT jint JNICALL OS_NATIVE(CallWindowProcW)
 #endif
 
 #ifndef NO_CharLowerA
-JNIEXPORT jshort JNICALL OS_NATIVE(CharLowerA)
-	(JNIEnv *env, jclass that, jshort arg0)
+JNIEXPORT jint JNICALL OS_NATIVE(CharLowerA)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jshort rc = 0;
+	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CharLowerA_FUNC);
-	rc = (jshort)CharLowerA((LPSTR)arg0);
+	rc = (jint)CharLowerA((LPSTR)arg0);
 	OS_NATIVE_EXIT(env, that, CharLowerA_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CharLowerW
-JNIEXPORT jshort JNICALL OS_NATIVE(CharLowerW)
-	(JNIEnv *env, jclass that, jshort arg0)
+JNIEXPORT jint JNICALL OS_NATIVE(CharLowerW)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jshort rc = 0;
+	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CharLowerW_FUNC);
-	rc = (jshort)CharLowerW((LPWSTR)arg0);
+	rc = (jint)CharLowerW((LPWSTR)arg0);
 	OS_NATIVE_EXIT(env, that, CharLowerW_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CharUpperA
-JNIEXPORT jshort JNICALL OS_NATIVE(CharUpperA)
-	(JNIEnv *env, jclass that, jshort arg0)
+JNIEXPORT jint JNICALL OS_NATIVE(CharUpperA)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jshort rc = 0;
+	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CharUpperA_FUNC);
-	rc = (jshort)CharUpperA((LPSTR)arg0);
+	rc = (jint)CharUpperA((LPSTR)arg0);
 	OS_NATIVE_EXIT(env, that, CharUpperA_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CharUpperW
-JNIEXPORT jshort JNICALL OS_NATIVE(CharUpperW)
-	(JNIEnv *env, jclass that, jshort arg0)
+JNIEXPORT jint JNICALL OS_NATIVE(CharUpperW)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jshort rc = 0;
+	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CharUpperW_FUNC);
-	rc = (jshort)CharUpperW((LPWSTR)arg0);
+	rc = (jint)CharUpperW((LPWSTR)arg0);
 	OS_NATIVE_EXIT(env, that, CharUpperW_FUNC);
 	return rc;
 }

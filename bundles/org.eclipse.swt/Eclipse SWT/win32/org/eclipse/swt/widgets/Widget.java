@@ -1502,7 +1502,7 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 		* upper case values in WM_KEYDOWN despite the fact that the 
 		* Shift was not pressed.
 		*/
-	 	display.lastKey = OS.CharLower ((short) mapKey);
+	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
 
 		/*
 		* Feature in Windows. The virtual key VK_CANCEL is treated
@@ -1561,7 +1561,7 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 			display.lastAscii = display.shiftedKey ((int)/*64*/wParam);
 			if (display.lastAscii == 0) display.lastAscii = mapKey;
 	 	} else {
-	 		display.lastAscii = OS.CharLower ((short) mapKey);
+	 		display.lastAscii = (int)/*64*/OS.CharLower ((short) mapKey);
 	 	}
 	 			
 		/* Note that Ctrl+'@' is ASCII NUL and is delivered in WM_CHAR */
@@ -2314,7 +2314,7 @@ LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPara
 		* upper case values in WM_SYSKEYDOWN despite the fact that the 
 		* Shift was not pressed.
 		*/
-	 	display.lastKey = OS.CharLower ((short) mapKey);
+	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
 
 		/*
 		* Feature in Windows 98.  MapVirtualKey() indicates that
