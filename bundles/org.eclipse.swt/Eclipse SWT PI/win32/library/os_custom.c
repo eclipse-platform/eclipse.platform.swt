@@ -88,7 +88,7 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 {
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
-	SWT_PTR rc;
+	SWT_PTR rc = 0;
 #ifdef SWT_PTR_SIZE_64
 	OS_NATIVE_ENTER(env, that, SendMessageW__JI_3I_3I_FUNC)
 #else
