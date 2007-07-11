@@ -6574,7 +6574,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1GetIconSize)
 	OS_NATIVE_ENTER(env, that, ImageList_1GetIconSize_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)ImageList_GetIconSize((HIMAGELIST)arg0, lparg1, lparg2);
+	rc = (jboolean)ImageList_GetIconSize((HIMAGELIST)arg0, (int *)lparg1, (int *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
