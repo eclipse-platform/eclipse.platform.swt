@@ -2271,7 +2271,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsEmbedString_1new___3C)
 	jint rc = 0;
 	XPCOM_NATIVE_ENTER(env, that, nsEmbedString_1new___3C_FUNC);
 	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
-	rc = (jint)new nsEmbedString(lparg0);
+	rc = (jint)new nsEmbedString((PRUnichar *)lparg0);
 fail:
 	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
 	XPCOM_NATIVE_EXIT(env, that, nsEmbedString_1new___3C_FUNC);
