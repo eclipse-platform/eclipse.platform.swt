@@ -889,46 +889,26 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 	int underlineY = y + run.ascent - run.underlinePos;
 	int strikeoutY = y + run.ascent - run.strikeoutPos;
 	if (advance) {
-		int /*long*/ newPen = 0;
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
 		if (run.style.underline) {
-			newPen = Gdip.Pen_new(color, run.underlineThickness);
-			Gdip.Graphics_DrawLine(graphics, newPen, x, underlineY, x + run.width, underlineY);
+			Gdip.Graphics_FillRectangle(graphics, color, x, underlineY, run.width, run.underlineThickness);
 		}
 		if (run.style.strikeout) {
-			if (newPen == 0 || run.strikeoutThickness != run.underlineThickness) {
-				if (newPen != 0) {
-					Gdip.Pen_delete(newPen);
-				}
-				newPen = Gdip.Pen_new(color, run.strikeoutThickness);
-			}
-			Gdip.Graphics_DrawLine(graphics, newPen, x, strikeoutY, x + run.width, strikeoutY);
+			Gdip.Graphics_FillRectangle(graphics, color, x, strikeoutY, run.width, run.strikeoutThickness);
 		}
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
-		Gdip.Pen_delete(newPen);
 	} else {
-		int /*long*/ newPen = 0;
-		int /*long*/ oldPen = 0;
+		int /*long*/ brush = OS.CreateSolidBrush((int)/*64*/color);
+		RECT rect = new RECT();
 		if (run.style.underline) {
-			newPen = OS.CreatePen(OS.PS_SOLID, run.underlineThickness, (int)/*64*/color);
-			oldPen = OS.SelectObject(graphics, newPen);
-			OS.MoveToEx(graphics, x, underlineY, 0);
-			OS.LineTo(graphics, x + run.width, underlineY);
+			OS.SetRect(rect, x, underlineY, x + run.width, underlineY + run.underlineThickness);
+			OS.FillRect(graphics, rect, brush);
 		}
 		if (run.style.strikeout) {
-			if (newPen == 0 || run.strikeoutThickness != run.underlineThickness) {
-				if (newPen != 0) {
-					OS.SelectObject(graphics, oldPen);
-					OS.DeleteObject(newPen);
-				}
-				newPen = OS.CreatePen(OS.PS_SOLID, run.strikeoutThickness, (int)/*64*/color);
-				oldPen = OS.SelectObject(graphics, newPen);
-			}
-			OS.MoveToEx(graphics, x, strikeoutY, 0);
-			OS.LineTo(graphics, x + run.width, strikeoutY);	
+			OS.SetRect(rect, x, strikeoutY, x + run.width, strikeoutY + run.strikeoutThickness);
+			OS.FillRect(graphics, rect, brush);
 		}
-		OS.SelectObject(graphics, oldPen);
-		OS.DeleteObject(newPen);
+		OS.DeleteObject(brush);
 	}
 }
 
@@ -2470,9 +2450,9 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 		}
 		if (lotm != null) {
 			run.underlinePos = lotm.otmsUnderscorePosition;
-			run.underlineThickness = lotm.otmsUnderscoreSize;
+			run.underlineThickness = Math.max(1, lotm.otmsUnderscoreSize);
 			run.strikeoutPos = lotm.otmsStrikeoutPosition;
-			run.strikeoutThickness = lotm.otmsStrikeoutSize;
+			run.strikeoutThickness = Math.max(1, lotm.otmsStrikeoutSize);
 		} else {
 			run.underlinePos = 1;
 			run.underlineThickness = 1;
