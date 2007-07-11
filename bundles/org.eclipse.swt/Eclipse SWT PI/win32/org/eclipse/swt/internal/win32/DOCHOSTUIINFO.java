@@ -14,7 +14,7 @@ public class DOCHOSTUIINFO {
 	public int cbSize;
 	public int dwFlags;
 	public int dwDoubleClick;
-	public int /*long*/ pchHostCss;
-	public int /*long*/ pchHostNS;
+//	public int /*long*/ pchHostCss;
+//	public int /*long*/ pchHostNS;
 	public static final int sizeof = OS.DOCHOSTUIINFO_sizeof ();
 }

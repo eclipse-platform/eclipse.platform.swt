@@ -878,7 +878,7 @@ void setDLLVERSIONINFOFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpSt
 typedef struct DOCHOSTUIINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID cbSize, dwFlags, dwDoubleClick, pchHostCss, pchHostNS;
+	jfieldID cbSize, dwFlags, dwDoubleClick;
 } DOCHOSTUIINFO_FID_CACHE;
 
 DOCHOSTUIINFO_FID_CACHE DOCHOSTUIINFOFc;
@@ -890,8 +890,6 @@ void cacheDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject)
 	DOCHOSTUIINFOFc.cbSize = (*env)->GetFieldID(env, DOCHOSTUIINFOFc.clazz, "cbSize", "I");
 	DOCHOSTUIINFOFc.dwFlags = (*env)->GetFieldID(env, DOCHOSTUIINFOFc.clazz, "dwFlags", "I");
 	DOCHOSTUIINFOFc.dwDoubleClick = (*env)->GetFieldID(env, DOCHOSTUIINFOFc.clazz, "dwDoubleClick", "I");
-	DOCHOSTUIINFOFc.pchHostCss = (*env)->GetFieldID(env, DOCHOSTUIINFOFc.clazz, "pchHostCss", "I");
-	DOCHOSTUIINFOFc.pchHostNS = (*env)->GetFieldID(env, DOCHOSTUIINFOFc.clazz, "pchHostNS", "I");
 	DOCHOSTUIINFOFc.cached = 1;
 }
 
@@ -901,8 +899,6 @@ DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIIN
 	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags);
 	lpStruct->dwDoubleClick = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick);
-	lpStruct->pchHostCss = (OLECHAR *)(*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss);
-	lpStruct->pchHostNS = (OLECHAR *)(*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS);
 	return lpStruct;
 }
 
@@ -912,8 +908,6 @@ void setDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStru
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize, (jint)lpStruct->cbSize);
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags, (jint)lpStruct->dwFlags);
 	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick, (jint)lpStruct->dwDoubleClick);
-	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss, (jint)lpStruct->pchHostCss);
-	(*env)->SetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS, (jint)lpStruct->pchHostNS);
 }
 #endif
 
