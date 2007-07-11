@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 894;
-int OS_nativeFunctionCallCount[894];
+int OS_nativeFunctionCount = 897;
+int OS_nativeFunctionCallCount[897];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -114,6 +114,7 @@ char * OS_nativeFunctionNames[] = {
 	"CreateWindowExW",
 	"DIBSECTION_1sizeof",
 	"DLLVERSIONINFO_1sizeof",
+	"DOCHOSTUIINFO_1sizeof",
 	"DOCINFO_1sizeof",
 	"DRAWITEMSTRUCT_1sizeof",
 	"DROPFILES_1sizeof",
@@ -499,6 +500,7 @@ char * OS_nativeFunctionNames[] = {
 	"MessageBoxA",
 	"MessageBoxW",
 	"MonitorFromWindow",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I",
@@ -527,6 +529,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__I_3JI",
 	"MoveMemory__I_3SI",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II",

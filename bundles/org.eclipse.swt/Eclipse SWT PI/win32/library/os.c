@@ -1692,6 +1692,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(DLLVERSIONINFO_1sizeof)
 }
 #endif
 
+#ifndef NO_DOCHOSTUIINFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(DOCHOSTUIINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DOCHOSTUIINFO_1sizeof_FUNC);
+	rc = (jint)DOCHOSTUIINFO_sizeof();
+	OS_NATIVE_EXIT(env, that, DOCHOSTUIINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DOCINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(DOCINFO_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -7910,6 +7922,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(MonitorFromWindow)
 }
 #endif
 
+#ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DOCHOSTUIINFO _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I_FUNC);
+	if (arg1) if ((lparg1 = getDOCHOSTUIINFOFields(env, arg1, &_arg1)) == NULL) goto fail;
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -8395,6 +8420,20 @@ fail:
 	}
 	if (arg0 && lparg0) setBITMAPINFOHEADERFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DOCHOSTUIINFO _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setDOCHOSTUIINFOFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II_FUNC);
 }
 #endif
 

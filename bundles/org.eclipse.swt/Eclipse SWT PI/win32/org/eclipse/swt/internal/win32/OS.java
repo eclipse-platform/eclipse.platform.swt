@@ -2056,6 +2056,7 @@ public static final native int COMPOSITIONFORM_sizeof ();
 public static final native int CREATESTRUCT_sizeof ();
 public static final native int DIBSECTION_sizeof ();
 public static final native int DLLVERSIONINFO_sizeof ();
+public static final native int DOCHOSTUIINFO_sizeof ();
 public static final native int DOCINFO_sizeof ();
 public static final native int DRAWITEMSTRUCT_sizeof ();
 public static final native int DROPFILES_sizeof ();
@@ -3589,6 +3590,7 @@ public static final native void MoveMemory (short[] Destination, int /*long*/ So
 public static final native void MoveMemory (int /*long*/ Destination, byte [] Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, char [] Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, int [] Source, int Length);
+public static final native void MoveMemory (int /*long*/ Destination, DOCHOSTUIINFO Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, GRADIENT_RECT Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, LOGFONTW Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, LOGFONTA Source, int Length);
@@ -3603,6 +3605,7 @@ public static final native void MoveMemory (int /*long*/ Destination, RECT Sourc
 public static final native void MoveMemory (int /*long*/ Destination, TRIVERTEX Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, WINDOWPOS Source, int Length);
 public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [] Source, int Length);
+public static final native void MoveMemory (DOCHOSTUIINFO Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (EXTLOGPEN Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (HDITEM Destination, int /*long*/ Source, int Length);

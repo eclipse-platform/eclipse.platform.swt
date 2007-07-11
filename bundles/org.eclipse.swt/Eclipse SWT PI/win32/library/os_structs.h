@@ -203,6 +203,18 @@ void setDLLVERSIONINFOFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpSt
 #define DLLVERSIONINFO_sizeof() 0
 #endif
 
+#ifndef NO_DOCHOSTUIINFO
+void cacheDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject);
+DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStruct);
+void setDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIINFO *lpStruct);
+#define DOCHOSTUIINFO_sizeof() sizeof(DOCHOSTUIINFO)
+#else
+#define cacheDOCHOSTUIINFOFields(a,b)
+#define getDOCHOSTUIINFOFields(a,b,c) NULL
+#define setDOCHOSTUIINFOFields(a,b,c)
+#define DOCHOSTUIINFO_sizeof() 0
+#endif
+
 #ifndef NO_DOCINFO
 void cacheDOCINFOFields(JNIEnv *env, jobject lpObject);
 DOCINFO *getDOCINFOFields(JNIEnv *env, jobject lpObject, DOCINFO *lpStruct);

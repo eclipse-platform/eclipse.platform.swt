@@ -29,7 +29,6 @@ class IE extends WebBrowser {
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
-	int info;
 	int /*long*/ globalDispatch;
 	String html;
 
@@ -100,8 +99,6 @@ class IE extends WebBrowser {
 	}
 
 public void create(Composite parent, int style) {
-	info = IE.DOCHOSTUIFLAG_THEME;
-	if ((style & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
 	frame = new OleFrame(browser, SWT.NONE);
 
 	/*

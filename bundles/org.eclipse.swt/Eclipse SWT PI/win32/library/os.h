@@ -25,6 +25,7 @@
 #include <shlwapi.h>
 #include <shellapi.h>
 #include <wininet.h>
+#include <mshtmhst.h>
 
 #ifndef _WIN32_WCE
 #include <initguid.h>
