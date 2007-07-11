@@ -541,7 +541,8 @@ public Rectangle getBounds() {
 	int[] w = new int[1], h = new int[1];
 	OS.pango_layout_get_size(layout, w, h);
 	int wrapWidth = OS.pango_layout_get_width(layout);
-	int width = OS.PANGO_PIXELS(wrapWidth != -1 ? wrapWidth : w[0]);
+	w[0] = wrapWidth != -1 ? wrapWidth : w[0] + OS.pango_layout_get_indent(layout);
+	int width = OS.PANGO_PIXELS(w[0]);
 	int height = OS.PANGO_PIXELS(h[0]);
 	if (ascent != -1 && descent != -1) {
 		height = Math.max (height, ascent + descent);
