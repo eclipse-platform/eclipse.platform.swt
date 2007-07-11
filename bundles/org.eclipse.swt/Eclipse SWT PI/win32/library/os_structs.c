@@ -901,8 +901,8 @@ DOCHOSTUIINFO *getDOCHOSTUIINFOFields(JNIEnv *env, jobject lpObject, DOCHOSTUIIN
 	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.cbSize);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwFlags);
 	lpStruct->dwDoubleClick = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.dwDoubleClick);
-	lpStruct->pchHostCss = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss);
-	lpStruct->pchHostNS = (*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS);
+	lpStruct->pchHostCss = (OLECHAR *)(*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostCss);
+	lpStruct->pchHostNS = (OLECHAR *)(*env)->GetIntField(env, lpObject, DOCHOSTUIINFOFc.pchHostNS);
 	return lpStruct;
 }
 
