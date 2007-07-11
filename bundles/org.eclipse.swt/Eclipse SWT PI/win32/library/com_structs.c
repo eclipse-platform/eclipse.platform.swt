@@ -198,7 +198,7 @@ DVTARGETDEVICE *getDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETD
 	lpStruct->tdExtDevmodeOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdExtDevmodeOffset);
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData[0]), (jbyte *)lpStruct->tdData[0]);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData), (jbyte *)lpStruct->tdData);
 	}
 	return lpStruct;
 }
@@ -213,7 +213,7 @@ void setDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpSt
 	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdExtDevmodeOffset, (jshort)lpStruct->tdExtDevmodeOffset);
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData[0]), (jbyte *)lpStruct->tdData[0]);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData), (jbyte *)lpStruct->tdData);
 	}
 }
 #endif
@@ -534,7 +534,7 @@ OLECMDTEXT *getOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStr
 	lpStruct->cwBuf = (*env)->GetIntField(env, lpObject, OLECMDTEXTFc.cwBuf);
 	{
 	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz[0]) / 2, (jshort *)lpStruct->rgwz[0]);
+	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz) / 2, (jshort *)lpStruct->rgwz);
 	}
 	return lpStruct;
 }
@@ -547,7 +547,7 @@ void setOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct)
 	(*env)->SetIntField(env, lpObject, OLECMDTEXTFc.cwBuf, (jint)lpStruct->cwBuf);
 	{
 	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz[0]) / 2, (jshort *)lpStruct->rgwz[0]);
+	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz) / 2, (jshort *)lpStruct->rgwz);
 	}
 }
 #endif

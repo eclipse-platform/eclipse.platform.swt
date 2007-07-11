@@ -543,7 +543,7 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 			//ADD ESP,(argCount + 1) * sizeof(SWT_PTR) - 3 bytes
 			code[j++] = 0x83;
 			code[j++] = 0xc4;
-			code[j++] = ((argCount + 1) * sizeof(SWT_PTR));
+			code[j++] = (unsigned char)((argCount + 1) * sizeof(SWT_PTR));
 
 			//POP EBP - 1 byte
 			code[j++] = 0x5d;
@@ -551,7 +551,7 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 #if defined (_WIN32) || defined (_WIN32_WCE)
 			//RETN argCount * sizeof(SWT_PTR) - 3 bytes
 			code[j++] = 0xc2;
-			code[j++] = (argCount * sizeof(SWT_PTR));
+			code[j++] = (unsigned char)(argCount * sizeof(SWT_PTR));
 			code[j++] = 0x00;
 #else
 			//RETN - 1 byte
