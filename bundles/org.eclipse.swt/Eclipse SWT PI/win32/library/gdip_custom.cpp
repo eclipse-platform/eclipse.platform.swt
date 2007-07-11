@@ -21,7 +21,7 @@ extern "C" {
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawLines)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTR arg1, jintArray arg2, jint arg3)
 {
-	Point *points = NULL;
+	Point *points=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawLines_FUNC);
@@ -47,7 +47,7 @@ fail:
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawPolygon)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTR arg1, jintArray arg2, jint arg3)
 {
-	Point *points = NULL;
+	Point *points=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawPolygon_FUNC);
@@ -73,7 +73,7 @@ fail:
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPolygon)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTR arg1, jintArray arg2, jint arg3, jint arg4)
 {
-	Point *points = NULL;
+	Point *points=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1FillPolygon_FUNC);
@@ -99,7 +99,7 @@ fail:
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPathPoints)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, jfloatArray arg1, jint arg2)
 {
-	PointF *points = NULL;
+	PointF *points=NULL;
 	jfloat *lparg1=NULL;
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1GetPathPoints_FUNC);
@@ -126,7 +126,7 @@ fail:
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__I_3FI)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, jfloatArray arg1, jint arg2)
 {
-	PointF *points = NULL;
+	PointF *points=NULL;
 	jfloat *lparg1=NULL;
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Matrix_1TransformPoints__I_3FI_FUNC);
@@ -158,7 +158,7 @@ fail:
 JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetInterpolationColors)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTRArray arg1, jfloatArray arg2, jint arg3)
 {
-	Color *colors;
+	Color *colors=NULL;
 	SWT_PTR *lparg1=NULL;
 	jfloat *lparg2=NULL;
 	jint rc = 0;
@@ -187,7 +187,7 @@ fail:
 JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetSurroundColors)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTRArray arg1, jintArray arg2)
 {
-	Color *colors;
+	Color *colors=NULL;
 	SWT_PTR *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
@@ -216,7 +216,7 @@ fail:
 JNIEXPORT SWT_PTR JNICALL Gdip_NATIVE(GraphicsPath_1new___3I_3BII)
 	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
-	Point *points = NULL;
+	Point *points=NULL;
 	jint *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	SWT_PTR rc = 0;
