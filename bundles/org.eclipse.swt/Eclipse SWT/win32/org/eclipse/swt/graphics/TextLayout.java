@@ -910,7 +910,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 		int /*long*/ newPen = 0;
 		int /*long*/ oldPen = 0;
 		if (run.style.underline) {
-			newPen = OS.CreatePen(OS.PS_SOLID, run.underlineThickness, color);
+			newPen = OS.CreatePen(OS.PS_SOLID, run.underlineThickness, (int)/*64*/color);
 			oldPen = OS.SelectObject(graphics, newPen);
 			OS.MoveToEx(graphics, x, underlineY, 0);
 			OS.LineTo(graphics, x + run.width, underlineY);
@@ -921,7 +921,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					OS.SelectObject(graphics, oldPen);
 					OS.DeleteObject(newPen);
 				}
-				newPen = OS.CreatePen(OS.PS_SOLID, run.strikeoutThickness, color);
+				newPen = OS.CreatePen(OS.PS_SOLID, run.strikeoutThickness, (int)/*64*/color);
 				oldPen = OS.SelectObject(graphics, newPen);
 			}
 			OS.MoveToEx(graphics, x, strikeoutY, 0);
