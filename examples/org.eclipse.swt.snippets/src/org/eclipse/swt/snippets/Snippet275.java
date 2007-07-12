@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Canvas snippet: update a Canvas frequently
+ * Canvas snippet: update part of a Canvas frequently
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
