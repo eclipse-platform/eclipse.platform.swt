@@ -25,25 +25,25 @@ public class Snippet275 {
 static String value;
 public static void main (String[] args) {
 	final int INTERVAL = 888;
-    final Display display = new Display ();
-    final Image image = new Image (display, 750, 750);
-    GC gc = new GC (image);
-    gc.setBackground (display.getSystemColor (SWT.COLOR_RED));
-    gc.fillRectangle (image.getBounds ());
-    gc.dispose ();
+	final Display display = new Display ();
+	final Image image = new Image (display, 750, 750);
+	GC gc = new GC (image);
+	gc.setBackground (display.getSystemColor (SWT.COLOR_RED));
+	gc.fillRectangle (image.getBounds ());
+	gc.dispose ();
 
-    Shell shell = new Shell (display);
-    shell.setBounds (10, 10, 790, 790);
-    final Canvas canvas = new Canvas (shell, SWT.NONE);
-    canvas.setBounds (10, 10, 750, 750);
-    canvas.addListener (SWT.Paint, new Listener () {
+	Shell shell = new Shell (display);
+	shell.setBounds (10, 10, 790, 790);
+	final Canvas canvas = new Canvas (shell, SWT.NONE);
+	canvas.setBounds (10, 10, 750, 750);
+	canvas.addListener (SWT.Paint, new Listener () {
 		public void handleEvent (Event event) {
 			value = String.valueOf (System.currentTimeMillis ());
 			event.gc.drawImage (image, 0, 0);
 			event.gc.drawString (value, 10, 10, true);
 		}
 	});
-    display.timerExec (INTERVAL, new Runnable () {
+	display.timerExec (INTERVAL, new Runnable () {
 		public void run () {
 			if (canvas.isDisposed ()) return;
 			// canvas.redraw (); // <-- bad, damages more than is needed
@@ -54,12 +54,12 @@ public static void main (String[] args) {
 			display.timerExec (INTERVAL, this);
 		}
 	});
-    shell.open ();
-    while (!shell.isDisposed ()){
-        if (!display.readAndDispatch ()) display.sleep ();
-    }
-    image.dispose ();
-    display.dispose ();
+	shell.open ();
+	while (!shell.isDisposed ()){
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	image.dispose ();
+	display.dispose ();
 }
 
-} 
+}
