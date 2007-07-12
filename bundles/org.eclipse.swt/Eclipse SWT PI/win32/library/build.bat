@@ -23,7 +23,6 @@ IF "%MSSDK%"=="" set MSSDK=%DEV_TOOLS%\platsdk\feb2003
 call %MSSDK%\setenv /XP32 /RETAIL
 IF "%OUTPUT_DIR%"=="" set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 IF "%JAVA_HOME%"=="" set JAVA_HOME=j:\teamswt\swt-builddir\ibm-jdk1.4.1
-IF "%JAWT_LIB%"=="" set JAWT_LIB=$(JAVA_HOME)\jre\bin
 IF "%XULRUNNER_SDK%"=="" set XULRUNNER_SDK=j:\teamswt\swt-builddir\gecko-sdk
 set XULRUNNER_MAKE=make_xulrunner make_xpcominit
 IF "%1"=="X86" shift
@@ -35,7 +34,6 @@ IF "%MSSDK%"=="" set MSSDK=c:\sdk
 call %MSSDK%\setenv /X64 /RETAIL
 IF "%OUTPUT_DIR%"=="" set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF "%JAVA_HOME%"=="" set JAVA_HOME=C:\jdk150-64
-IF "%JAWT_LIB%"=="" set JAWT_LIB=$(JAVA_HOME)\jre\bin
 set CFLAGS=-DSWT_PTR_SIZE_64
 shift
 GOTO MAKE
@@ -47,7 +45,6 @@ IF "%MSSDK%"=="" set MSSDK=c:\sdk
 call %MSSDK%\setenv /SRV64 /RETAIL
 IF "%OUTPUT_DIR%"=="" set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.ia64
 IF "%JAVA_HOME%"=="" set JAVA_HOME=C:\jdk142_ia64
-IF "%JAWT_LIB%"=="" set JAWT_LIB=$(JAVA_HOME)\jre\bin
 set CFLAGS=-DSWT_PTR_SIZE_64
 shift
 GOTO MAKE

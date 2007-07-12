@@ -13,7 +13,6 @@
 
 # assumes these variables are set in the environment from which nmake is run
 #	JAVA_HOME
-#	JAWT_LIB
 #	OUTPUT_DIR
 
 !include <make_common.mak>
@@ -35,7 +34,7 @@ GDIP_OBJS    = gdip.obj gdip_structs.obj gdip_stats.obj gdip_custom.obj
 
 AWT_PREFIX = swt-awt
 AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-AWT_LIBS   = $(JAWT_LIB)\jawt.lib
+AWT_LIBS   = "$(JAVA_HOME)\jre\bin\jawt.lib"
 AWT_OBJS   = swt_awt.obj
 
 WGL_PREFIX = swt-wgl
