@@ -555,7 +555,7 @@
 #endif
 
 #ifndef _WIN32_WCE
-#if (_WIN32_IE <= 0x0600)
+#ifndef _BP_PAINTPARAMS
 typedef HANDLE HPAINTBUFFER;
 typedef struct _BP_PAINTPARAMS {
     DWORD cbSize;
