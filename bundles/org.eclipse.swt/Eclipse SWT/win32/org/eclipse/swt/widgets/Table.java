@@ -363,7 +363,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 	if (!ignoreCustomDraw && !ignoreDrawFocus && nmcd.left != nmcd.right) {
 		if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
 			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
-				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+				if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 					int dwExStyle = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 					if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
 //						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
@@ -417,7 +417,7 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 	if (!ignoreCustomDraw) {
 		if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
 			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
-				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+				if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 					int dwExStyle = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 					if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
 						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
@@ -453,7 +453,7 @@ LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ l
 	*/
 	if (--customCount == 0 && OS.IsWindowVisible (handle)) {
 		if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
-			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+			if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 				int dwExStyle = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
 					int bits = OS.LVS_EX_FULLROWSELECT;
@@ -492,7 +492,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ lP
 	*/
 	if (customCount++ == 0 && OS.IsWindowVisible (handle)) {
 		if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
-			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+			if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 				int dwExStyle = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) != 0) {
 					int bits = OS.LVS_EX_FULLROWSELECT;
@@ -540,7 +540,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ lP
 				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				fillImageBackground (nmcd.hdc, control, rect);
 			} else {
-				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+				if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 					if (OS.IsWindowEnabled (handle)) {
 						RECT rect = new RECT ();
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
@@ -586,7 +586,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*l
 		* is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
 		* in CDDS_SUBITEMPOSTPAINT.
 		*/
-		if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+		if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
 					int oldColumn = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
@@ -735,7 +735,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 						Control control = findBackgroundControl ();
 						if (control == null) control = this;
 						if (control.backgroundImage == null) {
-							if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+							if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 								nmcd.clrTextBk = control.getBackgroundPixel ();
 							}
 						}
@@ -5329,7 +5329,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 					OS.SetBrushOrgEx (hDC, ps.left, ps.top, lpPoint2);
 					int /*long*/ hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
 					int /*long*/ hOldBitmap = OS.SelectObject (hDC, hBitmap);
-					if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+					if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 						RECT rect = new RECT ();
 						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 						drawBackground (hDC, rect);
