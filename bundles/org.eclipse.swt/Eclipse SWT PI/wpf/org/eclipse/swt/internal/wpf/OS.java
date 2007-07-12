@@ -454,6 +454,7 @@ public static final native int Border_typeid();
 public static final native int Brushes_White();
 public static final native int Brushes_Black();
 public static final native int Brushes_Navy();
+public static final native int Brushes_Red();
 public static final native int Brushes_Transparent();
 public static final native int Brushes_LightSkyBlue();
 public static final native void Brush_Opacity(int sender, double opacity);
@@ -625,6 +626,8 @@ public static final native int DockPanel_typeid();
 public static final native void DoubleCollection_Add(int sender, double value);
 public static final native int DoubleAnimationUsingKeyFrames_KeyFrames(int sender);
 public static final native int DoubleKeyFrameCollection_Add(int sender, int keyFrame);
+public static final native int DragDeltaEventArgs_VerticalChange(int e);
+public static final native int DragDeltaEventArgs_HorizontalChange(int e);
 public static final native int DragDrop_DoDragDrop(int dragSource, int data, int allowedEffects);
 public static final native int DragEventArgs_AllowedEffects (int sender);
 public static final native int DragEventArgs_Data (int sender);
@@ -751,6 +754,10 @@ public static final native int FrameworkElement_TagProperty();
 public static final native int FrameworkElement_typeid();
 public static final native int FrameworkElement_ToolTip(int sender);
 public static final native void FrameworkElement_ToolTip(int sender, int value);
+public static final native double FrameworkElement_MaxHeight(int sender);
+public static final native void FrameworkElement_MaxHeight(int sender, double height);
+public static final native double FrameworkElement_MaxWidth(int sender);
+public static final native void FrameworkElement_MaxWidth(int sender, double width);
 public static final native double FrameworkElement_MinHeight(int sender);
 public static final native void FrameworkElement_MinHeight(int sender, double height);
 public static final native double FrameworkElement_MinWidth(int sender);
@@ -1641,5 +1648,7 @@ public static final native int XmlReader_Create(int stream);
 public static final native int XamlReader_Load(int stream);
 public static final native int gcnew_ResourceDictionary();
 public static final native void ResourceDictionary_Source(int sender, int uri);
+
+
 
 }

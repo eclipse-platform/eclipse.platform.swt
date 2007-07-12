@@ -622,6 +622,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(Brushes_1Navy)
 }
 #endif
 
+#ifndef NO_Brushes_1Red
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Brushes_1Red)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Brushes_1Red)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Brushes_1Red_FUNC);
+	rc = (jint)TO_HANDLE(Brushes::Red);
+	OS_NATIVE_EXIT(env, that, Brushes_1Red_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Brushes_1Transparent
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Brushes_1Transparent)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(Brushes_1Transparent)
@@ -2725,6 +2738,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(DoubleKeyFrameCollection_1Add)
 }
 #endif
 
+#ifndef NO_DragDeltaEventArgs_1HorizontalChange
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragDeltaEventArgs_1HorizontalChange)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DragDeltaEventArgs_1HorizontalChange)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragDeltaEventArgs_1HorizontalChange_FUNC);
+	rc = (jint)((DragDeltaEventArgs^)TO_OBJECT(arg0))->HorizontalChange;
+	OS_NATIVE_EXIT(env, that, DragDeltaEventArgs_1HorizontalChange_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragDeltaEventArgs_1VerticalChange
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragDeltaEventArgs_1VerticalChange)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DragDeltaEventArgs_1VerticalChange)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragDeltaEventArgs_1VerticalChange_FUNC);
+	rc = (jint)((DragDeltaEventArgs^)TO_OBJECT(arg0))->VerticalChange;
+	OS_NATIVE_EXIT(env, that, DragDeltaEventArgs_1VerticalChange_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DragDrop_1DoDragDrop
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragDrop_1DoDragDrop)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL OS_NATIVE(DragDrop_1DoDragDrop)
@@ -4287,6 +4326,54 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1MarginProperty)
 	rc = (jint)TO_HANDLE(FrameworkElement::MarginProperty);
 	OS_NATIVE_EXIT(env, that, FrameworkElement_1MarginProperty_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1MaxHeight__I
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(FrameworkElement_1MaxHeight__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(FrameworkElement_1MaxHeight__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1MaxHeight__I_FUNC);
+	rc = (jdouble)((FrameworkElement^)TO_OBJECT(arg0))->MaxHeight;
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1MaxHeight__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1MaxHeight__ID
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1MaxHeight__ID)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1MaxHeight__ID)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1MaxHeight__ID_FUNC);
+	((FrameworkElement^)TO_OBJECT(arg0))->MaxHeight = (arg1);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1MaxHeight__ID_FUNC);
+}
+#endif
+
+#ifndef NO_FrameworkElement_1MaxWidth__I
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(FrameworkElement_1MaxWidth__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(FrameworkElement_1MaxWidth__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1MaxWidth__I_FUNC);
+	rc = (jdouble)((FrameworkElement^)TO_OBJECT(arg0))->MaxWidth;
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1MaxWidth__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1MaxWidth__ID
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1MaxWidth__ID)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1MaxWidth__ID)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1MaxWidth__ID_FUNC);
+	((FrameworkElement^)TO_OBJECT(arg0))->MaxWidth = (arg1);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1MaxWidth__ID_FUNC);
 }
 #endif
 

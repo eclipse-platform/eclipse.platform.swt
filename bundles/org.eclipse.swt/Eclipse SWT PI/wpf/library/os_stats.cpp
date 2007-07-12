@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1264;
-int OS_nativeFunctionCallCount[1264];
+int OS_nativeFunctionCount = 1270;
+int OS_nativeFunctionCallCount[1270];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -67,6 +67,7 @@ char * OS_nativeFunctionNames[] = {
 	"Brushes_1Black",
 	"Brushes_1LightSkyBlue",
 	"Brushes_1Navy",
+	"Brushes_1Red",
 	"Brushes_1Transparent",
 	"Brushes_1White",
 	"ButtonBase_1Click",
@@ -238,6 +239,8 @@ char * OS_nativeFunctionNames[] = {
 	"DoubleAnimationUsingKeyFrames_1KeyFrames",
 	"DoubleCollection_1Add",
 	"DoubleKeyFrameCollection_1Add",
+	"DragDeltaEventArgs_1HorizontalChange",
+	"DragDeltaEventArgs_1VerticalChange",
 	"DragDrop_1DoDragDrop",
 	"DragEventArgs_1AllowedEffects",
 	"DragEventArgs_1Data",
@@ -367,6 +370,10 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1Margin__I",
 	"FrameworkElement_1Margin__II",
 	"FrameworkElement_1MarginProperty",
+	"FrameworkElement_1MaxHeight__I",
+	"FrameworkElement_1MaxHeight__ID",
+	"FrameworkElement_1MaxWidth__I",
+	"FrameworkElement_1MaxWidth__ID",
 	"FrameworkElement_1MinHeight__I",
 	"FrameworkElement_1MinHeight__ID",
 	"FrameworkElement_1MinWidth__I",
@@ -1218,7 +1225,6 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1SWTTextParagraphProperties",
 	"gcnew_1SWTTextRunProperties",
 	"gcnew_1SWTTextSource",
-	"gcnew_1SWTToolBar",
 	"gcnew_1SWTTreeView",
 	"gcnew_1SWTTreeViewRowPresenter",
 	"gcnew_1SaveFileDialog",
