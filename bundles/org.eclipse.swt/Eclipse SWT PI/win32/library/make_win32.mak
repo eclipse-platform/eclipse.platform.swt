@@ -66,7 +66,8 @@ MOZILLACFLAGS = -c \
 	-I"$(JAVA_HOME)/include/win32" \
 	-I"$(XULRUNNER_SDK)\include\mozilla-config.h" -I"$(XULRUNNER_SDK)\include"
 
-CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
+#CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
+CFLAGS = -O1 -DNDEBUG $(cflags) $(cvarsmt) $(CFLAGS) \
 	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER \
 	/I"$(JAVA_HOME)\include" /I"$(JAVA_HOME)\include\win32" /I.
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
