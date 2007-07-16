@@ -122,8 +122,13 @@ fail:
 }
 #endif
 
-#ifndef NO_Matrix_1TransformPoints__I_3FI
+
+#if (!defined(NO_Matrix_1TransformPoints__I_3FI) && !defined(SWT_PTR_SIZE_64)) || (!defined(NO_Matrix_1TransformPoints__J_3FI) && defined(SWT_PTR_SIZE_64))
+#ifdef SWT_PTR_SIZE_64
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__J_3FI)
+#else
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__I_3FI)
+#endif
 	(JNIEnv *env, jclass that, SWT_PTR arg0, jfloatArray arg1, jint arg2)
 {
 	PointF *points=NULL;
