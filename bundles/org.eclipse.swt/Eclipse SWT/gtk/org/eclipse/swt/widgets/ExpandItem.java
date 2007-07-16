@@ -268,8 +268,7 @@ public boolean getExpanded () {
 public int getHeaderHeight () {
 	checkWidget ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		int /*long*/ widget = OS.gtk_expander_get_label_widget (handle);
-		return OS.GTK_WIDGET_HEIGHT (widget);
+		return OS.GTK_WIDGET_HEIGHT (handle) - (expanded ? height : 0);
 	}
 	return Math.max (parent.getBandHeight (), imageHeight);
 }
