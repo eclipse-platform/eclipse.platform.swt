@@ -873,19 +873,6 @@ public void create (Composite parent, int style) {
 	createCOMInterfaces ();
 	AddRef ();
 
-	if (!Is_1_8) {
-		/*
-		* Check for the availability of the 1.8 implementation of nsIDocShell to determine
-		* if the GRE's version is >= 1.8. 
-		*/
-		rc = webBrowser.QueryInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
-		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			Is_1_8 = true;
-			new nsISupports (result[0]).Release ();
-			result[0] = 0;
-		}
-	}
-
 	rc = webBrowser.SetContainerWindow (webBrowserChrome.getAddress());
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
@@ -928,6 +915,26 @@ public void create (Composite parent, int style) {
 		error (XPCOM.NS_ERROR_FAILURE);
 	}
 	baseWindow.Release ();
+
+	if (!Is_1_8) {
+		/*
+		* Check for the availability of the 1.8 implementation of nsIDocShell to determine
+		* if the GRE's version is >= 1.8. 
+		*/
+		rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
+		result[0] = 0;
+
+		rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			Is_1_8 = true;
+			new nsISupports (result[0]).Release ();
+		}
+		result[0] = 0;
+		interfaceRequestor.Release ();
+	}
 
 	rc = webBrowser.AddWebBrowserListener (weakReference.getAddress (), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) {
