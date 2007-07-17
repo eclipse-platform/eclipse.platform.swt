@@ -2391,9 +2391,9 @@ int /*long*/ IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredConten
 	boolean preferred = false;
 	int size = XPCOM.strlen (aContentType);
 	if (size > 0) {
-		byte[] typeBytes = new byte[size];
+		byte[] typeBytes = new byte[size + 1];
 		XPCOM.memmove (typeBytes, aContentType, size);
-		String contentType = new String (typeBytes);
+		String contentType = new String (typeBytes, 0, size);
 
 		/* do not attempt to handle known problematic content types */
 		if (!contentType.equals (XPCOM.CONTENT_MAYBETEXT) && !contentType.equals (XPCOM.CONTENT_MULTIPART)) {
