@@ -1866,10 +1866,9 @@ int getLastEventTime () {
 	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
 }
 
-//TODO - should ids be long
-MenuItem getMenuItem (int /*long*/ _id) {
+MenuItem getMenuItem (int id) {
 	if (items == null) return null;
-	int id = (int)/*64*/_id - ID_START;
+	id = id - ID_START;
 	if (0 <= id && id < items.length) return items [id];
 	return null;
 }

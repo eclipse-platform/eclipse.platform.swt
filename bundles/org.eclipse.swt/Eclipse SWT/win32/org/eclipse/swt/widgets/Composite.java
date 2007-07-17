@@ -931,7 +931,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	Shell shell = getShell ();
 	if ((hdr.uFlags & OS.TTF_IDISHWND) == 0) {
 		String string = null;
-		ToolTip toolTip = shell.findToolTip (hdr.idFrom);
+		ToolTip toolTip = shell.findToolTip ((int)/*64*/hdr.idFrom);
 		if (toolTip != null) {
 			string = toolTip.message;
 			if (string == null || string.length () == 0) string = " ";

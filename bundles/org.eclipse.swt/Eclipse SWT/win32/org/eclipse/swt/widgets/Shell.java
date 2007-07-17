@@ -722,10 +722,9 @@ Control findThemeControl () {
 	return null;
 }
 
-//TODO - should ids be long
-ToolTip findToolTip (int /*long*/ _id) {
+ToolTip findToolTip (int id) {
 	if (toolTips == null) return null;
-	int id = (int)/*64*/_id - Display.ID_START;
+	id = id - Display.ID_START;
 	return 0 <= id && id < toolTips.length ? toolTips [id] : null;
 }
 
@@ -843,7 +842,7 @@ ToolTip getCurrentToolTip (int /*long*/ hwndToolTip) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) return findToolTip (lpti.uId);
+			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) return findToolTip ((int)/*64*/lpti.uId);
 		}
 	}
 	return null;

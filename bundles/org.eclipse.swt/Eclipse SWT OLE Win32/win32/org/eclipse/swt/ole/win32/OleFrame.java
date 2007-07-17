@@ -403,7 +403,6 @@ public MenuItem[] getFileMenus(){
 int /*long*/ getIOleInPlaceFrame() {
 	return iOleInPlaceFrame.getAddress();
 }
-//TODO - should ids be long
 private int /*long*/ getMenuItemID(int /*long*/ hMenu, int index) {
 	int /*long*/ id = 0;
 	MENUITEMINFO lpmii = new MENUITEMINFO();

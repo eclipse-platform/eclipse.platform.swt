@@ -211,14 +211,12 @@ TreeItem _getItem (int /*long*/ hItem) {
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = hItem;
 	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
-		return _getItem (tvItem.hItem, tvItem.lParam);
+		return _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 	}
 	return null;
 }
 
-//TODO - should ids be long
-TreeItem _getItem (int /*long*/ hItem, int /*long*/ _id) {
-	int id = (int)/*64*/_id;
+TreeItem _getItem (int /*long*/ hItem, int id) {
 	if ((style & SWT.VIRTUAL) == 0) return items [id];
 	return id != -1 ? items [id] : new TreeItem (this, SWT.NONE, -1, -1, hItem);
 }
@@ -1760,7 +1758,6 @@ void clearAll (int /*long*/ hItem, TVITEM tvItem, boolean all) {
 	}
 }
 
-//TODO - should ids be long
 int /*long*/ CompareFunc (int /*long*/ lParam1, int /*long*/ lParam2, int /*long*/ lParamSort) {
 	TreeItem item1 = items [(int)/*64*/lParam1], item2 = items [(int)/*64*/lParam2];
 	String text1 = item1.getText ((int)/*64*/lParamSort), text2 = item2.getText ((int)/*64*/lParamSort);
@@ -2980,14 +2977,14 @@ TreeItem getItem (NMTVCUSTOMDRAW nmcd) {
 	* fix is to query the field from the item instead
 	* of using the struct.
 	*/
-	int /*long*/ id = nmcd.lItemlParam;
+	int id = (int)/*64*/nmcd.lItemlParam;
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (id == -1) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 			tvItem.hItem = nmcd.dwItemSpec;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			id = tvItem.lParam;
+			id = (int)/*64*/tvItem.lParam;
 		}
 	}
 	return _getItem (nmcd.dwItemSpec, id);
@@ -3128,7 +3125,7 @@ TreeItem [] getItems (int /*long*/ hTreeItem) {
 	*/
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = _getItem (tvItem.hItem, tvItem.lParam);
+		TreeItem item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 		if (item != null) result [index++] = item;
 		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
 	}
@@ -3207,7 +3204,7 @@ int getSelection (int /*long*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
 				if (selection != null && index < selection.length) {
-					selection [index] = _getItem (hItem, tvItem.lParam);
+					selection [index] = _getItem (hItem, (int)/*64*/tvItem.lParam);
 				}
 				index++;
 			}
@@ -3217,7 +3214,7 @@ int getSelection (int /*long*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 				if (tvItem != null && selection != null && index < selection.length) {
 					tvItem.hItem = hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					selection [index] = _getItem (hItem, tvItem.lParam);
+					selection [index] = _getItem (hItem, (int)/*64*/tvItem.lParam);
 				}
 				index++;
 			}
@@ -3262,7 +3259,7 @@ public TreeItem [] getSelection () {
 		tvItem.hItem = hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return new TreeItem [0];
-		return new TreeItem [] {_getItem (tvItem.hItem, tvItem.lParam)};
+		return new TreeItem [] {_getItem (tvItem.hItem, (int)/*64*/tvItem.lParam)};
 	}
 	int count = 0;
 	TreeItem [] guess = new TreeItem [(style & SWT.VIRTUAL) != 0 ? 8 : 1];
@@ -5420,7 +5417,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 					tvItem.state |= OS.TVIS_SELECTED;
 				}
 				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-				TreeItem item = _getItem (hItem, tvItem.lParam);
+				TreeItem item = _getItem (hItem, (int)/*64*/tvItem.lParam);
 				Event event = new Event ();
 				event.item = item;
 				postEvent (SWT.Selection, event);
@@ -5547,7 +5544,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					tvItem.hItem = hNewItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					Event event = new Event ();
-					event.item = _getItem (hNewItem, tvItem.lParam);
+					event.item = _getItem (hNewItem, (int)/*64*/tvItem.lParam);
 					postEvent (SWT.Selection, event);
 					return new LRESULT (code);
 				}
@@ -5718,7 +5715,7 @@ LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);	
 				}
 				Event event = new Event ();
-				event.item = _getItem (tvItem.hItem, tvItem.lParam);
+				event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
 				return LRESULT.ZERO;
@@ -5838,7 +5835,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, (int)/*64*/id);	
 			}
 			Event event = new Event ();
-			event.item = _getItem (tvItem.hItem, tvItem.lParam);
+			event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 			event.detail = SWT.CHECK;
 			postEvent (SWT.Selection, event);
 			return LRESULT.ZERO;
@@ -6069,7 +6066,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		Event event = new Event ();
-		event.item = _getItem (tvItem.hItem, tvItem.lParam);
+		event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 		postEvent (SWT.Selection, event);
 	}
 	gestureCompleted = false;
@@ -6788,14 +6785,14 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			* fix is to query the field from the item instead
 			* of using the struct.
 			*/
-			int /*long*/ id = lptvdi.lParam;
+			int id = (int)/*64*/lptvdi.lParam;
 			if ((style & SWT.VIRTUAL) != 0) {
 				if (id == -1) {
 					TVITEM tvItem = new TVITEM ();
 					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 					tvItem.hItem = lptvdi.hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					id = tvItem.lParam;
+					id = (int)/*64*/tvItem.lParam;
 				}
 			}
 			TreeItem item = _getItem (lptvdi.hItem, id);
@@ -6990,7 +6987,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				TVITEM tvItem = treeView.itemNew;
 				hAnchor = tvItem.hItem;
 				Event event = new Event ();
-				event.item = _getItem (tvItem.hItem, tvItem.lParam);
+				event.item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 				postEvent (SWT.Selection, event);
 			}
 			updateScrollBar ();
@@ -7026,7 +7023,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				* items.  The fix is to check for null. 
 				*/
 				if (items == null) break;
-				TreeItem item = _getItem (tvItem.hItem, tvItem.lParam);
+				TreeItem item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
 				if (item == null) break;
 				Event event = new Event ();
 				event.item = item;

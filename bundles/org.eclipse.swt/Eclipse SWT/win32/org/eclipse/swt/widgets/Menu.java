@@ -752,7 +752,7 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-	int /*long*/ id = 0;
+	int id = 0;
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 		if (OS.IsPPC) {
 			TBBUTTON lpButton = new TBBUTTON ();
@@ -771,7 +771,7 @@ public MenuItem getItem (int index) {
 		if (!OS.GetMenuItemInfo (handle, index, true, info)) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}
-		id = info.dwItemData;
+		id = (int)/*64*/info.dwItemData;
 	}
 	return display.getMenuItem (id);
 }
@@ -837,7 +837,7 @@ public MenuItem [] getItems () {
 			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}
-		MenuItem item = display.getMenuItem (info.dwItemData);
+		MenuItem item = display.getMenuItem ((int)/*64*/info.dwItemData);
 		if (item != null) items [count++] = item;
 		index++;
 	}

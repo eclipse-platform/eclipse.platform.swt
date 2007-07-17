@@ -698,7 +698,6 @@ String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
 	}
-	//TODO - should ids be long
 	int index = (int)/*64*/hdr.idFrom;
 	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
