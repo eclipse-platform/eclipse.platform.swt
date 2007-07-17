@@ -1449,7 +1449,9 @@ LRESULT WM_SYSCOMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
-	if ((state & CANVAS) != 0) OS.InvalidateRect (handle, null, false);
+	if ((state & CANVAS) != 0 && hooks (SWT.Paint)) {
+		OS.InvalidateRect (handle, null, true);
+	}
 	return result;
 }
 
