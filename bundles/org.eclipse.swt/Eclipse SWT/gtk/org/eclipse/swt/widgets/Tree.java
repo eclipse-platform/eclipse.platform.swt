@@ -2274,22 +2274,9 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	items = new TreeItem[4];
-	/*
-	* Bug in GTK.  In version 2.3.2, when the property fixed-height-mode
-	* is set and there are items in the list, OS.gtk_tree_store_clear()
-	* segment faults.  The fix is to create a new empty model instead.
-	*/
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	// TODO verify if true for tree store
-	//OS.gtk_tree_store_clear (modelHandle);
-	int /*long*/ oldModel = modelHandle;
-	int /*long*/[] types = getColumnTypes (Math.max (1,columnCount));
-	int /*long*/ newModel = OS.gtk_tree_store_newv (types.length, types);
-	if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_tree_view_set_model (handle, newModel);
-	OS.g_object_unref (oldModel);
-	modelHandle = newModel;
+	OS.gtk_tree_store_clear (modelHandle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	
 	/* Disable searching when using VIRTUAL */
