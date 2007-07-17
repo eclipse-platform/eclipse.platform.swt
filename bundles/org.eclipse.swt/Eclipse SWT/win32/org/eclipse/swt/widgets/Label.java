@@ -20,6 +20,13 @@ import org.eclipse.swt.graphics.*;
  * user interface object that displays a string or image.
  * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
+ * <p>
+ * Shadow styles are hints and may not be honoured
+ * by the platform.  To create a separator label
+ * with the default shadow style for the platform,
+ * do not specify a shadow style.
+ * </p>
+ * <dl>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
@@ -481,6 +488,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
 	/*
 	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
 	* a static control, it sends WM_CTLCOLORSTATIC to get the
