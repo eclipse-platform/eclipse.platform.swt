@@ -2281,6 +2281,22 @@ public void removeAll () {
 	*/
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	/*
+	* Bug in GTK.  In version 2.8, when gtk_tree_view_set_model() is called, GTK
+	* does not remove the timer used to show animation when expanding a node. This
+	* can cause two possible crashes. The first one happens when the timer expires and
+	* it accesses the expanding node which has been already destroyed. The second one
+	* happens if a new item is created and destroyed before the timer expires. The fix 
+	* is to remove the timer by disposing the first item in the tree.  
+	*/
+	if (OS.GTK_VERSION < OS.VERSION(2, 10, 0)) {
+		if (OS.gtk_tree_model_iter_n_children (modelHandle, 0) != 0) {
+			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, 0);
+			OS.gtk_tree_store_remove (modelHandle, iter);
+			OS.g_free (iter);
+		}
+	}
 	// TODO verify if true for tree store
 	//OS.gtk_tree_store_clear (modelHandle);
 	int /*long*/ oldModel = modelHandle;
