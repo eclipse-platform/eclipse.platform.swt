@@ -665,6 +665,9 @@ public void setMessage (String string) {
 	if (message.length () != 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		layoutMessage = OS.gtk_widget_create_pango_layout (handle, buffer);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+			OS.pango_layout_set_auto_dir (layoutMessage, false);
+		}
 		OS.pango_layout_set_wrap (layoutMessage, OS.PANGO_WRAP_WORD_CHAR);
 	}
 	if (OS.GTK_WIDGET_VISIBLE (handle)) configure ();
@@ -693,6 +696,9 @@ public void setText (String string) {
 	if (text.length () != 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, text, true);
 		layoutText = OS.gtk_widget_create_pango_layout (handle, buffer);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+			OS.pango_layout_set_auto_dir (layoutText, false);
+		}
 		int /*long*/ boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
 		PangoAttribute attribute = new PangoAttribute ();
 		OS.memmove (attribute, boldAttr, PangoAttribute.sizeof);
