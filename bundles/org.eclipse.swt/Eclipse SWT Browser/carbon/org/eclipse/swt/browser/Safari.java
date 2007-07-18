@@ -944,7 +944,11 @@ int createWebViewWithRequest(int request) {
 		}
 	}
 	int webView = 0;
-	Browser browser = newEvent.browser;
+
+	Browser browser = null;
+	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof Safari) {
+		browser = newEvent.browser;
+	}
 	if (browser != null && !browser.isDisposed()) {
 		webView = Cocoa.HIWebViewGetWebView(((Safari)browser.webBrowser).webViewHandle);
 		
