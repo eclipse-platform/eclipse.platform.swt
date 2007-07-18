@@ -259,6 +259,8 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 		propertyValue = mozillaPath + COMPONENTS_DIR;
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
+	} else if (propertyName.equals (XPCOM.NS_APP_PREF_DEFAULTS_50_DIR)) {
+		propertyValue = profilePath;
 	}
 
 	XPCOM.memmove (persistent, new int[] {1}, 4); /* PRBool */

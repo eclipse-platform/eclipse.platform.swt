@@ -74,6 +74,7 @@ public class XPCOM extends C {
 	public static final String NS_APP_HISTORY_50_FILE = "UHist"; //$NON-NLS-1$
 	public static final String NS_APP_LOCALSTORE_50_FILE = "LclSt"; //$NON-NLS-1$
 	public static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
+	public static final String NS_APP_PREF_DEFAULTS_50_DIR = "PrfDef"; //$NON-NLS-1$
 	public static final String NS_APP_PREFS_50_DIR = "PrefD"; //$NON-NLS-1$
 	public static final String NS_APP_PREFS_50_FILE = "PrefF"; //$NON-NLS-1$
 	public static final String NS_APP_USER_CHROME_DIR = "UChrm"; //$NON-NLS-1$
