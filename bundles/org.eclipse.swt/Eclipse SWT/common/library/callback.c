@@ -448,7 +448,7 @@ SWT_PTR fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = {
 	FN_A_BLOCK(12)    
 };
 
-#endif // USE_ASSEMBLER
+#endif /* USE_ASSEMBLER */
 
 /* --------------- callback class calls --------------- */
 
@@ -559,7 +559,7 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 #endif
 			return (SWT_PTR)code;
 			}
-#endif // USE_ASSEMBLER
+#endif /* USE_ASSEMBLER */
 		}
 	}
 fail:
