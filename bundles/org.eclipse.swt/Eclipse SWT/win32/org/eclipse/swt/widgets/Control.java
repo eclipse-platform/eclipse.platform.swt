@@ -4472,9 +4472,23 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 			if ((lpwp.flags & OS.SWP_NOMOVE) == 0 || (lpwp.flags & OS.SWP_NOSIZE) == 0) {
 				RECT rect = new RECT ();
 				OS.GetWindowRect (topHandle (), rect);
-				int /*long*/ hwndParent = parent == null ? 0 : parent.handle;
-				OS.MapWindowPoints (0, hwndParent, rect, 2);
-				OS.InvalidateRect (hwndParent, rect, true);
+				int width = rect.right - rect.left;
+				int height = rect.bottom - rect.top;
+				if (width != 0 && height != 0) {
+					int /*long*/ hwndParent = parent == null ? 0 : parent.handle;
+					OS.MapWindowPoints (0, hwndParent, rect, 2);
+					if (OS.IsWinCE) {
+						OS.InvalidateRect (hwndParent, rect, true);
+					} else {
+						int /*long*/ rgn1 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+						int /*long*/ rgn2 = OS.CreateRectRgn (lpwp.x, lpwp.y, lpwp.x + lpwp.cx, lpwp.y + lpwp.cy);
+						OS.CombineRgn (rgn1, rgn1, rgn2, OS.RGN_DIFF);
+						int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+						OS.RedrawWindow (hwndParent, null, rgn1, flags);
+						OS.DeleteObject (rgn1);
+						OS.DeleteObject (rgn2);
+					}
+				}
 			}
 		}
 	}
