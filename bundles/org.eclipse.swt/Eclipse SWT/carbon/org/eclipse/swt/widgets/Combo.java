@@ -136,6 +136,13 @@ public void add (String string) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
+		/*
+		* Feature in the Macintosh.  Setting text that starts with "-" makes the
+		* menu item a separator.  The fix is to clear the separator attribute. 
+		*/
+		if (string.startsWith ("-")) {
+			OS.ChangeMenuItemAttributes (menuHandle, (short)OS.CountMenuItems (menuHandle), 0, OS.kMenuItemAttrSeparator);
+		}
 	} else {
 		result = OS.HIComboBoxAppendTextItem (handle, ptr, null);
 	}
@@ -178,6 +185,13 @@ public void add (String string, int index) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.InsertMenuItemTextWithCFString (menuHandle, ptr, (short)index, 0, 0);
+		/*
+		* Feature in the Macintosh.  Setting text that starts with "-" makes the
+		* menu item a separator.  The fix is to clear the separator attribute. 
+		*/
+		if (string.startsWith ("-")) {
+			OS.ChangeMenuItemAttributes (menuHandle, (short)(index + 1), 0, OS.kMenuItemAttrSeparator);
+		}
 	} else {
 		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
 	}
@@ -1438,6 +1452,13 @@ public void setItem (int index, String string) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.SetMenuItemTextWithCFString (menuHandle, (short)(index+1), ptr);
+		/*
+		* Feature in the Macintosh.  Setting text that starts with "-" makes the
+		* menu item a separator.  The fix is to clear the separator attribute. 
+		*/
+		if (string.startsWith ("-")) {
+			OS.ChangeMenuItemAttributes (menuHandle, (short)(index+1), 0, OS.kMenuItemAttrSeparator);
+		}
 	} else {
 		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
 		OS.HIComboBoxRemoveItemAtIndex (handle, index+1);
@@ -1477,6 +1498,13 @@ public void setItems (String [] items) {
 		int result;
 		if ((style & SWT.READ_ONLY) != 0) {
 			result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
+			/*
+			* Feature in the Macintosh.  Setting text that starts with "-" makes the
+			* menu item a separator.  The fix is to clear the separator attribute. 
+			*/
+			if (string.startsWith ("-")) {
+				OS.ChangeMenuItemAttributes (menuHandle, (short)(i + 1), 0, OS.kMenuItemAttrSeparator);
+			}
 		} else {
 			int [] outIndex = new int[1];
 			result = OS.HIComboBoxAppendTextItem (handle, ptr, outIndex);

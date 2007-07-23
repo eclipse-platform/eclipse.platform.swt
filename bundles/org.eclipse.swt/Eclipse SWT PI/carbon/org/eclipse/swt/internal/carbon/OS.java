@@ -1225,6 +1225,7 @@ public static final native int CGShadingCreateAxial (int colorspace, CGPoint sta
 public static final native int CGShadingCreateRadial (int colorspace, CGPoint start, float startRadius, CGPoint end, float endRadius, int function, boolean extendStart, boolean extendEnd);
 public static final native void CGShadingRelease (int shading);
 public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosition);
+public static final native int ChangeMenuItemAttributes(int menu, int item, int setTheseAttributes, int clearTheseAttributes);
 public static final native int ChangeWindowAttributes(int windowHandle, int setAttributes, int clearAttributes);
 public static final native int CPSEnableForegroundOperation(int[] psn, int arg2, int arg3, int arg4, int arg5);
 public static final native int CPSSetProcessName(int[] psn, byte[] name);

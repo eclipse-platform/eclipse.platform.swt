@@ -840,6 +840,13 @@ void updateText (short menuIndex) {
 	int [] outHierMenu = new int [1];
 	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outHierMenu);
 	if (outHierMenu [0] != 0) OS.SetMenuTitleWithCFString (outHierMenu [0], str);
+	/*
+	* Feature in the Macintosh.  Setting text that starts with "-" makes the
+	* menu item a separator.  The fix is to clear the separator attribute. 
+	*/
+	if (text.startsWith ("-")) {
+		OS.ChangeMenuItemAttributes (parent.handle, menuIndex, 0, OS.kMenuItemAttrSeparator);
+	}
 	OS.CFRelease (str);
 }
 }

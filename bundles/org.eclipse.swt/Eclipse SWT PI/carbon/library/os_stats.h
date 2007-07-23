@@ -259,6 +259,7 @@ typedef enum {
 	Call_FUNC,
 	CallNextEventHandler_FUNC,
 	CancelMenuTracking_FUNC,
+	ChangeMenuItemAttributes_FUNC,
 	ChangeWindowAttributes_FUNC,
 	ClearCurrentScrap_FUNC,
 	ClearKeyboardFocus_FUNC,

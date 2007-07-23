@@ -3038,6 +3038,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CancelMenuTracking)
 }
 #endif
 
+#ifndef NO_ChangeMenuItemAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(ChangeMenuItemAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ChangeMenuItemAttributes_FUNC);
+	rc = (jint)ChangeMenuItemAttributes((MenuRef)arg0, (MenuItemIndex)arg1, (MenuItemAttributes)arg2, (MenuItemAttributes)arg3);
+	OS_NATIVE_EXIT(env, that, ChangeMenuItemAttributes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ChangeWindowAttributes
 JNIEXPORT jint JNICALL OS_NATIVE(ChangeWindowAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
