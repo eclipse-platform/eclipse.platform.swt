@@ -455,8 +455,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint;
 	} else {
 		if (columns.length == 0) {
-			for (int i = 0; i < items.length; i++) {
-				Rectangle itemBounds = items [i].getBounds (false);
+			for (int i = 0; i < availableItemsCount; i++) {
+				Rectangle itemBounds = availableItems [i].getBounds (false);
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
@@ -468,7 +468,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) {
 		height = hHint;
 	} else {
-		height = getHeaderHeight () + items.length * itemHeight;
+		height = getHeaderHeight () + availableItemsCount * itemHeight;
 	}
 	Rectangle result = computeTrim (0, 0, width, height);
 	return new Point (result.width, result.height);

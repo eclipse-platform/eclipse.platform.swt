@@ -1795,7 +1795,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = Math.max (width, rect.right);
 			height += rect.bottom - rect.top;
 		}
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;

@@ -94,6 +94,7 @@ public class Tree extends Composite {
 	static final int CELL_CONTENT_INSET = 12;
 	static final int BORDER_INSET = 1;
 	static final int DISCLOSURE_COLUMN_EDGE_INSET = 8;
+	static final int DISCLOSURE_COLUMN_LEVEL_INDENT = 24;
 	static final int DISCLOSURE_TRIANGLE_AND_CONTENT_GAP = 8;
 
 /**
@@ -315,15 +316,17 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
-int calculateWidth (int [] ids, GC gc, boolean recurse) {
+int calculateWidth (int [] ids, GC gc, boolean recurse, int level, int levelIndent) {
 	if (ids == null) return 0;
 	int width = 0;
 	for (int i=0; i<ids.length; i++) {
 		TreeItem item = _getItem (ids [i], false);
 		if (item != null) {
-			width = Math.max (width, item.calculateWidth (0, gc));
+			int itemWidth = item.calculateWidth (0, gc);
+			itemWidth += level * levelIndent;
+			width = Math.max (width, itemWidth);
 			if (recurse && item._getExpanded ()) {
-				width = Math.max (width, calculateWidth (item.childIds, gc, recurse));
+				width = Math.max (width, calculateWidth (item.childIds, gc, recurse, level + 1, levelIndent));
 			}
 		}
 	}
@@ -489,16 +492,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width += columns [i].getWidth ();
 			}
 		} else {
-			int columnWidth = 0;
-			GC gc = new GC (this);
-			for (int i=0; i<items.length; i++) {
-				TreeItem item = items [i];
-				if (item != null && item.parentItem == null) {
-					columnWidth = Math.max (columnWidth, items [i].calculateWidth (0, gc));
-				}
+			int levelIndent = DISCLOSURE_COLUMN_LEVEL_INDENT;
+			if (OS.VERSION >= 0x1040) {
+				float [] metric = new float [1];
+				OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricDisclosureColumnPerDepthGap, null, metric);
+				levelIndent = (int) metric [0];
 			}
+			GC gc = new GC (this);
+			width = calculateWidth (childIds, gc, true, 0, levelIndent);
 			gc.dispose ();
-			width += columnWidth + getInsetWidth (column_id, true);
+			width += getInsetWidth (column_id, true);
 		}
 		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
 	} else {
@@ -507,7 +510,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (width <= 0) width = DEFAULT_WIDTH;
 	int height = 0;
 	if (hHint == SWT.DEFAULT) {
-		height = getItemCount () * getItemHeight () + getHeaderHeight();
+		height = visibleCount * getItemHeight () + getHeaderHeight();
 	} else {
 		height = hHint;
 	}
@@ -2927,7 +2930,7 @@ boolean setScrollWidth (boolean set, int[] childIds, boolean recurse) {
 	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0 || childIds == null) return false;
 	GC gc = new GC (this);
-	int newWidth = calculateWidth (childIds, gc, recurse);
+	int newWidth = calculateWidth (childIds, gc, recurse, 0, 0);
 	gc.dispose ();
 	newWidth += getInsetWidth (column_id, false);
 	if (!set) {
