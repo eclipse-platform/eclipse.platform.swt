@@ -2885,7 +2885,10 @@ int readImageRef(int path) {
 						int[] iconFamily = new int[1];
 						OS.ReadIconFile(fsSpec, iconFamily);						
 						if (iconFamily[0] != 0) {
-							image = createImageFromFamily(iconFamily[0], OS.kThumbnail32BitData, OS.kThumbnail8BitMask, 128, 128)[0];
+							int[] icon = createImageFromFamily(iconFamily[0], OS.kThumbnail32BitData, OS.kThumbnail8BitMask, 128, 128);
+							if (icon == null) icon = createImageFromFamily(iconFamily[0], OS.kHuge32BitData, OS.kHuge8BitMask, 64, 64);
+							if (icon == null) icon = createImageFromFamily(iconFamily[0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
+							if (icon != null) image = icon[0];
 							OS.DisposeHandle(iconFamily[0]);
 						}
 					}
