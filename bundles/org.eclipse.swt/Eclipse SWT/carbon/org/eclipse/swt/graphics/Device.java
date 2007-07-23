@@ -205,8 +205,8 @@ public void dispose () {
 	release ();
 	destroy ();
 	disposed = true;
-	synchronized (trackingLock) {
-		if (tracking) {
+	if (tracking) {
+		synchronized (trackingLock) {
 			objects = null;
 			errors = null;
 			trackingLock = null;
