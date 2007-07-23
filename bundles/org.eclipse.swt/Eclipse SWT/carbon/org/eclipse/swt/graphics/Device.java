@@ -290,8 +290,7 @@ public DeviceData getDeviceData () {
 	data.tracking = tracking;
 	if (tracking) {
 		synchronized (trackingLock) {
-			int count = 0, length = 0;
-			if (tracking) length = objects.length;
+			int count = 0, length = objects.length;
 			for (int i=0; i<length; i++) {
 				if (objects [i] != null) count++;
 			}
@@ -306,6 +305,9 @@ public DeviceData getDeviceData () {
 				}
 			}
 		}
+	} else {
+		data.objects = new Object [0];
+		data.errors = new Error [0];
 	}
 	return data;
 }
