@@ -3278,7 +3278,8 @@ void showItem (TreeItem item, boolean scroll) {
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
 		int columnId = (columnCount == 0) ? column_id : columns [0].id;
-		OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		int options = OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView;
+		OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) options);
 
 		/*
 		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
