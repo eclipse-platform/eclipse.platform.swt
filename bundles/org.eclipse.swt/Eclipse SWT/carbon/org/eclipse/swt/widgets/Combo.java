@@ -516,6 +516,14 @@ public void cut () {
 	sendEvent (SWT.Modify);
 }
 
+Color defaultBackground () {
+    return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+}
+
+Color defaultForeground () {
+    return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
 /**
  * Deselects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already deselected, it remains
@@ -1365,6 +1373,14 @@ boolean sendKeyEvent (int type, Event event) {
 	postEvent (SWT.Modify);
 	return newText == oldText;
 }
+
+void setBackground (int control, float [] color) {
+	if ((style & SWT.READ_ONLY) == 0) {
+		if (color == null) color = defaultBackground ().handle;
+	}
+	super.setBackground (control, color);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return super.setBounds (x, y, width, height, move, resize, events);
