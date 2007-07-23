@@ -1843,6 +1843,14 @@ public void drawRectangle (int x, int y, int width, int height) {
 	checkGC(DRAW);
 	int /*long*/ gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
+		if (width < 0) {
+			x = x + width;
+			width = -width;
+		}
+		if (height < 0) {
+			y = y + height;
+			height = -height;
+		}
 		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_DrawRectangle(gdipGraphics, data.gdipPen, x, y, width, height);
 		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
@@ -2745,6 +2753,14 @@ public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
 	if (data.gdipGraphics != 0) {
+		if (width < 0) {
+			x = x + width;
+			width = -width;
+		}
+		if (height < 0) {
+			y = y + height;
+			height = -height;
+		}
 		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
 		return;
 	}
