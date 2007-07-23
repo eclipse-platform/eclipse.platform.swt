@@ -102,7 +102,6 @@ public Device(DeviceData data) {
 			debug = data.debug;
 			tracking = data.tracking;
 		}
-		tracking = true;
 		create (data);
 		init ();
 		if (tracking) {
@@ -618,11 +617,6 @@ protected void release () {
 	systemFont = null;
 	if (tracking) {
 		synchronized (trackingLock) {
-			if (objects != null) {
-				for (int i = 0; i < objects.length; i++) {
-					if (objects[i] != null) ((Resource)objects[i]).dispose();
-				}
-			}
 			if (TRACK & objects != null) {
 				for (int i = 0; i < objects.length; i++) {
 					if (objects[i] != null) {
