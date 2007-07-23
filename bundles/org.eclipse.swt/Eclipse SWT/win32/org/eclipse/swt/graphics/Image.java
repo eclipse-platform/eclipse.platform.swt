@@ -578,8 +578,13 @@ public Image (Device device, String filename) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
+	boolean gdip = true;
 	try {
 		device.checkGDIP();
+	} catch (SWTException e) {
+		gdip = false;
+	}
+	if (gdip) {
 		int length = filename.length();
 		char[] chars = new char[length+1];
 		filename.getChars(0, length, chars, 0);
@@ -725,7 +730,7 @@ public Image (Device device, String filename) {
 				return;
 			}
 		}
-	} catch (SWTException e) {}
+	}
 	init(device, new ImageData(filename));
 	if(device.tracking) device.new_Object(this);
 }

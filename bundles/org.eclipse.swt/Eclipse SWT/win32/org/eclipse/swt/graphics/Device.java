@@ -165,8 +165,8 @@ protected void checkDevice () {
 
 void checkGDIP() {
 	if (gdipToken != null) return;
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-    int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
+    int oldErrorMode = 0;
+    if (!OS.IsWinCE) oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	try {
 		int /*long*/ [] token = new int /*long*/ [1];
 		GdiplusStartupInput input = new GdiplusStartupInput ();
@@ -177,7 +177,7 @@ void checkGDIP() {
 	} catch (Throwable t) {
 		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [GDI+ is required]"); //$NON-NLS-1$
 	} finally {
-        OS.SetErrorMode (oldErrorMode);
+		if (!OS.IsWinCE) OS.SetErrorMode (oldErrorMode);
     }
 }
 
