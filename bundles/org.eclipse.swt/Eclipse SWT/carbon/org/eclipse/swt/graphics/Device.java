@@ -288,20 +288,22 @@ public DeviceData getDeviceData () {
 	DeviceData data = new DeviceData ();
 	data.debug = debug;
 	data.tracking = tracking;
-	synchronized (trackingLock) {
-		int count = 0, length = 0;
-		if (tracking) length = objects.length;
-		for (int i=0; i<length; i++) {
-			if (objects [i] != null) count++;
-		}
-		int index = 0;
-		data.objects = new Object [count];
-		data.errors = new Error [count];
-		for (int i=0; i<length; i++) {
-			if (objects [i] != null) {
-				data.objects [index] = objects [i];
-				data.errors [index] = errors [i];
-				index++;
+	if (tracking) {
+		synchronized (trackingLock) {
+			int count = 0, length = 0;
+			if (tracking) length = objects.length;
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) count++;
+			}
+			int index = 0;
+			data.objects = new Object [count];
+			data.errors = new Error [count];
+			for (int i=0; i<length; i++) {
+				if (objects [i] != null) {
+					data.objects [index] = objects [i];
+					data.errors [index] = errors [i];
+					index++;
+				}
 			}
 		}
 	}
