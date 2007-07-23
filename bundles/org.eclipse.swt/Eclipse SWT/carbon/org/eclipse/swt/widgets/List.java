@@ -756,19 +756,15 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		* up or down arrow to traverse the items in a Data Browser, the item
 		* scrolls to the left such that the white space that is normally
 		* visible to the right of the every item is scrolled out of view.
-		* The fix is to do the arrow traversal in Java and not call the
-		* default handler.
+		* The fix is to save and restore the horizontal scroll position.
 		*/
-		case 125: { /* Down */
-			int index = getSelectionIndex ();
-			setSelection (Math.min (itemCount - 1, index + 1), true);
-			return OS.noErr;
-		}
-		case 126: { /* Up*/
-			int index = getSelectionIndex ();
-			setSelection (Math.max (0, index - 1), true);
-			return OS.noErr;
-		}
+		case 125: /* Down */
+		case 126: /* Up*/
+			int [] top = new int [1], left = new int [1];
+			OS.GetDataBrowserScrollPosition (handle, top, left);
+			result = OS.CallNextEventHandler (nextHandler, theEvent);
+			OS.GetDataBrowserScrollPosition (handle, top, null);
+			OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
 	}
 	return result;
 }
