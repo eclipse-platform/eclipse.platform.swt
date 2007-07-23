@@ -1255,6 +1255,7 @@ public void setEnabled (boolean enabled) {
 }
 public boolean setFocus () {
 	checkWidget();
+	if (!isEnabled () || !isVisible ()) return false;
 	if (isFocusControl ()) return true;
 	return text.setFocus ();
 }
