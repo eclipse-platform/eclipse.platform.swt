@@ -228,6 +228,7 @@ public TableCursor(Table parent, int style) {
 
 	disposeItemListener = new Listener() {
 		public void handleEvent(Event event) {
+			unhookRowColumnListeners();
 			row = null;
 			column = null;
 			_resize();
@@ -235,6 +236,7 @@ public TableCursor(Table parent, int style) {
 	};
 	disposeColumnListener = new Listener() {
 		public void handleEvent(Event event) {
+			unhookRowColumnListeners();
 			row = null;
 			column = null;
 			_resize();
@@ -294,16 +296,7 @@ public void addSelectionListener(SelectionListener listener) {
 void dispose(Event event) {
 	table.removeListener(SWT.FocusIn, tableListener);
 	table.removeListener(SWT.MouseDown, tableListener);
-	if (column != null) {
-		column.removeListener(SWT.Dispose, disposeColumnListener);
-		column.removeListener(SWT.Move, resizeListener);
-		column.removeListener(SWT.Resize, resizeListener);
-		column = null;
-	}
-	if (row != null) {
-		row.removeListener(SWT.Dispose, disposeItemListener);
-		row = null;
-	}
+	unhookRowColumnListeners();
 	ScrollBar hBar = table.getHorizontalBar();
 	if (hBar != null) {
 		hBar.removeListener(SWT.Selection, resizeListener);
@@ -463,10 +456,11 @@ void paint(Event event) {
 }
 
 void tableFocusIn(Event event) {
-	if (isDisposed())
-		return;
-	if (isVisible())
+	if (isDisposed()) return;
+	if (isVisible()) {
+		if (row == null && column == null) return;
 		setFocus();
+	}
 }
 
 void tableMouseDown(Event event) {
@@ -677,5 +671,17 @@ public void setSelection(TableItem row, int column) {
 		|| column > maxColumnIndex)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setRowColumn(table.indexOf(row), column, false);
+}
+void unhookRowColumnListeners() {
+	if (column != null) {
+		column.removeListener(SWT.Dispose, disposeColumnListener);
+		column.removeListener(SWT.Move, resizeListener);
+		column.removeListener(SWT.Resize, resizeListener);
+		column = null;
+	}
+	if (row != null) {
+		row.removeListener(SWT.Dispose, disposeItemListener);
+		row = null;
+	}
 }
 }
