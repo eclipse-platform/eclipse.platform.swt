@@ -364,6 +364,7 @@ public class OS extends C {
 	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
 	public static final int GTK_WRAP_NONE = 0;
 	public static final int GTK_WRAP_WORD = 2;
+	public static final int GTK_WRAP_WORD_CHAR = 3;
 	public static final int G_LOG_FLAG_FATAL = 0x2;
 	public static final int G_LOG_FLAG_RECURSION = 0x1;
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
