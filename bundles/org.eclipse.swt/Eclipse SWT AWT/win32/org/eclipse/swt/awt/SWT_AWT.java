@@ -152,12 +152,12 @@ public static Frame new_Frame (final Composite parent) {
 	Object value = null;
 	Constructor constructor = null;
 	try {
-		constructor = clazz.getConstructor (new Class [] {int.class, boolean.class});
-		value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle), Boolean.TRUE});
+		constructor = clazz.getConstructor (new Class [] {int.class});
+		value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle)});
 	} catch (Throwable e1) {
 		try {
-			constructor = clazz.getConstructor (new Class [] {long.class, boolean.class});
-			value = constructor.newInstance (new Object [] {new Long (handle), Boolean.TRUE});
+			constructor = clazz.getConstructor (new Class [] {long.class});
+			value = constructor.newInstance (new Object [] {new Long (handle)});
 		} catch (Throwable e2) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
