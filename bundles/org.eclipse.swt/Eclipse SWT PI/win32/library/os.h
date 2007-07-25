@@ -444,7 +444,7 @@
 #define NO_SetTextAlign
 #define NO_SetWindowLongA
 #define NO_SetWindowLongPtrA
-#define NO_SetWindowLongPtrW
+//#define NO_SetWindowLongPtrW
 #define NO_SetWindowOrgEx
 #define NO_SetWindowPlacement
 #define NO_SetWindowTextA
@@ -495,6 +495,7 @@
 #define NO_WindowFromDC
 
 #define GetWindowLongPtrW GetWindowLongW
+#define SetWindowLongPtrW SetWindowLongW
 
 #define ChooseColorW ChooseColor
 #define CHOOSECOLORW CHOOSECOLOR
