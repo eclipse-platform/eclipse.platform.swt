@@ -391,7 +391,7 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
-int calculateWidth (int /*long*/ column, int /*long*/ iter) {
+int calculateWidth (int /*long*/ column, int /*long*/ iter, boolean recurse) {
 	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 	/*
 	* Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size()
@@ -405,7 +405,16 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	
 	int width = 0;
 	int [] w = new int [1];
-	if (OS.gtk_tree_view_get_expander_column (handle) == column) {		
+	int /*long*/ path = 0;
+
+	if (OS.gtk_tree_view_get_expander_column (handle) == column) {
+		/* indent */
+		GdkRectangle rect = new GdkRectangle ();
+		OS.gtk_widget_realize (handle);
+		path = OS.gtk_tree_model_get_path (modelHandle, iter);
+		OS.gtk_tree_view_get_cell_area (handle, path, column, rect);
+		width += rect.x;
+		/* expander */
 		OS.gtk_widget_style_get (handle, OS.expander_size, w, 0);
 		width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
@@ -423,6 +432,22 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 		temp = OS.g_list_next (temp);
 	}
 	OS.g_list_free (list);
+
+	if (recurse) {
+		if (path == 0) path = OS.gtk_tree_model_get_path (modelHandle, iter);
+		boolean expanded = OS.gtk_tree_view_row_expanded (handle, path);
+		if (expanded) {
+			int /*long*/ childIter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			boolean valid = OS.gtk_tree_model_iter_children (modelHandle, childIter, iter);
+			while (valid) {
+				width = Math.max (width, calculateWidth (column, childIter, true));
+				valid = OS.gtk_tree_model_iter_next (modelHandle, childIter);
+			}
+			OS.g_free (childIter);
+		}
+	}
+
+	if (path != 0) OS.gtk_tree_path_free (path);
 	return width;
 }
 
@@ -2828,7 +2853,7 @@ void setScrollWidth (int /*long*/ column, TreeItem item) {
 	*/
 	if (((style & SWT.VIRTUAL) != 0) && OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
 	int width = OS.gtk_tree_view_column_get_fixed_width (column);
-	int itemWidth = calculateWidth (column, item.handle);
+	int itemWidth = calculateWidth (column, item.handle, true);
 	if (width < itemWidth) {
 		OS.gtk_tree_view_column_set_fixed_width (column, itemWidth);
 	}

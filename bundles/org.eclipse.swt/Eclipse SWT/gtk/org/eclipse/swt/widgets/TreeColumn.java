@@ -411,7 +411,7 @@ public void pack () {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		if (OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {
 			do {
-				width = Math.max (width, parent.calculateWidth (handle, iter));
+				width = Math.max (width, parent.calculateWidth (handle, iter, true));
 			} while (OS.gtk_tree_model_iter_next(parent.modelHandle, iter));
 		}
 		OS.g_free (iter);
