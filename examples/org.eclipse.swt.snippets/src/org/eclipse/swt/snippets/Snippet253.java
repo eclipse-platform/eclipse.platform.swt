@@ -37,8 +37,9 @@ public class Snippet253 {
 		button.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				Rectangle rect = table.getClientArea ();
-				int itemHeight = table.getItemHeight();
-				int visibleCount = (rect.height + itemHeight - 1) / itemHeight;
+				int itemHeight = table.getItemHeight ();
+				int headerHeight = table.getHeaderHeight ();
+				int visibleCount = (rect.height - headerHeight + itemHeight - 1) / itemHeight;
 				button.setText ("Visible Items [" + visibleCount + "]");
 			}
 		});
