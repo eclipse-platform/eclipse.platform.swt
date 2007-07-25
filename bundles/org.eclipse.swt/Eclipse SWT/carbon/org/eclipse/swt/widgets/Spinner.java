@@ -449,8 +449,11 @@ public int getPageIncrement () {
  * </ul>
  */
 public int getSelection () {
-	checkWidget ();	
-	return OS.GetControl32BitValue (buttonHandle);
+	checkWidget ();
+	int pos = OS.GetControl32BitValue (buttonHandle);
+	int value = getSelectionText ();
+	setSelection (value, value != pos);
+	return value;
 }
 
 int getSelectionText () {
@@ -547,8 +550,9 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 		if (part [0] == OS.kControlFocusNoPart) {
+			int pos = OS.GetControl32BitValue (buttonHandle);
 			int value = getSelectionText ();
-			setSelection (value, true);
+			setSelection (value, value != pos);
 		}
 	}
 	return result;
@@ -565,8 +569,9 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: /* Return */
+			int pos = OS.GetControl32BitValue (buttonHandle);
 			int value = getSelectionText ();
-			setSelection (value, true);
+			setSelection (value, value != pos);
 			postEvent (SWT.DefaultSelection);
 			break;
 		case 116: /* Page Up */ delta = pageIncrement; break;
