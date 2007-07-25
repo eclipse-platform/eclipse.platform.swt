@@ -302,7 +302,7 @@
 #define NO_GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2
 #define NO_GetWindowLongA
 #define NO_GetWindowLongPtrA
-#define NO_GetWindowLongPtrW
+//#define NO_GetWindowLongPtrW
 #define NO_GetWindowOrgEx
 #define NO_GetWindowPlacement
 #define NO_GetWindowTextA
@@ -493,6 +493,8 @@
 #define NO_VkKeyScanW
 #define NO_WaitMessage
 #define NO_WindowFromDC
+
+#define GetWindowLongPtrW GetWindowLongW
 
 #define ChooseColorW ChooseColor
 #define CHOOSECOLORW CHOOSECOLOR
