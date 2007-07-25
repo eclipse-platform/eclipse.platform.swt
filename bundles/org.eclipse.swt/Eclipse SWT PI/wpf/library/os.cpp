@@ -13002,14 +13002,27 @@ JNIEXPORT void JNICALL OS_NATIVE(Window_1Top__ID)
 }
 #endif
 
-#ifndef NO_Window_1Topmost
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Window_1Topmost)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Window_1Topmost)
+#ifndef NO_Window_1Topmost__I
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Window_1Topmost__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Window_1Topmost__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Window_1Topmost__I_FUNC);
+	rc = (jboolean)((Window^)TO_OBJECT(arg0))->Topmost;
+	OS_NATIVE_EXIT(env, that, Window_1Topmost__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Window_1Topmost__IZ
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Window_1Topmost__IZ)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Window_1Topmost__IZ)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, Window_1Topmost_FUNC);
+	OS_NATIVE_ENTER(env, that, Window_1Topmost__IZ_FUNC);
 	((Window^)TO_OBJECT(arg0))->Topmost = (arg1);
-	OS_NATIVE_EXIT(env, that, Window_1Topmost_FUNC);
+	OS_NATIVE_EXIT(env, that, Window_1Topmost__IZ_FUNC);
 }
 #endif
 
@@ -13037,14 +13050,27 @@ JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowState__II)
 }
 #endif
 
-#ifndef NO_Window_1WindowStyle
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowStyle)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowStyle)
+#ifndef NO_Window_1WindowStyle__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Window_1WindowStyle__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Window_1WindowStyle__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Window_1WindowStyle__I_FUNC);
+	rc = (jint)((Window^)TO_OBJECT(arg0))->WindowStyle;
+	OS_NATIVE_EXIT(env, that, Window_1WindowStyle__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Window_1WindowStyle__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowStyle__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowStyle__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, Window_1WindowStyle_FUNC);
+	OS_NATIVE_ENTER(env, that, Window_1WindowStyle__II_FUNC);
 	((Window^)TO_OBJECT(arg0))->WindowStyle = ((WindowStyle)arg1);
-	OS_NATIVE_EXIT(env, that, Window_1WindowStyle_FUNC);
+	OS_NATIVE_EXIT(env, that, Window_1WindowStyle__II_FUNC);
 }
 #endif
 
