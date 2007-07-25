@@ -489,7 +489,7 @@ void createHandle () {
 		OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //		OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 		int [] theRoot = new int [1];
-		OS.HIViewFindByID (shellHandle, OS.kHIViewWindowContentID (), theRoot);
+		OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowContentID (), theRoot);
 		/*
 		* Bug in the Macintosh.  When the window class is kMovableModalWindowClass or
 		* kModalWindowClass, HIViewFindByID() fails to find the control identified by
