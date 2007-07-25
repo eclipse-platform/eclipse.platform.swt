@@ -1371,46 +1371,24 @@ public void setMaximized (boolean maximized) {
 	int hMaxAtom = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
 	int vMaxAtom = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
 	if (hMaxAtom == 0 || vMaxAtom == 0) return;
-	int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atomsPtr = new int[1];
-	OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atomsPtr);
-	if (type [0] == OS.None) return;
-	int[] atoms = new int [nitems [0]];
-	OS.memmove (atoms, atomsPtr [0], nitems [0] * 4);
-	
-	if (maximized) {
-		boolean hasHmax = false;
-		boolean hasVmax = false;
-		for (int i = 0; i < nitems [0]; i++) {
-			int atom = atoms [i];
-			if (atom == hMaxAtom) hasHmax = true;
-			if (atom == vMaxAtom) hasVmax = true;
-		}
-		if (!hasHmax) {
-			int[] temp = new int [atoms.length + 1];
-			System.arraycopy (atoms, 0, temp, 0, atoms.length);
-			temp [atoms.length] = hMaxAtom;
-			atoms = temp;
-		}
-		if (!hasVmax) {
-			int[] temp = new int [atoms.length + 1];
-			System.arraycopy (atoms, 0, temp, 0, atoms.length);
-			temp [atoms.length] = vMaxAtom;
-			atoms = temp;
-		}
-	} else {
-		int[] temp = new int [nitems [0]];
-		int index = 0;
-		for (int i = 0; i < nitems [0]; i++) {
-			int atom = atoms [i];
-			if (atom != hMaxAtom && atom != vMaxAtom) {
-				temp [index++] = atom;
-			}
-		}
-		atoms = new int [index];
-		System.arraycopy (temp, 0, atoms, 0, index);
-	}
-
-	OS.XChangeProperty (xDisplay, xWindow, property, OS.XA_ATOM, 32, OS.PropModeReplace, atoms, atoms.length);
+	XClientMessageEvent xEvent = new XClientMessageEvent ();
+	xEvent.type = OS.ClientMessage;
+	xEvent.send_event = 1;
+	xEvent.display = xDisplay;
+	xEvent.window = xWindow;
+	xEvent.message_type = property;
+	xEvent.format = 32;
+	xEvent.data [0] = maximized ? 1 : 0;
+	xEvent.data [1] = hMaxAtom;
+	xEvent.data [2] = vMaxAtom;
+	XWindowAttributes attributes = new XWindowAttributes ();
+	OS.XGetWindowAttributes (xDisplay, xWindow, attributes);
+	int rootWindow = OS.XRootWindowOfScreen (attributes.screen);
+	int event = OS.XtMalloc (XEvent.sizeof);
+	OS.memmove (event, xEvent, XClientMessageEvent.sizeof);
+	OS.XSendEvent (xDisplay, rootWindow, false, OS.SubstructureRedirectMask|OS.SubstructureNotifyMask, event);
+	OS.XSync (xDisplay, false);
+	OS.XtFree (event);
 }
 public void setMinimized (boolean minimized) {
 	checkWidget();
