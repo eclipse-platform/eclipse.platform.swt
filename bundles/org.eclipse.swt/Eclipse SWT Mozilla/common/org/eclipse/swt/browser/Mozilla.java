@@ -2591,9 +2591,19 @@ int /*long*/ HandleEvent (int /*long*/ event) {
 		mouseEvent.button = aButton[0] + 1;
 		mouseEvent.count = aDetail[0];
 	} else if (XPCOM.DOMEVENT_MOUSEUP.equals (typeString)) {
+		/*
+		 * Bug on OSX.  For some reason multiple mouseup events come from the DOM
+		 * when button 3 is released on OSX.  The first of these events has a count
+		 * detail and the others do not.  The workaround is to not fire received
+		 * button 3 mouseup events that do not have a count since mouse events
+		 * without a click count are not valid.
+		 */
+		int button = aButton[0] + 1;
+		int count = aDetail[0];
+		if (count == 0 && button == 3) return XPCOM.NS_OK;
 		mouseEvent.type = SWT.MouseUp;
-		mouseEvent.button = aButton[0] + 1;
-		mouseEvent.count = aDetail[0];
+		mouseEvent.button = button;
+		mouseEvent.count = count;
 	} else if (XPCOM.DOMEVENT_MOUSEMOVE.equals (typeString)) {
 		mouseEvent.type = SWT.MouseMove;
 	} else if (XPCOM.DOMEVENT_MOUSEOVER.equals (typeString)) {
