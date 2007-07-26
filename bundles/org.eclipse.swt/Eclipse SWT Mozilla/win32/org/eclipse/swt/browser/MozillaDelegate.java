@@ -65,6 +65,10 @@ String getLibraryName () {
 void handleFocus () {
 }
 
+boolean hookEnterExit () {
+	return true;
+}
+
 void init () {
 }
 
