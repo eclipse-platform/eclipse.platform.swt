@@ -60,6 +60,8 @@ public final class Printer extends Device {
 
 	static final String GTK_LPR_BACKEND = "GtkPrintBackendLpr"; //$NON-NLS-1$
 
+	static boolean disablePrinting = System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
+	
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
@@ -68,7 +70,7 @@ public final class Printer extends Device {
  */
 public static PrinterData[] getPrinterList() {
 	printerList = new PrinterData [0];
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0)) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
 		return printerList;
 	}
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_List", 2); //$NON-NLS-1$
@@ -108,7 +110,7 @@ static int /*long*/ GtkPrinterFunc_List (int /*long*/ printer, int /*long*/ user
  */
 public static PrinterData getDefaultPrinterData() {
 	printerList = new PrinterData [1];
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0)) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
 		return null;
 	}
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_Default", 2); //$NON-NLS-1$
@@ -122,6 +124,8 @@ public static PrinterData getDefaultPrinterData() {
 static int /*long*/ GtkPrinterFunc_Default (int /*long*/ printer, int /*long*/ user_data) {
 	if (OS.gtk_printer_is_default(printer)) {
 		printerList[0] = printerDataFromGtkPrinter(printer);
+		return 1;
+	} else if (OS.GTK_VERSION < OS.VERSION(2, 10, 12) && printerDataFromGtkPrinter(printer).driver.equals (GTK_LPR_BACKEND)) { 
 		return 1;
 	}
 	return 0;
@@ -142,6 +146,8 @@ int /*long*/ GtkPrinterFunc_FindNamedPrinter (int /*long*/ printer, int /*long*/
 	if (pd.driver.equals(data.driver) && pd.name.equals(data.name)) {
 		this.printer = printer;
 		OS.g_object_ref(printer);
+		return 1;
+	} else if (OS.GTK_VERSION < OS.VERSION (2, 10, 12) && pd.driver.equals(GTK_LPR_BACKEND)) {
 		return 1;
 	}
 	return 0;
@@ -625,7 +631,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  */
 protected void create(DeviceData deviceData) {
 	this.data = (PrinterData)deviceData;
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0)) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
 	printer = gtkPrinterFromPrinterData();
 	if (printer == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
