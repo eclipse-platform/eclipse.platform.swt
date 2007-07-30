@@ -115,6 +115,7 @@ public class OS extends C {
 	public static final int kATSUQDUnderlineTag = 258;
 	public static final int kATSUStyleStrikeThroughTag = 292;
 	public static final int kATSUStyleUnderlineColorOptionTag = 291;
+	public static final int kATSUStyleStrikeThroughColorOptionTag = 294;
 	public static final int kATSULeftTab = 0;
 	public static final int kATSUseDeviceOrigins = 1;
 	public static final int kATSUseLineHeight = 0x7FFFFFFF;
