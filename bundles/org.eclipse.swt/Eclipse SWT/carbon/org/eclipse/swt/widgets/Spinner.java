@@ -86,6 +86,9 @@ int actionProc (int theControl, int partCode) {
 	if (result == OS.noErr) return result;
 	if (theControl == buttonHandle) {
 		int value = getSelectionText ();
+		if (value == -1) {
+			value = OS.GetControl32BitValue (buttonHandle);
+		}
 		int newValue = value;
 	    switch (partCode) {
 		    case OS.kControlUpButtonPart:
@@ -102,7 +105,7 @@ int actionProc (int theControl, int partCode) {
 			if (newValue < min) newValue = max;
 		}
 		newValue = Math.min (Math.max (min, newValue), max);
-		if (value != newValue) setSelection (newValue, true);
+		if (value != newValue) setSelection (newValue, true, true, true);
 	}
 	return result;
 }
@@ -300,7 +303,7 @@ void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
 	}
-	setSelection (0, false);
+	setSelection (0, false, true, false);
 }
 
 /**
@@ -450,10 +453,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	int pos = OS.GetControl32BitValue (buttonHandle);
-	int value = getSelectionText ();
-	setSelection (value, value != pos);
-	return value;
+	return OS.GetControl32BitValue (buttonHandle);
 }
 
 int getSelectionText () {
@@ -499,7 +499,7 @@ int getSelectionText () {
 		} catch (NumberFormatException e) {
 		}
 	}
-	return OS.GetControl32BitValue (buttonHandle);
+	return -1;
 }
 
 int getVisibleRegion (int control, boolean clipChildren) {
@@ -550,9 +550,11 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 		if (part [0] == OS.kControlFocusNoPart) {
-			int pos = OS.GetControl32BitValue (buttonHandle);
 			int value = getSelectionText ();
-			setSelection (value, value != pos);
+			if (value == -1) {
+				value = OS.GetControl32BitValue (buttonHandle);
+				setSelection (value, false, true, false);
+			}
 		}
 	}
 	return result;
@@ -569,9 +571,6 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: /* Return */
-			int pos = OS.GetControl32BitValue (buttonHandle);
-			int value = getSelectionText ();
-			setSelection (value, value != pos);
 			postEvent (SWT.DefaultSelection);
 			break;
 		case 116: /* Page Up */ delta = pageIncrement; break;
@@ -581,6 +580,9 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	}
 	if (delta != 0) {
 		int value = getSelectionText ();
+		if (value == -1) {
+			value = OS.GetControl32BitValue (buttonHandle);
+		}
 		int newValue = value + delta;
 		int max = OS.GetControl32BitMaximum (buttonHandle);
 		int min = OS.GetControl32BitMinimum (buttonHandle);
@@ -589,8 +591,15 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 			if (newValue < min) newValue = max;
 		}
 		newValue = Math.min (Math.max (min, newValue), max);
-		if (value != newValue) setSelection (newValue, true);
+		if (value != newValue) setSelection (newValue, true, true, true);
 		return OS.noErr;
+	} else {
+		result = OS.CallNextEventHandler (nextHandler, theEvent);
+		int value = getSelectionText ();
+		if (value != -1) {
+			int pos = OS.GetControl32BitValue (buttonHandle);
+			if (pos != value) setSelection (value, true, false, true);
+		}
 	}
 	return result;
 }
@@ -817,7 +826,7 @@ public void setDigits (int value) {
 	if (value == digits) return;
 	digits = value;
 	int pos = OS.GetControl32BitValue (buttonHandle);	
-	setSelection (pos, false);
+	setSelection (pos, false, true, false);
 }
 
 void setFontStyle (Font font) {
@@ -868,7 +877,7 @@ public void setMaximum (int value) {
 	if (value <= min) return;
 	int pos = OS.GetControl32BitValue (buttonHandle);
 	OS.SetControl32BitMaximum (buttonHandle, value);
-	if (pos > value) setSelection (value, false);	
+	if (pos > value) setSelection (value, true, true, false);	
 }
 
 /**
@@ -891,7 +900,7 @@ public void setMinimum (int value) {
 	if (value >= max) return;
 	int pos = OS.GetControl32BitValue (buttonHandle);
 	OS.SetControl32BitMinimum (buttonHandle, value);
-	if (pos < value) setSelection (value, false);
+	if (pos < value) setSelection (value, true, true, false);
 }
 
 /**
@@ -930,47 +939,51 @@ public void setSelection (int value) {
 	int min = OS.GetControl32BitMinimum (buttonHandle);
 	int max = OS.GetControl32BitMaximum (buttonHandle);
 	value = Math.min (Math.max (min, value), max);
-	setSelection (value, false);
+	setSelection (value, true, true, false);
 }
 
-void setSelection (int value, boolean notify) {
-	OS.SetControl32BitValue (buttonHandle, value);
-	String string = String.valueOf (value);
-	if (digits > 0) {
-		String decimalSeparator = getDecimalSeparator ();
-		int index = string.length () - digits;
-		StringBuffer buffer = new StringBuffer ();
-		if (index > 0) {
-			buffer.append (string.substring (0, index));
-			buffer.append (decimalSeparator);
-			buffer.append (string.substring (index));
-		} else {
-			buffer.append ("0");
-			buffer.append (decimalSeparator);
-			while (index++ < 0) buffer.append ("0");
-			buffer.append (string);
-		}
-		string = buffer.toString ();
+void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
+	if (setPos) {
+		OS.SetControl32BitValue (buttonHandle, value);
 	}
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int [] actualSize = new int [1];
-		int [] ptr = new int [1];
-		int length = 0;
-		if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
-			length = OS.CFStringGetLength (ptr [0]);
-			OS.CFRelease (ptr [0]);
+	if (setText) {
+		String string = String.valueOf (value);
+		if (digits > 0) {
+			String decimalSeparator = getDecimalSeparator ();
+			int index = string.length () - digits;
+			StringBuffer buffer = new StringBuffer ();
+			if (index > 0) {
+				buffer.append (string.substring (0, index));
+				buffer.append (decimalSeparator);
+				buffer.append (string.substring (index));
+			} else {
+				buffer.append ("0");
+				buffer.append (decimalSeparator);
+				while (index++ < 0) buffer.append ("0");
+				buffer.append (string);
+			}
+			string = buffer.toString ();
 		}
-		string = verifyText (string, 0, length, null);
-		if (string == null) return;
+		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+			int [] actualSize = new int [1];
+			int [] ptr = new int [1];
+			int length = 0;
+			if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
+				length = OS.CFStringGetLength (ptr [0]);
+				OS.CFRelease (ptr [0]);
+			}
+			string = verifyText (string, 0, length, null);
+			if (string == null) return;
+		}
+		char [] buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+		OS.CFRelease (ptr);
+		redrawWidget (textHandle, false);
+		sendEvent (SWT.Modify);
 	}
-	char [] buffer = new char [string.length ()];
-	string.getChars (0, buffer.length, buffer, 0);
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-	OS.CFRelease (ptr);
-	redrawWidget (textHandle, false);
-	sendEvent (SWT.Modify);
 	if (notify) postEvent (SWT.Selection);
 }
 
@@ -1051,7 +1064,7 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	this.digits = digits;
 	OS.SetControl32BitMaximum (buttonHandle, maximum);
 	OS.SetControl32BitMinimum (buttonHandle, minimum);
-	setSelection (selection, false);
+	setSelection (selection, true, true, false);
 }
 
 void setZOrder () {
