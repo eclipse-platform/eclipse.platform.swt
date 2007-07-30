@@ -281,15 +281,15 @@ void drag(Event dragEvent) {
 			if (transfer instanceof FileTransfer) {
 				TransferData transferData = new TransferData();
 				transferData.type = types[0];
-				event = new DNDEvent();
-				event.widget = this;
-				event.time = (int)System.currentTimeMillis(); 
-				event.dataType = transferData; 
-				notifyListeners(DND.DragSetData, event);
-				if (event.data != null) {
+				DNDEvent event2 = new DNDEvent();
+				event2.widget = this;
+				event2.time = (int)System.currentTimeMillis(); 
+				event2.dataType = transferData; 
+				notifyListeners(DND.DragSetData, event2);
+				if (event2.data != null) {
 					for (int j = 0; j < types.length; j++) {
 						transferData.type = types[j];
-						transfer.javaToNative(event.data, transferData);
+						transfer.javaToNative(event2.data, transferData);
 						if (transferData.result == OS.noErr) {
 							for (int k = 0; k < transferData.data.length; k++) {
 								byte[] datum = transferData.data[k];
