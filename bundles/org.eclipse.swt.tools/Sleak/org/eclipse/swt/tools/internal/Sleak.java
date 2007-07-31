@@ -43,7 +43,7 @@ public static void main (String [] args) {
 	Sleak sleak = new Sleak ();
 	sleak.open ();
 	
-	// Launch you application here
+	// Launch your application here
 	// e.g.		
 //	Shell shell = new Shell(display);
 //	Button button1 = new Button(shell, SWT.PUSH);
