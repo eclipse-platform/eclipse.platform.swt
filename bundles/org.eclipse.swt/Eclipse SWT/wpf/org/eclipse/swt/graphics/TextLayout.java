@@ -131,14 +131,30 @@ void computeRuns () {
 			if (style.strikeout || style.underline) {
 				decorations = OS.gcnew_TextDecorationCollection(2);
 				if (style.strikeout) {
-					int strikeout = OS.TextDecorations_Strikethrough();
+					int pen = 0;
+					if (style.strikeoutColor != null) {
+						int color = style.strikeoutColor.handle;
+						int brush = OS.gcnew_SolidColorBrush(color);
+						pen = OS.gcnew_Pen(brush, 1);
+						OS.GCHandle_Free(brush);
+					}
+					int strikeout = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Strikethrough, pen, 0, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
 					OS.TextDecorationCollection_Add(decorations, strikeout);
 					OS.GCHandle_Free(strikeout);
+					if (pen != 0) OS.GCHandle_Free(pen);
 				}
 				if (style.underline) {
-					int underline = OS.TextDecorations_Underline();
+					int pen = 0;
+					if (style.underlineColor != null) {
+						int color = style.underlineColor.handle;
+						int brush = OS.gcnew_SolidColorBrush(color);
+						pen = OS.gcnew_Pen(brush, 1);
+						OS.GCHandle_Free(brush);
+					}
+					int underline = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Underline, pen, 0, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
 					OS.TextDecorationCollection_Add(decorations, underline);
 					OS.GCHandle_Free(underline);
+					if (pen != 0) OS.GCHandle_Free(pen);
 				}
 			}
 			run.textProperties = OS.gcnew_SWTTextRunProperties(styleFont.handle, styleFont.size, styleFont.size, decorations, fg, bg, OS.BaselineAlignment_Baseline, culture);
