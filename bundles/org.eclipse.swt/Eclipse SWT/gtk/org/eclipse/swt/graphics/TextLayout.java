@@ -187,6 +187,15 @@ void computeRuns () {
 			attribute.end_index = byteEnd;
 			OS.memmove(attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);
+			if (style.underlineColor != null && OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+				GdkColor color = style.underlineColor.handle;
+				attr = OS.pango_attr_underline_color_new(color.red, color.green, color.blue);
+				OS.memmove(attribute, attr, PangoAttribute.sizeof);
+				attribute.start_index = byteStart;
+				attribute.end_index = byteEnd;
+				OS.memmove(attr, attribute, PangoAttribute.sizeof);
+				OS.pango_attr_list_insert(attrList, attr);
+			}
 		}
 		if (style.strikeout) {
 			int /*long*/ attr = OS.pango_attr_strikethrough_new(true);
@@ -195,6 +204,15 @@ void computeRuns () {
 			attribute.end_index = byteEnd;
 			OS.memmove(attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);
+			if (style.strikeoutColor != null && OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+				GdkColor color = style.strikeoutColor.handle;
+				attr = OS.pango_attr_strikethrough_color_new(color.red, color.green, color.blue);
+				OS.memmove(attribute, attr, PangoAttribute.sizeof);
+				attribute.start_index = byteStart;
+				attribute.end_index = byteEnd;
+				OS.memmove(attr, attribute, PangoAttribute.sizeof);
+				OS.pango_attr_list_insert(attrList, attr);
+			}
 		}
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
