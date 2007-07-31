@@ -489,6 +489,7 @@ public class OS extends C {
 	public static final int CP_UTF8 = 65001;
 	public static final int CP_DROPDOWNBUTTON = 1;
 	public static final int CP_INSTALLED = 0x1;
+	public static final int CPS_COMPLETE = 0x1;
 	public static final int CS_BYTEALIGNWINDOW = 0x2000;
 	public static final int CS_DBLCLKS = 0x8;
 	public static final int CS_DROPSHADOW = 0x20000;
@@ -1134,6 +1135,7 @@ public class OS extends C {
 	public static final int MSGF_SIZE = 4;
 	public static final int MSGF_USER = 4096;
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
+	public static final int NI_COMPOSITIONSTR = 0x15;
 	public static final int NIF_ICON = 0x00000002;
 	public static final int NIF_INFO = 0x00000010;
 	public static final int NIF_MESSAGE = 0x00000001;
@@ -3518,6 +3520,7 @@ public static final native int /*long*/ ImmGetContext (int /*long*/ hWnd);
 public static final native boolean ImmGetConversionStatus (int /*long*/ hIMC, int [] lpfdwConversion, int [] lpfdwSentence);
 public static final native int /*long*/ ImmGetDefaultIMEWnd (int /*long*/ hWnd);
 public static final native boolean ImmGetOpenStatus (int /*long*/ hIMC);
+public static final native boolean ImmNotifyIME (int /*long*/ hIMC, int dwAction, int dwIndex, int dwValue);
 public static final native boolean ImmReleaseContext (int /*long*/ hWnd, int /*long*/ hIMC);
 public static final native boolean ImmSetCompositionFontW (int /*long*/ hIMC, LOGFONTW lplf);
 public static final native boolean ImmSetCompositionFontA (int /*long*/ hIMC, LOGFONTA lplf);

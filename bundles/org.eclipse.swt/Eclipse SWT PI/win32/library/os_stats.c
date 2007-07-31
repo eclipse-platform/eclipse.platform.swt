@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 897;
-int OS_nativeFunctionCallCount[897];
+int OS_nativeFunctionCount = 898;
+int OS_nativeFunctionCallCount[898];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -422,6 +422,7 @@ char * OS_nativeFunctionNames[] = {
 	"ImmGetConversionStatus",
 	"ImmGetDefaultIMEWnd",
 	"ImmGetOpenStatus",
+	"ImmNotifyIME",
 	"ImmReleaseContext",
 	"ImmSetCandidateWindow",
 	"ImmSetCompositionFontA",

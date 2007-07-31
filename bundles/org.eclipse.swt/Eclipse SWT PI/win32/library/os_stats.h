@@ -430,6 +430,7 @@ typedef enum {
 	ImmGetConversionStatus_FUNC,
 	ImmGetDefaultIMEWnd_FUNC,
 	ImmGetOpenStatus_FUNC,
+	ImmNotifyIME_FUNC,
 	ImmReleaseContext_FUNC,
 	ImmSetCandidateWindow_FUNC,
 	ImmSetCompositionFontA_FUNC,

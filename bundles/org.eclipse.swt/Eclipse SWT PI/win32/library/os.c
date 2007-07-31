@@ -6854,6 +6854,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmGetOpenStatus)
 }
 #endif
 
+#ifndef NO_ImmNotifyIME
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImmNotifyIME)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImmNotifyIME_FUNC);
+	rc = (jboolean)ImmNotifyIME((HIMC)arg0, arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, ImmNotifyIME_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ImmReleaseContext
 JNIEXPORT jboolean JNICALL OS_NATIVE(ImmReleaseContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
