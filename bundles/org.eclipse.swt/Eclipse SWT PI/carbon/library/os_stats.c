@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 919;
-int OS_nativeFunctionCallCount[919];
+int OS_nativeFunctionCount = 921;
+int OS_nativeFunctionCallCount[921];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -480,6 +480,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetScrapFlavorSize",
 	"GetScriptManagerVariable",
 	"GetSuperControl",
+	"GetSystemUIMode",
 	"GetTabContentRect",
 	"GetThemeBrushAsColor",
 	"GetThemeButtonContentBounds",
@@ -845,6 +846,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetRect",
 	"SetRectRgn",
 	"SetRootMenu",
+	"SetSystemUIMode",
 	"SetThemeBackground",
 	"SetThemeCursor",
 	"SetThemeDrawingState",

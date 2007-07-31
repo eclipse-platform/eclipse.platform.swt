@@ -6644,6 +6644,23 @@ fail:
 }
 #endif
 
+#ifndef NO_GetSystemUIMode
+JNIEXPORT void JNICALL OS_NATIVE(GetSystemUIMode)
+	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1)
+{
+	jint *lparg0=NULL;
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, GetSystemUIMode_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	GetSystemUIMode((SystemUIMode *)lparg0, (SystemUIOptions *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GetSystemUIMode_FUNC);
+}
+#endif
+
 #ifndef NO_GetTabContentRect
 JNIEXPORT jint JNICALL OS_NATIVE(GetTabContentRect)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -11906,6 +11923,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetRootMenu)
 	OS_NATIVE_ENTER(env, that, SetRootMenu_FUNC);
 	rc = (jint)SetRootMenu((MenuRef)arg0);
 	OS_NATIVE_EXIT(env, that, SetRootMenu_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetSystemUIMode
+JNIEXPORT jint JNICALL OS_NATIVE(SetSystemUIMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetSystemUIMode_FUNC);
+	rc = (jint)SetSystemUIMode((SystemUIMode)arg0, (SystemUIOptions)arg1);
+	OS_NATIVE_EXIT(env, that, SetSystemUIMode_FUNC);
 	return rc;
 }
 #endif

@@ -882,6 +882,11 @@ public class OS extends C {
 	public static final int kThemeWatchCursor = 7;
 	public static final int kTrackMouseLocationOptionDontConsumeMouseUp = 1;
 	public static final int kTransformSelected = 0x4000;
+	public static final int kUIModeNormal = 0;
+	public static final int kUIModeContentSuppressed = 1;
+	public static final int kUIModeContentHidden = 2;
+	public static final int kUIModeAllHidden = 3;
+	public static final int kUIModeAllSuppressed = 4;
 	public static final int kUnicodeDocument = ('u'<<24) + ('d'<<16) + ('o'<<8) + 'c';
 	public static final int kUtilityWindowClass = 8;
     public static final int kWindowActivationScopeNone = 0;
@@ -910,6 +915,7 @@ public class OS extends C {
 	public static final int kWindowStructureRgn = 32;
 	public static final int kWindowToolbarButtonAttribute = (1 << 6);
 	public static final int kWindowUpdateRgn= 34;
+	public static final int kWindowNoTitleBarAttribute = (1 << 9);
 	public static final int kCaretPosition = 1;
 	public static final int kRawText = 2;
 	public static final int kSelectedRawText = 3;
@@ -1458,6 +1464,7 @@ public static final native int GetScrapFlavorInfoList(int scrap, int[] infoCount
 public static final native int GetScrapFlavorSize(int scrap, int flavorType, int[] byteCount);
 public static final native int GetScriptManagerVariable(short selector);
 public static final native int GetSuperControl(int cHandle, int[] parentHandle);
+public static final native void GetSystemUIMode(int[] outMode, int[] outOptions);
 public static final native int GetTabContentRect(int theControl, Rect rect);
 public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeButtonContentBounds(Rect inBounds, int inKind, ThemeButtonDrawInfo inDrawInfo, Rect outBounds);
@@ -1822,6 +1829,7 @@ public static final native void SetPt(Point p, short h, short v);
 public static final native void SetRect(Rect r, short left, short top, short right, short bottom);
 public static final native void SetRectRgn(int rgnHandle, short left, short top, short right, short bottom);
 public static final native int SetRootMenu(int mHandle);
+public static final native int SetSystemUIMode(int inMode, int inOptions);
 public static final native int SetThemeBackground(short inBrush, short depth, boolean isColorDevice);
 public static final native int SetThemeCursor(int themeCursor);
 public static final native int SetThemeDrawingState(int state, boolean disposeNow);
