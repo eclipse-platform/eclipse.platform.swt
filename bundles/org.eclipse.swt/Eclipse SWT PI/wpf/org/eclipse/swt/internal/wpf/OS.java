@@ -351,7 +351,11 @@ public class OS extends C {
 	
 	public static final int RelativeSourceMode_FindAncestor = 3;
 
-	public static final int DialogResult_OK = 1;	
+	public static final int DialogResult_OK = 1;
+	
+	public static final int TextDecorationUnit_FontRecommended = 0;
+	public static final int TextDecorationLocation_Underline = 0;
+	public static final int TextDecorationLocation_Strikethrough = 2;
 	
 
 	/*
@@ -1567,6 +1571,7 @@ public static final native int gcnew_Path();
 public static final native int gcnew_PathFigure();
 public static final native int gcnew_PathGeometry();
 public static final native int gcnew_Pen();
+public static final native int gcnew_Pen(int brush, double thickness);
 public static final native int gcnew_PolyLineSegment(int points, boolean isStroked);
 public static final native int gcnew_PointCollection(int capacity);
 public static final native int gcnew_Point(double x, double y);
@@ -1611,6 +1616,7 @@ public static final native int gcnew_TabControl();
 public static final native int gcnew_TabItem();
 public static final native int gcnew_TemplateBindingExtension(int dp);
 public static final native int gcnew_TextDecorationCollection(int capacity); 
+public static final native int gcnew_TextDecoration(int location, int pen, double penOffset, int penOffsetUnit, int penThicknessUnit);
 public static final native int gcnew_TextTabProperties(int alignment, double location, int tabLeader, int aligningChar);
 public static final native int gcnew_TextTabPropertiesCollection(int capacity);
 public static final native int gcnew_TextBlock();

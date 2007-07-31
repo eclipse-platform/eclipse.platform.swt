@@ -10320,7 +10320,7 @@ JNIEXPORT void JNICALL OS_NATIVE(TextDecorationCollection_1Add)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, TextDecorationCollection_1Add_FUNC);
-	((TextDecorationCollection^)TO_OBJECT(arg0))->Add((TextDecorationCollection^)TO_OBJECT(arg1));
+	((TextDecorationCollection^)TO_OBJECT(arg0))->Add((TextDecoration^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, TextDecorationCollection_1Add_FUNC);
 }
 #endif
@@ -14157,15 +14157,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1PathGeometry)
 }
 #endif
 
-#ifndef NO_gcnew_1Pen
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Pen)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Pen)
+#ifndef NO_gcnew_1Pen__
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Pen__)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Pen__)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1Pen_FUNC);
+	OS_NATIVE_ENTER(env, that, gcnew_1Pen___FUNC);
 	rc = (jint)TO_HANDLE(gcnew Pen());
-	OS_NATIVE_EXIT(env, that, gcnew_1Pen_FUNC);
+	OS_NATIVE_EXIT(env, that, gcnew_1Pen___FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1Pen__ID
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Pen__ID)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Pen__ID)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1Pen__ID_FUNC);
+	rc = (jint)TO_HANDLE(gcnew Pen((Brush^)TO_OBJECT(arg0), arg1));
+	OS_NATIVE_EXIT(env, that, gcnew_1Pen__ID_FUNC);
 	return rc;
 }
 #endif
@@ -14681,6 +14694,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TextCharacters)
 	OS_NATIVE_ENTER(env, that, gcnew_1TextCharacters_FUNC);
 	rc = (jint)TO_HANDLE(gcnew TextCharacters((String^)TO_OBJECT(arg0), arg1, arg2, (TextRunProperties^)TO_OBJECT(arg3)));
 	OS_NATIVE_EXIT(env, that, gcnew_1TextCharacters_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1TextDecoration
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TextDecoration)(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2, jint arg3, jint arg4);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TextDecoration)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2, jint arg3, jint arg4)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1TextDecoration_FUNC);
+	rc = (jint)TO_HANDLE(gcnew TextDecoration((TextDecorationLocation)arg0, (Pen^)TO_OBJECT(arg1), arg2, (TextDecorationUnit)arg3, (TextDecorationUnit)arg4));
+	OS_NATIVE_EXIT(env, that, gcnew_1TextDecoration_FUNC);
 	return rc;
 }
 #endif

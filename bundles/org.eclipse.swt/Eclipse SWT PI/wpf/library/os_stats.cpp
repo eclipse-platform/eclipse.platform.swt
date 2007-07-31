@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1270;
-int OS_nativeFunctionCallCount[1270];
+int OS_nativeFunctionCount = 1272;
+int OS_nativeFunctionCallCount[1272];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -1199,7 +1199,8 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1Path",
 	"gcnew_1PathFigure",
 	"gcnew_1PathGeometry",
-	"gcnew_1Pen",
+	"gcnew_1Pen__",
+	"gcnew_1Pen__ID",
 	"gcnew_1Point",
 	"gcnew_1PointCollection",
 	"gcnew_1PolyLineSegment",
@@ -1257,6 +1258,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1TextChangedEventHandler",
 	"gcnew_1TextCharacters",
 	"gcnew_1TextCompositionEventHandler",
+	"gcnew_1TextDecoration",
 	"gcnew_1TextDecorationCollection",
 	"gcnew_1TextEndOfLine",
 	"gcnew_1TextEndOfParagraph",
