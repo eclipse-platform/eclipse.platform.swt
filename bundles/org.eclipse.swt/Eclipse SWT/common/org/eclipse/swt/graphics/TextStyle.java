@@ -58,11 +58,25 @@ public class TextStyle {
 	public boolean underline;
 	
 	/**
+	 * the underline color of the style
+	 * 
+	 * @since 3.4
+	 */	
+	public Color underlineColor;
+	
+	/**
 	 * the strikeout flag of the style
 	 * 
 	 * @since 3.1
 	 */	
 	public boolean strikeout;
+	
+	/**
+	 * the strikeout color of the style
+	 * 
+	 * @since 3.4
+	 */	
+	public Color strikeoutColor;
 	
 	/**
 	 * the GlyphMetrics of the style
