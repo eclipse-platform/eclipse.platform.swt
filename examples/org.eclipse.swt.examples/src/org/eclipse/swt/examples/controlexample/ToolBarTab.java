@@ -359,9 +359,8 @@ class ToolBarTab extends Tab {
 					final ToolItem toolItem = (ToolItem) event.widget;
 					final ToolBar  toolBar = toolItem.getParent();
 					
-					Rectangle toolItemBounds = toolItem.getBounds();
-					Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
-					menu.setLocation(point.x, point.y + toolItemBounds.height);
+					Point point = toolBar.toDisplay(new Point(event.x, event.y));
+					menu.setLocation(point.x, point.y);
 					setMenuVisible(true);
 				}
 			} else {
