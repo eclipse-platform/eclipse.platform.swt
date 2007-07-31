@@ -36,7 +36,7 @@ public final class TextLayout extends Resource {
 		int start;
 		int atsuStyle;
 
-		void createStyle(Font defaultFont) {
+		void createStyle(Device device, Font defaultFont) {
 			if (atsuStyle != 0) return;
 			int[] buffer = new int[1];
 			OS.ATSUCreateStyle(buffer);
@@ -51,10 +51,18 @@ public final class TextLayout extends Resource {
 				if (style.underline) {
 					length += 1;
 					ptrLength += 1;
+					if (style.underlineColor != null) {
+						length += 1;
+						ptrLength += 4;
+					}
 				}
 				if (style.strikeout) {
 					length += 1;
 					ptrLength += 1;
+					if (style.strikeoutColor != null) {
+						length += 1;
+						ptrLength += 4;
+					}
 				}
 				if (style.metrics != null) {
 					length += 3;
@@ -120,6 +128,7 @@ public final class TextLayout extends Resource {
 					index++;
 				}
 			}
+			int underlineColor = 0, strikeoutColor = 0;;
 			if (style != null && style.underline) {
 				buffer1[0] = (byte)1;
 				tags[index] = OS.kATSUQDUnderlineTag;
@@ -127,7 +136,16 @@ public final class TextLayout extends Resource {
 				values[index] = ptr1;
 				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
-				index++;				
+				index++;
+				if (style.underlineColor != null) {
+					buffer[0] = underlineColor = OS.CGColorCreate(device.colorspace, style.underlineColor.handle);
+					tags[index] = OS.kATSUStyleUnderlineColorOptionTag;
+					sizes[index] = 4;
+					values[index] = ptr1;
+					OS.memmove(values[index], buffer, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
 			}
 			if (style != null && style.strikeout) {
 				buffer1[0] = (byte)1;
@@ -137,6 +155,15 @@ public final class TextLayout extends Resource {
 				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
+				if (style.strikeoutColor != null) {
+					buffer[0] = strikeoutColor = OS.CGColorCreate(device.colorspace, style.strikeoutColor.handle);
+					tags[index] = OS.kATSUStyleStrikeThroughColorOptionTag;
+					sizes[index] = 4;
+					values[index] = ptr1;
+					OS.memmove(values[index], buffer, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
 			}
 			if (style != null && style.metrics != null) {
 				GlyphMetrics metrics = style.metrics; 
@@ -188,6 +215,8 @@ public final class TextLayout extends Resource {
 			}
 			OS.ATSUSetAttributes(atsuStyle, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);	
+			if (underlineColor != 0) OS.CGColorRelease (underlineColor);
+			if (strikeoutColor != 0) OS.CGColorRelease (strikeoutColor);
 		}
 
 		void freeStyle() {
@@ -286,8 +315,8 @@ void computeRuns() {
 	int[] buffer = new int[1];
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem run = styles[i];
-		run.createStyle(font);
-		//set the defaut font in the ZWS when text is empty fixes text metrics
+		run.createStyle(device, font);
+		//set the default font in the ZWS when text is empty fixes text metrics
 		int start = textLength != 0 ? translateOffset(run.start) : 0;
 		int runLength = translateOffset(styles[i + 1].start) - start;
 		OS.ATSUSetRunStyle(layout, run.atsuStyle, start, runLength);
