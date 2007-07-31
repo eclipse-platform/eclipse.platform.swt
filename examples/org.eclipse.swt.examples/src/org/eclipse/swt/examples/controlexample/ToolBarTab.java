@@ -320,7 +320,9 @@ class ToolBarTab extends Tab {
 			// Create the menu if it has not already been created
 			if (menu == null) {
 				// Lazy create the menu.
-				menu = new Menu(shell);
+				ToolBar toolbar = ((ToolItem) event.widget).getParent();
+				int style = toolbar.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT);
+				menu = new Menu(shell, style | SWT.POP_UP);
 				for (int i = 0; i < 9; ++i) {
 					final String text = ControlExample.getResourceString("DropDownData_" + i);
 					if (text.length() != 0) {
