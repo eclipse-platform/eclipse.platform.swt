@@ -15565,6 +15565,35 @@ fail:
 }
 #endif
 
+#ifndef NO__1pango_1attr_1strikethrough_1color_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1strikethrough_1color_1new)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1strikethrough_1color_1new_FUNC);
+/*
+	rc = (jint)pango_attr_strikethrough_color_new(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jshort, jshort, jshort);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_attr_strikethrough_color_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_attr_strikethrough_color_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1strikethrough_1color_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1attr_1strikethrough_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1strikethrough_1new)
 	(JNIEnv *env, jclass that, jboolean arg0)

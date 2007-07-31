@@ -1107,6 +1107,7 @@ typedef enum {
 	_1pango_1attr_1list_1unref_FUNC,
 	_1pango_1attr_1rise_1new_FUNC,
 	_1pango_1attr_1shape_1new_FUNC,
+	_1pango_1attr_1strikethrough_1color_1new_FUNC,
 	_1pango_1attr_1strikethrough_1new_FUNC,
 	_1pango_1attr_1underline_1color_1new_FUNC,
 	_1pango_1attr_1underline_1new_FUNC,

@@ -9609,6 +9609,15 @@ public static final void pango_attr_list_unref(int /*long*/ list) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _pango_attr_strikethrough_color_new(short red, short green, short blue);
+public static final int /*long*/ pango_attr_strikethrough_color_new(short red, short green, short blue) {
+	lock.lock();
+	try {
+		return _pango_attr_strikethrough_color_new(red, green, blue);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_attr_strikethrough_new(boolean strikethrough);
 public static final int /*long*/ pango_attr_strikethrough_new(boolean strikethrough) {
 	lock.lock();
