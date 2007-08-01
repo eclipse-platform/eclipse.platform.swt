@@ -2162,8 +2162,8 @@ void onMouse(Event event) {
 						CTabFolderListener listener = tabListeners[j];
 						listener.itemClosed(e);
 					}
-					if (e.doit) {
-						item.dispose();
+					if (e.doit) item.dispose();
+					if (item.isDisposed()) {
 						Display display = getDisplay();
 						Point pt = display.getCursorLocation();
 						pt = display.map(null, this, pt.x, pt.y);
