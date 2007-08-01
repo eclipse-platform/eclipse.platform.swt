@@ -16,15 +16,15 @@ import org.eclipse.swt.widgets.*;
 
 class PromptDialog extends Dialog {
 	
-	public PromptDialog(Shell parent, int style) {
+	PromptDialog(Shell parent, int style) {
 		super(parent, style);
 	}
 	
-	public PromptDialog(Shell parent) {
+	PromptDialog(Shell parent) {
 		this(parent, 0);
 	}
 	
-	public void alertCheck(String title, String text, String check, final int[] checkValue) {
+	void alertCheck(String title, String text, String check, final int[] checkValue) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		if (title != null) shell.setText(title);
@@ -65,7 +65,7 @@ class PromptDialog extends Dialog {
 		}
 	}
 
-	public void confirmEx(String title, String text, String check, String button0, String button1, String button2, int defaultIndex, final int[] checkValue, final int[] result) {
+	void confirmEx(String title, String text, String check, String button0, String button1, String button2, int defaultIndex, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setText(title);
@@ -131,7 +131,7 @@ class PromptDialog extends Dialog {
 		}
 	}
 	
-	public void prompt(String title, String text, String check, final String[] value, final int[] checkValue, final int[] result) {
+	void prompt(String title, String text, String check, final String[] value, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		if (title != null) shell.setText(title);
@@ -190,7 +190,7 @@ class PromptDialog extends Dialog {
 		}	
 	}
 
-	public void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final int[] checkValue, final int[] result) {
+	void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setText(title);

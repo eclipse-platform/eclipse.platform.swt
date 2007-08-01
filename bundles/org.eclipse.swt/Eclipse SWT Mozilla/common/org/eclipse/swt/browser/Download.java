@@ -28,7 +28,7 @@ class Download {
 	Label status;
 	Button cancel;
 	
-public Download () {
+Download () {
 	createCOMInterfaces ();
 }
 
@@ -83,7 +83,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method15 (int /*long*/[] args) {return SetObserver (args[0]);}
 		public int /*long*/ method16 (int /*long*/[] args) {return Open (args[0]);}
 		public int /*long*/ method17 (int /*long*/[] args) {return GetCancelDownloadOnClose (args[0]);}
-		public int /*long*/ method18 (int /*long*/[] args) {return SetCancelDownloadOnClose (args[0]);}
+		public int /*long*/ method18 (int /*long*/[] args) {return SetCancelDownloadOnClose ((int)/*64*/args[0]);}
 		public int /*long*/ method19 (int /*long*/[] args) {return GetDialog (args[0]);}
 		public int /*long*/ method20 (int /*long*/[] args) {return SetDialog (args[0]);}
 	};
@@ -92,11 +92,11 @@ void createCOMInterfaces () {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return OnStateChange (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return OnProgressChange (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return OnStateChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return OnProgressChange (args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4], (int)/*64*/args[5]);}
 		public int /*long*/ method5 (int /*long*/[] args) {return OnLocationChange (args[0], args[1], args[2]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return OnStatusChange (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return OnSecurityChange (args[0], args[1], args[2]);}
+		public int /*long*/ method6 (int /*long*/[] args) {return OnStatusChange (args[0], args[1], (int)/*64*/args[2], args[3]);}
+		public int /*long*/ method7 (int /*long*/[] args) {return OnSecurityChange (args[0], args[1], (int)/*64*/args[2]);}
 	};
 }
 
@@ -123,7 +123,7 @@ int /*long*/ getAddress () {
 	return progressDialog.getAddress ();
 }
 
-int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
@@ -161,7 +161,7 @@ int Release () {
 /* nsIDownload */
 
 /* Note. The argument startTime is defined as a PRInt64. This translates into two java ints. */
-public int /*long*/ Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName, int /*long*/ aMIMEInfo, int /*long*/ startTime1, int /*long*/ startTime2, int /*long*/ aPersist) {
+int Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName, int /*long*/ aMIMEInfo, int /*long*/ startTime1, int /*long*/ startTime2, int /*long*/ aPersist) {
 	nsIURI source = new nsIURI (aSource);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
 	int rc = source.GetHost (aSpec);
@@ -253,51 +253,51 @@ public int /*long*/ Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ GetSource (int /*long*/ aSource) {
+int GetSource (int /*long*/ aSource) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetTarget (int /*long*/ aTarget) {
+int GetTarget (int /*long*/ aTarget) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetPersist (int /*long*/ aPersist) {
+int GetPersist (int /*long*/ aPersist) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetPercentComplete (int /*long*/ aPercentComplete) {
+int GetPercentComplete (int /*long*/ aPercentComplete) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetDisplayName (int /*long*/ aDisplayName) {
+int GetDisplayName (int /*long*/ aDisplayName) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ SetDisplayName (int /*long*/ aDisplayName) {
+int SetDisplayName (int /*long*/ aDisplayName) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetStartTime (int /*long*/ aStartTime) {
+int GetStartTime (int /*long*/ aStartTime) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetMIMEInfo (int /*long*/ aMIMEInfo) {
+int GetMIMEInfo (int /*long*/ aMIMEInfo) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetListener (int /*long*/ aListener) {
+int GetListener (int /*long*/ aListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ SetListener (int /*long*/ aListener) {
+int SetListener (int /*long*/ aListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetObserver (int /*long*/ aObserver) {
+int GetObserver (int /*long*/ aObserver) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ SetObserver (int /*long*/ aObserver) {
+int SetObserver (int /*long*/ aObserver) {
 	if (aObserver != 0) {
 		nsISupports supports = new nsISupports (aObserver);
 		int /*long*/[] result = new int /*long*/[1];
@@ -310,29 +310,29 @@ public int /*long*/ SetObserver (int /*long*/ aObserver) {
 }
 
 /* nsIProgressDialog */
-public int /*long*/ Open (int /*long*/ aParent) {
+int Open (int /*long*/ aParent) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetCancelDownloadOnClose (int /*long*/ aCancelDownloadOnClose) {
+int GetCancelDownloadOnClose (int /*long*/ aCancelDownloadOnClose) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ SetCancelDownloadOnClose (int /*long*/ aCancelDownloadOnClose) {
+int SetCancelDownloadOnClose (int aCancelDownloadOnClose) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ GetDialog (int /*long*/ aDialog) {
+int GetDialog (int /*long*/ aDialog) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ SetDialog (int /*long*/ aDialog) {
+int SetDialog (int /*long*/ aDialog) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIWebProgressListener */
 
-int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStateFlags, int /*long*/ aStatus) {
+int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateFlags, int aStatus) {
 	if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		if (helperAppLauncher != null) helperAppLauncher.Release ();
 		helperAppLauncher = null;
@@ -342,9 +342,9 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ OnProgressChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aCurSelfProgress, int /*long*/ aMaxSelfProgress, int /*long*/ aCurTotalProgress, int /*long*/ aMaxTotalProgress) {
-	int currentKBytes = (int)/*64*/aCurTotalProgress / 1024;
-	int totalKBytes = (int)/*64*/aMaxTotalProgress / 1024;
+int OnProgressChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
+	int currentKBytes = aCurTotalProgress / 1024;
+	int totalKBytes = aMaxTotalProgress / 1024;
 	if (shell != null & !shell.isDisposed ()) {
 		Object[] arguments = {new Integer (currentKBytes), new Integer (totalKBytes)};
 		String statusMsg = Compatibility.getMessage ("SWT_Download_Status", arguments); //$NON-NLS-1$
@@ -355,15 +355,15 @@ int /*long*/ OnProgressChange (int /*long*/ aWebProgress, int /*long*/ aRequest,
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
+int OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ OnStatusChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
+int OnStatusChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStatus, int /*long*/ aMessage) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ OnSecurityChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ state) {
+int OnSecurityChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int state) {
 	return XPCOM.NS_OK;
 }
 }

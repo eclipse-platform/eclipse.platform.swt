@@ -20,14 +20,14 @@ class FilePicker {
 	XPCOMObject filePicker;
 
 	int refCount = 0;
-	int mode;
+	short mode;
 	int /*long*/ parentHandle;
 	String[] files, masks;
 	String defaultFilename, directory, title;
 
 	static final String SEPARATOR = System.getProperty ("file.separator"); //$NON-NLS-1$
 
-public FilePicker () {
+FilePicker () {
 	createCOMInterfaces ();
 }
 
@@ -48,15 +48,15 @@ void createCOMInterfaces () {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Init (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AppendFilters (args[0]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return Init (args[0], args[1], (short)args[2]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return AppendFilters ((int)/*64*/args[0]);}
 		public int /*long*/ method5 (int /*long*/[] args) {return AppendFilter (args[0], args[1]);}
 		public int /*long*/ method6 (int /*long*/[] args) {return GetDefaultString (args[0]);}
 		public int /*long*/ method7 (int /*long*/[] args) {return SetDefaultString (args[0]);}
 		public int /*long*/ method8 (int /*long*/[] args) {return GetDefaultExtension (args[0]);}
 		public int /*long*/ method9 (int /*long*/[] args) {return SetDefaultExtension (args[0]);}
 		public int /*long*/ method10 (int /*long*/[] args) {return GetFilterIndex (args[0]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return SetFilterIndex (args[0]);}
+		public int /*long*/ method11 (int /*long*/[] args) {return SetFilterIndex ((int)/*64*/args[0]);}
 		public int /*long*/ method12 (int /*long*/[] args) {return GetDisplayDirectory (args[0]);}
 		public int /*long*/ method13 (int /*long*/[] args) {return SetDisplayDirectory (args[0]);}
 		public int /*long*/ method14 (int /*long*/[] args) {return GetFile (args[0]);}
@@ -81,7 +81,7 @@ int /*long*/ getAddress () {
 	return filePicker.getAddress ();
 }
 
-int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
@@ -123,14 +123,14 @@ String parseAString (int /*long*/ string) {
 
 /* nsIFilePicker */
 
-int /*long*/ Init (int /*long*/ parent, int /*long*/ title, int /*long*/ mode) {
+int Init (int /*long*/ parent, int /*long*/ title, short mode) {
 	parentHandle = parent;
-	this.mode = (int)/*64*/mode;
+	this.mode = mode;
 	this.title = parseAString (title);
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ Show (int /*long*/ _retval) {
+int Show (int /*long*/ _retval) {
 	if (mode == nsIFilePicker.modeGetFolder) {
 		/* picking a directory */
 		int result = showDirectoryPicker ();
@@ -176,15 +176,15 @@ int showDirectoryPicker () {
 	return directory == null ? nsIFilePicker.returnCancel : nsIFilePicker.returnOK;
 }
 
-int /*long*/ GetFiles (int /*long*/ aFiles) {
+int GetFiles (int /*long*/ aFiles) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ GetFileURL (int /*long*/ aFileURL) {
+int GetFileURL (int /*long*/ aFileURL) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ GetFile (int /*long*/ aFile) {
+int GetFile (int /*long*/ aFile) {
 	String filename = "";	//$NON-NLS-1$
 	if (directory != null) filename += directory + SEPARATOR;
 	if (files != null && files.length > 0) filename += files[0];
@@ -198,7 +198,7 @@ int /*long*/ GetFile (int /*long*/ aFile) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
+int SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	if (aDisplayDirectory == 0) return XPCOM.NS_OK;
 	nsILocalFile file = new nsILocalFile (aDisplayDirectory);
 	int /*long*/ pathname = XPCOM.nsEmbedCString_new ();
@@ -213,7 +213,7 @@ int /*long*/ SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
+int GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	String directoryName = directory != null ? directory : "";	//$NON-NLS-1$
 	nsEmbedString path = new nsEmbedString (directoryName);
 	int /*long*/[] file = new int /*long*/[1];
@@ -225,42 +225,42 @@ int /*long*/ GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ SetFilterIndex (int /*long*/ aFilterIndex) {
+int SetFilterIndex (int aFilterIndex) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ GetFilterIndex (int /*long*/ aFilterIndex) {
+int GetFilterIndex (int /*long*/ aFilterIndex) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ SetDefaultExtension (int /*long*/ aDefaultExtension) {
+int SetDefaultExtension (int /*long*/ aDefaultExtension) {
 	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ GetDefaultExtension (int /*long*/ aDefaultExtension) {
+int GetDefaultExtension (int /*long*/ aDefaultExtension) {
 	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ SetDefaultString (int /*long*/ aDefaultString) {
+int SetDefaultString (int /*long*/ aDefaultString) {
 	defaultFilename = parseAString (aDefaultString);
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ GetDefaultString (int /*long*/ aDefaultString) {
+int GetDefaultString (int /*long*/ aDefaultString) {
 	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ AppendFilter (int /*long*/ title, int /*long*/ filter) {
+int AppendFilter (int /*long*/ title, int /*long*/ filter) {
 	/* note that the type of arguments 1 and 2 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ AppendFilters (int /*long*/ filterMask) {
+int AppendFilters (int filterMask) {
 	String[] addFilters = null;
-	switch ((int)/*64*/filterMask) {
+	switch (filterMask) {
 		case nsIFilePicker.filterAll:
 		case nsIFilePicker.filterApps:
 			masks = null;			/* this is equivalent to no filter */

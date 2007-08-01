@@ -20,7 +20,7 @@ class InputStream {
 	byte[] buffer;
 	int index = 0;
 	
-public InputStream (byte[] buffer) {
+InputStream (byte[] buffer) {
 	this.buffer = buffer;
 	index = 0;
 	createCOMInterfaces ();
@@ -39,8 +39,8 @@ void createCOMInterfaces () {
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return Close ();}
 		public int /*long*/ method4 (int /*long*/[] args) {return Available (args[0]);}
-		public int /*long*/ method5 (int /*long*/[] args) {return Read (args[0], args[1], args[2]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return ReadSegments (args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method5 (int /*long*/[] args) {return Read (args[0], (int)/*64*/args[1], args[2]);}
+		public int /*long*/ method6 (int /*long*/[] args) {return ReadSegments (args[0], args[1], (int)/*64*/args[2], args[3]);}
 		public int /*long*/ method7 (int /*long*/[] args) {return IsNonBlocking (args[0]);}
 	};
 }
@@ -56,7 +56,7 @@ int /*long*/ getAddress () {
 	return inputStream.getAddress ();
 }
 
-int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
@@ -83,20 +83,20 @@ int Release () {
 	
 /* nsIInputStream implementation */
 
-int /*long*/ Close () {
+int Close () {
 	buffer = null;
 	index = 0;
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ Available (int /*long*/ _retval) {
+int Available (int /*long*/ _retval) {
 	int available = buffer == null ? 0 : buffer.length - index;
 	XPCOM.memmove (_retval, new int[] {available}, 4);
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ Read(int /*long*/ aBuf, int /*long*/ aCount, int /*long*/ _retval) {
-	int max = Math.min ((int)/*64*/aCount, buffer == null ? 0 : buffer.length - index);
+int Read(int /*long*/ aBuf, int aCount, int /*long*/ _retval) {
+	int max = Math.min (aCount, buffer == null ? 0 : buffer.length - index);
 	if (max > 0) {
 		byte[] src = new byte[max];
 		System.arraycopy (buffer, index, src, 0, max);
@@ -107,8 +107,8 @@ int /*long*/ Read(int /*long*/ aBuf, int /*long*/ aCount, int /*long*/ _retval) 
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ ReadSegments (int /*long*/ aWriter, int /*long*/ aClosure, int /*long*/ aCount, int /*long*/ _retval) {
-	int max = Math.min ((int)/*64*/aCount, buffer == null ? 0 : buffer.length - index);
+int ReadSegments (int /*long*/ aWriter, int /*long*/ aClosure, int aCount, int /*long*/ _retval) {
+	int max = Math.min (aCount, buffer == null ? 0 : buffer.length - index);
 	int cnt = max;
 	while (cnt > 0) {
 		int[] aWriteCount = new int[1];
@@ -121,7 +121,7 @@ int /*long*/ ReadSegments (int /*long*/ aWriter, int /*long*/ aClosure, int /*lo
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ IsNonBlocking (int /*long*/ _retval) {
+int IsNonBlocking (int /*long*/ _retval) {
 	/* blocking */
 	XPCOM.memmove (_retval, new int[] {0}, 4);
 	return XPCOM.NS_OK;

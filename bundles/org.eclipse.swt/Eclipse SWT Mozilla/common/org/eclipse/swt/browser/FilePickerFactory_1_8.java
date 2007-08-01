@@ -28,13 +28,13 @@ void createCOMInterfaces () {
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return CreateInstance (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return LockFactory (args[0]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return LockFactory ((int)/*64*/args[0]);}
 	};
 }
 
 /* nsIFactory */
 
-public int /*long*/ CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
+int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
 	FilePicker_1_8 picker = new FilePicker_1_8 ();
 	picker.AddRef ();
 	XPCOM.memmove (result, new int /*long*/[] {picker.getAddress ()}, C.PTR_SIZEOF);

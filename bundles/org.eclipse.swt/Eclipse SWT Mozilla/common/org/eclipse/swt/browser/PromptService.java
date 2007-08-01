@@ -20,7 +20,7 @@ class PromptService {
 	XPCOMObject promptService;
 	int refCount = 0;
 
-public PromptService () {
+PromptService () {
 	createCOMInterfaces ();
 }
 
@@ -45,11 +45,11 @@ void createCOMInterfaces () {
 		public int /*long*/ method4 (int /*long*/[] args) {return AlertCheck (args[0], args[1], args[2], args[3], args[4]);}
 		public int /*long*/ method5 (int /*long*/[] args) {return Confirm (args[0], args[1], args[2], args[3]);}
 		public int /*long*/ method6 (int /*long*/[] args) {return ConfirmCheck (args[0], args[1], args[2], args[3], args[4], args[5]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);}
+		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7], args[8], args[9]);}
 		public int /*long*/ method8 (int /*long*/[] args) {return Prompt (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
 		public int /*long*/ method9 (int /*long*/[] args) {return PromptUsernameAndPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
 		public int /*long*/ method10 (int /*long*/[] args) {return PromptPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6]);}
 	};		
 }
 
@@ -68,7 +68,7 @@ int /*long*/ getAddress () {
 	return promptService.getAddress ();
 }
 
-int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
@@ -162,7 +162,7 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 
 /* nsIPromptService */
 
-public int /*long*/ Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) {
+int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) {
 	Browser browser = getBrowser (aParent);
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
@@ -183,7 +183,7 @@ public int /*long*/ Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int 
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ AlertCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState) {
+int AlertCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState) {
 	Browser browser = getBrowser (aParent);
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
@@ -210,7 +210,7 @@ public int /*long*/ AlertCheck (int /*long*/ aParent, int /*long*/ aDialogTitle,
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ Confirm (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ _retval) {
+int Confirm (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ _retval) {
 	Browser browser = getBrowser (aParent);
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
@@ -233,11 +233,11 @@ public int /*long*/ Confirm (int /*long*/ aParent, int /*long*/ aDialogTitle, in
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ ConfirmCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int ConfirmCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aButtonFlags, int /*long*/ aButton0Title, int /*long*/ aButton1Title, int /*long*/ aButton2Title, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int aButtonFlags, int /*long*/ aButton0Title, int /*long*/ aButton1Title, int /*long*/ aButton2Title, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	Browser browser = getBrowser (aParent);
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
@@ -258,9 +258,9 @@ public int /*long*/ ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, 
 		checkLabel = new String (dest);
 	}
 	
-	String button0Label = getLabel ((int)/*64*/aButtonFlags, nsIPromptService.BUTTON_POS_0, aButton0Title);
-	String button1Label = getLabel ((int)/*64*/aButtonFlags, nsIPromptService.BUTTON_POS_1, aButton1Title);
-	String button2Label = getLabel ((int)/*64*/aButtonFlags, nsIPromptService.BUTTON_POS_2, aButton2Title);
+	String button0Label = getLabel (aButtonFlags, nsIPromptService.BUTTON_POS_0, aButton0Title);
+	String button1Label = getLabel (aButtonFlags, nsIPromptService.BUTTON_POS_1, aButton1Title);
+	String button2Label = getLabel (aButtonFlags, nsIPromptService.BUTTON_POS_2, aButton2Title);
 	
 	int defaultIndex = 0;
 	if ((aButtonFlags & nsIPromptService.BUTTON_POS_1_DEFAULT) != 0) {
@@ -279,7 +279,7 @@ public int /*long*/ ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, 
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aValue, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aValue, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	Browser browser = getBrowser (aParent);
 	String titleLabel = null, textLabel, checkLabel = null;
 	String[] valueLabel = new String[1];
@@ -364,7 +364,7 @@ public int /*long*/ Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ PromptUsernameAndPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aUsername, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int PromptUsernameAndPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aUsername, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	Browser browser = getBrowser (aParent);
 	String titleLabel, textLabel, checkLabel = null;
 	String[] userLabel = new String[1], passLabel = new String[1];
@@ -488,11 +488,11 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ aParent, int /*long*
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ PromptPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int PromptPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ Select (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCount, int /*long*/ aSelectList, int /*long*/ aOutSelection, int /*long*/ _retval) {
+int Select (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int aCount, int /*long*/ aSelectList, int /*long*/ aOutSelection, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 }

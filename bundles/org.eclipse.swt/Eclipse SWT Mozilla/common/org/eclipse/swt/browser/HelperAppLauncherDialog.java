@@ -20,7 +20,7 @@ class HelperAppLauncherDialog {
 	XPCOMObject helperAppLauncherDialog;
 	int refCount = 0;
 
-public HelperAppLauncherDialog () {
+HelperAppLauncherDialog () {
 	createCOMInterfaces ();
 }
 
@@ -41,7 +41,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Show (args[0], args[1], args[2]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return Show (args[0], args[1], (int)/*64*/args[2]);}
 		public int /*long*/ method4 (int /*long*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], args[4]);}
 	};		
 }
@@ -61,7 +61,7 @@ int /*long*/ getAddress () {
 	return helperAppLauncherDialog.getAddress ();
 }
 
-int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
@@ -96,7 +96,7 @@ int Release () {
 
 /* nsIHelperAppLauncherDialog */
 
-public int /*long*/ Show (int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aReason) {
+int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
 	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to
@@ -115,7 +115,7 @@ public int /*long*/ Show (int /*long*/ aLauncher, int /*long*/ aContext, int /*l
 	return helperAppLauncher.SaveToDisk (0, false);
 }
 
-public int /*long*/ PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
+int PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
 	int /*long*/ aDefaultFile, aSuggestedFileExtension, _retval;
 	boolean hasLauncher = false;
 

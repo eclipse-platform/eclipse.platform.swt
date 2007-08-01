@@ -26,15 +26,15 @@ void createCOMInterfaces () {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Init (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AppendFilters (args[0]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return Init (args[0], args[1], (short)args[2]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return AppendFilters ((int)/*64*/args[0]);}
 		public int /*long*/ method5 (int /*long*/[] args) {return AppendFilter (args[0], args[1]);}
 		public int /*long*/ method6 (int /*long*/[] args) {return GetDefaultString (args[0]);}
 		public int /*long*/ method7 (int /*long*/[] args) {return SetDefaultString (args[0]);}
 		public int /*long*/ method8 (int /*long*/[] args) {return GetDefaultExtension (args[0]);}
 		public int /*long*/ method9 (int /*long*/[] args) {return SetDefaultExtension (args[0]);}
 		public int /*long*/ method10 (int /*long*/[] args) {return GetFilterIndex (args[0]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return SetFilterIndex (args[0]);}
+		public int /*long*/ method11 (int /*long*/[] args) {return SetFilterIndex ((int)/*64*/args[0]);}
 		public int /*long*/ method12 (int /*long*/[] args) {return GetDisplayDirectory (args[0]);}
 		public int /*long*/ method13 (int /*long*/[] args) {return SetDisplayDirectory (args[0]);}
 		public int /*long*/ method14 (int /*long*/[] args) {return GetFile (args[0]);}

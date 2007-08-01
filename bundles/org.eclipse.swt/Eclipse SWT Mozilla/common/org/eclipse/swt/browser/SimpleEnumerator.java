@@ -20,7 +20,7 @@ class SimpleEnumerator {
 	nsISupports[] values;
 	int index = 0;
 
-public SimpleEnumerator (nsISupports[] values) {
+SimpleEnumerator (nsISupports[] values) {
 	this.values = values;
 	for (int i = 0; i < values.length; i++) {
 		values[i].AddRef ();
@@ -36,13 +36,13 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return queryInterface (args[0], args[1]);}
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 	};
 
 	simpleEnumerator = new XPCOMObject (new int[] {2, 0, 0, 1, 1}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return queryInterface (args[0], args[1]);}
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return HasMoreElements (args[0]);}
@@ -71,7 +71,7 @@ int /*long*/ getAddress () {
 	return simpleEnumerator.getAddress ();
 }
 
-int /*long*/ queryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
