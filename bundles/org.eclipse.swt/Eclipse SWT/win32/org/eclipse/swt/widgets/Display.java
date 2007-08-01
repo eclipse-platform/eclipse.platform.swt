@@ -2436,6 +2436,24 @@ protected void init () {
 	lpWndClass.lpfnWndProc = windowProc;
 	lpWndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
 	lpWndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
+	/*
+	* Set the default icon for the window class to IDI_APPLICATION.
+	* This is not necessary for native Windows applications but
+	* versions of Java starting at JDK 1.6 set the icon in the
+	* executable instead of leaving the default.
+	*/
+	if (!OS.IsWinCE && Library.JAVA_VERSION >= Library.JAVA_VERSION (1, 6, 0)) {
+		TCHAR lpszFile = new TCHAR (0, OS.MAX_PATH);
+		while (OS.GetModuleFileName (0, lpszFile, lpszFile.length ()) == lpszFile.length ()) {
+			lpszFile = new TCHAR (0, lpszFile.length () + OS.MAX_PATH);
+		}
+		if (OS.ExtractIconEx (lpszFile, -1, null, null, 1) != 0) {
+			String fileName = lpszFile.toString (0, lpszFile.strlen ());
+			if (fileName.endsWith ("java.exe") || fileName.endsWith ("javaw.exe")) { //$NON-NLS-1$ //$NON-NLS-2$
+				lpWndClass.hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
+			}
+		}
+	}
 	int byteCount = windowClass.length () * TCHAR.sizeof;
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
@@ -2443,7 +2461,9 @@ protected void init () {
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
 
 	/* Register the SWT drop shadow window class */
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) lpWndClass.style |= OS.CS_DROPSHADOW;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		lpWndClass.style |= OS.CS_DROPSHADOW;
+	}
 	byteCount = windowShadowClass.length () * TCHAR.sizeof;
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
