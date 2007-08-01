@@ -12,7 +12,6 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.mozilla.interfaces.*;
 import org.mozilla.xpcom.Mozilla;
@@ -30,16 +29,15 @@ import org.mozilla.xpcom.Mozilla;
  * @since 3.3
  */
 public class Snippet277 {
+	static Shell shell;
 	static Label statusLabel;
 	static Button cancelButton;
-	static Shell shell;
 	static nsICancelable nsICancelable;
 
 	public static void main (String [] args) {
 		Display display = new Display ();
 		shell = new Shell (display);
 		shell.setText ("Custom Download Handler");
-		shell.setLayout (new GridLayout ());
 
 		Browser browser;
 		try {
@@ -48,14 +46,9 @@ public class Snippet277 {
 			System.out.println ("Could not instantiate Browser: " + e.getMessage ());
 			return;
 		}
-		browser.setLayoutData (new GridData (600,600));
 
-		Composite composite = new Composite (shell, SWT.NONE);
-		composite.setLayoutData (new GridData (GridData.FILL_BOTH));
-		composite.setLayout (new GridLayout (2, false));
-		statusLabel = new Label (composite, SWT.WRAP | SWT.BORDER);
-		statusLabel.setLayoutData (new GridData (GridData.FILL_BOTH));
-		cancelButton = new Button (composite, SWT.PUSH);
+		statusLabel = new Label (shell, SWT.WRAP | SWT.BORDER);
+		cancelButton = new Button (shell, SWT.PUSH);
 		cancelButton.setText ("Cancel");
 		cancelButton.setEnabled (false);
 		cancelButton.addListener (SWT.Selection, new Listener () {
@@ -67,8 +60,6 @@ public class Snippet277 {
 				cancelButton.setEnabled (false);
 				statusLabel.setData ("");
 				statusLabel.setText ("");
-				shell.layout ();
-				shell.pack ();
 			}
 		});
 
@@ -89,7 +80,10 @@ public class Snippet277 {
 		});
 
 		browser.setUrl ("http://download.eclipse.org/downloads");
-		shell.pack ();
+		shell.setBounds (10, 10, 800, 600);
+		browser.setBounds (10, 10, 780, 500);
+		statusLabel.setBounds (10, 520, 680, 50);
+		cancelButton.setBounds (710, 520, 80, 50);
 		shell.open ();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) display.sleep ();
@@ -113,8 +107,6 @@ public class Snippet277 {
 					cancelButton.setEnabled (false);
 					statusLabel.setData ("");
 					statusLabel.setText ("");
-					shell.layout ();
-					shell.pack ();
 				}
 			}
 			public void onProgressChange64 (nsIWebProgress webProgress, nsIRequest request, long curSelfProgress, long maxSelfProgress, long curTotalProgress, long maxTotalProgress) {
@@ -122,8 +114,6 @@ public class Snippet277 {
 				long totalKBytes = maxTotalProgress / 1024;
 				String string = (String)statusLabel.getData () + " (" + currentKBytes + "/" + totalKBytes + ")";
 				statusLabel.setText (string);
-				shell.layout ();
-				shell.pack ();
 			}
 			public void init (nsIURI source, nsIURI target, String displayName, nsIMIMEInfo MIMEInfo, double startTime, nsILocalFile tempFile, nsICancelable cancelable) {
 				nsICancelable = cancelable;
@@ -131,8 +121,6 @@ public class Snippet277 {
 				String string = "Downloading " + source.getSpec () + " to " + target.getSpec ();
 				statusLabel.setData (string);
 				statusLabel.setText (string);
-				shell.layout ();
-				shell.pack ();
 			}
 			public void onStatusChange (nsIWebProgress webProgress, nsIRequest request, long status, String message) {}
 			public void onSecurityChange (nsIWebProgress webProgress, nsIRequest request, long state) {}
