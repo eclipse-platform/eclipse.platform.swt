@@ -81,9 +81,9 @@ public class Snippet277 {
 
 		browser.setUrl ("http://download.eclipse.org/downloads");
 		shell.setBounds (10, 10, 800, 600);
-		browser.setBounds (10, 10, 780, 500);
-		statusLabel.setBounds (10, 520, 680, 50);
-		cancelButton.setBounds (710, 520, 80, 50);
+		browser.setBounds (10, 10, 780, 450);
+		statusLabel.setBounds (10, 470, 680, 100);
+		cancelButton.setBounds (710, 470, 80, 50);
 		shell.open ();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) display.sleep ();
