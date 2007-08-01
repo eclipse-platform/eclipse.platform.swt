@@ -314,7 +314,6 @@ class ToolBarTab extends Tab {
 	 */
 	class DropDownSelectionListener extends SelectionAdapter {
 		private Menu    menu = null;
-		private boolean visible = false;
 		
 		public void widgetSelected(SelectionEvent event) {
 			// Create the menu if it has not already been created
@@ -328,15 +327,6 @@ class ToolBarTab extends Tab {
 					if (text.length() != 0) {
 						MenuItem menuItem = new MenuItem(menu, SWT.NONE);
 						menuItem.setText(text);
-						/*
-						 * Add a menu selection listener so that the menu is hidden
-						 * when the user selects an item from the drop down menu.
-						 */
-						menuItem.addSelectionListener(new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-								setMenuVisible(false);
-							}
-						});
 					} else {
 						new MenuItem(menu, SWT.SEPARATOR);
 					}
@@ -353,28 +343,14 @@ class ToolBarTab extends Tab {
 				/*
 				 * The drop down arrow was selected.
 				 */
-				if (visible) {
-					// Hide the menu to give the Arrow the appearance of being a toggle button.
-					setMenuVisible(false);
-				} else {	
-					// Position the menu below and vertically aligned with the the drop down tool button.
-					final ToolItem toolItem = (ToolItem) event.widget;
-					final ToolBar  toolBar = toolItem.getParent();
-					
-					Point point = toolBar.toDisplay(new Point(event.x, event.y));
-					menu.setLocation(point.x, point.y);
-					setMenuVisible(true);
-				}
-			} else {
-				/*
-				 * Main area of drop down tool item selected.
-				 * An application would invoke the code to perform the action for the tool item.
-				 */
-			}
-		}
-		private void setMenuVisible(boolean visible) {
-			menu.setVisible(visible);
-			this.visible = visible;
+				// Position the menu below and vertically aligned with the the drop down tool button.
+				final ToolItem toolItem = (ToolItem) event.widget;
+				final ToolBar  toolBar = toolItem.getParent();
+				
+				Point point = toolBar.toDisplay(new Point(event.x, event.y));
+				menu.setLocation(point.x, point.y);
+				menu.setVisible(true);
+			} 
 		}
 	}
 }
