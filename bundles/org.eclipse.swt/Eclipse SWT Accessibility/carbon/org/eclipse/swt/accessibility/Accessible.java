@@ -540,35 +540,46 @@ public class Accessible {
 	}
 	
 	int getFocusedAttribute (int nextHandler, int theEvent, int userData) {
-		int osChildID = getChildIDFromEvent(theEvent);
+		int[] osChildID = new int[1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleObject, OS.typeCFTypeRef, null, 4, null, osChildID);
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = ACC.CHILDID_MULTIPLE; // set to impossible value to test if app resets
+		event.childID = ACC.CHILDID_MULTIPLE; // set to invalid value, to test if the application sets it in getFocus()
 		event.accessible = null;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getFocus(event);
 		}
+
+		/* The application can optionally answer an accessible. */
 		if (event.accessible != null) {
-			if (OS.CFEqual(event.accessible.axuielementref, osChildID)) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {true});
-				return OS.noErr;
-			}
+			boolean hasFocus = OS.CFEqual(event.accessible.axuielementref, osChildID[0]);
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus});
+			return OS.noErr;
+		}
+		
+		/* Or the application can answer a valid child ID, including CHILDID_SELF and CHILDID_NONE. */
+		if (event.childID == ACC.CHILDID_SELF) {
+			boolean hasFocus = OS.CFEqual(axuielementref, osChildID[0]);
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus});
+			return OS.noErr;
 		}
 		if (event.childID == ACC.CHILDID_NONE) {
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {false});
 			return OS.noErr;
 		}
 		if (event.childID != ACC.CHILDID_MULTIPLE) {
-			boolean hasFocus = OS.CFEqual(childIDToOs(event.childID), osChildID); // This will test for CHILDID_SELF also.
+			/* Other valid childID. */
+			int childID = osToChildID(osChildID[0]);
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {event.childID == childID});
+			return OS.noErr;
+		}
+
+		/* Invalid childID means that application did not implement getFocus, so return the native focus. */
+		if (OS.CFEqual(axuielementref, osChildID[0])) {
+			boolean hasFocus =  control.isFocusControl();
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus});
 			return OS.noErr;
 		}
-		// TODO: If the app does not implement getFocus, return the native focus
-//		if (OS.CFEqual(axuielementref, osChildID)) {
-//			boolean hasFocus = control.isFocusControl();
-//			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus});
-//			return OS.noErr;
-//		}
 		return OS.CallNextEventHandler (nextHandler, theEvent);
 	}
 	
