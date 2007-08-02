@@ -3627,10 +3627,10 @@ void init(Drawable drawable, GCData data, int hDC) {
 	}
 	data.state &= ~(NULL_BRUSH | NULL_PEN);
 	int hFont = data.hFont;
-	if (hFont != 0) {
+	if (hFont != 0 && hFont != -1) {
 		data.state &= ~FONT;
 	} else {
-		hFont = OS.GetCurrentObject(hDC, OS.OBJ_FONT);
+		data.hFont = OS.GetCurrentObject(hDC, OS.OBJ_FONT);
 	}
 	int hPalette = data.device.hPalette;
 	if (hPalette != 0) {
