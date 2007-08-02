@@ -31,6 +31,7 @@ class IE extends WebBrowser {
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int /*long*/ globalDispatch;
 	String html;
+	int style;
 
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
@@ -99,6 +100,7 @@ class IE extends WebBrowser {
 	}
 
 public void create(Composite parent, int style) {
+	this.style = style;
 	frame = new OleFrame(browser, SWT.NONE);
 
 	/*
