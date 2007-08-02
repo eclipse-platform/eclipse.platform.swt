@@ -178,7 +178,10 @@ int GetExternal(int /*long*/ ppDispatch) {
 }
 
 int GetHostInfo(int /*long*/ pInfo) {
-	OS.MoveMemory(pInfo + 4, new int[] {IE.DOCHOSTUIFLAG_THEME}, 4);
+	int info = IE.DOCHOSTUIFLAG_THEME;
+	Browser browser = (Browser)getParent().getParent();
+	if ((browser.getStyle () & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
+	OS.MoveMemory(pInfo + 4, new int[] {info}, 4);
 
 	/*
 	* TODO replace the implementation above with the one commented below
