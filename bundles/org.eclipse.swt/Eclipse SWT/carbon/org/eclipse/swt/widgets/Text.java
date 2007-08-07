@@ -600,6 +600,7 @@ public void cut () {
 			String newText = verifyText ("", oldSelection.x, oldSelection.y, null);
 			if (newText == null) return;
 			if (newText.length () != 0) {
+				copyToClipboard (oldText);
 				if (txnObject == 0) {
 					insertEditText (newText);
 				} else {

@@ -516,13 +516,14 @@ public void cut () {
 	String text = getText ();
 	String leftText = text.substring (0, start);
 	String rightText = text.substring (end, text.length ());
+	String oldText = text.substring (start, end);
 	String newText = "";
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		newText = verifyText (newText, start, end, null);
 		if (newText == null) return;
 	}
-	char [] buffer = new char [newText.length ()];
-	newText.getChars (0, buffer.length, buffer, 0);
+	char [] buffer = new char [oldText.length ()];
+	oldText.getChars (0, buffer.length, buffer, 0);
 	copyToClipboard (buffer);
 	setText (leftText + newText + rightText, false);
 	start += newText.length ();
