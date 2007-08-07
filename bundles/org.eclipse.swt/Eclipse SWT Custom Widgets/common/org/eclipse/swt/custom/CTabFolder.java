@@ -2163,7 +2163,7 @@ void onMouse(Event event) {
 						listener.itemClosed(e);
 					}
 					if (e.doit) item.dispose();
-					if (item.isDisposed()) {
+					if (!isDisposed() && item.isDisposed()) {
 						Display display = getDisplay();
 						Point pt = display.getCursorLocation();
 						pt = display.map(null, this, pt.x, pt.y);
