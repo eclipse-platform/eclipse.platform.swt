@@ -115,7 +115,10 @@ public class OS extends C {
 	public static final int kATSUQDUnderlineTag = 258;
 	public static final int kATSUStyleStrikeThroughTag = 292;
 	public static final int kATSUStyleUnderlineColorOptionTag = 291;
+	public static final int kATSUStyleUnderlineCountOptionTag = 290;
 	public static final int kATSUStyleStrikeThroughColorOptionTag = 294;
+	public static final int kATSUStyleSingleLineCount = 1;
+	public static final int kATSUStyleDoubleLineCount = 2;
 	public static final int kATSULeftTab = 0;
 	public static final int kATSUseDeviceOrigins = 1;
 	public static final int kATSUseLineHeight = 0x7FFFFFFF;
@@ -484,6 +487,7 @@ public class OS extends C {
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 	public static final int kEventTextInputOffsetToPos = 3;
 	public static final int kEventTextInputPosToOffset = 4;
+	public static final int kEventTextInputGetSelectedText = 6;
 	public static final int kEventWindowActivated = 5;
 	public static final int kEventWindowBoundsChanged = 27;
 	public static final int kEventWindowClose = 72;
