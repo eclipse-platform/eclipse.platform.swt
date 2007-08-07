@@ -673,8 +673,7 @@ public String getText () {
 }
 
 boolean isTabItem () {
-	//TEMPORARY CODE
-	//if ((style & SWT.PUSH) != 0) return true;
+	if ((style & SWT.PUSH) != 0) return isTabGroup ();
 	return super.isTabItem ();
 }
 
