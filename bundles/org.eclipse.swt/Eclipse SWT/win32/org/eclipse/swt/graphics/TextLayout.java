@@ -829,7 +829,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							Gdip.Graphics_Restore(gdipGraphics, gstate2);
 						}
 						Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-						drawLines(gdip, gdipGraphics, drawX, drawRunY, run, brush, false);
+						drawLines(gdip, gdipGraphics, drawX, drawRunY, run, brush, fullSelection, null, alpha);
 						if (partialSelection) {
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 							gstate = Gdip.Graphics_Save(gdipGraphics);
@@ -845,7 +845,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								Gdip.Graphics_Restore(gdipGraphics, gstate2);
 							}
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg, true);
+							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg, true, null, alpha);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
 						Gdip.GraphicsPath_delete(path);
@@ -859,11 +859,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						}
 						OS.SetTextColor(hdc, fg);
 						OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-						drawLines(gdip, hdc, drawX, drawRunY, run, fg, false);
+						drawLines(gdip, hdc, drawX, drawRunY, run, fg, fullSelection, null, alpha);
 						if (partialSelection && fg != selectionForeground.handle) {
 							OS.SetTextColor(hdc, selectionForeground.handle);
 							OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle, true);
+							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle, true, rect, alpha);
 						}
 					}
 				}
@@ -883,29 +883,52 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 }
 
-void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem run, int /*long*/ color, boolean selection) {
-	if (run.style == null) return;
-	if (!run.style.underline && !run.style.strikeout) return;
+void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem run, int /*long*/ color, boolean selection, RECT clipRect, int alpha) {
+	TextStyle style = run.style;
+	if (style == null) return;
+	if (!style.underline && !style.strikeout) return;
 	int underlineY = y + run.ascent - run.underlinePos;
 	int strikeoutY = y + run.ascent - run.strikeoutPos;
 	if (advance) {
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
 		int /*long*/ brush = color;
-		if (run.style.underline) {
-			if (!selection && run.style.underlineColor != null) {
-				int c = run.style.underlineColor.handle;
-				int argb = (0xFF << 24) | ((c >> 16) & 0xFF) | (c & 0xFF00) | ((c & 0xFF) << 16);
+		if (style.underline) {
+			if (!selection && style.underlineColor != null) {
+				int fg = style.underlineColor.handle;
+				int argb = ((alpha & 0xFF) << 24) | ((fg >> 16) & 0xFF) | (fg & 0xFF00) | ((fg & 0xFF) << 16);
 				int /*long*/ gdiColor = Gdip.Color_new(argb); 
 				brush = Gdip.SolidBrush_new(gdiColor);
 				Gdip.Color_delete(gdiColor);
 			}
-			Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY, run.width, run.underlineThickness);
+			switch (style.underlineStyle) {
+				case SWT.UNDERLINE_ERROR:
+				case SWT.UNDERLINE_IME_INPUT:
+					int squigglyThickness = 1;
+					int squigglyHeight = 2 * squigglyThickness;
+					int squigglyY = Math.min(underlineY, y + run.ascent + run.descent - squigglyHeight - 1);
+					int[] points = computePolyline(x, squigglyY, x + run.width, squigglyY + squigglyHeight);
+					int /*long*/ pen = Gdip.Pen_new(brush, squigglyThickness);
+					Gdip.Graphics_DrawLines(graphics, pen, points, points.length / 2);
+					Gdip.Pen_delete(pen);
+					break;
+				case SWT.UNDERLINE_IME_TARGET_CONVERTED:
+					Gdip.Graphics_FillRectangle(graphics, brush, x - run.underlineThickness, underlineY, run.width, run.underlineThickness * 2);
+					break;
+				case SWT.UNDERLINE_IME_CONVERTED:
+				case SWT.UNDERLINE_SINGLE:
+					Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY, run.width, run.underlineThickness);
+					break;
+				case SWT.UNDERLINE_DOUBLE:
+					Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY, run.width, run.underlineThickness);
+					Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY + run.underlineThickness * 2, run.width, run.underlineThickness);
+					break;
+			}
 			if (brush != color) Gdip.SolidBrush_delete(brush);
 		}
-		if (run.style.strikeout) {
-			if (!selection && run.style.strikeoutColor != null) {
-				int c = run.style.strikeoutColor.handle;
-				int argb = (0xFF << 24) | ((c >> 16) & 0xFF) | (c & 0xFF00) | ((c & 0xFF) << 16);
+		if (style.strikeout) {
+			if (!selection && style.strikeoutColor != null) {
+				int fg = style.strikeoutColor.handle;
+				int argb = ((alpha & 0xFF) << 24) | ((fg >> 16) & 0xFF) | (fg & 0xFF00) | ((fg & 0xFF) << 16);
 				int /*long*/ gdiColor = Gdip.Color_new(argb); 
 				brush = Gdip.SolidBrush_new(gdiColor);
 				Gdip.Color_delete(gdiColor);
@@ -920,17 +943,72 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 		int /*long*/ brushUnderline = 0;
 		int /*long*/ brushStrikeout = 0;
 		RECT rect = new RECT();
-		if (run.style.underline) {
-			if (!selection && run.style.underlineColor != null) {
-				colorRefUnderline = run.style.underlineColor.handle;
+		if (style.underline) {
+			if (!selection && style.underlineColor != null) {
+				colorRefUnderline = style.underlineColor.handle;
 			}
-			brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
-			OS.SetRect(rect, x, underlineY, x + run.width, underlineY + run.underlineThickness);
-			OS.FillRect(graphics, rect, brushUnderline);
+			switch (style.underlineStyle) {
+				case SWT.UNDERLINE_ERROR:
+				case SWT.UNDERLINE_IME_INPUT:
+					int squigglyThickness = 1;
+					int squigglyHeight = 2 * squigglyThickness;
+					int squigglyY = Math.min(underlineY, y + run.ascent + run.descent - squigglyHeight - 1);
+					int state = 0;
+					if (clipRect != null) {
+						state = OS.SaveDC(graphics);
+						OS.IntersectClipRect(graphics, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+					}
+					int[] points = computePolyline(x, squigglyY, x + run.width, squigglyY + squigglyHeight);
+					int /*long*/ pen = OS.CreatePen(OS.PS_SOLID, squigglyThickness, colorRefUnderline);
+					int /*long*/ oldPen = OS.SelectObject(graphics, pen);
+					OS.Polyline(graphics, points, points.length / 2);
+					int length = points.length;
+					if (length >= 2 && squigglyThickness <= 1) {
+						OS.SetPixel (graphics, points[length - 2], points[length - 1], colorRefUnderline);
+					}
+					if (state != 0) OS.RestoreDC(graphics, state);
+					OS.SelectObject(graphics, oldPen);
+					OS.DeleteObject(pen);
+					break;
+				case SWT.UNDERLINE_IME_TARGET_CONVERTED:
+					brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
+					OS.SetRect(rect, x, underlineY - run.underlineThickness, x + run.width, underlineY + run.underlineThickness);
+					if (clipRect != null) {
+						rect.left = Math.max(rect.left, clipRect.left);
+						rect.right = Math.min(rect.right, clipRect.right);
+					}
+					OS.FillRect(graphics, rect, brushUnderline);
+					break;
+				case SWT.UNDERLINE_IME_CONVERTED:
+				case SWT.UNDERLINE_SINGLE:
+					brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
+					OS.SetRect(rect, x, underlineY, x + run.width, underlineY + run.underlineThickness);
+					if (clipRect != null) {
+						rect.left = Math.max(rect.left, clipRect.left);
+						rect.right = Math.min(rect.right, clipRect.right);
+					}
+					OS.FillRect(graphics, rect, brushUnderline);
+					break;
+				case SWT.UNDERLINE_DOUBLE:
+					brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
+					OS.SetRect(rect, x, underlineY, x + run.width, underlineY + run.underlineThickness);
+					if (clipRect != null) {
+						rect.left = Math.max(rect.left, clipRect.left);
+						rect.right = Math.min(rect.right, clipRect.right);
+					}
+					OS.FillRect(graphics, rect, brushUnderline);
+					OS.SetRect(rect, x, underlineY + run.underlineThickness * 2, x + run.width, underlineY + run.underlineThickness * 3);
+					if (clipRect != null) {
+						rect.left = Math.max(rect.left, clipRect.left);
+						rect.right = Math.min(rect.right, clipRect.right);
+					}
+					OS.FillRect(graphics, rect, brushUnderline);
+					break;
+			}
 		}
-		if (run.style.strikeout) {
-			if (!selection && run.style.strikeoutColor != null) {
-				colorRefStrikeout = run.style.strikeoutColor.handle;
+		if (style.strikeout) {
+			if (!selection && style.strikeoutColor != null) {
+				colorRefStrikeout = style.strikeoutColor.handle;
 			}
 			if (brushUnderline != 0 && colorRefStrikeout == colorRefUnderline) {
 				brushStrikeout = brushUnderline;
@@ -938,11 +1016,38 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 				brushStrikeout = OS.CreateSolidBrush(colorRefStrikeout);
 			}
 			OS.SetRect(rect, x, strikeoutY, x + run.width, strikeoutY + run.strikeoutThickness);
+			if (clipRect != null) {
+				rect.left = Math.max(rect.left, clipRect.left);
+				rect.right = Math.min(rect.right, clipRect.right);
+			}
 			OS.FillRect(graphics, rect, brushStrikeout);
 		}
 		if (brushUnderline != 0) OS.DeleteObject(brushUnderline);
 		if (brushStrikeout != 0 && brushStrikeout != brushUnderline) OS.DeleteObject(brushStrikeout);
 	}
+}
+
+int[] computePolyline(int left, int top, int right, int bottom) {
+	int height = bottom - top; // can be any number
+	int width = 2 * height; // must be even
+	int peaks = (right - left) / width;
+	if (peaks == 0 && right - left > 2) {
+		peaks = 1;
+	}
+	int length = ((2 * peaks) + 1) * 2;
+	if (length < 0) return new int[0];
+	
+	int[] coordinates = new int[length];
+	for (int i = 0; i < peaks; i++) {
+		int index = 4 * i;
+		coordinates[index] = left + (width * i);
+		coordinates[index+1] = bottom;
+		coordinates[index+2] = coordinates[index] + width / 2;
+		coordinates[index+3] = top;
+	}
+	coordinates[length-2] = Math.min(Math.max(0, right - 1), left + (width * peaks));
+	coordinates[length-1] = bottom;
+	return coordinates;
 }
 
 void freeRuns () {
