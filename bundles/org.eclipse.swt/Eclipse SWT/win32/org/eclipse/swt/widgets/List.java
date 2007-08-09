@@ -1500,19 +1500,18 @@ int /*long*/ windowProc () {
 	return ListProc;
 }
 
-LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
-	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	/*
 	* Feature in Windows.  The Windows list box does not implement
 	* the control key interface for multi-select list boxes, making
 	* it inaccessible from the keyboard.  The fix is to implement
-	* this key processing.
+	* the key processing.
 	*/
 	if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.LBS_EXTENDEDSEL) != 0) {
-			int location = -1;
 			switch ((int)/*64*/wParam) {
 				case OS.VK_SPACE: {
 					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
@@ -1521,6 +1520,35 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					OS.SendMessage (handle, OS.LB_SETSEL, code != 0 ? 0 : 1, index);
 					OS.SendMessage (handle, OS.LB_SETANCHORINDEX, index, 0);
 					postEvent (SWT.Selection);
+					return LRESULT.ZERO;
+				}
+			}
+		}
+	}
+	return result;
+}
+	
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  The Windows list box does not implement
+	* the control key interface for multi-select list boxes, making
+	* it inaccessible from the keyboard.  The fix is to implement
+	* the key processing.
+	*/
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.LBS_EXTENDEDSEL) != 0) {
+			int location = -1;
+			switch ((int)/*64*/wParam) {
+				case OS.VK_SPACE: {
+					/*
+					* Ensure that the window proc does not process VK_SPACE
+					* so that it can be handled in WM_CHAR.  This allows the
+					* application to cancel an operation that is normally
+					* performed in WM_KEYDOWN from WM_CHAR.
+					*/
 					return LRESULT.ZERO;
 				}
 				case OS.VK_UP:
@@ -1579,6 +1607,34 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				return LRESULT.ZERO;
 			}
 		}
+	}
+	
+	/*
+	* Feature in Windows.  When the user changes focus using
+	* the keyboard, the focus indicator does not draw.  The
+	* fix is to update the UI state for the control whenever
+	* the focus indicator changes as a result of something
+	* the user types.
+	*/
+	int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+	if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+		int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+		int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+		int newIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+		if (oldIndex != newIndex) {
+			OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+			/*
+			* Bug in Windows.  When the WM_CHANGEUISTATE is used
+			* to update the UI state for a list that has been
+			* selected using Shift+Arrow, the focus indicator
+			* has pixel corruption.  The fix is to redraw the
+			* focus item.
+			*/
+			RECT itemRect = new RECT ();
+			OS.SendMessage (handle, OS.LB_GETITEMRECT, newIndex, itemRect);
+			OS.InvalidateRect (handle, itemRect, true);
+		}
+		return new LRESULT (code);
 	}
 	return result;
 }
