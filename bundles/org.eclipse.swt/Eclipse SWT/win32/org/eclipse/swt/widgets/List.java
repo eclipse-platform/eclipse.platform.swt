@@ -1500,6 +1500,89 @@ int /*long*/ windowProc () {
 	return ListProc;
 }
 
+LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  The Windows list box does not implement
+	* the control key interface for multi-select list boxes, making
+	* it inaccessible from the keyboard.  The fix is to implement
+	* this key processing.
+	*/
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.LBS_EXTENDEDSEL) != 0) {
+			int location = -1;
+			switch ((int)/*64*/wParam) {
+				case OS.VK_SPACE: {
+					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					int code = (int)/*64*/OS.SendMessage (handle, OS.LB_GETSEL, index, 0);
+					if (code == OS.LB_ERR) break;
+					OS.SendMessage (handle, OS.LB_SETSEL, code != 0 ? 0 : 1, index);
+					OS.SendMessage (handle, OS.LB_SETANCHORINDEX, index, 0);
+					postEvent (SWT.Selection);
+					return LRESULT.ZERO;
+				}
+				case OS.VK_UP:
+				case OS.VK_DOWN: {
+					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					location = Math.max (0, index + (((int)/*64*/wParam) == OS.VK_UP ? -1 : 1));
+					break;
+				}
+				case OS.VK_PRIOR: {
+					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+					if (index != topIndex) {
+						location = topIndex;
+					} else {
+						forceResize ();
+						RECT rect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
+						int pageSize = Math.max (2, (rect.bottom / itemHeight));
+						location = Math.max (0, topIndex - (pageSize - 1));
+					}
+					break;
+				}
+				case OS.VK_NEXT: {
+					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+					forceResize ();
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
+					int pageSize = Math.max (2, (rect.bottom / itemHeight));
+					int bottomIndex = topIndex + pageSize - 1;
+					if (index != bottomIndex) {
+						location = bottomIndex;
+					} else {
+						location = bottomIndex + pageSize - 1;
+					}
+					int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+					if (count != OS.LB_ERR) location = Math.min (count - 1, location);
+					break;
+				}
+				case OS.VK_HOME: {
+					location = 0;
+					break;
+				}
+				case OS.VK_END: {
+					int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+					if (count == OS.LB_ERR) break;
+					location = count - 1;
+					break;
+				}
+			}
+			if (location != -1) {
+				OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+				OS.SendMessage (handle, OS.LB_SETCARETINDEX, location, 0);
+				return LRESULT.ZERO;
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  If the top index is changed while the

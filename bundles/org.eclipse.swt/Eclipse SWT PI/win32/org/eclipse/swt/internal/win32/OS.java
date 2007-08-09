@@ -866,6 +866,7 @@ public class OS extends C {
 	public static final int LB_RESETCONTENT = 0x184;
 	public static final int LB_SELITEMRANGE = 0x19b;
 	public static final int LB_SELITEMRANGEEX = 0x183;
+	public static final int LB_SETANCHORINDEX = 0xf19c;
 	public static final int LB_SETCARETINDEX = 0x19e;
 	public static final int LB_SETCURSEL = 0x186;
 	public static final int LB_SETHORIZONTALEXTENT = 0x194;
