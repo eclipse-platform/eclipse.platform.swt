@@ -48,9 +48,13 @@ public final class TextLayout extends Resource {
 			if (style != null) {
 				font = style.font;
 				foreground = style.foreground;
-				if (style.underline) {
+				if (style.underline && (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE)) {
 					length += 1;
 					ptrLength += 1;
+					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+						length += 1;
+						ptrLength += 2;
+					}
 					if (style.underlineColor != null) {
 						length += 1;
 						ptrLength += 4;
@@ -129,7 +133,7 @@ public final class TextLayout extends Resource {
 				}
 			}
 			int underlineColor = 0, strikeoutColor = 0;;
-			if (style != null && style.underline) {
+			if (style != null && style.underline && (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE)) {				
 				buffer1[0] = (byte)1;
 				tags[index] = OS.kATSUQDUnderlineTag;
 				sizes[index] = 1;
@@ -137,6 +141,15 @@ public final class TextLayout extends Resource {
 				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
+				if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+					short buffer2[] = {OS.kATSUStyleDoubleLineCount};
+					tags[index] = OS.kATSUStyleUnderlineCountOptionTag;
+					sizes[index] = 2;
+					values[index] = ptr1;
+					OS.memmove(values[index], buffer2, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
 				if (style.underlineColor != null) {
 					buffer[0] = underlineColor = OS.CGColorCreate(device.colorspace, style.underlineColor.handle);
 					tags[index] = OS.kATSUStyleUnderlineColorOptionTag;
@@ -241,6 +254,7 @@ public final class TextLayout extends Resource {
 	int[] segments;
 	int tabsPtr;
 	int[] breaks, hardBreaks, lineX, lineWidth, lineHeight, lineAscent;
+	StyleItem drawStyle;
 
 	static final int TAB_COUNT = 32;
 	static final char ZWS = '\u200B';
@@ -556,7 +570,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		}
 	}
 	if (callback != null) callback.dispose();
-	if (rgn != 0) OS.DisposeRgn(rgn);
+	callback = null;
 
 	selectionStart = translateOffset(selectionStart);
 	selectionEnd = translateOffset(selectionEnd);
@@ -615,6 +629,92 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	}
 	if (restoreColor) setLayoutControl(OS.kATSULineHighlightCGColorTag, 0, 4);
 	OS.CGContextRestoreGState(gc.handle);
+
+	for (int j = 0; j < styles.length; j++) {
+		StyleItem run = styles[j];
+		TextStyle style = run.style;
+		if (style == null || !style.underline) continue;
+		if (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE) continue;
+		int start = translateOffset(run.start);
+		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
+		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
+			int lineBreak = breaks[i];
+			int lineEnd = lineBreak - 1;
+			if (!(start > lineEnd || end < lineStart)) {
+				int highStart = Math.max(lineStart, start);
+				int highEnd = Math.min(lineEnd, end);
+				int highLen = highEnd - highStart + 1;
+				if (highLen > 0) {
+					if (rgn == 0) rgn = OS.NewRgn();
+					float underlineY = y + lineY;
+					float[] foreground = gc.data.foreground;
+					float lineWidth = 0;
+					OS.CGContextSaveGState(gc.handle);
+					switch (style.underlineStyle) {
+						case SWT.UNDERLINE_ERROR: {
+							lineWidth = 2;
+							underlineY += 2 * lineAscent [i] + lineWidth;
+							if (style.underlineColor != null) {
+								foreground = style.underlineColor.handle;
+							} else {
+								if (style.foreground != null) {
+									foreground = style.foreground.handle;
+								}
+							}
+							OS.CGContextSetLineDash(gc.handle, 0, new float[]{1f,3}, 2);
+							OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapRound);
+							break;
+						}
+						case SWT.UNDERLINE_IME_INPUT:
+						case SWT.UNDERLINE_IME_TARGET_CONVERTED:
+						case SWT.UNDERLINE_IME_CONVERTED:
+							lineWidth = 1.5f;
+							foreground = style.underlineStyle == SWT.UNDERLINE_IME_CONVERTED ? new float[]{0.5f, 0.5f, 0.5f, 1} : new float[]{0, 0, 0, 1};
+							Font font = style.font;
+							if (font == null) font = this.font != null ? this.font : device.systemFont;
+							ATSFontMetrics metrics = new ATSFontMetrics();
+							OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+							underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
+							break;
+					}
+					OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
+					OS.CGContextSetStrokeColor(gc.handle, foreground);
+					OS.CGContextSetLineWidth(gc.handle, lineWidth);
+					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, rgn);
+					if (callback == null) {
+						callback = new Callback(this, "drawUnderline", 4);
+						if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+					}
+					drawStyle = run;
+					OS.CGContextTranslateCTM (gc.handle, 0.5f, 0.5f);
+					OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, callback.getAddress(), gc.handle);
+					OS.CGContextStrokePath(gc.handle);
+					OS.CGContextRestoreGState(gc.handle);
+				}
+			}
+			if (lineEnd > end) break;
+			lineY += lineHeight[i];
+			lineStart = lineBreak;
+		}
+	}
+	if (callback != null) callback.dispose();
+	if (rgn != 0) OS.DisposeRgn(rgn);
+}
+
+int drawUnderline(int message, int rgn, int r, int context) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		Rect rect = new Rect();
+		OS.memmove(rect, r, Rect.sizeof);
+		switch (drawStyle.style.underlineStyle) {
+			case SWT.UNDERLINE_IME_TARGET_CONVERTED:
+			case SWT.UNDERLINE_IME_CONVERTED:
+				rect.left += 1;
+				rect.right -= 1;
+		}
+		OS.CGContextMoveToPoint(context, rect.left, rect.top);
+		OS.CGContextAddLineToPoint(context, rect.right, rect.top);
+	}
+	return 0;
 }
 
 void freeRuns() {
@@ -684,7 +784,7 @@ public Rectangle getBounds() {
 	int width = 0, height = 0;
 	int length = text.length();
 	if (length == 0) {
-		Font font = this.font != null ? this.font : device.getSystemFont();
+		Font font = this.font != null ? this.font : device.systemFont;
 		ATSFontMetrics metrics = new ATSFontMetrics();
 		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
 		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
@@ -967,7 +1067,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int length = text.length();
 	if (length == 0) {
-		Font font = this.font != null ? this.font : device.getSystemFont();
+		Font font = this.font != null ? this.font : device.systemFont;
 		ATSFontMetrics metrics = new ATSFontMetrics();
 		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
 		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
