@@ -375,6 +375,7 @@ public class OS extends C {
 	public static final int PANGO_ATTR_FOREGROUND = 9;
 	public static final int PANGO_ATTR_BACKGROUND = 10;
 	public static final int PANGO_ATTR_UNDERLINE = 11;
+	public static final int PANGO_ATTR_UNDERLINE_COLOR = 18;
 	public static final int PANGO_DIRECTION_LTR = 0;
 	public static final int PANGO_DIRECTION_RTL = 1;	
 	public static final int PANGO_SCALE = 1024;
@@ -383,8 +384,11 @@ public class OS extends C {
 	public static final int PANGO_STYLE_NORMAL = 0x0;
 	public static final int PANGO_STYLE_OBLIQUE = 0x1;
 	public static final int PANGO_TAB_LEFT = 0;
-	public static final int PANGO_UNDERLINE_LOW = 3;
+	public static final int PANGO_UNDERLINE_NONE = 0;
 	public static final int PANGO_UNDERLINE_SINGLE = 1;
+	public static final int PANGO_UNDERLINE_DOUBLE = 2;
+	public static final int PANGO_UNDERLINE_LOW = 3;
+	public static final int PANGO_UNDERLINE_ERROR = 4;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
