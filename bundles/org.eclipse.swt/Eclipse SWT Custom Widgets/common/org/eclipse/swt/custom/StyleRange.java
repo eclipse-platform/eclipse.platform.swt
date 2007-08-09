@@ -41,7 +41,17 @@ public class StyleRange extends TextStyle implements CloneableCompatibility {
  * @since 3.2
  */
 public StyleRange() {
-	super(null, null, null);
+}
+
+/** 
+ * Create a new style range from an existing text style.
+ *
+ *@param style the text style to copy
+ *
+ *@since 3.4
+ */
+public StyleRange(TextStyle style) {
+	super(style);
 }
 
 /** 

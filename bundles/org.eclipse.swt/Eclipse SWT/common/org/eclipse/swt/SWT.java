@@ -1388,7 +1388,42 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int UP = 1 << 7;
+	
+	/**
+	 * Style constant to indicate single underline (value is 0).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_SINGLE = 0;
 
+	/**
+	 * Style constant to indicate double underline (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_DOUBLE = 1;
+	
+	/**
+	 * Style constant to indicate error underline (value is 2).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int UNDERLINE_ERROR = 2;
+	
+	/* DO NOT USE - API UNDER CONSTRUCTION */
+	public static final int UNDERLINE_IME_INPUT = 3;
+	public static final int UNDERLINE_IME_CONVERTED = 4;
+	public static final int UNDERLINE_IME_TARGET_CONVERTED = 5;
+	
 	/**
 	 * Style constant for align top behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
