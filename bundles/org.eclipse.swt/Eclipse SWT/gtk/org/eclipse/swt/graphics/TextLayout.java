@@ -181,20 +181,41 @@ void computeRuns () {
 			OS.pango_attr_list_insert(attrList, attr);
 		}
 		if (style.underline) {
-			int /*long*/ attr = OS.pango_attr_underline_new(OS.PANGO_UNDERLINE_SINGLE);
-			OS.memmove(attribute, attr, PangoAttribute.sizeof);
-			attribute.start_index = byteStart;
-			attribute.end_index = byteEnd;
-			OS.memmove(attr, attribute, PangoAttribute.sizeof);
-			OS.pango_attr_list_insert(attrList, attr);
-			if (style.underlineColor != null && OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
-				GdkColor color = style.underlineColor.handle;
-				attr = OS.pango_attr_underline_color_new(color.red, color.green, color.blue);
+			int underlineStyle = OS.PANGO_UNDERLINE_SINGLE;
+			switch (style.underlineStyle) {
+				case SWT.UNDERLINE_IME_CONVERTED:
+				case SWT.UNDERLINE_IME_TARGET_CONVERTED:
+					underlineStyle = OS.PANGO_UNDERLINE_NONE;
+					break;
+				case SWT.UNDERLINE_IME_INPUT:
+				case SWT.UNDERLINE_SINGLE:
+					underlineStyle = OS.PANGO_UNDERLINE_SINGLE; 
+					break;
+				case SWT.UNDERLINE_DOUBLE:
+					underlineStyle = OS.PANGO_UNDERLINE_DOUBLE; 
+					break;
+				case SWT.UNDERLINE_ERROR:
+					if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+						underlineStyle = OS.PANGO_UNDERLINE_ERROR;
+					}
+					break;
+			}
+			if (underlineStyle != OS.PANGO_UNDERLINE_NONE) {
+				int /*long*/ attr = OS.pango_attr_underline_new(underlineStyle);
 				OS.memmove(attribute, attr, PangoAttribute.sizeof);
 				attribute.start_index = byteStart;
 				attribute.end_index = byteEnd;
 				OS.memmove(attr, attribute, PangoAttribute.sizeof);
 				OS.pango_attr_list_insert(attrList, attr);
+				if (style.underlineColor != null && OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+					GdkColor color = style.underlineColor.handle;
+					attr = OS.pango_attr_underline_color_new(color.red, color.green, color.blue);
+					OS.memmove(attribute, attr, PangoAttribute.sizeof);
+					attribute.start_index = byteStart;
+					attribute.end_index = byteEnd;
+					OS.memmove(attr, attribute, PangoAttribute.sizeof);
+					OS.pango_attr_list_insert(attrList, attr);
+				}
 			}
 		}
 		if (style.strikeout) {
