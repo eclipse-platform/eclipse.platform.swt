@@ -148,12 +148,30 @@ void computeRuns () {
 					if (style.underlineColor != null) {
 						int color = style.underlineColor.handle;
 						int brush = OS.gcnew_SolidColorBrush(color);
-						pen = OS.gcnew_Pen(brush, 1);
+						pen = OS.gcnew_Pen(brush, 1f);
 						OS.GCHandle_Free(brush);
 					}
-					int underline = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Underline, pen, 0, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
-					OS.TextDecorationCollection_Add(decorations, underline);
-					OS.GCHandle_Free(underline);
+					int underline;
+					switch (style.underlineStyle) {
+						case SWT.UNDERLINE_ERROR:
+							int dashStyle = OS.DashStyles_Dash();
+							OS.Pen_DashStyle(pen, dashStyle);
+							underline = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Underline, pen, 0, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
+							OS.TextDecorationCollection_Add(decorations, underline);
+							OS.GCHandle_Free(underline);
+							OS.GCHandle_Free(dashStyle);
+							break;
+						case SWT.UNDERLINE_DOUBLE: 
+							underline = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Underline, pen, 1, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
+							OS.TextDecorationCollection_Add(decorations, underline);
+							OS.GCHandle_Free(underline);
+							//FALLTHROU
+						case SWT.UNDERLINE_SINGLE: 
+							underline = OS.gcnew_TextDecoration(OS.TextDecorationLocation_Underline, pen, 0, OS.TextDecorationUnit_FontRecommended, OS.TextDecorationUnit_FontRecommended);
+							OS.TextDecorationCollection_Add(decorations, underline);
+							OS.GCHandle_Free(underline);
+							break;
+					}
 					if (pen != 0) OS.GCHandle_Free(pen);
 				}
 			}
