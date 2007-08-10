@@ -475,7 +475,20 @@ private void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean se
 		if (!selection && style.underlineColor != null) {
 			gc.setForeground(style.underlineColor);
 		}
-		gc.drawLine (x, underlineY, x + width, underlineY);
+		switch (style.underlineStyle) {
+			case SWT.UNDERLINE_ERROR:
+				int squigglyThickness = 1;
+				int squigglyHeight = 2 * squigglyThickness;
+				int squigglyY = Math.min(underlineY, y + run.height - squigglyHeight - 1);
+				int[] points = computePolyline(x, squigglyY, x + width, squigglyY + squigglyHeight);
+				gc.drawPolyline(points);
+				break;
+			case SWT.UNDERLINE_DOUBLE:
+				gc.drawLine (x, underlineY + 2, x + width, underlineY + 2);
+				//FALLTHROU
+			case SWT.UNDERLINE_SINGLE:	
+				gc.drawLine (x, underlineY, x + width, underlineY);
+		}
 	}
 	if (style.strikeout) {
 		int strikeoutY = y + run.height - run.height/2 - 1;
@@ -484,6 +497,29 @@ private void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean se
 		}
 		gc.drawLine (x, strikeoutY, x + width, strikeoutY);
 	}
+}
+
+int[] computePolyline(int left, int top, int right, int bottom) {
+	int height = bottom - top; // can be any number
+	int width = 2 * height; // must be even
+	int peaks = (right - left) / width;
+	if (peaks == 0 && right - left > 2) {
+		peaks = 1;
+	}
+	int length = ((2 * peaks) + 1) * 2;
+	if (length < 0) return new int[0];
+	
+	int[] coordinates = new int[length];
+	for (int i = 0; i < peaks; i++) {
+		int index = 4 * i;
+		coordinates[index] = left + (width * i);
+		coordinates[index+1] = bottom;
+		coordinates[index+2] = coordinates[index] + width / 2;
+		coordinates[index+3] = top;
+	}
+	coordinates[length-2] = Math.min(Math.max(0, right - 1), left + (width * peaks));
+	coordinates[length-1] = bottom;
+	return coordinates;
 }
 
 void freeRuns() {
