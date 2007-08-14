@@ -934,6 +934,7 @@ void setFont (int font, double size) {
 }
 
 void setForegroundBrush (int brush) {
+	OS.UIElement_InvalidateVisual (handle);
 }
 
 /**
