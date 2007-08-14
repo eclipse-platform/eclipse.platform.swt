@@ -739,17 +739,16 @@ protected int GetWindow(int /*long*/ phwnd) {
 	}
 	
 	// Copy the Window's handle into the memory passed in
-	COM.MoveMemory(phwnd, new int /*long*/[] {frame.handle}, OS.PTR_SIZEOF);
+	COM.MoveMemory(phwnd, new int /*long*/[] {handle}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
 RECT getRect() {
-	Point location = this.getLocation();
-	Rectangle area = frame.getClientArea();
+	Rectangle area = getClientArea();
 	RECT rect = new RECT();
-	rect.left   = location.x;
-	rect.top    = location.y;
-	rect.right  = location.x + area.width - borderWidths.left - borderWidths.right;
-	rect.bottom = location.y + area.height - borderWidths.top - borderWidths.bottom;
+	rect.left   = area.x;
+	rect.top    = area.y;
+	rect.right  = area.x + area.width;
+	rect.bottom = area.y + area.height;
 	return rect;
 }
 private int GetWindowContext(int /*long*/ ppFrame, int /*long*/ ppDoc, int /*long*/ lprcPosRect, int /*long*/ lprcClipRect, int /*long*/ lpFrameInfo) {	
