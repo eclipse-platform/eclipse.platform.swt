@@ -3203,16 +3203,19 @@ public void setSelection(int index) {
 	selection.closeImageState = NORMAL;
 	selection.showing = false;
 
-	Control control = selection.control;
-	if (control != null && !control.isDisposed()) {
-		control.setBounds(getClientArea());
-		control.setVisible(true);
+	Control newControl = selection.control;
+	Control oldControl = null;
+	if (oldIndex != -1) {
+		oldControl = items[oldIndex].control;
 	}
 	
-	if (oldIndex != -1) {
-		control = items[oldIndex].control;
-		if (control != null && !control.isDisposed()) {
-			control.setVisible(false);
+	if (newControl != oldControl) {
+		if (newControl != null && !newControl.isDisposed()) {
+			newControl.setBounds(getClientArea());
+			newControl.setVisible(true);
+		}
+		if (oldControl != null && !oldControl.isDisposed()) {
+			oldControl.setVisible(false);
 		}
 	}
 	showItem(selection);
