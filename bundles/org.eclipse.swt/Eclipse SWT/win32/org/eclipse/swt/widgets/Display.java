@@ -630,8 +630,10 @@ int asciiKey (int key) {
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronizer.asyncExec (runnable);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer.asyncExec (runnable);
+	}
 }
 
 /**
@@ -670,11 +672,13 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-static synchronized void checkDisplay (Thread thread, boolean multiple) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null) {
-			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+static void checkDisplay (Thread thread, boolean multiple) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] != null) {
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			}
 		}
 	}
 }
@@ -1043,9 +1047,11 @@ static int /*long*/ createMaskFromAlpha (ImageData data, int destWidth, int dest
 	return hMask;
 }
 
-static synchronized void deregister (Display display) {
-	for (int i=0; i<Displays.length; i++) {
-		if (display == Displays [i]) Displays [i] = null;
+static void deregister (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (display == Displays [i]) Displays [i] = null;
+		}
 	}
 }
 
@@ -1279,14 +1285,16 @@ int /*long*/ foregroundIdleProc (int /*long*/ code, int /*long*/ wParam, int /*l
  * @param thread the user-interface thread
  * @return the display for the given thread
  */
-public static synchronized Display findDisplay (Thread thread) {
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == thread) {
-			return display;
+public static Display findDisplay (Thread thread) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			Display display = Displays [i];
+			if (display != null && display.thread == thread) {
+				return display;
+			}
 		}
+		return null;
 	}
-	return null;
 }
 
 /**
@@ -1338,7 +1346,7 @@ public Rectangle getBounds () {
  *
  * @return the current display
  */
-public static synchronized Display getCurrent () {
+public static Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 
@@ -1495,9 +1503,11 @@ public Point [] getCursorSizes () {
  *
  * @return the default display
  */
-public static synchronized Display getDefault () {
-	if (Default == null) Default = new Display ();
-	return Default;
+public static Display getDefault () {
+	synchronized (Device.class) {
+		if (Default == null) Default = new Display ();
+		return Default;
+	}
 }
 
 static boolean isValidClass (Class clazz) {
@@ -2106,8 +2116,10 @@ Image getSortImage (int direction) {
  * </ul>
  */
 public Thread getSyncThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return synchronizer.syncThread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return synchronizer.syncThread;
+	}
 }
 
 /**
@@ -2337,8 +2349,10 @@ public Tray getSystemTray () {
  * </ul>
  */
 public Thread getThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return thread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return thread;
+	}
 }
 
 int /*long*/ hButtonTheme () {
@@ -3148,116 +3162,118 @@ int numpadKey (int key) {
  * 
  */
 public boolean post (Event event) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int type = event.type;
-	switch (type){
-		case SWT.KeyDown:
-		case SWT.KeyUp: {
-			KEYBDINPUT inputs = new KEYBDINPUT ();
-			inputs.wVk = (short) untranslateKey (event.keyCode);
-			if (inputs.wVk == 0) {
-				char key = event.character;
-				switch (key) {
-					case SWT.BS: inputs.wVk = (short) OS.VK_BACK; break;
-					case SWT.CR: inputs.wVk = (short) OS.VK_RETURN; break;
-					case SWT.DEL: inputs.wVk = (short) OS.VK_DELETE; break;
-					case SWT.ESC: inputs.wVk = (short) OS.VK_ESCAPE; break;
-					case SWT.TAB: inputs.wVk = (short) OS.VK_TAB; break;
-					/*
-					* Since there is no LF key on the keyboard, do not attempt
-					* to map LF to CR or attempt to post an LF key.
-					*/
-//					case SWT.LF: inputs.wVk = (short) OS.VK_RETURN; break;
-					case SWT.LF: return false;
-					default: {
-						if (OS.IsWinCE) {
-							inputs.wVk = (short)/*64*/OS.CharUpper ((short) key);
-						} else {
-							inputs.wVk = OS.VkKeyScan ((short) wcsToMbcs (key, 0));
-							if (inputs.wVk == -1) return false;
-							inputs.wVk &= 0xFF;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+		int type = event.type;
+		switch (type){
+			case SWT.KeyDown:
+			case SWT.KeyUp: {
+				KEYBDINPUT inputs = new KEYBDINPUT ();
+				inputs.wVk = (short) untranslateKey (event.keyCode);
+				if (inputs.wVk == 0) {
+					char key = event.character;
+					switch (key) {
+						case SWT.BS: inputs.wVk = (short) OS.VK_BACK; break;
+						case SWT.CR: inputs.wVk = (short) OS.VK_RETURN; break;
+						case SWT.DEL: inputs.wVk = (short) OS.VK_DELETE; break;
+						case SWT.ESC: inputs.wVk = (short) OS.VK_ESCAPE; break;
+						case SWT.TAB: inputs.wVk = (short) OS.VK_TAB; break;
+						/*
+						* Since there is no LF key on the keyboard, do not attempt
+						* to map LF to CR or attempt to post an LF key.
+						*/
+//						case SWT.LF: inputs.wVk = (short) OS.VK_RETURN; break;
+						case SWT.LF: return false;
+						default: {
+							if (OS.IsWinCE) {
+								inputs.wVk = (short)/*64*/OS.CharUpper ((short) key);
+							} else {
+								inputs.wVk = OS.VkKeyScan ((short) wcsToMbcs (key, 0));
+								if (inputs.wVk == -1) return false;
+								inputs.wVk &= 0xFF;
+							}
 						}
 					}
 				}
+				inputs.dwFlags = type == SWT.KeyUp ? OS.KEYEVENTF_KEYUP : 0;
+				int /*long*/ hHeap = OS.GetProcessHeap ();
+				int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
+				OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);
+				//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
+				OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, KEYBDINPUT.sizeof);
+				boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
+				OS.HeapFree (hHeap, 0, pInputs);
+				return result;
 			}
-			inputs.dwFlags = type == SWT.KeyUp ? OS.KEYEVENTF_KEYUP : 0;
-			int /*long*/ hHeap = OS.GetProcessHeap ();
-			int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
-			OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);
-			//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
-			OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, KEYBDINPUT.sizeof);
-			boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
-			OS.HeapFree (hHeap, 0, pInputs);
-			return result;
-		}
-		case SWT.MouseDown:
-		case SWT.MouseMove:
-		case SWT.MouseUp:
-		case SWT.MouseWheel: {
-			MOUSEINPUT inputs = new MOUSEINPUT ();
-			if (type == SWT.MouseMove){
-				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
-				int x= 0, y = 0, width = 0, height = 0;
-				if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
-					inputs.dwFlags |= OS.MOUSEEVENTF_VIRTUALDESK;
-					x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-					y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
-					width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
-					height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-				} else {
-					width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
-					height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-				}
-				inputs.dx = ((event.x - x) * 65535 + width - 2) / (width - 1);
-				inputs.dy = ((event.y - y) * 65535 + height - 2) / (height - 1);
-			} else {
-				if (type == SWT.MouseWheel) {
-					if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
-					inputs.dwFlags = OS.MOUSEEVENTF_WHEEL;
-					switch (event.detail) {
-						case SWT.SCROLL_PAGE:
-							inputs.mouseData = event.count * OS.WHEEL_DELTA;
-							break;
-						case SWT.SCROLL_LINE:
-							int [] value = new int [1];
-							OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
-							inputs.mouseData = event.count * OS.WHEEL_DELTA / value [0];
-							break;
-						default: return false;
+			case SWT.MouseDown:
+			case SWT.MouseMove:
+			case SWT.MouseUp:
+			case SWT.MouseWheel: {
+				MOUSEINPUT inputs = new MOUSEINPUT ();
+				if (type == SWT.MouseMove){
+					inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
+					int x= 0, y = 0, width = 0, height = 0;
+					if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
+						inputs.dwFlags |= OS.MOUSEEVENTF_VIRTUALDESK;
+						x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+						y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+						width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+						height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+					} else {
+						width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
+						height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
 					}
+					inputs.dx = ((event.x - x) * 65535 + width - 2) / (width - 1);
+					inputs.dy = ((event.y - y) * 65535 + height - 2) / (height - 1);
 				} else {
-					switch (event.button) {
-						case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
-						case 2: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
-						case 3: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
-						case 4: {
-							if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
-							inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
-							inputs.mouseData = OS.XBUTTON1;
-							break;
+					if (type == SWT.MouseWheel) {
+						if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+						inputs.dwFlags = OS.MOUSEEVENTF_WHEEL;
+						switch (event.detail) {
+							case SWT.SCROLL_PAGE:
+								inputs.mouseData = event.count * OS.WHEEL_DELTA;
+								break;
+							case SWT.SCROLL_LINE:
+								int [] value = new int [1];
+								OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
+								inputs.mouseData = event.count * OS.WHEEL_DELTA / value [0];
+								break;
+							default: return false;
 						}
-						case 5: {
-							if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
-							inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
-							inputs.mouseData = OS.XBUTTON2;
-							break;
+					} else {
+						switch (event.button) {
+							case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
+							case 2: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
+							case 3: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
+							case 4: {
+								if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+								inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
+								inputs.mouseData = OS.XBUTTON1;
+								break;
+							}
+							case 5: {
+								if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+								inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
+								inputs.mouseData = OS.XBUTTON2;
+								break;
+							}
+							default: return false;
 						}
-						default: return false;
 					}
 				}
+				int /*long*/ hHeap = OS.GetProcessHeap ();
+				int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
+				OS.MoveMemory(pInputs, new int[] {OS.INPUT_MOUSE}, 4);
+				//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
+				OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, MOUSEINPUT.sizeof);
+				boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
+				OS.HeapFree (hHeap, 0, pInputs);
+				return result;
 			}
-			int /*long*/ hHeap = OS.GetProcessHeap ();
-			int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
-			OS.MoveMemory(pInputs, new int[] {OS.INPUT_MOUSE}, 4);
-			//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
-			OS.MoveMemory (pInputs + OS.PTR_SIZEOF, inputs, MOUSEINPUT.sizeof);
-			boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
-			OS.HeapFree (hHeap, 0, pInputs);
-			return result;
-		}
-	} 
-	return false;
+		} 
+		return false;
+	}
 }
 
 void postEvent (Event event) {
@@ -3322,17 +3338,19 @@ public boolean readAndDispatch () {
 	return runMessages && runAsyncMessages (false);
 }
 
-static synchronized void register (Display display) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] == null) {
-			Displays [i] = display;
-			return;
+static void register (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] == null) {
+				Displays [i] = display;
+				return;
+			}
 		}
+		Display [] newDisplays = new Display [Displays.length + 4];
+		System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
+		newDisplays [Displays.length] = display;
+		Displays = newDisplays;
 	}
-	Display [] newDisplays = new Display [Displays.length + 4];
-	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = display;
-	Displays = newDisplays;
 }
 
 /**
@@ -4119,7 +4137,11 @@ public boolean sleep () {
  * @see #asyncExec
  */
 public void syncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	Synchronizer synchronizer;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer = this.synchronizer;
+	}
 	synchronizer.syncExec (runnable);
 }
 
@@ -4309,9 +4331,11 @@ void updateImages () {
  * @see #sleep
  */
 public void wake () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (thread == Thread.currentThread ()) return;
-	wakeThread ();
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (thread == Thread.currentThread ()) return;
+		wakeThread ();
+	}
 }
 
 void wakeThread () {

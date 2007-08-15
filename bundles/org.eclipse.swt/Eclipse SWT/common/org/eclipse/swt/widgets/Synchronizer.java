@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
  
 /**
@@ -148,21 +149,27 @@ boolean runAsyncMessages (boolean all) {
  * @see #asyncExec
  */
 protected void syncExec (Runnable runnable) {
-	if (display.isValidThread ()) {
+	RunnableLock lock = null;
+	synchronized (Device.class) {
+		if (display == null || display.isDisposed ()) SWT.error (SWT.ERROR_DEVICE_DISPOSED);
+		if (!display.isValidThread ()) {
+			if (runnable == null) {
+				display.wake ();
+				return;
+			}
+			lock = new RunnableLock (runnable);
+			/*
+			 * Only remember the syncThread for syncExec.
+			 */
+			lock.thread = Thread.currentThread();
+			addLast (lock);
+		}
+	}
+	if (lock == null) {
 		if (runnable != null) runnable.run ();
 		return;
 	}
-	if (runnable == null) {
-		display.wake ();
-		return;
-	}
-	RunnableLock lock = new RunnableLock (runnable);
-	/*
-	 * Only remember the syncThread for syncExec.
-	 */
-	lock.thread = Thread.currentThread();
 	synchronized (lock) {
-		addLast (lock);
 		boolean interrupted = false;
 		while (!lock.done ()) {
 			try {
