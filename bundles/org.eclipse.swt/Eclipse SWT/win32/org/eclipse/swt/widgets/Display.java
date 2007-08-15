@@ -4066,10 +4066,14 @@ void setModalShell (Shell shell) {
 public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages(true);
+	Synchronizer oldSynchronizer;
+	synchronized (Device.class) {
+		oldSynchronizer = this.synchronizer;
+		this.synchronizer = synchronizer;
 	}
-	this.synchronizer = synchronizer;
+	if (oldSynchronizer != null) {
+		oldSynchronizer.runAsyncMessages(true);
+	}
 }
 
 int shiftedKey (int key) {
