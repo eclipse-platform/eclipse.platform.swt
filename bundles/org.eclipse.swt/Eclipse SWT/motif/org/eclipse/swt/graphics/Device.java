@@ -103,8 +103,6 @@ public abstract class Device implements Drawable {
 	static Callback XErrorCallback, XIOErrorCallback;
 	static int XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
 	static Device[] Devices = new Device[4];
-	
-	static final Object CREATE_LOCK = new Object();
 
 	/* Initialize X and Xt */
 	static {
@@ -174,7 +172,7 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_LOCK) {
+	synchronized (Device.class) {
 		if (data != null) {
 			display_name = data.display_name;
 			application_name = data.application_name;
@@ -293,17 +291,19 @@ protected void destroy () {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	deregister (this);
-	xDisplay = 0;
-	if (tracking) {
-		synchronized (trackingLock) {
-			objects = null;
-			errors = null;
-			trackingLock = null;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		deregister (this);
+		xDisplay = 0;
+		if (tracking) {
+			synchronized (trackingLock) {
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
 		}
 	}
 }
@@ -745,7 +745,9 @@ public abstract void internal_dispose_GC (int handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return xDisplay == 0;
+	synchronized (Device.class) {
+		return xDisplay == 0;
+	}
 }
 
 /**
