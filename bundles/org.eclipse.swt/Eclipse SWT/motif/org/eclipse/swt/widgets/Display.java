@@ -302,21 +302,6 @@ public class Display extends Device {
 //		PACKAGE_PREFIX = name.substring (0, index + 1);
 //	}
 	
-	/*
-	* In order to support CLDC, .class cannot be used because
-	* it does not compile on some Java compilers when they are
-	* targeted for CLDC.  Use Class.forName() instead.
-	*/
-	static final Class OS_LOCK;
-	static {
-		Class lock = null;
-		try {
-			lock = Class.forName ("org.eclipse.swt.internal.motif.OS");
-		} catch (Throwable th) {
-		}
-		OS_LOCK = lock;
-	}
-	
 	/* Mouse Hover */
 	Callback mouseHoverCallback;
 	int mouseHoverID, mouseHoverProc;
