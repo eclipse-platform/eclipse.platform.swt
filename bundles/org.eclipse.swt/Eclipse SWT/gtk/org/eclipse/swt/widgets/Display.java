@@ -647,14 +647,16 @@ void addWidget (int /*long*/ handle, Widget widget) {
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronized (idleLock) {
-		if (idleNeeded && idleHandle == 0) {
- 			//NOTE: calling unlocked function in OS
-			idleHandle = OS._g_idle_add (idleProc, 0);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronized (idleLock) {
+			if (idleNeeded && idleHandle == 0) {
+	 			//NOTE: calling unlocked function in OS
+				idleHandle = OS._g_idle_add (idleProc, 0);
+			}
 		}
+		synchronizer.asyncExec (runnable);
 	}
-	synchronizer.asyncExec (runnable);
 }
 
 /**
@@ -689,11 +691,13 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-static synchronized void checkDisplay (Thread thread, boolean multiple) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null) {
-			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+static void checkDisplay (Thread thread, boolean multiple) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] != null) {
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			}
 		}
 	}
 }
@@ -807,11 +811,11 @@ protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay(thread = Thread.currentThread (), false);
 	createDisplay (data);
-	register ();
+	register (this);
 	if (Default == null) Default = this;
 }
 
-synchronized void createDisplay (DeviceData data) {
+void createDisplay (DeviceData data) {
 	/* Required for g_main_context_wakeup */
 	if (!OS.g_thread_supported ()) {
 		OS.g_thread_init (0);
@@ -1009,9 +1013,11 @@ static int /*long*/ createPixbuf(Image image) {
 	return pixbuf;
 }
 
-synchronized void deregister () {
-	for (int i=0; i<Displays.length; i++) {
-		if (this == Displays [i]) Displays [i] = null;
+static void deregister (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (display == Displays [i]) Displays [i] = null;
+		}
 	}
 }
 
@@ -1027,7 +1033,7 @@ synchronized void deregister () {
  */
 protected void destroy () {
 	if (this == Default) Default = null;
-	deregister ();
+	deregister (this);
 	destroyDisplay ();
 }
 
@@ -1044,14 +1050,16 @@ void destroyDisplay () {
  * @param thread the user-interface thread
  * @return the display for the given thread
  */
-public static synchronized Display findDisplay (Thread thread) {
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == thread) {
-			return display;
+public static Display findDisplay (Thread thread) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			Display display = Displays [i];
+			if (display != null && display.thread == thread) {
+				return display;
+			}
 		}
+		return null;
 	}
-	return null;
 }
 
 /**
@@ -1347,13 +1355,8 @@ public Rectangle getBounds () {
  *
  * @return the current display
  */
-public static synchronized Display getCurrent () {
-	Thread current = Thread.currentThread ();
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == current) return display;
-	}
-	return null;
+public static Display getCurrent () {
+	return findDisplay (Thread.currentThread ());
 }
 
 int getCaretBlinkTime () {
@@ -1585,9 +1588,11 @@ int /*long*/ gtk_cell_renderer_toggle_get_type () {
  *
  * @return the default display
  */
-public static synchronized Display getDefault () {
-	if (Default == null) Default = new Display ();
-	return Default;
+public static Display getDefault () {
+	synchronized (Device.class) {
+		if (Default == null) Default = new Display ();
+		return Default;
+	}
 }
 
 static boolean isValidClass (Class clazz) {
@@ -1908,8 +1913,10 @@ public Shell [] getShells () {
  * </ul>
  */
 public Thread getSyncThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return synchronizer.syncThread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return synchronizer.syncThread;
+	}
 }
 
 /**
@@ -2199,8 +2206,10 @@ public Tray getSystemTray () {
  * </ul>
  */
 public Thread getThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return thread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return thread;
+	}
 }
 
 Widget getWidget (int /*long*/ handle) {
@@ -2822,66 +2831,68 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
  * 
  */
 public boolean post (Event event) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!OS.GDK_WINDOWING_X11()) return false;
-	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
-	int type = event.type;
-	switch (type) {
-		case SWT.KeyDown:
-		case SWT.KeyUp: {
-			int keyCode = 0;
-			int /*long*/ keysym = untranslateKey (event.keyCode);
-			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-			if (keyCode == 0) {
-				char key = event.character;
-				switch (key) {
-					case SWT.BS: keysym = OS.GDK_BackSpace; break;
-					case SWT.CR: keysym = OS.GDK_Return; break;
-					case SWT.DEL: keysym = OS.GDK_Delete; break;
-					case SWT.ESC: keysym = OS.GDK_Escape; break;
-					case SWT.TAB: keysym = OS.GDK_Tab; break;
-					case SWT.LF: keysym = OS.GDK_Linefeed; break;
-					default:
-						keysym = wcsToMbcs (key);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+		if (!OS.GDK_WINDOWING_X11()) return false;
+		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int type = event.type;
+		switch (type) {
+			case SWT.KeyDown:
+			case SWT.KeyUp: {
+				int keyCode = 0;
+				int /*long*/ keysym = untranslateKey (event.keyCode);
+				if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+				if (keyCode == 0) {
+					char key = event.character;
+					switch (key) {
+						case SWT.BS: keysym = OS.GDK_BackSpace; break;
+						case SWT.CR: keysym = OS.GDK_Return; break;
+						case SWT.DEL: keysym = OS.GDK_Delete; break;
+						case SWT.ESC: keysym = OS.GDK_Escape; break;
+						case SWT.TAB: keysym = OS.GDK_Tab; break;
+						case SWT.LF: keysym = OS.GDK_Linefeed; break;
+						default:
+							keysym = wcsToMbcs (key);
+					}
+					keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+					if (keyCode == 0) return false;
 				}
-				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-				if (keyCode == 0) return false;
+				OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
+				return true;
 			}
-			OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
-			return true;
-		}
-		case SWT.MouseDown:
-		case SWT.MouseMove: 
-		case SWT.MouseUp: {
-			if (type == SWT.MouseMove) {
-				OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
-			} else {
-				int button = event.button;
-				switch (button) {
-					case 1:
-					case 2:
-					case 3:	break;
-					case 4: button = 6;	break;
-					case 5: button = 7;	break;
-					default: return false;
+			case SWT.MouseDown:
+			case SWT.MouseMove: 
+			case SWT.MouseUp: {
+				if (type == SWT.MouseMove) {
+					OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+				} else {
+					int button = event.button;
+					switch (button) {
+						case 1:
+						case 2:
+						case 3:	break;
+						case 4: button = 6;	break;
+						case 5: button = 7;	break;
+						default: return false;
+					}
+					OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
 				}
-				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+				return true;
 			}
-			return true;
+			/*
+			* This code is intentionally commented. After posting a
+			* mouse wheel event the system may respond unpredictably
+			* to subsequent mouse actions.
+			*/
+//			case SWT.MouseWheel: {
+//				if (event.count == 0) return false;
+//				int button = event.count < 0 ? 5 : 4;
+//				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseWheel, 0);			
+//			}
 		}
-		/*
-		* This code is intentionally commented. After posting a
-		* mouse wheel event the system may respond unpredictably
-		* to subsequent mouse actions.
-		*/
-//		case SWT.MouseWheel: {
-//			if (event.count == 0) return false;
-//			int button = event.count < 0 ? 5 : 4;
-//			OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseWheel, 0);			
-//		}
+		return false;
 	}
-	return false;
 }
 
 void postEvent (Event event) {
@@ -2959,17 +2970,19 @@ public boolean readAndDispatch () {
 	return runAsyncMessages (false);
 }
 
-synchronized void register () {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] == null) {
-			Displays [i] = this;
-			return;
+static void register (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] == null) {
+				Displays [i] = display;
+				return;
+			}
 		}
+		Display [] newDisplays = new Display [Displays.length + 4];
+		System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
+		newDisplays [Displays.length] = display;
+		Displays = newDisplays;
 	}
-	Display [] newDisplays = new Display [Displays.length + 4];
-	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = this;
-	Displays = newDisplays;
 }
 
 /**
@@ -3210,7 +3223,7 @@ int /*long*/ removeGdkEvent () {
 }
 
 void removeIdleProc () {
-	synchronized(idleLock) {
+	synchronized (idleLock) {
 		if (idleHandle != 0) OS.g_source_remove (idleHandle);
 		idleNeeded = false;
 		idleHandle = 0;
@@ -3872,11 +3885,15 @@ int /*long*/ styleSetProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/
  * @see #asyncExec
  */
 public void syncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronized (idleLock) {
-		if (idleNeeded && idleHandle == 0) {
-			//NOTE: calling unlocked function in OS
-			idleHandle = OS._g_idle_add (idleProc, 0);
+	Synchronizer synchronizer;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer = this.synchronizer;
+		synchronized (idleLock) {
+			if (idleNeeded && idleHandle == 0) {
+				//NOTE: calling unlocked function in OS
+				idleHandle = OS._g_idle_add (idleProc, 0);
+			}
 		}
 	}
 	synchronizer.syncExec (runnable);
@@ -3925,9 +3942,11 @@ public void update () {
  * @see #sleep
  */
 public void wake () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (thread == Thread.currentThread ()) return;
-	wakeThread ();
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (thread == Thread.currentThread ()) return;
+		wakeThread ();
+	}
 }
 
 void wakeThread () {

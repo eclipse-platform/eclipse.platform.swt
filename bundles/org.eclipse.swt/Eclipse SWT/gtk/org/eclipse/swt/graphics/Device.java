@@ -81,8 +81,6 @@ public abstract class Device implements Drawable {
 
 	static boolean CAIRO_LOADED;
 
-	static final Object CREATE_LOCK = new Object();
-
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -141,7 +139,7 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	synchronized (CREATE_LOCK) {
+	synchronized (Device.class) {
 		if (data != null) {
 			debug = data.debug;
 			tracking = data.tracking;
@@ -234,18 +232,20 @@ protected void create (DeviceData data) {
  * @see #checkDevice
  */
 public void dispose () {
-	if (isDisposed()) return;
-	checkDevice ();
-	release ();
-	destroy ();
-	deregister (this);
-	xDisplay = 0;
-	disposed = true;
-	if (tracking) {
-		synchronized (trackingLock) {
-			objects = null;
-			errors = null;
-			trackingLock = null;
+	synchronized (Device.class) {
+		if (isDisposed()) return;
+		checkDevice ();
+		release ();
+		destroy ();
+		deregister (this);
+		xDisplay = 0;
+		disposed = true;
+		if (tracking) {
+			synchronized (trackingLock) {
+				objects = null;
+				errors = null;
+				trackingLock = null;
+			}
 		}
 	}
 }
@@ -678,7 +678,9 @@ public abstract void internal_dispose_GC (int /*long*/ handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return disposed;
+	synchronized (Device.class) {
+		return disposed;
+	}
 }
 
 /**
