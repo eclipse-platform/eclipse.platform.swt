@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CFRunLoopSourceContext;
@@ -583,8 +582,10 @@ void addDisposeWindow (int window) {
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronizer.asyncExec (runnable);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer.asyncExec (runnable);
+	}
 }
 
 /**
@@ -749,11 +750,13 @@ public Display (DeviceData data) {
 	super (data);
 }
 
-static synchronized void checkDisplay (Thread thread, boolean multiple) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null) {
-			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+static void checkDisplay (Thread thread, boolean multiple) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] != null) {
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			}
 		}
 	}
 }
@@ -1017,9 +1020,11 @@ void createDisplay (DeviceData data) {
 	OS.GetThemeBrushAsColor ((short) OS.kThemeBrushPrimaryHighlightColor, (short) getDepth(), true, highlightColor);
 }
 
-synchronized static void deregister (Display display) {
-	for (int i=0; i<Displays.length; i++) {
-		if (display == Displays [i]) Displays [i] = null;
+static void deregister (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (display == Displays [i]) Displays [i] = null;
+		}
 	}
 }
 
@@ -1187,14 +1192,16 @@ public Widget findWidget (Widget widget, int id) {
  * @param thread the user-interface thread
  * @return the display for the given thread
  */
-public static synchronized Display findDisplay (Thread thread) {
-	for (int i=0; i<Displays.length; i++) {
-		Display display = Displays [i];
-		if (display != null && display.thread == thread) {
-			return display;
+public static Display findDisplay (Thread thread) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			Display display = Displays [i];
+			if (display != null && display.thread == thread) {
+				return display;
+			}
 		}
+		return null;
 	}
-	return null;
 }
 
 /**
@@ -1255,7 +1262,7 @@ public Rectangle getBounds () {
  *
  * @return the current display
  */
-public static synchronized Display getCurrent () {
+public static Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 
@@ -1382,9 +1389,11 @@ public Point [] getCursorSizes () {
  *
  * @return the default display
  */
-public static synchronized Display getDefault () {
-	if (Default == null) Default = new Display ();
-	return Default;
+public static Display getDefault () {
+	synchronized (Device.class) {
+		if (Default == null) Default = new Display ();
+		return Default;
+	}
 }
 
 /**
@@ -1759,8 +1768,10 @@ public Shell [] getShells () {
  * </ul>
  */
 public Thread getSyncThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return synchronizer.syncThread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return synchronizer.syncThread;
+	}
 }
 
 /**
@@ -1946,8 +1957,10 @@ public Tray getSystemTray () {
  * </ul>
  */
 public Thread getThread () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	return thread;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		return thread;
+	}
 }
 
 Widget getWidget (int handle) {
@@ -2376,117 +2389,119 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
  * 
  */
 public boolean post(Event event) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int type = event.type;
-	switch (type) {
-		case SWT.KeyDown:
-		case SWT.KeyUp: {
-			int vKey = Display.untranslateKey (event.keyCode);
-			if (vKey != 0) {
-				return OS.CGPostKeyboardEvent (0, vKey, type == SWT.KeyDown) == 0;
-			} else {
-				vKey = -1;
-				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
-				int key = -1;
-				int [] state = new int [1];
-				int [] encoding = new int [1];
-				short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
-				short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-				if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
-					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
-						encoding [0] = OS.kTextEncodingMacRoman;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+		int type = event.type;
+		switch (type) {
+			case SWT.KeyDown:
+			case SWT.KeyUp: {
+				int vKey = Display.untranslateKey (event.keyCode);
+				if (vKey != 0) {
+					return OS.CGPostKeyboardEvent (0, vKey, type == SWT.KeyDown) == 0;
+				} else {
+					vKey = -1;
+					int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
+					int key = -1;
+					int [] state = new int [1];
+					int [] encoding = new int [1];
+					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+							encoding [0] = OS.kTextEncodingMacRoman;
+						}
 					}
-				}
-				int [] encodingInfo = new int [1];
-				OS.CreateUnicodeToTextInfoByEncoding (encoding [0], encodingInfo);
-				if (encodingInfo [0] != 0) {
-					char [] input = {event.character};
-					byte [] buffer = new byte [2];
-					OS.ConvertFromUnicodeToPString (encodingInfo [0], 2, input, buffer);
-					OS.DisposeUnicodeToTextInfo (encodingInfo);
-					key = buffer [1] & 0x7f;
-				}
-				if (key == -1) return false;				
-				for (int i = 0 ; i <= 0x7F ; i++) {
-					int result1 = OS.KeyTranslate (kchrPtr, (short) (i | 512), state);
-					int result2 = OS.KeyTranslate (kchrPtr, (short) i, state);
-					if ((result1 & 0x7f) == key || (result2 & 0x7f) == key) {
-						vKey = i;
-						break;
+					int [] encodingInfo = new int [1];
+					OS.CreateUnicodeToTextInfoByEncoding (encoding [0], encodingInfo);
+					if (encodingInfo [0] != 0) {
+						char [] input = {event.character};
+						byte [] buffer = new byte [2];
+						OS.ConvertFromUnicodeToPString (encodingInfo [0], 2, input, buffer);
+						OS.DisposeUnicodeToTextInfo (encodingInfo);
+						key = buffer [1] & 0x7f;
 					}
+					if (key == -1) return false;				
+					for (int i = 0 ; i <= 0x7F ; i++) {
+						int result1 = OS.KeyTranslate (kchrPtr, (short) (i | 512), state);
+						int result2 = OS.KeyTranslate (kchrPtr, (short) i, state);
+						if ((result1 & 0x7f) == key || (result2 & 0x7f) == key) {
+							vKey = i;
+							break;
+						}
+					}
+					if (vKey == -1) return false;
+					return OS.CGPostKeyboardEvent (key, vKey, type == SWT.KeyDown) == 0;
 				}
-				if (vKey == -1) return false;
-				return OS.CGPostKeyboardEvent (key, vKey, type == SWT.KeyDown) == 0;
 			}
-		}
-		case SWT.MouseDown:
-		case SWT.MouseMove: 
-		case SWT.MouseUp: {
-			CGPoint mouseCursorPosition = new CGPoint ();
-			int chord = OS.GetCurrentEventButtonState ();
-			if (type == SWT.MouseMove) {
-				mouseCursorPosition.x = event.x;
-				mouseCursorPosition.y = event.y;
-				return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0, (chord & 0x8) != 0, (chord & 0x10) != 0) == 0;
-			} else {
-				int button = event.button;
-				if (button < 1 || button > 5) return false;
-				boolean button1 = false, button2 = false, button3 = false, button4 = false, button5 = false;
- 				switch (button) {
-					case 1: {
-						button1 = type == SWT.MouseDown;
-						button2 = (chord & 0x4) != 0;
-						button3 = (chord & 0x2) != 0;
-						button4 = (chord & 0x8) != 0;
-						button5 = (chord & 0x10) != 0;
-						break;
+			case SWT.MouseDown:
+			case SWT.MouseMove: 
+			case SWT.MouseUp: {
+				CGPoint mouseCursorPosition = new CGPoint ();
+				int chord = OS.GetCurrentEventButtonState ();
+				if (type == SWT.MouseMove) {
+					mouseCursorPosition.x = event.x;
+					mouseCursorPosition.y = event.y;
+					return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0, (chord & 0x8) != 0, (chord & 0x10) != 0) == 0;
+				} else {
+					int button = event.button;
+					if (button < 1 || button > 5) return false;
+					boolean button1 = false, button2 = false, button3 = false, button4 = false, button5 = false;
+	 				switch (button) {
+						case 1: {
+							button1 = type == SWT.MouseDown;
+							button2 = (chord & 0x4) != 0;
+							button3 = (chord & 0x2) != 0;
+							button4 = (chord & 0x8) != 0;
+							button5 = (chord & 0x10) != 0;
+							break;
+						}
+						case 2: {
+							button1 = (chord & 0x1) != 0;
+							button2 = type == SWT.MouseDown;
+							button3 = (chord & 0x2) != 0;
+							button4 = (chord & 0x8) != 0;
+							button5 = (chord & 0x10) != 0;
+							break;
+						}
+						case 3: {
+							button1 = (chord & 0x1) != 0;
+							button2 = (chord & 0x4) != 0;
+							button3 = type == SWT.MouseDown;
+							button4 = (chord & 0x8) != 0;
+							button5 = (chord & 0x10) != 0;
+							break;
+						}
+						case 4: {
+							button1 = (chord & 0x1) != 0;
+							button2 = (chord & 0x4) != 0;
+							button3 = (chord & 0x2) != 0;
+							button4 = type == SWT.MouseDown;
+							button5 = (chord & 0x10) != 0;
+							break;
+						}
+						case 5: {
+							button1 = (chord & 0x1) != 0;
+							button2 = (chord & 0x4) != 0;
+							button3 = (chord & 0x2) != 0;
+							button4 = (chord & 0x8) != 0;
+							button5 = type == SWT.MouseDown;
+							break;
+						}
 					}
-					case 2: {
-						button1 = (chord & 0x1) != 0;
-						button2 = type == SWT.MouseDown;
-						button3 = (chord & 0x2) != 0;
-						button4 = (chord & 0x8) != 0;
-						button5 = (chord & 0x10) != 0;
-						break;
-					}
-					case 3: {
-						button1 = (chord & 0x1) != 0;
-						button2 = (chord & 0x4) != 0;
-						button3 = type == SWT.MouseDown;
-						button4 = (chord & 0x8) != 0;
-						button5 = (chord & 0x10) != 0;
-						break;
-					}
-					case 4: {
-						button1 = (chord & 0x1) != 0;
-						button2 = (chord & 0x4) != 0;
-						button3 = (chord & 0x2) != 0;
-						button4 = type == SWT.MouseDown;
-						button5 = (chord & 0x10) != 0;
-						break;
-					}
-					case 5: {
-						button1 = (chord & 0x1) != 0;
-						button2 = (chord & 0x4) != 0;
-						button3 = (chord & 0x2) != 0;
-						button4 = (chord & 0x8) != 0;
-						button5 = type == SWT.MouseDown;
-						break;
-					}
+					org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+					OS.GetGlobalMouse (pt);
+					mouseCursorPosition.x = pt.h;
+					mouseCursorPosition.y = pt.v;
+					return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, button1, button3, button2, button4, button5) == 0;
 				}
-				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				OS.GetGlobalMouse (pt);
-				mouseCursorPosition.x = pt.h;
-				mouseCursorPosition.y = pt.v;
-				return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, button1, button3, button2, button4, button5) == 0;
 			}
-		}
-		case SWT.MouseWheel: {
-			return OS.CGPostScrollWheelEvent (1, event.count) == 0;
-		}
-	} 
-	return false;
+			case SWT.MouseWheel: {
+				return OS.CGPostScrollWheelEvent (1, event.count) == 0;
+			}
+		} 
+		return false;
+	}
 }
 
 void postEvent (Event event) {
@@ -2959,17 +2974,19 @@ public boolean readAndDispatch () {
 	return runAsyncMessages (false);
 }
 
-static synchronized void register (Display display) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] == null) {
-			Displays [i] = display;
-			return;
+static void register (Display display) {
+	synchronized (Device.class) {
+		for (int i=0; i<Displays.length; i++) {
+			if (Displays [i] == null) {
+				Displays [i] = display;
+				return;
+			}
 		}
+		Display [] newDisplays = new Display [Displays.length + 4];
+		System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
+		newDisplays [Displays.length] = display;
+		Displays = newDisplays;
 	}
-	Display [] newDisplays = new Display [Displays.length + 4];
-	System.arraycopy (Displays, 0, newDisplays, 0, Displays.length);
-	newDisplays [Displays.length] = display;
-	Displays = newDisplays;
 }
 
 /**
@@ -3790,7 +3807,11 @@ int sourceProc (int info) {
  * @see #asyncExec
  */
 public void syncExec (Runnable runnable) {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	Synchronizer synchronizer;
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		synchronizer = this.synchronizer;
+	}
 	synchronizer.syncExec (runnable);
 }
 
@@ -3983,9 +4004,11 @@ void updateQuitMenu () {
  * @see #sleep
  */
 public void wake () {
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (thread == Thread.currentThread ()) return;
-	wakeThread ();
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (thread == Thread.currentThread ()) return;
+		wakeThread ();
+	}
 }
 
 void wakeThread () {
