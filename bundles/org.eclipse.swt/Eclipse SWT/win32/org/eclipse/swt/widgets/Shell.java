@@ -1307,7 +1307,7 @@ public void setEnabled (boolean enabled) {
 public void setImeInputMode (int mode) {
 	checkWidget ();
 	if (!OS.IsDBLocale) return;
-	boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
+	boolean imeOn = mode != SWT.NONE;
 	int /*long*/ hIMC = OS.ImmGetContext (handle);
 	OS.ImmSetOpenStatus (hIMC, imeOn);
 	if (imeOn) {
@@ -1324,7 +1324,7 @@ public void setImeInputMode (int mode) {
 					oldBits = OS.IME_CMODE_KATAKANA;
 				}
 			}
-			if ((mode & SWT.DBCS) != 0) {
+			if ((mode & (SWT.DBCS | SWT.NATIVE)) != 0) {
 				newBits |= OS.IME_CMODE_FULLSHAPE;
 			} else {
 				oldBits |= OS.IME_CMODE_FULLSHAPE;
@@ -1334,7 +1334,8 @@ public void setImeInputMode (int mode) {
 			} else {
 				oldBits |= OS.IME_CMODE_ROMAN;
 			}
-			lpfdwConversion [0] |= newBits;  lpfdwConversion [0] &= ~oldBits;
+			lpfdwConversion [0] |= newBits;
+			lpfdwConversion [0] &= ~oldBits;
 			OS.ImmSetConversionStatus (hIMC, lpfdwConversion [0], lpfdwSentence [0]);
 		}
 	}
