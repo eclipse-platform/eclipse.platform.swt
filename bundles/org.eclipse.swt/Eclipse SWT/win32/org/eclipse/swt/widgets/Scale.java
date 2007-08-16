@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Scale extends Control {
-	boolean ignoreResize;
+	boolean ignoreResize, ignoreSelection;
 	static final int /*long*/ TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	static {
@@ -425,6 +425,29 @@ int /*long*/ windowProc () {
 	return TrackBarProc;
 }
 
+LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
+	if (result != null) return result;	
+	/*
+	* Bug in Windows.  When a track bar slider is changed
+	* from WM_MOUSEWHEEL, it does not always send either
+	* a WM_VSCROLL or M_HSCROLL to notify the application
+	* of the change.  The fix is to detect that the selection
+	* has changed and that notification has not been issued
+	* and send the selection event.
+	*/
+	int oldPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	ignoreSelection = true;
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	ignoreSelection = false;
+	int newPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	if (oldPosition != newPosition) {
+		sendEvent (SWT.Selection);
+		// widget could be disposed at this point		
+	}
+	return new LRESULT (code);
+}
+
 LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
@@ -472,28 +495,29 @@ LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
 			return null;
 	}
 
-	Event event = new Event ();
-	/*
-	* This code is intentionally commented.  The event
-	* detail field is not currently supported on all
-	* platforms.
-	*/
-//	switch (code) {
-//		case OS.TB_TOP: 		event.detail = SWT.HOME;  break;
-//		case OS.TB_BOTTOM:		event.detail = SWT.END;  break;
-//		case OS.TB_LINEDOWN:	event.detail = SWT.ARROW_DOWN;  break;
-//		case OS.TB_LINEUP: 		event.detail = SWT.ARROW_UP;  break;
-//		case OS.TB_PAGEDOWN: 	event.detail = SWT.PAGE_DOWN;  break;
-//		case OS.TB_PAGEUP: 		event.detail = SWT.PAGE_UP;  break;
-//	}
-	
-	/*
-	* Send the event because WM_HSCROLL and WM_VSCROLL
-	* are sent from a modal message loop in windows that
-	* is active when the user is scrolling.
-	*/
-	sendEvent (SWT.Selection, event);
-	// widget could be disposed at this point
+	if (!ignoreSelection) {
+		Event event = new Event ();
+		/*
+		* This code is intentionally commented.  The event
+		* detail field is not currently supported on all
+		* platforms.
+		*/
+//		switch (code) {
+//			case OS.TB_TOP: 		event.detail = SWT.HOME;  break;
+//			case OS.TB_BOTTOM:		event.detail = SWT.END;  break;
+//			case OS.TB_LINEDOWN:	event.detail = SWT.ARROW_DOWN;  break;
+//			case OS.TB_LINEUP: 		event.detail = SWT.ARROW_UP;  break;
+//			case OS.TB_PAGEDOWN: 	event.detail = SWT.PAGE_DOWN;  break;
+//			case OS.TB_PAGEUP: 		event.detail = SWT.PAGE_UP;  break;
+//		}
+		/*
+		* Send the event because WM_HSCROLL and WM_VSCROLL
+		* are sent from a modal message loop in windows that
+		* is active when the user is scrolling.
+		*/
+		sendEvent (SWT.Selection, event);
+		// widget could be disposed at this point
+	}
 	return null;
 }
 
