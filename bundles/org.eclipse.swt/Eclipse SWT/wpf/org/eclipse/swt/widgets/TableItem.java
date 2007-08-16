@@ -1081,7 +1081,7 @@ public void setText (String string) {
 }
 
 void updateBackground (int index) {
-	int panel = findPart (index, Table.STACKPANEL_PART_NAME);
+	int panel = findPart (index, Table.DOCKPANEL_PART_NAME);
 	if (panel != 0) {
 		if (cellBackground != null && cellBackground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellBackground [index].handle);

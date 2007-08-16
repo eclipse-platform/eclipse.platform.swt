@@ -68,7 +68,7 @@ public class Table extends Composite {
 	static final String CHECKBOX_PART_NAME = "SWT_PART_CHECKBOX";
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
-	static final String STACKPANEL_PART_NAME = "SWT_PART_STACKPANEL";
+	static final String DOCKPANEL_PART_NAME = "SWT_PART_DOCKPANEL";
 	static final String RENDER_PANEL_NAME = "SWTStackPanel";
 
 /**
@@ -347,11 +347,11 @@ int createCellTemplate (int index) {
 	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
 	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
 	OS.GCHandle_Free (jniRefProperty);
-	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
+	int dockPanelName = createDotNetString (DOCKPANEL_PART_NAME, false);
 	int dockPanelType = OS.DockPanel_typeid ();
-	int cellContentNode = OS.gcnew_FrameworkElementFactory (dockPanelType, stackPanelName);
+	int cellContentNode = OS.gcnew_FrameworkElementFactory (dockPanelType, dockPanelName);
 	OS.GCHandle_Free (dockPanelType);
-	OS.GCHandle_Free (stackPanelName);
+	OS.GCHandle_Free (dockPanelName);
 	int clipProperty = OS.UIElement_ClipToBoundsProperty ();
 	OS.FrameworkElementFactory_SetValue (cellContentNode, clipProperty, true);
 	OS.GCHandle_Free (clipProperty);
@@ -438,7 +438,7 @@ void createHandle () {
 int createHeaderTemplate (int columnJniRef) {
 	int template = OS.gcnew_DataTemplate ();
 	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
+	int stackPanelName = createDotNetString (DOCKPANEL_PART_NAME, false);
 	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString(TEXT_PART_NAME, false);
