@@ -3452,14 +3452,20 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 
 void setBackgroundImage (int /*long*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
-	if (!customDraw) setBackgroundTransparent (hBitmap != 0);
+	if (hBitmap != 0) {
+		setBackgroundTransparent (true);
+	} else {
+		if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+			setBackgroundTransparent (false);
+		}
+	}
 }
 
 void setBackgroundPixel (int newPixel) {
-	if (!customDraw) {
+	int oldPixel = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+	if (oldPixel != OS.CLR_NONE) {
 		if (findImageControl () != null) return;
 		if (newPixel == -1) newPixel = defaultBackground ();
-		int oldPixel = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
 		if (oldPixel != newPixel) {
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
@@ -5477,8 +5483,11 @@ LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (findBackgroundControl () == null) {
 		setBackgroundPixel (defaultBackground ());
 	} else {
-		if ((style & SWT.CHECK) != 0) {
-			fixCheckboxImageListColor (true);
+		int oldPixel = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+		if (oldPixel != OS.CLR_NONE) {
+			if (findImageControl () == null) {
+				if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
+			}
 		}
 	}
 	return result;
