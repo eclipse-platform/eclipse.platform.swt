@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1272;
-int OS_nativeFunctionCallCount[1272];
+int OS_nativeFunctionCount = 1273;
+int OS_nativeFunctionCallCount[1273];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -168,7 +168,8 @@ char * OS_nativeFunctionNames[] = {
 	"Control_1HorizontalContentAlignment__I",
 	"Control_1HorizontalContentAlignment__II",
 	"Control_1MouseDoubleClick",
-	"Control_1Padding",
+	"Control_1Padding__I",
+	"Control_1Padding__II",
 	"Control_1PreviewMouseDoubleClick",
 	"Control_1Template__I",
 	"Control_1Template__II",
@@ -1095,8 +1096,6 @@ char * OS_nativeFunctionNames[] = {
 	"Window_1Title__II",
 	"Window_1Top__I",
 	"Window_1Top__ID",
-	"Window_1Topmost__I",
-	"Window_1Topmost__IZ",
 	"Window_1WindowState__I",
 	"Window_1WindowState__II",
 	"Window_1WindowStyle__I",

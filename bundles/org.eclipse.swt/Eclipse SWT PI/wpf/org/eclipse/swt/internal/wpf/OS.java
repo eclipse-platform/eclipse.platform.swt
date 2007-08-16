@@ -526,6 +526,7 @@ public static final native void CompositeCollection_Insert(int sender, int index
 public static final native void CompositeCollection_Remove(int sender, int value);
 public static final native void CompositeCollection_RemoveAt(int sender, int value);
 public static final native void Console_Beep();
+public static final native int Control_Padding(int sender);
 public static final native void Control_Padding(int sender, int value);
 public static final native int ContainerVisual_Clip(int sender);
 public static final native void ContainerVisual_Clip(int sender, int clip);
@@ -1472,8 +1473,6 @@ public static final native void Window_Owner(int sender, int owner);
 public static final native void Window_Show(int sender);
 public static final native double Window_Left(int sender);
 public static final native double Window_Top(int sender);
-public static final native void Window_Topmost(int sender, boolean value);
-public static final native boolean Window_Topmost(int sender);
 public static final native void Window_Left(int sender, double left);
 public static final native void Window_Top(int sender, double top);
 public static final native void Window_Icon(int sender, int icon);

@@ -328,6 +328,28 @@ public void clearAll () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	updateLayout (parent.handle);
+	if (columnCount == 0) { // pack the default column
+		double width = 0;
+		int columns = OS.GridView_Columns (gridViewHandle);
+		int column = OS.GridViewColumnCollection_default (columns, 0);
+		OS.GCHandle_Free (columns);
+		int columnHeader = OS.GridViewColumn_Header (column);
+		if (columnHeader != 0) {
+			int size = OS.UIElement_DesiredSize (columnHeader);
+			width = OS.Size_Width (size);
+			OS.GCHandle_Free (size);
+			OS.GCHandle_Free (columnHeader);
+		}
+		int items = OS.ItemsControl_Items (handle);
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = getItem (items, i, false);
+			if (item != null) width = Math.max (width, item.computeWidth (0));
+		}
+		OS.GCHandle_Free (items);
+		OS.GridViewColumn_Width (column, width);
+		OS.GCHandle_Free (column);
+	}
 	Point size = computeSize (handle, wHint, hHint, changed);
 	if (size.x == 0) size.x = DEFAULT_WIDTH;
 	if (size.y == 0) size.y = DEFAULT_HEIGHT;
@@ -407,6 +429,9 @@ int createCellTemplate (int index) {
 void createDefaultColumn () {
 	int column = OS.gcnew_GridViewColumn ();
 	int columnCollection = OS.GridView_Columns (gridViewHandle);
+	int headerHandle = OS.gcnew_GridViewColumnHeader ();
+	OS.GridViewColumn_Header (column, headerHandle);
+	OS.GCHandle_Free (headerHandle);
 	OS.GridViewColumnCollection_Insert (columnCollection, 0, column);
 	int cellTemplate = createCellTemplate (0);
 	OS.GridViewColumn_CellTemplate (column, cellTemplate);

@@ -1857,14 +1857,27 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1MouseDoubleClick)
 }
 #endif
 
-#ifndef NO_Control_1Padding
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding)
+#ifndef NO_Control_1Padding__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1Padding__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Control_1Padding__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1Padding__I_FUNC);
+	rc = (jint)TO_HANDLE(((Control^)TO_OBJECT(arg0))->Padding);
+	OS_NATIVE_EXIT(env, that, Control_1Padding__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Control_1Padding__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, Control_1Padding_FUNC);
+	OS_NATIVE_ENTER(env, that, Control_1Padding__II_FUNC);
 	((Control^)TO_OBJECT(arg0))->Padding = ((Thickness)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, Control_1Padding_FUNC);
+	OS_NATIVE_EXIT(env, that, Control_1Padding__II_FUNC);
 }
 #endif
 
@@ -12999,30 +13012,6 @@ JNIEXPORT void JNICALL OS_NATIVE(Window_1Top__ID)
 	OS_NATIVE_ENTER(env, that, Window_1Top__ID_FUNC);
 	((Window ^)TO_OBJECT(arg0))->Top = (arg1);
 	OS_NATIVE_EXIT(env, that, Window_1Top__ID_FUNC);
-}
-#endif
-
-#ifndef NO_Window_1Topmost__I
-extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Window_1Topmost__I)(JNIEnv *env, jclass that, jint arg0);
-JNIEXPORT jboolean JNICALL OS_NATIVE(Window_1Topmost__I)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, Window_1Topmost__I_FUNC);
-	rc = (jboolean)((Window^)TO_OBJECT(arg0))->Topmost;
-	OS_NATIVE_EXIT(env, that, Window_1Topmost__I_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_Window_1Topmost__IZ
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Window_1Topmost__IZ)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Window_1Topmost__IZ)
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, Window_1Topmost__IZ_FUNC);
-	((Window^)TO_OBJECT(arg0))->Topmost = (arg1);
-	OS_NATIVE_EXIT(env, that, Window_1Topmost__IZ_FUNC);
 }
 #endif
 

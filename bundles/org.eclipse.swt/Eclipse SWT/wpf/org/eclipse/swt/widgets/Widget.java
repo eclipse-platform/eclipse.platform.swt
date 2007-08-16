@@ -467,9 +467,11 @@ void dumpVisualTree (int visual, int depth) {
 	String typeName = createJavaString (typeNamePtr);
 	OS.GCHandle_Free(typeNamePtr);
 	int name = OS.FrameworkElement_Name (visual);
+	double width = OS.FrameworkElement_Width (visual);
+	double actualWidth = OS.FrameworkElement_ActualWidth (visual);
 	String widgetName = createJavaString (name);
 	OS.GCHandle_Free (name);
-	System.out.println(typeName + " ["+widgetName+"]");
+	System.out.println(typeName + " ["+widgetName+ " width=" + width + " actualWidth=" + actualWidth +"]");
 	int count = OS.VisualTreeHelper_GetChildrenCount(visual);
 	for (int i = 0; i < count; i++) {
 		int child = OS.VisualTreeHelper_GetChild (visual, i);

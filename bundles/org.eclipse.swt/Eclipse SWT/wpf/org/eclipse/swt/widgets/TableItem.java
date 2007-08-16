@@ -126,18 +126,9 @@ double computeWidth (int columnIndex) {
 	double width = 0;
 	if (rowHandle != 0) {
 		int contentPresenter = OS.VisualTreeHelper_GetChild (rowHandle, columnIndex);
-		/*
-		 * Bug in WPF. The DesiredSize property of the content presenter is always 0
-		 * for all columns except the first column. The work around is to Measure the
-		 * content presenter before asking for its DesiredSize. Calling Measure on the 
-		 * first column does not work because it will set DesiredSize to be equal to the 
-		 * available size you pass into the Measure function. 
-		 */
-		if (columnIndex != 0) { 
-			int availSize = OS.gcnew_Size (0x7FFFFFFF,0x7FFFFFFF);
-			OS.UIElement_Measure (contentPresenter, availSize);
-			OS.GCHandle_Free (availSize);
-		}
+		int availSize = OS.gcnew_Size (0x7FFFFFFF,0x7FFFFFFF);
+		OS.UIElement_Measure (contentPresenter, availSize);
+		OS.GCHandle_Free (availSize);
 		int size = OS.UIElement_DesiredSize (contentPresenter);
 		width = OS.Size_Width (size);
 		OS.GCHandle_Free (size);
