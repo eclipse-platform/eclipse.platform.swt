@@ -566,6 +566,11 @@ public Rectangle getBounds () {
 	return new Rectangle (area.pos_x, area.pos_y, width, height);
 }
 
+public boolean getFullScreen () {
+	checkWidget();
+	return false;
+}
+
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -1036,6 +1041,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	
 	/* Always return 0 */
 	return 0;
+}
+
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
 }
 
 /**

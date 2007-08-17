@@ -125,6 +125,7 @@ public class Shell extends Decorations {
 	static final  byte [] _NET_WM_STATE = Converter.wcsToMbcs(null, "_NET_WM_STATE\0");
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_VERT = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_VERT\0");
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_HORZ = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_HORZ\0");
+	static final  byte [] _NET_WM_STATE_FULLSCREEN = Converter.wcsToMbcs(null, "_NET_WM_STATE_FULLSCREEN\0");
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -893,7 +894,35 @@ void getBounds(Point location, Point size, Rectangle bounds) {
 		bounds.height = height;
 	}
 }
-
+public boolean getFullScreen () {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow != 0) {
+		int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+		if (property != 0) { 
+			int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atoms = new int[1];
+			OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atoms);
+			boolean result = false;
+			if (type [0] != OS.None) {
+				int fullScreen = OS.XInternAtom (xDisplay, _NET_WM_STATE_FULLSCREEN, true);
+				if (fullScreen != 0) {
+					int[] atom = new int[1];
+					for (int i=0; i<nitems [0]; i++) {
+						OS.memmove(atom, atoms [0] + i * 4, 4);
+						if (atom [0] == fullScreen) {
+							result = true;
+							break;
+						}
+					}
+				}
+			}
+			if (atoms [0] != 0) OS.XFree (atoms [0]);
+			return result;
+		}
+	}
+	return false;
+}
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -1358,6 +1387,34 @@ public void setEnabled (boolean enabled) {
 	if (enabled && this == display.getActiveShell ()) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
+}
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
+	if (!OS.XtIsRealized (handle)) realizeWidget ();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow == 0) return;
+	int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+	if (property == 0) return;
+	int atom = OS.XInternAtom (xDisplay, _NET_WM_STATE_FULLSCREEN, true);
+	if (atom == 0) return;
+	XClientMessageEvent xEvent = new XClientMessageEvent ();
+	xEvent.type = OS.ClientMessage;
+	xEvent.send_event = 1;
+	xEvent.display = xDisplay;
+	xEvent.window = xWindow;
+	xEvent.message_type = property;
+	xEvent.format = 32;
+	xEvent.data [0] = fullScreen ? 1 : 0;
+	xEvent.data [1] = atom;
+	XWindowAttributes attributes = new XWindowAttributes ();
+	OS.XGetWindowAttributes (xDisplay, xWindow, attributes);
+	int rootWindow = OS.XRootWindowOfScreen (attributes.screen);
+	int event = OS.XtMalloc (XEvent.sizeof);
+	OS.memmove (event, xEvent, XClientMessageEvent.sizeof);
+	OS.XSendEvent (xDisplay, rootWindow, false, OS.SubstructureRedirectMask|OS.SubstructureNotifyMask, event);
+	OS.XSync (xDisplay, false);
+	OS.XtFree (event);
 }
 public void setMaximized (boolean maximized) {
 	checkWidget();
