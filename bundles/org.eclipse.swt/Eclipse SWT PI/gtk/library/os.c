@@ -15096,6 +15096,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1deiconify)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1fullscreen
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1fullscreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1fullscreen_FUNC);
+	gtk_window_fullscreen((GtkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1fullscreen_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1window_1get_1focus
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1focus)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -15370,6 +15380,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1type_1hint)
 	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1type_1hint_FUNC);
 	gtk_window_set_type_hint((GtkWindow *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1type_1hint_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1window_1unfullscreen
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1unfullscreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1unfullscreen_FUNC);
+	gtk_window_unfullscreen((GtkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1unfullscreen_FUNC);
 }
 #endif
 

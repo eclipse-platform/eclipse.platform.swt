@@ -232,6 +232,7 @@ public class OS extends C {
 	public static final int GDK_WINDOW_CHILD = 2;
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
 	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
+	public static final int GDK_WINDOW_STATE_FULLSCREEN  = 1 << 4;
 	public static final int GTK_ACCEL_VISIBLE = 0x1;
 	public static final int GTK_ARROW_DOWN = 0x1;
 	public static final int GTK_ARROW_LEFT = 0x2;
@@ -9275,6 +9276,24 @@ public static final void gtk_window_maximize(int /*long*/ handle) {
 	lock.lock();
 	try {
 		_gtk_window_maximize(handle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_window_fullscreen(int /*long*/ handle);
+public static final void gtk_window_fullscreen(int /*long*/ handle) {
+	lock.lock();
+	try {
+		_gtk_window_fullscreen(handle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_window_unfullscreen(int /*long*/ handle);
+public static final void gtk_window_unfullscreen(int /*long*/ handle) {
+	lock.lock();
+	try {
+		_gtk_window_unfullscreen(handle);
 	} finally {
 		lock.unlock();
 	}
