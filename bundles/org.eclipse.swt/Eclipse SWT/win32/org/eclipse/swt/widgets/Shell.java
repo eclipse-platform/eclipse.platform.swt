@@ -118,7 +118,7 @@ public class Shell extends Decorations {
 	int /*long*/ hIMC, hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 	int /*long*/ [] brushes;
-	boolean showWithParent;
+	boolean showWithParent, fullScreen, wasMaximized;
 	String toolTitle, balloonTitle;
 	int /*long*/ toolIcon, balloonIcon;
 	int /*long*/ windowProc;
@@ -854,6 +854,25 @@ public boolean getEnabled () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is currently
+ * in fullscreen state, and false otherwise. 
+ * <p>
+ *
+ * @return the fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public boolean getFullScreen () {
+	checkWidget();
+	return fullScreen;
+}
+
+/**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
  * more of the following constants defined in class
@@ -897,6 +916,11 @@ public Point getLocation () {
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	return new Point (rect.left, rect.top);
+}
+
+public boolean getMaximized () {
+	checkWidget ();
+	return !fullScreen && super.getMaximized ();
 }
 
 /**
@@ -1276,6 +1300,7 @@ void setActiveControl (Control control) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	if (fullScreen) setFullScreen (false);
 	super.setBounds (x, y, width, height, flags, false);
 }
 
@@ -1286,6 +1311,53 @@ public void setEnabled (boolean enabled) {
 	if (enabled && handle == OS.GetActiveWindow ()) {
 		if (!restoreFocus ()) traverseGroup (true);
 	}
+}
+
+/**
+ * Sets the full screen state of the receiver.
+ * If the argument is <code>true</code> causes the receiver
+ * to switch to the fullscreen state, and if the argument is
+ * <code>false</code> and the receiver was previously switched
+ * into fullscreen state, causes the receiver to switch back
+ * to either the maximmized or normal states.
+ * <p>
+ * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
+ * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will 
+ * vary by platform. Typically, the behavior will match the platform user's 
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * 
+ * @param fullScreen the new fullscreen state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
+	if (this.fullScreen == fullScreen) return;
+	int stateFlags = fullScreen ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
+	int styleFlags = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int mask = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & mask) != 0) {
+		if (fullScreen) {
+			styleFlags = styleFlags & ~OS.WS_CAPTION;
+		} else {
+			styleFlags = styleFlags | OS.WS_CAPTION;
+		}
+	}
+	if (fullScreen) wasMaximized = getMaximized ();
+	OS.SetWindowLong (handle, OS.GWL_STYLE, styleFlags);
+	if (wasMaximized) {
+		OS.ShowWindow (handle, OS.SW_HIDE);
+		stateFlags = OS.SW_SHOWMAXIMIZED;
+	}
+	OS.ShowWindow (handle, stateFlags);
+	OS.UpdateWindow (handle);
+	this.fullScreen = fullScreen;
 }
 
 /**
