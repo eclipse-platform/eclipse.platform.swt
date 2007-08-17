@@ -115,7 +115,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow;
-	boolean mapped, moved, resized, opened;
+	boolean mapped, moved, resized, opened, fullScreen;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
@@ -780,11 +780,21 @@ void forceResize (int width, int height) {
 	OS.gtk_widget_size_allocate (vboxHandle, allocation);
 }
 
+public boolean getFullScreen () {
+	checkWidget();
+	return fullScreen;
+}
+
 public Point getLocation () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x,y);
 	return new Point (x [0], y [0]);
+}
+
+public boolean getMaximized () {
+	checkWidget();
+	return !fullScreen && super.getMaximized ();
 }
 
 /**
@@ -1021,6 +1031,7 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
 	minimized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_ICONIFIED) != 0;
 	maximized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_MAXIMIZED) != 0;
+	fullScreen = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_FULLSCREEN) != 0;
 	return 0;
 }
 
@@ -1168,6 +1179,7 @@ void resizeBounds (int width, int height, boolean notify) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	if (fullScreen) setFullScreen (false);
 	/*
 	* Bug in GTK.  When either of the location or size of
 	* a shell is changed while the shell is maximized, the
@@ -1279,6 +1291,19 @@ public void setEnabled (boolean enabled) {
 	if (enabled && display.activeShell == this) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
+}
+
+public void setFullScreen (boolean fullScreen) {
+	checkWidget();
+	if (fullScreen) {
+		OS.gtk_window_fullscreen (shellHandle);
+	} else {
+		OS.gtk_window_unfullscreen (shellHandle);
+		if (maximized) {
+			setMaximized (true);
+		}
+	}
+	this.fullScreen = fullScreen;
 }
 
 /**
@@ -1604,6 +1629,7 @@ boolean traverseEscape () {
 }
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
+	if (fullScreen) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
@@ -1620,6 +1646,7 @@ int trimHeight () {
 
 int trimWidth () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
+	if (fullScreen) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
