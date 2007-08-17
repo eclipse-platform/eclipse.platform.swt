@@ -117,8 +117,9 @@ public class Shell extends Decorations {
 	Region region;
 	Control lastActive;
 	boolean closing;
-	boolean moved, resized, opened;
+	boolean moved, resized, opened, fullScreen;
 	int oldX, oldY, oldWidth, oldHeight;
+	int oldWindowStyle, oldWindowState;
 	
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -621,6 +622,11 @@ public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
 
+public boolean getFullScreen() {
+	checkWidget ();
+	return fullScreen; 
+}
+
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -655,6 +661,11 @@ public Point getLocation () {
 		y = (int) OS.Window_Top (shellHandle);
 	}
 	return new Point (x, y);
+}
+
+public boolean getMaximized () {
+	checkWidget ();
+	return !fullScreen && super.getMaximized ();
 }
 
 /**
@@ -1053,6 +1064,7 @@ void setActiveControl (Control control) {
 }
 
 int setBounds (int x, int y, int width, int height, int flags) {
+	if (fullScreen) setFullScreen (false);
 	int result = 0;
 	if ((flags & MOVED) != 0) {
 		int currentX, currentY;
@@ -1115,6 +1127,25 @@ public void setEnabled (boolean enabled) {
 	if (enabled && OS.Window_IsActive (shellHandle)) {
 		if (!restoreFocus ()) traverseGroup (true);
 	}
+}
+
+public void setFullScreen (boolean fullScreen) {
+	checkWidget ();
+	if (this.fullScreen == fullScreen) return;
+	if(fullScreen) {
+		oldWindowStyle = OS.Window_WindowStyle (shellHandle);
+		oldWindowState = OS.Window_WindowState (shellHandle);
+		OS.Window_Hide (shellHandle);
+		OS.Window_WindowStyle (shellHandle, OS.WindowStyle_None);
+		OS.Window_Show (shellHandle);
+		OS.Window_WindowState (shellHandle, OS.WindowState_Maximized);
+	} else {
+		OS.Window_WindowStyle (shellHandle, oldWindowStyle);
+		OS.Window_WindowState (shellHandle, oldWindowState);
+		oldWindowState = 0;
+		oldWindowStyle = 0;
+	}
+	this.fullScreen = fullScreen;
 }
 
 /**
