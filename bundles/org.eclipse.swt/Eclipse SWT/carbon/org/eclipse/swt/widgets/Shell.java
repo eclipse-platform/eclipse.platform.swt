@@ -118,11 +118,12 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened;
+	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	int invalRgn;
 	Control lastActive;
 	Region region;
 	Rect rgnRect;
+	Rectangle normalBounds;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -675,6 +676,10 @@ int getDrawCount (int control) {
 	return 0;
 }
 
+public boolean getFullScreen () {
+	return fullScreen;
+}
+
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -706,8 +711,7 @@ public Point getLocation () {
 
 public boolean getMaximized () {
 	checkWidget();
-	//NOT DONE
-	return super.getMaximized ();
+	return !fullScreen && super.getMaximized ();
 }
 
 public boolean getMinimized () {
@@ -902,6 +906,18 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 			if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 		}
 		display.activeShell = null;
+		Shell parentShell = this;
+		while (parentShell.parent != null) {
+			parentShell = (Shell) parentShell.parent;
+			if (parentShell.fullScreen) {
+				break;
+			}
+		}
+		if (!parentShell.fullScreen || menuBar != null) {
+			updateSystemUIMode ();
+		} else {
+			parentShell.updateSystemUIMode ();
+		}
 	}
 	return result;
 }
@@ -1285,6 +1301,7 @@ void setActiveControl (Control control) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	if (fullScreen) setFullScreen (false);
 	Rect rect = new Rect ();
 	if (!move) {
 		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
@@ -1313,6 +1330,51 @@ public void setEnabled (boolean enabled) {
 	super.setEnabled (enabled);
 	if (enabled && OS.IsWindowActive (shellHandle)) {
 		if (!restoreFocus ()) traverseGroup (false);
+	}
+}
+
+public void setFullScreen (boolean fullScreen) {
+	checkWidget ();
+	this.fullScreen = fullScreen; 
+	if (fullScreen) {
+		normalBounds = getBounds ();
+		OS.ChangeWindowAttributes (shellHandle, OS.kWindowNoTitleBarAttribute, OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute);
+		updateSystemUIMode ();
+		Rectangle screen = getMonitor ().getBounds ();
+		if (menuBar != null && getMonitor ().equals(display.getPrimaryMonitor ())) {
+			Rect rect = new Rect ();
+			int gdevice = OS.GetMainDevice ();
+			OS.GetAvailableWindowPositioningBounds (gdevice, rect);
+			screen.height -= rect.top;
+			screen.y += rect.top;
+		}
+		Rect rect = new Rect ();
+		OS.SetRect (rect, (short) screen.x, (short) screen.y, (short) (screen.x + screen.width), (short) (screen.y + screen.height));
+		OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	} else {
+		int attributes = 0;
+		if ((style & SWT.RESIZE) != 0) {
+			attributes |= OS.kWindowResizableAttribute;
+			/*
+			* Bug in the Macintosh.  For some reason, a window has no title bar
+			* and the kWindowResizableAttribute, no rubber banding feedback is
+			* given while the window is resizing.  The fix is to create the window 
+			* with kWindowLiveResizeAttribute in this case.  This is inconsistent
+			* with other windows, but the user will get feedback when resizing.
+			*/
+			if ((style & SWT.TITLE) == 0) attributes |= OS.kWindowLiveResizeAttribute;
+			if (!OS.__BIG_ENDIAN__()) attributes |= OS.kWindowLiveResizeAttribute;
+		}
+		OS.ChangeWindowAttributes (shellHandle, attributes, OS.kWindowNoTitleBarAttribute);
+		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
+		if (maximized) {
+			setMaximized (true);
+		} else {
+			Rect rect = new Rect ();
+			if (normalBounds != null) OS.SetRect (rect, (short) normalBounds.x, (short) normalBounds.y, (short) (normalBounds.x + normalBounds.width), (short) (normalBounds.y + normalBounds.height));
+			OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+		}
+		normalBounds = null;
 	}
 }
 
@@ -1586,6 +1648,30 @@ boolean traverseEscape () {
 	if (!isVisible () || !isEnabled ()) return false;
 	close ();
 	return true;
+}
+
+void updateSystemUIMode () {
+	if (!getMonitor ().equals (display.getPrimaryMonitor ())) return;
+	boolean isActive = false;
+	Shell activeShell = display.getActiveShell ();
+	Shell current = this;
+	while (current != null) {
+		if (current.equals (activeShell)) {
+			isActive = true;
+			break;
+		}
+		current = (Shell) current.parent;
+	}
+	if (!isActive) return;
+	if (fullScreen) {
+		int mode = OS.kUIModeAllHidden;
+		if (menuBar != null) {
+			mode = OS.kUIModeContentHidden;
+		}
+		OS.SetSystemUIMode (mode, 0);
+	} else {
+		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
+	}
 }
 
 }
