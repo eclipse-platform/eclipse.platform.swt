@@ -103,11 +103,15 @@ boolean drawCaret () {
 	if (image != null && !image.isDisposed() && image.mask == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
 	 	OS.gdk_drawable_get_size(image.pixmap, width, height);
-		OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, x, y, width[0], height[0]);
+	 	int nX = x;
+		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - width[0] - nX;
+	 	OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, nX, y, width[0], height[0]);
 	} else {
 		int nWidth = width, nHeight = height;
 		if (nWidth <= 0) nWidth = 1;
-		OS.gdk_draw_rectangle (window, gc, 1, x, y, nWidth, nHeight);
+		int nX = x;
+		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
+		OS.gdk_draw_rectangle (window, gc, 1, nX, y, nWidth, nHeight);
 	}
 	OS.g_object_unref (gc);
 	OS.gdk_colormap_free_colors (colormap, color, 1);

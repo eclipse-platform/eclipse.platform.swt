@@ -299,7 +299,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		if (socketHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, socketHandle);
 	}
-	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
+	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
 	/*
@@ -554,6 +554,10 @@ public Rectangle getClientArea () {
 	return super.getClientArea();
 }
 
+int getClientWidth() {
+	return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle ());
+}
+
 /**
  * Returns layout which is associated with the receiver, or
  * null if one has not been set.
@@ -660,6 +664,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		event.y = rect.y;
 		event.width = rect.width;
 		event.height = rect.height;
+		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
 		int /*long*/ damageRgn = OS.gdk_region_new ();
 		OS.gdk_region_union_with_rect (damageRgn, rect);
 		GCData data = new GCData ();
@@ -1055,6 +1060,41 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);
+}
+
+void moveChildren(int oldWidth) {
+	Control[] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		Control child = children[i];
+		int /*long*/ topHandle = child.topHandle ();
+		int x = OS.GTK_WIDGET_X (topHandle);
+		int y = OS.GTK_WIDGET_Y (topHandle);
+		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		x = oldWidth - controlWidth - x; 
+		int clientWidth = getClientWidth ();
+		x = clientWidth - controlWidth - x;
+		if (child.enableWindow != 0) {
+			OS.gdk_window_move (child.enableWindow, x, y);
+		}
+		child.moveHandle (x, y);
+		/*
+		* Cause a size allocation this widget's topHandle.  Note that
+		* all calls to gtk_widget_size_allocate() must be preceded by
+		* a call to gtk_widget_size_request().
+		*/
+		GtkRequisition requisition = new GtkRequisition ();
+		gtk_widget_size_request (topHandle, requisition);
+		GtkAllocation allocation = new GtkAllocation ();
+		allocation.x = x;
+		allocation.y = y;
+		allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+		allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+		OS.gtk_widget_size_allocate (topHandle, allocation);
+		Control control = child.findBackgroundControl ();
+		if (control != null && control.backgroundImage != null) {
+			if (child.isVisible ()) child.redrawWidget (0, 0, 0, 0, true, true, true);
+		}
+	}
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {

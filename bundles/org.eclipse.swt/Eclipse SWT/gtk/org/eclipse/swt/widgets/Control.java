@@ -103,6 +103,7 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle);
 	if (window == 0) return false;
 	int orientation = vertical ? OS.GTK_ORIENTATION_HORIZONTAL : OS.GTK_ORIENTATION_VERTICAL;
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	OS.gtk_paint_handle (OS.gtk_widget_get_style (paintHandle), window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, new byte [1], x, y, width, height, orientation);
 	return true;
 }
@@ -371,6 +372,14 @@ void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
 
+void checkMirrored () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if ((state & CANVAS) != 0) {
+			style |= SWT.MIRRORED;
+		}
+	}
+}
+
 int /*long*/ childStyle () {
 	return parent.childStyle ();
 }
@@ -386,6 +395,7 @@ void createWidget (int index) {
 	setInitialBounds ();
 	setZOrder (null, false, false);
 	setRelations ();
+	checkMirrored ();
 	checkBorder ();
 }
 
@@ -512,6 +522,7 @@ public Rectangle getBounds () {
 	int y = OS.GTK_WIDGET_Y (topHandle);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -598,6 +609,20 @@ void resizeHandle (int width, int height) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int /*long*/ topHandle = topHandle ();
+	boolean sendMove = move;
+	if ((parent.style & SWT.MIRRORED) != 0) {
+		int clientWidth = parent.getClientWidth ();
+		int oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		int oldX = clientWidth - oldWidth - OS.GTK_WIDGET_X (topHandle);
+		if (move) {
+			sendMove &= x != oldX;
+			x = clientWidth - (resize ? width : oldWidth) - x;
+		} else {
+			move = true;
+			x = clientWidth - (resize ? width : oldWidth) - oldX;
+			y = OS.GTK_WIDGET_Y (topHandle);
+		}
+	}
 	boolean sameOrigin = true, sameExtent = true;
 	if (move) {
 		int oldX = OS.GTK_WIDGET_X (topHandle);
@@ -610,10 +635,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			moveHandle (x, y);
 		}
 	}
+	int clientWidth = 0;
 	if (resize) {
 		int oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
 		int oldHeight = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
 		sameExtent = width == oldWidth && height == oldHeight;
+		if (!sameExtent && (style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
 		if (!sameExtent && !(width == 0 && height == 0)) {
 			int newWidth = Math.max (1, width);
 			int newHeight = Math.max (1, height);
@@ -672,6 +699,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				OS.gtk_widget_show (topHandle);
 			}
 		}
+		if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
 	}
 	int result = 0;
 	if (move && !sameOrigin) {
@@ -679,7 +707,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		if (control != null && control.backgroundImage != null) {
 			if (isVisible ()) redrawWidget (0, 0, 0, 0, true, true, true);
 		}
-		sendEvent (SWT.Move);
+		if (sendMove) sendEvent (SWT.Move);
 		result |= MOVED;
 	}
 	if (resize && !sameExtent) {
@@ -707,6 +735,10 @@ public Point getLocation () {
 	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int y = OS.GTK_WIDGET_Y (topHandle);
+	if ((parent.style & SWT.MIRRORED) != 0) {
+		int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		x = parent.getClientWidth () - width - x;
+	}
 	return new Point (x, y);
 }
 
@@ -906,6 +938,9 @@ public void moveBelow (Control control) {
 	setZOrder (control, false, true);
 }
 
+void moveChildren (int oldWidth) {
+}
+
 /**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
@@ -983,7 +1018,10 @@ public Point toControl (int x, int y) {
 	int /*long*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	return new Point (x - origin_x [0], y - origin_y [0]);
+	x -= origin_x [0];
+	y -= origin_y [0];
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
+	return new Point (x, y);
 }
 
 /**
@@ -1029,7 +1067,10 @@ public Point toDisplay (int x, int y) {
 	int /*long*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	return new Point (origin_x [0] + x, origin_y [0] + y);
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
+	x += origin_x [0];
+	y += origin_y [0];
+	return new Point (x, y);
 }
 
 /**
@@ -2002,6 +2043,10 @@ public int getBorderWidth () {
 	return 0;
 }
 
+int getClientWidth () {
+	return 0;
+}
+
 /**
  * Returns the receiver's cursor, or null if it has not been set.
  * <p>
@@ -2468,6 +2513,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	event.y = gdkEvent.area_y;
 	event.width = gdkEvent.area_width;
 	event.height = gdkEvent.area_height;
+	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
 	GCData data = new GCData ();
 	data.damageRgn = gdkEvent.region;
 	GC gc = event.gc = GC.gtk_new (this, data);
@@ -2707,6 +2753,10 @@ public int /*long*/ internal_new_GC (GCData data) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
 			data.style |= style & (mask | SWT.MIRRORED);
+		} else {
+			if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
+				data.style |= SWT.MIRRORED;
+			}
 		}
 		data.drawable = window;
 		data.device = display;
@@ -2943,6 +2993,7 @@ void redraw (boolean all) {
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	redrawWidget (x, y, width, height, false, all, false);
 }
 
@@ -3027,6 +3078,7 @@ boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateM
 	event.button = button;
 	event.x = x;
 	event.y = y;
+	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.x;
 	if (isStateMask) {
 		event.stateMask = stateMask;
 	} else {
@@ -3102,6 +3154,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 		event.x = (int)x - origin_x [0];
 		event.y = (int)y - origin_y [0];
 	}
+	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.x;
 	setInputState (event, state);
 	if (send) {
 		sendEvent (type, event);
@@ -3500,7 +3553,11 @@ void setInitialBounds () {
 		* expected by SWT.
 		*/
 		int /*long*/ topHandle = topHandle ();
-		OS.GTK_WIDGET_SET_X (topHandle, 0);
+		if ((parent.style & SWT.MIRRORED) != 0) {
+			OS.GTK_WIDGET_SET_X (topHandle, parent.getClientWidth ());
+		} else {
+			OS.GTK_WIDGET_SET_X (topHandle, 0);
+		}
 		OS.GTK_WIDGET_SET_Y (topHandle, 0);
 	} else {
 		resizeHandle (1, 1);
@@ -3576,6 +3633,16 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
+	int /*long*/ topHandle = topHandle ();
+	int x = OS.GTK_WIDGET_X (topHandle);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+	if ((this.parent.style & SWT.MIRRORED) != 0) {
+		x =  this.parent.getClientWidth () - width - x;
+	}
+	if ((parent.style & SWT.MIRRORED) != 0) {
+		x = parent.getClientWidth () - width - x;
+	}
+	int y = OS.GTK_WIDGET_Y (topHandle);
 	releaseParent ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
@@ -3585,10 +3652,7 @@ public boolean setParent (Composite parent) {
 		newDecorations.fixAccelGroup ();
 		oldDecorations.fixAccelGroup ();
 	}
-	int /*long*/ topHandle = topHandle ();
 	int /*long*/ newParent = parent.parentingHandle();
-	int x = OS.GTK_WIDGET_X (topHandle);
-	int y = OS.GTK_WIDGET_Y (topHandle);
 	OS.gtk_widget_reparent (topHandle, newParent);
 	OS.gtk_fixed_move (newParent, topHandle, x, y);
 	this.parent = parent;
@@ -4030,6 +4094,9 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 		case OS.GDK_Down:
 		case OS.GDK_Right: {
 			boolean next = key == OS.GDK_Down || key == OS.GDK_Right;
+			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+				if (key == OS.GDK_Left || key == OS.GDK_Right) next = !next;
+			}
 			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
 			break;
 		}

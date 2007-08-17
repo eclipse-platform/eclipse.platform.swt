@@ -264,8 +264,8 @@ public class Display extends Device {
 	/* Fixed Subclass */
 	static int /*long*/ fixed_type;
 	static int /*long*/ fixed_info_ptr;
-	static Callback fixedClassInitCallback, fixedMapCallback;
-	static int /*long*/ fixedClassInitProc, fixedMapProc;
+	static Callback fixedClassInitCallback, fixedMapCallback, fixedSizeAllocateCallback;
+	static int /*long*/ fixedClassInitProc, fixedMapProc, fixedSizeAllocateProc, oldFixedSizeAllocateProc;
 
 	/* Renderer Subclass */
 	static int /*long*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
@@ -843,6 +843,9 @@ void createDisplay (DeviceData data) {
 		fixedMapCallback = new Callback (getClass (), "fixedMapProc", 1);
 		fixedMapProc = fixedMapCallback.getAddress ();
 		if (fixedMapProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		fixedSizeAllocateCallback = new Callback (getClass (), "fixedSizeAllocateProc", 2);
+		fixedSizeAllocateProc = fixedSizeAllocateCallback.getAddress ();
+		if (fixedSizeAllocateProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		GTypeInfo fixed_info = new GTypeInfo ();
 		fixed_info.class_size = (short) OS.GtkFixedClass_sizeof ();
 		fixed_info.class_init = fixedClassInitProc;
@@ -1268,6 +1271,8 @@ static int /*long*/ fixedClassInitProc (int /*long*/ g_class, int /*long*/ class
 	GtkWidgetClass klass = new GtkWidgetClass ();
 	OS.memmove (klass, g_class);
 	klass.map = fixedMapProc;
+	oldFixedSizeAllocateProc = klass.size_allocate;
+	klass.size_allocate = fixedSizeAllocateProc;
 	OS.memmove (g_class, klass);
 	return 0;
 }
@@ -1277,6 +1282,13 @@ static int /*long*/ fixedMapProc (int /*long*/ handle) {
 	Widget widget = display.getWidget (handle);
 	if (widget != null) return widget.fixedMapProc (handle);
 	return 0;
+}
+
+static int /*long*/ fixedSizeAllocateProc (int /*long*/ handle, int /*long*/ allocation) {
+	Display display = getCurrent ();
+	Widget widget = display.getWidget (handle);
+	if (widget != null) return widget.fixedSizeAllocateProc (handle, allocation);
+	return OS.Call (oldFixedSizeAllocateProc, handle, allocation);
 }
 
 static int /*long*/ rendererClassInitProc (int /*long*/ g_class, int /*long*/ class_data) {
@@ -2649,6 +2661,7 @@ public Point map (Control from, Control to, int x, int y) {
 		int /*long*/ window = from.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		if ((from.style & SWT.MIRRORED) != 0) point.x = from.getClientWidth () - point.x;
 		point.x += origin_x [0];
 		point.y += origin_y [0];
 	}
@@ -2658,6 +2671,7 @@ public Point map (Control from, Control to, int x, int y) {
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		point.x -= origin_x [0];
 		point.y -= origin_y [0];
+		if ((to.style & SWT.MIRRORED) != 0) point.x = to.getClientWidth () - point.x;
 	}
 	return point;
 }
@@ -2771,10 +2785,12 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
 	if (from == to) return rect;
+	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
 		int /*long*/ window = from.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth() - rect.x;
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
 	}
@@ -2784,7 +2800,9 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x -= origin_x [0];
 		rect.y -= origin_y [0];
+		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;
 	}
+	if (fromRTL != toRTL) rect.x -= rect.width;
 	return rect;
 }
 

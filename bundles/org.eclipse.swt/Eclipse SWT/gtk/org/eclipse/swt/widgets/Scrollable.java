@@ -139,6 +139,7 @@ ScrollBar createScrollBar (int style) {
 		bar.handle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
 		bar.adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	}
+	bar.setOrientation();
 	bar.hookEvents ();
 	bar.register ();
 	return bar;

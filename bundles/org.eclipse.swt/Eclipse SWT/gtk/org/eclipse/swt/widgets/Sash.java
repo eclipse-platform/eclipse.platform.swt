@@ -186,14 +186,16 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
+	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
 		lastX = event.x;
 		lastY = event.y;
+		if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth () - width  - lastX;
 		parent.update (true, (style & SWT.SMOOTH) == 0);
-		drawBand (event.x, event.y, width, height);
+		drawBand (lastX, event.y, width, height);
 		if ((style & SWT.SMOOTH) != 0) {
 			setBounds (event.x, event.y, width, height);
 			// widget could be disposed at this point
@@ -220,6 +222,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPt
 	event.width = width;
 	event.height = height;
 	drawBand (lastX, lastY, width, height);
+	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return result;
 	if (event.doit) {
@@ -290,6 +293,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			event.y = newY;
 			event.width = width;
 			event.height = height;
+			if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
 			sendEvent (SWT.Selection, event);
 			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 			if (isDisposed ()) break;
@@ -297,6 +301,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			if (event.doit) {
 				lastX = event.x;
 				lastY = event.y;
+				if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth () - width  - lastX;
 				if ((style & SWT.SMOOTH) != 0) {
 					setBounds (event.x, event.y, width, height);
 					if (isDisposed ()) break;
@@ -361,16 +366,18 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	if ((style & SWT.SMOOTH) == 0) {
 		event.detail = SWT.DRAG;
 	}
+	if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth() - width  - event.x;
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		lastX = event.x;
 		lastY = event.y;
+		if ((parent.style & SWT.MIRRORED) != 0) lastX = parent.getClientWidth () - width  - lastX;
 	}
 	parent.update (true, (style & SWT.SMOOTH) == 0);
 	drawBand (lastX, lastY, width, height);
 	if ((style & SWT.SMOOTH) != 0) {
-		setBounds (lastX, lastY, width, height);
+		setBounds (event.x, lastY, width, height);
 		// widget could be disposed at this point
 	}
 	return result;

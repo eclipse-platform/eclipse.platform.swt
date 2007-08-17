@@ -377,6 +377,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		event.y = gdkEvent.area_y;
 		event.width = gdkEvent.area_width;
 		event.height = gdkEvent.area_height;
+		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
 		event.gc = gc;
 		sendEvent (SWT.Paint, event);
 		event.gc = null;

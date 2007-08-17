@@ -595,6 +595,15 @@ public void setMinimum (int value) {
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+void setOrientation () {
+	super.setOrientation ();
+	if ((parent.style & SWT.MIRRORED) != 0) {
+		if ((style & SWT.HORIZONTAL) != 0) {
+			OS.gtk_range_set_inverted (handle, true);
+		}
+	}
+}
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the page increment/decrement areas

@@ -1079,6 +1079,10 @@ public int /*long*/ internal_new_GC (GCData data) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
 			data.style |= SWT.LEFT_TO_RIGHT;
+		} else {
+			if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
+				data.style |= SWT.MIRRORED;
+			}
 		}
 		data.device = device;
 		data.drawable = pixmap;

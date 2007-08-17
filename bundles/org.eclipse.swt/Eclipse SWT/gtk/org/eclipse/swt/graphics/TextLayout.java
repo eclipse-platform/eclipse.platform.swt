@@ -448,8 +448,18 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (length == 0) return;
 	if (!hasSelection) {
 		if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+			if ((data.style & SWT.MIRRORED) != 0) {
+				Cairo.cairo_save(cairo);
+				int[] width = new int[1], height = new int[1];
+				OS.pango_layout_get_size(layout, width, height);
+				Cairo.cairo_scale(cairo, -1f,  1);
+				Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+			}
 			Cairo.cairo_move_to(cairo, x, y);
 			OS.pango_cairo_show_layout(cairo, layout);
+			if ((data.style & SWT.MIRRORED) != 0) {
+			    Cairo.cairo_restore(cairo);
+			}
 		} else {
 			OS.gdk_draw_layout(data.drawable, gc.handle, x, y, layout);
 		}
@@ -465,7 +475,17 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		if (fullSelection) {
 			if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 				int /*long*/ ptr = OS.pango_layout_get_text(layout);
+				if ((data.style & SWT.MIRRORED) != 0) {
+					Cairo.cairo_save(cairo);
+					int[] width = new int[1], height = new int[1];
+					OS.pango_layout_get_size(layout, width, height);
+					Cairo.cairo_scale(cairo, -1f,  1);
+					Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+				}
 				drawWithCairo(cairo, x, y, 0, OS.strlen(ptr), fullSelection, selectionBackground.handle, selectionForeground.handle);
+				if ((data.style & SWT.MIRRORED) != 0) {
+					Cairo.cairo_restore(cairo);
+				}
 			} else {
 				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
 			}
@@ -477,7 +497,17 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			byteSelStart = Math.min(byteSelStart, strlen);
 			byteSelEnd = Math.min(byteSelEnd, strlen);
 			if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+				if ((data.style & SWT.MIRRORED) != 0) {
+					Cairo.cairo_save(cairo);
+					int[] width = new int[1], height = new int[1];
+					OS.pango_layout_get_size(layout, width, height);
+					Cairo.cairo_scale(cairo, -1f,  1);
+					Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+				}
 				drawWithCairo(cairo, x, y, byteSelStart, byteSelEnd, fullSelection, selectionBackground.handle, selectionForeground.handle);
+				if ((data.style & SWT.MIRRORED) != 0) {
+					Cairo.cairo_restore(cairo);
+				}
 			} else {
 				Region clipping = new Region();
 				gc.getClipping(clipping);

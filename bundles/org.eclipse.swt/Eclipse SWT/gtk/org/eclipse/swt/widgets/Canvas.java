@@ -187,6 +187,11 @@ void releaseChildren (boolean destroy) {
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (width <= 0 || height <= 0) return;
+	if ((style & SWT.MIRRORED) != 0) {
+		int clientWidth = getClientWidth ();
+		x = clientWidth - width - x;
+		destX = clientWidth - width - destX;
+	}
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	if (!isVisible ()) return;

@@ -815,6 +815,10 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ fixedSizeAllocateProc(int /*long*/ widget, int /*long*/ allocationPtr) {
+	return OS.Call (Display.oldFixedSizeAllocateProc, widget, allocationPtr);
+}
+
 char [] fixMnemonic (String string) {
 	int length = string.length ();
 	char [] text = new char [length];

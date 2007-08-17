@@ -253,7 +253,7 @@ Image createArrowImage (int width, int height) {
 	imageData.transparentPixel = 1;
 	Image image = new Image (display, imageData);
 		
-	GC gc = new GC (image);
+	GC gc = new GC (image, parent.getStyle() & SWT.RIGHT_TO_LEFT);
 	gc.setBackground (background);
 	gc.fillRectangle (0, 0, width, height);
 	gc.setForeground (black);
