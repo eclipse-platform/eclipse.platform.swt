@@ -3308,9 +3308,6 @@ boolean translateTraversal (MSG msg) {
 					doit = false;
 				}
 			}
-			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
-			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -3330,6 +3327,9 @@ boolean translateTraversal (MSG msg) {
 			int /*long*/ code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & (OS.DLGC_WANTARROWS /*| OS.DLGC_WANTALLKEYS*/)) != 0) doit = false;
 			boolean next = key == OS.VK_DOWN || key == OS.VK_RIGHT;
+			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
+			}
 			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
 			break;
 		}
