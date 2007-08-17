@@ -582,8 +582,6 @@ void createToolTip (ToolTip toolTip) {
 	lpti.uFlags = OS.TTF_TRACK;
 	if ((toolTip.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
 		lpti.uFlags |= OS.TTF_RTLREADING;
-	} else {
-		lpti.uFlags &= ~OS.TTF_RTLREADING;
 	}
 	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
 	OS.SendMessage (toolTip.hwndToolTip (), OS.TTM_ADDTOOL, 0, lpti);
