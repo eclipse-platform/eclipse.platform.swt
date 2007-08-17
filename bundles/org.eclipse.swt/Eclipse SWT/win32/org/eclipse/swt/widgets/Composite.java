@@ -1560,7 +1560,9 @@ LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					if ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0) {
 						widget = display.getControl (hwnd);
 					} else {
-						widget = shell.findToolTip ((int)/*64*/hdr.idFrom);
+						if (hdr.hwndFrom == shell.toolTipHandle || hdr.hwndFrom == shell.balloonTipHandle) {
+							widget = shell.findToolTip ((int)/*64*/hdr.idFrom);
+						}
 					}
 					if (widget != null) {
 						if ((widget.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
