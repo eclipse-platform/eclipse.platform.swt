@@ -1555,15 +1555,18 @@ LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					* Ensure that the orientation of the tool tip matches
 					* the orientation of the control.
 					*/
+					Widget control = null;
 					int /*long*/ hwnd = hdr.idFrom;
 					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
-						Control control = display.getControl (hwnd);
-						if (control != null) {
-							if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
-								lpnmtdi.uFlags |= OS.TTF_RTLREADING;
-							} else {
-								lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
-							}
+						control = display.getControl (hwnd);
+					} else {
+						control = shell.findToolTip ((int)/*64*/hdr.idFrom);
+					}
+					if (control != null) {
+						if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+							lpnmtdi.uFlags |= OS.TTF_RTLREADING;
+						} else {
+							lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
 						}
 					}
 					
