@@ -711,6 +711,7 @@ public Point getLocation () {
 
 public boolean getMaximized () {
 	checkWidget();
+	//NOT DONE
 	return !fullScreen && super.getMaximized ();
 }
 
