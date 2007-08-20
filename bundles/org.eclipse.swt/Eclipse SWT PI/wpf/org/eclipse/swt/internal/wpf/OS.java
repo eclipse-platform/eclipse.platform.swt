@@ -1416,6 +1416,7 @@ public static final native void UIElement_LostKeyboardFocus(int sender, int hand
 public static final native void UIElement_PreviewTextInput(int sender, int handler);
 public static final native void UIElement_QueryContinueDrag(int sender, int handler);
 public static final native int UIElement_QueryContinueDragEvent();
+public static final native int UIElement_RenderSize(int sender);
 public static final native void UIElement_ReleaseMouseCapture(int sender);
 public static final native void UIElement_RemoveHandler(int sender, int routedEvent, int handler);
 public static final native void UIElement_SnapsToDevicePixels(int sender, boolean value);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1273;
-int OS_nativeFunctionCallCount[1273];
+int OS_nativeFunctionCount = 1274;
+int OS_nativeFunctionCallCount[1274];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -1032,6 +1032,7 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1QueryContinueDragEvent",
 	"UIElement_1ReleaseMouseCapture",
 	"UIElement_1RemoveHandler",
+	"UIElement_1RenderSize",
 	"UIElement_1SnapsToDevicePixels",
 	"UIElement_1TextInput",
 	"UIElement_1TranslatePoint",

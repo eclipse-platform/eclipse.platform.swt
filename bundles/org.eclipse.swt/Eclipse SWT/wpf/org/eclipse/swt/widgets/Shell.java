@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
 import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -617,8 +616,10 @@ public Rectangle getBounds () {
 		x = (int) OS.Window_Left (shellHandle);
 		y = (int) OS.Window_Top (shellHandle);
 	}
-	int width = (int) OS.FrameworkElement_Width (shellHandle);
-	int height = (int) OS.FrameworkElement_Height (shellHandle);
+	int renderSize = OS.UIElement_RenderSize (shellHandle);
+	int width = (int) OS.Size_Width (renderSize);
+	int height = (int) OS.Size_Height (renderSize);
+	OS.GCHandle_Free (renderSize);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -1137,7 +1138,7 @@ public void setFullScreen (boolean fullScreen) {
 		oldWindowState = OS.Window_WindowState (shellHandle);
 		OS.Window_Hide (shellHandle);
 		OS.Window_WindowStyle (shellHandle, OS.WindowStyle_None);
-		OS.Window_Show (shellHandle);
+		if (getVisible ()) OS.Window_Show (shellHandle);
 		OS.Window_WindowState (shellHandle, OS.WindowState_Maximized);
 	} else {
 		OS.Window_WindowStyle (shellHandle, oldWindowStyle);

@@ -1040,6 +1040,7 @@ typedef enum {
 	UIElement_1QueryContinueDragEvent_FUNC,
 	UIElement_1ReleaseMouseCapture_FUNC,
 	UIElement_1RemoveHandler_FUNC,
+	UIElement_1RenderSize_FUNC,
 	UIElement_1SnapsToDevicePixels_FUNC,
 	UIElement_1TextInput_FUNC,
 	UIElement_1TranslatePoint_FUNC,

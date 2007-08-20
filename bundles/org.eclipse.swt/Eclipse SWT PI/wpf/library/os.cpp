@@ -12245,6 +12245,19 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1RemoveHandler)
 }
 #endif
 
+#ifndef NO_UIElement_1RenderSize
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1RenderSize)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1RenderSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UIElement_1RenderSize_FUNC);
+	rc = (jint)TO_HANDLE(((UIElement^)TO_OBJECT(arg0))->RenderSize);
+	OS_NATIVE_EXIT(env, that, UIElement_1RenderSize_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UIElement_1SnapsToDevicePixels
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1SnapsToDevicePixels)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
 JNIEXPORT void JNICALL OS_NATIVE(UIElement_1SnapsToDevicePixels)
