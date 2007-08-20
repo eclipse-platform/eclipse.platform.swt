@@ -206,7 +206,7 @@ void checkGC (int mask) {
 			}
 			if  (pattern != null) {
 				if ((data.style & SWT.MIRRORED) != 0 && pattern.surface != 0) {
-					int newPattern = Cairo.cairo_pattern_create_for_surface(pattern.surface);
+					int /*long*/ newPattern = Cairo.cairo_pattern_create_for_surface(pattern.surface);
 					if (newPattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					Cairo.cairo_pattern_set_extend(newPattern, Cairo.CAIRO_EXTEND_REPEAT);
 					double[] matrix = {-1, 0, 0, 1, 0, 0};
