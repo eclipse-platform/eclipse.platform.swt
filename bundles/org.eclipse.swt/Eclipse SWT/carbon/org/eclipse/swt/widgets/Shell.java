@@ -905,6 +905,8 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 		sendEvent (SWT.Activate);
 		if (!isDisposed ()) {
 			if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+		}
+		if (!isDisposed ()) {
 			display.activeShell = null;
 			Shell parentShell = this;
 			while (parentShell.parent != null) {
