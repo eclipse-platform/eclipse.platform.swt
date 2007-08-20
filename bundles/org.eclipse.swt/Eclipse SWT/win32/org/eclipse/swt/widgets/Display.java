@@ -3689,15 +3689,13 @@ Control removeControl (int /*long*/ handle) {
 		index = (int)/*64*/OS.RemoveProp (handle, SWT_OBJECT_INDEX) - 1;
 	} else {
 		index = (int)/*64*/OS.GetWindowLongPtr (handle, OS.GWLP_USERDATA) - 1;
+		OS.SetWindowLongPtr (handle, OS.GWLP_USERDATA, 0);
 	}
 	if (0 <= index && index < controlTable.length) {
 		control = controlTable [index];
 		controlTable [index] = null;
 		indexTable [index] = freeSlot;
 		freeSlot = index;
-		if (!USE_PROPERTY) {
-			OS.SetWindowLongPtr (handle, OS.GWLP_USERDATA, 0);
-		}
 	}
 	return control;
 }
