@@ -905,19 +905,19 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 		sendEvent (SWT.Activate);
 		if (!isDisposed ()) {
 			if (!restoreFocus () && !traverseGroup (true)) setFocus ();
-		}
-		display.activeShell = null;
-		Shell parentShell = this;
-		while (parentShell.parent != null) {
-			parentShell = (Shell) parentShell.parent;
-			if (parentShell.fullScreen) {
-				break;
+			display.activeShell = null;
+			Shell parentShell = this;
+			while (parentShell.parent != null) {
+				parentShell = (Shell) parentShell.parent;
+				if (parentShell.fullScreen) {
+					break;
+				}
 			}
-		}
-		if (!parentShell.fullScreen || menuBar != null) {
-			updateSystemUIMode ();
-		} else {
-			parentShell.updateSystemUIMode ();
+			if (!parentShell.fullScreen || menuBar != null) {
+				updateSystemUIMode ();
+			} else {
+				parentShell.updateSystemUIMode ();
+			}
 		}
 	}
 	return result;
