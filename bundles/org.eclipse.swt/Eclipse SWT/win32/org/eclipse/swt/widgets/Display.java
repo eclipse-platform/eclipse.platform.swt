@@ -2984,7 +2984,8 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 				* to run.  In order to avoid running code after the display
 				* has been disposed, exit from Java.
 				*/
-				System.exit (0);
+				/* This code is intentionally commented */
+//				System.exit (0);
 			}
 			break;
 		}

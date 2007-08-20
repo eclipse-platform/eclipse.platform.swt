@@ -844,15 +844,17 @@ int coreEventProc (int theAppleEvent, int reply, int handlerRefcon) {
 		Event event = new Event ();
 		sendEvent (SWT.Close, event);
 		if (event.doit) {
+			dispose ();
 			/*
 			* When the application is closing, no SWT program can continue
 			* to run.  In order to avoid running code after the display has
 			* been disposed, exit from Java.
 			*/
-			dispose ();
-			System.exit (0);
+			/* This code is intentionally commented */
+//			System.exit (0);
+		} else {
+			return OS.userCanceledErr;
 		}
-		return OS.userCanceledErr;
 	}
 	return OS.noErr;
 }
