@@ -1355,7 +1355,7 @@ public void setFullScreen (boolean fullScreen) {
 		OS.ShowWindow (handle, OS.SW_HIDE);
 		stateFlags = OS.SW_SHOWMAXIMIZED;
 	}
-	OS.ShowWindow (handle, stateFlags);
+	if (isVisible ()) OS.ShowWindow (handle, stateFlags);
 	OS.UpdateWindow (handle);
 	this.fullScreen = fullScreen;
 }
