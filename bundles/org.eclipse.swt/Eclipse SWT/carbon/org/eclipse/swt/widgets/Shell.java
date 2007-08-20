@@ -1532,6 +1532,7 @@ void setWindowVisible (boolean visible) {
 		}
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.SetWindowActivationScope (shellHandle, scope [0]);
+			OS.BringToFront (shellHandle);
 		}
 		opened = true;
 		if (!moved) {
