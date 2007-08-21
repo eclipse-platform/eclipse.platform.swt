@@ -147,6 +147,7 @@
 #define NO_AssocQueryStringA
 #define NO_AssocQueryStringW
 #define NO_AttachThreadInput
+#define NO_AllowSetForegroundWindow 
 #define NO_AlphaBlend
 #define NO_AnimateWindow
 #define NO_BeginBufferedPaint

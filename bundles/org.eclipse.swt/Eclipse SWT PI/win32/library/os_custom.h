@@ -13,6 +13,7 @@
 #define ActivateActCtx_LIB "kernel32.dll"
 #define AddFontResourceExA_LIB "gdi32.dll"
 #define AddFontResourceExW_LIB "gdi32.dll"
+#define AllowSetForegroundWindow_LIB "user32.dll"
 #define AlphaBlend_LIB "msimg32.dll"
 #define AnimateWindow_LIB "user32.dll"
 #define AssocQueryStringA_LIB "shlwapi.dll"

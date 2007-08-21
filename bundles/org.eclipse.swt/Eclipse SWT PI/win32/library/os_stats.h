@@ -33,6 +33,7 @@ typedef enum {
 	AddFontResourceExA_FUNC,
 	AddFontResourceExW_FUNC,
 	AdjustWindowRectEx_FUNC,
+	AllowSetForegroundWindow_FUNC,
 	AlphaBlend_FUNC,
 	AnimateWindow_FUNC,
 	Arc_FUNC,

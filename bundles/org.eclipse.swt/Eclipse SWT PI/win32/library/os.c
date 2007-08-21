@@ -175,6 +175,34 @@ fail:
 }
 #endif
 
+#ifndef NO_AllowSetForegroundWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(AllowSetForegroundWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AllowSetForegroundWindow_FUNC);
+/*
+	rc = (jboolean)AllowSetForegroundWindow(arg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(AllowSetForegroundWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "AllowSetForegroundWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, AllowSetForegroundWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AlphaBlend
 JNIEXPORT jboolean JNICALL OS_NATIVE(AlphaBlend)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10)

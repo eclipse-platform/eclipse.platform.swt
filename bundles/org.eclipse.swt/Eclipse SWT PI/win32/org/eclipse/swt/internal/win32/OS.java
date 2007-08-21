@@ -3154,6 +3154,7 @@ public static final native int /*long*/ ActivateKeyboardLayout(int /*long*/ hkl,
 public static final native int AddFontResourceExW(char[] lpszFilename, int fl, int /*long*/ pdv);
 public static final native int AddFontResourceExA(byte[] lpszFilename, int fl, int /*long*/ pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
+public static final native boolean AllowSetForegroundWindow (int dwProcessId);
 public static final native boolean AlphaBlend(int /*long*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int /*long*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 public static final native boolean AnimateWindow(int /*long*/ hwnd, int dwTime, int dwFlags);
 public static final native boolean Arc (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
