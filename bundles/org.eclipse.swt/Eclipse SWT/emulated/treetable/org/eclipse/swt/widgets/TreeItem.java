@@ -1064,12 +1064,7 @@ Rectangle getExpanderBounds () {
 Rectangle getFocusBounds () {
 	TreeColumn[] columns = parent.columns;
 	int orderedCol0index = columns.length == 0 ? 0 : parent.getOrderedColumns ()[0].getIndex ();
-	int x;
-	if (parent.hooks (SWT.PaintItem)) {
-		x = getContentX (orderedCol0index);
-	} else {
-		x = getTextX (orderedCol0index);
-	}
+	int x = getTextX (orderedCol0index);
 
 	int width;
 	if (columns.length > 0) {

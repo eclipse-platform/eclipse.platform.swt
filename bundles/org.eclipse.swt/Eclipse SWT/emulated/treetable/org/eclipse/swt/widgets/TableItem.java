@@ -609,20 +609,12 @@ Rectangle getFocusBounds () {
 	if ((parent.style & SWT.FULL_SELECTION) != 0) {
 		int col0index = columnOrder.length == 0 ? 0 : columnOrder [0];
 		if (col0index == 0) {
-			if (parent.hooks (SWT.PaintItem)) {
-				x = getContentX (0);
-			} else {
-				x = getTextX (0);
-			}
+			x = getTextX (0);
 		} else {
 			x = -parent.horizontalOffset;
 		}
 	} else {
-		if (parent.hooks (SWT.PaintItem)) {
-			x = getContentX (0);
-		} else {
-			x = getTextX (0);
-		}
+		x = getTextX (0);
 	}
 
 	if (columns.length > 0) {
