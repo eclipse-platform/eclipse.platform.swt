@@ -1753,7 +1753,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	}
 
 	boolean isSelected = isSelected ();
-	boolean isFocusItem = parent.focusItem == this;
+	boolean isFocusItem = parent.focusItem == this && parent.isFocusControl ();
 	boolean drawBackground = true;
 	boolean drawForeground = true;
 	boolean drawSelection = isSelected;
