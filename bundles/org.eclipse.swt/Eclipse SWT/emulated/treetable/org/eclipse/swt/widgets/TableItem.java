@@ -451,7 +451,7 @@ Rectangle getBounds (boolean checkData) {
 			width = Math.max (0, right - x);
 		}
 	}
-	return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
+	return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight);
 }
 /**
  * Returns a rectangle describing the receiver's size and location
