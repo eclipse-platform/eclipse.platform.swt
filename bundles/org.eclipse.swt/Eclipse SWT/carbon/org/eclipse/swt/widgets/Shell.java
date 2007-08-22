@@ -677,6 +677,7 @@ int getDrawCount (int control) {
 }
 
 public boolean getFullScreen () {
+	checkWidget();
 	return fullScreen;
 }
 
