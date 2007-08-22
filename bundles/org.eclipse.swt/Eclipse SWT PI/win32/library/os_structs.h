@@ -1487,6 +1487,30 @@ void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct);
 #define TEXTMETRICW_sizeof() 0
 #endif
 
+#ifndef NO_TF_DA_COLOR
+void cacheTF_DA_COLORFields(JNIEnv *env, jobject lpObject);
+TF_DA_COLOR *getTF_DA_COLORFields(JNIEnv *env, jobject lpObject, TF_DA_COLOR *lpStruct);
+void setTF_DA_COLORFields(JNIEnv *env, jobject lpObject, TF_DA_COLOR *lpStruct);
+#define TF_DA_COLOR_sizeof() sizeof(TF_DA_COLOR)
+#else
+#define cacheTF_DA_COLORFields(a,b)
+#define getTF_DA_COLORFields(a,b,c) NULL
+#define setTF_DA_COLORFields(a,b,c)
+#define TF_DA_COLOR_sizeof() 0
+#endif
+
+#ifndef NO_TF_DISPLAYATTRIBUTE
+void cacheTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject);
+TF_DISPLAYATTRIBUTE *getTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject, TF_DISPLAYATTRIBUTE *lpStruct);
+void setTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject, TF_DISPLAYATTRIBUTE *lpStruct);
+#define TF_DISPLAYATTRIBUTE_sizeof() sizeof(TF_DISPLAYATTRIBUTE)
+#else
+#define cacheTF_DISPLAYATTRIBUTEFields(a,b)
+#define getTF_DISPLAYATTRIBUTEFields(a,b,c) NULL
+#define setTF_DISPLAYATTRIBUTEFields(a,b,c)
+#define TF_DISPLAYATTRIBUTE_sizeof() 0
+#endif
+
 #ifndef NO_TOOLINFO
 void cacheTOOLINFOFields(JNIEnv *env, jobject lpObject);
 TOOLINFO *getTOOLINFOFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpStruct);

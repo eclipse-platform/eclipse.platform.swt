@@ -7089,6 +7089,104 @@ void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
 }
 #endif
 
+#ifndef NO_TF_DA_COLOR
+typedef struct TF_DA_COLOR_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, cr;
+} TF_DA_COLOR_FID_CACHE;
+
+TF_DA_COLOR_FID_CACHE TF_DA_COLORFc;
+
+void cacheTF_DA_COLORFields(JNIEnv *env, jobject lpObject)
+{
+	if (TF_DA_COLORFc.cached) return;
+	TF_DA_COLORFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TF_DA_COLORFc.type = (*env)->GetFieldID(env, TF_DA_COLORFc.clazz, "type", "I");
+	TF_DA_COLORFc.cr = (*env)->GetFieldID(env, TF_DA_COLORFc.clazz, "cr", "I");
+	TF_DA_COLORFc.cached = 1;
+}
+
+TF_DA_COLOR *getTF_DA_COLORFields(JNIEnv *env, jobject lpObject, TF_DA_COLOR *lpStruct)
+{
+	if (!TF_DA_COLORFc.cached) cacheTF_DA_COLORFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, TF_DA_COLORFc.type);
+	lpStruct->cr = (*env)->GetIntField(env, lpObject, TF_DA_COLORFc.cr);
+	return lpStruct;
+}
+
+void setTF_DA_COLORFields(JNIEnv *env, jobject lpObject, TF_DA_COLOR *lpStruct)
+{
+	if (!TF_DA_COLORFc.cached) cacheTF_DA_COLORFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TF_DA_COLORFc.type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, TF_DA_COLORFc.cr, (jint)lpStruct->cr);
+}
+#endif
+
+#ifndef NO_TF_DISPLAYATTRIBUTE
+typedef struct TF_DISPLAYATTRIBUTE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID crText, crBk, lsStyle, fBoldLine, crLine, bAttr;
+} TF_DISPLAYATTRIBUTE_FID_CACHE;
+
+TF_DISPLAYATTRIBUTE_FID_CACHE TF_DISPLAYATTRIBUTEFc;
+
+void cacheTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject)
+{
+	if (TF_DISPLAYATTRIBUTEFc.cached) return;
+	TF_DISPLAYATTRIBUTEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TF_DISPLAYATTRIBUTEFc.crText = (*env)->GetFieldID(env, TF_DISPLAYATTRIBUTEFc.clazz, "crText", "Lorg/eclipse/swt/internal/win32/TF_DA_COLOR;");
+	TF_DISPLAYATTRIBUTEFc.crBk = (*env)->GetFieldID(env, TF_DISPLAYATTRIBUTEFc.clazz, "crBk", "Lorg/eclipse/swt/internal/win32/TF_DA_COLOR;");
+	TF_DISPLAYATTRIBUTEFc.lsStyle = (*env)->GetFieldID(env, TF_DISPLAYATTRIBUTEFc.clazz, "lsStyle", "I");
+	TF_DISPLAYATTRIBUTEFc.fBoldLine = (*env)->GetFieldID(env, TF_DISPLAYATTRIBUTEFc.clazz, "fBoldLine", "Z");
+	TF_DISPLAYATTRIBUTEFc.crLine = (*env)->GetFieldID(env, TF_DISPLAYATTRIBUTEFc.clazz, "crLine", "Lorg/eclipse/swt/internal/win32/TF_DA_COLOR;");
+	TF_DISPLAYATTRIBUTEFc.bAttr = (*env)->GetFieldID(env, TF_DISPLAYATTRIBUTEFc.clazz, "bAttr", "I");
+	TF_DISPLAYATTRIBUTEFc.cached = 1;
+}
+
+TF_DISPLAYATTRIBUTE *getTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject, TF_DISPLAYATTRIBUTE *lpStruct)
+{
+	if (!TF_DISPLAYATTRIBUTEFc.cached) cacheTF_DISPLAYATTRIBUTEFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, TF_DISPLAYATTRIBUTEFc.crText);
+	if (lpObject1 != NULL) getTF_DA_COLORFields(env, lpObject1, &lpStruct->crText);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, TF_DISPLAYATTRIBUTEFc.crBk);
+	if (lpObject1 != NULL) getTF_DA_COLORFields(env, lpObject1, &lpStruct->crBk);
+	}
+	lpStruct->lsStyle = (*env)->GetIntField(env, lpObject, TF_DISPLAYATTRIBUTEFc.lsStyle);
+	lpStruct->fBoldLine = (*env)->GetBooleanField(env, lpObject, TF_DISPLAYATTRIBUTEFc.fBoldLine);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, TF_DISPLAYATTRIBUTEFc.crLine);
+	if (lpObject1 != NULL) getTF_DA_COLORFields(env, lpObject1, &lpStruct->crLine);
+	}
+	lpStruct->bAttr = (*env)->GetIntField(env, lpObject, TF_DISPLAYATTRIBUTEFc.bAttr);
+	return lpStruct;
+}
+
+void setTF_DISPLAYATTRIBUTEFields(JNIEnv *env, jobject lpObject, TF_DISPLAYATTRIBUTE *lpStruct)
+{
+	if (!TF_DISPLAYATTRIBUTEFc.cached) cacheTF_DISPLAYATTRIBUTEFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, TF_DISPLAYATTRIBUTEFc.crText);
+	if (lpObject1 != NULL) setTF_DA_COLORFields(env, lpObject1, &lpStruct->crText);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, TF_DISPLAYATTRIBUTEFc.crBk);
+	if (lpObject1 != NULL) setTF_DA_COLORFields(env, lpObject1, &lpStruct->crBk);
+	}
+	(*env)->SetIntField(env, lpObject, TF_DISPLAYATTRIBUTEFc.lsStyle, (jint)lpStruct->lsStyle);
+	(*env)->SetBooleanField(env, lpObject, TF_DISPLAYATTRIBUTEFc.fBoldLine, (jboolean)lpStruct->fBoldLine);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, TF_DISPLAYATTRIBUTEFc.crLine);
+	if (lpObject1 != NULL) setTF_DA_COLORFields(env, lpObject1, &lpStruct->crLine);
+	}
+	(*env)->SetIntField(env, lpObject, TF_DISPLAYATTRIBUTEFc.bAttr, (jint)lpStruct->bAttr);
+}
+#endif
+
 #ifndef NO_TOOLINFO
 typedef struct TOOLINFO_FID_CACHE {
 	int cached;

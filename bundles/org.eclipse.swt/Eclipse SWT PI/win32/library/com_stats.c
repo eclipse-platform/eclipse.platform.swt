@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 154;
-int COM_nativeFunctionCallCount[154];
+int COM_nativeFunctionCount = 153;
+int COM_nativeFunctionCallCount[153];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CAUUID_1sizeof",
@@ -144,7 +144,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__II_3CIII_3J",
 	"VtblCall__II_3CJII_3J",
 	"VtblCall__II_3C_3C",
-	"VtblCall__II_3I",
 	"VtblCall__II_3J",
 	"VtblCall__IJIIIIJ",
 	"VtblCall__IJJIIIII",

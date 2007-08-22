@@ -824,6 +824,7 @@ public class OS extends C {
 	public static final int IME_CMODE_KATAKANA = 0x2;
 	public static final int IME_CMODE_NATIVE = 0x1;
 	public static final int IME_CMODE_ROMAN = 0x10;
+	public static final int IMEMOUSE_LDOWN = 1;
 	public static final int INFINITE = 0xffffffff;
 	public static final int INPUT_KEYBOARD = 1;
 	public static final int INPUT_MOUSE = 0;
@@ -1598,6 +1599,21 @@ public class OS extends C {
 	public static final int TCS_TABS = 0x0;
 	public static final int TCS_TOOLTIPS = 0x4000;
 	public static final int TECHNOLOGY = 0x2;
+	public static final int TF_ATTR_INPUT = 0;
+	public static final int TF_ATTR_TARGET_CONVERTED = 1;
+	public static final int TF_ATTR_CONVERTED = 2;
+	public static final int TF_ATTR_TARGET_NOTCONVERTED = 3;
+	public static final int TF_ATTR_INPUT_ERROR = 4;
+	public static final int TF_ATTR_FIXEDCONVERTED = 5;
+	public static final int TF_ATTR_OTHER = -1;
+	public static final int TF_CT_NONE = 0;
+	public static final int TF_CT_SYSCOLOR = 1;
+	public static final int TF_CT_COLORREF = 2;
+	public static final int TF_LS_NONE = 0;
+	public static final int TF_LS_SOLID = 1;
+	public static final int TF_LS_DOT = 2;
+	public static final int TF_LS_DASH = 3;
+	public static final int TF_LS_SQUIGGLE = 4;
 	public static final int TIME_NOSECONDS = 0x2;
 	public static final int TIS_NORMAL = 1;
 	public static final int TIS_HOT = 2;
@@ -2157,6 +2173,8 @@ public static final native int TBBUTTONINFO_sizeof ();
 public static final native int TCITEM_sizeof ();
 public static final native int TEXTMETRICA_sizeof ();
 public static final native int TEXTMETRICW_sizeof ();
+public static final native int TF_DA_COLOR_sizeof ();
+public static final native int TF_DISPLAYATTRIBUTE_sizeof ();
 public static final native int TOOLINFO_sizeof ();
 public static final native int TRACKMOUSEEVENT_sizeof ();
 public static final native int TRIVERTEX_sizeof ();
@@ -3920,6 +3938,10 @@ public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int arg2, long[] arg3);
 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int[] arg3, int[] arg4);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, short arg0, byte[] arg1, byte[] arg2, byte[] arg3);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int /*long*/[] arg0);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/[] arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, TF_DISPLAYATTRIBUTE arg0);
 
 public static final native boolean WaitMessage ();
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);

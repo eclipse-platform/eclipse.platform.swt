@@ -2008,22 +2008,6 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__II_3I
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
-{
-	jint *lparg2=NULL;
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__II_3I_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	COM_NATIVE_EXIT(env, that, VtblCall__II_3I_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__II_3J
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3J)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2)

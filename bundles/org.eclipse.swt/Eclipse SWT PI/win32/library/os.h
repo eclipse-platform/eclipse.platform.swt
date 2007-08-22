@@ -36,6 +36,7 @@
 #pragma warning( default : 4214 )
 #include <uxtheme.h>
 #include <vfw.h>
+#include <msctf.h>
 #endif // _WIN32_WCE
 
 #if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
@@ -96,6 +97,8 @@
 #define NO_SCRIPT_FONTPROPERTIES
 #define NO_SCRIPT_PROPERTIES
 #define NO_SCRIPT_STATE
+#define NO_TF_DA_COLOR
+#define NO_TF_DISPLAYATTRIBUTE
 #define NO_TOOLINFO
 #define NO_TRACKMOUSEEVENT
 #define NO_TRIVERTEX
@@ -492,6 +495,8 @@
 #define NO_UnregisterClassA
 #define NO_VkKeyScanA
 #define NO_VkKeyScanW
+#define NO_VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2
+
 #define NO_WaitMessage
 #define NO_WindowFromDC
 

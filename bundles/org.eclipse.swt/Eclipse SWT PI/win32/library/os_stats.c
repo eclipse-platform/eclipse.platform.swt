@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 899;
-int OS_nativeFunctionCallCount[899];
+int OS_nativeFunctionCount = 905;
+int OS_nativeFunctionCallCount[905];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -871,6 +871,8 @@ char * OS_nativeFunctionNames[] = {
 	"TCITEM_1sizeof",
 	"TEXTMETRICA_1sizeof",
 	"TEXTMETRICW_1sizeof",
+	"TF_1DA_1COLOR_1sizeof",
+	"TF_1DISPLAYATTRIBUTE_1sizeof",
 	"TOOLINFO_1sizeof",
 	"TRACKMOUSEEVENT_1sizeof",
 	"TRIVERTEX_1sizeof",
@@ -903,10 +905,14 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__III",
 	"VtblCall__IIIII_3I",
 	"VtblCall__IIIJI_3J",
+	"VtblCall__III_3I_3I",
 	"VtblCall__IIJ",
 	"VtblCall__IIJII_3J",
 	"VtblCall__IIJJI_3J",
+	"VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2",
+	"VtblCall__IIS_3B_3B_3B",
 	"VtblCall__II_3CII_3I_3I",
+	"VtblCall__II_3I",
 	"WINDOWPLACEMENT_1sizeof",
 	"WINDOWPOS_1sizeof",
 	"WNDCLASS_1sizeof",
