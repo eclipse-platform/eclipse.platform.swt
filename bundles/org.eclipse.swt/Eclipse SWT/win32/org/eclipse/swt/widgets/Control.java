@@ -3695,6 +3695,8 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		case OS.WM_HSCROLL:				result = WM_HSCROLL (wParam, lParam); break;
 		case OS.WM_IME_CHAR:			result = WM_IME_CHAR (wParam, lParam); break;
 		case OS.WM_IME_COMPOSITION:		result = WM_IME_COMPOSITION (wParam, lParam); break;
+		case OS.WM_IME_COMPOSITION_START:	result = WM_IME_COMPOSITION_START (wParam, lParam); break;
+		case OS.WM_IME_ENDCOMPOSITION:	result = WM_IME_ENDCOMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_INPUTLANGCHANGE:		result = WM_INPUTLANGCHANGE (wParam, lParam); break;
 		case OS.WM_HOTKEY:				result = WM_HOTKEY (wParam, lParam); break;		
@@ -3924,6 +3926,14 @@ LRESULT WM_IME_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+	return null;
+}
+
+LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
+	return null;
+}
+
+LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
