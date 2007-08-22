@@ -12,6 +12,12 @@ package org.eclipse.swt.snippets;
  
 /*
  * OLE and ActiveX example snippet: get events from IE control (win32 only)
+ * 
+ * This snippet only runs as-is on 32-bit architectures because it uses
+ * java integers to represent native pointers.  "long" comments are included
+ * throughout the snippet to show where int should be changed to long in
+ * order to run on a 64-bit architecture.
+ * 
  * NOTE: This snippet uses internal SWT packages that are
  * subject to change without notice.
  *
@@ -23,6 +29,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.OS;
 
 public class Snippet123 {
 
@@ -121,18 +128,18 @@ class EventDispatch {
 		this.eventID = eventID;
 		createCOMInterfaces();
 	}
-	int getAddress() {
+	int /*long*/ getAddress() {
 		return iDispatch.getAddress();
 	}
 	private void createCOMInterfaces() {
 		iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
-			public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-			public int method1(int[] args) {return AddRef();}
-			public int method2(int[] args) {return Release();}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			// method3 GetTypeInfoCount - not implemented
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
-			public int method6(int[] args) {return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
+			public int /*long*/ method6(int /*long*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 		};
 	}
 	private void disposeCOMInterfaces() {
@@ -145,7 +152,7 @@ class EventDispatch {
 		refCount++;
 		return refCount;
 	}
-	private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispParams, int pVarResult, int pExcepInfo, int pArgErr)	{
+	private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr)	{
 		switch (eventID) {
 			case onhelp: System.out.println("onhelp"); break;
 			case onclick: System.out.println("onclick"); break;
@@ -167,17 +174,17 @@ class EventDispatch {
 		}
 		return COM.S_OK;
 	}
-	private int QueryInterface(int riid, int ppvObject) {
+	private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 		if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, riid, GUID.sizeof);
 	
-		if ( COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
-			COM.MoveMemory(ppvObject, new int[] {iDispatch.getAddress()}, 4);
+		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
+			COM.MoveMemory(ppvObject, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
-		COM.MoveMemory(ppvObject, new int[] {0}, 4);
+		COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 		return COM.E_NOINTERFACE;
 	}
 	int Release() {
