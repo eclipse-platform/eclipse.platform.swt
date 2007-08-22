@@ -101,9 +101,7 @@ int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
 		case OS.GDK_KEY_PRESS:
-		case OS.GDK_KEY_RELEASE:
-		case OS.GDK_BUTTON_PRESS:
-		case OS.GDK_BUTTON_RELEASE: {
+		case OS.GDK_KEY_RELEASE: {
 			/* 
 			* Forward the event to the parent embedder before Mozilla receives it, 
 			* as Mozilla may or may not consume it.
@@ -130,6 +128,10 @@ void handleFocus () {
 	};
 	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
 	browser.getShell ().addListener (SWT.Deactivate, listener);
+}
+
+boolean hookEnterExit () {
+	return false;
 }
 
 void init () {

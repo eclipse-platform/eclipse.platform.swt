@@ -1654,7 +1654,7 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	* Only hook mouseover and mouseout if the target is a top-level frame, so that mouse moves
 	* between frames will not generate events.
 	*/
-	if (isTop) {
+	if (isTop && delegate.hookEnterExit ()) {
 		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
 		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 		if (rc != XPCOM.NS_OK) error (rc);

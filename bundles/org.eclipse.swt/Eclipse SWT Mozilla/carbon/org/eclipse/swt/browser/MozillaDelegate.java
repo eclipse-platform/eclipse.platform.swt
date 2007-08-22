@@ -165,6 +165,10 @@ void handleFocus () {
 	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
+boolean hookEnterExit () {
+	return true;
+}
+
 void init () {
 }
 
