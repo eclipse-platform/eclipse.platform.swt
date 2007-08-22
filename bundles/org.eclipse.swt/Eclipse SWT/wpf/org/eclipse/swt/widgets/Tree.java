@@ -75,12 +75,12 @@ public class Tree extends Composite {
 	boolean ignoreSelection, shiftDown, ctrlDown;
 
 	static final String HEADER_PART_NAME = "SWT_PART_HEADER";
+	static final String SCROLLVIEWER_PART_NAME = "SWT_PART_SCROLLVIEWER";
 	static final String CHECKBOX_PART_NAME = "SWT_PART_CHECKBOX";
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
-	static final String SCROLLVIEWER_PART_NAME = "SWT_PART_SCROLLVIEWER";
-	static final String STACKPANEL_PART_NAME = "SWT_PART_STACKPANEL";
-	static final String RENDER_PANEL_NAME = "SWTStackPanel";
+	static final String CONTENTPANEL_PART_NAME = "SWT_PART_CONTENTPANEL";
+	static final String RENDER_PANEL_NAME = "SWT_PART_RENDERPANEL";
 	
 	static String scrollViewerStyle = "<Style TargetType=\"ScrollViewer\" " +
 			"xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
@@ -349,57 +349,73 @@ void clearAll (TreeItem parentItem, boolean all) {
 
 int createCellTemplate (int index) {
 	int template = OS.gcnew_DataTemplate ();
-	int swtStackPanelType = OS.SWTStackPanel_typeid ();
-	int swtstackPanelName = createDotNetString(RENDER_PANEL_NAME, false);
-	int onRenderNode = OS.gcnew_FrameworkElementFactory (swtStackPanelType, swtstackPanelName);
-	OS.GCHandle_Free (swtStackPanelType);
-	OS.GCHandle_Free(swtstackPanelName);
-	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
+	int renderPanelType = OS.SWTDockPanel_typeid ();
+	int renderPanelName = createDotNetString(RENDER_PANEL_NAME, false);
+	int onRenderNode = OS.gcnew_FrameworkElementFactory (renderPanelType, renderPanelName);
+	OS.GCHandle_Free(renderPanelName);
+	OS.GCHandle_Free (renderPanelType);
+	int jniRefProperty = OS.SWTDockPanel_JNIRefProperty ();
 	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
 	OS.GCHandle_Free (jniRefProperty);
-	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
-	int dockPanelType = OS.DockPanel_typeid ();
-	int cellContentNode = OS.gcnew_FrameworkElementFactory (dockPanelType, stackPanelName);
-	OS.GCHandle_Free (dockPanelType);
-	OS.GCHandle_Free (stackPanelName);
+	int contentPanelName = createDotNetString (CONTENTPANEL_PART_NAME, false);
+	int contentPanelType = OS.StackPanel_typeid ();
+	int cellContentNode = OS.gcnew_FrameworkElementFactory (contentPanelType, contentPanelName);
+	OS.GCHandle_Free (contentPanelType);
+	OS.GCHandle_Free (contentPanelName);
 	int clipProperty = OS.UIElement_ClipToBoundsProperty ();
 	OS.FrameworkElementFactory_SetValue (cellContentNode, clipProperty, true);
 	OS.GCHandle_Free (clipProperty);
+	int orientationProperty = OS.StackPanel_OrientationProperty ();
+	OS.FrameworkElementFactory_SetValueOrientation (cellContentNode, orientationProperty, OS.Orientation_Horizontal);
+	OS.GCHandle_Free (orientationProperty);
+	
+	
+//	int vert = OS.FrameworkElement_VerticalAlignmentProperty();
+//	OS.FrameworkElementFactory_SetValueVerticalAlignment(onRenderNode, vert, OS.VerticalAlignment_Stretch);
+//	OS.GCHandle_Free (vert);
+//	
+//	int dp = OS.Panel_BackgroundProperty();
+//	int red = OS.Brushes_Red();
+//	int navy = OS.Brushes_Navy();
+//	OS.FrameworkElementFactory_SetValue(cellContentNode, dp, red);
+//	OS.FrameworkElementFactory_SetValue(onRenderNode, dp, navy);
+//	OS.GCHandle_Free (dp);
+//	OS.GCHandle_Free (red);
+//	OS.GCHandle_Free (navy);
+	
+	
 	if (index == 0 && (style & SWT.CHECK) != 0) {
 		int checkBoxType = OS.CheckBox_typeid ();
 		int checkBoxName = createDotNetString (CHECKBOX_PART_NAME, false);
 		int checkBoxNode = OS.gcnew_FrameworkElementFactory (checkBoxType, checkBoxName);
-		OS.GCHandle_Free (checkBoxType);
 		int verticalAlignmentProperty = OS.FrameworkElement_VerticalAlignmentProperty ();
 		OS.FrameworkElementFactory_SetValueVerticalAlignment (checkBoxNode, verticalAlignmentProperty, OS.VerticalAlignment_Center);
-		OS.GCHandle_Free (verticalAlignmentProperty);
 		int marginProperty = OS.FrameworkElement_MarginProperty ();
 		int thickness = OS.gcnew_Thickness (0,0,4,0);
 		OS.FrameworkElementFactory_SetValue (checkBoxNode, marginProperty, thickness);
-		OS.GCHandle_Free (marginProperty);
-		OS.GCHandle_Free (thickness);
-		int threeStateProperty = OS.ToggleButton_IsThreeStateProperty ();
-		OS.FrameworkElementFactory_SetValue (checkBoxNode, threeStateProperty, true);
-		OS.GCHandle_Free (threeStateProperty);
 		OS.FrameworkElementFactory_AppendChild (cellContentNode, checkBoxNode);
-		int fooProperty = OS.FrameworkElement_NameProperty();
-		OS.FrameworkElementFactory_SetValue (checkBoxNode, fooProperty, checkBoxName);
+		OS.GCHandle_Free (thickness);
+		OS.GCHandle_Free (marginProperty);
+		OS.GCHandle_Free (verticalAlignmentProperty);
 		OS.GCHandle_Free (checkBoxName);
-		OS.GCHandle_Free (fooProperty);
 		OS.GCHandle_Free (checkBoxNode);
+		OS.GCHandle_Free (checkBoxType);
 	}
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString (TEXT_PART_NAME, false);
 	int textNode = OS.gcnew_FrameworkElementFactory (textType, textName);
 	OS.GCHandle_Free (textName);
 	OS.GCHandle_Free (textType);
+	int verticalAlignmentProperty = OS.FrameworkElement_VerticalAlignmentProperty ();
+	OS.FrameworkElementFactory_SetValueVerticalAlignment (textNode, verticalAlignmentProperty, OS.VerticalAlignment_Center);
+	OS.GCHandle_Free (verticalAlignmentProperty);
 	int imageType = OS.Image_typeid ();
 	int imageName = createDotNetString (IMAGE_PART_NAME, false);
 	int imageNode = OS.gcnew_FrameworkElementFactory (imageType, imageName);
 	OS.GCHandle_Free (imageName);
 	OS.GCHandle_Free (imageType);
-	int thickness = OS.gcnew_Thickness (0, 0, 4, 0);
 	int marginProperty = OS.FrameworkElement_MarginProperty ();
+	int thickness = OS.gcnew_Thickness (0,0,4,0);
 	OS.FrameworkElementFactory_SetValue (imageNode, marginProperty, thickness);
 	OS.GCHandle_Free (marginProperty);
 	OS.GCHandle_Free (thickness);
@@ -482,7 +498,7 @@ void createHandle () {
 int createHeaderTemplate (int columnJniRef) {
 	int template = OS.gcnew_DataTemplate ();
 	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
+	int stackPanelName = createDotNetString (CONTENTPANEL_PART_NAME, false);
 	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
 	OS.GCHandle_Free (stackPanelName);
 	OS.GCHandle_Free (stackPanelType);

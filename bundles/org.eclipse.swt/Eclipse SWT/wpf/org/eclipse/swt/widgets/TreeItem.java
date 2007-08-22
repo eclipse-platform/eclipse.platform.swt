@@ -580,18 +580,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	//BUG?
-	if (!OS.UIElement_IsVisible(handle)) return new Rectangle (0, 0, 0, 0);
-	int point = OS.gcnew_Point (0, 0);
-	int location = OS.UIElement_TranslatePoint (handle, point, parent.handle);
-	int x = (int) OS.Point_X (location);
-	int y = (int) OS.Point_Y (location);
-	OS.GCHandle_Free (point);
-	OS.GCHandle_Free (location);
-	int width = (int) OS.FrameworkElement_ActualWidth (handle);
-	int height = (int) OS.FrameworkElement_ActualHeight (handle);
-	return new Rectangle (x, y, width, height);
+	return getTextBounds (0);
 }
 
 /**
@@ -615,7 +604,7 @@ public Rectangle getBounds (int index) {
 	if (!OS.UIElement_IsVisible (handle)) return new Rectangle (0, 0, 0, 0);
 	updateLayout (handle);
 	int point = OS.gcnew_Point (0, 0);
-	int stackPanel = findPart (index, Tree.STACKPANEL_PART_NAME);
+	int stackPanel = findPart (index, Tree.CONTENTPANEL_PART_NAME);
 	int location = OS.UIElement_TranslatePoint (stackPanel, point, parent.handle);
 	int x = (int) OS.Point_X (location);
 	int y = (int) OS.Point_Y (location);
@@ -953,18 +942,28 @@ public Rectangle getTextBounds (int index) {
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int parentHandle = parent.topHandle ();
-	int part = findPart (index, Tree.TEXT_PART_NAME);
 	int point = OS.gcnew_Point (0, 0);
 	if (point == 0) error (SWT.ERROR_NO_HANDLES);
-	int location = OS.UIElement_TranslatePoint (part, point, parentHandle);
-	int x = (int) OS.Point_X (location);
-	int y = (int) OS.Point_Y (location);
+	int textBlock = findPart (index, Tree.TEXT_PART_NAME);
+	int renderPanel = findPart (index, Table.RENDER_PANEL_NAME);
+	Rectangle result = new Rectangle (0, 0, 0, 0);
+	if (textBlock != 0 && renderPanel != 0) {
+		int location = OS.UIElement_TranslatePoint (textBlock, point, parentHandle);
+		int x = (int) OS.Point_X (location);
+		int y = (int) OS.Point_Y (location);
+		OS.GCHandle_Free (location);
+		double textWidth = OS.FrameworkElement_ActualWidth (textBlock);
+		int panelLocation = OS.UIElement_TranslatePoint (textBlock, point, renderPanel);
+		double visibleWidth = Math.max (0, OS.FrameworkElement_ActualWidth (renderPanel) - OS.Point_X (panelLocation));
+		OS.GCHandle_Free (panelLocation);
+		int width = (int) Math.min (textWidth, visibleWidth);
+		int height = (int) OS.FrameworkElement_ActualHeight (textBlock);
+		result = new Rectangle (x, y, width, height);
+	}
 	OS.GCHandle_Free (point);
-	OS.GCHandle_Free (location);
-	int width = (int) OS.FrameworkElement_ActualWidth (part);
-	int height = (int) OS.FrameworkElement_ActualHeight (part);
-	OS.GCHandle_Free (part);
-	return new Rectangle (x, y, width, height);
+	if (textBlock != 0) OS.GCHandle_Free (textBlock);
+	if (renderPanel != 0) OS.GCHandle_Free (renderPanel);
+	return result;
 }
 
 public String getText () {
@@ -1505,7 +1504,7 @@ public void setText (String string) {
 }
 
 void updateBackground (int index) {
-	int panel = findPart (index, Tree.STACKPANEL_PART_NAME);
+	int panel = findPart (index, Tree.CONTENTPANEL_PART_NAME);
 	if (panel != 0) {
 		if (cellBackground != null && cellBackground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellBackground [index].handle);
@@ -1608,9 +1607,7 @@ void updateText (int index) {
 	if (textBlock != 0) {
 		if (strings != null && strings [index] != null) {
 			int strPtr = createDotNetString (strings [index], false);
-			int text = OS.TextBlock_Text (textBlock);
 			OS.TextBlock_Text (textBlock, strPtr);
-			OS.GCHandle_Free (text);
 			OS.GCHandle_Free (strPtr);
 		} else {
 			int property = OS.TextBlock_TextProperty ();

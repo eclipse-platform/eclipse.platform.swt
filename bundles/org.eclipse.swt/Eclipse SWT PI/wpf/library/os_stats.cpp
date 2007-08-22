@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1274;
-int OS_nativeFunctionCallCount[1274];
+int OS_nativeFunctionCount = 1273;
+int OS_nativeFunctionCallCount[1273];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -722,8 +722,8 @@ char * OS_nativeFunctionNames[] = {
 	"Run_1Text",
 	"SWTCanvas_1Visual__I",
 	"SWTCanvas_1Visual__II",
-	"SWTStackPanel_1JNIRefProperty",
-	"SWTStackPanel_1typeid",
+	"SWTDockPanel_1JNIRefProperty",
+	"SWTDockPanel_1typeid",
 	"SWTTextRunProperties_1ForegroundBrush",
 	"ScrollBar_1Orientation__I",
 	"ScrollBar_1Orientation__II",
@@ -1223,7 +1223,6 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1Run",
 	"gcnew_1SWTCanvas",
 	"gcnew_1SWTSafeHandle",
-	"gcnew_1SWTStackPanel",
 	"gcnew_1SWTTextEmbeddedObject",
 	"gcnew_1SWTTextParagraphProperties",
 	"gcnew_1SWTTextRunProperties",

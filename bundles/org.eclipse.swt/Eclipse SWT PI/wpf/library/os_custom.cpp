@@ -184,9 +184,9 @@ public:
 /* Table and Tree Classes						*/
 /*												*/
 
-public ref class SWTStackPanel : StackPanel {
+public ref class SWTDockPanel : DockPanel {
 public: 
-	static DependencyProperty^ JNIRefProperty = DependencyProperty::Register("JNIRef", Int32::typeid, SWTStackPanel::typeid);
+	static DependencyProperty^ JNIRefProperty = DependencyProperty::Register("JNIRef", Int32::typeid, SWTDockPanel::typeid);
 private:
 	jmethodID OnRenderMID;
 	JniRefCookie^ cookie;
@@ -206,7 +206,7 @@ private:
 		}
 		if (env != NULL) {
 			if (cookie == nullptr) {
-				cookie = gcnew JniRefCookie(env, (jint)(Int32)GetValue(SWTStackPanel::JNIRefProperty));
+				cookie = gcnew JniRefCookie(env, (jint)(Int32)GetValue(SWTDockPanel::JNIRefProperty));
 			}
 			jobject object = cookie->object;
 			if (object == NULL) { 
@@ -229,7 +229,7 @@ private:
 	}
 protected:
 	virtual void OnRender(DrawingContext^ drawingContext) override {
-		this->StackPanel::OnRender(drawingContext);
+		this->DockPanel::OnRender(drawingContext);
 		callin(OnRenderMID, drawingContext);
 	}
 };
@@ -316,7 +316,7 @@ protected:
 			}
 			width = Math::Max (0.0, width);
 			Point^ loc = gcnew Point (x, 0);
-			Size^ size = gcnew Size (width, child->DesiredSize.Height);
+			Size^ size = gcnew Size (width, arrangeSize.Height);
 			Rect^ rect = gcnew Rect (*loc, *size);
 			child->Arrange (*rect);
 			availableWidth -= width;
@@ -1039,28 +1039,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCanvas)
 }
 #endif
 
-#ifndef NO_SWTStackPanel_1JNIRefProperty
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1JNIRefProperty)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1JNIRefProperty)
+#ifndef NO_SWTDockPanel_1JNIRefProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTDockPanel_1JNIRefProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SWTDockPanel_1JNIRefProperty)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SWTStackPanel_1JNIRefProperty_FUNC);
-	rc = (jint)TO_HANDLE(SWTStackPanel::JNIRefProperty);
-	OS_NATIVE_EXIT(env, that, SWTStackPanel_1JNIRefProperty_FUNC);
+	OS_NATIVE_ENTER(env, that, SWTDockPanel_1JNIRefProperty_FUNC);
+	rc = (jint)TO_HANDLE(SWTDockPanel::JNIRefProperty);
+	OS_NATIVE_EXIT(env, that, SWTDockPanel_1JNIRefProperty_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_SWTStackPanel_1typeid
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1typeid)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1typeid)
+#ifndef NO_SWTDockPanel_1typeid
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTDockPanel_1typeid)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SWTDockPanel_1typeid)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SWTStackPanel_1typeid_FUNC);
-	rc = (jint)TO_HANDLE(SWTStackPanel::typeid);
-	OS_NATIVE_EXIT(env, that, SWTStackPanel_1typeid_FUNC);
+	OS_NATIVE_ENTER(env, that, SWTDockPanel_1typeid_FUNC);
+	rc = (jint)TO_HANDLE(SWTDockPanel::typeid);
+	OS_NATIVE_EXIT(env, that, SWTDockPanel_1typeid_FUNC);
 	return rc;
 }
 #endif

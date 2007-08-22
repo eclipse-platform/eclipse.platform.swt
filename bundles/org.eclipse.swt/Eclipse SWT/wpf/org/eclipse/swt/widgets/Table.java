@@ -68,8 +68,8 @@ public class Table extends Composite {
 	static final String CHECKBOX_PART_NAME = "SWT_PART_CHECKBOX";
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
-	static final String DOCKPANEL_PART_NAME = "SWT_PART_DOCKPANEL";
-	static final String RENDER_PANEL_NAME = "SWTStackPanel";
+	static final String CONTENTPANEL_PART_NAME = "SWT_PART_CONTENTPANEL";
+	static final String RENDER_PANEL_NAME = "SWT_PART_RENDERPANEL";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -361,22 +361,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 int createCellTemplate (int index) {
 	int template = OS.gcnew_DataTemplate ();
-	int swtStackPanelType = OS.SWTStackPanel_typeid ();
-	int swtstackPanelName = createDotNetString(RENDER_PANEL_NAME, false);
-	int onRenderNode = OS.gcnew_FrameworkElementFactory (swtStackPanelType, swtstackPanelName);
-	OS.GCHandle_Free(swtstackPanelName);
-	OS.GCHandle_Free (swtStackPanelType);
-	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
+	int renderPanelType = OS.SWTDockPanel_typeid ();
+	int renderPanelName = createDotNetString(RENDER_PANEL_NAME, false);
+	int onRenderNode = OS.gcnew_FrameworkElementFactory (renderPanelType, renderPanelName);
+	OS.GCHandle_Free(renderPanelName);
+	OS.GCHandle_Free (renderPanelType);
+	int jniRefProperty = OS.SWTDockPanel_JNIRefProperty ();
 	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
 	OS.GCHandle_Free (jniRefProperty);
-	int dockPanelName = createDotNetString (DOCKPANEL_PART_NAME, false);
-	int dockPanelType = OS.DockPanel_typeid ();
-	int cellContentNode = OS.gcnew_FrameworkElementFactory (dockPanelType, dockPanelName);
-	OS.GCHandle_Free (dockPanelType);
-	OS.GCHandle_Free (dockPanelName);
+	int contentPanelName = createDotNetString (CONTENTPANEL_PART_NAME, false);
+	int contentPanelType = OS.StackPanel_typeid ();
+	int cellContentNode = OS.gcnew_FrameworkElementFactory (contentPanelType, contentPanelName);
+	OS.GCHandle_Free (contentPanelType);
+	OS.GCHandle_Free (contentPanelName);
 	int clipProperty = OS.UIElement_ClipToBoundsProperty ();
 	OS.FrameworkElementFactory_SetValue (cellContentNode, clipProperty, true);
 	OS.GCHandle_Free (clipProperty);
+	int orientationProperty = OS.StackPanel_OrientationProperty ();
+	OS.FrameworkElementFactory_SetValueOrientation (cellContentNode, orientationProperty, OS.Orientation_Horizontal);
+	OS.GCHandle_Free (orientationProperty);
 	if (index == 0 && (style & SWT.CHECK) != 0) {
 		int checkBoxType = OS.CheckBox_typeid ();
 		int checkBoxName = createDotNetString (CHECKBOX_PART_NAME, false);
@@ -463,7 +466,7 @@ void createHandle () {
 int createHeaderTemplate (int columnJniRef) {
 	int template = OS.gcnew_DataTemplate ();
 	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelName = createDotNetString (DOCKPANEL_PART_NAME, false);
+	int stackPanelName = createDotNetString (CONTENTPANEL_PART_NAME, false);
 	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString(TEXT_PART_NAME, false);
