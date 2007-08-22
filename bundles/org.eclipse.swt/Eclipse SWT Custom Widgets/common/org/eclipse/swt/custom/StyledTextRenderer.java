@@ -836,6 +836,22 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
+	if (event != null) {
+		if (styledText.compositionStart != -1 && styledText.compositionLength > 0) {
+			int compositionLine = styledText.getContent().getLineAtOffset(styledText.compositionStart);
+			if (compositionLine == lineIndex) {
+				StyleRange[] imeStyles = getStyleRanges(styledText.compositionStart, styledText.compositionLength, false);
+				int[] imeRanges = getRanges(styledText.compositionStart, styledText.compositionLength);
+				if (imeStyles != null && imeRanges != null) {
+					for (int i = 0; i < imeStyles.length; i++) {
+						int start = imeRanges[i*2] - lineOffset;
+						layout.setStyle(imeStyles[i], start, start + imeRanges[i*2+1] - 1);
+					}
+				}
+			}
+		}
+	}
+	
 	if (styledText != null && styledText.isFixedLineHeight()) {
 		int index = -1;
 		int lineCount = layout.getLineCount();
