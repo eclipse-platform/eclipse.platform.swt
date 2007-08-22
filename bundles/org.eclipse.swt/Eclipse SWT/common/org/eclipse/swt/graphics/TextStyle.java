@@ -67,6 +67,10 @@ public class TextStyle {
 	/**
 	 * the underline style
 	 * 
+	 * @see SWT#UNDERLINE_SINGLE
+	 * @see SWT#UNDERLINE_DOUBLE 
+	 * @see SWT#UNDERLINE_ERROR
+	 * 
 	 * @since 3.4
 	 */	
 	public int underlineStyle;
