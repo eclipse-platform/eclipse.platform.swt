@@ -259,6 +259,10 @@ public final class TextLayout extends Resource {
 	static final int TAB_COUNT = 32;
 	static final char ZWS = '\u200B';
 	
+	static final int UNDERLINE_IME_INPUT = 1 << 16;
+	static final int UNDERLINE_IME_TARGET_CONVERTED = 2 << 16;
+	static final int UNDERLINE_IME_CONVERTED = 3 << 16;
+	
 /**	 
  * Constructs a new instance of this class on the given device.
  * <p>
@@ -665,11 +669,11 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapRound);
 							break;
 						}
-						case SWT.UNDERLINE_IME_INPUT:
-						case SWT.UNDERLINE_IME_TARGET_CONVERTED:
-						case SWT.UNDERLINE_IME_CONVERTED:
+						case UNDERLINE_IME_INPUT:
+						case UNDERLINE_IME_TARGET_CONVERTED:
+						case UNDERLINE_IME_CONVERTED:
 							lineWidth = 1.5f;
-							foreground = style.underlineStyle == SWT.UNDERLINE_IME_CONVERTED ? new float[]{0.5f, 0.5f, 0.5f, 1} : new float[]{0, 0, 0, 1};
+							foreground = style.underlineStyle == UNDERLINE_IME_CONVERTED ? new float[]{0.5f, 0.5f, 0.5f, 1} : new float[]{0, 0, 0, 1};
 							Font font = style.font;
 							if (font == null) font = this.font != null ? this.font : device.systemFont;
 							ATSFontMetrics metrics = new ATSFontMetrics();
@@ -706,8 +710,8 @@ int drawUnderline(int message, int rgn, int r, int context) {
 		Rect rect = new Rect();
 		OS.memmove(rect, r, Rect.sizeof);
 		switch (drawStyle.style.underlineStyle) {
-			case SWT.UNDERLINE_IME_TARGET_CONVERTED:
-			case SWT.UNDERLINE_IME_CONVERTED:
+			case UNDERLINE_IME_TARGET_CONVERTED:
+			case UNDERLINE_IME_CONVERTED:
 				rect.left += 1;
 				rect.right -= 1;
 		}
