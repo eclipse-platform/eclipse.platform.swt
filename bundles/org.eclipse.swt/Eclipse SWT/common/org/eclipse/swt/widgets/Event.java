@@ -173,6 +173,53 @@ public class Event {
 	 * be inserted or deleted.
 	 */
 	public String text;
+	
+	/**
+	 * the ranges in the text where styles should be applied.  
+	 * 
+	 * @since 3.4
+	 */
+	public int [] ranges;
+
+	/**
+	 * the styles for the text.  
+	 * 
+	 * @since 3.4
+	 */
+	public TextStyle [] styles;
+	
+	/**
+	 * the hitTest that indicates a part given a x and y location.  
+	 * 
+	 * @see org.eclipse.swt.SWT#COMPOSITION_HITTEST
+	 * @see org.eclipse.swt.SWT#HITTEST_INSIDE_COMPOSITION  
+	 * @see org.eclipse.swt.SWT#HITTEST_INSIDE_TEXT
+	 * @see org.eclipse.swt.SWT#HITTEST_OUTSIDE_TEXT
+	 * 
+	 * @since 3.4
+	 */
+	public int hitTest;
+	
+	/**
+	 * the trailing specifies if the hit test occurred in the 
+	 * leading (0) or trailing edge (1) of the character.
+	 * 
+	 * @see org.eclipse.swt.SWT#COMPOSITION_HITTEST
+	 * @see org.eclipse.swt.graphics.TextLayout#getOffset(int, int, int[])
+	 * 
+	 * @since 3.4
+	 */
+	public int trailing;
+	
+	/**
+	 * this flag is set by the IME to indicate to the application that
+	 * a wide caret should be use.   
+	 * 
+	 * @see org.eclipse.swt.SWT#COMPOSITION_CHANGED
+	 * 
+	 * @since 3.4
+	 */
+	public boolean wideCaret;
 
 	/**
 	 * depending on the event, a flag indicating whether the operation

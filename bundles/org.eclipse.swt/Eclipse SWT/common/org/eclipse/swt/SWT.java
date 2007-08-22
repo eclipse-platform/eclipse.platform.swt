@@ -611,7 +611,105 @@ public class SWT {
 	 */
 	public static final int PaintItem = 42;	
 	
+	/**
+	 * The IME composition event type (value is 43).  
+	 * <p>
+	 * The IME composition event is sent to allow
+	 * custom text editors to implement in-line
+	 * editing of international text. 
+	 * </p> 
+	 * 
+	 * The detail field indicates the action to be taken:
+	 * <p><ul>
+	 * <li>{@link SWT#COMPOSITION_CHANGED}</li>
+	 * <li>{@link SWT#COMPOSITION_HITTEST}</li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.4
+	 */
+	public static final int ImeComposition = 43;
+	
 	/* Event Details */
+	
+	/**
+	 * The IME composition event detail that indicates
+	 * a change in the IME composition. The text, ranges,
+	 * and styles fields of the event define the appearance
+	 * of the composition text. The index field of the event
+	 * indicates the offset of the caret within the text.
+	 * The wideCaret field indicates that the caret should
+	 * be set to the width of the text (value is 1).
+	 * 
+	 * @see SWT#ImeComposition
+	 * 
+	 * @since 3.4
+	 */
+	public static final int COMPOSITION_CHANGED = 1;
+	
+	/**
+	 * The IME composition event detail that indicates
+	 * that an IME hit test occurred.  The x and y fields
+	 * of the event are used by the application to set
+	 * the hitTest, index and trailing fields of the event.
+	 * 
+	 * The hitTest values are:
+	 * <p><ul>
+	 * <li>{@link SWT#HITTEST_OUTSIDE_TEXT}</li>
+	 * <li>{@link SWT#HITTEST_INSIDE_TEXT}</li>
+	 * <li>{@link SWT#HITTEST_INSIDE_COMPOSITION}</li>
+	 * </ul></p>
+	 * 
+	 * The index field of the event is the caret offset
+	 * relative to the composition text. The trailing field
+	 * is used to indicate that the hit test occurred in the
+	 * leading edge (0) or trailing edge (1) of the character
+	 * at index (value is 2).
+	 * 
+	 * @see SWT#ImeComposition
+	 * @see org.eclipse.swt.graphics.TextLayout#getOffset(int, int, int[])
+	 * 
+	 * @since 3.4
+	 */
+	public static final int COMPOSITION_HITTEST = 2;
+	
+	/**
+	 * Indicates that a hit test has occurred outside of
+	 * the text (value is 1).
+	 * 
+	 * @see SWT#COMPOSITION_HITTEST
+	 * @see org.eclipse.swt.widgets.Event#hitTest
+	 * 
+	 * @since 3.4
+	 */
+	public static final int HITTEST_OUTSIDE_TEXT = 1;
+	
+	
+	/**
+	 * Indicates that a hit test has occurred inside of
+	 * the text (value is 2).
+	 * 
+	 * @see SWT#COMPOSITION_HITTEST
+	 * @see org.eclipse.swt.widgets.Event#hitTest
+	 * 
+	 * @since 3.4
+	 */
+	public static final int HITTEST_INSIDE_TEXT = 2;
+	
+	/**
+	 * Indicates that a hit test has occurred inside of
+	 * the IME composition text (value is 3).
+	 * 
+	 * @see SWT#COMPOSITION_HITTEST
+	 * @see org.eclipse.swt.widgets.Event#hitTest
+	 * 
+	 * @since 3.4
+	 */
+	public static final int HITTEST_INSIDE_COMPOSITION = 3;
+	
 
 	/**
 	 * Indicates that a user-interface component is being dragged,
@@ -1418,11 +1516,6 @@ public class SWT {
 	 * @since 3.4
 	 */
 	public static final int UNDERLINE_ERROR = 2;
-	
-	/* DO NOT USE - API UNDER CONSTRUCTION */
-	public static final int UNDERLINE_IME_INPUT = 3;
-	public static final int UNDERLINE_IME_CONVERTED = 4;
-	public static final int UNDERLINE_IME_TARGET_CONVERTED = 5;
 	
 	/**
 	 * Style constant for align top behavior (value is 1&lt;&lt;7,

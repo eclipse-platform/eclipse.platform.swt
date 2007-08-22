@@ -59,6 +59,11 @@ public final class TextLayout extends Resource {
 		OS.IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}\0".toCharArray(), IID_IMLangFontLink2);
 	}
 	
+	/* Caret has a copy of these constants */
+	static final int UNDERLINE_IME_DOT = 1 << 16;
+	static final int UNDERLINE_IME_DASH = 2 << 16;
+	static final int UNDERLINE_IME_THICK = 3 << 16;
+	
 	class StyleItem {
 		TextStyle style;
 		int start, length;
@@ -901,8 +906,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 				Gdip.Color_delete(gdiColor);
 			}
 			switch (style.underlineStyle) {
-				case SWT.UNDERLINE_ERROR:
-				case SWT.UNDERLINE_IME_INPUT:
+				case SWT.UNDERLINE_ERROR: {
 					int squigglyThickness = 1;
 					int squigglyHeight = 2 * squigglyThickness;
 					int squigglyY = Math.min(underlineY, y + run.ascent + run.descent - squigglyHeight - 1);
@@ -911,10 +915,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					Gdip.Graphics_DrawLines(graphics, pen, points, points.length / 2);
 					Gdip.Pen_delete(pen);
 					break;
-				case SWT.UNDERLINE_IME_TARGET_CONVERTED:
-					Gdip.Graphics_FillRectangle(graphics, brush, x - run.underlineThickness, underlineY, run.width, run.underlineThickness * 2);
-					break;
-				case SWT.UNDERLINE_IME_CONVERTED:
+				}
 				case SWT.UNDERLINE_SINGLE:
 					Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY, run.width, run.underlineThickness);
 					break;
@@ -922,6 +923,18 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY, run.width, run.underlineThickness);
 					Gdip.Graphics_FillRectangle(graphics, brush, x, underlineY + run.underlineThickness * 2, run.width, run.underlineThickness);
 					break;
+				case UNDERLINE_IME_THICK:
+					Gdip.Graphics_FillRectangle(graphics, brush, x - run.underlineThickness, underlineY, run.width, run.underlineThickness * 2);
+					break;
+				case UNDERLINE_IME_DOT:
+				case UNDERLINE_IME_DASH: {
+					int /*long*/ pen = Gdip.Pen_new(brush, 1);
+					int dashStyle = style.underlineStyle == UNDERLINE_IME_DOT ? Gdip.DashStyleDot : Gdip.DashStyleDash;
+					Gdip.Pen_SetDashStyle(pen, dashStyle);
+					Gdip.Graphics_DrawLine(graphics, pen, x, underlineY, x + run.width, underlineY);
+					Gdip.Pen_delete(pen);
+					break;
+				}
 			}
 			if (brush != color) Gdip.SolidBrush_delete(brush);
 		}
@@ -948,8 +961,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 				colorRefUnderline = style.underlineColor.handle;
 			}
 			switch (style.underlineStyle) {
-				case SWT.UNDERLINE_ERROR:
-				case SWT.UNDERLINE_IME_INPUT:
+				case SWT.UNDERLINE_ERROR: {
 					int squigglyThickness = 1;
 					int squigglyHeight = 2 * squigglyThickness;
 					int squigglyY = Math.min(underlineY, y + run.ascent + run.descent - squigglyHeight - 1);
@@ -970,16 +982,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					OS.SelectObject(graphics, oldPen);
 					OS.DeleteObject(pen);
 					break;
-				case SWT.UNDERLINE_IME_TARGET_CONVERTED:
-					brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
-					OS.SetRect(rect, x, underlineY - run.underlineThickness, x + run.width, underlineY + run.underlineThickness);
-					if (clipRect != null) {
-						rect.left = Math.max(rect.left, clipRect.left);
-						rect.right = Math.min(rect.right, clipRect.right);
-					}
-					OS.FillRect(graphics, rect, brushUnderline);
-					break;
-				case SWT.UNDERLINE_IME_CONVERTED:
+				}
 				case SWT.UNDERLINE_SINGLE:
 					brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
 					OS.SetRect(rect, x, underlineY, x + run.width, underlineY + run.underlineThickness);
@@ -1004,6 +1007,32 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					}
 					OS.FillRect(graphics, rect, brushUnderline);
 					break;
+				case UNDERLINE_IME_THICK:
+					brushUnderline = OS.CreateSolidBrush(colorRefUnderline);
+					OS.SetRect(rect, x, underlineY - run.underlineThickness, x + run.width, underlineY + run.underlineThickness);
+					if (clipRect != null) {
+						rect.left = Math.max(rect.left, clipRect.left);
+						rect.right = Math.min(rect.right, clipRect.right);
+					}
+					OS.FillRect(graphics, rect, brushUnderline);
+					break;
+				case UNDERLINE_IME_DASH:
+				case UNDERLINE_IME_DOT: {
+					underlineY = y + run.ascent + run.descent;
+					int penStyle = style.underlineStyle == UNDERLINE_IME_DASH ? OS.PS_DASH : OS.PS_DOT;
+					int /*long*/ pen = OS.CreatePen(penStyle, 1, colorRefUnderline);
+					int /*long*/ oldPen = OS.SelectObject(graphics, pen);
+					OS.SetRect(rect, x, underlineY, x + run.width, underlineY + run.underlineThickness);
+					if (clipRect != null) {
+						rect.left = Math.max(rect.left, clipRect.left);
+						rect.right = Math.min(rect.right, clipRect.right);
+					}
+					OS.MoveToEx(graphics, rect.left, rect.top, 0);
+					OS.LineTo(graphics, rect.right, rect.top);
+					OS.SelectObject(graphics, oldPen);
+					OS.DeleteObject(pen);
+					break;
+				}
 			}
 		}
 		if (style.strikeout) {
