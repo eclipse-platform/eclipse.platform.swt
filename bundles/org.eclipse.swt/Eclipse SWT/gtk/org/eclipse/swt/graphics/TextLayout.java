@@ -183,11 +183,6 @@ void computeRuns () {
 		if (style.underline) {
 			int underlineStyle = OS.PANGO_UNDERLINE_SINGLE;
 			switch (style.underlineStyle) {
-				case SWT.UNDERLINE_IME_CONVERTED:
-				case SWT.UNDERLINE_IME_TARGET_CONVERTED:
-					underlineStyle = OS.PANGO_UNDERLINE_NONE;
-					break;
-				case SWT.UNDERLINE_IME_INPUT:
 				case SWT.UNDERLINE_SINGLE:
 					underlineStyle = OS.PANGO_UNDERLINE_SINGLE; 
 					break;
