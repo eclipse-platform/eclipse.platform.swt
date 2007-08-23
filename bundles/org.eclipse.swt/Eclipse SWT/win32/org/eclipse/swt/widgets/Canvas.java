@@ -170,6 +170,11 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 	return pda;
 }
 
+boolean isInlineIMEEnabled () {
+	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (5, 1)) return false;
+	return OS.IsDBLocale && hooks (SWT.ImeComposition);
+}
+
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
@@ -354,7 +359,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 
 LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_IME_COMPOSITION (wParam, lParam);
-	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
+	if (isInlineIMEEnabled ()) {
 		int /*long*/ hIMC = OS.ImmGetContext (handle);
 		if (hIMC != 0) {
 			TCHAR buffer = null;
@@ -519,7 +524,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_IME_COMPOSITION_START (wParam, lParam);
-	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
+	if (isInlineIMEEnabled ()) {
 		return LRESULT.ONE;
 	}
 	return result;
@@ -527,7 +532,7 @@ LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_IME_ENDCOMPOSITION (wParam, lParam);
-	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
+	if (isInlineIMEEnabled ()) {
 		return LRESULT.ONE;
 	}
 	return result;
@@ -543,7 +548,7 @@ LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
-	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
+	if (isInlineIMEEnabled ()) {
 		int /*long*/ hIMC = OS.ImmGetContext (handle);
 		if (hIMC != 0) {
 			if (OS.ImmGetOpenStatus (hIMC)) {
@@ -558,7 +563,7 @@ LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
-	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
+	if (isInlineIMEEnabled ()) {
 		int /*long*/ hIMC = OS.ImmGetContext (handle);
 		if (hIMC != 0) {
 			if (OS.ImmGetOpenStatus (hIMC)) {
