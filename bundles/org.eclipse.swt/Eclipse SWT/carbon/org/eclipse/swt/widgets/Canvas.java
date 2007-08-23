@@ -38,6 +38,10 @@ import org.eclipse.swt.graphics.*;
 public class Canvas extends Composite {
 	Caret caret;
 
+	static final int UNDERLINE_IME_INPUT = 1 << 16;
+	static final int UNDERLINE_IME_TARGET_CONVERTED = 2 << 16;
+	static final int UNDERLINE_IME_CONVERTED = 3 << 16;
+	
 Canvas () {
 	/* Do nothing */
 }
@@ -142,17 +146,130 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) {
-		if (caret != null && !isDisposed ()) {
+		if (!isDisposed ()) {
+			Shell shell = parent.getShell ();
 			short [] part = new short [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 			if (part [0] != OS.kControlFocusNoPart) {
-				caret.setFocus ();
+				if (caret != null) caret.setFocus ();
+				OS.ActivateTSMDocument (shell.imHandle);
 			} else {
-				caret.killFocus ();
+				if (caret != null) caret.killFocus ();
+				OS.DeactivateTSMDocument (shell.imHandle);
 			}
 		}
 	}
 	return result;
+}
+
+int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
+	if (!hooks (SWT.ImeComposition)) return OS.eventNotHandledErr;
+	if (caret == null) return OS.eventNotHandledErr;
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+	org.eclipse.swt.graphics.Point point = toDisplay (caret.x, caret.y + caret.height);
+	pt.h = (short)point.x;
+	pt.v = (short)point.y;
+	OS.SetEventParameter (theEvent, OS.kEventParamTextInputReplyPoint, OS.typeQDPoint, sizeof, pt);
+	return OS.noErr;
+}
+
+int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
+	if (!hooks (SWT.ImeComposition)) return OS.eventNotHandledErr;
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendCurrentPoint, OS.typeQDPoint, null, sizeof, null, pt);
+	org.eclipse.swt.graphics.Point point = toControl (pt.h, pt.v);
+	Event event = new Event ();
+	event.detail = SWT.COMPOSITION_HITTEST;
+	event.x = point.x;
+	event.y = point.y;
+	sendEvent (SWT.ImeComposition, event);
+	OS.SetEventParameter (theEvent, OS.kEventParamTextInputReplyTextOffset, OS.typeLongInteger, 4, new int [] {event.index * 2});
+	OS.SetEventParameter (theEvent, OS.kEventParamTextInputReplyRegionClass, OS.typeLongInteger, 4, new int [] {event.hitTest});
+	OS.SetEventParameter (theEvent, OS.kEventParamTextInputReplyLeadingEdge, OS.typeBoolean, 4, new boolean [] {event.trailing == 0});
+	return OS.noErr;
+}
+
+int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
+	if (!hooks(SWT.ImeComposition)) return OS.eventNotHandledErr;
+	int [] length = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, 0, length, (char [])null);
+	char [] chars = new char [length [0]];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, length [0], null, chars);
+	int [] fixed_length = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendFixLen, OS.typeLongInteger, null, 4, null, fixed_length);
+	int [] rangeSize = new int [1];
+	int index = 0;
+	int [] ranges = null;
+	TextStyle [] styles = null;
+	int rc = OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendHiliteRng, OS.typeTextRangeArray, null, 0, rangeSize, (byte [])null);
+	if (rc == OS.noErr) {
+		int firstSelectedConverted = -1;
+		boolean hasConvertedText = false;
+		int textRanges = OS.NewPtr (rangeSize [0]);
+		OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendHiliteRng, OS.typeTextRangeArray, null, rangeSize [0], null, textRanges);
+		short [] nRanges = new short [1];
+		OS.memmove (nRanges, textRanges, 2);
+		int count = nRanges [0];
+		if (count > 0) {
+			TextRange range = new TextRange ();
+			ranges = new int [(count - 1) * 2];
+			styles = new TextStyle [count - 1];
+			for (int i = 0, j = 0; i < count; i++) {
+				OS.memmove (range, textRanges + 2 + (i * TextRange.sizeof), TextRange.sizeof);
+				switch (range.fHiliteStyle) {
+					case OS.kCaretPosition: 
+						index = range.fStart;
+						break;
+					case OS.kConvertedText:	
+					case OS.kSelectedConvertedText:
+					case OS.kSelectedRawText:
+					case OS.kRawText:
+						ranges [j * 2] = range.fStart / 2;
+						ranges [j * 2 + 1] = range.fEnd / 2 - range.fStart / 2 + 0;
+						styles [j] = new TextStyle ();
+						styles [j].underline = true;
+						styles [j].underlineStyle = UNDERLINE_IME_INPUT;
+						if (range.fHiliteStyle == OS.kConvertedText) {
+							styles [j].underlineStyle = UNDERLINE_IME_CONVERTED;
+							hasConvertedText = true;
+						}
+						if (range.fHiliteStyle == OS.kSelectedConvertedText) {
+							styles [j].underlineStyle = UNDERLINE_IME_TARGET_CONVERTED;
+							if (firstSelectedConverted == -1) {
+								firstSelectedConverted = range.fStart;
+							}
+						}
+						j++;
+						break;
+				}
+			}
+		}
+		OS.DisposePtr (textRanges);
+		if (hasConvertedText && firstSelectedConverted != -1) {
+			index = firstSelectedConverted;
+		}
+	}
+	Event event = new Event ();
+	event.detail = SWT.COMPOSITION_CHANGED;
+	event.text = new String(chars, 0, length [0] / 2);
+	event.index = index / 2;
+	event.count = fixed_length [0] != -1 ? fixed_length [0] / 2: length [0] / 2;
+	event.ranges = ranges;
+	event.styles = styles;
+	sendEvent (SWT.ImeComposition, event);
+	if (event.doit) {
+		if (fixed_length [0] == -1 || fixed_length [0] == length [0]) {
+			for (int i=0; i<chars.length; i++) {
+				if (chars [i] == 0) break;
+				event = new Event ();
+				event.character = chars [i];
+				sendKeyEvent (SWT.KeyDown, event);
+			}
+		}
+	}
+	return OS.noErr;
 }
 
 void redrawWidget (int control, boolean children) {

@@ -124,6 +124,7 @@ public class Shell extends Decorations {
 	Region region;
 	Rect rgnRect;
 	Rectangle normalBounds;
+	int imHandle;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -540,6 +541,10 @@ void createHandle () {
 		inMinLimits.x = (int) 0;	
 	}
 	OS.SetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
+	int [] docID = new int [1];
+	OS.NewTSMDocument ((short)1, new int [] {OS.kUnicodeDocument}, docID, 0);
+	if (docID [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	imHandle = docID [0];
 }
 
 void createWidget () {
@@ -1207,7 +1212,8 @@ void releaseWidget () {
 	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
 	display.updateQuitMenu ();
 	if (invalRgn != 0) OS.DisposeRgn (invalRgn);
-	invalRgn = windowGroup = 0;
+	if (imHandle != 0) OS.DeleteTSMDocument (imHandle);
+	imHandle = invalRgn = windowGroup = 0;
 	lastActive = null;
 	region = null;
 }
