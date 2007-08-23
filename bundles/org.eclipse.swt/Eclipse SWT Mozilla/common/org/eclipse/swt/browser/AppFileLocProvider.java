@@ -260,7 +260,9 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_APP_PREF_DEFAULTS_50_DIR)) {
-		propertyValue = profilePath;
+		// the following line is intentionally commented because
+		// it causes problems for Mozilla < 1.7
+		//propertyValue = profilePath;
 	}
 
 	XPCOM.memmove (persistent, new int[] {1}, 4); /* PRBool */
