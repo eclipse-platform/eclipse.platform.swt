@@ -650,6 +650,38 @@ public boolean forward() {
 	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
 }
 
+public String getText() {
+	/* get the document object */
+	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
+	Variant pVarResult = auto.getProperty(rgdispid[0]);
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return ""; //$NON-NLS-1$
+	OleAutomation document = pVarResult.getAutomation();
+	pVarResult.dispose();
+
+	/* get the html object */
+	rgdispid = document.getIDsOfNames(new String[] {"documentElement"}); //$NON-NLS-1$
+	if (rgdispid == null) {
+		/* implies that the browser is displaying non-HTML content */
+		document.dispose();
+		return ""; //$NON-NLS-1$
+	}
+	pVarResult = document.getProperty(rgdispid[0]);
+	document.dispose();
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return ""; //$NON-NLS-1$
+	OleAutomation element = pVarResult.getAutomation();
+	pVarResult.dispose();
+
+	/* get its outerHTML property */
+	rgdispid = element.getIDsOfNames(new String[] {"outerHTML"}); //$NON-NLS-1$
+	pVarResult = element.getProperty(rgdispid[0]);
+	element.dispose();
+	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return ""; //$NON-NLS-1$
+	String result = pVarResult.getString();
+	pVarResult.dispose();
+
+	return result;
+}
+
 public String getUrl() {
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
 	Variant pVarResult = auto.getProperty(rgdispid[0]);

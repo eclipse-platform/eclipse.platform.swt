@@ -299,6 +299,23 @@ public boolean forward() {
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goForward) != 0;
 }
 
+public String getText() {
+	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
+	int mainFrame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
+	int dataSource = Cocoa.objc_msgSend(mainFrame, Cocoa.S_dataSource);
+	if (dataSource == 0) return "";	//$NON-NLS-1$
+	int representation = Cocoa.objc_msgSend(dataSource, Cocoa.S_representation);
+	if (representation == 0) return "";	//$NON-NLS-1$
+	int source = Cocoa.objc_msgSend(representation, Cocoa.S_documentSource);
+	if (source == 0) return "";	//$NON-NLS-1$
+	int length = OS.CFStringGetLength(source);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(source, range, buffer);
+	return new String(buffer);
+}
+
 public String getUrl() {
 	return url;
 }
