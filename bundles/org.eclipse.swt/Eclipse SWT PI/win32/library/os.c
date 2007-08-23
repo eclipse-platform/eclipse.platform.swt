@@ -14415,6 +14415,22 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3J
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3J_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3J_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_WINDOWPLACEMENT_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(WINDOWPLACEMENT_1sizeof)
 	(JNIEnv *env, jclass that)

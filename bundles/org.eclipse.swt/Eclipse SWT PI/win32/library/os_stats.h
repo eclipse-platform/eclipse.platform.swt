@@ -923,6 +923,7 @@ typedef enum {
 	VtblCall__IIS_3B_3B_3B_FUNC,
 	VtblCall__II_3CII_3I_3I_FUNC,
 	VtblCall__II_3I_FUNC,
+	VtblCall__II_3J_FUNC,
 	WINDOWPLACEMENT_1sizeof_FUNC,
 	WINDOWPOS_1sizeof_FUNC,
 	WNDCLASS_1sizeof_FUNC,

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 907;
-int OS_nativeFunctionCallCount[907];
+int OS_nativeFunctionCount = 908;
+int OS_nativeFunctionCallCount[908];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -915,6 +915,7 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IIS_3B_3B_3B",
 	"VtblCall__II_3CII_3I_3I",
 	"VtblCall__II_3I",
+	"VtblCall__II_3J",
 	"WINDOWPLACEMENT_1sizeof",
 	"WINDOWPOS_1sizeof",
 	"WNDCLASS_1sizeof",

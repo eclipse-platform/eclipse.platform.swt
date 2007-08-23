@@ -469,8 +469,6 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int /*long*/ arg1, int arg2, int arg3, int arg4, int /*long*/[] arg5);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long[] arg0);
-
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int[] arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int[] arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long[] arg1);
