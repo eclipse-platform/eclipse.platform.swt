@@ -165,6 +165,11 @@ public boolean forward() {
 	return true;
 }
 
+public String getText () {
+	// TODO
+	return ""; //$NON-NLS-1$
+}
+
 public String getUrl() {
 	return url;
 }

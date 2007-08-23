@@ -110,6 +110,11 @@ public boolean forward() {
 	return OS.WebBrowser_GoForward(webBrowser);
 }
 
+public String getText () {
+	// TODO
+	return ""; //$NON-NLS-1$
+}
+
 public String getUrl() {
 	int uri = OS.WebBrowser_Url(webBrowser);
 	String url = getUriString (uri);
