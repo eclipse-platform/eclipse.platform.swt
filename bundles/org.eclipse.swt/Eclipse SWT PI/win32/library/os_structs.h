@@ -251,6 +251,18 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct);
 #define DROPFILES_sizeof() 0
 #endif
 
+#ifndef NO_DWM_BLURBEHIND
+void cacheDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject);
+DWM_BLURBEHIND *getDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);
+void setDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);
+#define DWM_BLURBEHIND_sizeof() sizeof(DWM_BLURBEHIND)
+#else
+#define cacheDWM_BLURBEHINDFields(a,b)
+#define getDWM_BLURBEHINDFields(a,b,c) NULL
+#define setDWM_BLURBEHINDFields(a,b,c)
+#define DWM_BLURBEHIND_sizeof() 0
+#endif
+
 #ifndef NO_EXTLOGPEN
 void cacheEXTLOGPENFields(JNIEnv *env, jobject lpObject);
 EXTLOGPEN *getEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct);

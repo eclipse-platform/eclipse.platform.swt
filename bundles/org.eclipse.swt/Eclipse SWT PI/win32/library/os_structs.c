@@ -1061,6 +1061,46 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct)
 }
 #endif
 
+#ifndef NO_DWM_BLURBEHIND
+typedef struct DWM_BLURBEHIND_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID bdwFlags, bfEnable, hRgnBlur, fTransitionOnMaximized;
+} DWM_BLURBEHIND_FID_CACHE;
+
+DWM_BLURBEHIND_FID_CACHE DWM_BLURBEHINDFc;
+
+void cacheDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject)
+{
+	if (DWM_BLURBEHINDFc.cached) return;
+	DWM_BLURBEHINDFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DWM_BLURBEHINDFc.bdwFlags = (*env)->GetFieldID(env, DWM_BLURBEHINDFc.clazz, "bdwFlags", "I");
+	DWM_BLURBEHINDFc.bfEnable = (*env)->GetFieldID(env, DWM_BLURBEHINDFc.clazz, "bfEnable", "Z");
+	DWM_BLURBEHINDFc.hRgnBlur = (*env)->GetFieldID(env, DWM_BLURBEHINDFc.clazz, "hRgnBlur", "I");
+	DWM_BLURBEHINDFc.fTransitionOnMaximized = (*env)->GetFieldID(env, DWM_BLURBEHINDFc.clazz, "fTransitionOnMaximized", "Z");
+	DWM_BLURBEHINDFc.cached = 1;
+}
+
+DWM_BLURBEHIND *getDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct)
+{
+	if (!DWM_BLURBEHINDFc.cached) cacheDWM_BLURBEHINDFields(env, lpObject);
+	lpStruct->bdwFlags = (*env)->GetIntField(env, lpObject, DWM_BLURBEHINDFc.bdwFlags);
+	lpStruct->bfEnable = (*env)->GetBooleanField(env, lpObject, DWM_BLURBEHINDFc.bfEnable);
+	lpStruct->hRgnBlur = (*env)->GetIntField(env, lpObject, DWM_BLURBEHINDFc.hRgnBlur);
+	lpStruct->fTransitionOnMaximized = (*env)->GetBooleanField(env, lpObject, DWM_BLURBEHINDFc.fTransitionOnMaximized);
+	return lpStruct;
+}
+
+void setDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct)
+{
+	if (!DWM_BLURBEHINDFc.cached) cacheDWM_BLURBEHINDFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DWM_BLURBEHINDFc.bdwFlags, (jint)lpStruct->bdwFlags);
+	(*env)->SetBooleanField(env, lpObject, DWM_BLURBEHINDFc.bfEnable, (jboolean)lpStruct->bfEnable);
+	(*env)->SetIntField(env, lpObject, DWM_BLURBEHINDFc.hRgnBlur, (jint)lpStruct->hRgnBlur);
+	(*env)->SetBooleanField(env, lpObject, DWM_BLURBEHINDFc.fTransitionOnMaximized, (jboolean)lpStruct->fTransitionOnMaximized);
+}
+#endif
+
 #ifndef NO_EXTLOGPEN
 typedef struct EXTLOGPEN_FID_CACHE {
 	int cached;

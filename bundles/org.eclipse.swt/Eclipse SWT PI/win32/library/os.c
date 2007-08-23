@@ -1768,6 +1768,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(DROPFILES_1sizeof)
 }
 #endif
 
+#ifndef NO_DWM_1BLURBEHIND_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(DWM_1BLURBEHIND_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DWM_1BLURBEHIND_1sizeof_FUNC);
+	rc = (jint)DWM_BLURBEHIND_sizeof();
+	OS_NATIVE_EXIT(env, that, DWM_1BLURBEHIND_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DefFrameProcA
 JNIEXPORT jint JNICALL OS_NATIVE(DefFrameProcA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -2396,6 +2408,38 @@ fail:
 	if (arg8 && lparg8) setRECTFields(env, arg8, lparg8);
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, DrawThemeText_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DwmEnableBlurBehindWindow
+JNIEXPORT jint JNICALL OS_NATIVE(DwmEnableBlurBehindWindow)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DWM_BLURBEHIND _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DwmEnableBlurBehindWindow_FUNC);
+	if (arg1) if ((lparg1 = getDWM_BLURBEHINDFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jint)DwmEnableBlurBehindWindow((HWND)arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(DwmEnableBlurBehindWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "DwmEnableBlurBehindWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HWND)arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setDWM_BLURBEHINDFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, DwmEnableBlurBehindWindow_FUNC);
 	return rc;
 }
 #endif

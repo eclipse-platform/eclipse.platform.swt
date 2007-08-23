@@ -559,6 +559,9 @@ public class OS extends C {
 	public static final int DTS_SHORTDATEFORMAT = 0x0000;
 	public static final int DTS_TIMEFORMAT = 0x0009;
 	public static final int DTS_UPDOWN = 0x0001;
+	public static final int DWM_BB_ENABLE = 0x1;
+	public static final int DWM_BB_BLURREGION = 0x2; 
+	public static final int DWM_BB_TRANSITIONONMAXIMIZED = 0x4;
 	public static final int E_POINTER = 0x80004003;
 	public static final int EBP_NORMALGROUPBACKGROUND = 5;
 	public static final int EBP_NORMALGROUPCOLLAPSE = 6;
@@ -2079,6 +2082,7 @@ public static final native int DOCHOSTUIINFO_sizeof ();
 public static final native int DOCINFO_sizeof ();
 public static final native int DRAWITEMSTRUCT_sizeof ();
 public static final native int DROPFILES_sizeof ();
+public static final native int DWM_BLURBEHIND_sizeof ();
 public static final native int EXTLOGPEN_sizeof ();
 public static final native int FILETIME_sizeof ();
 public static final native int GCP_RESULTS_sizeof ();
@@ -3285,6 +3289,7 @@ public static final native int DrawThemeEdge (int /*long*/ hTheme, int /*long*/ 
 public static final native int DrawThemeIcon (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, RECT pRect, int /*long*/ himl, int iImageIndex);
 public static final native int DrawThemeParentBackground (int /*long*/ hwnd, int /*long*/ hdc, RECT prc);
 public static final native int DrawThemeText (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
+public static final native int DwmEnableBlurBehindWindow (int /*long*/ hWnd, DWM_BLURBEHIND pBlurBehind);
 public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset); 
 public static final native boolean Ellipse (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native boolean EnableMenuItem (int /*long*/ hMenu, int uIDEnableItem, int uEnable);

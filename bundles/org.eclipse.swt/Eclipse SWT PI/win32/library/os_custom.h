@@ -32,6 +32,7 @@
 #define DrawThemeIcon_LIB "uxtheme.dll"
 #define DrawThemeParentBackground_LIB "uxtheme.dll"
 #define DrawThemeText_LIB "uxtheme.dll"
+#define DwmDwmEnableBlurBehindWindow_LIB "dwmapi.dll"
 #define DwmExtendFrameIntoClientArea_LIB "dwmapi.dll"
 #define GetThemeInt_LIB "uxtheme.dll"
 #define GetThemeMargins_LIB "uxtheme.dll"
