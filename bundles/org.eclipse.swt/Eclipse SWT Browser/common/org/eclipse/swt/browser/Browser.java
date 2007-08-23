@@ -410,6 +410,24 @@ public boolean forward () {
 }
 
 /**
+ * Returns a string with HTML that represents the content of the current page.
+ *
+ * @return HTML representing the current page or an empty <code>String</code>
+ * if this is empty
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public String getText () {
+	checkWidget();
+	return webBrowser.getText ();
+}
+
+/**
  * Returns the current URL.
  *
  * @return the current URL or an empty <code>String</code> if there is no current URL
