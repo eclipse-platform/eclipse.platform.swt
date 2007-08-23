@@ -56,6 +56,7 @@ public class XPCOM extends C {
 	public static final String NS_CONTEXTSTACK_CONTRACTID = "@mozilla.org/js/xpc/ContextStack;1"; //$NON-NLS-1$
 	public static final String NS_COOKIEMANAGER_CONTRACTID = "@mozilla.org/cookiemanager;1"; //$NON-NLS-1$
 	public static final String NS_DIRECTORYSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1"; //$NON-NLS-1$
+	public static final String NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1"; //$NON-NLS-1$
 	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
 	public static final String NS_FILEPICKER_CONTRACTID = "@mozilla.org/filepicker;1"; //$NON-NLS-1$
 	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
@@ -247,4 +248,6 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, boolean[] arg1, int /*long*/[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int arg1, int arg2, int /*long*/ arg3, boolean[] arg4, int /*long*/[] arg5);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int arg3, char[] arg4, byte[] arg5, int /*long*/ arg6, int /*long*/ arg7, int arg8, int /*long*/ arg9, boolean arg10, int /*long*/[] arg11, int /*long*/[] arg12);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, byte[] arg2);
 }

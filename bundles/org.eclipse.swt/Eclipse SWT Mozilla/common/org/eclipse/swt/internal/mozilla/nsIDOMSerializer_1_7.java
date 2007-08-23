@@ -22,34 +22,30 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2005 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIWebBrowserStream extends nsISupports {
+public class nsIDOMSerializer_1_7 extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
-	public static final String NS_IWEBBROWSERSTREAM_IID_STR =
-		"86d02f0e-219b-4cfc-9c88-bd98d2cce0b8";
+	public static final String NS_IDOMSERIALIZER_IID_STR =
+		"9fd4ba15-e67c-4c98-b52c-7715f62c9196";
 
-	public static final nsID NS_IWEBBROWSERSTREAM_IID =
-		new nsID(NS_IWEBBROWSERSTREAM_IID_STR);
+	public static final nsID NS_IDOMSERIALIZER_IID =
+		new nsID(NS_IDOMSERIALIZER_IID_STR);
 
-	public nsIWebBrowserStream(int /*long*/ address) {
+	public nsIDOMSerializer_1_7(int /*long*/ address) {
 		super(address);
 	}
 
-	public int OpenStream(int /*long*/ aBaseURI, int /*long*/ aContentType) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aBaseURI, aContentType);
+	public int SerializeToString(int /*long*/ root, int /*long*/ _retval) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
 	}
 
-	public int AppendToStream(int /*long*/ aData, int aLen) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aData, aLen);
-	}
-
-	public int CloseStream() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
+	public int SerializeToStream(int /*long*/ root, int /*long*/ stream, int /*long*/ charset) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), root, stream, charset);
 	}
 }
