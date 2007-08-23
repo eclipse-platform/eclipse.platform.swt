@@ -2143,6 +2143,9 @@ void initializeCallbacks () {
 	OS.InstallEventHandler (focusTarget, keyboardProc, mask4.length / 2, mask4, 0, null);
 	int [] mask5 = new int[] {
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
+		OS.kEventClassTextInput, OS.kEventTextInputUpdateActiveInputArea,
+		OS.kEventClassTextInput, OS.kEventTextInputOffsetToPos,
+		OS.kEventClassTextInput, OS.kEventTextInputPosToOffset,
 	};
 	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, null);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, 0, false);
