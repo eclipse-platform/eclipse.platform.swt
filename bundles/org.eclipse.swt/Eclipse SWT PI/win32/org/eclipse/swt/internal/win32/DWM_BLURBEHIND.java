@@ -11,8 +11,8 @@
 package org.eclipse.swt.internal.win32;
 
 public class DWM_BLURBEHIND {
-	public int bdwFlags;
-	public boolean bfEnable;
+	public int dwFlags;
+	public boolean fEnable;
 	public int /*long*/ hRgnBlur;
 	public boolean fTransitionOnMaximized;
 	public static final int sizeof = OS.DWM_BLURBEHIND_sizeof ();

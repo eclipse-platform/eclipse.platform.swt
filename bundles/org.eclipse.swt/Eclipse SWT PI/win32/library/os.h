@@ -202,6 +202,7 @@
 #define NO_DrawThemeIcon
 #define NO_DrawThemeParentBackground
 #define NO_DrawThemeText
+#define NO_DwmEnableBlurBehindWindow
 #define NO_DwmExtendFrameIntoClientArea
 #define NO_EnableScrollBar
 #define NO_EndBufferedPaint
@@ -573,6 +574,15 @@ typedef struct _BP_PAINTPARAMS {
     const RECT *prcExclude;
     const BLENDFUNCTION *pBlendFunction;
 } BP_PAINTPARAMS, *PBP_PAINTPARAMS;
+#endif
+
+#ifndef _DWM_BLURBEHIND
+typedef struct _DWM_BLURBEHIND {
+    DWORD dwFlags;
+    BOOL fEnable;
+    HRGN hRgnBlur;
+    BOOL fTransitionOnMaximized;
+} DWM_BLURBEHIND, *PDWM_BLURBEHIND;
 #endif
 
 #if (_WIN32_IE <= 0x0600)
