@@ -57,7 +57,7 @@ public int GetIDsOfNames(GUID riid, String[] rgszNames, int cNames, int lcid, in
 public int GetTypeInfo(int iTInfo, int lcid, int /*long*/[] ppTInfo ){
 	return COM.VtblCall(4, address, iTInfo, lcid, ppTInfo);
 }
-public int GetTypeInfoCount(int /*long*/[] pctinfo ){
+public int GetTypeInfoCount(int [] pctinfo ){
 	return COM.VtblCall(3, address, pctinfo);
 }
 public int Invoke(int dispIdMember, GUID riid, int lcid, int dwFlags, DISPPARAMS pDispParams, int /*long*/ pVarResult, EXCEPINFO pExcepInfo, int[] pArgErr) {
