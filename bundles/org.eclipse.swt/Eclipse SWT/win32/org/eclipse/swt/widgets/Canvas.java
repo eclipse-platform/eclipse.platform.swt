@@ -544,7 +544,7 @@ LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
-		int hIMC = OS.ImmGetContext (handle);
+		int /*long*/ hIMC = OS.ImmGetContext (handle);
 		if (hIMC != 0) {
 			if (OS.ImmGetOpenStatus (hIMC)) {
 				OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
@@ -559,7 +559,7 @@ LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsDBLocale && hooks (SWT.ImeComposition)) {
-		int hIMC = OS.ImmGetContext (handle);
+		int /*long*/ hIMC = OS.ImmGetContext (handle);
 		if (hIMC != 0) {
 			if (OS.ImmGetOpenStatus (hIMC)) {
 				int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0);
@@ -570,7 +570,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					event.y = OS.GET_Y_LPARAM (lParam);
 					sendEvent (SWT.ImeComposition, event);
 					if (event.hitTest == SWT.HITTEST_INSIDE_COMPOSITION) {
-						int imeWnd = OS.ImmGetDefaultIMEWnd (handle);
+						int /*long*/ imeWnd = OS.ImmGetDefaultIMEWnd (handle);
 						int action = OS.IMEMOUSE_LDOWN;
 						int offset = event.index + event.trailing;
 						int trailing = event.trailing > 0 ? 1 : 2;
