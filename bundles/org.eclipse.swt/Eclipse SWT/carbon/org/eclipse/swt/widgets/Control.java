@@ -1645,7 +1645,7 @@ public void internal_dispose_GC (int context, GCData data) {
 	}
 	
 	/*
-	* This code is intentionaly commented. Use CGContextSynchronize
+	* This code is intentionally commented. Use CGContextSynchronize
 	* instead of CGContextFlush to improve performance.
 	*/
 //	OS.CGContextFlush (context);
