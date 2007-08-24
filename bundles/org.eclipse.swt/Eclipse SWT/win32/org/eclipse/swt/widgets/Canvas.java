@@ -167,6 +167,19 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 		/* pProfiles.Release () */
 		hr = OS.VtblCall (2, pProfiles [0]);
 	}
+	if (pda == null) {
+		pda = new TF_DISPLAYATTRIBUTE ();
+		switch (attInfo) {
+			case OS.TF_ATTR_INPUT:
+				pda.lsStyle = OS.TF_LS_SQUIGGLE;
+				break;
+			case OS.TF_ATTR_CONVERTED:
+			case OS.TF_ATTR_TARGET_CONVERTED:
+				pda.lsStyle = OS.TF_LS_SOLID;
+				pda.fBoldLine = attInfo == OS.TF_ATTR_TARGET_CONVERTED; 
+				break;
+		}
+	}
 	return pda;
 }
 
