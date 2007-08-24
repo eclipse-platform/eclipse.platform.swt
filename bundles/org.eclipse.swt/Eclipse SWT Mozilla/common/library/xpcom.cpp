@@ -1070,6 +1070,19 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ)
 }
 #endif
 
+#ifndef NO_VtblCall__IIJI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJI_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJI_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IIJJ
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ)
