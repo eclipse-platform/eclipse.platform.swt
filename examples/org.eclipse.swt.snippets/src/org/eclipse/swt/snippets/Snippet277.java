@@ -126,7 +126,7 @@ public class Snippet277 {
 					table.getColumn (0).setWidth (editor.minimumWidth);
 				}
 				table.getColumn (1).pack ();
-				table.getShell ().pack ();
+				table.getShell ().layout ();
 			}
 			public void onStatusChange (nsIWebProgress webProgress, nsIRequest request, long status, String message) {}
 			public void onSecurityChange (nsIWebProgress webProgress, nsIRequest request, long state) {}
@@ -145,7 +145,7 @@ public class Snippet277 {
 					((GridData)table.getLayoutData ()).exclude = true;	/* hide the table */
 				}
 				table.getColumn (1).pack ();
-				table.getShell ().pack ();
+				table.getShell ().layout ();
 			}
 		};
 	}
