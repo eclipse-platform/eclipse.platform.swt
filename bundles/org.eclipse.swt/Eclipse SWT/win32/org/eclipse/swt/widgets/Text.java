@@ -130,7 +130,61 @@ public Text (Composite parent, int style) {
 
 int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
+	boolean redraw = false;
+	switch (msg) {
+		case OS.WM_ERASEBKGND: {
+			if (findImageControl () != null) return 0;
+			break;
+		}
+		case OS.WM_HSCROLL:
+		case OS.WM_VSCROLL: {
+			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			break;
+		}
+		case OS.WM_PAINT: {
+			if (findImageControl () != null) {
+				int /*long*/ paintDC = 0;
+				PAINTSTRUCT ps = new PAINTSTRUCT ();
+				paintDC = OS.BeginPaint (handle, ps);
+				int width = ps.right - ps.left;
+				int height = ps.bottom - ps.top;
+				if (width != 0 && height != 0) {
+					int /*long*/ hDC = OS.CreateCompatibleDC (paintDC);
+					POINT lpPoint1 = new POINT (), lpPoint2 = new POINT ();
+					OS.SetWindowOrgEx (hDC, ps.left, ps.top, lpPoint1);
+					OS.SetBrushOrgEx (hDC, ps.left, ps.top, lpPoint2);
+					int /*long*/ hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
+					int /*long*/ hOldBitmap = OS.SelectObject (hDC, hBitmap);
+					RECT rect = new RECT ();
+					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+					drawBackground (hDC, rect);
+					OS.CallWindowProc (EditProc, hwnd, OS.WM_PAINT, hDC, lParam);
+					OS.SetWindowOrgEx (hDC, lpPoint1.x, lpPoint1.y, null);
+					OS.SetBrushOrgEx (hDC, lpPoint2.x, lpPoint2.y, null);
+					OS.BitBlt (paintDC, ps.left, ps.top, width, height, hDC, 0, 0, OS.SRCCOPY);
+					OS.SelectObject (hDC, hOldBitmap);
+					OS.DeleteObject (hBitmap);
+					OS.DeleteObject (hDC);
+				}
+				OS.EndPaint (handle, ps);
+				return 0;
+			}
+			break;
+		}
+	}
+	int code = OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
+	switch (msg) {
+		case OS.WM_HSCROLL:
+		case OS.WM_VSCROLL: {
+			if (redraw) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+			}
+			break;
+		}
+	}
+	return code;
 }
 
 void createHandle () {
@@ -2355,6 +2409,9 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.EN_CHANGE:
+			if (findImageControl () != null) {
+				OS.InvalidateRect (handle, null, true);
+			}
 			if (ignoreModify) break;
 			/*
 			* It is possible (but unlikely), that application
