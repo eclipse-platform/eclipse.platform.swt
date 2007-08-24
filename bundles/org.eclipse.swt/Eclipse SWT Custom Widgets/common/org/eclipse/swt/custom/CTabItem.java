@@ -118,12 +118,9 @@ public CTabItem (CTabFolder parent, int style) {
  * @see Widget#getStyle()
  */
 public CTabItem (CTabFolder parent, int style, int index) {
-	super (parent, checkStyle(style));
+	super (parent, style);
 	showClose = (style & SWT.CLOSE) != 0;
 	parent.createItem (this, index);
-}
-static int checkStyle(int style) {
-	return SWT.NONE;
 }
 
 /*
