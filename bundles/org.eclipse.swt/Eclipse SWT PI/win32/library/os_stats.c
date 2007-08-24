@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 908;
-int OS_nativeFunctionCallCount[908];
+int OS_nativeFunctionCount = 909;
+int OS_nativeFunctionCallCount[909];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -913,6 +913,7 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IIJJI_3J",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2",
 	"VtblCall__IIS_3B_3B_3B",
+	"VtblCall__II_3B_3I",
 	"VtblCall__II_3CII_3I_3I",
 	"VtblCall__II_3I",
 	"VtblCall__II_3J",

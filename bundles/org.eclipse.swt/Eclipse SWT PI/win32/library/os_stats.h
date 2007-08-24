@@ -921,6 +921,7 @@ typedef enum {
 	VtblCall__IIJJI_3J_FUNC,
 	VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,
 	VtblCall__IIS_3B_3B_3B_FUNC,
+	VtblCall__II_3B_3I_FUNC,
 	VtblCall__II_3CII_3I_3I_FUNC,
 	VtblCall__II_3I_FUNC,
 	VtblCall__II_3J_FUNC,

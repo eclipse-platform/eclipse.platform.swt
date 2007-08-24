@@ -14377,6 +14377,25 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3B_3I
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3B_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3)
+{
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3B_3I_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3B_3I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3CII_3I_3I
 JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3CII_3I_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6)
