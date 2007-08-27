@@ -147,7 +147,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) {
 		if (!isDisposed ()) {
-			Shell shell = parent.getShell ();
+			Shell shell = getShell ();
 			short [] part = new short [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 			if (part [0] != OS.kControlFocusNoPart) {
