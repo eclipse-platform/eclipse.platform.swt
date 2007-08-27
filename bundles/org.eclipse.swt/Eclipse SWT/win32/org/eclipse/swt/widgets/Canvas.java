@@ -404,6 +404,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 				if ((lParam & OS.GCS_COMPSTR) == 0) return LRESULT.ONE;
 			}
 			
+			buffer = null;
 			int index = 0;
 			int [] ranges = null;
 			TextStyle [] styles = null;
