@@ -1620,8 +1620,11 @@ void checkBuffered () {
 
 boolean checkData (TreeItem item, boolean redraw) {
 	if ((style & SWT.VIRTUAL) == 0) return true;
-	TreeItem parentItem = item.getParentItem ();
-	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
+	if (!item.cached) {
+		TreeItem parentItem = item.getParentItem ();
+		return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
+	}
+	return true;
 }
 
 boolean checkData (TreeItem item, int index, boolean redraw) {
