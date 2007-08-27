@@ -491,7 +491,7 @@ public void setAlignment (int alignment) {
 	int /*long*/ hwndHeader = parent.hwndHeader;
 	if (hwndHeader == 0) return;
 	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
+	hdItem.mask = OS.HDI_FORMAT;
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 	hdItem.fmt &= ~OS.HDF_JUSTIFYMASK;
 	if ((style & SWT.LEFT) == SWT.LEFT) hdItem.fmt |= OS.HDF_LEFT;
