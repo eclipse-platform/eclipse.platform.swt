@@ -173,7 +173,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 			break;
 		}
 	}
-	int code = OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
+	int /*long*/ code = OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 	switch (msg) {
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL: {
