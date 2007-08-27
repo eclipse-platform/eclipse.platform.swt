@@ -266,8 +266,10 @@ void resizeIME () {
 	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	if (parent.isInlineIMEEnabled ()) {
 		CANDIDATEFORM lpCandidate = new CANDIDATEFORM ();
-		lpCandidate.dwStyle = OS.CFS_CANDIDATEPOS;
+		lpCandidate.dwStyle = OS.CFS_EXCLUDE;
 		lpCandidate.ptCurrentPos = ptCurrentPos;
+		lpCandidate.rcArea = new RECT ();
+		OS.SetRect (lpCandidate.rcArea, ptCurrentPos.x, ptCurrentPos.y, ptCurrentPos.x + width, ptCurrentPos.y + height);
 		OS.ImmSetCandidateWindow (hIMC, lpCandidate);
 	} else {
 		RECT rect = new RECT ();

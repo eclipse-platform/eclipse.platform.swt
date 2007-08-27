@@ -445,6 +445,7 @@ public class OS extends C {
 	public static final int CFS_POINT = 0x2;
 	public static final int CFS_RECT = 0x1;
 	public static final int CFS_CANDIDATEPOS = 0x0040;
+	public static final int CFS_EXCLUDE = 0x0080;
 	public static final int CF_EFFECTS = 0x100;
 	public static final int CF_INITTOLOGFONTSTRUCT = 0x40;
 	public static final int CF_SCREENFONTS = 0x1;
