@@ -259,7 +259,41 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 	boolean oldSelected = wasSelected;
 	if (checkSelection) wasSelected = false;
 	if (checkActivate) ignoreActivate = true;
-	int /*long*/ code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
+	
+	/*
+	* Bug in Windows.  For some reason, when the WS_EX_COMPOSITED
+	* style is set in a parent of a table and the header is visible,
+	* Windows issues an endless stream of WM_PAINT messages.  The
+	* fix is to call BeginPaint() and EndPaint() outside of WM_PAINT
+	* and pass the paint HDC in to the window proc.
+	*/
+	boolean fixPaint = false;
+	if (msg == OS.WM_PAINT) {
+		int bits0 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits0 & OS.LVS_NOCOLUMNHEADER) == 0) {
+			int /*long*/ hwndParent = OS.GetParent (handle), hwndOwner = 0;
+			while (hwndParent != 0) {
+				int bits1 = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+				if ((bits1 & OS.WS_EX_COMPOSITED) != 0) {
+					fixPaint = true;
+					break;
+				}
+				hwndOwner = OS.GetWindow (hwndParent, OS.GW_OWNER);
+				if (hwndOwner != 0) break;
+				hwndParent = OS.GetParent (hwndParent);
+			}
+		}
+	}
+	int /*long*/ code = 0;
+	if (fixPaint) {
+		PAINTSTRUCT ps = new PAINTSTRUCT ();
+		int /*long*/ hDC = OS.BeginPaint (hwnd, ps);
+		code = OS.CallWindowProc (TableProc, hwnd, OS.WM_PAINT, hDC, lParam);
+		OS.EndPaint (hwnd, ps);
+	} else {
+		code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
+	}
+	
 	if (checkActivate) ignoreActivate = false;
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
