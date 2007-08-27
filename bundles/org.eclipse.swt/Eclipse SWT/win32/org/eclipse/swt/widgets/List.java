@@ -175,7 +175,27 @@ public void addSelectionListener(SelectionListener listener) {
 
 int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
-	return OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	boolean redraw = false;
+	switch (msg) {
+		case OS.WM_HSCROLL:
+		case OS.WM_VSCROLL: {
+			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			break;
+		}
+	}
+	int /*long*/ code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	switch (msg) {
+		case OS.WM_HSCROLL:
+		case OS.WM_VSCROLL: {
+			if (redraw) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+			}
+			break;
+		}
+	}
+	return code;
 }
 
 static int checkStyle (int style) {
