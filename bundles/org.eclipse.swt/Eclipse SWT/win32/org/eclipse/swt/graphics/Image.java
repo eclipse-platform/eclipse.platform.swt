@@ -584,6 +584,12 @@ public Image (Device device, String filename) {
 	} catch (SWTException e) {
 		gdip = false;
 	}
+	/*
+	* Bug in GDI+.  For some reason, Bitmap.LockBits() segment faults
+	* when loading GIF files in 64-bit Windows.  The fix is to not use
+	* GDI+ image loading in this case.
+	*/
+	if (gdip && OS.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
 	if (gdip) {
 		int length = filename.length();
 		char[] chars = new char[length+1];
