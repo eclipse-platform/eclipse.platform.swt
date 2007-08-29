@@ -54,6 +54,10 @@ class StyledTextRenderer {
 	int stylesSetCount = 0;
 	final static int BULLET_MARGIN = 8;
 	
+	/* IME styles*/
+	int[] imeRanges;
+	TextStyle[] imeStyles;
+	
 	final static boolean COMPACT_STYLES = true;
 	final static boolean MERGE_STYLES = true;
 	
@@ -836,16 +840,29 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
-	if (event != null) {
-		if (styledText.compositionStart != -1 && styledText.compositionLength > 0) {
-			int compositionLine = styledText.getContent().getLineAtOffset(styledText.compositionStart);
+	if (styledText != null && imeRanges != null && imeStyles != null) {
+		int compositionStart = styledText.compositionStart;
+		int compositionLength = styledText.compositionLength;
+		if (compositionStart != -1 && compositionLength > 0) {
+			int compositionLine = content.getLineAtOffset(compositionStart);
 			if (compositionLine == lineIndex) {
-				StyleRange[] imeStyles = getStyleRanges(styledText.compositionStart, styledText.compositionLength, false);
-				int[] imeRanges = getRanges(styledText.compositionStart, styledText.compositionLength);
-				if (imeStyles != null && imeRanges != null) {
-					for (int i = 0; i < imeStyles.length; i++) {
-						int start = imeRanges[i*2] - lineOffset;
-						layout.setStyle(imeStyles[i], start, start + imeRanges[i*2+1] - 1);
+				for (int i = 0; i < imeStyles.length; i++) {
+					int start = imeRanges[i*2] + compositionStart - lineOffset;
+					int end = start + imeRanges[i*2+1] - 1;
+					TextStyle imeStyle = imeStyles[i], userStyle;
+					for (int j = start; j <= end; j++) {
+						userStyle = layout.getStyle(j);
+						if (userStyle == null && j > 0) userStyle = layout.getStyle(j - 1);
+						if (userStyle == null && j + 1 < length) userStyle = layout.getStyle(j + 1);
+						if (userStyle == null) {
+							layout.setStyle(imeStyle, j, j);
+						} else {
+							TextStyle newStyle = new TextStyle(imeStyle);
+							if (newStyle.font == null) newStyle.font = userStyle.font;
+							if (newStyle.foreground == null) newStyle.foreground = userStyle.foreground;
+							if (newStyle.background == null) newStyle.background = userStyle.background;
+							layout.setStyle(newStyle, j, j);
+						}
 					}
 				}
 			}
@@ -916,6 +933,8 @@ void reset() {
 	bullets = null;
 	bulletsIndices = null;
 	redrawLines = null;
+	imeRanges = null;
+	imeStyles = null;
 }
 void reset(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;

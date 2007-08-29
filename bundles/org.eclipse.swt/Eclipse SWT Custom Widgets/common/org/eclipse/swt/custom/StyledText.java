@@ -4966,6 +4966,8 @@ void handleCompositionChanged(Event event) {
 		compositionStart = caretOffset;
 		compositionLength = 0;
 	}
+	renderer.imeRanges = null;
+	renderer.imeStyles = null;
 	if (length == event.count) {
 		content.replaceTextRange(compositionStart, compositionLength, "");
 		caretOffset = compositionStart;
@@ -4976,18 +4978,12 @@ void handleCompositionChanged(Event event) {
 	} else {
 		content.replaceTextRange(compositionStart, compositionLength, text);
 		compositionLength = length;
-		if (event.styles != null) {
-			int[] ranges = event.ranges;
-			StyleRange[] styles = new StyleRange[event.styles.length]; 
-			for (int i = 0; i < event.styles.length; i++) {
-				styles[i] = new StyleRange (event.styles[i]);
-				ranges[i*2] += compositionStart;
-			}
-			setStyleRanges(0, 0, ranges, styles, false);
-		}
 		caretOffset = compositionStart + event.index;
+		int lineIndex = getCaretLine();
+		renderer.imeRanges = event.ranges;
+		renderer.imeStyles = event.styles;
+		renderer.reset(lineIndex, 1);
 		if (event.wideCaret) {
-			int lineIndex = getCaretLine();
 			int lineOffset = content.getOffsetAtLine(lineIndex);
 			TextLayout layout = renderer.getTextLayout(lineIndex);	
 			caretWidth = layout.getBounds(compositionStart - lineOffset, compositionStart + compositionLength - 1 - lineOffset).width;
