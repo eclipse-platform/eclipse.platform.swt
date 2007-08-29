@@ -102,6 +102,7 @@ public class DragSource extends Widget {
 	Transfer[] transferAgents = new Transfer[0];
 	DragSourceEffect dragEffect;
 	Composite topControl;
+	int hwndDrag;
 	
 	// ole interfaces
 	COMObject iDropSource;
@@ -114,6 +115,7 @@ public class DragSource extends Widget {
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
+	static final TCHAR WindowClass = new TCHAR (0, "#32770", true);
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -297,12 +299,38 @@ private void drag(Event dragEvent) {
 	display.setData(key, new Boolean(true));
 	ImageList imagelist = null;
 	Image image = event.image;
+	hwndDrag = 0;
+	topControl = null;
 	if (image != null) {
 		imagelist = new ImageList(SWT.NONE);
 		imagelist.add(image);
 		topControl = control.getShell();
-		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, 0, 0);
-		Point location = topControl.getLocation();
+		/* 
+		 * Bug in Windows. The image is inverted if the shell is RIGHT_TO_LEFT.
+		 * The fix is to create a transparent window that covers the shell client
+		 * area and use it during the drag to prevent the image from being inverted.
+		 * On XP if the shell is RTL, the image is not displayed.
+		 */
+		int offset = 0;
+		hwndDrag = topControl.handle;
+		if ((topControl.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
+			offset = image.getBounds().width;
+			RECT rect = new RECT ();
+			OS.GetClientRect (topControl.handle, rect);
+			hwndDrag = OS.CreateWindowEx (
+				OS.WS_EX_TRANSPARENT | OS.WS_EX_NOINHERITLAYOUT,
+				WindowClass,
+				null,
+				OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
+				0, 0,
+				rect.right - rect.left, rect.bottom - rect.top, 
+				topControl.handle,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			OS.ShowWindow (hwndDrag, OS.SW_SHOW);
+		}
+		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, offset, 0);
         /*
         * Feature in Windows. When ImageList_DragEnter() is called,
         * it takes a snapshot of the screen  If a drag is started
@@ -317,16 +345,27 @@ private void drag(Event dragEvent) {
 			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 			OS.RedrawWindow (topControl.handle, null, 0, flags);
 		}
-		OS.ImageList_DragEnter(topControl.handle, dragEvent.x - location.x, dragEvent.y - location.y);
+		POINT pt = new POINT ();
+		pt.x = dragEvent.x;
+		pt.y = dragEvent.y;
+		OS.MapWindowPoints (0, hwndDrag, pt, 1);
+		OS.ImageList_DragEnter(hwndDrag, pt.x, pt.y);
 	}
-	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
-	if (imagelist != null) {
-		OS.ImageList_DragLeave(topControl.handle);
-		OS.ImageList_EndDrag();
-		imagelist.dispose();
-		topControl = null;
+	int result = COM.DRAGDROP_S_CANCEL;
+	try {
+		result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
+	} finally {
+		// ensure that we don't leave transparent window around
+		if (hwndDrag != 0) {
+			OS.ImageList_DragLeave(hwndDrag);
+			OS.ImageList_EndDrag();
+			imagelist.dispose();
+			if (hwndDrag != topControl.handle) OS.DestroyWindow(hwndDrag);
+			hwndDrag = 0;
+			topControl = null;
+		}
+		display.setData(key, oldValue);
 	}
-	display.setData(key, oldValue);
 	int operation = osToOp(pdwEffect[0]);
 	if (dataEffect == DND.DROP_MOVE) {
 		operation = (operation == DND.DROP_NONE || operation == DND.DROP_COPY) ? DND.DROP_TARGET_MOVE : DND.DROP_MOVE;
@@ -453,8 +492,9 @@ private int GiveFeedback(int dwEffect) {
 }
 
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
+	if (topControl != null && topControl.isDisposed()) return COM.DRAGDROP_S_CANCEL;
 	if (fEscapePressed != 0){
-		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
+		if (hwndDrag != 0) OS.ImageList_DragLeave(hwndDrag);
 		return COM.DRAGDROP_S_CANCEL;
 	}
 	/*
@@ -466,15 +506,15 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 //	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if ((grfKeyState & mask) == 0) {
-		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
+		if (hwndDrag != 0) OS.ImageList_DragLeave(hwndDrag);
 		return COM.DRAGDROP_S_DROP;
 	}
 	
-	if (topControl != null) {
-		Display display = getDisplay();
-		Point pt = display.getCursorLocation();
-		Point location = topControl.getLocation();
-		OS.ImageList_DragMove(pt.x - location.x, pt.y - location.y);
+	if (hwndDrag != 0) {
+		POINT pt = new POINT ();
+		OS.GetCursorPos (pt);
+		OS.MapWindowPoints (0, hwndDrag, pt, 1);
+		OS.ImageList_DragMove(pt.x, pt.y);
 	}
 	return COM.S_OK;
 }
