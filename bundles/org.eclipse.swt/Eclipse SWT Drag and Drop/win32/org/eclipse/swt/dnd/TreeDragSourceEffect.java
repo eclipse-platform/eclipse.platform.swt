@@ -86,7 +86,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			for (int i = 1; i < count; i++) {
 				bounds = bounds.union(selection[i].getBounds(0));
 			}
-			int hDC = OS.GetDC(0);
+			int hDC = OS.GetDC(tree.handle);
 			int hDC1 = OS.CreateCompatibleDC(hDC);
 			int bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
 			int hOldBitmap = OS.SelectObject(hDC1, bitmap);
@@ -104,7 +104,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			}
 			OS.SelectObject(hDC1, hOldBitmap);
 			OS.DeleteDC (hDC1);
-			OS.ReleaseDC (0, hDC);
+			OS.ReleaseDC (tree.handle, hDC);
 			Display display = tree.getDisplay();
 			dragSourceImage = Image.win32_new(display, SWT.BITMAP, bitmap);
 			return dragSourceImage;

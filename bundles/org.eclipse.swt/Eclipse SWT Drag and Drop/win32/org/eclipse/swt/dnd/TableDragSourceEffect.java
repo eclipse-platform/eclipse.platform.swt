@@ -89,6 +89,11 @@ public class TableDragSourceEffect extends DragSourceEffect {
 			}
 			int hDC = OS.GetDC(0);
 			int hDC1 = OS.CreateCompatibleDC(hDC);
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+				if ((table.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
+					OS.SetLayout(hDC1, OS.LAYOUT_RTL | OS.LAYOUT_BITMAPORIENTATIONPRESERVED);
+				}
+			}
 			int bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
 			int hOldBitmap = OS.SelectObject(hDC1, bitmap);
 			RECT rect = new RECT();
