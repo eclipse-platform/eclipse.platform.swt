@@ -102,7 +102,7 @@ public class DragSource extends Widget {
 	Transfer[] transferAgents = new Transfer[0];
 	DragSourceEffect dragEffect;
 	Composite topControl;
-	int hwndDrag;
+	int /*long*/ hwndDrag;
 	
 	// ole interfaces
 	COMObject iDropSource;
