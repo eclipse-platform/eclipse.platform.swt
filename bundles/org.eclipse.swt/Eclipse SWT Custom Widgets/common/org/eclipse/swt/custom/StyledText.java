@@ -4966,17 +4966,18 @@ void handleCompositionChanged(Event event) {
 		compositionStart = caretOffset;
 		compositionLength = 0;
 	}
+	int oldLength = compositionLength;
+	compositionLength = 0;
 	renderer.imeRanges = null;
 	renderer.imeStyles = null;
 	if (length == event.count) {
-		content.replaceTextRange(compositionStart, compositionLength, "");
+		content.replaceTextRange(compositionStart, oldLength, "");
 		caretOffset = compositionStart;
 		compositionStart = -1;
-		compositionLength = 0;
 		caretWidth = 0;
 		caretDirection = SWT.NULL;
 	} else {
-		content.replaceTextRange(compositionStart, compositionLength, text);
+		content.replaceTextRange(compositionStart, oldLength, text);
 		compositionLength = length;
 		caretOffset = compositionStart + event.index;
 		int lineIndex = getCaretLine();

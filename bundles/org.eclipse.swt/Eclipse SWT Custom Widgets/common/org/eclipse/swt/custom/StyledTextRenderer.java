@@ -840,28 +840,45 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
-	if (styledText != null && imeRanges != null && imeStyles != null) {
+	if (styledText != null) {
 		int compositionStart = styledText.compositionStart;
 		int compositionLength = styledText.compositionLength;
 		if (compositionStart != -1 && compositionLength > 0) {
 			int compositionLine = content.getLineAtOffset(compositionStart);
 			if (compositionLine == lineIndex) {
-				for (int i = 0; i < imeStyles.length; i++) {
-					int start = imeRanges[i*2] + compositionStart - lineOffset;
-					int end = start + imeRanges[i*2+1] - 1;
-					TextStyle imeStyle = imeStyles[i], userStyle;
-					for (int j = start; j <= end; j++) {
-						userStyle = layout.getStyle(j);
-						if (userStyle == null && j > 0) userStyle = layout.getStyle(j - 1);
-						if (userStyle == null && j + 1 < length) userStyle = layout.getStyle(j + 1);
-						if (userStyle == null) {
-							layout.setStyle(imeStyle, j, j);
-						} else {
-							TextStyle newStyle = new TextStyle(imeStyle);
-							if (newStyle.font == null) newStyle.font = userStyle.font;
-							if (newStyle.foreground == null) newStyle.foreground = userStyle.foreground;
-							if (newStyle.background == null) newStyle.background = userStyle.background;
-							layout.setStyle(newStyle, j, j);
+				if (imeRanges != null && imeStyles != null) {
+					for (int i = 0; i < imeStyles.length; i++) {
+						int start = imeRanges[i*2] + compositionStart - lineOffset;
+						int end = start + imeRanges[i*2+1] - 1;
+						TextStyle imeStyle = imeStyles[i], userStyle;
+						for (int j = start; j <= end; j++) {
+							userStyle = layout.getStyle(j);
+							if (userStyle == null && j > 0) userStyle = layout.getStyle(j - 1);
+							if (userStyle == null && j + 1 < length) userStyle = layout.getStyle(j + 1);
+							if (userStyle == null) {
+								layout.setStyle(imeStyle, j, j);
+							} else {
+								TextStyle newStyle = new TextStyle(imeStyle);
+								if (newStyle.font == null) newStyle.font = userStyle.font;
+								if (newStyle.foreground == null) newStyle.foreground = userStyle.foreground;
+								if (newStyle.background == null) newStyle.background = userStyle.background;
+								layout.setStyle(newStyle, j, j);
+							}
+						}
+					}
+				} else {
+					int start = compositionStart - lineOffset;
+					int end = start + compositionLength - 1;
+					TextStyle userStyle = layout.getStyle(start);
+					if (userStyle == null) {
+						if (start > 0) userStyle = layout.getStyle(start - 1);
+						if (userStyle == null && end + 1 < length) userStyle = layout.getStyle(end + 1);
+						if (userStyle != null) {
+							TextStyle newStyle = new TextStyle();
+							newStyle.font = userStyle.font;
+							newStyle.foreground = userStyle.foreground;
+							newStyle.background = userStyle.background;
+							layout.setStyle(newStyle, start, end);
 						}
 					}
 				}
