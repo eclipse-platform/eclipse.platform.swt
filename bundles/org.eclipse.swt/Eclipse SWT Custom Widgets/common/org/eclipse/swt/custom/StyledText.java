@@ -1839,8 +1839,8 @@ boolean checkDragDetect(Event event) {
 		if (event.button != 1) return false;
 	}
 	if (selection.x == selection.y) return false;
-	int offset = getOffsetAtPoint(event.x, event.y);
-	if (offset > selection.x && offset < selection.y) {
+	int offset = getOffsetAtPoint(event.x, event.y, null);
+	if (selection.x <= offset && offset < selection.y) {
 		return dragDetect(event);
 	}
 	return false;
@@ -3859,6 +3859,28 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 	}
 	renderer.disposeTextLayout(layout);
 	return offsetInLine + content.getOffsetAtLine(lineIndex);
+}
+int getOffsetAtPoint(int x, int y, int[] trailing) {
+	if (y < topMargin || x < leftMargin || y > clientAreaHeight  - bottomMargin || x > clientAreaWidth - rightMargin) {
+		return -1;
+	}
+	int bottomIndex = getPartialBottomIndex();
+	int height = getLinePixel(bottomIndex + 1);
+	if (y > height) {
+		return -1;
+	}
+	int lineIndex = getLineIndex(y);
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	TextLayout layout = renderer.getTextLayout(lineIndex);	
+	x = x + horizontalScrollOffset - leftMargin ;
+	y = y - getLinePixel(lineIndex);
+	int offset = layout.getOffset(x, y, trailing);
+	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offset));
+	renderer.disposeTextLayout(layout);
+	if (rect.x  <= x && x <  rect.x + rect.width) {
+		return offset + lineOffset;
+	}
+	return -1;
 }
 /**
  * Returns the orientation of the receiver.
