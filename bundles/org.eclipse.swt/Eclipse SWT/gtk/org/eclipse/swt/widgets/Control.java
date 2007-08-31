@@ -373,11 +373,7 @@ void checkBorder () {
 }
 
 void checkMirrored () {
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if ((state & CANVAS) != 0) {
-			style |= SWT.MIRRORED;
-		}
-	}
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.MIRRORED;
 }
 
 int /*long*/ childStyle () {
@@ -4391,7 +4387,8 @@ void updateLayout (boolean all) {
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
-			if ((OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) && ((state & OBSCURED) == 0)) {
+			if (((OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) && ((state & OBSCURED) == 0)) ||
+				((style & SWT.MIRRORED) != 0)) {
 				Control control = findBackgroundControl ();
 				if (control != null && control.backgroundImage != null) {
 					GdkEventExpose gdkEvent = new GdkEventExpose ();
@@ -4404,8 +4401,16 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 					int[] dest_x = new int[1], dest_y = new int[1];
 					OS.gtk_widget_translate_coordinates (paintHandle (), control.paintHandle (), 0, 0, dest_x, dest_y);
 					OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-					OS.gdk_gc_set_ts_origin (gdkGC, -dest_x [0], -dest_y [0]);
-					OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap); 
+					int /*long*/ pixmap = control.backgroundImage.pixmap;
+					if ((style & SWT.MIRRORED) != 0) {		
+						int [] w = new int [1], h = new int [1];
+						OS.gdk_drawable_get_size (pixmap, w, h);
+						dest_x[0] = getClientWidth () - w[0];
+						OS.gdk_gc_set_ts_origin (gdkGC, dest_x [0], dest_y [0]);
+					} else {
+						OS.gdk_gc_set_ts_origin (gdkGC, -dest_x [0], -dest_y [0]);
+					}
+					OS.gdk_gc_set_tile (gdkGC, pixmap); 
 					OS.gdk_draw_rectangle (window, gdkGC, 1, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
 					OS.g_object_unref (gdkGC);
 				}

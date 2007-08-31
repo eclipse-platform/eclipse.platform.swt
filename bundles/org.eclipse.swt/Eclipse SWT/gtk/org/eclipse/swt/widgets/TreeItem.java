@@ -370,6 +370,7 @@ public Rectangle getBounds (int index) {
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientArea ().width - rect.width - rect.x;
 	
 	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
@@ -432,6 +433,7 @@ public Rectangle getBounds () {
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientArea ().width - rect.width - rect.x;
 	int right = rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];
@@ -692,7 +694,7 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
-	
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientArea ().width - rect.width - rect.x;
 	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
@@ -922,6 +924,7 @@ public Rectangle getTextBounds (int index) {
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientArea ().width - rect.width - rect.x;
 	int right = rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];

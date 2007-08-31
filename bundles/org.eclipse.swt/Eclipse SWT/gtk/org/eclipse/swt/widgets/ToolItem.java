@@ -321,6 +321,7 @@ public Rectangle getBounds () {
 		width = OS.GTK_WIDGET_WIDTH (topHandle);
 		height = OS.GTK_WIDGET_HEIGHT (topHandle);		
 	}
+	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -521,8 +522,8 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 						event.detail = SWT.ARROW;
 						int /*long*/ topHandle = topHandle ();
 						event.x = OS.GTK_WIDGET_X (topHandle);
+						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - OS.GTK_WIDGET_WIDTH (topHandle) - event.x;
 						event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
-						if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) event.x +=  OS.GTK_WIDGET_WIDTH (topHandle);
 					}
 					break;
 				}

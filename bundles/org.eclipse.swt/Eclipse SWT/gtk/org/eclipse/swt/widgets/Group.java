@@ -88,12 +88,6 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
-void checkMirrored() {
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		style |= SWT.MIRRORED;
-	}
-}
-
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }

@@ -312,6 +312,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 					int /*long*/ topHandle = item.topHandle ();
 					event.x = OS.GTK_WIDGET_X (topHandle);
 					event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+					if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - OS.GTK_WIDGET_WIDTH(topHandle) - event.x;
 					item.postEvent (SWT.Selection, event);
 					return result;
 				}
@@ -321,6 +322,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		case OS.GDK_Right: next = true; break;
 		default: return result;
 	}
+	if ((style & SWT.MIRRORED) != 0) next= !next;
 	int start = index, offset = next ? 1 : -1;
 	while ((index = (index + offset + length) % length) != start) {
 		ToolItem item = items [index];

@@ -314,7 +314,9 @@ void drawRectangles (Rectangle [] rects) {
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
-		OS.gdk_draw_rectangle (window, gc, 0, rect.x, rect.y, rect.width, rect.height);
+		int x = rect.x;
+		if (parent != null && (parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - rect.width - x;
+		OS.gdk_draw_rectangle (window, gc, 0, x, rect.y, rect.width, rect.height);
 	}
 	OS.g_object_unref (gc);
 }
@@ -402,6 +404,9 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		Event event = new Event ();
 		event.x = oldX + xChange;
 		event.y = oldY + yChange;
+		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+			event.x = parent.getClientWidth () - event.width - event.x;
+		}
 		if ((style & SWT.RESIZE) != 0) {
 			resizeRectangles (xChange, yChange);
 			sendEvent (SWT.Resize, event);
@@ -625,6 +630,7 @@ void moveRectangles (int xChange, int yChange) {
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) yChange = 0;
 	if (xChange == 0 && yChange == 0) return;
+	if (parent != null && (parent.style & SWT.MIRRORED) != 0) xChange *= -1;
 	bounds.x += xChange; bounds.y += yChange;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
@@ -797,6 +803,7 @@ public void removeKeyListener(KeyListener listener) {
 
 void resizeRectangles (int xChange, int yChange) {
 	if (bounds == null) return;
+	if (parent != null && (parent.style & SWT.MIRRORED) != 0) xChange *= -1;
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.

@@ -344,6 +344,10 @@ void drawBackground (GC gc, int x, int y, int width, int height) {
 				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
 				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
 				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+				if ((data.style & SWT.MIRRORED) != 0) {
+					double[] matrix = {-1, 0, 0, 1, 0, 0};
+					Cairo.cairo_pattern_set_matrix(pattern, matrix);
+				}
 				Cairo.cairo_set_source (cairo, pattern);
 				Cairo.cairo_surface_destroy (surface);
 				Cairo.cairo_pattern_destroy (pattern);

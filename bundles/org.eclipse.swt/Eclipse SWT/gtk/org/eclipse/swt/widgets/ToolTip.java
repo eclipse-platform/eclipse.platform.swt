@@ -159,6 +159,14 @@ void configure () {
 				w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
 				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
 				0, 5+t};
+			if ((parent.style & SWT.MIRRORED) != 0) {
+				x -= w - 36;
+				polyline[12] = w-36; 
+				polyline[14] = w-16; 
+				polyline[16] = w-15; 
+				borderPolygon[12] = w-35;
+				borderPolygon[14] = borderPolygon[16]  = w-16;
+			}
 			OS.gtk_window_move (handle, Math.max(0, x - 17), y);
 		} else {
 			polyline = new int[] {
@@ -175,6 +183,13 @@ void configure () {
 				35, h-1, 17, h+TIP_HEIGHT-2, 17, h-1,
 				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
 				0, 5};
+			if ((parent.style & SWT.MIRRORED) != 0) {
+				x -= w - 36;
+				polyline [42] =  polyline [44] =  w-16;
+				polyline [46] = w-35;
+				borderPolygon[36] = borderPolygon[38] = w-17;
+				borderPolygon [40] = w-35;
+			}
 			OS.gtk_window_move (handle, Math.max(0, x - 17), y - h - TIP_HEIGHT);
 		}
 	} else {
@@ -194,6 +209,13 @@ void configure () {
 				w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
 				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
 				0, 5+t};
+			if ((parent.style & SWT.MIRRORED) != 0) {
+				x += w - 35;
+				polyline [12] = polyline [14] = 16;
+				polyline [16] = 35;
+				borderPolygon[12] =  borderPolygon[14] = 16;
+				borderPolygon [16] = 35;
+			}
 			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y);
 		} else {
 			polyline = new int[] {
@@ -210,6 +232,13 @@ void configure () {
 				w-17, h-1, w-17, h+TIP_HEIGHT-2, w-36, h-1,
 				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
 				0, 5};
+			if ((parent.style & SWT.MIRRORED) != 0) {
+				x += w - 35;
+				polyline [42] =  35;
+				polyline [44] = polyline [46] = 16;
+				borderPolygon[36] = 35;
+				borderPolygon[38] = borderPolygon [40] = 17;
+			}
 			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
 		}
 	}

@@ -2483,6 +2483,7 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 					gc.setForeground (item.getForeground (columnIndex));
 				}
 				gc.setFont (item.getFont (columnIndex));
+				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
 				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 				Event event = new Event ();
 				event.item = item;
@@ -2568,6 +2569,7 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 					gc.setForeground (foreground);
 				}
 				gc.setFont (item.getFont (columnIndex));
+				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
 				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 				Event event = new Event ();
 				event.item = item;
