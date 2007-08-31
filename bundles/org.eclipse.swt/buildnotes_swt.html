@@ -11,42 +11,72 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
+
+
+
+<h2> SWT Build 3.4 08a - Tuesday September 04, 2007</h2>
+<blockquote>
+179168 	Focus change will make the uncomposed text lost in IME
+<br>187125 [DND] Image effect not showing in RTL
+<br>193515 	[DND] Cannot drag a single character selection in StyledText
+<br>196487 	Korean input text does not display correctly with C4EB
+<br>199099 	ExpandBar is not high contrast complient. Cannot manually fix this issue.
+<br>199156 	ExpandBar does not scroll properly
+<br>201326 	computeSize on empty Link widget returns 0 for height
+</blockquote>
+
 <h2> SWT Build 3.4 08 - Tuesday August 28, 2007</h2>
 <blockquote>
 108591    	SWT StyledText does not support inline Input method
+<br>148530 	Text SWT.MULTI with backgroundimage don't show deleted characters
 <br>165108 	Spinner can not apply the value that input to text-box.
 <br>180686 	DBCS3.3: strikeout rendering issue on WindowsVista
 <br>189292 	[DND] FileTransfer disables image feedback
 <br>192861 	VM crash opening browser widget with much html
 <br>196791 	SWT ToolTip does not render Arabian text tooltip correctly on SLED10 Linux
 <br>200101 	TableColumn sets image when SWT.CENTER alignment is used.
+<br>200153 	Provide AllowSetForegroundWindow in org.eclipse.swt.internal.win32.OS
+<br>200694 	TableItem.getBounds() wrong.
 <br>201181 	Basic Authentication of XMLHttpRequest crashes Eclipse
 <br>201217 	NPE in Canvas.kEventControlSetFocusPart(Canvas.java:150)
 </blockquote>
 
 <h2> SWT Build 3.4 07 - Tuesday August 21, 2007</h2>
 <blockquote>
-164755  Inconsistent z-order for ON_TOP shells between win32 and MacOS
+37031 	Full screen exclusive (not maximized) support for SWT
+<br>45294 	[Jobs] NPE in .log using 1021
+<br>76182 	Display.setSynchronizer considered harmful
+<br>140270 	Mouse wheel does not fire selection event on Scale
+<br>150365 	setImeInputMode() is not correct with MS-IME2000
+<br>164755  Inconsistent z-order for ON_TOP shells between win32 and MacOS
+<br>189149 	Scale widget freaks out if layout() is called from a selection listener.
+<br>194707 	Display.getDefault() deadlocks with Display constructor
+<br>199109 	Changing foreground color on Canvas does not work
 <br>194146 	CVSUIPlugin.stop not being called
 <br>196979 	Shell.getBounds() wrong when shell is maximized.
+<br>197964 	Table.setBackground() fails if TableItem.setBackground() was used
 </blockquote>
 
 
 <h2> SWT Build 3.4 06b - Tuesday August 14, 2007</h2>
 <blockquote>
 TextLayout improvements
+<br>199463 	org.eclipse.swt.List is not keyboard-only accessable
 </blockquote>
 
 <h2> SWT Build 3.4 06a - Wednesday August 08, 2007</h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
-198922    	CTabFolder code causes Widget is disposed exception
+7747    Arrow keys should switch focus between buttons
+<br>198922    	CTabFolder code causes Widget is disposed exception
+<br>199133 	Combo#cut() does not place deleted text to clipboard
 </blockquote>
 
 <h2> SWT Build 3.4 06 - Thursday August 02, 2007</h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 165108  Spinner can not apply the value that input to text-box.
+<br>178100 	Spinner.getSelection does not return correct value within Modify listener
 <br>180686 	DBCS3.3: strikeout rendering issue on WindowsVista
 <br>194275 	CTabFolder close box should highlight without needing mouse move
 </blockquote>
