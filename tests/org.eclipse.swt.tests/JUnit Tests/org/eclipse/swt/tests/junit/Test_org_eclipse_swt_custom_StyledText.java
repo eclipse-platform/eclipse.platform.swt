@@ -1153,8 +1153,9 @@ public void test_getOffsetAtLineI() {
 public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	boolean exceptionThrown = false;
 	Point location;
+	final int XINSET = isBidi() ? 2 : 0;
 	
-	assertTrue(":a:", text.getOffsetAtLocation(new Point(0, 0)) == 0);
+	assertTrue(":a:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 0);
 	try {
 		text.getOffsetAtLocation(new Point(-1, 0));
 	}
@@ -1198,12 +1199,12 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	exceptionThrown = false;
 
 	text.setTopIndex(1);
-	assertTrue(":i:", text.getOffsetAtLocation(new Point(0, -5)) == 0);
-	assertTrue(":j:", text.getOffsetAtLocation(new Point(0, 0)) == 7);
+	assertTrue(":i:", text.getOffsetAtLocation(new Point(XINSET, -5)) == 0);
+	assertTrue(":j:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 7);
 	
 	text.setHorizontalIndex(1);
-	assertTrue(":k:", text.getOffsetAtLocation(new Point(-5, -5)) == 0);
-	assertTrue(":l:", text.getOffsetAtLocation(new Point(-5, 0)) == 7);
+	assertTrue(":k:", text.getOffsetAtLocation(new Point(XINSET + -5, -5)) == 0);
+	assertTrue(":l:", text.getOffsetAtLocation(new Point(XINSET + -5, 0)) == 7);
 
 	// 1GL4ZVE
 	assertTrue(":m:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);

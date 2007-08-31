@@ -3785,30 +3785,17 @@ public int getOffsetAtLocation(Point point) {
 	if (point == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	// is y above first line or is x before first column?
-	if (point.y + getVerticalScrollOffset() < 0 || point.x + horizontalScrollOffset < 0) {
+	int[] trailing = new int[1];
+	int offset = getOffsetAtPoint(point.x, point.y, trailing);
+	if (offset == -1) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int bottomIndex = getLineIndex(clientAreaHeight);
-	int height = getLinePixel(bottomIndex) + renderer.getLineHeight(bottomIndex);
-	if (point.y > height) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
-	}
-	int lineIndex = getLineIndex(point.y);
+	int lineIndex = content.getLineAtOffset(offset);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
-	TextLayout layout = renderer.getTextLayout(lineIndex);	
-	int[] trailing = new int[1];
-	int x = point.x + horizontalScrollOffset - leftMargin ;
-	int y = point.y - getLinePixel(lineIndex);
-	int offsetInLine = layout.getOffset(x, y, trailing);
+	int offsetInLine = offset - lineOffset;
 	String line = content.getLine(lineIndex);
 	if (offsetInLine != line.length() - 1) {
 		offsetInLine = Math.min(line.length(), offsetInLine + trailing[0]);		
-	}
-	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offsetInLine));
-	renderer.disposeTextLayout(layout);
-	if (x > rect.x + rect.width) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	return lineOffset + offsetInLine;
 }
@@ -3861,8 +3848,8 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 	return offsetInLine + content.getOffsetAtLine(lineIndex);
 }
 int getOffsetAtPoint(int x, int y, int[] trailing) {
-	if (y < topMargin || x < leftMargin || y > clientAreaHeight  - bottomMargin || x > clientAreaWidth - rightMargin) {
-		return -1;
+	if (y + getVerticalScrollOffset() < 0 || x + horizontalScrollOffset < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int bottomIndex = getPartialBottomIndex();
 	int height = getLinePixel(bottomIndex + 1);
@@ -3872,12 +3859,12 @@ int getOffsetAtPoint(int x, int y, int[] trailing) {
 	int lineIndex = getLineIndex(y);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(lineIndex);	
-	x = x + horizontalScrollOffset - leftMargin ;
-	y = y - getLinePixel(lineIndex);
+	x += horizontalScrollOffset - leftMargin ;
+	y -= getLinePixel(lineIndex);
 	int offset = layout.getOffset(x, y, trailing);
 	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offset));
 	renderer.disposeTextLayout(layout);
-	if (rect.x  <= x && x <  rect.x + rect.width) {
+	if (rect.x  <= x && x <=  rect.x + rect.width) {
 		return offset + lineOffset;
 	}
 	return -1;
@@ -3907,7 +3894,7 @@ int getPartialBottomIndex() {
 	if (isFixedLineHeight()) {
 		int lineHeight = renderer.getLineHeight();
 		int partialLineCount = Compatibility.ceil(clientAreaHeight, lineHeight);
-		return Math.min(content.getLineCount(), topIndex + partialLineCount) - 1;
+		return Math.max(0, Math.min(content.getLineCount(), topIndex + partialLineCount) - 1);
 	}
 	return getLineIndex(clientAreaHeight - bottomMargin);
 }
@@ -4948,29 +4935,9 @@ void internalRedrawRange(int start, int length) {
 	}
 }
 void handleCompositionHittest (Event event) {
-	if (event.y < topMargin || event.x < leftMargin || event.y > clientAreaHeight  - bottomMargin || event.x > clientAreaWidth - rightMargin) {
-		event.hitTest = SWT.HITTEST_OUTSIDE_TEXT;
-		return;
-	}
-	int bottomIndex = getPartialBottomIndex();
-	int height = getLinePixel(bottomIndex + 1);
-	if (event.y > height) {
-		event.hitTest = SWT.HITTEST_OUTSIDE_TEXT;
-		return;
-	}
-	int lineIndex = getLineIndex(event.y);
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	TextLayout layout = renderer.getTextLayout(lineIndex);	
-	int[] trailing = new int[1];
-	int x = event.x + horizontalScrollOffset - leftMargin ;
-	int y = event.y - getLinePixel(lineIndex);
-	int offset = layout.getOffset(x, y, trailing);
-	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offset));
-	offset += lineOffset;
-	renderer.disposeTextLayout(layout);
-	if (x > rect.x + rect.width || x < rect.x) {
-		event.hitTest = SWT.HITTEST_OUTSIDE_TEXT;
-	} else {
+	int[] trailing = new int [1];
+	int offset = getOffsetAtPoint(event.x, event.y, trailing);
+	if (offset != -1) {
 		if (compositionStart <= offset && offset < compositionStart + compositionLength) {
 			event.hitTest = SWT.HITTEST_INSIDE_COMPOSITION;
 			event.index = offset - compositionStart;
@@ -4979,6 +4946,8 @@ void handleCompositionHittest (Event event) {
 			event.index = offset;
 		}
 		event.trailing = trailing[0];
+	} else {
+		event.hitTest = SWT.HITTEST_OUTSIDE_TEXT;
 	}
 }
 void handleCompositionChanged(Event event) {
