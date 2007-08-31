@@ -256,25 +256,34 @@ void drawWidget (GC gc, RECT clipRect) {
 		int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 		drawFocus = (uiState & OS.UISF_HIDEFOCUS) == 0;
 	}
-	int /*long*/ hCaptionFont = 0, oldFont = 0;	
+	int /*long*/ hCurrentFont = 0, oldFont = 0;	
 	if (hTheme == 0) {
-		if (!OS.IsWinCE && hFont == 0) {
-			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-			info.cbSize = NONCLIENTMETRICS.sizeof;
-			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-				hCaptionFont = OS.CreateFontIndirect (logFont);
-				oldFont = OS.SelectObject (gc.handle, hCaptionFont);
+		if (hFont != 0) {
+			hCurrentFont = hFont;
+		} else {
+			if (!OS.IsWinCE) {
+				NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+				info.cbSize = NONCLIENTMETRICS.sizeof;
+				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+					hCurrentFont = OS.CreateFontIndirect (logFont);
+				}
 			}
+		}
+		if (hCurrentFont != 0) {
+			oldFont = OS.SelectObject (gc.handle, hCurrentFont);
+		}
+		if (foreground != -1) {
+			OS.SetTextColor (gc.handle, foreground);
 		}
 	}
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		item.drawItem (gc, hTheme, clipRect, item == focusItem && drawFocus);
 	}
-	if (hCaptionFont != 0) {
+	if (hCurrentFont != 0) {
 		OS.SelectObject (gc.handle, oldFont);
-		OS.DeleteObject (hCaptionFont);
+		if (hCurrentFont != hFont) OS.DeleteObject (hCurrentFont);
 	}
 }
 

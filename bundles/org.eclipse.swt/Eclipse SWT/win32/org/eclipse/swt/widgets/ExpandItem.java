@@ -122,7 +122,7 @@ private void drawChevron (int /*long*/ hDC, RECT rect) {
 	rect.top += 4;
 	rect.right -= 4;
 	rect.bottom -= 4;
-	int /*long*/ hPen = OS.CreatePen (OS.PS_SOLID, 1, parent.foreground);
+	int /*long*/ hPen = OS.CreatePen (OS.PS_SOLID, 1, parent.getForegroundPixel ());
 	int /*long*/ oldPen = OS.SelectObject (hDC, hPen);
 	int [] polyline1, polyline2;
 	if (expanded) {
