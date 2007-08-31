@@ -560,6 +560,42 @@ void showItem (ExpandItem item) {
 	layoutItems (index + 1, true);
 }
 
+void showFocus (boolean up) {
+	RECT rect = new RECT();
+	OS.GetClientRect (handle, rect);
+	int height = rect.bottom - rect.top;
+	int updateY = 0;
+	if (up) {
+		if (focusItem.y < 0) {
+			updateY = Math.min (yCurrentScroll, -focusItem.y);
+		}
+	} else {
+		int itemHeight = focusItem.y + getBandHeight ();
+		if (focusItem.expanded) {
+			if (height >= getBandHeight () + focusItem.height) {
+				itemHeight += focusItem.height;
+			}
+		}
+		if (itemHeight > height) {
+			updateY = height - itemHeight;
+		}
+	}
+	if (updateY != 0) {
+		yCurrentScroll = Math.max (0, yCurrentScroll - updateY);
+		if ((style & SWT.V_SCROLL) != 0) {
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_POS;
+			info.nPos = yCurrentScroll;
+			OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
+		}
+		OS.ScrollWindowEx (handle, 0, updateY, null, null, 0, null, OS.SW_SCROLLCHILDREN | OS.SW_INVALIDATE);
+		for (int i = 0; i < itemCount; i++) {
+			items [i].y += updateY;
+		}
+	}
+}
+
 TCHAR windowClass () {
 	return display.windowClass;
 }
@@ -587,6 +623,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				focusItem.redraw (true);
 				focusItem = items [focusIndex - 1];
 				focusItem.redraw (true);
+				showFocus (true);
 				return LRESULT.ZERO;
 			}
 			break;
@@ -597,6 +634,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				focusItem.redraw (true);
 				focusItem = items [focusIndex + 1];
 				focusItem.redraw (true);
+				showFocus (false);
 				return LRESULT.ZERO;
 			}
 			break;
