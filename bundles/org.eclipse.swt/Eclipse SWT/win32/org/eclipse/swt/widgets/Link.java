@@ -134,16 +134,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int /*long*/ hDC = OS.GetDC (handle);
 		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		int /*long*/ oldFont = OS.SelectObject (hDC, newFont);
-		TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
-		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-		if (wHint != SWT.DEFAULT) {
-			flags |= OS.DT_WORDBREAK;
-			rect.right = wHint;
+		if (text.length () > 0) {
+			TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
+			RECT rect = new RECT ();
+			int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+			if (wHint != SWT.DEFAULT) {
+				flags |= OS.DT_WORDBREAK;
+				rect.right = wHint;
+			}
+			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			width = rect.right - rect.left;
+			height = rect.bottom;
+		} else {
+			TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW () : new TEXTMETRICA ();
+			OS.GetTextMetrics (hDC, lptm);
+			width = 0;
+			height = lptm.tmHeight;
 		}
-		OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-		width = rect.right - rect.left;
-		height = rect.bottom;
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	} else {
