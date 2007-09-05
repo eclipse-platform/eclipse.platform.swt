@@ -1156,7 +1156,7 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	return sendIMKeyEvent (type, keyEvent, chars) != null;
 }
 
-char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
+char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char [] chars) {
 	int index = 0, count = 0, state = 0;
 	int /*long*/ ptr = 0;
 	if (keyEvent == null) {
