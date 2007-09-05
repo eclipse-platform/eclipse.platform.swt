@@ -143,6 +143,7 @@ public class Display extends Device {
 	/* Input method resources */
 	Control imControl;
 	int /*long*/ preeditWindow, preeditLabel;
+	boolean inComposition;
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);

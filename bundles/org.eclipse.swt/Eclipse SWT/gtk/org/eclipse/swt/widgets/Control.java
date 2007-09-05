@@ -2433,7 +2433,7 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 		OS.memmove (buffer, text, length);
 		chars = Converter.mbcsToWcs (null, buffer);
 	}
-	if (hooks(SWT.ImeComposition)) {
+	if (hooks(SWT.ImeComposition) && display.inComposition) {
 		Event event = new Event();
 		event.detail = SWT.COMPOSITION_CHANGED;
 		event.text = chars != null ? new String(chars) : "";
@@ -2445,6 +2445,7 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 	if (chars != null && doit) {
 		sendIMKeyEvent (SWT.KeyDown, null, chars);
 	}
+	display.inComposition = false;
 	return 0;
 }
 
@@ -2753,6 +2754,7 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 			OS.g_free (preeditString [0]);
 		}
 		if (chars != null) {
+			display.inComposition = true;
 			Event event = new Event ();
 			event.detail = SWT.COMPOSITION_CHANGED;
 			event.text = new String (chars);
