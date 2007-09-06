@@ -1442,6 +1442,7 @@ public class OS extends C {
 	public static final int SPI_GETWORKAREA = 0x30;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
+	public static final int SPI_GETCARETWIDTH = 0x2006;
 	public static final int SPI_SETSIPINFO = 224;
 	public static final int SPI_SETHIGHCONTRAST = 67;
 	public static final int SRCAND = 0x8800c6;
@@ -3597,6 +3598,7 @@ public static final native int /*long*/ LoadLibraryW (char [] lpLibFileName);
 public static final native int /*long*/ LoadLibraryA (byte [] lpLibFileName);
 public static final native int /*long*/ LocalFree (int /*long*/ hMem);
 public static final native boolean LockWindowUpdate (int /*long*/ hWndLock);
+public static final native int /*long*/ MAKEWORD(int l, int h);
 public static final native int /*long*/ MAKEWPARAM(int l, int h);
 public static final native int /*long*/ MAKELPARAM(int l, int h);
 public static final native int /*long*/ MAKELRESULT(int l, int h);

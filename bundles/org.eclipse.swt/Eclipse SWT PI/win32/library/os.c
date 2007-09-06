@@ -7724,6 +7724,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(MAKELRESULT)
 }
 #endif
 
+#ifndef NO_MAKEWORD
+JNIEXPORT jint JNICALL OS_NATIVE(MAKEWORD)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, MAKEWORD_FUNC);
+	rc = (jint)MAKEWORD(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, MAKEWORD_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_MAKEWPARAM
 JNIEXPORT jint JNICALL OS_NATIVE(MAKEWPARAM)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

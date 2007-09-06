@@ -493,6 +493,7 @@ typedef enum {
 	LockWindowUpdate_FUNC,
 	MAKELPARAM_FUNC,
 	MAKELRESULT_FUNC,
+	MAKEWORD_FUNC,
 	MAKEWPARAM_FUNC,
 	MARGINS_1sizeof_FUNC,
 	MCIWndRegisterClass_FUNC,

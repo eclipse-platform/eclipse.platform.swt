@@ -590,11 +590,10 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					sendEvent (SWT.ImeComposition, event);
 					if (event.hitTest == SWT.HITTEST_INSIDE_COMPOSITION) {
 						int /*long*/ imeWnd = OS.ImmGetDefaultIMEWnd (handle);
-						int action = OS.IMEMOUSE_LDOWN;
 						int offset = event.index + event.trailing;
 						int trailing = event.trailing > 0 ? 1 : 2;
-						int w = ((action & 0xFF) | (trailing & 0xFF) << 8) | ((offset & 0xFFFF) << 16);
-						OS.SendMessage (imeWnd, WM_MSIME_MOUSE, w, hIMC);
+						int param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
+						OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, hIMC);
 					} else {
 						OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
 					}
