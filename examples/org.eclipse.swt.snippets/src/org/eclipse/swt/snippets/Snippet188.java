@@ -31,9 +31,6 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setLayout(new GridLayout());
-	Button b1 = new Button(shell, SWT.PUSH);
-	b1.setText("top");
-	b1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 	final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 	Composite c = new Composite(sc, SWT.NONE);
@@ -42,10 +39,6 @@ public static void main (String [] args) {
 		Button b = new Button(c, SWT.PUSH);
 		b.setText("Button "+i);
 	}
-	Button b2 = new Button(shell, SWT.PUSH);
-	b2.setText("bottom");
-	b2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-	
 	sc.setContent(c);
 	sc.setExpandHorizontal(true);
 	sc.setExpandVertical(true);
@@ -68,6 +61,7 @@ public static void main (String [] args) {
 	for (int i = 0; i < controls.length; i++) {
 		controls[i].addListener(SWT.Activate, listener);
 	}
+
 	shell.setSize(300, 500);
 	shell.open ();
 	while (!shell.isDisposed ()) {
