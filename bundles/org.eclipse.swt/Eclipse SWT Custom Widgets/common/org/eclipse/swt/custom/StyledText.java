@@ -3849,7 +3849,7 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 }
 int getOffsetAtPoint(int x, int y, int[] trailing) {
 	if (y + getVerticalScrollOffset() < 0 || x + horizontalScrollOffset < 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		return -1;
 	}
 	int bottomIndex = getPartialBottomIndex();
 	int height = getLinePixel(bottomIndex + 1);
