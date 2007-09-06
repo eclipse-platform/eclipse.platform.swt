@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * example snippet: Scroll table when mouse at top or bottom
+ * example snippet: Scroll tree when mouse at top or bottom
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

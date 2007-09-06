@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * A button with text and image
+ * Button example snippet: a Button with text and image
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

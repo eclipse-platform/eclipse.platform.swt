@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Text with underline and strike through
+ * TextLayout example snippet: text with underline and strike through
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

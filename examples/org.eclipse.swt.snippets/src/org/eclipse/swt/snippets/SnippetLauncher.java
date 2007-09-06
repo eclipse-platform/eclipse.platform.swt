@@ -51,6 +51,9 @@ public class SnippetLauncher {
 						} else if (source.indexOf("OpenGL") != -1) {
 							platform = "OpenGL";
 							skip = true;
+						} else if (source.indexOf("JavaXPCOM") != -1) {
+							platform = "JavaXPCOM";
+							skip = true;
 						} else {
 							String [] platforms = {"win32", "motif", "gtk", "photon", "carbon"};
 							for (int p = 0; p < platforms.length; p++) {
