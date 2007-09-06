@@ -319,9 +319,15 @@ void computeRuns (GC gc) {
 			if (start == 0 && i != lineStart && !run.tab) {
 				run = allRuns[--i];
 			} else 	if (start <= 0 && i == lineStart) {
-				i = firstIndice;
-				run = allRuns[i];
-				start = Math.max(1, firstStart);
+				if (lineWidth == wrapWidth && firstIndice > 0) {
+					i = firstIndice - 1;
+					run = allRuns[i];
+					start = run.length;
+				} else {
+					i = firstIndice;
+					run = allRuns[i];
+					start = Math.max(1, firstStart);
+				}
 			}
 			breakRun(run);
 			while (start < run.length) {
