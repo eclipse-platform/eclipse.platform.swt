@@ -305,6 +305,13 @@ void resize () {
 	int /*long*/ hwnd = parent.handle;
 	OS.DestroyCaret ();		
 	int /*long*/ hBitmap = image != null ? image.handle : 0;
+	int width = this.width;
+	if (image == null && width == 0) {
+		int [] buffer = new int [1];
+		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+			width = buffer [0];
+		}
+	}
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	OS.SetCaretPos (x, y);
 	OS.ShowCaret (hwnd);
@@ -375,6 +382,13 @@ void setFocus () {
 	int /*long*/ hwnd = parent.handle;
 	int /*long*/ hBitmap = 0;
 	if (image != null) hBitmap = image.handle;
+	int width = this.width;
+	if (image == null && width == 0) {
+		int [] buffer = new int [1];
+		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+			width = buffer [0];
+		}
+	}
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	move ();
 	setIMEFont ();
