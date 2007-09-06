@@ -922,7 +922,9 @@ boolean setTabGroupFocus () {
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		if (child.isTabItem () && !child.isTabGroup () && child.setTabItemFocus ()) {
+			return true;
+		}
 	}
 	return false;
 }
