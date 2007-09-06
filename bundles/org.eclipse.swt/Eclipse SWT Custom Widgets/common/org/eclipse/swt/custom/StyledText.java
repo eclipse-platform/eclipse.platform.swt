@@ -4974,7 +4974,7 @@ void handleCompositionChanged(Event event) {
 		int lineIndex = getCaretLine();
 		renderer.imeRanges = event.ranges;
 		renderer.imeStyles = event.styles;
-		renderer.reset(lineIndex, 1);
+		resetCache(lineIndex, 1);
 		if (event.wideCaret) {
 			int lineOffset = content.getOffsetAtLine(lineIndex);
 			TextLayout layout = renderer.getTextLayout(lineIndex);	
