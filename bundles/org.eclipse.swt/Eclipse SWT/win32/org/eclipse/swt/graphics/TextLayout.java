@@ -1730,16 +1730,22 @@ public int getOffset (int x, int y, int[] trailing) {
 		if (lineY[line + 1] > y) break;
 	}
 	line = Math.min(line, runs.length - 1);
-	x -= getLineIndent(line);
 	StyleItem[] lineRuns = runs[line];
-	if (x >= lineWidth[line]) x = lineWidth[line] - 1;
-	if (x < 0) x = 0;
-	int width = 0;
-	for (int i = 0; i < lineRuns.length; i++) {
-		StyleItem run = lineRuns[i];
-		if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
-		if (width + run.width > x) {
-			int xRun = x - width;
+	int lineIndent = getLineIndent(line);
+	if (x >= lineIndent + lineWidth[line]) x = lineIndent + lineWidth[line] - 1;
+	if (x < lineIndent) x = lineIndent;
+	int low = -1;
+	int high = lineRuns.length;
+	while (high - low > 1) {
+		int index = ((high + low) / 2);
+		StyleItem run = lineRuns[index];
+		if (run.x > x) {
+			high = index;
+		} else if (run.x + run.width < x) {
+			low = index;
+		} else {
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
+			int xRun = x - run.x;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
 				if (metrics.width > 0) {
@@ -1750,7 +1756,7 @@ public int getOffset (int x, int y, int[] trailing) {
 				}
 			}
 			if (run.tab) {
-				if (trailing != null) trailing[0] = x < (width + run.width / 2) ? 0 : 1;
+				if (trailing != null) trailing[0] = x < (run.x + run.width / 2) ? 0 : 1;
 				return untranslateOffset(run.start);
 			}
 			int cChars = run.length;
@@ -1765,7 +1771,6 @@ public int getOffset (int x, int y, int[] trailing) {
 			if (trailing != null) trailing[0] = piTrailing[0];
 			return untranslateOffset(run.start + piCP[0]);
 		}
-		width += run.width;
 	}
 	if (trailing != null) trailing[0] = 0;
 	return untranslateOffset(lineOffset[line + 1]);
