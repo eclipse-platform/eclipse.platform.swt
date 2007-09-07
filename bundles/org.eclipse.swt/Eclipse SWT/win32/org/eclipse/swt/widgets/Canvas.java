@@ -592,7 +592,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 						int /*long*/ imeWnd = OS.ImmGetDefaultIMEWnd (handle);
 						int offset = event.index + event.trailing;
 						int trailing = event.trailing > 0 ? 1 : 2;
-						int param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
+						int /*long*/ param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
 						OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, hIMC);
 					} else {
 						OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
