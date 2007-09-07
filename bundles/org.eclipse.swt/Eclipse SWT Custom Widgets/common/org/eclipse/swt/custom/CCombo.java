@@ -1040,7 +1040,23 @@ void popupEvent(Event event) {
 			dropDown (false);
 			break;
 		case SWT.Deactivate:
-			dropDown (false);
+			/*
+			 * Bug in GTK. When the arrow button is pressed the popup control receives a
+			 * deactivate event and then the arrow button receives a selection event. If 
+			 * we hide the popup in the deactivate event, the selection event will show 
+			 * it again. To prevent the popup from showing again, we will let the selection 
+			 * event of the arrow button hide the popup.
+			 * In Windows, hiding the popup during the deactivate causes the deactivate 
+			 * to be called twice and the selection event to be disappear.
+			 */
+			if (!"carbon".equals(SWT.getPlatform())) {
+				Point point = arrow.toControl(getDisplay().getCursorLocation());
+				Point size = arrow.getSize();
+				Rectangle rect = new Rectangle(0, 0, size.x, size.y);
+				if (!rect.contains(point)) dropDown (false);
+			} else {
+				dropDown(false);
+			}
 			break;
 	}
 }
