@@ -1533,44 +1533,38 @@ public Point getLocation (int offset, boolean trailing) {
 		if (lineOffset[line + 1] > offset) break;
 	}
 	line = Math.min(line, runs.length - 1);
-	StyleItem[] lineRuns = runs[line];
-	Point result = null;
 	if (offset == length) {
-		result = new Point(lineWidth[line], lineY[line]);
-	} else {
-		int width = 0;
-		for (int i=0; i<lineRuns.length; i++) {
-			StyleItem run = lineRuns[i];
-			int end = run.start + run.length;
-			if (run.start <= offset && offset < end) {
-				if (run.style != null && run.style.metrics != null) {
-					GlyphMetrics metrics = run.style.metrics;
-					width += metrics.width * (offset - run.start + (trailing ? 1 : 0));
-					result = new Point(width, lineY[line]);
-				} else if (run.tab) {
-					if (trailing || (offset == length)) width += run.width;
-					result = new Point(width, lineY[line]);
-				} else {
-					int runOffset = offset - run.start;
-					int cChars = run.length;
-					int gGlyphs = run.glyphCount;
-					int[] piX = new int[1];
-					int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
-					OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-					if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-						result = new Point(width + (run.width - piX[0]), lineY[line]);
-					} else {
-						result = new Point(width + piX[0], lineY[line]);
-					}
-				}
-				break;
+		return new Point(getLineIndent(line) + lineWidth[line], lineY[line]);
+	}
+	int low = -1;
+	int high = allRuns.length;
+	while (high - low > 1) {
+		int index = ((high + low) / 2);
+		StyleItem run = allRuns[index];
+		if (run.start > offset) {
+			high = index;
+		} else if (run.start + run.length <= offset) {
+			low = index;
+		} else {
+			int width;
+			if (run.style != null && run.style.metrics != null) {
+				GlyphMetrics metrics = run.style.metrics;
+				width = metrics.width * (offset - run.start + (trailing ? 1 : 0));
+			} else if (run.tab) {
+				width = (trailing || (offset == length)) ? run.width : 0;
+			} else {
+				int runOffset = offset - run.start;
+				int cChars = run.length;
+				int gGlyphs = run.glyphCount;
+				int[] piX = new int[1];
+				int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
+				OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
+				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];   
 			}
-			width += run.width;
+			return new Point(run.x + width, lineY[line]);
 		}
 	}
-	if (result == null) result = new Point(0, 0);
-	result.x += getLineIndent(line);
-	return result;
+	return new Point(0, 0);
 }
 
 /**
@@ -1741,7 +1735,7 @@ public int getOffset (int x, int y, int[] trailing) {
 		StyleItem run = lineRuns[index];
 		if (run.x > x) {
 			high = index;
-		} else if (run.x + run.width < x) {
+		} else if (run.x + run.width <= x) {
 			low = index;
 		} else {
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
