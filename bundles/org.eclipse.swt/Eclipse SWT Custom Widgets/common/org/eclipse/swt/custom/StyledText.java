@@ -3790,14 +3790,7 @@ public int getOffsetAtLocation(Point point) {
 	if (offset == -1) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int lineIndex = content.getLineAtOffset(offset);
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	int offsetInLine = offset - lineOffset;
-	String line = content.getLine(lineIndex);
-	if (offsetInLine != line.length() - 1) {
-		offsetInLine = Math.min(line.length(), offsetInLine + trailing[0]);		
-	}
-	return lineOffset + offsetInLine;
+	return offset + trailing[0];
 }
 int getOffsetAtPoint(int x, int y) {
 	int lineIndex = getLineIndex(y);

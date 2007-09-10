@@ -1177,7 +1177,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	text.setText("Line0\r\nLine1");	
 	location = text.getLocationAtOffset(5);
 	assertTrue(":d:", text.getOffsetAtLocation(new Point(10, 0)) > 0);
-	assertTrue(":e:", text.getOffsetAtLocation(new Point(location.x - 1, 0)) == 4);
+	assertTrue(":e:", text.getOffsetAtLocation(new Point(location.x - 1, 0)) == 5);
 	location = text.getLocationAtOffset(7);	
 	assertTrue(":f:", text.getOffsetAtLocation(location) == 7);
 	try {
