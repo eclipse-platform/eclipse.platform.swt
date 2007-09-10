@@ -1283,6 +1283,18 @@ void setSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct
 #define SCRIPT_STATE_sizeof() 0
 #endif
 
+#ifndef NO_SCROLLBARINFO
+void cacheSCROLLBARINFOFields(JNIEnv *env, jobject lpObject);
+SCROLLBARINFO *getSCROLLBARINFOFields(JNIEnv *env, jobject lpObject, SCROLLBARINFO *lpStruct);
+void setSCROLLBARINFOFields(JNIEnv *env, jobject lpObject, SCROLLBARINFO *lpStruct);
+#define SCROLLBARINFO_sizeof() sizeof(SCROLLBARINFO)
+#else
+#define cacheSCROLLBARINFOFields(a,b)
+#define getSCROLLBARINFOFields(a,b,c) NULL
+#define setSCROLLBARINFOFields(a,b,c)
+#define SCROLLBARINFO_sizeof() 0
+#endif
+
 #ifndef NO_SCROLLINFO
 void cacheSCROLLINFOFields(JNIEnv *env, jobject lpObject);
 SCROLLINFO *getSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct);

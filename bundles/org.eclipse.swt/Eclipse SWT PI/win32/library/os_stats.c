@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 910;
-int OS_nativeFunctionCallCount[910];
+int OS_nativeFunctionCount = 917;
+int OS_nativeFunctionCallCount[917];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -318,6 +318,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetRgnBox",
 	"GetSaveFileNameA",
 	"GetSaveFileNameW",
+	"GetScrollBarInfo",
 	"GetScrollInfo",
 	"GetStartupInfoA",
 	"GetStartupInfoW",
@@ -690,6 +691,7 @@ char * OS_nativeFunctionNames[] = {
 	"SCRIPT_1LOGATTR_1sizeof",
 	"SCRIPT_1PROPERTIES_1sizeof",
 	"SCRIPT_1STATE_1sizeof",
+	"SCROLLBARINFO_1sizeof",
 	"SCROLLINFO_1sizeof",
 	"SHACTIVATEINFO_1sizeof",
 	"SHBrowseForFolderA",
@@ -812,6 +814,8 @@ char * OS_nativeFunctionNames[] = {
 	"SetGraphicsMode",
 	"SetLayeredWindowAttributes",
 	"SetLayout",
+	"SetMapMode",
+	"SetMapperFlags",
 	"SetMenu",
 	"SetMenuDefaultItem",
 	"SetMenuInfo",
@@ -833,6 +837,9 @@ char * OS_nativeFunctionNames[] = {
 	"SetTextAlign",
 	"SetTextColor",
 	"SetTimer",
+	"SetViewportExtEx",
+	"SetViewportOrgEx",
+	"SetWindowExtEx",
 	"SetWindowLongA",
 	"SetWindowLongPtrA",
 	"SetWindowLongPtrW",

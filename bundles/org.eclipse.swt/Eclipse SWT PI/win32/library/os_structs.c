@@ -6116,6 +6116,67 @@ void setSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct
 }
 #endif
 
+#ifndef NO_SCROLLBARINFO
+typedef struct SCROLLBARINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, rcScrollBar, dxyLineButton, xyThumbTop, xyThumbBottom, reserved, rgstate;
+} SCROLLBARINFO_FID_CACHE;
+
+SCROLLBARINFO_FID_CACHE SCROLLBARINFOFc;
+
+void cacheSCROLLBARINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCROLLBARINFOFc.cached) return;
+	SCROLLBARINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCROLLBARINFOFc.cbSize = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "cbSize", "I");
+	SCROLLBARINFOFc.rcScrollBar = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "rcScrollBar", "Lorg/eclipse/swt/internal/win32/RECT;");
+	SCROLLBARINFOFc.dxyLineButton = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "dxyLineButton", "I");
+	SCROLLBARINFOFc.xyThumbTop = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "xyThumbTop", "I");
+	SCROLLBARINFOFc.xyThumbBottom = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "xyThumbBottom", "I");
+	SCROLLBARINFOFc.reserved = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "reserved", "I");
+	SCROLLBARINFOFc.rgstate = (*env)->GetFieldID(env, SCROLLBARINFOFc.clazz, "rgstate", "[I");
+	SCROLLBARINFOFc.cached = 1;
+}
+
+SCROLLBARINFO *getSCROLLBARINFOFields(JNIEnv *env, jobject lpObject, SCROLLBARINFO *lpStruct)
+{
+	if (!SCROLLBARINFOFc.cached) cacheSCROLLBARINFOFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, SCROLLBARINFOFc.cbSize);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCROLLBARINFOFc.rcScrollBar);
+	if (lpObject1 != NULL) getRECTFields(env, lpObject1, &lpStruct->rcScrollBar);
+	}
+	lpStruct->dxyLineButton = (*env)->GetIntField(env, lpObject, SCROLLBARINFOFc.dxyLineButton);
+	lpStruct->xyThumbTop = (*env)->GetIntField(env, lpObject, SCROLLBARINFOFc.xyThumbTop);
+	lpStruct->xyThumbBottom = (*env)->GetIntField(env, lpObject, SCROLLBARINFOFc.xyThumbBottom);
+	lpStruct->reserved = (*env)->GetIntField(env, lpObject, SCROLLBARINFOFc.reserved);
+	{
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, SCROLLBARINFOFc.rgstate);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgstate) / 4, (jint *)lpStruct->rgstate);
+	}
+	return lpStruct;
+}
+
+void setSCROLLBARINFOFields(JNIEnv *env, jobject lpObject, SCROLLBARINFO *lpStruct)
+{
+	if (!SCROLLBARINFOFc.cached) cacheSCROLLBARINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SCROLLBARINFOFc.cbSize, (jint)lpStruct->cbSize);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCROLLBARINFOFc.rcScrollBar);
+	if (lpObject1 != NULL) setRECTFields(env, lpObject1, &lpStruct->rcScrollBar);
+	}
+	(*env)->SetIntField(env, lpObject, SCROLLBARINFOFc.dxyLineButton, (jint)lpStruct->dxyLineButton);
+	(*env)->SetIntField(env, lpObject, SCROLLBARINFOFc.xyThumbTop, (jint)lpStruct->xyThumbTop);
+	(*env)->SetIntField(env, lpObject, SCROLLBARINFOFc.xyThumbBottom, (jint)lpStruct->xyThumbBottom);
+	(*env)->SetIntField(env, lpObject, SCROLLBARINFOFc.reserved, (jint)lpStruct->reserved);
+	{
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, SCROLLBARINFOFc.rgstate);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgstate) / 4, (jint *)lpStruct->rgstate);
+	}
+}
+#endif
+
 #ifndef NO_SCROLLINFO
 typedef struct SCROLLINFO_FID_CACHE {
 	int cached;

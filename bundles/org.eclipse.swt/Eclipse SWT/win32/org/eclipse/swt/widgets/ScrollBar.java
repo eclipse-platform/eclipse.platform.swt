@@ -230,6 +230,13 @@ Rectangle getBounds () {
  */
 public boolean getEnabled () {
 	checkWidget();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		SCROLLBARINFO psbi = new SCROLLBARINFO ();
+		psbi.cbSize = SCROLLBARINFO.sizeof;
+		int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_VSCROLL : OS.OBJID_HSCROLL;
+		OS.GetScrollBarInfo (hwndScrollBar (), idObject, psbi);
+		return (psbi.rgstate [0] & OS.STATE_SYSTEM_UNAVAILABLE) == 0;
+	}
 	return (state & DISABLED) == 0;
 }
 
@@ -418,6 +425,13 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		SCROLLBARINFO psbi = new SCROLLBARINFO ();
+		psbi.cbSize = SCROLLBARINFO.sizeof;
+		int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_VSCROLL : OS.OBJID_HSCROLL;
+		OS.GetScrollBarInfo (hwndScrollBar (), idObject, psbi);
+		return (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+	}
 	return (state & HIDDEN) == 0;
 }
 
@@ -638,19 +652,18 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* scroll bar operation is performed), the opposite scroll
 	* bar draws.  The fix is to hide both scroll bars.
 	*/
-	if ((state & (DISABLED | HIDDEN)) != 0) fRedraw = false;
-	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
-	
-	/*
-	* Bug in Windows.  For some reason, when the widget
-	* is a standard scroll bar, and SetScrollInfo() is
-	* called with SIF_RANGE or SIF_PAGE, the widget is
-	* incorrectly made visible so that the next time the
-	* parent is resized (or another scroll bar operation
-	* is performed), the scroll bar draws.  The fix is
-	* to hide the scroll bar (again) when already hidden.
-	*/
-	if ((state & HIDDEN) != 0) {
+	boolean both = false;
+	boolean isVisible = (state & HIDDEN) == 0;
+	boolean isEnabled = (state & DISABLED) == 0;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		SCROLLBARINFO psbi = new SCROLLBARINFO ();
+		psbi.cbSize = SCROLLBARINFO.sizeof;
+		int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_VSCROLL : OS.OBJID_HSCROLL;
+		OS.GetScrollBarInfo (hwndScrollBar (), idObject, psbi);
+		isVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+		isEnabled = (psbi.rgstate [0] & OS.STATE_SYSTEM_UNAVAILABLE) == 0;
+	}
+	if (!isVisible) {
 		/*
 		* This line is intentionally commented.  Currently
 		* always show scrollbar as being enabled and visible.
@@ -666,7 +679,27 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 					bar = parent.getHorizontalBar ();
 					break;
 			}
-			boolean both = bar != null && !bar.getVisible ();
+			both = bar != null && !bar.getVisible ();
+		}
+	}
+	if (!isVisible || !isEnabled) fRedraw = false;
+	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
+	/*
+	* Bug in Windows.  For some reason, when the widget
+	* is a standard scroll bar, and SetScrollInfo() is
+	* called with SIF_RANGE or SIF_PAGE, the widget is
+	* incorrectly made visible so that the next time the
+	* parent is resized (or another scroll bar operation
+	* is performed), the scroll bar draws.  The fix is
+	* to hide the scroll bar (again) when already hidden.
+	*/
+	if (!isVisible) {
+		/*
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
+		*/
+//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+		if (!OS.IsWinCE) {
 			OS.ShowScrollBar (hwnd, both ? OS.SB_BOTH : flags, false);
 		}
 	}
@@ -679,7 +712,7 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* The fix is to disable the scroll bar (again) when
 	* the application has disabled the scroll bar.
 	*/
-	if ((state & DISABLED) != 0) {
+	if (!isEnabled) {
 		/*
 		* This line is intentionally commented.  Currently
 		* always show scrollbar as being enabled and visible.
@@ -804,8 +837,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	boolean isVisible = (state & HIDDEN) == 0;
-	if (isVisible == visible) return;
+	if (visible == getVisible ()) return;
 	
 	/*
 	* On Windows CE, use SIF_DISABLENOSCROLL to show and
@@ -853,22 +885,24 @@ public void setVisible (boolean visible) {
 	*/
 	state = visible ? state & ~HIDDEN : state | HIDDEN;
 	int /*long*/ hwnd = hwndScrollBar ();
-	int type = scrollBarType ();
+	int type = scrollBarType ();	
+	
+	/*
+	* Bug in Windows.  For some reason, when the widget
+	* is a standard scroll bar, and SetScrollInfo () is
+	* called with SIF_RANGE or SIF_PAGE while the widget
+	* is not visible, the widget is incorrectly disabled
+	* even though the values for SIF_RANGE and SIF_PAGE,
+	* when set for a visible scroll bar would not disable
+	* the scroll bar.  The fix is to enable the scroll bar
+	* when not disabled by the application and the current
+	* scroll bar ranges would cause the scroll bar to be
+	* enabled had they been set when the scroll bar was
+	* visible.
+	*/
+	boolean isEnabled = getEnabled ();
 	if (OS.ShowScrollBar (hwnd, type, visible)) {
-		/*
-		* Bug in Windows.  For some reason, when the widget
-		* is a standard scroll bar, and SetScrollInfo () is
-		* called with SIF_RANGE or SIF_PAGE while the widget
-		* is not visible, the widget is incorrectly disabled
-		* even though the values for SIF_RANGE and SIF_PAGE,
-		* when set for a visible scroll bar would not disable
-		* the scroll bar.  The fix is to enable the scroll bar
-		* when not disabled by the application and the current
-		* scroll bar ranges would cause the scroll bar to be
-		* enabled had they been set when the scroll bar was
-		* visible.
-		*/
-		if ((state & DISABLED) == 0) {
+		if (isEnabled) {
 			SCROLLINFO info = new SCROLLINFO ();
 			info.cbSize = SCROLLINFO.sizeof;
 			info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;

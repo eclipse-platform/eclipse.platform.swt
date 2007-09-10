@@ -98,6 +98,7 @@
 #define NO_SCRIPT_FONTPROPERTIES
 #define NO_SCRIPT_PROPERTIES
 #define NO_SCRIPT_STATE
+#define NO_SCROLLBARINFO
 #define NO_TF_DA_COLOR
 #define NO_TF_DISPLAYATTRIBUTE
 #define NO_TOOLINFO
@@ -286,6 +287,7 @@
 #define NO_GetRandomRgn
 #define NO_GetROP2
 #define NO_GetSaveFileNameA
+#define NO_GetScrollBarInfo
 #define NO_GetStartupInfoA
 #define NO_GetStartupInfoW
 #define NO_GetSystemDefaultUILanguage
@@ -438,6 +440,8 @@
 #define NO_SetDIBColorTable
 #define NO_SetErrorMode
 #define NO_SetGraphicsMode
+#define NO_SetMapMode
+#define NO_SetMapperFlags
 #define NO_SetMenu
 #define NO_SetMenuDefaultItem
 #define NO_SetMenuInfo
@@ -448,6 +452,8 @@
 #define NO_SetPropW
 #define NO_SetStretchBltMode
 #define NO_SetTextAlign
+#define NO_SetViewportExtEx
+#define NO_SetWindowExtEx
 #define NO_SetWindowLongA
 #define NO_SetWindowLongPtrA
 //#define NO_SetWindowLongPtrW

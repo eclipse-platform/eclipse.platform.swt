@@ -5141,6 +5141,22 @@ fail:
 }
 #endif
 
+#ifndef NO_GetScrollBarInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetScrollBarInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	SCROLLBARINFO _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetScrollBarInfo_FUNC);
+	if (arg2) if ((lparg2 = getSCROLLBARINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)GetScrollBarInfo((HWND)arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setSCROLLBARINFOFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetScrollBarInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetScrollInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetScrollInfo)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -10983,6 +10999,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SCRIPT_1STATE_1sizeof)
 }
 #endif
 
+#ifndef NO_SCROLLBARINFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(SCROLLBARINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SCROLLBARINFO_1sizeof_FUNC);
+	rc = (jint)SCROLLBARINFO_sizeof();
+	OS_NATIVE_EXIT(env, that, SCROLLBARINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SCROLLINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(SCROLLINFO_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -12881,6 +12909,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
 }
 #endif
 
+#ifndef NO_SetMapMode
+JNIEXPORT jint JNICALL OS_NATIVE(SetMapMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetMapMode_FUNC);
+	rc = (jint)SetMapMode((HDC)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetMapMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetMapperFlags
+JNIEXPORT jint JNICALL OS_NATIVE(SetMapperFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetMapperFlags_FUNC);
+	rc = (jint)SetMapperFlags((HDC)arg0, (DWORD)arg1);
+	OS_NATIVE_EXIT(env, that, SetMapperFlags_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetMenu
 JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenu)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -13199,6 +13251,54 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetTimer)
 	OS_NATIVE_ENTER(env, that, SetTimer_FUNC);
 	rc = (jint)SetTimer((HWND)arg0, arg1, arg2, (TIMERPROC)arg3);
 	OS_NATIVE_EXIT(env, that, SetTimer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetViewportExtEx
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetViewportExtEx)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	SIZE _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetViewportExtEx_FUNC);
+	if (arg3) if ((lparg3 = getSIZEFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)SetViewportExtEx((HDC)arg0, arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setSIZEFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SetViewportExtEx_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetViewportOrgEx
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetViewportOrgEx)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	POINT _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetViewportOrgEx_FUNC);
+	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)SetViewportOrgEx((HDC)arg0, arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SetViewportOrgEx_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWindowExtEx
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetWindowExtEx)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	SIZE _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetWindowExtEx_FUNC);
+	if (arg3) if ((lparg3 = getSIZEFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)SetWindowExtEx((HDC)arg0, arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setSIZEFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SetWindowExtEx_FUNC);
 	return rc;
 }
 #endif
