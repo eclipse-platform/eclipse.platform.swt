@@ -418,6 +418,13 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		SCROLLBARINFO psbi = new SCROLLBARINFO ();
+		psbi.cbSize = SCROLLBARINFO.sizeof;
+		int idObject = (style & SWT.VERTICAL) != 0 ? OS.OBJID_VSCROLL : OS.OBJID_HSCROLL;
+		OS.GetScrollBarInfo (hwndScrollBar (), idObject, psbi);
+		return (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+	}
 	return (state & HIDDEN) == 0;
 }
 
@@ -638,19 +645,9 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* scroll bar operation is performed), the opposite scroll
 	* bar draws.  The fix is to hide both scroll bars.
 	*/
-	if ((state & (DISABLED | HIDDEN)) != 0) fRedraw = false;
-	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
-	
-	/*
-	* Bug in Windows.  For some reason, when the widget
-	* is a standard scroll bar, and SetScrollInfo() is
-	* called with SIF_RANGE or SIF_PAGE, the widget is
-	* incorrectly made visible so that the next time the
-	* parent is resized (or another scroll bar operation
-	* is performed), the scroll bar draws.  The fix is
-	* to hide the scroll bar (again) when already hidden.
-	*/
-	if ((state & HIDDEN) != 0) {
+	boolean both = false;
+	boolean visible = getVisible ();
+	if (!visible) {
 		/*
 		* This line is intentionally commented.  Currently
 		* always show scrollbar as being enabled and visible.
@@ -666,7 +663,27 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 					bar = parent.getHorizontalBar ();
 					break;
 			}
-			boolean both = bar != null && !bar.getVisible ();
+			both = bar != null && !bar.getVisible ();
+		}
+	}
+	if (!visible || (state & DISABLED) != 0) fRedraw = false;
+	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
+	/*
+	* Bug in Windows.  For some reason, when the widget
+	* is a standard scroll bar, and SetScrollInfo() is
+	* called with SIF_RANGE or SIF_PAGE, the widget is
+	* incorrectly made visible so that the next time the
+	* parent is resized (or another scroll bar operation
+	* is performed), the scroll bar draws.  The fix is
+	* to hide the scroll bar (again) when already hidden.
+	*/
+	if (!visible) {
+		/*
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
+		*/
+//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+		if (!OS.IsWinCE) {
 			OS.ShowScrollBar (hwnd, both ? OS.SB_BOTH : flags, false);
 		}
 	}
@@ -804,8 +821,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	boolean isVisible = (state & HIDDEN) == 0;
-	if (isVisible == visible) return;
+	if (visible == getVisible ()) return;
 	
 	/*
 	* On Windows CE, use SIF_DISABLENOSCROLL to show and
