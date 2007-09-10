@@ -3598,7 +3598,7 @@ public static final native int /*long*/ LoadLibraryW (char [] lpLibFileName);
 public static final native int /*long*/ LoadLibraryA (byte [] lpLibFileName);
 public static final native int /*long*/ LocalFree (int /*long*/ hMem);
 public static final native boolean LockWindowUpdate (int /*long*/ hWndLock);
-public static final native int /*long*/ MAKEWORD(int l, int h);
+public static final native int MAKEWORD(int l, int h);
 public static final native int /*long*/ MAKEWPARAM(int l, int h);
 public static final native int /*long*/ MAKELPARAM(int l, int h);
 public static final native int /*long*/ MAKELRESULT(int l, int h);
