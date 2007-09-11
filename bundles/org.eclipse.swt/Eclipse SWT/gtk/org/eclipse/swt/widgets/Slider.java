@@ -157,7 +157,17 @@ void createHandle (int index) {
 		handle = OS.gtk_vscrollbar_new (hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	/*
+	* Bug in GTK. In GTK 2.10, the buttons on either end of
+	* a horizontal slider are created taller then the slider bar
+	* when the GTK_CAN_FOCUS flag is set. The fix is not to set
+	* the flag for horizontal bars in all versions of 2.10. Note
+	* that a bug has been logged with GTK about this issue.
+	* (http://bugzilla.gnome.org/show_bug.cgi?id=475909) 
+	*/
+	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || (style & SWT.VERTICAL) != 0) {
+		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	}
 	OS.gtk_container_add (fixedHandle, handle);
 }
 
