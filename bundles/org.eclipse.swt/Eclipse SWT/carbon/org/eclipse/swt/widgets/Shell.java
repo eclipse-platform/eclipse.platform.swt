@@ -904,6 +904,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	if (!active) {
 		active = true;
+		deferDispose = true;
 		Display display = this.display;
 		display.activeShell = this;
 		display.setMenuBar (menuBar);
@@ -927,6 +928,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 				parentShell.updateSystemUIMode ();
 			}
 		}
+		deferDispose = false;
 	}
 	return result;
 }
