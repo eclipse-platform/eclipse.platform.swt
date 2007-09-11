@@ -245,6 +245,7 @@ void createHandle (int parentHandle) {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	OS.HIObjectSetAccessibilityIgnored (handle, true);
 }
 
 void createScrolledHandle (int parentHandle) {
@@ -259,6 +260,8 @@ void createScrolledHandle (int parentHandle) {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	OS.HIObjectSetAccessibilityIgnored (scrolledHandle, true);
+	OS.HIObjectSetAccessibilityIgnored (handle, true);
 }
 
 void drawBackground (int control, int context) {

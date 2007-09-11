@@ -969,6 +969,7 @@ public class OS extends C {
 	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeHIPoint = ('h'<<24) + ('i'<<16) + ('p'<<8) + 't';
 	public static final int typeHIRect = ('h'<<24) + ('i'<<16) + ('r'<<8) + 'c';
+	public static final int typeHISize = ('h'<<24) + ('i'<<16) + ('s'<<8) + 'z';
 	public static final int typeLongInteger = ('l'<<24) + ('o'<<16) + ('n'<<8) + 'g';
 	public static final int typeMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeMenuItemIndex = ('m'<<24) + ('i'<<16) + ('d'<<8) + 'x';        
@@ -1919,7 +1920,9 @@ public static final native void memmove(int[] dest, TXNTab src, int size);
 public static final native int AXUIElementCreateWithHIObjectAndIdentifier(int inHIObject, long inIdentifier);
 public static final native void AXNotificationHIObjectNotify(int inNotification, int inHIObject, long inIdentifier);
 public static final native void AXUIElementGetIdentifier(int inUIElement, long[] outIdentifier);
+public static final native int AXUIElementGetDataBrowserItemInfo(int inElement, int inDataBrowser, int inDesiredInfoVersion, int[] outInfo);
 public static final native int AXValueCreate (int theType, CFRange range);
+public static final native int HIObjectSetAccessibilityIgnored(int inObject, boolean inIgnored);
 
 public static final int kEventClassAccessibility = ('a'<<24) + ('c'<<16) + ('c'<<8) + 'e';
 

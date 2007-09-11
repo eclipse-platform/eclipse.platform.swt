@@ -376,6 +376,7 @@ int accessibilityProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventAccessibleGetChildAtPoint:	return kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
+		case OS.kEventAccessibleGetFocusedChild:	return kEventAccessibleGetFocusedChild (nextHandler, theEvent, userData);
 		case OS.kEventAccessibleGetAllAttributeNames:	return kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
 		case OS.kEventAccessibleGetNamedAttribute:	return kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
 	}
@@ -970,6 +971,10 @@ int itemNotificationProc (int browser, int item, int message) {
 }
 
 int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

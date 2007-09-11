@@ -299,6 +299,18 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct);
 #define Cursor_sizeof() 0
 #endif
 
+#ifndef NO_DataBrowserAccessibilityItemInfo
+void cacheDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject);
+DataBrowserAccessibilityItemInfo *getDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct);
+void setDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct);
+#define DataBrowserAccessibilityItemInfo_sizeof() sizeof(DataBrowserAccessibilityItemInfo)
+#else
+#define cacheDataBrowserAccessibilityItemInfoFields(a,b)
+#define getDataBrowserAccessibilityItemInfoFields(a,b,c) NULL
+#define setDataBrowserAccessibilityItemInfoFields(a,b,c)
+#define DataBrowserAccessibilityItemInfo_sizeof() 0
+#endif
+
 #ifndef NO_DataBrowserCallbacks
 void cacheDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject);
 DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct);

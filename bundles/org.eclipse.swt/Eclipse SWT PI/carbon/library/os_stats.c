@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 921;
-int OS_nativeFunctionCallCount[921];
+int OS_nativeFunctionCount = 923;
+int OS_nativeFunctionCallCount[923];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -70,6 +70,7 @@ char * OS_nativeFunctionNames[] = {
 	"ATSUTextInserted",
 	"AXNotificationHIObjectNotify",
 	"AXUIElementCreateWithHIObjectAndIdentifier",
+	"AXUIElementGetDataBrowserItemInfo",
 	"AXUIElementGetIdentifier",
 	"AXValueCreate",
 	"AcquireFirstMatchingEventInQueue",
@@ -518,6 +519,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIObjectCopyClassID",
 	"HIObjectCreate",
 	"HIObjectRegisterSubclass",
+	"HIObjectSetAccessibilityIgnored",
 	"HIScrollViewCreate",
 	"HISearchFieldChangeAttributes",
 	"HISearchFieldCopyDescriptiveText",

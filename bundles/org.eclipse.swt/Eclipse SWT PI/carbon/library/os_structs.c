@@ -1095,6 +1095,49 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 }
 #endif
 
+#ifndef NO_DataBrowserAccessibilityItemInfo
+typedef struct DataBrowserAccessibilityItemInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, v0_container, v0_item, v0_columnProperty, v0_propertyPart;
+} DataBrowserAccessibilityItemInfo_FID_CACHE;
+
+DataBrowserAccessibilityItemInfo_FID_CACHE DataBrowserAccessibilityItemInfoFc;
+
+void cacheDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (DataBrowserAccessibilityItemInfoFc.cached) return;
+	DataBrowserAccessibilityItemInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DataBrowserAccessibilityItemInfoFc.version = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "version", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_container = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_container", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_item = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_item", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_columnProperty = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_columnProperty", "I");
+	DataBrowserAccessibilityItemInfoFc.v0_propertyPart = (*env)->GetFieldID(env, DataBrowserAccessibilityItemInfoFc.clazz, "v0_propertyPart", "I");
+	DataBrowserAccessibilityItemInfoFc.cached = 1;
+}
+
+DataBrowserAccessibilityItemInfo *getDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct)
+{
+	if (!DataBrowserAccessibilityItemInfoFc.cached) cacheDataBrowserAccessibilityItemInfoFields(env, lpObject);
+	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.version);
+	lpStruct->u.v0.container = (DataBrowserItemID)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_container);
+	lpStruct->u.v0.item = (DataBrowserItemID)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_item);
+	lpStruct->u.v0.columnProperty = (DataBrowserPropertyID)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_columnProperty);
+	lpStruct->u.v0.propertyPart = (DataBrowserPropertyPart)(*env)->GetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_propertyPart);
+	return lpStruct;
+}
+
+void setDataBrowserAccessibilityItemInfoFields(JNIEnv *env, jobject lpObject, DataBrowserAccessibilityItemInfo *lpStruct)
+{
+	if (!DataBrowserAccessibilityItemInfoFc.cached) cacheDataBrowserAccessibilityItemInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_container, (jint)lpStruct->u.v0.container);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_item, (jint)lpStruct->u.v0.item);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_columnProperty, (jint)lpStruct->u.v0.columnProperty);
+	(*env)->SetIntField(env, lpObject, DataBrowserAccessibilityItemInfoFc.v0_propertyPart, (jint)lpStruct->u.v0.propertyPart);
+}
+#endif
+
 #ifndef NO_DataBrowserCallbacks
 typedef struct DataBrowserCallbacks_FID_CACHE {
 	int cached;

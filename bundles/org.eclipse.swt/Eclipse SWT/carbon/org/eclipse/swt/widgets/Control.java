@@ -1503,6 +1503,7 @@ void hookEvents () {
 	int accessibilityProc = display.accessibilityProc;
 	mask = new int [] {
 		OS.kEventClassAccessibility, OS.kEventAccessibleGetChildAtPoint,
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetFocusedChild,
 		OS.kEventClassAccessibility, OS.kEventAccessibleGetAllAttributeNames,
 		OS.kEventClassAccessibility, OS.kEventAccessibleGetNamedAttribute,
 	};
@@ -1832,6 +1833,13 @@ Decorations menuShell () {
 int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
 	if (accessible != null) {
 		return accessible.internal_kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetFocusedChild (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }
