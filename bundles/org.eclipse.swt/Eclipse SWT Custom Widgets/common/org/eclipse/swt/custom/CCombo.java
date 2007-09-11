@@ -860,7 +860,7 @@ void initAccessible() {
 		
 		public void getLocation (AccessibleControlEvent e) {
 			Rectangle location = getBounds ();
-			Point pt = toDisplay (location.x, location.y);
+			Point pt = getParent().toDisplay (location.x, location.y);
 			e.x = pt.x;
 			e.y = pt.y;
 			e.width = location.width;
