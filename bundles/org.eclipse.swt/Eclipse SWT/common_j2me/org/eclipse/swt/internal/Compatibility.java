@@ -13,6 +13,7 @@ package org.eclipse.swt.internal;
  
 import org.eclipse.swt.SWT;
 import java.io.*;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * This class is a placeholder for utility methods commonly
@@ -188,6 +189,19 @@ public static int pow2(int n) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
 	return 1;
+}
+
+/**
+ * Create an DeflaterOutputStream if such things are supported.
+ * 
+ * @param stream the output stream
+ * @return a deflater stream or <code>null</code>
+ * @exception IOException
+ * 
+ * @since 3.4
+ */
+public static OutputStream newDeflaterOutputStream(OutputStream stream) throws IOException {
+	return null;
 }
 
 /**

@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.zip.InflaterInputStream;
+import java.util.zip.DeflaterOutputStream;
 
 import org.eclipse.swt.SWT;
 
@@ -144,6 +145,19 @@ public static int pow2(int n) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
 	return 1;
+}
+
+/**
+ * Create an DeflaterOutputStream if such things are supported.
+ * 
+ * @param stream the output stream
+ * @return a deflater stream or <code>null</code>
+ * @exception IOException
+ * 
+ * @since 3.4
+ */
+public static OutputStream newDeflaterOutputStream(OutputStream stream) throws IOException {
+	return new DeflaterOutputStream(stream);
 }
 
 /**

@@ -12,10 +12,13 @@ package org.eclipse.swt.internal.image;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.internal.Compatibility;
 
 final class PngEncoder extends Object {
 
@@ -226,24 +229,26 @@ void writeTransparency() {
 
 }
 
-void writeImageData() {
+void writeImageData() throws IOException {
 
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+	OutputStream os = Compatibility.newDeflaterOutputStream(baos);
+	if (os == null) os = baos;
 	
 	if (colorType == 3) {
 	
-		int[] lineData = new int[width];
+		byte[] lineData = new byte[width];
 		
 		for (int y = 0; y < height; y++) {
 			
-			byte filter[] = {0};
-			baos.write(filter, 0, 1);
+			int filter = 0;
+			os.write(filter);
 			
 			data.getPixels(0, y, width, lineData, 0);
 			
 			for (int x = 0; x < lineData.length; x++) {
 			
-				baos.write((byte) lineData[x]);
+				os.write(lineData[x]);
 			
 			}
 		
@@ -254,7 +259,10 @@ void writeImageData() {
 	else {
 	
 		int[] lineData = new int[width];
-		byte[] alphaData = new byte[width];
+		byte[] alphaData = null;
+		if (colorType == 6) {
+			alphaData = new byte[width];
+		}
 		
 		int redMask = data.palette.redMask;
 		int redShift = data.palette.redShift;
@@ -265,8 +273,8 @@ void writeImageData() {
 		
 		for (int y = 0; y < height; y++) {
 		
-			byte filter[] = {0};
-			baos.write(filter, 0, 1);
+			int filter = 0;
+			os.write(filter);
 			
 			data.getPixels(0, y, width, lineData, 0);
 			
@@ -285,14 +293,12 @@ void writeImageData() {
 				int b = pixel & blueMask;
 				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;
 				
-				byte pixels[] = {(byte) r, (byte) g, (byte) b};
-				baos.write(pixels, 0, 3);
+				os.write(r);
+				os.write(g);
+				os.write(b);
 				
 				if (colorType == 6) {
-				
-					byte alpha[] = {alphaData[x]};
-					baos.write(alpha, 0, 1);
-				
+					os.write(alphaData[x]);
 				}
 			
 			}
@@ -301,8 +307,14 @@ void writeImageData() {
 	
 	}
 	
-	PngDeflater deflater = new PngDeflater();
-	byte[] compressed = deflater.deflate(baos.toByteArray());
+	os.flush();
+	os.close();
+	
+	byte[] compressed = baos.toByteArray();
+	if (os == baos) {
+		PngDeflater deflater = new PngDeflater();
+		compressed = deflater.deflate(compressed);
+	}
 	
 	writeChunk(TAG_IDAT, compressed);
 
