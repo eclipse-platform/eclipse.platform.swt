@@ -371,8 +371,18 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		iconHandle = outControl [0];
 		ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-		fontStyle.flags = (short) OS.kControlUseThemeFontIDMask;
-		fontStyle.font = (short) parent.defaultThemeFont ();
+		Font font = parent.font;
+		if (font != null) {
+			short [] family = new short [1], style = new short [1];
+			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
+			fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
+			fontStyle.font = family [0];
+			fontStyle.style = (short) (style [0] | font.style);
+			fontStyle.size = (short) font.size;
+		} else {
+			fontStyle.flags = (short) OS.kControlUseThemeFontIDMask;
+			fontStyle.font = (short) parent.defaultThemeFont ();
+		}
 		OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = outControl [0];
