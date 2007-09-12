@@ -36,6 +36,8 @@ public class Caret extends Widget {
 	int blinkRate;
 	Image image;
 	Font font;
+	
+	static final int DEFAULT_WIDTH = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -108,7 +110,7 @@ boolean drawCaret () {
 	 	OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, nX, y, width[0], height[0]);
 	} else {
 		int nWidth = width, nHeight = height;
-		if (nWidth <= 0) nWidth = 1;
+		if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
 		int nX = x;
 		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
 		OS.gdk_draw_rectangle (window, gc, 1, nX, y, nWidth, nHeight);
@@ -134,6 +136,10 @@ public Rectangle getBounds () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			new Rectangle (x, y, DEFAULT_WIDTH, height);
+		}
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -215,6 +221,10 @@ public Point getSize () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Point (rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			new Point (DEFAULT_WIDTH, height);
+		}
 	}
 	return new Point (width, height);
 }
