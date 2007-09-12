@@ -93,6 +93,7 @@ public class OS extends C {
 	public static final int kATSULineDescentTag = 9;
 	public static final int kATSULineDirectionTag = 3;
 	public static final int kATSLineUseDeviceMetrics = 0x01000000;
+	public static final int kATSLineKeepSpacesOutOfMargin = 0x00000008;
 	public static final int kATSUStartAlignment = 0x00000000;
 	public static final int kATSUEndAlignment = 0x40000000;
 	public static final int kATSUCenterAlignment = 0x20000000;
