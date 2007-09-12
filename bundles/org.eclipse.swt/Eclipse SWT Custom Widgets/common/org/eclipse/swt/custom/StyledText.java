@@ -3134,21 +3134,27 @@ int getBottomIndex() {
 }
 Rectangle getBoundsAtOffset(int offset) {
 	int lineIndex = content.getLineAtOffset(offset);
+	int lineOffset = content.getOffsetAtLine(lineIndex);
 	String line = content.getLine(lineIndex);
 	Rectangle bounds;
 	if (line.length() != 0) {
-		int offsetInLine = offset - content.getOffsetAtLine(lineIndex);
+		int offsetInLine = offset - lineOffset;
 		TextLayout layout = renderer.getTextLayout(lineIndex);
 		bounds = layout.getBounds(offsetInLine, offsetInLine);
 		renderer.disposeTextLayout(layout);
 	} else {
 		bounds = new Rectangle (0, 0, 0, renderer.getLineHeight());
 	}
+	if (offset == caretOffset) {
+		int lineEnd = lineOffset + line.length();
+		if (offset == lineEnd && caretAlignment == PREVIOUS_OFFSET_TRAILING) {
+			bounds.width += getCaretWidth();
+		}
+	}
 	bounds.x += leftMargin - horizontalScrollOffset;
 	bounds.y += getLinePixel(lineIndex);
 	return bounds;
 }
-
 /**
  * Returns the caret position relative to the start of the text.
  *
