@@ -138,7 +138,7 @@ public Rectangle getBounds () {
 		return new Rectangle (x, y, rect.width, rect.height);
 	} else {
 		if (width == 0) {
-			new Rectangle (x, y, DEFAULT_WIDTH, height);
+			return new Rectangle (x, y, DEFAULT_WIDTH, height);
 		}
 	}
 	return new Rectangle (x, y, width, height);
@@ -223,7 +223,7 @@ public Point getSize () {
 		return new Point (rect.width, rect.height);
 	} else {
 		if (width == 0) {
-			new Point (DEFAULT_WIDTH, height);
+			return new Point (DEFAULT_WIDTH, height);
 		}
 	}
 	return new Point (width, height);
