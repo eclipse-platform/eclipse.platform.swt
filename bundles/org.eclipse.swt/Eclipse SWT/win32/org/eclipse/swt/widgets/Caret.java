@@ -110,6 +110,13 @@ public Rectangle getBounds () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
+	} else {
+		if (!OS.IsWinCE && width == 0) {
+			int [] buffer = new int [1];
+			if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+				return new Rectangle (x, y, buffer [0], height);
+			}
+		}
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -194,6 +201,13 @@ public Point getSize () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Point (rect.width, rect.height);
+	} else {
+		if (!OS.IsWinCE && width == 0) {
+			int [] buffer = new int [1];
+			if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
+				return new Point (buffer [0], height);
+			}
+		}
 	}
 	return new Point (width, height);
 }
@@ -265,11 +279,12 @@ void resizeIME () {
 	int /*long*/ hwnd = parent.handle;
 	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
 	if (parent.isInlineIMEEnabled ()) {
+		Point size = getSize ();
 		CANDIDATEFORM lpCandidate = new CANDIDATEFORM ();
 		lpCandidate.dwStyle = OS.CFS_EXCLUDE;
 		lpCandidate.ptCurrentPos = ptCurrentPos;
 		lpCandidate.rcArea = new RECT ();
-		OS.SetRect (lpCandidate.rcArea, ptCurrentPos.x, ptCurrentPos.y, ptCurrentPos.x + width, ptCurrentPos.y + height);
+		OS.SetRect (lpCandidate.rcArea, ptCurrentPos.x, ptCurrentPos.y, ptCurrentPos.x + size.x, ptCurrentPos.y + size.y);
 		OS.ImmSetCandidateWindow (hIMC, lpCandidate);
 	} else {
 		RECT rect = new RECT ();
@@ -306,7 +321,7 @@ void resize () {
 	OS.DestroyCaret ();		
 	int /*long*/ hBitmap = image != null ? image.handle : 0;
 	int width = this.width;
-	if (image == null && width == 0) {
+	if (!OS.IsWinCE && image == null && width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
 			width = buffer [0];
@@ -349,8 +364,10 @@ public void setBounds (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
 	if (samePosition && sameExtent) return;
-	this.x = x;  this.y = y;
-	this.width = width;  this.height = height;
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 	if (sameExtent) {
 		moved = true;
 		if (isVisible && hasFocus ()) move ();
@@ -383,7 +400,7 @@ void setFocus () {
 	int /*long*/ hBitmap = 0;
 	if (image != null) hBitmap = image.handle;
 	int width = this.width;
-	if (image == null && width == 0) {
+	if (!OS.IsWinCE && image == null && width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
 			width = buffer [0];
