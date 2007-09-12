@@ -41,6 +41,8 @@ public class Caret extends Widget {
 	Image image;
 	Font font;
 
+	static final int DEFAULT_WIDTH	= 1;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -97,7 +99,7 @@ boolean drawCaret () {
 	int parentHandle = parent.handle;
 	if (!parent.isDrawing (parentHandle)) return false;
 	int nWidth = width, nHeight = height;
-	if (nWidth <= 0) nWidth = 1;
+	if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
 	int window = OS.GetControlOwner (parentHandle);
 	int port = OS.GetWindowPort (window);
 	int [] currentPort = new int [1];
@@ -175,6 +177,10 @@ public Rectangle getBounds () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			return new Rectangle (x, y, DEFAULT_WIDTH, height);
+		}
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -256,6 +262,10 @@ public Point getSize () {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		return new Point (rect.width, rect.height);
+	} else {
+		if (width == 0) {
+			return new Point (DEFAULT_WIDTH, height);
+		}
 	}
 	return new Point (width, height);
 }
@@ -353,9 +363,10 @@ public void setBounds (int x, int y, int width, int height) {
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
 	boolean isFocus = isFocusCaret ();
 	if (isFocus && isVisible) hideCaret ();
-	this.x = x; this.y = y;
-	this.width = width; this.height = height;
-//	parent.updateCaret ();
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 	if (isFocus && isVisible) showCaret ();
 }
 
