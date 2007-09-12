@@ -25,7 +25,7 @@ class IE extends WebBrowser {
 	OleListener mouseListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, navigate, delaySetText, ignoreDispose;
+	boolean back, forward, navigate, delaySetText, ignoreDispose, silenceInternalNavigate;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -104,6 +104,40 @@ public void create(Composite parent, int style) {
 	frame = new OleFrame(browser, SWT.NONE);
 
 	/*
+	* Registry entry HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Version indicates
+	* which version of IE is installed.  Check this value in order to determine version-specific
+	* features that can be enabled.
+	*/
+	TCHAR key = new TCHAR (0, "Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
+	int /*long*/ [] phkResult = new int /*long*/ [1];
+	if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
+		int [] lpcbData = new int [1];
+		TCHAR buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
+		int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
+		if (result == 0) {
+			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+			result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, lpData, lpcbData);
+			if (result == 0) {
+				String versionString = lpData.toString (0, lpData.strlen ());
+				int index = versionString.indexOf ("."); //$NON-NLS-1$
+				if (index != -1) {
+					String majorString = versionString.substring (0, index);
+					int major = 0;
+					try {
+						major = Integer.valueOf (majorString).intValue ();
+					} catch (NumberFormatException e) {
+						/* just continue, version-specific features will not be enabled */
+					}
+					if (major >= 7) {
+						silenceInternalNavigate = true;
+					}
+				}
+			}
+		}
+		OS.RegCloseKey (phkResult [0]);
+	}
+
+	/*
 	* Registry entry HKEY_CLASSES_ROOT\Shell.Explorer\CLSID indicates which version of
 	* Shell.Explorer to use by default.  We usually want to use this value because it
 	* typically points at the newest one that is available.  However it is possible for
@@ -115,8 +149,8 @@ public void create(Composite parent, int style) {
 	* will be embedded to explicitly specify Shell.Explorer.2.
 	*/
 	String progId = "Shell.Explorer";	//$NON-NLS-1$
-	TCHAR key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
-	int /*long*/ [] phkResult = new int /*long*/ [1];
+	key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
+	phkResult = new int /*long*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
 		int [] lpcbData = new int [1];
 		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
@@ -139,6 +173,7 @@ public void create(Composite parent, int style) {
 		}
 		OS.RegCloseKey (phkResult [0]);
 	}
+	
 	try {
 		site = new WebSite(frame, SWT.NONE, progId); //$NON-NLS-1$
 	} catch (SWTException e) {
@@ -760,13 +795,13 @@ public boolean setText(String html) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	boolean oldValue = false;
-	if (!OS.IsWinCE) {
+	if (!OS.IsWinCE && silenceInternalNavigate) {
 		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	if (!OS.IsWinCE) {
+	if (!OS.IsWinCE && silenceInternalNavigate) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
 	rgvarg[0].dispose();
@@ -800,13 +835,13 @@ public boolean setUrl(String url) {
 			int[] rgdispidNamedArgs = new int[1];
 			rgdispidNamedArgs[0] = rgdispid[1];
 			boolean oldValue = false;
-			if (!OS.IsWinCE) {
+			if (!OS.IsWinCE && silenceInternalNavigate) {
 				int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 				oldValue = hResult == COM.S_OK;
 				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 			}
 			auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-			if (!OS.IsWinCE) {
+			if (!OS.IsWinCE && silenceInternalNavigate) {
 				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 			}
 			rgvarg[0].dispose();
