@@ -1079,6 +1079,7 @@ public static final native int GetCFRunLoopFromEventLoop(int inEventLoop);
 public static final native void CFRunLoopAddObserver(int rl, int observer, int mode);
 public static final native void CFRunLoopAddSource(int rl, int source, int mode);
 public static final native int CFRunLoopObserverCreate(int allocator, int activities, boolean repeats, int order, int callout, int context);
+public static final native void CFRunLoopObserverInvalidate(int observer);
 public static final native int CFRunLoopRunInMode(int mode, double seconds, boolean returnAfterSourceHandled);
 public static final native int CFRunLoopSourceCreate(int allocator, int order, CFRunLoopSourceContext context);
 public static final native void CFRunLoopSourceInvalidate(int source);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 923;
-int OS_nativeFunctionCallCount[923];
+int OS_nativeFunctionCount = 924;
+int OS_nativeFunctionCallCount[924];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -99,6 +99,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFRunLoopAddObserver",
 	"CFRunLoopAddSource",
 	"CFRunLoopObserverCreate",
+	"CFRunLoopObserverInvalidate",
 	"CFRunLoopRunInMode",
 	"CFRunLoopSourceCreate",
 	"CFRunLoopSourceInvalidate",

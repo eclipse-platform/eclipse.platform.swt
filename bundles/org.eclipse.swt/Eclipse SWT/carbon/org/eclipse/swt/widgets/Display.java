@@ -114,7 +114,7 @@ public class Display extends Device {
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, observerProc, sourceProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc, coreEventProc;
 	EventTable eventTable, filterTable;
-	int queue, runLoop, runLoopSource, lastModifiers, lastState, lastX, lastY;
+	int queue, runLoop, runLoopSource, runLoopObserver, lastModifiers, lastState, lastX, lastY;
 	boolean disposing;
 	
 	boolean inPaint, needsPaint;
@@ -2155,10 +2155,9 @@ void initializeCallbacks () {
 
 	int mode = OS.kCFRunLoopCommonModes ();
 	int activities = OS.kCFRunLoopBeforeWaiting;
-	int observer = OS.CFRunLoopObserverCreate (OS.kCFAllocatorDefault, activities, true, 0, observerProc, 0);
-	if (observer == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.CFRunLoopAddObserver (runLoop, observer, mode);
-	OS.CFRelease (observer);
+	runLoopObserver = OS.CFRunLoopObserverCreate (OS.kCFAllocatorDefault, activities, true, 0, observerProc, 0);
+	if (runLoopObserver == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.CFRunLoopAddObserver (runLoop, runLoopObserver, mode);
 	CFRunLoopSourceContext context = new CFRunLoopSourceContext ();
 	context.version = 0;
 	context.perform = sourceProc;
@@ -3093,11 +3092,15 @@ void releaseDisplay () {
 	if (dockImage != 0) OS.CGImageRelease (dockImage);
 	dockImage = 0;
 
+	if (runLoopObserver != 0) {
+		OS.CFRunLoopObserverInvalidate (runLoopObserver);
+		OS.CFRelease (runLoopObserver);
+	}
 	if (runLoopSource != 0) {
 		OS.CFRunLoopSourceInvalidate (runLoopSource);
 		OS.CFRelease (runLoopSource);
 	}
-	runLoop = runLoopSource = 0;
+	runLoop = runLoopSource = runLoopObserver = 0;
 
 	releaseCallback.dispose ();	
 	actionCallback.dispose ();

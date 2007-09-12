@@ -107,6 +107,7 @@ typedef enum {
 	CFRunLoopAddObserver_FUNC,
 	CFRunLoopAddSource_FUNC,
 	CFRunLoopObserverCreate_FUNC,
+	CFRunLoopObserverInvalidate_FUNC,
 	CFRunLoopRunInMode_FUNC,
 	CFRunLoopSourceCreate_FUNC,
 	CFRunLoopSourceInvalidate_FUNC,
