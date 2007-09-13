@@ -7946,12 +7946,8 @@ public void setTabs(int tabs) {
 	checkWidget();	
 	tabLength = tabs;
 	renderer.setFont(null, tabs);
-	if (caretOffset > 0) {
-		caretOffset = 0;
-		showCaret();
-		clearSelection(false);
-	}
 	resetCache(0, content.getLineCount());
+	setCaretLocation();
 	super.redraw();
 }
 /** 
