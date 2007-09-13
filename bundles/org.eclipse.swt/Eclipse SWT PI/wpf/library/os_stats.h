@@ -27,6 +27,7 @@ extern char* OS_nativeFunctionNames[];
 typedef enum {
 	AccessText_1AccessKey_FUNC,
 	AccessText_1Text_FUNC,
+	AccessText_1TextWrapping_FUNC,
 	ApplicationCommands_1Cut_FUNC,
 	ApplicationCommands_1Paste_FUNC,
 	ApplicationCommands_1Redo_FUNC,

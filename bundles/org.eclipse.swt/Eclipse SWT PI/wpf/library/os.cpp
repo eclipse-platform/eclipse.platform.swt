@@ -39,6 +39,17 @@ JNIEXPORT void JNICALL OS_NATIVE(AccessText_1Text)
 }
 #endif
 
+#ifndef NO_AccessText_1TextWrapping
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(AccessText_1TextWrapping)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(AccessText_1TextWrapping)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, AccessText_1TextWrapping_FUNC);
+	((AccessText^)TO_OBJECT(arg0))->TextWrapping = ((TextWrapping)arg1);
+	OS_NATIVE_EXIT(env, that, AccessText_1TextWrapping_FUNC);
+}
+#endif
+
 #ifndef NO_ApplicationCommands_1Cut
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ApplicationCommands_1Cut)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(ApplicationCommands_1Cut)

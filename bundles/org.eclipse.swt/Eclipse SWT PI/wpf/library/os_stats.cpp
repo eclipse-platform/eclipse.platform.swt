@@ -14,11 +14,12 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1273;
-int OS_nativeFunctionCallCount[1273];
+int OS_nativeFunctionCount = 1274;
+int OS_nativeFunctionCallCount[1274];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
+	"AccessText_1TextWrapping",
 	"ApplicationCommands_1Cut",
 	"ApplicationCommands_1Paste",
 	"ApplicationCommands_1Redo",

@@ -409,8 +409,9 @@ public static final native void DeleteGlobalRef(int globalRef);
 public static final native Object JNIGetObject(int globalRef);
 
 /** Natives */
-public static final native void AccessText_Text(int sender, int value);
 public static final native char AccessText_AccessKey(int sender);
+public static final native void AccessText_Text(int sender, int value);
+public static final native void AccessText_TextWrapping(int sender, int value);
 public static final native int ApplicationCommands_Cut();
 public static final native int ApplicationCommands_Paste();
 public static final native int ApplicationCommands_Redo();
@@ -1656,6 +1657,7 @@ public static final native int XmlReader_Create(int stream);
 public static final native int XamlReader_Load(int stream);
 public static final native int gcnew_ResourceDictionary();
 public static final native void ResourceDictionary_Source(int sender, int uri);
+
 
 
 

@@ -291,6 +291,10 @@ public void setText (String string) {
 	text = string;
 	int ptr = createDotNetString (text, true);
 	int accessText = OS.gcnew_AccessText ();
+	if (accessText == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.WRAP) != 0) {
+		OS.AccessText_TextWrapping (accessText, OS.TextWrapping_WrapWithOverflow);
+	}
 	OS.AccessText_Text (accessText, ptr);
 	OS.ContentControl_Content (handle, accessText);
 	OS.GCHandle_Free (ptr);
