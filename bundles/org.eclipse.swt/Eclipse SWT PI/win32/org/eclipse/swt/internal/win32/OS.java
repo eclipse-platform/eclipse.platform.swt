@@ -1835,7 +1835,9 @@ public class OS extends C {
 	public static final int UDS_ALIGNRIGHT = 0x004;
 	public static final int UDS_AUTOBUDDY = 0x0010;
 	public static final int UDS_WRAP = 0x0001;
+	public static final int UIS_CLEAR = 2;
 	public static final int UIS_INITIALIZE = 3;
+	public static final int UIS_SET = 1;
 	public static final int UISF_HIDEACCEL = 0x2;
 	public static final int UISF_HIDEFOCUS = 0x1;
 	public static final String UPDOWN_CLASS = "msctls_updown32"; //$NON-NLS-1$

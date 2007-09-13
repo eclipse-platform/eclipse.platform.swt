@@ -231,6 +231,64 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
+/**
+ * Copies a rectangular area of the receiver at the specified
+ * position using the gc.
+ * 
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+/*public*/ void copyArea (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	
+	//XP only, no GDI+
+	//#define PW_CLIENTONLY 0x00000001
+	//DCOrg() wrong
+	//topHandle wrong for Tree?
+	int hDC = gc.handle;
+	int nSavedDC = OS.SaveDC (hDC);
+	OS.IntersectClipRect (hDC, 0, 0, width, height);
+	
+	//WRONG PARENT
+	POINT lpPoint = new POINT ();
+	int hwndParent = OS.GetParent (handle);
+	OS.MapWindowPoints (handle, hwndParent, lpPoint, 1);
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	POINT lpPoint1 = new POINT (), lpPoint2 = new POINT ();
+	x = x + (lpPoint.x - rect.left);
+	y = y + (lpPoint.y - rect.top);
+	OS.SetWindowOrgEx (hDC, x, y, lpPoint1);
+	OS.SetBrushOrgEx (hDC, x, y, lpPoint2);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.WS_VISIBLE) == 0) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+	}
+	//NECESSARY?
+	OS.RedrawWindow (handle, null, 0, OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN);
+	OS.PrintWindow (handle, hDC, 0);//0x00000001);
+	if ((bits & OS.WS_VISIBLE) == 0) {
+		OS.DefWindowProc(handle, OS.WM_SETREDRAW, 0, 0);
+	}
+	OS.RestoreDC (hDC, nSavedDC);
+}
+
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
@@ -968,7 +1026,10 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_RIGHT: 
 			case OS.VK_PRIOR:
 			case OS.VK_NEXT:
-				OS.SendMessage (msg.hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+				int uiState = (int)/*64*/OS.SendMessage (msg.hwnd, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+					OS.SendMessage (msg.hwnd, OS.WM_UPDATEUISTATE, OS.UIS_INITIALIZE, 0);
+				}
 				break;
 		}
 	}
@@ -1033,6 +1094,14 @@ void updateLayout (boolean resize, boolean all) {
 		for (int i=0; i<children.length; i++) {
 			children [i].updateLayout (resize, all);
 		}
+	}
+}
+
+void updateUIState () {
+	int hwndShell = getShell ().handle;
+	int uiState = /*64*/(int)OS.SendMessage (hwndShell, OS.WM_QUERYUISTATE, 0, 0);
+	if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | OS.UISF_HIDEFOCUS, 0);
 	}
 }
 
@@ -1173,6 +1242,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 				event.width = width;
 				event.height = height;
 				sendEvent (SWT.Paint, event);
+				if (data.focusDrawn && !isDisposed ()) updateUIState ();
 				gc.dispose ();
 				OS.EndBufferedPaint (hBufferedPaint, true);
 			}
@@ -1274,6 +1344,10 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 				// widget could be disposed at this point
 				event.gc = null;
 				if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+					if (!gc.isDisposed ()) {
+						GCData gcData = gc.getGCData ();
+						if (gcData.focusDrawn && !isDisposed ()) updateUIState ();
+					}
 					gc.dispose();
 					if (!isDisposed ()) paintGC.drawImage (image, ps.left, ps.top);
 					image.dispose ();
@@ -1281,6 +1355,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 				}
 			}
 			if (sysRgn != 0) OS.DeleteObject (sysRgn);
+			if (data.focusDrawn && !isDisposed ()) updateUIState ();
 			
 			/* Dispose the paint GC */
 			gc.dispose ();

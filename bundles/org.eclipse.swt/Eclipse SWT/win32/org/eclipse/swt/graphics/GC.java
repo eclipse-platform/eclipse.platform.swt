@@ -776,6 +776,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((data.uiState & OS.UISF_HIDEFOCUS) != 0) return;
+	data.focusDrawn = true;
 	int /*long*/ hdc = handle;
 	int state = 0;
 	int /*long*/ gdipGraphics = data.gdipGraphics;
