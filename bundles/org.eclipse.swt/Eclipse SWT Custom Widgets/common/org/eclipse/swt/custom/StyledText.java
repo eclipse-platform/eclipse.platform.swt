@@ -1839,7 +1839,7 @@ boolean checkDragDetect(Event event) {
 		if (event.button != 1) return false;
 	}
 	if (selection.x == selection.y) return false;
-	int offset = getOffsetAtPoint(event.x, event.y, null);
+	int offset = getOffsetAtPoint(event.x, event.y, null, true);
 	if (selection.x <= offset && offset < selection.y) {
 		return dragDetect(event);
 	}
@@ -3792,7 +3792,7 @@ public int getOffsetAtLocation(Point point) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	int[] trailing = new int[1];
-	int offset = getOffsetAtPoint(point.x, point.y, trailing);
+	int offset = getOffsetAtPoint(point.x, point.y, trailing, true);
 	if (offset == -1) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -3819,7 +3819,6 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 	caretAlignment = OFFSET_LEADING;
 	if (trailing[0] != 0) {
 		int lineInParagraph = layout.getLineIndex(offsetInLine + trailing[0]);
-		//TODO handle bidi text
 		int lineStart = layout.getLineOffsets()[lineInParagraph];
 		if (offsetInLine + trailing[0] == lineStart) {
 			offsetInLine += trailing[0];
@@ -3846,13 +3845,13 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 	renderer.disposeTextLayout(layout);
 	return offsetInLine + content.getOffsetAtLine(lineIndex);
 }
-int getOffsetAtPoint(int x, int y, int[] trailing) {
-	if (y + getVerticalScrollOffset() < 0 || x + horizontalScrollOffset < 0) {
+int getOffsetAtPoint(int x, int y, int[] trailing, boolean inTextOnly) {
+	if (inTextOnly && y + getVerticalScrollOffset() < 0 || x + horizontalScrollOffset < 0) {
 		return -1;
 	}
 	int bottomIndex = getPartialBottomIndex();
 	int height = getLinePixel(bottomIndex + 1);
-	if (y > height) {
+	if (inTextOnly && y > height) {
 		return -1;
 	}
 	int lineIndex = getLineIndex(y);
@@ -3863,10 +3862,10 @@ int getOffsetAtPoint(int x, int y, int[] trailing) {
 	int offset = layout.getOffset(x, y, trailing);
 	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offset));
 	renderer.disposeTextLayout(layout);
-	if (rect.x  <= x && x <=  rect.x + rect.width) {
-		return offset + lineOffset;
+	if (inTextOnly && !(rect.x  <= x && x <=  rect.x + rect.width)) {
+		return -1;
 	}
-	return -1;
+	return offset + lineOffset;
 }
 /**
  * Returns the orientation of the receiver.
@@ -4935,7 +4934,7 @@ void internalRedrawRange(int start, int length) {
 }
 void handleCompositionHittest (Event event) {
 	int[] trailing = new int [1];
-	int offset = getOffsetAtPoint(event.x, event.y, trailing);
+	int offset = getOffsetAtPoint(event.x, event.y, trailing, true);
 	if (offset != -1) {
 		if (compositionStart <= offset && offset < compositionStart + compositionLength) {
 			event.hitTest = SWT.HITTEST_INSIDE_COMPOSITION;
