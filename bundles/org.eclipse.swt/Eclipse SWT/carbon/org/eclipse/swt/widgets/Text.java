@@ -46,7 +46,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Text extends Scrollable {
-	int txnObject, txnFrameID, frameHandle;
+	int txnObject, frameHandle;
 	int textLimit = LIMIT, tabs = 8;
 	ControlEditTextSelectionRec selection;
 	char echoCharacter;
@@ -1433,7 +1433,7 @@ void register () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	txnObject = txnFrameID = 0;
+	txnObject = 0;
 	hiddenText = message = null;
 }
 
