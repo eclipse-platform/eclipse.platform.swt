@@ -158,37 +158,27 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					 pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE))) {
 					if (System.currentTimeMillis() >= scrollBeginTime) {
 						Rectangle area = text.getClientArea();
-						Rectangle bounds = text.getTextBounds(0, 0);
-						int charWidth = bounds.width;
+						GC gc = new GC(text);
+						FontMetrics fm = gc.getFontMetrics();
+						gc.dispose();
+						int charWidth = fm.getAverageCharWidth();
 						int scrollAmount = 10*charWidth;
 						if (pt.x < area.x + 3*charWidth) {
 							int leftPixel = text.getHorizontalPixel();
 							text.setHorizontalPixel(leftPixel - scrollAmount);
-							if (text.getHorizontalPixel() != leftPixel) {
-								text.redraw();
-							}
 						}
 						if (pt.x > area.width - 3*charWidth) {
 							int leftPixel = text.getHorizontalPixel();
 							text.setHorizontalPixel(leftPixel + scrollAmount);
-							if (text.getHorizontalPixel() != leftPixel) {
-								text.redraw();
-							}
 						}
-						int lineHeight = bounds.height;
+						int lineHeight = text.getLineHeight();
 						if (pt.y < area.y + lineHeight) {
 							int topPixel = text.getTopPixel();
 							text.setTopPixel(topPixel - lineHeight);
-							if (text.getTopPixel() != topPixel) {
-								text.redraw();
-							}
 						}
 						if (pt.y > area.height - lineHeight) {
 							int topPixel = text.getTopPixel();
 							text.setTopPixel(topPixel + lineHeight);
-							if (text.getTopPixel() != topPixel) {
-								text.redraw();
-							}
 						}
 						scrollBeginTime = 0;
 						scrollX = scrollY = -1;
