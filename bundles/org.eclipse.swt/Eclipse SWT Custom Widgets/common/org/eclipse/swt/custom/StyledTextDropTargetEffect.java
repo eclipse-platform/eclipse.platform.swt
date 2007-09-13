@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This adapter class provides a default drag under effect (eg. select and scroll) 
- * when a drag occurs over a <code>Table</code>.
+ * when a drag occurs over a <code>StyledText</code>.
  * 
  * <p>Classes that wish to provide their own drag under effect for a <code>StyledText</code>
  * can extend this class, override the <code>StyledTextDropTargetEffect.dragOver</code>
