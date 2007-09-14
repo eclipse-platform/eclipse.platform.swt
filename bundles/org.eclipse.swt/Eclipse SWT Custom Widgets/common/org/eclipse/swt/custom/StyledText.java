@@ -1649,10 +1649,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int maxHeight = display.getClientArea().height;
 		for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
 			TextLayout layout = renderer.getTextLayout(lineIndex);
+			int wrapWidth = layout.getWidth();
 			if (wordWrap) layout.setWidth(wHint == 0 ? 1 : wHint);
 			Rectangle rect = layout.getBounds();
 			height += rect.height;
 			width = Math.max(width, rect.width);
+			layout.setWidth(wrapWidth);
 			renderer.disposeTextLayout(layout);
 			if (isFixedLineHeight() && height > maxHeight) break;
 		}
@@ -5300,6 +5302,7 @@ void handleResize(Event event) {
 			super.redraw(x, 0, rightMargin, oldHeight, false);
 		}
 	}
+//	System.out.println(clientArea);
 	if (oldHeight != clientAreaHeight) {
 		if (bottomMargin > 0) {
 			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight) - bottomMargin; 
