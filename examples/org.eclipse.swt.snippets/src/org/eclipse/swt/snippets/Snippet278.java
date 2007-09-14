@@ -17,13 +17,14 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet278 {
 
 public static void main (String [] args) {
-	Display display = new Display ();
+	final Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setBounds (10, 10, 300, 100);
 	shell.setLayout (new FillLayout ());
@@ -31,10 +32,18 @@ public static void main (String [] args) {
 	label.setText ("resize the Shell then hover over this Label");
 	label.addListener (SWT.MouseEnter, new Listener () {
 		public void handleEvent (Event event) {
-			int desiredLabelWidth = label.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
-			int desiredLabelRightX = label.getLocation ().x + desiredLabelWidth;
-			int availableRightX = label.getParent ().getClientArea ().width;
-			boolean isFullyVisible = desiredLabelRightX <= availableRightX;
+			/* 
+			 * Map Rectangles to Display coordinates to ensure that
+			 * right-to-left contexts will work as well.
+			 */
+			Composite parent = label.getParent ();
+			Point requiredLabelSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+			Point labelLoc = label.getLocation ();
+			Rectangle requiredRect = new Rectangle (labelLoc.x, labelLoc.y, requiredLabelSize.x, requiredLabelSize.y);
+			requiredRect = display.map (parent, null, requiredRect);
+			Rectangle availableRect = parent.getClientArea ();
+			availableRect = display.map (parent, null, availableRect);
+			boolean isFullyVisible = requiredRect.equals (availableRect.intersection (requiredRect));
 			System.out.println ("Label is fully visible: " + isFullyVisible);
 			label.setToolTipText (isFullyVisible ? null : label.getText ());
 		}
