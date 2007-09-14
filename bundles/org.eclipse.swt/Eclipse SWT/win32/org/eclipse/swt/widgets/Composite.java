@@ -261,13 +261,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	//#define PW_CLIENTONLY 0x00000001
 	//DCOrg() wrong
 	//topHandle wrong for Tree?
-	int hDC = gc.handle;
+	int /*long*/ hDC = gc.handle;
 	int nSavedDC = OS.SaveDC (hDC);
 	OS.IntersectClipRect (hDC, 0, 0, width, height);
 	
 	//WRONG PARENT
 	POINT lpPoint = new POINT ();
-	int hwndParent = OS.GetParent (handle);
+	int /*long*/ hwndParent = OS.GetParent (handle);
 	OS.MapWindowPoints (handle, hwndParent, lpPoint, 1);
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -1098,7 +1098,7 @@ void updateLayout (boolean resize, boolean all) {
 }
 
 void updateUIState () {
-	int hwndShell = getShell ().handle;
+	int /*long*/ hwndShell = getShell ().handle;
 	int uiState = /*64*/(int)OS.SendMessage (hwndShell, OS.WM_QUERYUISTATE, 0, 0);
 	if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
 		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | OS.UISF_HIDEFOCUS, 0);
