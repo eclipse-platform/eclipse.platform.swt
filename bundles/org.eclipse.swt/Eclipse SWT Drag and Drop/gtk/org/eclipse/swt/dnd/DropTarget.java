@@ -650,6 +650,14 @@ public void setTransfer(Transfer[] transferAgents){
 	}			
 	
 	int actions = opToOsOp(getStyle());
+	if (control instanceof Combo) {
+		if ((control.getStyle() & SWT.READ_ONLY) == 0) {
+			int /*long*/ entryHandle = OS.gtk_bin_get_child (control.handle);
+			if (entryHandle != 0) {
+				OS.gtk_drag_dest_unset(entryHandle);
+			}
+		}
+	} 
 	OS.gtk_drag_dest_set(control.handle, 0, pTargets, targets.length, actions);
 	
 	for (int i = 0; i < targets.length; i++) {

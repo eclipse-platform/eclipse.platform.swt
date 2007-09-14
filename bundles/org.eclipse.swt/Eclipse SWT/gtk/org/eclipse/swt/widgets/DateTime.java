@@ -101,6 +101,8 @@ public DateTime (Composite parent, int style) {
 		calendar = Calendar.getInstance();
 		formatSymbols = new DateFormatSymbols();
 		text = new Text(this, SWT.SINGLE);
+		// disable the native drag and drop for the date/time text field
+		OS.gtk_drag_dest_unset(text.handle);
 		if ((this.style & SWT.DATE) != 0) {
 			setFormat((this.style & SWT.SHORT) != 0 ? DEFAULT_SHORT_DATE_FORMAT : (this.style & SWT.LONG) != 0 ? DEFAULT_LONG_DATE_FORMAT : DEFAULT_MEDIUM_DATE_FORMAT);
 		} else { // SWT.TIME
