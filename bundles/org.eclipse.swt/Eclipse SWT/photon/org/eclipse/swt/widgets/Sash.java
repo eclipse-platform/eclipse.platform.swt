@@ -158,7 +158,7 @@ void drawBand (int x, int y, int width, int height) {
 	if( disjoint != 0 )
 		OS.PgSetRegion( OS.PtWidgetRid( disjoint ) );
 	PhPoint_t pt = new PhPoint_t ();
-	PhRect_t tran_rect = new PhRect_t();
+//	PhRect_t tran_rect = new PhRect_t();
 	if (parentHandle <= 0) return; 
 	OS.PtWidgetOffset(parentHandle, pt);
 	OS.PgSetTranslation(pt,0);
