@@ -32,20 +32,11 @@ public static void main (String [] args) {
 	label.setText ("resize the Shell then hover over this Label");
 	label.addListener (SWT.MouseEnter, new Listener () {
 		public void handleEvent (Event event) {
-			/* 
-			 * Map Rectangles to Display coordinates to ensure that
-			 * right-to-left contexts will work as well.
-			 */
-			Composite parent = label.getParent ();
-			Point requiredLabelSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-			Point labelLoc = label.getLocation ();
-			Rectangle requiredRect = new Rectangle (labelLoc.x, labelLoc.y, requiredLabelSize.x, requiredLabelSize.y);
-			requiredRect = display.map (parent, null, requiredRect);
-			Rectangle availableRect = parent.getClientArea ();
-			availableRect = display.map (parent, null, availableRect);
-			boolean isFullyVisible = requiredRect.equals (availableRect.intersection (requiredRect));
-			System.out.println ("Label is fully visible: " + isFullyVisible);
-			label.setToolTipText (isFullyVisible ? null : label.getText ());
+			Point requiredSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+			Point labelSize = label.getSize ();
+			boolean fullyVisible = requiredSize.x <= labelSize.x && requiredSize.y <= labelSize.y;
+			System.out.println ("Label is fully visible: " + fullyVisible);
+			label.setToolTipText (fullyVisible ? null : label.getText ());
 		}
 	});
 	shell.open ();
