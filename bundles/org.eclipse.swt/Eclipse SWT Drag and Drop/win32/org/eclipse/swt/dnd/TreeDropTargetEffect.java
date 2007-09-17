@@ -207,10 +207,11 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		} else {
 			if (hItem != -1 && expandIndex == hItem && expandBeginTime != 0) {
 				if (System.currentTimeMillis() >= expandBeginTime) {
-					TreeItem item = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
-					if (item != null && item.getItemCount() > 0) {
-						if (!item.getExpanded()) {
+					if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem) != 0) {
+						TreeItem item = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
+						if (item != null && !item.getExpanded()) {
 							item.setExpanded(true);
+							tree.redraw();
 							Event expandEvent = new Event ();
 							expandEvent.item = item;
 							tree.notifyListeners(SWT.Expand, expandEvent);
