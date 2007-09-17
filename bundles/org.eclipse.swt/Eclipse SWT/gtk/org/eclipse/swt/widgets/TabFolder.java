@@ -277,7 +277,7 @@ void destroyItem (TabItem item) {
 }
 
 int /*long*/ eventHandle () {
-	return fixedHandle;
+	return handle;
 }
 		
 /**
