@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -206,14 +207,13 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		} else {
 			if (hItem != -1 && expandIndex == hItem && expandBeginTime != 0) {
 				if (System.currentTimeMillis() >= expandBeginTime) {
-					if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem) != 0) {
-						TVITEM tvItem = new TVITEM ();
-						tvItem.hItem = hItem;
-						tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-						if ((tvItem.state & OS.TVIS_EXPANDED) == 0) {
-							OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
-							tree.redraw();
+					TreeItem item = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
+					if (item != null && item.getItemCount() > 0) {
+						if (!item.getExpanded()) {
+							item.setExpanded(true);
+							Event expandEvent = new Event ();
+							expandEvent.item = item;
+							tree.notifyListeners(SWT.Expand, expandEvent);
 						}
 					}
 					expandBeginTime = 0;
