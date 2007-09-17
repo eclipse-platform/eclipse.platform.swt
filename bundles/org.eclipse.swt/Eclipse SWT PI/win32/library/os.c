@@ -1744,6 +1744,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(DOCINFO_1sizeof)
 }
 #endif
 
+#ifndef NO_DPtoLP
+JNIEXPORT jboolean JNICALL OS_NATIVE(DPtoLP)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	POINT _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DPtoLP_FUNC);
+	if (arg1) if ((lparg1 = getPOINTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)DPtoLP((HDC)arg0, lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setPOINTFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, DPtoLP_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DRAWITEMSTRUCT_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(DRAWITEMSTRUCT_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -7448,6 +7464,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(LOWORD)
 	OS_NATIVE_ENTER(env, that, LOWORD_FUNC);
 	rc = (jint)LOWORD(arg0);
 	OS_NATIVE_EXIT(env, that, LOWORD_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LPtoDP
+JNIEXPORT jboolean JNICALL OS_NATIVE(LPtoDP)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	POINT _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, LPtoDP_FUNC);
+	if (arg1) if ((lparg1 = getPOINTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)LPtoDP((HDC)arg0, lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setPOINTFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, LPtoDP_FUNC);
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 917;
-int OS_nativeFunctionCallCount[917];
+int OS_nativeFunctionCount = 919;
+int OS_nativeFunctionCallCount[919];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -117,6 +117,7 @@ char * OS_nativeFunctionNames[] = {
 	"DLLVERSIONINFO_1sizeof",
 	"DOCHOSTUIINFO_1sizeof",
 	"DOCINFO_1sizeof",
+	"DPtoLP",
 	"DRAWITEMSTRUCT_1sizeof",
 	"DROPFILES_1sizeof",
 	"DWM_1BLURBEHIND_1sizeof",
@@ -464,6 +465,7 @@ char * OS_nativeFunctionNames[] = {
 	"LOGFONTW_1sizeof",
 	"LOGPEN_1sizeof",
 	"LOWORD",
+	"LPtoDP",
 	"LVCOLUMN_1sizeof",
 	"LVHITTESTINFO_1sizeof",
 	"LVITEM_1sizeof",

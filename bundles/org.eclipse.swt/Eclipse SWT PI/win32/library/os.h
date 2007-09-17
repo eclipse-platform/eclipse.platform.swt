@@ -190,6 +190,7 @@
 #define NO_DefWindowProcA
 #define NO_DestroyCursor
 #define NO_DispatchMessageA
+#define NO_DPtoLP
 #define NO_DragDetect
 #define NO_DragFinish
 #define NO_DragQueryFileA
@@ -344,6 +345,7 @@
 #define NO_LoadLibraryA
 #define NO_LoadStringA
 #define NO_LockWindowUpdate
+#define NO_LPtoDP
 #define NO_MapVirtualKeyA
 #define NO_MCIWndRegisterClass
 #define NO_MessageBoxA
