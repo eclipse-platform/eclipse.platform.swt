@@ -1114,6 +1114,13 @@ public Rectangle getClientArea () {
 	return new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
 }
 
+int getClientWidth () {
+	int [] w = new int [1], h = new int [1];
+	OS.gtk_widget_realize (handle);
+	OS.gdk_drawable_get_size(OS.gtk_tree_view_get_bin_window(handle), w, h);
+	return w[0];
+}
+
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
