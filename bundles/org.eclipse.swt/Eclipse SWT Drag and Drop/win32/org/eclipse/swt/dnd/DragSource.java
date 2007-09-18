@@ -348,8 +348,10 @@ private void drag(Event dragEvent) {
 		POINT pt = new POINT ();
 		pt.x = dragEvent.x;
 		pt.y = dragEvent.y;
-		OS.MapWindowPoints (0, hwndDrag, pt, 1);
-		OS.ImageList_DragEnter(hwndDrag, pt.x, pt.y);
+		OS.MapWindowPoints (control.handle, 0, pt, 1);
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwndDrag, rect);
+		OS.ImageList_DragEnter(hwndDrag, pt.x - rect.left, pt.y - rect.top);
 	}
 	int result = COM.DRAGDROP_S_CANCEL;
 	try {
@@ -513,8 +515,9 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	if (hwndDrag != 0) {
 		POINT pt = new POINT ();
 		OS.GetCursorPos (pt);
-		OS.MapWindowPoints (0, hwndDrag, pt, 1);
-		OS.ImageList_DragMove(pt.x, pt.y);
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwndDrag, rect);
+		OS.ImageList_DragMove (pt.x - rect.left, pt.y - rect.top);
 	}
 	return COM.S_OK;
 }
