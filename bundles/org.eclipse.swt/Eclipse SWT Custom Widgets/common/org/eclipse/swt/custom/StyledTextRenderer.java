@@ -372,7 +372,6 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	styledText.drawBackground(gc, client.x, paintY, client.width, height);
 	
 	gc.setForeground(widgetForeground);
-	gc.setBackground(lineBackground);
 	if (selectionStart == selectionEnd || (selectionEnd <= 0 && selectionStart > lineLength - 1)) {
 		layout.draw(gc, paintX, paintY);
 	} else {
