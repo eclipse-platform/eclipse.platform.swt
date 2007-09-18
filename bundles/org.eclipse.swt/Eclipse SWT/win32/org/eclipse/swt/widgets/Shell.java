@@ -1316,9 +1316,9 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the full screen state of the receiver.
  * If the argument is <code>true</code> causes the receiver
- * to switch to the fullscreen state, and if the argument is
+ * to switch to the full screen state, and if the argument is
  * <code>false</code> and the receiver was previously switched
- * into fullscreen state, causes the receiver to switch back
+ * into full screen state, causes the receiver to switch back
  * to either the maximmized or normal states.
  * <p>
  * Note: The result of intermixing calls to <code>setFullScreen(true)</code>, 
