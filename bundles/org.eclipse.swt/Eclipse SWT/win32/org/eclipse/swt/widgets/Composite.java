@@ -811,7 +811,7 @@ void resizeEmbeddedHandle(int /*long*/ embeddedHandle, int width, int height) {
 
 void sendResize () {
 	setResizeChildren (false);
-	sendEvent (SWT.Resize);
+	super.sendResize ();
 	if (isDisposed ()) return;
 	if (layout != null) {
 		markLayout (false, false);
@@ -843,6 +843,24 @@ public void setBackgroundMode (int mode) {
 	Control [] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		children [i].updateBackgroundMode ();		
+	}
+}
+
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	if (display.resizeCount > Display.RESIZE_LIMIT) {
+		defer = false;
+	}
+	if (!defer && (state & CANVAS) != 0) {
+		state &= ~RESIZE_OCCURRED | MOVE_OCCURRED;
+		state |= RESIZE_DEFERRED | MOVE_DEFERRED;
+	}
+	super.setBounds (x, y, width, height, flags, defer);
+	if (!defer && (state & CANVAS) != 0) {
+		boolean wasMoved = (state & MOVE_OCCURRED) != 0;
+		boolean wasResized = (state & RESIZE_OCCURRED) != 0;
+		state &= ~(RESIZE_DEFERRED | MOVE_DEFERRED);
+		if (wasMoved && !isDisposed ()) sendMove ();
+		if (wasResized && !isDisposed ()) sendResize ();
 	}
 }
 
@@ -1429,27 +1447,31 @@ LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
-
-	/* Begin deferred window positioning */
-	setResizeChildren (false);
+	LRESULT result = null;
+	if ((state & RESIZE_DEFERRED) != 0) {
+		result = super.WM_SIZE (wParam, lParam);
+	} else {
+		/* Begin deferred window positioning */
+		setResizeChildren (false);
+		
+		/* Resize and Layout */
+		result = super.WM_SIZE (wParam, lParam);
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the resize
+		* event.  If this happens, end the processing of the
+		* Windows message by returning the result of the
+		* WM_SIZE message.
+		*/
+		if (isDisposed ()) return result;
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false, false);
+		}
 	
-	/* Resize and Layout */
-	LRESULT result = super.WM_SIZE (wParam, lParam);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
-	*/
-	if (isDisposed ()) return result;
-	if (layout != null) {
-		markLayout (false, false);
-		updateLayout (false, false);
+		/* End deferred window positioning */
+		setResizeChildren (true);
 	}
-
-	/* End deferred window positioning */
-	setResizeChildren (true);
 	
 	/* Damage the widget to cause a repaint */
 	if (OS.IsWindowVisible (handle)) {

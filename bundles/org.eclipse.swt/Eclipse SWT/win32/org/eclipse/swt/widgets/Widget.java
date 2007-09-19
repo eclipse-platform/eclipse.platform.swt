@@ -80,6 +80,12 @@ public abstract class Widget {
 	static final int FOREIGN_HANDLE	= 1<<14;
 	static final int DRAG_DETECT	= 1<<15;
 
+	/* Move and resize state flags */
+	static final int MOVE_OCCURRED		= 1<<16;
+	static final int MOVE_DEFERRED		= 1<<17;
+	static final int RESIZE_OCCURRED	= 1<<18;
+	static final int RESIZE_DEFERRED	= 1<<19;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

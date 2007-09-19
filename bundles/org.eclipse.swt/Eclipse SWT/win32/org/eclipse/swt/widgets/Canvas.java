@@ -619,7 +619,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
-	if (result != null) return result;
+	//if (result != null) return result;
 	/*
 	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
 	* that contains a caret is resized, Windows does not move the
