@@ -253,7 +253,7 @@ public class Display extends Device {
 	
 	/* Resize and move recursion */
 	int resizeCount;
-	static final int RESIZE_LIMIT = 8;
+	static final int RESIZE_LIMIT = 6;
 	
 	/* Display Data */
 	Object data;
