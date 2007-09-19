@@ -489,6 +489,17 @@ void createHandle () {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
 	}
+	/*
+	* Feature in Windows.  Push buttons draw border around
+	* the button using the default background color instead
+	* of using the color provided by WM_CTRLCOLOR.  The fix
+	* is to draw the background in WM_CTRLCOLOR.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+			state |= DRAW_BACKGROUND;
+		}
+	}
 }
 
 int defaultBackground () {
