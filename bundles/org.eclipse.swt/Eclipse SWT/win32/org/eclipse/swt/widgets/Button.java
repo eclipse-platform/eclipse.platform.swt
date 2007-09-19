@@ -473,7 +473,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		state |= THEME_BACKGROUND;
+	} else {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+	}
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
