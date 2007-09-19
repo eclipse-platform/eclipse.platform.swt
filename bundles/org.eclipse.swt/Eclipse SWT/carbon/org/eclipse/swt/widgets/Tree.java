@@ -3278,15 +3278,50 @@ void showItem (TreeItem item, boolean scroll) {
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
 		int columnId = (columnCount == 0) ? column_id : columns [0].id;
-		int options = OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView;
+		int options = OS.kDataBrowserRevealWithoutSelecting;
+		/*
+		* This code is intentionally commented, since kDataBrowserRevealAndCenterInView
+		* does not scroll the item to the center always (it seems to scroll to the
+		* end in some cases).
+		*/
+		//options |= OS.kDataBrowserRevealAndCenterInView;
 		OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) options);
+		int [] newTop = new int [1], newLeft = new int [1];
+		if (columnCount == 0) {
+			boolean fixScroll = false;
+			Rect content = new Rect ();
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyContentPart, content) == OS.noErr) {
+				fixScroll = content.left < rect.x || content.left >= rect.x + rect.width;
+				if (!fixScroll) {
+					GC gc = new GC (this);
+					int contentWidth = calculateWidth (new int[]{item.id}, gc, false, 0, 0);
+					gc.dispose ();
+					fixScroll =  content.left + contentWidth > rect.x + rect.width;
+				}
+			}
+			if (fixScroll) {
+				int leftScroll = getLeftDisclosureInset (columnId);
+				int levelIndent = DISCLOSURE_COLUMN_LEVEL_INDENT;
+				if (OS.VERSION >= 0x1040) {
+					float [] metric = new float [1];
+					OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricDisclosureColumnPerDepthGap, null, metric);
+					levelIndent = (int) metric [0];
+				}
+				TreeItem temp = item;
+				while (temp.parentItem != null) {
+					leftScroll += levelIndent;
+					temp = temp.parentItem;
+				}
+				OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
+				OS.SetDataBrowserScrollPosition (handle, newTop [0], leftScroll);
+			}
+		}
 
 		/*
 		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
 		* by RevealDataBrowserItem(), the scrollbars are not redrawn.  The fix is to
 		* force a redraw.
 		*/
-		int [] newTop = new int [1], newLeft = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
 		if (horizontalBar != null && newLeft [0] != left [0]) horizontalBar.redraw ();
 		if (verticalBar != null && newTop [0] != top [0]) verticalBar.redraw ();
