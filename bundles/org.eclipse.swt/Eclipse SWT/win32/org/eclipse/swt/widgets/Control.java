@@ -2375,14 +2375,6 @@ boolean sendFocusEvent (int type) {
 	return true;
 }
 
-void sendMove () {
-	sendEvent (SWT.Move);
-}
-
-void sendResize () {
-	sendEvent (SWT.Resize);
-}
-
 void setBackground () {
 	Control control = findBackgroundControl ();
 	if (control == null) control = this;
@@ -4190,7 +4182,6 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
-	state |= MOVE_OCCURRED;
 	if (findImageControl () != null) {
 		if (this != getShell ()) redrawChildren ();
 	} else {
@@ -4202,7 +4193,7 @@ LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 		}
 	}
-	if ((state & MOVE_DEFERRED) == 0) sendEvent (SWT.Move);
+	sendEvent (SWT.Move);
 	// widget could be disposed at this point
 	return null;
 }
@@ -4318,8 +4309,7 @@ LRESULT WM_SHOWWINDOW (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
-	state |= RESIZE_OCCURRED;
-	if ((state & RESIZE_DEFERRED) == 0) sendEvent (SWT.Resize);
+	sendEvent (SWT.Resize);
 	// widget could be disposed at this point
 	return null;
 }
@@ -4474,13 +4464,7 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
-	try {
-		display.resizeCount++;
-		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
-		return code == 0 ? LRESULT.ZERO : new LRESULT (code);
-	} finally {
-		--display.resizeCount;
-	}
+	return null;
 }
 
 LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
