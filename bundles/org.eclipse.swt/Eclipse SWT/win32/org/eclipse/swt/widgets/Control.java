@@ -4472,7 +4472,7 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	try {
 		display.resizeCount++;
-		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
+		int /*long*/ code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
 		return code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	} finally {
 		--display.resizeCount;
