@@ -178,7 +178,7 @@ boolean hookEnterExit () {
 void init () {
 }
 
-public boolean needsSpinup () {
+boolean needsSpinup () {
 	return false;
 }
 

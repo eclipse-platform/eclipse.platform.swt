@@ -103,10 +103,6 @@ public boolean isFocusControl () {
 
 public abstract boolean isForwardEnabled ();
 
-public boolean needsSpinup () {
-	return true;
-}
-
 public abstract void refresh ();
 
 public void removeCloseWindowListener (CloseWindowListener listener) {
