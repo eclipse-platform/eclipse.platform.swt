@@ -72,6 +72,10 @@ boolean hookEnterExit () {
 void init () {
 }
 
+public boolean needsSpinup () {
+	return false;
+}
+
 void onDispose (int /*long*/ embedHandle) {
 	browser = null;
 }
