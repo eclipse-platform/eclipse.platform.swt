@@ -89,12 +89,12 @@ public boolean getWideCaret() {
 	return false; 
 }
 
-boolean isInlineIMEEnabled () {
+boolean isInlineEnabled () {
 	return hooks (SWT.ImeComposition);
 }
 
 int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
-	if (!isInlineIMEEnabled ()) return OS.eventNotHandledErr;
+	if (!isInlineEnabled ()) return OS.eventNotHandledErr;
 	Caret caret = parent.caret;
 	if (caret == null) return OS.eventNotHandledErr;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
@@ -107,7 +107,7 @@ int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
-	if (!isInlineIMEEnabled ()) return OS.eventNotHandledErr;
+	if (!isInlineEnabled ()) return OS.eventNotHandledErr;
 	if (startOffset == -1) return OS.eventNotHandledErr;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
@@ -137,7 +137,7 @@ int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
-	if (!isInlineIMEEnabled ()) return OS.eventNotHandledErr;
+	if (!isInlineEnabled ()) return OS.eventNotHandledErr;
 	ranges = null;
 	styles = null;
 	caretOffset = commitCount = 0;
