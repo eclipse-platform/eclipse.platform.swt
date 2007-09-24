@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 	
 Canvas () {
 	/* Do nothing */
@@ -92,6 +93,11 @@ public Canvas (Composite parent, int style) {
 public Caret getCaret () {
 	checkWidget();
 	return caret;
+}
+
+public IME getIME () {
+	checkWidget ();
+	return ime;
 }
 
 int Pt_CB_GOT_FOCUS (int widget, int info) {
@@ -163,6 +169,10 @@ void releaseChildren (boolean destroy) {
 		caret.release (false);
 		caret = null;
 	} 
+	if (ime != null) {
+		ime.release (false);
+		ime = null;
+	}
 	super.releaseChildren (destroy);
 }
 
@@ -260,5 +270,11 @@ public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 }

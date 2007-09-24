@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -116,11 +117,20 @@ int getCaretHandle () {
 	return 0;
 }
 
+public IME getIME () {
+	checkWidget ();
+	return ime;
+}
+
 void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 	if (caret != null) {
 		caret.release (false);
 		caret = null;
+	}
+	if (ime != null) {
+		ime.release (false);
+		ime = null;
 	}
 }
 
@@ -250,6 +260,12 @@ public void setFont (Font font) {
 	checkWidget ();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 
 void HandlePreviewGotKeyboardFocus (int sender, int e) {

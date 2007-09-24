@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 	
 Canvas () {
 	/* Do nothing */
@@ -119,6 +120,10 @@ public Caret getCaret () {
 	checkWidget();
 	return caret;
 }
+public IME getIME () {
+	checkWidget ();
+	return ime;
+}
 Caret getIMCaret () {
 	return caret;
 }
@@ -133,6 +138,10 @@ void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
 		caret = null;
+	}
+	if (ime != null) {
+		ime.release (false);
+		ime = null;
 	}
 	super.releaseChildren (destroy);
 }
@@ -264,6 +273,11 @@ public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
