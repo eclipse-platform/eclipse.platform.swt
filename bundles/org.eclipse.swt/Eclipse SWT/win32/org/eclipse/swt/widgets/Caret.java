@@ -284,7 +284,8 @@ void resizeIME () {
 	if (!OS.GetCaretPos (ptCurrentPos)) return;
 	int /*long*/ hwnd = parent.handle;
 	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
-	if (parent.ime != null) {
+	IME ime = parent.getIME ();
+	if (ime != null && ime.isInlineEnabled ()) {
 		Point size = getSize ();
 		CANDIDATEFORM lpCandidate = new CANDIDATEFORM ();
 		lpCandidate.dwStyle = OS.CFS_EXCLUDE;

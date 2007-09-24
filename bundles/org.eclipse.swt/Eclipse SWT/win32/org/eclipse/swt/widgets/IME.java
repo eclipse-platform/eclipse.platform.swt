@@ -175,7 +175,7 @@ public boolean getWideCaret() {
 	return OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN; 
 }
 
-boolean isInlineIMEEnabled () {
+boolean isInlineEnabled () {
 	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (5, 1)) return false;
 	return OS.IsDBLocale && hooks (SWT.ImeComposition);
 }
@@ -194,196 +194,192 @@ void releaseWidget () {
 }
 
 LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
-	if (isInlineIMEEnabled ()) {
-		ranges = null;
-		styles = null;
-		caretOffset = commitCount = 0;
-		int /*long*/ hwnd = parent.handle;
-		int /*long*/ hIMC = OS.ImmGetContext (hwnd);
-		int codePage = parent.getCodePage ();
-		if (hIMC != 0) {
-			TCHAR buffer = null;
-			if ((lParam & OS.GCS_RESULTSTR) != 0) {
-				int length = OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, null, 0);
-				if (length > 0) {
-					buffer = new TCHAR (codePage, length / TCHAR.sizeof);
-					OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, buffer, length);
-					Event event = new Event ();
-					event.detail = SWT.COMPOSITION_CHANGED;
-					event.start = startOffset;
-					event.end = startOffset + text.length();
-					event.text = text = buffer != null ? buffer.toString () : "";
-					commitCount = text.length ();
-					sendEvent (SWT.ImeComposition, event);
-					String chars = text;
-					text = "";
-					startOffset = -1;
-					commitCount = 0;
-					if (event.doit) {
-						Display display = this.display;
-						display.lastKey = 0;
-						display.lastVirtual = display.lastNull = display.lastDead = false;
-						length = chars.length ();
-						for (int i = 0; i < length; i++) {
-							char c = chars.charAt (i);
-							display.lastAscii = c;
-							event = new Event ();
-							event.character = c;
-							parent.sendEvent (SWT.KeyDown, event);
-						}
+	if (!isInlineEnabled ()) return null;
+	ranges = null;
+	styles = null;
+	caretOffset = commitCount = 0;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	int codePage = parent.getCodePage ();
+	if (hIMC != 0) {
+		TCHAR buffer = null;
+		if ((lParam & OS.GCS_RESULTSTR) != 0) {
+			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, null, 0);
+			if (length > 0) {
+				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
+				OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, buffer, length);
+				Event event = new Event ();
+				event.detail = SWT.COMPOSITION_CHANGED;
+				event.start = startOffset;
+				event.end = startOffset + text.length();
+				event.text = text = buffer != null ? buffer.toString () : "";
+				commitCount = text.length ();
+				sendEvent (SWT.ImeComposition, event);
+				String chars = text;
+				text = "";
+				startOffset = -1;
+				commitCount = 0;
+				if (event.doit) {
+					Display display = this.display;
+					display.lastKey = 0;
+					display.lastVirtual = display.lastNull = display.lastDead = false;
+					length = chars.length ();
+					for (int i = 0; i < length; i++) {
+						char c = chars.charAt (i);
+						display.lastAscii = c;
+						event = new Event ();
+						event.character = c;
+						parent.sendEvent (SWT.KeyDown, event);
 					}
 				}
-				if ((lParam & OS.GCS_COMPSTR) == 0) return LRESULT.ONE;
 			}
-			buffer = null;
-			if ((lParam & OS.GCS_COMPSTR) != 0) {
-				int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0);
-				if (length > 0) {
-					buffer = new TCHAR (codePage, length / TCHAR.sizeof);
-					OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, buffer, length);
-					if ((lParam & OS.GCS_CURSORPOS) != 0) {
-						caretOffset = OS.ImmGetCompositionString (hIMC, OS.GCS_CURSORPOS, null, 0);
+			if ((lParam & OS.GCS_COMPSTR) == 0) return LRESULT.ONE;
+		}
+		buffer = null;
+		if ((lParam & OS.GCS_COMPSTR) != 0) {
+			int length = OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0);
+			if (length > 0) {
+				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
+				OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, buffer, length);
+				if ((lParam & OS.GCS_CURSORPOS) != 0) {
+					caretOffset = OS.ImmGetCompositionString (hIMC, OS.GCS_CURSORPOS, null, 0);
+				}
+				int [] clauses = null;
+				if ((lParam & OS.GCS_COMPCLAUSE) != 0) {
+					length = OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPCLAUSE, (int [])null, 0);
+					if (length > 0) {
+						clauses = new int [length / 4];
+						OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPCLAUSE, clauses, length);
 					}
-					int [] clauses = null;
-					if ((lParam & OS.GCS_COMPCLAUSE) != 0) {
-						length = OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPCLAUSE, (int [])null, 0);
-						if (length > 0) {
-							clauses = new int [length / 4];
-							OS.ImmGetCompositionStringW (hIMC, OS.GCS_COMPCLAUSE, clauses, length);
-						}
-					}
-					if ((lParam & OS.GCS_COMPATTR) != 0 && clauses != null) {
-						length = OS.ImmGetCompositionStringA (hIMC, OS.GCS_COMPATTR, (byte [])null, 0);
-						if (length > 0) {
-							byte [] attrs = new byte [length];
-							OS.ImmGetCompositionStringA (hIMC, OS.GCS_COMPATTR, attrs, length);
-							length = clauses.length - 1;
-							ranges = new int [length * 2];
-							styles = new TextStyle [length];
-							int /*long*/ layout = OS.GetKeyboardLayout (0);
-							short langID = (short)OS.LOWORD (layout);
-							TF_DISPLAYATTRIBUTE attr = null; 
-							TextStyle style = null;
-							for (int i = 0; i < length; i++) {
-								ranges [i * 2] = clauses [i];
-								ranges [i * 2 + 1] = clauses [i + 1] - clauses [i];
-								styles [i] = style = new TextStyle ();
-								attr = getDisplayAttribute (langID, attrs [clauses [i]]);
-								if (attr != null) {
-									switch (attr.crText.type) {
-										case OS.TF_CT_COLORREF:
-											style.foreground = Color.win32_new (display, attr.crText.cr);
-											break;
-										case OS.TF_CT_SYSCOLOR:
-											int colorRef = OS.GetSysColor (attr.crText.cr);
-											style.foreground = Color.win32_new (display, colorRef);
-											break;
-									}
-									switch (attr.crBk.type) {
-										case OS.TF_CT_COLORREF:
-											style.background = Color.win32_new (display, attr.crBk.cr);
-											break;
-										case OS.TF_CT_SYSCOLOR:
-											int colorRef = OS.GetSysColor (attr.crBk.cr);
-											style.background = Color.win32_new (display, colorRef);
-											break;
-									}
-									switch (attr.crLine.type) {
-										case OS.TF_CT_COLORREF:
-											style.underlineColor = Color.win32_new (display, attr.crLine.cr);
-											break;
-										case OS.TF_CT_SYSCOLOR:
-											int colorRef = OS.GetSysColor (attr.crLine.cr);
-											style.underlineColor = Color.win32_new (display, colorRef);
-											break;
-									}
-									style.underline = attr.lsStyle != OS.TF_LS_NONE;
-									switch (attr.lsStyle) {
-										case OS.TF_LS_SQUIGGLE:
-											style.underlineStyle = SWT.UNDERLINE_ERROR;
-											break;
-										case OS.TF_LS_DASH:
-											style.underlineStyle = UNDERLINE_IME_DASH; 
-											break;
-										case OS.TF_LS_DOT:
-											style.underlineStyle = UNDERLINE_IME_DOT;
-											break;
-										case OS.TF_LS_SOLID:
-											style.underlineStyle = attr.fBoldLine ? UNDERLINE_IME_THICK : SWT.UNDERLINE_SINGLE;
-											break;
-									}
+				}
+				if ((lParam & OS.GCS_COMPATTR) != 0 && clauses != null) {
+					length = OS.ImmGetCompositionStringA (hIMC, OS.GCS_COMPATTR, (byte [])null, 0);
+					if (length > 0) {
+						byte [] attrs = new byte [length];
+						OS.ImmGetCompositionStringA (hIMC, OS.GCS_COMPATTR, attrs, length);
+						length = clauses.length - 1;
+						ranges = new int [length * 2];
+						styles = new TextStyle [length];
+						int /*long*/ layout = OS.GetKeyboardLayout (0);
+						short langID = (short)OS.LOWORD (layout);
+						TF_DISPLAYATTRIBUTE attr = null; 
+						TextStyle style = null;
+						for (int i = 0; i < length; i++) {
+							ranges [i * 2] = clauses [i];
+							ranges [i * 2 + 1] = clauses [i + 1] - clauses [i];
+							styles [i] = style = new TextStyle ();
+							attr = getDisplayAttribute (langID, attrs [clauses [i]]);
+							if (attr != null) {
+								switch (attr.crText.type) {
+									case OS.TF_CT_COLORREF:
+										style.foreground = Color.win32_new (display, attr.crText.cr);
+										break;
+									case OS.TF_CT_SYSCOLOR:
+										int colorRef = OS.GetSysColor (attr.crText.cr);
+										style.foreground = Color.win32_new (display, colorRef);
+										break;
+								}
+								switch (attr.crBk.type) {
+									case OS.TF_CT_COLORREF:
+										style.background = Color.win32_new (display, attr.crBk.cr);
+										break;
+									case OS.TF_CT_SYSCOLOR:
+										int colorRef = OS.GetSysColor (attr.crBk.cr);
+										style.background = Color.win32_new (display, colorRef);
+										break;
+								}
+								switch (attr.crLine.type) {
+									case OS.TF_CT_COLORREF:
+										style.underlineColor = Color.win32_new (display, attr.crLine.cr);
+										break;
+									case OS.TF_CT_SYSCOLOR:
+										int colorRef = OS.GetSysColor (attr.crLine.cr);
+										style.underlineColor = Color.win32_new (display, colorRef);
+										break;
+								}
+								style.underline = attr.lsStyle != OS.TF_LS_NONE;
+								switch (attr.lsStyle) {
+									case OS.TF_LS_SQUIGGLE:
+										style.underlineStyle = SWT.UNDERLINE_ERROR;
+										break;
+									case OS.TF_LS_DASH:
+										style.underlineStyle = UNDERLINE_IME_DASH; 
+										break;
+									case OS.TF_LS_DOT:
+										style.underlineStyle = UNDERLINE_IME_DOT;
+										break;
+									case OS.TF_LS_SOLID:
+										style.underlineStyle = attr.fBoldLine ? UNDERLINE_IME_THICK : SWT.UNDERLINE_SINGLE;
+										break;
 								}
 							}
 						}
 					}
 				}
-				OS.ImmReleaseContext (hwnd, hIMC);
-			}
-			if (startOffset == -1) {
-				Caret caret = parent.getCaret();
-				startOffset = caret != null ? caret.getOffset() : 0;
-			}
-			Event event = new Event ();
-			event.detail = SWT.COMPOSITION_CHANGED;
-			event.start = startOffset;
-			event.end = startOffset + text.length();
-			event.text = text = buffer != null ? buffer.toString () : "";
-			sendEvent (SWT.ImeComposition, event);
-		}
-		return LRESULT.ONE;
-	}
-	return null;
-}
-
-LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
-	return isInlineIMEEnabled () ? LRESULT.ONE : null;
-}
-
-LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
-	return isInlineIMEEnabled () ? LRESULT.ONE : null;
-}
-
-LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
-	if (isInlineIMEEnabled ()) {
-		int /*long*/ hwnd = parent.handle;
-		int /*long*/ hIMC = OS.ImmGetContext (hwnd);
-		if (hIMC != 0) {
-			if (OS.ImmGetOpenStatus (hIMC)) {
-				OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
 			}
 			OS.ImmReleaseContext (hwnd, hIMC);
 		}
+		if (startOffset == -1) {
+			Caret caret = parent.getCaret();
+			startOffset = caret != null ? caret.getOffset() : 0;
+		}
+		Event event = new Event ();
+		event.detail = SWT.COMPOSITION_CHANGED;
+		event.start = startOffset;
+		event.end = startOffset + text.length();
+		event.text = text = buffer != null ? buffer.toString () : "";
+		sendEvent (SWT.ImeComposition, event);
+	}
+	return LRESULT.ONE;
+}
+
+LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
+	return isInlineEnabled () ? LRESULT.ONE : null;
+}
+
+LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+	return isInlineEnabled () ? LRESULT.ONE : null;
+}
+
+LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+	if (!isInlineEnabled ()) return null;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	if (hIMC != 0) {
+		if (OS.ImmGetOpenStatus (hIMC)) {
+			OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
+		}
+		OS.ImmReleaseContext (hwnd, hIMC);
 	}
 	return null;
 }
 
 LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
-	if (isInlineIMEEnabled ()) {
-		int /*long*/ hwnd = parent.handle;
-		int /*long*/ hIMC = OS.ImmGetContext (hwnd);
-		if (hIMC != 0) {
-			if (OS.ImmGetOpenStatus (hIMC)) {
-				if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0) > 0) {
-					Event event = new Event ();
-					event.detail = SWT.COMPOSITION_OFFSET;
-					event.x = OS.GET_X_LPARAM (lParam); 
-					event.y = OS.GET_Y_LPARAM (lParam);
-					sendEvent (SWT.ImeComposition, event);
-					int offset = event.index;
-					int length = text.length();
-					if (offset != -1 && startOffset != -1 && startOffset <= offset && offset < startOffset + length) {
-						int /*long*/ imeWnd = OS.ImmGetDefaultIMEWnd (hwnd);
-						offset = event.index + event.count - startOffset;
-						int trailing = event.count > 0 ? 1 : 2;
-						int /*long*/ param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
-						OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, hIMC);
-					} else {
-						OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
-					}
+	if (!isInlineEnabled ()) return null;
+	int /*long*/ hwnd = parent.handle;
+	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	if (hIMC != 0) {
+		if (OS.ImmGetOpenStatus (hIMC)) {
+			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, null, 0) > 0) {
+				Event event = new Event ();
+				event.detail = SWT.COMPOSITION_OFFSET;
+				event.x = OS.GET_X_LPARAM (lParam); 
+				event.y = OS.GET_Y_LPARAM (lParam);
+				sendEvent (SWT.ImeComposition, event);
+				int offset = event.index;
+				int length = text.length();
+				if (offset != -1 && startOffset != -1 && startOffset <= offset && offset < startOffset + length) {
+					int /*long*/ imeWnd = OS.ImmGetDefaultIMEWnd (hwnd);
+					offset = event.index + event.count - startOffset;
+					int trailing = event.count > 0 ? 1 : 2;
+					int /*long*/ param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
+					OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, hIMC);
+				} else {
+					OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
 				}
 			}
-			OS.ImmReleaseContext (hwnd, hIMC);
 		}
+		OS.ImmReleaseContext (hwnd, hIMC);
 	}
 	return null;
 }
