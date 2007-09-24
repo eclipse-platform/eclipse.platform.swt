@@ -150,7 +150,7 @@ public class StyledText extends Canvas {
 	boolean updateCaretDirection = true;
 	boolean fixedLineHeight;
 	boolean dragDetect = true;
-	int compositionStart = -1, compositionLength;
+	IME ime;
 	
 	int alignment;
 	boolean justify;
@@ -1210,7 +1210,8 @@ public StyledText(Composite parent, int style) {
 	renderer = new StyledTextRenderer(getDisplay(), this);
 	renderer.setContent(content);
 	renderer.setFont(getFont(), tabLength);
-	defaultCaret = new Caret(this, SWT.NULL);
+	ime = new IME(this, SWT.NONE);
+	defaultCaret = new Caret(this, SWT.NONE);
 	if ((style & SWT.WRAP) != 0) {
 		setWordWrap(true);
 	}
@@ -4621,7 +4622,7 @@ int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 }
 int getCaretDirection() {
 	if (!isBidiCaret()) return SWT.DEFAULT;
-	if (compositionStart != -1 && compositionLength > 0) return SWT.DEFAULT;
+	if (ime.getCompositionOffset() != -1) return SWT.DEFAULT;
 	if (!updateCaretDirection && caretDirection != SWT.NULL) return caretDirection;
 	updateCaretDirection = false;
 	int caretLine = getCaretLine();
@@ -4809,7 +4810,6 @@ void installListeners() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose: handleDispose(event); break;
-				case SWT.ImeComposition: handleImeComposition(event); break;
 				case SWT.KeyDown: handleKeyDown(event); break;
 				case SWT.KeyUp: handleKeyUp(event); break;
 				case SWT.MouseDown: handleMouseDown(event); break;
@@ -4822,7 +4822,6 @@ void installListeners() {
 		}		
 	};
 	addListener(SWT.Dispose, listener);
-	addListener(SWT.ImeComposition, listener);
 	addListener(SWT.KeyDown, listener);
 	addListener(SWT.KeyUp, listener);
 	addListener(SWT.MouseDown, listener);
@@ -4831,6 +4830,11 @@ void installListeners() {
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Resize, listener);
 	addListener(SWT.Traverse, listener);
+	ime.addListener(SWT.ImeComposition, new Listener() {
+		public void handleEvent(Event event) {
+			handleImeComposition(event);
+		}
+	});
 	if (verticalBar != null) {
 		verticalBar.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -4936,49 +4940,26 @@ void internalRedrawRange(int start, int length) {
 }
 void handleCompositionHittest (Event event) {
 	int[] trailing = new int [1];
-	int offset = getOffsetAtPoint(event.x, event.y, trailing, true);
-	if (offset != -1) {
-		if (compositionStart <= offset && offset < compositionStart + compositionLength) {
-			event.hitTest = SWT.HITTEST_INSIDE_COMPOSITION;
-			event.index = offset - compositionStart;
-		} else {
-			event.hitTest = SWT.HITTEST_INSIDE_TEXT;
-			event.index = offset;
-		}
-		event.trailing = trailing[0];
-	} else {
-		event.hitTest = SWT.HITTEST_OUTSIDE_TEXT;
-	}
+	event.index = getOffsetAtPoint(event.x, event.y, trailing, true);
+	event.count = trailing[0];
 }
 void handleCompositionChanged(Event event) {
 	String text = event.text;
+	int start = event.start;
 	int length = text.length();
-	if (compositionStart == -1) {
-		compositionStart = caretOffset;
-		compositionLength = 0;
-	}
-	int oldLength = compositionLength;
-	compositionLength = 0;
-	renderer.imeRanges = null;
-	renderer.imeStyles = null;
-	if (length == event.count) {
-		content.replaceTextRange(compositionStart, oldLength, "");
-		caretOffset = compositionStart;
-		compositionStart = -1;
+	if (length == ime.getCommitCount()) {
+		content.replaceTextRange(start, event.end - start, "");
+		caretOffset = start;
 		caretWidth = 0;
 		caretDirection = SWT.NULL;
 	} else {
-		content.replaceTextRange(compositionStart, oldLength, text);
-		compositionLength = length;
-		caretOffset = compositionStart + event.index;
-		int lineIndex = getCaretLine();
-		renderer.imeRanges = event.ranges;
-		renderer.imeStyles = event.styles;
-		resetCache(lineIndex, 1);
-		if (event.wideCaret) {
+		content.replaceTextRange(start, event.end - start, text);
+		caretOffset = ime.getCaretOffset();
+		if (ime.getWideCaret()) {
+			int lineIndex = getCaretLine();
 			int lineOffset = content.getOffsetAtLine(lineIndex);
 			TextLayout layout = renderer.getTextLayout(lineIndex);	
-			caretWidth = layout.getBounds(compositionStart - lineOffset, compositionStart + compositionLength - 1 - lineOffset).width;
+			caretWidth = layout.getBounds(start - lineOffset, start + length - 1 - lineOffset).width;
 			renderer.disposeTextLayout(layout);
 		}
 	}
@@ -4987,7 +4968,7 @@ void handleCompositionChanged(Event event) {
 void handleImeComposition (Event event) {
 	switch (event.detail) {
 		case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
-		case SWT.COMPOSITION_HITTEST: handleCompositionHittest(event); break;
+		case SWT.COMPOSITION_OFFSET: handleCompositionHittest(event); break;
 	}
 }
 /** 
@@ -6768,6 +6749,7 @@ void setCaretLocation(Point location, int direction) {
 				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
 			}
 		}
+		caret.setOffset(caretOffset);
 	}
 	columnX = location.x;
 }

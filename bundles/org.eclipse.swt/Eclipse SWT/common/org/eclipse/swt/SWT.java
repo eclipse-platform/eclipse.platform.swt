@@ -622,7 +622,7 @@ public class SWT {
 	 * The detail field indicates the action to be taken:
 	 * <p><ul>
 	 * <li>{@link SWT#COMPOSITION_CHANGED}</li>
-	 * <li>{@link SWT#COMPOSITION_HITTEST}</li>
+	 * <li>{@link SWT#COMPOSITION_OFFSET}</li>
 	 * </ul></p>
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
@@ -674,42 +674,7 @@ public class SWT {
 	 * 
 	 * @since 3.4
 	 */
-	public static final int COMPOSITION_HITTEST = 2;
-	
-	/**
-	 * Indicates that a hit test has occurred outside of
-	 * the text (value is 1).
-	 * 
-	 * @see SWT#COMPOSITION_HITTEST
-	 * @see org.eclipse.swt.widgets.Event#hitTest
-	 * 
-	 * @since 3.4
-	 */
-	public static final int HITTEST_OUTSIDE_TEXT = 1;
-	
-	
-	/**
-	 * Indicates that a hit test has occurred inside of
-	 * the text (value is 2).
-	 * 
-	 * @see SWT#COMPOSITION_HITTEST
-	 * @see org.eclipse.swt.widgets.Event#hitTest
-	 * 
-	 * @since 3.4
-	 */
-	public static final int HITTEST_INSIDE_TEXT = 2;
-	
-	/**
-	 * Indicates that a hit test has occurred inside of
-	 * the IME composition text (value is 3).
-	 * 
-	 * @see SWT#COMPOSITION_HITTEST
-	 * @see org.eclipse.swt.widgets.Event#hitTest
-	 * 
-	 * @since 3.4
-	 */
-	public static final int HITTEST_INSIDE_COMPOSITION = 3;
-	
+	public static final int COMPOSITION_OFFSET = 2;
 
 	/**
 	 * Indicates that a user-interface component is being dragged,

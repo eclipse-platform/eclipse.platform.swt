@@ -60,7 +60,7 @@ public final class TextLayout extends Resource {
 		OS.IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}\0".toCharArray(), IID_IMLangFontLink2);
 	}
 	
-	/* Caret has a copy of these constants */
+	/* IME has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
 	static final int UNDERLINE_IME_DASH = 2 << 16;
 	static final int UNDERLINE_IME_THICK = 3 << 16;

@@ -38,6 +38,7 @@ public class Caret extends Widget {
 	Image image;
 	Font font;
 	LOGFONT oldFont;
+	int offset;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -171,6 +172,11 @@ public Point getLocation () {
 	return new Point (x, y);
 }
 
+public int getOffset () {
+	checkWidget ();
+	return offset;
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Canvas</code>.
  *
@@ -278,7 +284,7 @@ void resizeIME () {
 	if (!OS.GetCaretPos (ptCurrentPos)) return;
 	int /*long*/ hwnd = parent.handle;
 	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
-	if (parent.isInlineIMEEnabled ()) {
+	if (parent.ime != null) {
 		Point size = getSize ();
 		CANDIDATEFORM lpCandidate = new CANDIDATEFORM ();
 		lpCandidate.dwStyle = OS.CFS_EXCLUDE;
@@ -517,6 +523,23 @@ public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
+}
+
+/**
+ * Sets the receiver's offset.
+ * 
+ * @param offset the new offset for the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setOffset (int offset) {
+	checkWidget ();
+	this.offset = Math.max (0, offset);
 }
 
 /**
