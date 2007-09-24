@@ -2336,13 +2336,6 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
 	
-	if (hooks(SWT.ImeComposition)) {
-		int /*long*/ imHandle = imHandle ();
-		if (imHandle != 0) {
-			OS.gtk_im_context_reset (imHandle);
-		}
-	}
-	
 	/*
 	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
 	* do not activate the shell when the user clicks on the
@@ -2423,29 +2416,13 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 }
 
 int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
-	int length = 0;
-	char [] chars = null;
-	boolean doit = true;
-	if (text != 0) {
-		length = OS.strlen (text);
-		if (length == 0) return 0;
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, text, length);
-		chars = Converter.mbcsToWcs (null, buffer);
-	}
-	if (hooks(SWT.ImeComposition) && display.inComposition) {
-		Event event = new Event();
-		event.detail = SWT.COMPOSITION_CHANGED;
-		event.text = chars != null ? new String(chars) : "";
-		event.count = event.text.length();
-		event.index = event.text.length();
-		sendEvent(SWT.ImeComposition, event);
-		doit = event.doit;
-	}
-	if (chars != null && doit) {
-		sendIMKeyEvent (SWT.KeyDown, null, chars);
-	}
-	display.inComposition = false;
+	if (text == 0) return 0;
+	int length = OS.strlen (text);
+	if (length == 0) return 0;
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, text, length);
+	char [] chars = Converter.mbcsToWcs (null, buffer);
+	sendIMKeyEvent (SWT.KeyDown, null, chars);
 	return 0;
 }
 
@@ -2672,100 +2649,7 @@ int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
-	if (hooks (SWT.ImeComposition)) {
-		int /*long*/ imHandle = imHandle ();
-		int /*long*/ [] preeditString = new int /*long*/ [1];
-		int /*long*/ [] pangoAttrs = new int /*long*/ [1];
-		int [] cursorPos = new int [1];
-		OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, cursorPos);
-		char [] chars = null;
-		int [] ranges = null;
-		TextStyle [] styles = null;
-		if (preeditString [0] != 0) {
-			int length = OS.strlen (preeditString [0]);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, preeditString [0], length);
-			chars = Converter.mbcsToWcs (null, buffer);
-			if (pangoAttrs [0] != 0) {
-				int count = 0;
-				int /*long*/ iterator = OS.pango_attr_list_get_iterator (pangoAttrs [0]);
-				while (OS.pango_attr_iterator_next (iterator)) count++;
-				OS.pango_attr_iterator_destroy (iterator);
-				ranges = new int [count * 2];
-				styles = new TextStyle [count];
-				iterator = OS.pango_attr_list_get_iterator (pangoAttrs [0]);
-				PangoAttrColor attrColor = new PangoAttrColor ();
-				PangoAttrInt attrInt = new PangoAttrInt ();
-				int [] start = new int [1];
-				int [] end = new int [1];
-				for (int i = 0; i < count; i++) {
-					OS.pango_attr_iterator_range (iterator, start, end);
-					ranges [i * 2] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + start [0]);
-					ranges [i * 2 + 1] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + end [0]) - ranges [i * 2];
-					styles [i] = new TextStyle (null, null, null);
-					int /*long*/ attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
-					if (attr != 0) {
-						OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-						GdkColor color = new GdkColor ();
-						color.red = attrColor.color_red;
-						color.green = attrColor.color_green;
-						color.blue = attrColor.color_blue;
-						styles [i].foreground = Color.gtk_new (display, color);
-					}
-					attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_BACKGROUND);
-					if (attr != 0) {
-						OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-						GdkColor color = new GdkColor ();
-						color.red = attrColor.color_red;
-						color.green = attrColor.color_green;
-						color.blue = attrColor.color_blue;
-						styles [i].background = Color.gtk_new (display, color);
-					}
-					attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_UNDERLINE);
-					if (attr != 0) {
-						OS.memmove (attrInt, attr, PangoAttrInt.sizeof);
-						styles [i].underline = attrInt.value != OS.PANGO_UNDERLINE_NONE;;
-						styles [i].underlineStyle = SWT.UNDERLINE_SINGLE;
-						switch (attrInt.value) {
-							case OS.PANGO_UNDERLINE_DOUBLE:
-								styles [i].underlineStyle = SWT.UNDERLINE_DOUBLE;
-								break;
-							case OS.PANGO_UNDERLINE_ERROR:
-								styles [i].underlineStyle = SWT.UNDERLINE_ERROR;
-								break;
-						}
-						if (styles [i].underline) {
-							attr = OS.pango_attr_iterator_get(iterator, OS.PANGO_ATTR_UNDERLINE_COLOR);
-							if (attr != 0) {
-								OS.memmove (attrColor, attr, PangoAttrColor.sizeof);
-								GdkColor color = new GdkColor ();
-								color.red = attrColor.color_red;
-								color.green = attrColor.color_green;
-								color.blue = attrColor.color_blue;
-								styles [i].underlineColor = Color.gtk_new (display, color);
-							}
-						}
-					}
-					OS.pango_attr_iterator_next (iterator);
-				}
-				OS.pango_attr_iterator_destroy (iterator);
-				OS.pango_attr_list_unref (pangoAttrs [0]);	
-			}
-			OS.g_free (preeditString [0]);
-		}
-		if (chars != null) {
-			display.inComposition = true;
-			Event event = new Event ();
-			event.detail = SWT.COMPOSITION_CHANGED;
-			event.text = new String (chars);
-			event.index = cursorPos [0];
-			event.ranges = ranges;
-			event.styles = styles;
-			sendEvent (SWT.ImeComposition, event);
-		}
-	} else {
-		display.showIMWindow (this);
-	}
+	display.showIMWindow (this);
 	return 0;
 }
 
