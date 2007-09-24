@@ -278,11 +278,11 @@ public String open () {
 	}
 	
 	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	Display display = parent.getDisplay ();
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 	
 	/*
@@ -317,7 +317,7 @@ public String open () {
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 
 	/* Dispose the callback and reassign the buffer */

@@ -350,7 +350,7 @@ public class Display extends Device {
 	
 	/* Modality */
 	Shell [] modalShells;
-	Shell modalDialogShell;
+	Dialog modalDialog;
 	static boolean TrimEnabled = false;
 
 	/* Private SWT Window Messages */
@@ -1902,9 +1902,8 @@ Shell getModalShell () {
 	return null;
 }
 
-Shell getModalDialogShell () {
-	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-	return modalDialogShell;
+Dialog getModalDialog () {
+	return modalDialog;
 }
 
 /**
@@ -2959,9 +2958,8 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			*/
 			if (wParam != 0) {
 				if (!isXMouseActive ()) {
-					if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-					Shell modal = modalDialogShell != null ? modalDialogShell : getModalShell ();
-					if (modal != null) {
+					Shell modal = modalDialog != null ? modalDialog.parent : getModalShell ();
+					if (modal != null && !modal.isDisposed ()) {
 						int /*long*/ hwndModal = modal.handle;
 						if (OS.IsWindowEnabled (hwndModal)) {
 							modal.bringToTop ();
@@ -3526,7 +3524,7 @@ void releaseDisplay () {
 	thread = null;
 	msg = null;
 	keyboard = null;
-	modalDialogShell = null;
+	modalDialog = null;
 	modalShells = null;
 	data = null;
 	keys = null;
@@ -4043,9 +4041,8 @@ public static void setAppName (String name) {
 	/* Do nothing */
 }
 
-void setModalDialogShell (Shell modalDailog) {
-	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-	this.modalDialogShell = modalDailog;
+void setModalDialog (Dialog modalDailog) {
+	this.modalDialog = modalDailog;
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }

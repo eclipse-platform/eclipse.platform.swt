@@ -180,10 +180,10 @@ public RGB open () {
 	}
 	
 	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 	
 	/* Open the dialog */
@@ -191,7 +191,7 @@ public RGB open () {
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	if (success) {

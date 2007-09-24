@@ -176,12 +176,12 @@ public int open () {
 	* parent be temporarily modal. 
 	*/
 	int /*long*/ hwndOwner = parent != null ? parent.handle : 0;
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	Display display = null;
 	if ((bits & OS.MB_TASKMODAL) != 0) {
 		display = parent.getDisplay ();
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 
 	/* Open the message box */
@@ -192,7 +192,7 @@ public int open () {
 	
 	/* Clear the temporarily dialog modal parent */
 	if ((bits & OS.MB_TASKMODAL) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	/*

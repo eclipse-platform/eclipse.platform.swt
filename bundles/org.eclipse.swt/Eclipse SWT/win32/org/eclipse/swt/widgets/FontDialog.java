@@ -164,12 +164,12 @@ public FontData open () {
 	}
 	
 	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
+	Dialog oldModal = null;
 	Display display = null;
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display = parent.getDisplay ();
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
 	}
 
 	/* Open the dialog */
@@ -177,7 +177,7 @@ public FontData open () {
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
+		display.setModalDialog (oldModal);
 	}
 	
 	/* Compute the result */

@@ -1536,9 +1536,12 @@ public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 }
 
 boolean isActive () {
-	Shell dialogShell = display.getModalDialogShell ();
-	if (dialogShell != null && dialogShell != getShell ()) {
-		return false;
+	Dialog dialog = display.getModalDialog ();
+	if (dialog != null) {
+		Shell dialogShell = dialog.parent;
+		if (dialogShell != null && !dialogShell.isDisposed ()) {
+			if (dialogShell != getShell ()) return false;
+		}
 	}
 	Shell shell = null;
 	Shell [] modalShells = display.modalShells;
