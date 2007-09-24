@@ -122,14 +122,14 @@ public Caret getCaret () {
 	return caret;
 }
 
-public IME getIME () {
-	checkWidget ();
-	return ime;
-}
-
 Point getIMCaretPos () {
 	if (caret == null) return super.getIMCaretPos ();
 	return new Point (caret.x, caret.y);
+}
+
+public IME getIME () {
+	checkWidget ();
+	return ime;
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
@@ -351,16 +351,16 @@ public void setCaret (Caret caret) {
 	}
 }
 
-public void setIME (IME ime) {
-	checkWidget ();
-	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	this.ime = ime;
-}
-
 public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 	
 void updateCaret () {
