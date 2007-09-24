@@ -87,6 +87,38 @@ void clearArea (int x, int y, int width, int height) {
 	}
 }
 
+/** 
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background. 
+ *
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void drawBackground (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	RECT rect = new RECT ();
+	OS.SetRect (rect, x, y, x + width, y + height);
+	int /*long*/ hDC = gc.handle;
+	int pixel = background == -1 ? gc.getBackground ().handle : -1;
+	drawBackground (hDC, rect, pixel);
+}
+
 /**
  * Returns the caret.
  * <p>
@@ -137,38 +169,6 @@ void releaseChildren (boolean destroy) {
 		ime = null;
 	}
 	super.releaseChildren (destroy);
-}
-
-/** 
- * Fills the interior of the rectangle specified by the arguments,
- * with the receiver's background. 
- *
- * @param gc the gc where the rectangle is to be filled
- * @param x the x coordinate of the rectangle to be filled
- * @param y the y coordinate of the rectangle to be filled
- * @param width the width of the rectangle to be filled
- * @param height the height of the rectangle to be filled
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.2
- */
-public void drawBackground (GC gc, int x, int y, int width, int height) {
-	checkWidget ();
-	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + height);
-	int /*long*/ hDC = gc.handle;
-	int pixel = background == -1 ? gc.getBackground ().handle : -1;
-	drawBackground (hDC, rect, pixel);
 }
 
 /**
@@ -294,6 +294,12 @@ public void setCaret (Caret caret) {
 	}
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	if (caret != null) caret.setFont (font);
+	super.setFont (font);
+}
+
 /**
  * Sets the receiver's IME.
  * 
@@ -313,12 +319,6 @@ public void setIME (IME ime) {
 	checkWidget ();
 	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.ime = ime;
-}
-
-public void setFont (Font font) {
-	checkWidget ();
-	if (caret != null) caret.setFont (font);
-	super.setFont (font);
 }
 
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
