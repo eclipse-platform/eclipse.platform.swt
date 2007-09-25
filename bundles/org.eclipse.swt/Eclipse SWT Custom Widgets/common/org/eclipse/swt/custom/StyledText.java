@@ -6753,7 +6753,6 @@ void setCaretLocation(Point location, int direction) {
 				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
 			}
 		}
-		caret.setOffset(caretOffset);
 	}
 	columnX = location.x;
 }

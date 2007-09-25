@@ -36,7 +36,6 @@ public class Caret extends Widget {
 	int blinkRate = 0;
 	Image image;
 	Font font;
-	int offset;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -191,11 +190,6 @@ public Image getImage () {
 public Point getLocation () {
 	checkWidget();
 	return new Point (x, y);
-}
-
-public int getOffset () {
-	checkWidget ();
-	return offset;
 }
 
 /**
@@ -443,11 +437,6 @@ public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
-}
-
-public void setOffset (int offset) {
-	checkWidget ();
-	this.offset = Math.max (0, offset);
 }
 
 /**

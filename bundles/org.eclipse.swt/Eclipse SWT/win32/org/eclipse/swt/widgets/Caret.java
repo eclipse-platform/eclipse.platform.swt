@@ -38,7 +38,6 @@ public class Caret extends Widget {
 	Image image;
 	Font font;
 	LOGFONT oldFont;
-	int offset;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -170,11 +169,6 @@ public Image getImage () {
 public Point getLocation () {
 	checkWidget();
 	return new Point (x, y);
-}
-
-public int getOffset () {
-	checkWidget ();
-	return offset;
 }
 
 /**
@@ -524,23 +518,6 @@ public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
-}
-
-/**
- * Sets the receiver's offset.
- * 
- * @param offset the new offset for the receiver.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.4
- */
-public void setOffset (int offset) {
-	checkWidget ();
-	this.offset = Math.max (0, offset);
 }
 
 /**
