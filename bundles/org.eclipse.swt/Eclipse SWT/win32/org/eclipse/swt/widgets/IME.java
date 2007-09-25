@@ -155,12 +155,20 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 
 public int [] getRanges () {
 	checkWidget ();
-	return ranges != null ? ranges : new int [0];
+	if (ranges == null) return new int [0];
+	int[] result = new int [ranges.length];
+	for (int i = 0; i < result.length; i++) {
+		result[i] = ranges [i] + startOffset; 
+	}
+	return result;
 }
 
 public TextStyle [] getStyles () {
 	checkWidget ();
-	return styles != null ? styles : new TextStyle [0];
+	if (styles == null) return new TextStyle [0];
+	TextStyle[] result = new TextStyle [styles.length];
+	System.arraycopy (styles, 0, result, 0, styles.length);
+	return result;
 }
 
 public String getText () {
@@ -266,7 +274,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 						TextStyle style = null;
 						for (int i = 0; i < length; i++) {
 							ranges [i * 2] = clauses [i];
-							ranges [i * 2 + 1] = clauses [i + 1] - clauses [i];
+							ranges [i * 2 + 1] = clauses [i + 1] - 1;
 							styles [i] = style = new TextStyle ();
 							attr = getDisplayAttribute (langID, attrs [clauses [i]]);
 							if (attr != null) {
@@ -319,18 +327,24 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 			OS.ImmReleaseContext (hwnd, hIMC);
 		}
+		int end = startOffset + text.length();
 		if (startOffset == -1) {
-			Caret caret = parent.getCaret();
-			startOffset = caret != null ? caret.getOffset() : 0;
+			Event event = new Event ();
+			event.detail = SWT.COMPOSITION_SELECTION;
+			sendEvent (SWT.ImeComposition, event);
+			startOffset = event.start;
+			end = event.end;
 		}
 		Event event = new Event ();
 		event.detail = SWT.COMPOSITION_CHANGED;
 		event.start = startOffset;
-		event.end = startOffset + text.length();
+		event.end = end;
 		event.text = text = buffer != null ? buffer.toString () : "";
 		sendEvent (SWT.ImeComposition, event);
 		if (text.length() == 0) {
 			startOffset = -1;
+			ranges = null;
+			styles = null;
 		}
 	}
 	return LRESULT.ONE;

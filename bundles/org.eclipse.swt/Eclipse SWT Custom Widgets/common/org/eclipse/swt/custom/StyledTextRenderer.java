@@ -848,8 +848,8 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 					TextStyle[] imeStyles = ime.getStyles();
 					if (imeRanges.length > 0) {
 						for (int i = 0; i < imeStyles.length; i++) {
-							int start = imeRanges[i*2] + compositionOffset - lineOffset;
-							int end = start + imeRanges[i*2+1] - 1;
+							int start = imeRanges[i*2] - lineOffset;
+							int end = imeRanges[i*2+1] - lineOffset;
 							TextStyle imeStyle = imeStyles[i], userStyle;
 							for (int j = start; j <= end; j++) {
 								userStyle = layout.getStyle(j);

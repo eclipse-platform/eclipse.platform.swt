@@ -623,6 +623,7 @@ public class SWT {
 	 * <p><ul>
 	 * <li>{@link SWT#COMPOSITION_CHANGED}</li>
 	 * <li>{@link SWT#COMPOSITION_OFFSET}</li>
+	 * <li>{@link SWT#COMPOSITION_SELECTION}</li>
 	 * </ul></p>
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
@@ -637,12 +638,12 @@ public class SWT {
 	
 	/**
 	 * The IME composition event detail that indicates
-	 * a change in the IME composition. The text, ranges,
-	 * and styles fields of the event define the appearance
-	 * of the composition text. The index field of the event
-	 * indicates the offset of the caret within the text.
-	 * The wideCaret field indicates that the caret should
-	 * be set to the width of the text (value is 1).
+	 * a change in the IME composition. The text field
+	 * of the event is the new composition text. 
+	 * The start and end indicate the offsets where the
+	 * composition text should be inserted.
+	 * The styles and ranges are stored in the IME 
+	 * object (value is 1).
 	 * 
 	 * @see SWT#ImeComposition
 	 * 
@@ -652,22 +653,14 @@ public class SWT {
 	
 	/**
 	 * The IME composition event detail that indicates
-	 * that an IME hit test occurred.  The x and y fields
-	 * of the event are used by the application to set
-	 * the hitTest, index and trailing fields of the event.
+	 * that the IME needs the offset for a given location.
+	 * The x and y fields of the event are used by the 
+	 * application to determine the offset.
 	 * 
-	 * The hitTest values are:
-	 * <p><ul>
-	 * <li>{@link SWT#HITTEST_OUTSIDE_TEXT}</li>
-	 * <li>{@link SWT#HITTEST_INSIDE_TEXT}</li>
-	 * <li>{@link SWT#HITTEST_INSIDE_COMPOSITION}</li>
-	 * </ul></p>
-	 * 
-	 * The index field of the event is the caret offset
-	 * relative to the composition text. The trailing field
-	 * is used to indicate that the hit test occurred in the
-	 * leading edge (0) or trailing edge (1) of the character
-	 * at index (value is 2).
+	 * The index field of the event should be set to the 
+	 * text offset at that location. The count field should 
+	 * be set to indicate whether the location is closer to
+	 * the leading edge (0) or the trailing edge (1) (value is 2).
 	 * 
 	 * @see SWT#ImeComposition
 	 * @see org.eclipse.swt.graphics.TextLayout#getOffset(int, int, int[])
@@ -675,6 +668,17 @@ public class SWT {
 	 * @since 3.4
 	 */
 	public static final int COMPOSITION_OFFSET = 2;
+	
+	/**
+	 * The IME composition event detail that indicates
+	 * that IME needs the selected text and its start
+	 * and end offsets (value is 3).
+	 * 
+	 * @see SWT#ImeComposition
+	 * 
+	 * @since 3.4
+	 */
+	public static final int COMPOSITION_SELECTION = 3;
 
 	/**
 	 * Indicates that a user-interface component is being dragged,

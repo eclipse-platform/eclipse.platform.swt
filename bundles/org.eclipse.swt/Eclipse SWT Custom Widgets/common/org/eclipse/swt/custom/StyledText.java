@@ -4833,6 +4833,7 @@ void installListeners() {
 	ime.addListener(SWT.ImeComposition, new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.detail) {
+				case SWT.COMPOSITION_SELECTION: handleCompositionSelection(event); break;
 				case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
 				case SWT.COMPOSITION_OFFSET: handleCompositionOffset(event); break;
 			}
@@ -4946,24 +4947,23 @@ void handleCompositionOffset (Event event) {
 	event.index = getOffsetAtPoint(event.x, event.y, trailing, true);
 	event.count = trailing[0];
 }
+void handleCompositionSelection (Event event) {
+	event.start = selection.x;
+	event.end = selection.y;
+	event.text = getSelectionText();
+}
 void handleCompositionChanged(Event event) {
-	if (selection.x != selection.y) {
-		Event e = new Event();
-		e.text = "";
-		e.start = selection.x;
-		e.end = selection.y;
-		sendKeyEvent(e);
-	}
 	String text = event.text;
 	int start = event.start;
+	int end = event.end;
 	int length = text.length();
 	if (length == ime.getCommitCount()) {
-		content.replaceTextRange(start, event.end - start, "");
+		content.replaceTextRange(start, end - start, "");
 		caretOffset = start;
 		caretWidth = 0;
 		caretDirection = SWT.NULL;
 	} else {
-		content.replaceTextRange(start, event.end - start, text);
+		content.replaceTextRange(start, end - start, text);
 		caretOffset = ime.getCaretOffset();
 		if (ime.getWideCaret()) {
 			int lineIndex = getCaretLine();
