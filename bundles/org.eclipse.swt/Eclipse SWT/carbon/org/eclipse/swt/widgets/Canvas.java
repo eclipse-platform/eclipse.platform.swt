@@ -188,6 +188,14 @@ int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int use
 	return super.kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
 }
 
+int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
+	if (ime != null) {
+		int result = ime.kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
+		if (result != OS.eventNotHandledErr) return result;
+	}
+	return super.kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
+}
+
 void redrawWidget (int control, boolean children) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();

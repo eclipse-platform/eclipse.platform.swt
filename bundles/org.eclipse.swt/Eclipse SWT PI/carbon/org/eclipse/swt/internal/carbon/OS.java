@@ -465,6 +465,7 @@ public class OS extends C {
 	public static final int kEventParamTextInputReplyLeadingEdge = ('t'<<24) + ('r'<<16) + ('l'<<8) + 'e';
 	public static final int kEventParamTextInputReplyPoint = ('t'<<24) + ('r'<<16) + ('p'<<8) + 't';
 	public static final int kEventParamTextInputReplyRegionClass = ('t'<<24) + ('r'<<16) + ('r'<<8) + 'g';
+	public static final int kEventParamTextInputReplyText = ('t'<<24) + ('r'<<16) + ('t'<<8) + 'x';
 	public static final int kEventParamTextInputReplyTextOffset = ('t'<<24) + ('r'<<16) + ('t'<<8) + 'o';
 	public static final int kEventParamTextInputSendCurrentPoint = ('t'<<24) + ('s'<<16) + ('c'<<8) + 'p';
 	public static final int kEventParamTextInputSendFixLen = ('t'<<24) + ('s'<<16) + ('f'<<8) + 'x';

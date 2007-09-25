@@ -71,12 +71,20 @@ public int getCompositionOffset () {
 
 public int [] getRanges () {
 	checkWidget ();
-	return ranges != null ? ranges : new int [0];
+	if (ranges == null) return new int [0];
+	int[] result = new int [ranges.length];
+	for (int i = 0; i < result.length; i++) {
+		result[i] = ranges [i] + startOffset; 
+	}
+	return result;
 }
 
 public TextStyle [] getStyles () {
 	checkWidget ();
-	return styles != null ? styles : new TextStyle [0];
+	if (styles == null) return new TextStyle [0];
+	TextStyle[] result = new TextStyle [styles.length];
+	System.arraycopy (styles, 0, result, 0, styles.length);
+	return result;
 }
 
 public String getText () {
@@ -136,6 +144,20 @@ int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
 
+int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
+	Event event = new Event ();
+	event.detail = SWT.COMPOSITION_SELECTION;
+	sendEvent (SWT.ImeComposition, event);
+	String text = event.text;
+	if (text.length() > 0) {
+		char [] buffer = new char [text.length()];
+		text.getChars (0, buffer.length, buffer, 0);
+		OS.SetEventParameter (theEvent, OS.kEventParamTextInputReplyText, OS.typeUnicodeText, buffer.length * 2, buffer);
+		return OS.noErr;
+	}
+	return OS.eventNotHandledErr;
+}
+
 int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
 	if (!isInlineEnabled ()) return OS.eventNotHandledErr;
 	ranges = null;
@@ -172,7 +194,7 @@ int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int use
 					case OS.kSelectedRawText:
 					case OS.kRawText:
 						ranges [j * 2] = range.fStart / 2;
-						ranges [j * 2 + 1] = range.fEnd / 2 - range.fStart / 2 + 0;
+						ranges [j * 2 + 1] = range.fEnd / 2 - 1;
 						styles [j] = new TextStyle ();
 						styles [j].underline = true;
 						styles [j].underlineStyle = UNDERLINE_IME_INPUT;
@@ -196,14 +218,18 @@ int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int use
 			caretOffset = firstSelectedConverted / 2;
 		}
 	}
+	int end = startOffset + text.length();
 	if (startOffset == -1) {
-		Caret caret = parent.getCaret();
-		startOffset = caret != null ? caret.getOffset() : 0;
+		Event event = new Event ();
+		event.detail = SWT.COMPOSITION_SELECTION;
+		sendEvent (SWT.ImeComposition, event);
+		startOffset = event.start;
+		end = event.end;
 	}
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_CHANGED;
 	event.start = startOffset;
-	event.end = startOffset + text.length();
+	event.end = end;
 	event.text = text = new String(chars, 0, length [0] / 2);
 	commitCount = fixed_length [0] != -1 ? fixed_length [0] / 2: length [0] / 2;
 	sendEvent (SWT.ImeComposition, event);
@@ -211,6 +237,8 @@ int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int use
 		text = "";
 		caretOffset = commitCount = 0;
 		startOffset = -1;
+		ranges = null;
+		styles = null;
 	}
 	if (event.doit) {
 		if (fixed_length [0] == -1 || fixed_length [0] == length [0]) {

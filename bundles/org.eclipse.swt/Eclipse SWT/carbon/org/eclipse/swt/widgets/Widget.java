@@ -1194,6 +1194,10 @@ int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -1943,6 +1947,7 @@ int textInputProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventTextInputUpdateActiveInputArea: return kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
 		case OS.kEventTextInputOffsetToPos: return kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
 		case OS.kEventTextInputPosToOffset: return kEventTextInputPosToOffset (nextHandler, theEvent, userData);
+		case OS.kEventTextInputGetSelectedText: return kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

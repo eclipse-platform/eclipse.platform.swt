@@ -2146,6 +2146,7 @@ void initializeCallbacks () {
 		OS.kEventClassTextInput, OS.kEventTextInputUpdateActiveInputArea,
 		OS.kEventClassTextInput, OS.kEventTextInputOffsetToPos,
 		OS.kEventClassTextInput, OS.kEventTextInputPosToOffset,
+		OS.kEventClassTextInput, OS.kEventTextInputGetSelectedText,
 	};
 	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, null);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, 0, false);
