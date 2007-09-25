@@ -4832,7 +4832,10 @@ void installListeners() {
 	addListener(SWT.Traverse, listener);
 	ime.addListener(SWT.ImeComposition, new Listener() {
 		public void handleEvent(Event event) {
-			handleImeComposition(event);
+			switch (event.detail) {
+				case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
+				case SWT.COMPOSITION_OFFSET: handleCompositionOffset(event); break;
+			}
 		}
 	});
 	if (verticalBar != null) {
@@ -4938,12 +4941,19 @@ void internalRedrawRange(int start, int length) {
 		super.redraw(leftMargin, y, clientAreaWidth - rightMargin - leftMargin, endRect.y - y, false);
 	}
 }
-void handleCompositionHittest (Event event) {
+void handleCompositionOffset (Event event) {
 	int[] trailing = new int [1];
 	event.index = getOffsetAtPoint(event.x, event.y, trailing, true);
 	event.count = trailing[0];
 }
 void handleCompositionChanged(Event event) {
+	if (selection.x != selection.y) {
+		Event e = new Event();
+		e.text = "";
+		e.start = selection.x;
+		e.end = selection.y;
+		sendKeyEvent(e);
+	}
 	String text = event.text;
 	int start = event.start;
 	int length = text.length();
@@ -4964,12 +4974,6 @@ void handleCompositionChanged(Event event) {
 		}
 	}
 	showCaret();
-}
-void handleImeComposition (Event event) {
-	switch (event.detail) {
-		case SWT.COMPOSITION_CHANGED: handleCompositionChanged(event); break;
-		case SWT.COMPOSITION_OFFSET: handleCompositionHittest(event); break;
-	}
 }
 /** 
  * Frees resources.
@@ -5182,8 +5186,8 @@ void handleMouseDown(Event event) {
 				start = lineOffset;
 				end = lineEnd;
 			}
-			selection.x = selection.y = start;
-			selectionAnchor = -1;
+			caretOffset = start;
+			resetSelection();
 			caretOffset = end;
 			showCaret();
 			doMouseSelection();
