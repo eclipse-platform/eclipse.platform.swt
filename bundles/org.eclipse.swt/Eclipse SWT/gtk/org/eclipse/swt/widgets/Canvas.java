@@ -122,19 +122,19 @@ public Caret getCaret () {
 	return caret;
 }
 
-public IME getIME () {
-	checkWidget ();
-	return ime;
-}
-
 Point getIMCaretPos () {
 	if (caret == null) return super.getIMCaretPos ();
 	return new Point (caret.x, caret.y);
 }
 
+public IME getIME () {
+	checkWidget ();
+	return ime;
+}
+
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (ime != null) {
-		int result = ime.gtk_button_press_event (widget, event);
+		int /*long*/ result = ime.gtk_button_press_event (widget, event);
 		if (result != 0) return result;
 	}
 	return  super.gtk_button_press_event (widget, event);
@@ -142,7 +142,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 	if (ime != null) {
-		int result = ime.gtk_commit (imcontext, text);
+		int /*long*/ result = ime.gtk_commit (imcontext, text);
 		if (result != 0) return result;
 	}
 	return super.gtk_commit (imcontext, text);
@@ -171,7 +171,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 	if (ime != null) {
-		int result = ime.gtk_preedit_changed (imcontext);
+		int /*long*/ result = ime.gtk_preedit_changed (imcontext);
 		if (result != 0) return result;
 	}
 	return super.gtk_preedit_changed (imcontext);
@@ -351,16 +351,16 @@ public void setCaret (Caret caret) {
 	}
 }
 
-public void setIME (IME ime) {
-	checkWidget ();
-	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	this.ime = ime;
-}
-
 public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 	
 void updateCaret () {
