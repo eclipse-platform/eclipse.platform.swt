@@ -134,7 +134,7 @@ public IME getIME () {
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (ime != null) {
-		int result = ime.gtk_button_press_event (widget, event);
+		int /*long*/ result = ime.gtk_button_press_event (widget, event);
 		if (result != 0) return result;
 	}
 	return  super.gtk_button_press_event (widget, event);
@@ -142,7 +142,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 	if (ime != null) {
-		int result = ime.gtk_commit (imcontext, text);
+		int /*long*/ result = ime.gtk_commit (imcontext, text);
 		if (result != 0) return result;
 	}
 	return super.gtk_commit (imcontext, text);
@@ -171,7 +171,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 	if (ime != null) {
-		int result = ime.gtk_preedit_changed (imcontext);
+		int /*long*/ result = ime.gtk_preedit_changed (imcontext);
 		if (result != 0) return result;
 	}
 	return super.gtk_preedit_changed (imcontext);
