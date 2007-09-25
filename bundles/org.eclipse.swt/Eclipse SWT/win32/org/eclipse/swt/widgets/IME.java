@@ -329,6 +329,9 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 		event.end = startOffset + text.length();
 		event.text = text = buffer != null ? buffer.toString () : "";
 		sendEvent (SWT.ImeComposition, event);
+		if (text.length() == 0) {
+			startOffset = -1;
+		}
 	}
 	return LRESULT.ONE;
 }
