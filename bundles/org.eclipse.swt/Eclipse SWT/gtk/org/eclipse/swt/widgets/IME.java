@@ -68,12 +68,20 @@ public int getCompositionOffset () {
 
 public int [] getRanges () {
 	checkWidget ();
-	return ranges != null ? ranges : new int [0];
+	if (ranges == null) return new int [0];
+	int[] result = new int [ranges.length];
+	for (int i = 0; i < result.length; i++) {
+		result[i] = ranges [i] + startOffset; 
+	}
+	return result;
 }
 
 public TextStyle [] getStyles () {
 	checkWidget ();
-	return styles != null ? styles : new TextStyle [0];
+	if (styles == null) return new TextStyle [0];
+	TextStyle[] result = new TextStyle [styles.length];
+	System.arraycopy (styles, 0, result, 0, styles.length);
+	return result;
 }
 
 public String getText () {
@@ -154,7 +162,7 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 			for (int i = 0; i < count; i++) {
 				OS.pango_attr_iterator_range (iterator, start, end);
 				ranges [i * 2] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + start [0]);
-				ranges [i * 2 + 1] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + end [0]) - ranges [i * 2];
+				ranges [i * 2 + 1] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + end [0]) - 1;
 				styles [i] = new TextStyle (null, null, null);
 				int /*long*/ attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
 				if (attr != 0) {
@@ -208,15 +216,19 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 	}
 	if (chars != null) {
 		if (text.length() == 0) startOffset = -1;
+		int end = startOffset + text.length();
 		if (startOffset == -1) {
-			Caret caret = parent.getCaret ();
-			startOffset = caret != null ? caret.getOffset () : 0;
+			Event event = new Event ();
+			event.detail = SWT.COMPOSITION_SELECTION;
+			sendEvent (SWT.ImeComposition, event);
+			startOffset = event.start;
+			end = event.end;
 		}
 		inComposition = true;
 		Event event = new Event ();
 		event.detail = SWT.COMPOSITION_CHANGED;
 		event.start = startOffset;
-		event.end = startOffset + text.length ();
+		event.end = end;
 		event.text = text = chars != null ? new String (chars) : "";
 		sendEvent (SWT.ImeComposition, event);
 	}
