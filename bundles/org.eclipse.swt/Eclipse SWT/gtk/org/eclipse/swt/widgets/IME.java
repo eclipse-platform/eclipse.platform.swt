@@ -69,9 +69,9 @@ public int getCompositionOffset () {
 public int [] getRanges () {
 	checkWidget ();
 	if (ranges == null) return new int [0];
-	int[] result = new int [ranges.length];
+	int [] result = new int [ranges.length];
 	for (int i = 0; i < result.length; i++) {
-		result[i] = ranges [i] + startOffset; 
+		result [i] = ranges [i] + startOffset; 
 	}
 	return result;
 }
@@ -79,7 +79,7 @@ public int [] getRanges () {
 public TextStyle [] getStyles () {
 	checkWidget ();
 	if (styles == null) return new TextStyle [0];
-	TextStyle[] result = new TextStyle [styles.length];
+	TextStyle [] result = new TextStyle [styles.length];
 	System.arraycopy (styles, 0, result, 0, styles.length);
 	return result;
 }

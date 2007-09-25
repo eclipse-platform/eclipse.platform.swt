@@ -72,9 +72,9 @@ public int getCompositionOffset () {
 public int [] getRanges () {
 	checkWidget ();
 	if (ranges == null) return new int [0];
-	int[] result = new int [ranges.length];
+	int [] result = new int [ranges.length];
 	for (int i = 0; i < result.length; i++) {
-		result[i] = ranges [i] + startOffset; 
+		result [i] = ranges [i] + startOffset; 
 	}
 	return result;
 }
@@ -82,7 +82,7 @@ public int [] getRanges () {
 public TextStyle [] getStyles () {
 	checkWidget ();
 	if (styles == null) return new TextStyle [0];
-	TextStyle[] result = new TextStyle [styles.length];
+	TextStyle [] result = new TextStyle [styles.length];
 	System.arraycopy (styles, 0, result, 0, styles.length);
 	return result;
 }
@@ -149,8 +149,8 @@ int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData)
 	event.detail = SWT.COMPOSITION_SELECTION;
 	sendEvent (SWT.ImeComposition, event);
 	String text = event.text;
-	if (text.length() > 0) {
-		char [] buffer = new char [text.length()];
+	if (text.length () > 0) {
+		char [] buffer = new char [text.length ()];
 		text.getChars (0, buffer.length, buffer, 0);
 		OS.SetEventParameter (theEvent, OS.kEventParamTextInputReplyText, OS.typeUnicodeText, buffer.length * 2, buffer);
 		return OS.noErr;
