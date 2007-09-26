@@ -99,7 +99,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 	
 			// Create ole object with storage object
 			int /*long*/[] address = new int /*long*/[1];
-			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
+			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, iOleClientSite.getAddress(), tempStorage.getAddress(), address);
 			if (result != COM.S_OK)
 				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 	

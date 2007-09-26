@@ -49,7 +49,7 @@ public class OleClientSite extends Composite {
 		
 	// Interfaces for this Ole Client Container
 	private COMObject  iUnknown;
-	private COMObject  iOleClientSite;
+	COMObject  iOleClientSite;
 	private COMObject  iAdviseSink;
 	private COMObject  iOleInPlaceSite;
 	private COMObject  iOleDocumentSite;
@@ -187,7 +187,7 @@ public OleClientSite(Composite parent, int style, File file) {
 
 		// Create ole object with storage object
 		int /*long*/[] address = new int /*long*/[1];
-		result = COM.OleCreateFromFile(appClsid, fileName, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
+		result = COM.OleCreateFromFile(appClsid, fileName, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, iOleClientSite.getAddress(), tempStorage.getAddress(), address);
 		if (result != COM.S_OK)
 			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 
@@ -237,7 +237,7 @@ public OleClientSite(Composite parent, int style, String progId) {
 	
 		// Create ole object with storage object
 		int /*long*/[] address = new int /*long*/[1];
-		int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
+		int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, iOleClientSite.getAddress(), tempStorage.getAddress(), address);
 		if (result != COM.S_OK)
 			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 
@@ -299,7 +299,7 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 			tempStorage = createTempStorage();
 			// Create ole object with storage object
 			int /*long*/[] address = new int /*long*/[1];
-			int result = COM.OleCreateFromFile(appClsid, fileName, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
+			int result = COM.OleCreateFromFile(appClsid, fileName, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, iOleClientSite.getAddress(), tempStorage.getAddress(), address);
 			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 			objIUnknown = new IUnknown(address[0]);
 		} else {
@@ -418,7 +418,6 @@ protected void addObjectReferences() {
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND, result);
 	objIOleObject = new IOleObject(ppvObject[0]);
-	objIOleObject.SetClientSite(iOleClientSite.getAddress());
 	int[] pdwConnection = new int[1];
 	objIOleObject.Advise(iAdviseSink.getAddress(), pdwConnection);
 	objIOleObject.SetHostNames("main", "main");  //$NON-NLS-1$ //$NON-NLS-2$
@@ -905,13 +904,7 @@ private void onPaint(Event e) {
 	}
 }
 private void onResize(Event e) {
-	Rectangle area = frame.getClientArea();
-	setBounds(borderWidths.left, 
-		      borderWidths.top, 
-			  area.width - borderWidths.left - borderWidths.right, 
-			  area.height - borderWidths.top - borderWidths.bottom);
-
-	setObjectRects();
+	setBounds();
 }
 private void OnSave() {
 }
@@ -1235,10 +1228,14 @@ private int Scroll(int scrollExtent_cx, int scrollExtent_cy) {
 void setBorderSpace(RECT newBorderwidth) {
 	borderWidths = newBorderwidth;
 	// readjust size and location of client site
+	setBounds();
+}
+void setBounds() {
 	Rectangle area = frame.getClientArea();
-	setBounds(borderWidths.left, borderWidths.top, 
-				area.width - borderWidths.left - borderWidths.right, 
-				area.height - borderWidths.top - borderWidths.bottom);
+	setBounds(borderWidths.left, 
+		      borderWidths.top, 
+			  area.width - borderWidths.left - borderWidths.right, 
+			  area.height - borderWidths.top - borderWidths.bottom);
 	setObjectRects();
 }
 private void setExtent(int width, int height){
@@ -1287,6 +1284,7 @@ private int ShowObject() {
 	 * the user. This method ensures that the container itself is 
 	 * visible and not minimized.
 	 */
+	setBounds();
 	return COM.S_OK;
 }
 /**
