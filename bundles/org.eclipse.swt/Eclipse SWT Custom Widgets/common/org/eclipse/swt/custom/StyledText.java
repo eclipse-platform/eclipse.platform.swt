@@ -2421,8 +2421,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	int oldCaretAlignment = caretAlignment;
 	int newCaretOffset = getOffsetAtPoint(x, y);
 	
-	if (clickCount > 1) {
-		// double click word select the previous/next word. fixes bug 15610
+	if (doubleClickEnabled && clickCount > 1) {
 		newCaretOffset = doMouseWordSelect(x, newCaretOffset, line);
 	}
 	
