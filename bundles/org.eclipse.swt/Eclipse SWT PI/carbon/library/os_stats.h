@@ -535,6 +535,8 @@ typedef enum {
 	HISearchFieldCreate_FUNC,
 	HISearchFieldGetAttributes_FUNC,
 	HISearchFieldSetDescriptiveText_FUNC,
+	HIShapeCreateWithQDRgn_FUNC,
+	HIShapeReplacePathInCGContext_FUNC,
 	HITextViewCreate_FUNC,
 	HITextViewGetTXNObject_FUNC,
 	HIThemeDrawBackground_FUNC,

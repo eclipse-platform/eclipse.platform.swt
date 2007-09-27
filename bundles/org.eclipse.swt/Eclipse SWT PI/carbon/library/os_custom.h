@@ -24,3 +24,5 @@
 #define LSCopyAllRoleHandlersForContentType_LIB "com.apple.Carbon"
 #define LSOpenItemsWithRole_LIB "com.apple.Carbon"
 #define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"
+#define HIShapeCreateWithQDRgn_LIB "com.apple.Carbon"
+#define HIShapeReplacePathInCGContext_LIB "com.apple.Carbon"

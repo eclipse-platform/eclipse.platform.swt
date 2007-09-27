@@ -7392,6 +7392,64 @@ JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldSetDescriptiveText)
 }
 #endif
 
+#ifndef NO_HIShapeCreateWithQDRgn
+JNIEXPORT jint JNICALL OS_NATIVE(HIShapeCreateWithQDRgn)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIShapeCreateWithQDRgn_FUNC);
+/*
+	rc = (jint)HIShapeCreateWithQDRgn((RgnHandle)arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(RgnHandle);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIShapeCreateWithQDRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIShapeCreateWithQDRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((RgnHandle)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, HIShapeCreateWithQDRgn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIShapeReplacePathInCGContext
+JNIEXPORT jint JNICALL OS_NATIVE(HIShapeReplacePathInCGContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIShapeReplacePathInCGContext_FUNC);
+/*
+	rc = (jint)HIShapeReplacePathInCGContext((HIShapeRef)arg0, (CGContextRef)arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(HIShapeRef, CGContextRef);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIShapeReplacePathInCGContext_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIShapeReplacePathInCGContext"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((HIShapeRef)arg0, (CGContextRef)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, HIShapeReplacePathInCGContext_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HITextViewCreate
 JNIEXPORT jint JNICALL OS_NATIVE(HITextViewCreate)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jintArray arg3)
