@@ -710,7 +710,7 @@ public class Accessible {
 		int code = OS.CallNextEventHandler (nextHandler, theEvent);
 		CGPoint osPositionAttribute = new CGPoint ();
 		if (code == OS.noErr) {
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, osPositionAttribute);
+			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeHIPoint, null, CGPoint.sizeof, null, osPositionAttribute);
 		}
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = getChildIDFromEvent(theEvent);
@@ -730,7 +730,7 @@ public class Accessible {
 		int code = OS.CallNextEventHandler (nextHandler, theEvent);
 		CGPoint osSizeAttribute = new CGPoint ();
 		if (code == OS.noErr) {
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHISize, null, CGPoint.sizeof, null, osSizeAttribute);
+			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeHISize, null, CGPoint.sizeof, null, osSizeAttribute);
 		}
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = getChildIDFromEvent(theEvent);
