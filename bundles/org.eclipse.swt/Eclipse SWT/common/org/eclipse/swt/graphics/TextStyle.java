@@ -90,6 +90,24 @@ public class TextStyle {
 	public Color strikeoutColor;
 	
 	/**
+	 * the border style
+	 * 
+	 * @see SWT#BORDER_SOLID
+	 * @see SWT#BORDER_DASH 
+	 * @see SWT#BORDER_DOT
+	 * 
+	 * @since 3.4
+	 */	
+	public int borderStyle;
+	
+	/**
+	 * the border color of the style
+	 * 
+	 * @since 3.4
+	 */	
+	public Color borderColor;
+	
+	/**
 	 * the GlyphMetrics of the style
 	 * 
 	 * @since 3.2

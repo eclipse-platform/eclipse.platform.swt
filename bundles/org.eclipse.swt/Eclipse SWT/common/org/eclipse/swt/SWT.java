@@ -1487,6 +1487,36 @@ public class SWT {
 	public static final int UNDERLINE_ERROR = 2;
 	
 	/**
+	 * Style constant to indicate solid border (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int BORDER_SOLID = 1;
+
+	/**
+	 * Style constant to indicate dashed border (value is 2).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int BORDER_DASH = 2;
+	
+	/**
+	 * Style constant to indicate dotted border (value is 4).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextStyle</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int BORDER_DOT = 4;
+	
+	/**
 	 * Style constant for align top behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>
