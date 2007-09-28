@@ -1662,20 +1662,24 @@ void initAccessible() {
 
 		public void getLocation(AccessibleControlEvent e) {
 			Rectangle location = null;
+			Point pt = null;
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				location = getBounds();
-			} else if (childID >= 0 && childID < items.length) {
-				location = items[childID].getBounds();
-			} else if (showChevron && childID == items.length + CHEVRON_CHILD_ID) {
-				location = chevronRect;
-			} else if (showMin && childID == items.length + MINIMIZE_CHILD_ID) {
-				location = minRect;
-			} else if (showMax && childID == items.length + MAXIMIZE_CHILD_ID) {
-				location = maxRect;
+				pt = getParent().toDisplay(location.x, location.y);
+			} else {
+				if (childID >= 0 && childID < items.length) {
+					location = items[childID].getBounds();
+				} else if (showChevron && childID == items.length + CHEVRON_CHILD_ID) {
+					location = chevronRect;
+				} else if (showMin && childID == items.length + MINIMIZE_CHILD_ID) {
+					location = minRect;
+				} else if (showMax && childID == items.length + MAXIMIZE_CHILD_ID) {
+					location = maxRect;
+				}
+				pt = toDisplay(location.x, location.y);
 			}
-			if (location != null) {
-				Point pt = toDisplay(location.x, location.y);
+			if (location != null && pt != null) {
 				e.x = pt.x;
 				e.y = pt.y;
 				e.width = location.width;
