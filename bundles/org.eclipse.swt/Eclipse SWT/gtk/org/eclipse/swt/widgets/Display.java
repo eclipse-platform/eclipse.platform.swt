@@ -3074,8 +3074,9 @@ void releaseDisplay () {
 	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	/* Dispose xfilter callback */
-	if (filterProc != 0)
+	if (filterProc != 0) {
 		OS.gdk_window_remove_filter(0, filterProc, 0);
+	}
 	filterCallback.dispose(); filterCallback = null;
 	filterProc = 0;
 
