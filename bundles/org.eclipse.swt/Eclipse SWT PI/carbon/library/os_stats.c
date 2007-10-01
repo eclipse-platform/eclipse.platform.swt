@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 926;
-int OS_nativeFunctionCallCount[926];
+int OS_nativeFunctionCount = 928;
+int OS_nativeFunctionCallCount[928];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -168,6 +168,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextScaleCTM",
 	"CGContextSelectFont",
 	"CGContextSetAlpha",
+	"CGContextSetBlendMode",
 	"CGContextSetFillColor",
 	"CGContextSetFillColorSpace",
 	"CGContextSetFillPattern",
@@ -522,6 +523,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIObjectRegisterSubclass",
 	"HIObjectSetAccessibilityIgnored",
 	"HIScrollViewCreate",
+	"HIScrollViewSetScrollBarAutoHide",
 	"HISearchFieldChangeAttributes",
 	"HISearchFieldCopyDescriptiveText",
 	"HISearchFieldCreate",

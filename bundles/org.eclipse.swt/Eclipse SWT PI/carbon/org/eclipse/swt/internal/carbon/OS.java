@@ -1167,6 +1167,7 @@ public static final native void CGContextSelectFont (int ctx, byte[] name, float
 public static final native void CGContextSetFillColorSpace (int ctx, int colorspace);
 public static final native void CGContextSetFillPattern (int context, int pattern, float[] components);
 public static final native void CGContextSetAlpha (int context, float alpha);
+public static final native void CGContextSetBlendMode(int context, int mode);
 public static final native void CGContextSetFillColor (int ctx, float[] value);
 public static final native void CGContextSetFont (int ctx, int font);
 public static final native void CGContextSetFontSize (int ctx, float size);

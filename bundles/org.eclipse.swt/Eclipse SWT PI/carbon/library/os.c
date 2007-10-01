@@ -1998,6 +1998,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetAlpha)
 }
 #endif
 
+#ifndef NO_CGContextSetBlendMode
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetBlendMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetBlendMode_FUNC);
+	CGContextSetBlendMode((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetBlendMode_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSetFillColor
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFillColor)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
@@ -7317,6 +7327,18 @@ fail:
 }
 #endif
 
+#ifndef NO_HIScrollViewSetScrollBarAutoHide
+JNIEXPORT jint JNICALL OS_NATIVE(HIScrollViewSetScrollBarAutoHide)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIScrollViewSetScrollBarAutoHide_FUNC);
+	rc = (jint)HIScrollViewSetScrollBarAutoHide((HIViewRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, HIScrollViewSetScrollBarAutoHide_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HISearchFieldChangeAttributes
 JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldChangeAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -7399,12 +7421,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeCreateWithQDRgn)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, HIShapeCreateWithQDRgn_FUNC);
 /*
-	rc = (jint)HIShapeCreateWithQDRgn((RgnHandle)arg0);
+	rc = (jint)HIShapeCreateWithQDRgn(arg0);
 */
 	{
 		static int initialized = 0;
 		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(RgnHandle);
+		typedef jint (*FPTR)(jint);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -7413,7 +7435,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeCreateWithQDRgn)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jint)(*fptr)((RgnHandle)arg0);
+			rc = (jint)(*fptr)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIShapeCreateWithQDRgn_FUNC);
@@ -7428,12 +7450,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeReplacePathInCGContext)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, HIShapeReplacePathInCGContext_FUNC);
 /*
-	rc = (jint)HIShapeReplacePathInCGContext((HIShapeRef)arg0, (CGContextRef)arg1);
+	rc = (jint)HIShapeReplacePathInCGContext(arg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(HIShapeRef, CGContextRef);
+		typedef jint (*FPTR)(jint, jint);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -7442,7 +7464,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeReplacePathInCGContext)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jint)(*fptr)((HIShapeRef)arg0, (CGContextRef)arg1);
+			rc = (jint)(*fptr)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIShapeReplacePathInCGContext_FUNC);
