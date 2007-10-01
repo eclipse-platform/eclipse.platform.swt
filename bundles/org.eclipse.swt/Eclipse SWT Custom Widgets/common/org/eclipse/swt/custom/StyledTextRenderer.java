@@ -359,14 +359,17 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	int selectionStart = selection.x - lineOffset;
 	int selectionEnd = selection.y - lineOffset;
 	Rectangle client = styledText.getClientArea();  
-	Color lineBackground = getLineBackground(lineIndex, widgetBackground);
+	Color lineBackground = getLineBackground(lineIndex, null);
 	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);
 	if (event != null && event.lineBackground != null) lineBackground = event.lineBackground;
-	
 	int height = layout.getBounds().height;
-	gc.setBackground(lineBackground);
-	styledText.drawBackground(gc, client.x, paintY, client.width, height);
-	
+	if (lineBackground != null) {
+		gc.setBackground(lineBackground);
+		gc.fillRectangle(client.x, paintY, client.width, height);
+	} else {
+		gc.setBackground(widgetBackground);
+		styledText.drawBackground(gc, client.x, paintY, client.width, height);
+	}
 	gc.setForeground(widgetForeground);
 	if (selectionStart == selectionEnd || (selectionEnd <= 0 && selectionStart > lineLength - 1)) {
 		layout.draw(gc, paintX, paintY);
