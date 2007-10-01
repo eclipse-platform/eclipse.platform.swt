@@ -132,6 +132,7 @@ public class OS extends C {
 	public static final int kCFRunLoopRunTimedOut = 3;
 	public static final int kCFRunLoopRunHandledSource = 4;
 	public static final int kAvailBoundsChangedForDock = 1 << 0;
+	public static final int kCGBlendModeDifference = 10;
 	public static final int kCGBitmapByteOrderDefault = 0 << 12;
 	public static final int kCGBitmapByteOrder16Little = 1 << 12;
 	public static final int kCGBitmapByteOrder32Little = 2 << 12;
@@ -1517,6 +1518,7 @@ public static final native int HIViewScrollRect(int inView, CGRect inRect, float
 public static final native int HIShapeCreateWithQDRgn(int inRgn);
 public static final native int HIShapeReplacePathInCGContext(int inShape, int inContext);
 public static final native int HIScrollViewCreate(int inOptions, int[] outView);
+public static final native int HIScrollViewSetScrollBarAutoHide(int inView, boolean inAutoHide);    
 public static final native int HISearchFieldCreate(CGRect inBounds, int inAttributes, int inSearchMenu, int inDescriptiveText, int [] outRef);
 public static final native int HISearchFieldChangeAttributes(int inSearchField, int inAttributesToSet, int inAttributesToClear);
 public static final native int HISearchFieldCopyDescriptiveText(int inSearchField, int [] outDescription);
