@@ -100,6 +100,14 @@ boolean drawCaret () {
 	if (!parent.isDrawing (parentHandle)) return false;
 	int nWidth = width, nHeight = height;
 	if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
+	if (OS.VERSION >= 0x1040) {
+		if (image != null) {
+			nWidth = OS.CGImageGetWidth (image.handle);
+			nHeight = OS.CGImageGetHeight (image.handle);
+		}
+		parent.redrawWidget (parent.handle, x, y, nWidth, nHeight, false);
+		return true;
+	}
 	int window = OS.GetControlOwner (parentHandle);
 	int port = OS.GetWindowPort (window);
 	int [] currentPort = new int [1];

@@ -107,6 +107,39 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	}
 }
 
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
+	if (OS.VERSION >= 0x1040) {
+		if (control != handle) return;
+		if (caret == null) return;
+		if (caret.isShowing) {
+			OS.CGContextSaveGState (context);
+			CGRect rect = new CGRect ();
+			rect.x = caret.x;
+			rect.y = caret.y;
+			Image image = caret.image;
+			OS.CGContextSetBlendMode (context, OS.kCGBlendModeDifference);
+			if (image != null) {
+				rect.width = OS.CGImageGetWidth (image.handle);
+				rect.height = OS.CGImageGetHeight (image.handle);
+			 	OS.CGContextScaleCTM (context, 1, -1);
+			 	OS.CGContextTranslateCTM (context, 0, -(rect.height + 2 * rect.y));
+				OS.CGContextDrawImage (context, rect, image.handle);
+			} else {
+				rect.width = caret.width != 0 ? caret.width : Caret.DEFAULT_WIDTH;
+				rect.height = caret.height;
+				OS.CGContextSetShouldAntialias (context, false);
+				int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+				OS.CGContextSetFillColorSpace (context, colorspace);
+				OS.CGContextSetFillColor (context, new float[]{1, 1, 1, 1});
+				OS.CGColorSpaceRelease (colorspace);
+				OS.CGContextFillRect (context, rect);
+			}
+			OS.CGContextRestoreGState (context);
+		}
+	}
+}
+
 /**
  * Returns the caret.
  * <p>
@@ -138,7 +171,7 @@ public IME getIME () {
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	boolean isFocus = theControl [0] == handle && caret != null && caret.isFocusCaret ();
+	boolean isFocus = OS.VERSION < 0x1040 && theControl [0] == handle && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
 	if (isFocus) caret.setFocus ();
@@ -197,14 +230,14 @@ int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData)
 }
 
 void redrawWidget (int control, boolean children) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
+	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.redrawWidget (control, children);
 	if (isFocus) caret.setFocus ();
 }
 
 void redrawWidget (int control, int x, int y, int width, int height, boolean all) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
+	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.redrawWidget (control, x, y, width, height, all);
 	if (isFocus) caret.setFocus ();
