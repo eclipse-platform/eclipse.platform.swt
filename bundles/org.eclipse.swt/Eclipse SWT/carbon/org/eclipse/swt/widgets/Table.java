@@ -523,26 +523,28 @@ void createHandle () {
 	* it on a offscreen buffer to avoid flashes and then restoring it to
 	* size zero.
 	*/
-	OS.HIViewSetDrawingEnabled (handle, false);
-	int size = 50;
-	Rect rect = new Rect ();
-	rect.right = rect.bottom = (short) size;
-	OS.SetControlBounds (handle, rect);
-	int bpl = size * 4;
-	int [] gWorld = new int [1];
-	int data = OS.NewPtr (bpl * size);
-	OS.NewGWorldFromPtr (gWorld, OS.k32ARGBPixelFormat, rect, 0, 0, 0, data, bpl);
-	int [] curPort = new int [1];
-	int [] curGWorld = new int [1];
-	OS.GetGWorld (curPort, curGWorld);	
-	OS.SetGWorld (gWorld [0], curGWorld [0]);
-	OS.DrawControlInCurrentPort (handle);
-	OS.SetGWorld (curPort [0], curGWorld [0]);
-	OS.DisposeGWorld (gWorld [0]);
-	OS.DisposePtr (data);
-	rect.right = rect.bottom = (short) 0;
-	OS.SetControlBounds (handle, rect);
-	OS.HIViewSetDrawingEnabled (handle, true);
+	if (OS.VERSION < 0x1040) {
+		OS.HIViewSetDrawingEnabled (handle, false);
+		int size = 50;
+		Rect rect = new Rect ();
+		rect.right = rect.bottom = (short) size;
+		OS.SetControlBounds (handle, rect);
+		int bpl = size * 4;
+		int [] gWorld = new int [1];
+		int data = OS.NewPtr (bpl * size);
+		OS.NewGWorldFromPtr (gWorld, OS.k32ARGBPixelFormat, rect, 0, 0, 0, data, bpl);
+		int [] curPort = new int [1];
+		int [] curGWorld = new int [1];
+		OS.GetGWorld (curPort, curGWorld);	
+		OS.SetGWorld (gWorld [0], curGWorld [0]);
+		OS.DrawControlInCurrentPort (handle);
+		OS.SetGWorld (curPort [0], curGWorld [0]);
+		OS.DisposeGWorld (gWorld [0]);
+		OS.DisposePtr (data);
+		rect.right = rect.bottom = (short) 0;
+		OS.SetControlBounds (handle, rect);
+		OS.HIViewSetDrawingEnabled (handle, true);
+	}
 }
 
 void createItem (TableColumn column, int index) {
