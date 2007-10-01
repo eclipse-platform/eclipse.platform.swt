@@ -120,9 +120,14 @@ public class OS extends C {
 	public static final int GDK_FLEUR = 0x34;
 	public static final int GDK_FOCUS_CHANGE = 0xc;
 	public static final int GDK_FOCUS_CHANGE_MASK = 0x4000;
+	public static final int GDK_GC_FOREGROUND = 0x1;
 	public static final int GDK_GC_CLIP_MASK = 0x80;
 	public static final int GDK_GC_CLIP_X_ORIGIN = 0x800;
 	public static final int GDK_GC_CLIP_Y_ORIGIN = 0x1000;
+	public static final int GDK_GC_LINE_WIDTH = 0x4000;
+	public static final int GDK_GC_LINE_STYLE = 0x8000;
+	public static final int GDK_GC_CAP_STYLE = 0x10000;
+	public static final int GDK_GC_JOIN_STYLE = 0x20000;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
 	public static final int GDK_HAND2 = 0x3c;
 	public static final int GDK_Help = 0xFF6A;

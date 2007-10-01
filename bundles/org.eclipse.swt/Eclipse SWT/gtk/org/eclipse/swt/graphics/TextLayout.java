@@ -452,11 +452,13 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			}
 			Cairo.cairo_move_to(cairo, x, y);
 			OS.pango_cairo_show_layout(cairo, layout);
+			drawBorder(gc, x, y, null);
 			if ((data.style & SWT.MIRRORED) != 0) {
 			    Cairo.cairo_restore(cairo);
 			}
 		} else {
 			OS.gdk_draw_layout(data.drawable, gc.handle, x, y, layout);
+			drawBorder(gc, x, y, null);
 		}
 	} else {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
@@ -477,12 +479,13 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					Cairo.cairo_scale(cairo, -1f,  1);
 					Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
 				}
-				drawWithCairo(cairo, x, y, 0, OS.strlen(ptr), fullSelection, selectionBackground.handle, selectionForeground.handle);
+				drawWithCairo(gc, x, y, 0, OS.strlen(ptr), fullSelection, selectionForeground.handle, selectionBackground.handle);
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_restore(cairo);
 				}
 			} else {
 				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
+				drawBorder(gc, x, y, selectionForeground.handle);
 			}
 		} else {
 			int /*long*/ ptr = OS.pango_layout_get_text(layout);
@@ -499,7 +502,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					Cairo.cairo_scale(cairo, -1f,  1);
 					Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
 				}
-				drawWithCairo(cairo, x, y, byteSelStart, byteSelEnd, fullSelection, selectionBackground.handle, selectionForeground.handle);
+				drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground.handle, selectionBackground.handle);
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_restore(cairo);
 				}
@@ -507,6 +510,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				Region clipping = new Region();
 				gc.getClipping(clipping);
 				OS.gdk_draw_layout(data.drawable, gc.handle, x, y, layout);
+				drawBorder(gc, x, y, null);
 				int[] ranges = new int[]{byteSelStart, byteSelEnd};
 				int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 				if (rgn != 0) {
@@ -514,6 +518,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					OS.gdk_region_destroy(rgn);
 				}
 				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
+				drawBorder(gc, x, y, selectionForeground.handle);
 				gc.setClipping(clipping);
 				clipping.dispose();
 			}
@@ -521,25 +526,125 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	}
 }
 
-void drawWithCairo(int /*long*/ cairo, int x, int y, int byteSelStart, int byteSelEnd, boolean fullSelection, GdkColor selectionBackground, GdkColor selectionForeground) {
+void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkColor fg, GdkColor bg) {
+	GCData data = gc.data;
+	int /*long*/ cairo = data.cairo;
 	Cairo.cairo_save(cairo);
 	if (!fullSelection) {
 		Cairo.cairo_move_to(cairo, x, y);
 		OS.pango_cairo_show_layout(cairo, layout);
+		drawBorder(gc, x, y, null);
 	}
-	int[] ranges = new int[]{byteSelStart, byteSelEnd};
+	int[] ranges = new int[]{start, end};
 	int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 	if (rgn != 0) {
 		OS.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
-		OS.gdk_cairo_set_source_color(cairo, selectionBackground);
+		Cairo.cairo_set_source_rgba(cairo, (bg.red & 0xFFFF) / (float)0xFFFF, (bg.green & 0xFFFF) / (float)0xFFFF, (bg.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 		Cairo.cairo_paint(cairo);
 		OS.gdk_region_destroy(rgn);
 	}
-	OS.gdk_cairo_set_source_color(cairo, selectionForeground);
+	Cairo.cairo_set_source_rgba(cairo, (fg.red & 0xFFFF) / (float)0xFFFF, (fg.green & 0xFFFF) / (float)0xFFFF, (fg.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 	Cairo.cairo_move_to(cairo, x, y);
 	OS.pango_cairo_show_layout(cairo, layout);
+	drawBorder(gc, x, y, fg);
 	Cairo.cairo_restore(cairo);
+}
+
+void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
+	GCData data = gc.data;
+	int /*long*/ cairo = data.cairo;
+	int /*long*/ gdkGC = gc.handle;
+	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	GdkGCValues gcValues = null;
+	if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+		Cairo.cairo_save(cairo);
+	}
+	for (int i = 0; i < styles.length - 1; i++) {
+		TextStyle style = styles[i].style;
+		if (style != null && style.borderStyle != SWT.NONE) {
+			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, styles[i].start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, styles[i+1].start) - ptr);
+			int[] ranges = new int[]{byteStart, byteEnd};
+			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			if (rgn != 0) {
+				int[] nRects = new int[1];
+				int /*long*/[] rects = new int /*long*/[1];
+				OS.gdk_region_get_rectangles(rgn, rects, nRects);
+				GdkRectangle rect = new GdkRectangle();
+				GdkColor color = selectionColor;
+				if (color == null && style.borderColor != null) color = style.borderColor.handle;
+				if (color == null && style.foreground != null) color = style.foreground.handle;
+				if (color == null) color = data.foreground;
+				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+					int width = 1;
+					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+					Cairo.cairo_set_line_width(cairo, width);
+					float[] dashes = null;
+					switch (style.borderStyle) {
+						case SWT.BORDER_SOLID: break;
+						case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+						case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+					}
+					if (dashes != null) {
+						double[] cairoDashes = new double[dashes.length];
+						for (int j = 0; j < cairoDashes.length; j++) {
+							cairoDashes[j] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[j] : dashes[j] * width;
+						}
+						Cairo.cairo_set_dash(cairo, cairoDashes, cairoDashes.length, 0);
+					} else {
+						Cairo.cairo_set_dash(cairo, null, 0, 0);
+					}
+					for (int j=0; j<nRects[0]; j++) {
+						OS.memmove(rect, rects[0] + (j * GdkRectangle.sizeof), GdkRectangle.sizeof);
+						Cairo.cairo_rectangle(cairo, rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+					}
+					Cairo.cairo_stroke(cairo);
+				} else {
+					if (gcValues == null) {
+						gcValues = new GdkGCValues();
+						OS.gdk_gc_get_values(gdkGC, gcValues);
+					}
+					OS.gdk_gc_set_foreground(gdkGC, color);
+					int cap_style = OS.GDK_CAP_BUTT;
+					int join_style = OS.GDK_JOIN_MITER;
+					int line_style = 0;
+					int width = 1;
+					float[] dashes = null;
+					switch (style.borderStyle) {
+						case SWT.BORDER_SOLID: break;
+						case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+						case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+					}
+					if (dashes != null) {
+						byte[] dash_list = new byte[dashes.length];
+						for (int j = 0; j < dash_list.length; j++) {
+							dash_list[j] = (byte)(width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[j] : dashes[j] * width);
+						}
+						OS.gdk_gc_set_dashes(gdkGC, 0, dash_list, dash_list.length);
+						line_style = OS.GDK_LINE_ON_OFF_DASH;
+					} else {
+						line_style = OS.GDK_LINE_SOLID;
+					}
+					OS.gdk_gc_set_line_attributes(gdkGC, width, line_style, cap_style, join_style);
+					for (int j=0; j<nRects[0]; j++) {
+						OS.memmove(rect, rects[0] + (j * GdkRectangle.sizeof), GdkRectangle.sizeof);
+						OS.gdk_draw_rectangle(data.drawable, gdkGC, 0, rect.x, rect.y, rect.width - 1, rect.height - 1);
+					}
+				}
+				if (rects[0] != 0) OS.g_free(rects[0]);
+				OS.gdk_region_destroy(rgn);
+			}
+		}
+	}
+	if (gcValues != null) {
+		int mask = OS.GDK_GC_FOREGROUND | OS.GDK_GC_LINE_WIDTH | OS.GDK_GC_LINE_STYLE | OS.GDK_GC_CAP_STYLE | OS.GDK_GC_JOIN_STYLE;
+		OS.gdk_gc_set_values(gdkGC, gcValues, mask);
+		data.state &= ~GC.LINE_STYLE;
+	}
+	if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+		Cairo.cairo_restore(cairo);
+	}
 }
 
 void freeRuns() {
