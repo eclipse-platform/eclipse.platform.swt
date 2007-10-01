@@ -601,7 +601,8 @@ public class Accessible {
 	}
 	
 	int getEnabledAttribute (int nextHandler, int theEvent, int userData) {
-		return getAttribute (nextHandler, theEvent, userData);
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {control.isEnabled()});
+		return OS.noErr;
 	}
 	
 	int getFocusedAttribute (int nextHandler, int theEvent, int userData) {
@@ -664,6 +665,14 @@ public class Accessible {
 		if (childID == ACC.CHILDID_SELF) {
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = childID;
+			event.detail = -1; // set to impossible value to test if app resets
+			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				listener.getChildCount(event);
+			}
+			if (event.detail == 0) {
+				return OS.noErr;
+			}
 			for (int i = 0; i < accessibleControlListeners.size(); i++) {
 				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 				listener.getChildren(event);
