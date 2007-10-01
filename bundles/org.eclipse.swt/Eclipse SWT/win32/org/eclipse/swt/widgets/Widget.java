@@ -86,6 +86,9 @@ public abstract class Widget {
 	static final int RESIZE_OCCURRED	= 1<<18;
 	static final int RESIZE_DEFERRED	= 1<<19;
 	
+	/* Ignore WM_CHANGEUISTATE */
+	static final int IGNORE_WM_CHANGEUISTATE = 1<<20;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

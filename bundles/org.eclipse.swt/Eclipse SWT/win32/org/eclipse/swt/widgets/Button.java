@@ -472,7 +472,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	/*
+	* Feature in Windows.  When a button is created,
+	* it clears the UI state for all controls in the
+	* shell by sending WM_CHANGEUISTATE with UIS_SET,
+	* UISF_HIDEACCEL and UISF_HIDEFOCUS to the parent.
+	* This is undocumented and unexpected.  The fix
+	* is to ignore the WM_CHANGEUISTATE, when sent
+	* from CreateWindowEx().
+	*/
+	parent.state |= IGNORE_WM_CHANGEUISTATE;
 	super.createHandle ();
+	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
+	
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
 		state |= THEME_BACKGROUND;
 	}

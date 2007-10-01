@@ -3676,6 +3676,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 	switch (msg) {
 		case OS.WM_ACTIVATE:			result = WM_ACTIVATE (wParam, lParam); break;
 		case OS.WM_CAPTURECHANGED:		result = WM_CAPTURECHANGED (wParam, lParam); break;
+		case OS.WM_CHANGEUISTATE:		result = WM_CHANGEUISTATE (wParam, lParam); break;
 		case OS.WM_CHAR:				result = WM_CHAR (wParam, lParam); break;
 		case OS.WM_CLEAR:				result = WM_CLEAR (wParam, lParam); break;
 		case OS.WM_CLOSE:				result = WM_CLOSE (wParam, lParam); break;
@@ -3775,6 +3776,11 @@ LRESULT WM_ACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_CAPTURECHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmCaptureChanged (handle, wParam, lParam);
+}
+
+LRESULT WM_CHANGEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+	if ((state & IGNORE_WM_CHANGEUISTATE) != 0) return LRESULT.ZERO;
+	return null;
 }
 
 LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
