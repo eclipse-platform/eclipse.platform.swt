@@ -1234,6 +1234,11 @@ LRESULT selectPalette (int /*long*/ hPalette) {
 	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
 }
 
+boolean sendKeyEvent (int type, int msg, int /*long*/ wParam, int /*long*/ lParam, Event event) {
+	if (!isEnabled () || !isActive ()) return false;
+	return super.sendKeyEvent (type, msg, wParam, lParam, event);
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
