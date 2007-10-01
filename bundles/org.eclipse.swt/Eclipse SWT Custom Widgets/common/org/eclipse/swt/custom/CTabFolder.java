@@ -1668,7 +1668,7 @@ void initAccessible() {
 				location = getBounds();
 				pt = getParent().toDisplay(location.x, location.y);
 			} else {
-				if (childID >= 0 && childID < items.length) {
+				if (childID >= 0 && childID < items.length && items[childID].isShowing()) {
 					location = items[childID].getBounds();
 				} else if (showChevron && childID == items.length + CHEVRON_CHILD_ID) {
 					location = chevronRect;
@@ -1677,7 +1677,9 @@ void initAccessible() {
 				} else if (showMax && childID == items.length + MAXIMIZE_CHILD_ID) {
 					location = maxRect;
 				}
-				pt = toDisplay(location.x, location.y);
+				if (location != null) {
+					pt = toDisplay(location.x, location.y);
+				}
 			}
 			if (location != null && pt != null) {
 				e.x = pt.x;
