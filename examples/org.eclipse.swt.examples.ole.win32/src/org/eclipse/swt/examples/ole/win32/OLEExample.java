@@ -220,7 +220,7 @@ public class OLEExample {
 
 		}
 		if (clientSite != null)
-			clientSite.doVerb(OLE.OLEIVERB_SHOW);
+			clientSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	}
 
 	public void open(Display display) {
