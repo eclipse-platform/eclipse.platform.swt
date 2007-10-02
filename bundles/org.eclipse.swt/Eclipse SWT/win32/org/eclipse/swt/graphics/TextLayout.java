@@ -644,7 +644,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		int drawX = x + getLineIndent(line);
 		int drawY = y + lineY[line];
 		StyleItem[] lineRuns = runs[line];
-		int lineHeight = lineY[line+1] - lineY[line];
+		int lineHeight = lineY[line+1] - lineY[line] - lineSpacing;
 		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extents = false;
 			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
@@ -665,13 +665,13 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				if ((flags & SWT.FULL_SELECTION) != 0) {
 					width = OS.IsWin95 ? 0x7FFF : 0x6FFFFFF;
 				} else {
-					width = (lineHeight - lineSpacing) / 3;
+					width = lineHeight / 3;
 				}
 				if (gdip) {
-					Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX + lineWidth[line], drawY, width, lineHeight - lineSpacing);
+					Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX + lineWidth[line], drawY, width, lineHeight);
 				} else {
 					OS.SelectObject(hdc, selBrush);
-					OS.PatBlt(hdc, drawX + lineWidth[line], drawY, width, lineHeight - lineSpacing, OS.PATCOPY);
+					OS.PatBlt(hdc, drawX + lineWidth[line], drawY, width, lineHeight, OS.PATCOPY);
 				}
 			}
 		}
@@ -692,10 +692,10 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 					if (fullSelection) {
 						if (gdip) {
-							Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX, drawY, run.width, lineHeight - lineSpacing);
+							Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX, drawY, run.width, lineHeight);
 						} else {
 							OS.SelectObject(hdc, selBrush);
-							OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight - lineSpacing, OS.PATCOPY);
+							OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, OS.PATCOPY);
 						}
 					} else {
 						if (run.style != null && run.style.background != null) {
@@ -704,13 +704,13 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								int argb = ((alpha & 0xFF) << 24) | ((bg >> 16) & 0xFF) | (bg & 0xFF00) | ((bg & 0xFF) << 16);
 								int /*long*/ color = Gdip.Color_new(argb); 
 								int /*long*/ brush = Gdip.SolidBrush_new(color);
-								Gdip.Graphics_FillRectangle(gdipGraphics, brush, drawX, drawY, run.width, lineHeight - lineSpacing);
+								Gdip.Graphics_FillRectangle(gdipGraphics, brush, drawX, drawY, run.width, lineHeight);
 								Gdip.Color_delete(color);
 								Gdip.SolidBrush_delete(brush);
 							} else {
 								int /*long*/ hBrush = OS.CreateSolidBrush (bg);
 								int /*long*/ oldBrush = OS.SelectObject(hdc, hBrush);
-								OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight - lineSpacing, OS.PATCOPY);
+								OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, OS.PATCOPY);
 								OS.SelectObject(hdc, oldBrush);
 								OS.DeleteObject(hBrush);
 							}
@@ -730,7 +730,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 							runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 							rect.right = drawX + runX;
-							rect.bottom = drawY + lineHeight - lineSpacing;
+							rect.bottom = drawY + lineHeight;
 							if (gdip) {
 								if (rect.left > rect.right) {
 									int tmp = rect.left;
@@ -861,7 +861,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg, true, null, alpha);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
-						borderClip = drawBorder(gdip, gdipGraphics, x, drawY, lineHeight - lineSpacing, foregroundBrush, selBrushFg, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
+						borderClip = drawBorder(gdip, gdipGraphics, x, drawY, lineHeight, foregroundBrush, selBrushFg, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
 						Gdip.GraphicsPath_delete(path);
 						if (brush != selBrushFg && brush != foregroundBrush) Gdip.SolidBrush_delete(brush);
 					}  else {
@@ -880,7 +880,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle, true, rect, alpha);
 						}
 						int selForeground = selectionForeground != null ? selectionForeground.handle : 0;
-						borderClip = drawBorder(gdip, hdc, x, drawY, lineHeight - lineSpacing, foreground, selForeground, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
+						borderClip = drawBorder(gdip, hdc, x, drawY, lineHeight, foreground, selForeground, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
 					}
 				}
 			}
