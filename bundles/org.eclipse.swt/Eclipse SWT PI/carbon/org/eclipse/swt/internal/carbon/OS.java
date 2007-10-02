@@ -39,6 +39,7 @@ public class OS extends C {
 	public static final int diamondMark = 19;
 	public static final int dragNotAcceptedErr = -1857;
 	public static final int errControlIsNotEmbedder = -30590;
+	public static final int errDataBrowserItemNotFound = -4971;
 	public static final int errUnknownControl = -30584;
 	public static final int eventLoopTimedOutErr = -9875;
 	public static final int eventNotHandledErr = -9874;
@@ -1928,7 +1929,7 @@ public static final native void memmove(int[] dest, TXNTab src, int size);
 public static final native int AXUIElementCreateWithHIObjectAndIdentifier(int inHIObject, long inIdentifier);
 public static final native void AXNotificationHIObjectNotify(int inNotification, int inHIObject, long inIdentifier);
 public static final native void AXUIElementGetIdentifier(int inUIElement, long[] outIdentifier);
-public static final native int AXUIElementGetDataBrowserItemInfo(int inElement, int inDataBrowser, int inDesiredInfoVersion, int[] outInfo);
+public static final native int AXUIElementGetDataBrowserItemInfo(int inElement, int inDataBrowser, int inDesiredInfoVersion, DataBrowserAccessibilityItemInfo outInfo);
 public static final native int AXValueCreate (int theType, CFRange range);
 public static final native int HIObjectSetAccessibilityIgnored(int inObject, boolean inIgnored);
 
