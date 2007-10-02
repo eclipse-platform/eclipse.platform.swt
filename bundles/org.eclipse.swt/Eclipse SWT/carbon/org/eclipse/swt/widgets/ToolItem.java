@@ -43,7 +43,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ToolItem extends Item {
 	int handle, iconHandle, labelHandle;
-	int cIcon, labelCIcon;
+	int cIcon;
 	int visibleRgn, partCode;
 	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
@@ -847,8 +847,7 @@ void releaseHandle () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (cIcon != 0) destroyCIcon (cIcon);
-	if (labelCIcon != 0) destroyCIcon (labelCIcon);
-	cIcon = labelCIcon = 0;
+	cIcon = 0;
 	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
 	visibleRgn = 0;
 	control = null;
@@ -1221,46 +1220,6 @@ void updateImage (boolean layout) {
 	OS.SetBevelButtonContentInfo (iconHandle, inContent);
 	if (layout) {
 		redrawWidget (iconHandle, false);
-		parent.relayout();
-	}
-}
-
-void updateText (boolean layout) {
-	if ((style & SWT.SEPARATOR) != 0) return;
-	if (labelCIcon != 0) destroyCIcon (labelCIcon);
-	labelCIcon = 0;
-	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	if (text.length () > 0) {
-		Font font = parent.getFont ();
-		GC gc = new GC (parent);
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
-		Point size = gc.textExtent (text, flags);
-		gc.dispose ();
-		Image image = new Image (display, size.x, size.y);
-		gc = new GC (image);
-		Color foreground = parent.getForeground ();
-		gc.setForeground (foreground);
-		if (parent.background != null) {
-			gc.setBackground (parent.getBackground ());
-			gc.fillRectangle (0, 0, size.x, size.y);
-		}
-		gc.setFont (font);
-		gc.drawText (text, 0, 0, flags);
-		gc.dispose ();
-		if (parent.background == null) {
-			ImageData data = image.getImageData ();
-			data.transparentPixel = 0xFFFFFF;
-			image.dispose ();
-			image = new Image (display, data, data.getTransparencyMask ());
-		}
-		labelCIcon = createCIcon (image);
-		image.dispose ();
-		inContent.contentType = (short) OS.kControlContentCIconHandle;
-		inContent.iconRef = labelCIcon;
-	}
-	OS.SetBevelButtonContentInfo (labelHandle, inContent);	
-	if (layout) {
-		redrawWidget (labelHandle, false);
 		parent.relayout();
 	}
 }
