@@ -634,11 +634,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (restoreColor) setLayoutControl(OS.kATSULineHighlightCGColorTag, 0, 4);
 	OS.CGContextRestoreGState(gc.handle);
 
+	Callback borderCallback = null;
 	for (int j = 0; j < styles.length; j++) {
 		StyleItem run = styles[j];
 		TextStyle style = run.style;
-		if (style == null || !style.underline) continue;
-		if (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE) continue;
+		if (style == null) continue;
+		boolean drawUnderline = style.underline && style.underlineStyle != SWT.UNDERLINE_SINGLE && style.underlineStyle != SWT.UNDERLINE_DOUBLE;
+		boolean drawBorder = style.borderStyle != SWT.NONE;
+		if (!drawUnderline && !drawBorder) continue;
 		int start = translateOffset(run.start);
 		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
@@ -650,50 +653,86 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				int highLen = highEnd - highStart + 1;
 				if (highLen > 0) {
 					if (rgn == 0) rgn = OS.NewRgn();
-					float underlineY = y + lineY;
-					float[] foreground = gc.data.foreground;
-					float lineWidth = 0;
-					OS.CGContextSaveGState(gc.handle);
-					switch (style.underlineStyle) {
-						case SWT.UNDERLINE_ERROR: {
-							lineWidth = 2;
-							underlineY += 2 * lineAscent [i] + lineWidth;
-							if (style.underlineColor != null) {
-								foreground = style.underlineColor.handle;
-							} else {
-								if (style.foreground != null) {
-									foreground = style.foreground.handle;
+					if (drawUnderline) {
+						float underlineY = y + lineY;
+						float[] foreground = gc.data.foreground;
+						float lineWidth = 0;
+						OS.CGContextSaveGState(gc.handle);
+						switch (style.underlineStyle) {
+							case SWT.UNDERLINE_ERROR: {
+								lineWidth = 2;
+								underlineY += 2 * lineAscent [i] + lineWidth;
+								if (style.underlineColor != null) {
+									foreground = style.underlineColor.handle;
+								} else {
+									if (style.foreground != null) {
+										foreground = style.foreground.handle;
+									}
 								}
+								OS.CGContextSetLineDash(gc.handle, 0, new float[]{1f,3}, 2);
+								OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapRound);
+								break;
 							}
-							OS.CGContextSetLineDash(gc.handle, 0, new float[]{1f,3}, 2);
-							OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapRound);
-							break;
+							case UNDERLINE_IME_INPUT:
+							case UNDERLINE_IME_TARGET_CONVERTED:
+							case UNDERLINE_IME_CONVERTED:
+								lineWidth = 1.5f;
+								foreground = style.underlineStyle == UNDERLINE_IME_CONVERTED ? new float[]{0.5f, 0.5f, 0.5f, 1} : new float[]{0, 0, 0, 1};
+								Font font = style.font;
+								if (font == null) font = this.font != null ? this.font : device.systemFont;
+								ATSFontMetrics metrics = new ATSFontMetrics();
+								OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+								underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
+								break;
 						}
-						case UNDERLINE_IME_INPUT:
-						case UNDERLINE_IME_TARGET_CONVERTED:
-						case UNDERLINE_IME_CONVERTED:
-							lineWidth = 1.5f;
-							foreground = style.underlineStyle == UNDERLINE_IME_CONVERTED ? new float[]{0.5f, 0.5f, 0.5f, 1} : new float[]{0, 0, 0, 1};
-							Font font = style.font;
-							if (font == null) font = this.font != null ? this.font : device.systemFont;
-							ATSFontMetrics metrics = new ATSFontMetrics();
-							OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-							underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
-							break;
+						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
+						OS.CGContextSetStrokeColor(gc.handle, foreground);
+						OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapButt);
+						OS.CGContextSetLineJoin(gc.handle, OS.kCGLineJoinMiter);
+						OS.CGContextSetLineDash(gc.handle, 0, null, 0);
+						OS.CGContextSetLineWidth(gc.handle, lineWidth);
+						OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, rgn);
+						if (callback == null) {
+							callback = new Callback(this, "drawUnderline", 4);
+							if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+						}
+						drawStyle = run;
+						OS.CGContextTranslateCTM (gc.handle, 0.5f, 0.5f);
+						OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, callback.getAddress(), gc.handle);
+						OS.CGContextStrokePath(gc.handle);
+						OS.CGContextRestoreGState(gc.handle);
 					}
-					OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
-					OS.CGContextSetStrokeColor(gc.handle, foreground);
-					OS.CGContextSetLineWidth(gc.handle, lineWidth);
-					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, rgn);
-					if (callback == null) {
-						callback = new Callback(this, "drawUnderline", 4);
-						if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+					if (drawBorder) {
+						OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, rgn);
+						OS.CGContextSaveGState(gc.handle);
+						if (borderCallback == null) {
+							borderCallback = new Callback(this, "drawBorder", 4);
+							if (borderCallback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+						}
+						OS.CGContextTranslateCTM(gc.handle, 0.5f, 0.5f);
+						OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, borderCallback.getAddress(), gc.handle);
+						int width = 1;
+						OS.CGContextSetShouldAntialias(gc.handle, false);
+						OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapButt);
+						OS.CGContextSetLineJoin(gc.handle, OS.kCGLineJoinMiter);
+						OS.CGContextSetLineWidth(gc.handle, width);
+						float[] dashes = null;
+						switch (style.borderStyle) {
+							case SWT.BORDER_SOLID:	break;
+							case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+							case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+						}
+						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
+						float[] color = null;
+						if (style.borderColor != null) color = style.borderColor.handle;
+						if (color == null && style.foreground != null) color = style.foreground.handle;
+						if (color != null) {
+							OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
+							OS.CGContextSetStrokeColor(gc.handle, color);
+						}
+						OS.CGContextStrokePath(gc.handle);
+						OS.CGContextRestoreGState(gc.handle);
 					}
-					drawStyle = run;
-					OS.CGContextTranslateCTM (gc.handle, 0.5f, 0.5f);
-					OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, callback.getAddress(), gc.handle);
-					OS.CGContextStrokePath(gc.handle);
-					OS.CGContextRestoreGState(gc.handle);
 				}
 			}
 			if (lineEnd > end) break;
@@ -702,7 +741,23 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		}
 	}
 	if (callback != null) callback.dispose();
+	callback = null;
+	if (borderCallback != null) borderCallback.dispose();
+	borderCallback = null;
 	if (rgn != 0) OS.DisposeRgn(rgn);
+}
+
+int drawBorder(int message, int rgn, int r, int context) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		Rect rect = new Rect();
+		OS.memmove(rect, r, Rect.sizeof);
+		OS.CGContextMoveToPoint(context, rect.left, rect.top);
+		OS.CGContextAddLineToPoint(context, rect.right - 1, rect.top);
+		OS.CGContextAddLineToPoint(context, rect.right - 1, rect.bottom - 1);
+		OS.CGContextAddLineToPoint(context, rect.left, rect.bottom - 1);
+		OS.CGContextClosePath(context);
+	}
+	return 0;
 }
 
 int drawUnderline(int message, int rgn, int r, int context) {
