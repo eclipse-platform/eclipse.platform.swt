@@ -887,7 +887,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementGetDataBrowserItemInfo)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, AXUIElementGetDataBrowserItemInfo_FUNC);
 	if (arg3) if ((lparg3 = getDataBrowserAccessibilityItemInfoFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)AXUIElementGetDataBrowserItemInfo((AXUIElementRef)arg0, (ControlRef)arg1, (UInt32)arg2, lparg3);
+/*
+	rc = (jint)AXUIElementGetDataBrowserItemInfo(arg0, arg1, arg2, lparg3);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint, DataBrowserAccessibilityItemInfo *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(AXUIElementGetDataBrowserItemInfo_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("AXUIElementGetDataBrowserItemInfo"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) setDataBrowserAccessibilityItemInfoFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, AXUIElementGetDataBrowserItemInfo_FUNC);

@@ -26,3 +26,4 @@
 #define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"
 #define HIShapeCreateWithQDRgn_LIB "com.apple.Carbon"
 #define HIShapeReplacePathInCGContext_LIB "com.apple.Carbon"
+#define AXUIElementGetDataBrowserItemInfo_LIB "com.apple.Carbon"
