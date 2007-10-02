@@ -13,7 +13,7 @@ package org.eclipse.swt.accessibility;
 
 import java.util.Vector;
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
@@ -323,7 +323,8 @@ public class Accessible {
 		if (axuielementref != 0) {
 			int [] stringRef = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
-			int length = OS.CFStringGetLength (stringRef [0]);
+			int length = 0;
+			if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
 			char [] buffer= new char [length];
 			CFRange range = new CFRange ();
 			range.length = length;
@@ -1162,6 +1163,7 @@ public class Accessible {
 	 * Note that this method does not call OS.CFRelease(stringRef).
 	 */
 	String stringRefToString(int stringRef) {
+		if (stringRef == 0) return "";
 		int length = OS.CFStringGetLength (stringRef);
 		char [] buffer= new char [length];
 		CFRange range = new CFRange ();
