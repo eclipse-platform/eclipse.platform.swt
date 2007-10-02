@@ -12,6 +12,7 @@
 /* Libraries for dynamic loaded functions */
 #define CGBitmapContextCreateImage_LIB "com.apple.Carbon"
 #define CGImageCreateWithImageInRect_LIB "com.apple.Carbon"
+#define CGContextSetBlendMode_LIB "com.apple.Carbon"
 #define DataBrowserChangeAttributes_LIB "com.apple.Carbon"
 #define DataBrowserGetAttributes_LIB "com.apple.Carbon"
 #define DataBrowserGetMetric_LIB "com.apple.Carbon"

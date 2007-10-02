@@ -2020,7 +2020,23 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetBlendMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, CGContextSetBlendMode_FUNC);
+/*
 	CGContextSetBlendMode((CGContextRef)arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(CGContextRef, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CGContextSetBlendMode_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CGContextSetBlendMode"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((CGContextRef)arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, CGContextSetBlendMode_FUNC);
 }
 #endif
