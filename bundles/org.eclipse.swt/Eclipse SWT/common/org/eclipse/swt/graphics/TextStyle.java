@@ -164,6 +164,8 @@ public TextStyle (TextStyle style) {
 	underlineStyle = style.underlineStyle;
 	strikeout = style.strikeout;
 	strikeoutColor = style.strikeoutColor;
+	borderStyle = style.borderStyle;
+	borderColor = style.borderColor;
 	metrics = style.metrics;
 	rise = style.rise;
 }
@@ -194,6 +196,8 @@ public boolean equals(Object object) {
 	} else if (style.font != null) return false;
 	if (metrics != null || style.metrics != null) return false;
 	if (underline != style.underline) return false;
+	if (underlineStyle != style.underlineStyle) return false;
+	if (borderStyle != style.borderStyle) return false;
 	if (strikeout != style.strikeout) return false;
 	if (rise != style.rise) return false;
 	if (underlineColor != null) {
@@ -203,6 +207,9 @@ public boolean equals(Object object) {
 		if (!strikeoutColor.equals(style.strikeoutColor)) return false;
 	} else if (style.strikeoutColor != null) return false;
 	if (underlineStyle != style.underlineStyle) return false;
+	if (borderColor != null) {
+		if (!borderColor.equals(style.borderColor)) return false;
+	} else if (style.borderColor != null) return false;
 	return true;
 }
 
@@ -227,6 +234,7 @@ public int hashCode() {
 	hash ^= rise;
 	if (underlineColor != null) hash ^= underlineColor.hashCode();
 	if (strikeoutColor != null) hash ^= strikeoutColor.hashCode();
+	if (borderColor != null) hash ^= borderColor.hashCode();
 	hash ^= underlineStyle;
 	return hash;
 }
