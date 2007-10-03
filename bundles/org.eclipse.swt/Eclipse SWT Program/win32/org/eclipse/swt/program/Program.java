@@ -353,6 +353,12 @@ public ImageData getImageData () {
 			nIconIndex = Integer.parseInt (iconIndex);
 		} catch (NumberFormatException e) {}
 	}
+	int length = fileName.length ();
+	if (length != 0 && fileName.charAt (0) == '\"') {
+		if (fileName.charAt (length - 1) == '\"') {
+			fileName = fileName.substring (1, length - 1);
+		}
+	}
 	/* Use the character encoding for the default locale */
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
 	int /*long*/ [] phiconSmall = new int /*long*/[1], phiconLarge = null;
