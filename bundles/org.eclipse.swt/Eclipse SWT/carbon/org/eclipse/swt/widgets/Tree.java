@@ -1499,6 +1499,9 @@ public TreeItem getItem (Point point) {
 	if (0 < lastHittest && lastHittest <= items.length && lastHittestColumn != 0) {
 		TreeItem item = _getItem (lastHittest, false);
 		if (item != null) {
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, lastHittestColumn, OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
+				if (OS.PtInRect (pt, rect)) return null;
+			}
 			if (OS.GetDataBrowserItemPartBounds (handle, item.id, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 				if (rect.top <= pt.v && pt.v <= rect.bottom) {
 					if ((style & SWT.FULL_SELECTION) != 0) {
@@ -1514,6 +1517,9 @@ public TreeItem getItem (Point point) {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
+				if (OS.PtInRect (pt, rect)) return null;
+			}
 			if (columnCount == 0) {
 				if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 					if (rect.top <= pt.v && pt.v <= rect.bottom) {
