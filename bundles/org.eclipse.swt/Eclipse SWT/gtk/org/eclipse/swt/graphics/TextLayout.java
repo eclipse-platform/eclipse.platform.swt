@@ -681,7 +681,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 					int underlineY = rect.y + metrics.ascent - underlinePosition - style.rise;
 					switch (style.underlineStyle) {
 						case SWT.UNDERLINE_ERROR: {
-							int squigglyThickness = 1;
+							int squigglyThickness = underlineThickness;
 							int squigglyHeight = 2 * squigglyThickness;
 							int squigglyY = Math.min(underlineY, rect.y + rect.height - squigglyHeight - 1);
 							int[] points = computePolyline(rect.x, squigglyY, rect.x + rect.width, squigglyY + squigglyHeight);
