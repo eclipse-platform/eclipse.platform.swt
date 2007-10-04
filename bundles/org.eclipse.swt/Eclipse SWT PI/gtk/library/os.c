@@ -16282,6 +16282,122 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1descent)
 }
 #endif
 
+#ifndef NO__1pango_1font_1metrics_1get_1strikethrough_1position
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1strikethrough_1position)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1strikethrough_1position_FUNC);
+/*
+	rc = (jint)pango_font_metrics_get_strikethrough_position(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_font_metrics_get_strikethrough_position_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_font_metrics_get_strikethrough_position");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1strikethrough_1position_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1font_1metrics_1get_1strikethrough_1thickness
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1strikethrough_1thickness)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1strikethrough_1thickness_FUNC);
+/*
+	rc = (jint)pango_font_metrics_get_strikethrough_thickness(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_font_metrics_get_strikethrough_thickness_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_font_metrics_get_strikethrough_thickness");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1strikethrough_1thickness_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1font_1metrics_1get_1underline_1position
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1underline_1position)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1underline_1position_FUNC);
+/*
+	rc = (jint)pango_font_metrics_get_underline_position(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_font_metrics_get_underline_position_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_font_metrics_get_underline_position");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1underline_1position_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1font_1metrics_1get_1underline_1thickness
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1font_1metrics_1get_1underline_1thickness)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1metrics_1get_1underline_1thickness_FUNC);
+/*
+	rc = (jint)pango_font_metrics_get_underline_thickness(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_font_metrics_get_underline_thickness_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_font_metrics_get_underline_thickness");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1metrics_1get_1underline_1thickness_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1font_1metrics_1unref
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1metrics_1unref)
 	(JNIEnv *env, jclass that, jint arg0)

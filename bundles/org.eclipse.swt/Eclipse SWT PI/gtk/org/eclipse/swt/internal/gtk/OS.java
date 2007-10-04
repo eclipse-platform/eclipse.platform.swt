@@ -10006,6 +10006,42 @@ public static final int pango_font_metrics_get_descent(int /*long*/ metrics) {
 		lock.unlock();
 	}
 }
+public static final native int _pango_font_metrics_get_underline_thickness(int /*long*/ metrics);
+public static final int pango_font_metrics_get_underline_thickness(int /*long*/ metrics) {
+	lock.lock();
+	try {
+		return _pango_font_metrics_get_underline_thickness(metrics);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _pango_font_metrics_get_underline_position(int /*long*/ metrics);
+public static final int pango_font_metrics_get_underline_position(int /*long*/ metrics) {
+	lock.lock();
+	try {
+		return _pango_font_metrics_get_underline_position(metrics);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _pango_font_metrics_get_strikethrough_thickness(int /*long*/ metrics);
+public static final int pango_font_metrics_get_strikethrough_thickness(int /*long*/ metrics) {
+	lock.lock();
+	try {
+		return _pango_font_metrics_get_strikethrough_thickness(metrics);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _pango_font_metrics_get_strikethrough_position(int /*long*/ metrics);
+public static final int pango_font_metrics_get_strikethrough_position(int /*long*/ metrics) {
+	lock.lock();
+	try {
+		return _pango_font_metrics_get_strikethrough_position(metrics);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _pango_font_metrics_unref(int /*long*/ metrics);
 public static final void pango_font_metrics_unref(int /*long*/ metrics) {
 	lock.lock();
