@@ -842,7 +842,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							Gdip.Graphics_Restore(gdipGraphics, gstate2);
 						}
 						Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-						drawLines(gdip, gdipGraphics, drawX, drawRunY, run, brush, fullSelection, null, alpha);
+						drawLines(gdip, gdipGraphics, drawX, drawRunY, run, brush, null, alpha);
 						if (partialSelection) {
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 							gstate = Gdip.Graphics_Save(gdipGraphics);
@@ -858,7 +858,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								Gdip.Graphics_Restore(gdipGraphics, gstate2);
 							}
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg, true, null, alpha);
+							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg, null, alpha);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
 						borderClip = drawBorder(gdip, gdipGraphics, x, drawY, lineHeight, foregroundBrush, selBrushFg, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
@@ -873,11 +873,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						}
 						OS.SetTextColor(hdc, fg);
 						OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-						drawLines(gdip, hdc, drawX, drawRunY, run, fg, fullSelection, null, alpha);
+						drawLines(gdip, hdc, drawX, drawRunY, run, fg, null, alpha);
 						if (partialSelection && fg != selectionForeground.handle) {
 							OS.SetTextColor(hdc, selectionForeground.handle);
 							OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle, true, rect, alpha);
+							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle, rect, alpha);
 						}
 						int selForeground = selectionForeground != null ? selectionForeground.handle : 0;
 						borderClip = drawBorder(gdip, hdc, x, drawY, lineHeight, foreground, selForeground, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
@@ -899,7 +899,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 }
 
-void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem run, int /*long*/ color, boolean selection, RECT clipRect, int alpha) {
+void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem run, int /*long*/ color, RECT clipRect, int alpha) {
 	TextStyle style = run.style;
 	if (style == null) return;
 	if (!style.underline && !style.strikeout) return;
@@ -909,7 +909,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
 		int /*long*/ brush = color;
 		if (style.underline) {
-			if (!selection && style.underlineColor != null) {
+			if (style.underlineColor != null) {
 				int fg = style.underlineColor.handle;
 				int argb = ((alpha & 0xFF) << 24) | ((fg >> 16) & 0xFF) | (fg & 0xFF00) | ((fg & 0xFF) << 16);
 				int /*long*/ gdiColor = Gdip.Color_new(argb); 
@@ -950,7 +950,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 			if (brush != color) Gdip.SolidBrush_delete(brush);
 		}
 		if (style.strikeout) {
-			if (!selection && style.strikeoutColor != null) {
+			if (style.strikeoutColor != null) {
 				int fg = style.strikeoutColor.handle;
 				int argb = ((alpha & 0xFF) << 24) | ((fg >> 16) & 0xFF) | (fg & 0xFF00) | ((fg & 0xFF) << 16);
 				int /*long*/ gdiColor = Gdip.Color_new(argb); 
@@ -968,7 +968,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 		int /*long*/ brushStrikeout = 0;
 		RECT rect = new RECT();
 		if (style.underline) {
-			if (!selection && style.underlineColor != null) {
+			if (style.underlineColor != null) {
 				colorRefUnderline = style.underlineColor.handle;
 			}
 			switch (style.underlineStyle) {
@@ -1047,7 +1047,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 			}
 		}
 		if (style.strikeout) {
-			if (!selection && style.strikeoutColor != null) {
+			if (style.strikeoutColor != null) {
 				colorRefStrikeout = style.strikeoutColor.handle;
 			}
 			if (brushUnderline != 0 && colorRefStrikeout == colorRefUnderline) {
@@ -1107,10 +1107,10 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 				if (style.foreground != null) {
 					customColor = style.foreground.handle;
 				}
-			}
-			if (fullSelection && clipRect == null) {
-				customColor = -1;
-				brush = selectionColor;
+				if (fullSelection && clipRect == null) {
+					customColor = -1;
+					brush = selectionColor;
+				}
 			}
 			if (customColor != -1) {
 				int argb = ((alpha & 0xFF) << 24) | ((customColor >> 16) & 0xFF) | (customColor & 0xFF00) | ((customColor & 0xFF) << 16);
@@ -1129,7 +1129,7 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 			Gdip.Pen_SetDashStyle(pen, lineStyle);
 			float gdipXOffset = 0.5f, gdipYOffset = 0.5f;
 			Gdip.Graphics_TranslateTransform(graphics, gdipXOffset, gdipYOffset, Gdip.MatrixOrderPrepend);
-			if (clipRect != null) {
+			if (style.borderColor == null && clipRect != null) {
 				int gstate = Gdip.Graphics_Save(graphics);
 				if (clipRect.left == -1) clipRect.left = 0;
 				if (clipRect.right == -1) clipRect.right = 0x7ffff;
@@ -1161,9 +1161,9 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 				if (style.foreground != null) {
 					color = style.foreground.handle;
 				}
-			}
-			if (fullSelection && clipRect == null) {
-				color = selectionColor;
+				if (fullSelection && clipRect == null) {
+					color = selectionColor;
+				}
 			}
 			int lineWidth = 1;
 			int lineStyle = OS.PS_SOLID;
@@ -1179,7 +1179,7 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 			int /*long*/ oldPen = OS.SelectObject(graphics, newPen);
 			int /*long*/ oldBrush = OS.SelectObject(graphics, OS.GetStockObject(OS.NULL_BRUSH));
 			OS.Rectangle(graphics, x + left, y, x + run.x + run.width, y + lineHeight);
-			if (clipRect != null && color != selectionColor) {
+			if (style.borderColor == null && clipRect != null && color != selectionColor) {
 				int state = OS.SaveDC(graphics);
 				if (clipRect.left == -1) clipRect.left = 0;
 				if (clipRect.right == -1) clipRect.right = 0x7ffff;
