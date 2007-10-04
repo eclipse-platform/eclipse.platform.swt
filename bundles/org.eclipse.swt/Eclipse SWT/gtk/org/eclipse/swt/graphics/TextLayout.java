@@ -195,44 +195,22 @@ void computeRuns () {
 					}
 					break;
 			}
-			if (underlineStyle != OS.PANGO_UNDERLINE_NONE) {
-				if (style.underlineColor == null || OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
-					int /*long*/ attr = OS.pango_attr_underline_new(underlineStyle);
-					OS.memmove(attribute, attr, PangoAttribute.sizeof);
-					attribute.start_index = byteStart;
-					attribute.end_index = byteEnd;
-					OS.memmove(attr, attribute, PangoAttribute.sizeof);
-					OS.pango_attr_list_insert(attrList, attr);
-					if (style.underlineColor != null) {
-						GdkColor color = style.underlineColor.handle;
-						attr = OS.pango_attr_underline_color_new(color.red, color.green, color.blue);
-						OS.memmove(attribute, attr, PangoAttribute.sizeof);
-						attribute.start_index = byteStart;
-						attribute.end_index = byteEnd;
-						OS.memmove(attr, attribute, PangoAttribute.sizeof);
-						OS.pango_attr_list_insert(attrList, attr);
-					}
-				}
-			}
-		}
-		if (style.strikeout) {
-			if (style.strikeoutColor == null || OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
-				int /*long*/ attr = OS.pango_attr_strikethrough_new(true);
+			if (underlineStyle != OS.PANGO_UNDERLINE_NONE && style.underlineColor == null) {
+				int /*long*/ attr = OS.pango_attr_underline_new(underlineStyle);
 				OS.memmove(attribute, attr, PangoAttribute.sizeof);
 				attribute.start_index = byteStart;
 				attribute.end_index = byteEnd;
 				OS.memmove(attr, attribute, PangoAttribute.sizeof);
 				OS.pango_attr_list_insert(attrList, attr);
-				if (style.strikeoutColor != null) {
-					GdkColor color = style.strikeoutColor.handle;
-					attr = OS.pango_attr_strikethrough_color_new(color.red, color.green, color.blue);
-					OS.memmove(attribute, attr, PangoAttribute.sizeof);
-					attribute.start_index = byteStart;
-					attribute.end_index = byteEnd;
-					OS.memmove(attr, attribute, PangoAttribute.sizeof);
-					OS.pango_attr_list_insert(attrList, attr);
-				}
 			}
+		}
+		if (style.strikeout && style.strikeoutColor == null) {
+			int /*long*/ attr = OS.pango_attr_strikethrough_new(true);
+			OS.memmove(attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove(attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
 		}
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
@@ -591,15 +569,17 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 		TextStyle style = styles[i].style;
 		if (style == null) continue;
 		boolean drawUnderline = false;
-		if (style.underline && style.underlineColor != null && OS.GTK_VERSION < OS.VERSION(2, 6, 0)) drawUnderline = true;
+		if (style.underline && style.underlineColor != null) drawUnderline = true;
 		if (style.underline && style.underlineStyle == SWT.UNDERLINE_ERROR && OS.GTK_VERSION < OS.VERSION(2, 4, 0)) drawUnderline = true;
 		boolean drawStrikeout = false;
-		if (style.strikeout && style.strikeoutColor != null && OS.GTK_VERSION < OS.VERSION(2, 6, 0)) drawStrikeout = true;
+		if (style.strikeout && style.strikeoutColor != null) drawStrikeout = true;
 		boolean drawBorder = style.borderStyle != SWT.NONE;
 		if (!drawUnderline && !drawBorder && !drawStrikeout) continue;
 
-		int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, styles[i].start) - ptr);
-		int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, styles[i+1].start) - ptr);
+		int start = translateOffset(styles[i].start);
+		int end = translateOffset(styles[i+1].start - 1);
+		int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
+		int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
 		int[] ranges = new int[]{byteStart, byteEnd};
 		int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 		if (rgn != 0) {
@@ -608,8 +588,9 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 			OS.gdk_region_get_rectangles(rgn, rects, nRects);
 			GdkRectangle rect = new GdkRectangle();
 			if (drawBorder) {
-				GdkColor color = selectionColor;
+				GdkColor color = null;
 				if (color == null && style.borderColor != null) color = style.borderColor.handle;
+				if (color == null && selectionColor != null) color = selectionColor;
 				if (color == null && style.foreground != null) color = style.foreground.handle;
 				if (color == null) color = data.foreground;
 				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
@@ -670,47 +651,115 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 				}
 			}
 			if (drawUnderline) {
-				GdkColor color = selectionColor;
+				GdkColor color = null;
 				if (color == null && style.underlineColor != null) color = style.underlineColor.handle;
+				if (color == null && selectionColor != null) color = selectionColor;
+				if (color == null && style.foreground != null) color = style.foreground.handle;
 				if (color == null) color = data.foreground;
-				OS.gdk_gc_set_foreground(gdkGC, color);
+				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+				} else {
+					OS.gdk_gc_set_foreground(gdkGC, color);
+				}
+				int underlinePosition = -1;
 				int underlineThickness = 1;
-				OS.gdk_gc_set_line_attributes(gdkGC, underlineThickness, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+				if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+					Font font = style.font;
+					if (font == null) font = this.font;
+					if (font == null) font = device.systemFont;
+					int /*long*/ lang = OS.pango_context_get_language(context);
+					int /*long*/ metrics = OS.pango_context_get_metrics(context, font.handle, lang);
+					underlinePosition = OS.PANGO_PIXELS(OS.pango_font_metrics_get_underline_position(metrics));
+					underlineThickness = OS.PANGO_PIXELS(OS.pango_font_metrics_get_underline_thickness(metrics));
+					OS.pango_font_metrics_unref(metrics);
+				}
 				for (int j=0; j<nRects[0]; j++) {
 					OS.memmove(rect, rects[0] + (j * GdkRectangle.sizeof), GdkRectangle.sizeof);
 					int offset = getOffset(rect.x - x, rect.y - y, null);
 					int lineIndex = getLineIndex(offset);
 					FontMetrics metrics = getLineMetrics(lineIndex);
-					int underlineY = rect.y + metrics.ascent + 1 - style.rise;
+					int underlineY = rect.y + metrics.ascent - underlinePosition - style.rise;
 					switch (style.underlineStyle) {
 						case SWT.UNDERLINE_ERROR: {
 							int squigglyThickness = 1;
 							int squigglyHeight = 2 * squigglyThickness;
 							int squigglyY = Math.min(underlineY, rect.y + rect.height - squigglyHeight - 1);
 							int[] points = computePolyline(rect.x, squigglyY, rect.x + rect.width, squigglyY + squigglyHeight);
-							OS.gdk_draw_lines(data.drawable, gdkGC, points, points.length / 2);
+							if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+								Cairo.cairo_set_line_width(cairo, squigglyThickness);
+								Cairo.cairo_set_line_cap(cairo, Cairo.CAIRO_LINE_CAP_BUTT);
+								Cairo.cairo_set_line_join(cairo, Cairo.CAIRO_LINE_JOIN_MITER);
+								if (points.length > 0) {
+									double xOffset = 0.5, yOffset = 0.5; 
+									Cairo.cairo_move_to(cairo, points[0] + xOffset, points[1] + yOffset);
+									for (int k = 2; k < points.length; k += 2) {
+										Cairo.cairo_line_to(cairo, points[k] + xOffset, points[k + 1] + yOffset);
+									}
+									Cairo.cairo_stroke(cairo);
+								}
+							} else {	
+								OS.gdk_gc_set_line_attributes(gdkGC, squigglyThickness, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+								OS.gdk_draw_lines(data.drawable, gdkGC, points, points.length / 2);
+							}
 							break;
 						}
 						case SWT.UNDERLINE_DOUBLE:
-							OS.gdk_draw_line(data.drawable, gdkGC, rect.x, underlineY + underlineThickness * 2, rect.x + rect.width, underlineY + underlineThickness * 2);
+							if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+								Cairo.cairo_rectangle(cairo, rect.x, underlineY + underlineThickness * 2, rect.width, underlineThickness);
+								Cairo.cairo_fill(cairo);
+							} else {
+								OS.gdk_draw_rectangle(data.drawable, gdkGC, 1, rect.x, underlineY + underlineThickness * 2, rect.width, underlineThickness);
+							}
 							//FALLTHROUGH
 						case SWT.UNDERLINE_SINGLE:
-							OS.gdk_draw_line(data.drawable, gdkGC, rect.x, underlineY, rect.x + rect.width, underlineY);
+							if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+								Cairo.cairo_rectangle(cairo, rect.x, underlineY, rect.width, underlineThickness);
+								Cairo.cairo_fill(cairo);
+							} else {
+								OS.gdk_draw_rectangle(data.drawable, gdkGC, 1, rect.x, underlineY, rect.width, underlineThickness);
+							}
 							break;
 					}
 				}
 			}
 			if (drawStrikeout) {
-				GdkColor color = selectionColor;
+				GdkColor color = null;
 				if (color == null && style.strikeoutColor != null) color = style.strikeoutColor.handle;
+				if (color == null && selectionColor != null) color = selectionColor;
+				if (color == null && style.foreground != null) color = style.foreground.handle;
 				if (color == null) color = data.foreground;
-				OS.gdk_gc_set_foreground(gdkGC, color);
+				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+				} else {
+					OS.gdk_gc_set_foreground(gdkGC, color);
+				}
+				int strikeoutPosition = -1;
 				int strikeoutThickness = 1;
-				OS.gdk_gc_set_line_attributes(gdkGC, strikeoutThickness, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+				if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+					Font font = style.font;
+					if (font == null) font = this.font;
+					if (font == null) font = device.systemFont;
+					int /*long*/ lang = OS.pango_context_get_language(context);
+					int /*long*/ metrics = OS.pango_context_get_metrics(context, font.handle, lang);
+					strikeoutPosition = OS.PANGO_PIXELS(OS.pango_font_metrics_get_strikethrough_position(metrics));
+					strikeoutThickness = OS.PANGO_PIXELS(OS.pango_font_metrics_get_strikethrough_thickness(metrics));
+					OS.pango_font_metrics_unref(metrics);
+				}
 				for (int j=0; j<nRects[0]; j++) {
 					OS.memmove(rect, rects[0] + (j * GdkRectangle.sizeof), GdkRectangle.sizeof);
-					int strikeoutY = rect.y + rect.height / 2;
-					OS.gdk_draw_line(data.drawable, gdkGC, rect.x, strikeoutY, rect.x + rect.width - 1, strikeoutY);
+					int strikeoutY = rect.y + rect.height / 2 - style.rise;
+					if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+						int offset = getOffset(rect.x - x, rect.y - y, null);
+						int lineIndex = getLineIndex(offset);
+						FontMetrics metrics = getLineMetrics(lineIndex);
+						strikeoutY = rect.y + metrics.ascent - strikeoutPosition - style.rise;
+					}
+					if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+						Cairo.cairo_rectangle(cairo, rect.x, strikeoutY, rect.width, strikeoutThickness);
+						Cairo.cairo_fill(cairo);
+					} else {
+						OS.gdk_draw_rectangle(data.drawable, gdkGC, 1, rect.x, strikeoutY, rect.width, strikeoutThickness);
+					}
 				}
 			}
 			if (rects[0] != 0) OS.g_free(rects[0]);
