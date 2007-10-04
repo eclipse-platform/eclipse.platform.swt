@@ -134,6 +134,7 @@ public boolean isUnstyled() {
 	if (fontStyle != SWT.NORMAL) return false;
 	if (underline) return false;
 	if (strikeout) return false;
+	if (borderStyle != SWT.NONE) return false;
 	return true;
 }
 
