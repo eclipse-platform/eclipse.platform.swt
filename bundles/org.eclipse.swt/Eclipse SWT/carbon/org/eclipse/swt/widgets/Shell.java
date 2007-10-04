@@ -669,6 +669,15 @@ public void forceActive () {
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
 
+/*public*/ int getAlpha () {
+	checkWidget ();
+	float [] alpha = new float [1];
+	if (OS.GetWindowAlpha (shellHandle, alpha) == OS.noErr) {
+		return (int)(alpha [0] * 255);
+	}
+	return 0xFF;
+}
+
 public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = new Rect ();
@@ -1310,6 +1319,12 @@ void setActiveControl (Control control) {
 			activate [i].sendEvent (SWT.Activate);
 		}
 	}
+}
+
+/*public*/ void setAlpha (int alpha) {
+	checkWidget ();
+	alpha &= 0xFF;
+	OS.SetWindowAlpha (shellHandle, alpha / 255f);
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {

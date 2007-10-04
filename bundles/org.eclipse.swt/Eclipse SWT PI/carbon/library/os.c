@@ -6951,6 +6951,22 @@ fail:
 }
 #endif
 
+#ifndef NO_GetWindowAlpha
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowAlpha)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWindowAlpha_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetWindowAlpha((WindowRef)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetWindowAlpha_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetWindowBounds
 JNIEXPORT void JNICALL OS_NATIVE(GetWindowBounds)
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jobject arg2)
@@ -12170,6 +12186,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetWindowActivationScope)
 	OS_NATIVE_ENTER(env, that, SetWindowActivationScope_FUNC);
 	rc = (jint)SetWindowActivationScope((WindowRef)arg0, (WindowActivationScope)arg1);
 	OS_NATIVE_EXIT(env, that, SetWindowActivationScope_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWindowAlpha
+JNIEXPORT jint JNICALL OS_NATIVE(SetWindowAlpha)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetWindowAlpha_FUNC);
+	rc = (jint)SetWindowAlpha((WindowRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetWindowAlpha_FUNC);
 	return rc;
 }
 #endif

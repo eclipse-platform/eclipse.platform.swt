@@ -389,10 +389,12 @@ public class OS extends C {
 	public static final int kControlFocusNextPart = -1;
 	public static final int kEventControlGetClickActivation = 17;
 	public static final int kEventControlGetFocusPart = 8;
+	public static final int kEventControlGetPartRegion = 101;
 	public static final int kEventControlHit = 1;
 	public static final int kEventControlHitTest = 3;
 	public static final int kEventControlSetCursor = 11;
 	public static final int kEventControlSetFocusPart = 7;
+	public static final int kEventParamControlRegion = ('c'<<24) + ('r'<<16) + ('g'<<8) + 'n';
 	public static final int kEventParamControlSubControl = ('c'<<24) + ('s'<<16) + ('u'<<8) + 'b';
 	public static final int kEventControlRemovingSubControl = 153;
 	public static final int kEventControlOwningWindowChanged = 159;
@@ -1490,6 +1492,7 @@ public static final native int GetThemeTextDimensions(int sHandle, short fontID,
 public static final native int GetUserFocusEventTarget();
 public static final native int GetUserFocusWindow();
 public static final native int GetWindowActivationScope(int inWindow, int[] outScope);
+public static final native int GetWindowAlpha(int inWindow, float [] outAlpha);
 public static final native void GetWindowBounds(int wHandle, short windowRegion, Rect bounds);
 public static final native int GetWindowClass (int inWindow, int[] outClass);
 public static final native int GetWindowDefaultButton(int wHandle, int[] cHandle);
@@ -1852,6 +1855,7 @@ public static final native int SetThemeTextColor(short inBrush, short depth, boo
 public static final native int SetThemeWindowBackground(int wHandle, short brush, boolean update);
 public static final native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
 public static final native int SetWindowActivationScope(int wHandle, int scope);
+public static final native int SetWindowAlpha(int inWindow, float inAlpha);
 public static final native void SetWindowBounds(int window, int regionCode, Rect globalBounds);
 public static final native int SetWindowDefaultButton(int wHandle, int cHandle);
 public static final native int SetWindowGroup(int inWindow, int inNewGroup);
