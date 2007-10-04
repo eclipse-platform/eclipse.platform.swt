@@ -28,7 +28,7 @@ public XPCOMObject (int[] argCounts) {
 	synchronized (Callbacks) {
 		for (int i = 0, length = argCounts.length; i < length; i++){
 			if ((Callbacks[i][argCounts[i]]) == null) {
-				Callbacks[i][argCounts[i]] = new Callback (getClass (), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
+				Callbacks[i][argCounts[i]] = new Callback (getClass (), "callback"+i, argCounts[i] + 1, true, XPCOM.NS_ERROR_FAILURE); //$NON-NLS-1$
 			}
 			callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress ();
 			if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
