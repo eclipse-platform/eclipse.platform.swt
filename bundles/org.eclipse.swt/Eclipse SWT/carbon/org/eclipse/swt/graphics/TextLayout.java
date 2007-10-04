@@ -657,7 +657,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						float underlineY = y + lineY;
 						float[] foreground = gc.data.foreground;
 						float lineWidth = 0;
-						OS.CGContextSaveGState(gc.handle);
+						float[] dashes = null;
+						int lineCap = OS.kCGLineCapButt;
+						int lineJoin = OS.kCGLineJoinMiter;
 						switch (style.underlineStyle) {
 							case SWT.UNDERLINE_ERROR: {
 								lineWidth = 2;
@@ -669,8 +671,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 										foreground = style.foreground.handle;
 									}
 								}
-								OS.CGContextSetLineDash(gc.handle, 0, new float[]{1f,3}, 2);
-								OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapRound);
+								dashes = new float[]{1f,3};
+								lineCap = OS.kCGLineCapRound;
+								lineJoin = OS.kCGLineJoinRound;
 								break;
 							}
 							case UNDERLINE_IME_INPUT:
@@ -685,12 +688,13 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
 								break;
 						}
+						OS.CGContextSaveGState(gc.handle);
 						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
 						OS.CGContextSetStrokeColor(gc.handle, foreground);
-						OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapButt);
-						OS.CGContextSetLineJoin(gc.handle, OS.kCGLineJoinMiter);
-						OS.CGContextSetLineDash(gc.handle, 0, null, 0);
 						OS.CGContextSetLineWidth(gc.handle, lineWidth);
+						OS.CGContextSetLineCap(gc.handle, lineCap);
+						OS.CGContextSetLineJoin(gc.handle, lineJoin);
+						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
 						OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, rgn);
 						if (callback == null) {
 							callback = new Callback(this, "drawUnderline", 4);
