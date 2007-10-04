@@ -812,6 +812,29 @@ void forceResize () {
 	/* Do nothing */
 }
 
+/**
+ * Returns the receiver's alpha value.
+ *
+ * @return the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+/*public*/ int getAlpha () {
+	checkWidget ();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		byte [] pbAlpha = new byte [1];
+		if (OS.GetLayeredWindowAttributes (handle, null, pbAlpha, null)) {
+			return pbAlpha [0];
+		}
+	}
+	return 0xFF;
+}
+
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -1300,6 +1323,38 @@ void setActiveControl (Control control) {
 	for (int i=activate.length-1; i>=index; --i) {
 		if (!activate [i].isDisposed ()) {
 			activate [i].sendEvent (SWT.Activate);
+		}
+	}
+}
+
+/**
+ * Sets the receiver's alpha value.
+ * <p>
+ * This operation requires the operating system's advanced
+ * widgets subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * @param alpha the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+/*public*/ void setAlpha (int alpha) {
+	checkWidget ();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		alpha &= 0xFF;
+		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		if (alpha == 0xFF) {
+			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits & ~OS.WS_EX_LAYERED);
+			int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_FRAME | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (handle, null, 0, flags);
+		} else {
+			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits | OS.WS_EX_LAYERED);
+			OS.SetLayeredWindowAttributes (handle, 0, (byte)alpha, OS.LWA_ALPHA);
 		}
 	}
 }

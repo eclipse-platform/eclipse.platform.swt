@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 919;
-int OS_nativeFunctionCallCount[919];
+int OS_nativeFunctionCount = 920;
+int OS_nativeFunctionCallCount[920];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -258,6 +258,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetKeyboardState",
 	"GetLastActivePopup",
 	"GetLastError",
+	"GetLayeredWindowAttributes",
 	"GetLayout",
 	"GetLibraryHandle",
 	"GetLocaleInfoA",

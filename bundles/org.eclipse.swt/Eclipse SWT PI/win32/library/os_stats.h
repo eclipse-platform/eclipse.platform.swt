@@ -266,6 +266,7 @@ typedef enum {
 	GetKeyboardState_FUNC,
 	GetLastActivePopup_FUNC,
 	GetLastError_FUNC,
+	GetLayeredWindowAttributes_FUNC,
 	GetLayout_FUNC,
 	GetLibraryHandle_FUNC,
 	GetLocaleInfoA_FUNC,

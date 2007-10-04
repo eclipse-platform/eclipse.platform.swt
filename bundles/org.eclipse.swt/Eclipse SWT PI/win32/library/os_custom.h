@@ -49,6 +49,7 @@
 #define EnumSystemLanguageGroupsA_LIB "kernel32.dll"
 #define EnumSystemLanguageGroupsW_LIB "kernel32.dll"
 #define GetComboBoxInfo_LIB "user32.dll"
+#define GetLayeredWindowAttributes_LIB "user32.dll"
 #define GetLayout_LIB "gdi32.dll"
 #define GetMenuBarInfo_LIB "user32.dll"
 #define GetMenuInfo_LIB "user32.dll"

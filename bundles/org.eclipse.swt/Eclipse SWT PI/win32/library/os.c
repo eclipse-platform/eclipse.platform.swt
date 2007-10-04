@@ -4144,6 +4144,44 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLastError)
 }
 #endif
 
+#ifndef NO_GetLayeredWindowAttributes
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetLayeredWindowAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jbyteArray arg2, jintArray arg3)
+{
+	jint *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetLayeredWindowAttributes_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)GetLayeredWindowAttributes((HWND)arg0, lparg1, lparg2, lparg3);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetLayeredWindowAttributes_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetLayeredWindowAttributes");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HWND)arg0, lparg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetLayeredWindowAttributes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetLayout
 JNIEXPORT jint JNICALL OS_NATIVE(GetLayout)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -12892,7 +12930,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetLayeredWindowAttributes)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, SetLayeredWindowAttributes_FUNC);
 /*
-	rc = (jboolean)SetLayeredWindowAttributes(arg0, arg1, arg2, arg3);
+	rc = (jboolean)SetLayeredWindowAttributes((HWND)arg0, arg1, arg2, arg3);
 */
 	{
 		static int initialized = 0;
@@ -12905,7 +12943,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetLayeredWindowAttributes)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jboolean)fp(arg0, arg1, arg2, arg3);
+			rc = (jboolean)fp((HWND)arg0, arg1, arg2, arg3);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, SetLayeredWindowAttributes_FUNC);

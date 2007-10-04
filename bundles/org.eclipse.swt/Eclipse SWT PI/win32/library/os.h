@@ -250,6 +250,7 @@
 #define NO_GetKeyNameTextA
 #define NO_GetKeyNameTextW
 #define NO_GetLastActivePopup
+#define NO_GetLayeredWindowAttributes
 #define NO_GetLayout
 #define NO_GetLocaleInfoA
 #define NO_GetMapMode

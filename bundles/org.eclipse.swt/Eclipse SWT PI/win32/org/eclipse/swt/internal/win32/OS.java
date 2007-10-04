@@ -3398,6 +3398,7 @@ public static final native int GetKeyNameTextW (int lParam, char [] lpString, in
 public static final native int GetKeyNameTextA (int lParam, byte [] lpString, int nSize);
 public static final native int /*long*/ GetLastActivePopup (int /*long*/ hWnd);
 public static final native int GetLastError ();
+public static final native boolean GetLayeredWindowAttributes (int /*long*/ hwnd, int [] pcrKey, byte [] pbAlpha, int [] pdwFlags);
 public static final native int GetLayout (int /*long*/ hdc);
 /* returns the instance handle to the swt library */
 public static final native int /*long*/ GetLibraryHandle ();
