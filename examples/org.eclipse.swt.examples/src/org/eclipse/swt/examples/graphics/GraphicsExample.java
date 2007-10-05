@@ -148,7 +148,6 @@ void createControls(final Composite parent) {
 		public void handleEvent(Event event) {
 			Rectangle rect = hSash.getParent().getClientArea();
 			event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
-			System.out.println(event.x);
 			if (event.detail != SWT.DRAG) {
 				FormData data = (FormData)vSash.getLayoutData();
 				data.left.offset = event.x;
