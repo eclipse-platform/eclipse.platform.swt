@@ -145,6 +145,7 @@ typedef enum {
 	nsEmbedCString_1delete_FUNC,
 	nsEmbedCString_1get_FUNC,
 	nsEmbedCString_1new___FUNC,
+	nsEmbedCString_1new__II_FUNC,
 	nsEmbedCString_1new___3BI_FUNC,
 	nsEmbedString_1Length_FUNC,
 	nsEmbedString_1delete_FUNC,

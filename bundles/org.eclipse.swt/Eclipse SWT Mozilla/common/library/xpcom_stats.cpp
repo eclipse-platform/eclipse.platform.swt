@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 130;
-int XPCOM_nativeFunctionCallCount[130];
+int XPCOM_nativeFunctionCount = 131;
+int XPCOM_nativeFunctionCallCount[131];
 char * XPCOM_nativeFunctionNames[] = {
 	"Call",
 	"NS_1GetComponentManager",
@@ -137,6 +137,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"nsEmbedCString_1delete",
 	"nsEmbedCString_1get",
 	"nsEmbedCString_1new__",
+	"nsEmbedCString_1new__II",
 	"nsEmbedCString_1new___3BI",
 	"nsEmbedString_1Length",
 	"nsEmbedString_1delete",

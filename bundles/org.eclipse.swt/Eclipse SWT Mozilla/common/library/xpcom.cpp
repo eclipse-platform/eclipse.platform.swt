@@ -2238,6 +2238,19 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsEmbedCString_1new__)
 }
 #endif
 
+#ifndef NO_nsEmbedCString_1new__II
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(nsEmbedCString_1new__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsEmbedCString_1new__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, nsEmbedCString_1new__II_FUNC);
+	rc = (jint)new nsEmbedCString((const char *)arg0, arg1);
+	XPCOM_NATIVE_EXIT(env, that, nsEmbedCString_1new__II_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_nsEmbedCString_1new___3BI
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(nsEmbedCString_1new___3BI)(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsEmbedCString_1new___3BI)
