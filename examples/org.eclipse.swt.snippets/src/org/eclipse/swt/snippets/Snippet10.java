@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Drawing with transformations, paths and alpha blending
+ * Draw using transformations, paths and alpha blending
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
