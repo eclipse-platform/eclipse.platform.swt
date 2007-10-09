@@ -23,15 +23,14 @@ import org.eclipse.swt.widgets.*;
 public class Snippet279 {
 	public static void main (String [] args) {
 		Display display = new Display ();
-		Shell shell = new Shell (display);
+		Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
 		shell.setLayout(new FillLayout ());
 		final Image image = display.getSystemImage (SWT.ICON_QUESTION);
 		shell.addListener (SWT.Paint, new Listener () {
 			public void handleEvent (Event e) {
 				Rectangle rect = image.getBounds ();
 				GC gc = e.gc;
-				int x = 10;
-				int y = 10;
+				int x = 10, y = 10;
 				gc.drawImage (image, x, y);
 				Transform tr = new Transform (e.display);
 				tr.setElements (1, 0, 0, -1, 1, 2*(y+rect.height));
