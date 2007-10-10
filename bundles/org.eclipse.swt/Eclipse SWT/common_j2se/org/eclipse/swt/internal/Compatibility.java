@@ -192,7 +192,7 @@ public static OutputStream newFileOutputStream(String filename) throws IOExcepti
  * @since 3.3
  */
 public static InputStream newInflaterInputStream(InputStream stream) throws IOException {
-	return new InflaterInputStream(stream);
+	return new BufferedInputStream(new InflaterInputStream(stream));
 }
 
 /**

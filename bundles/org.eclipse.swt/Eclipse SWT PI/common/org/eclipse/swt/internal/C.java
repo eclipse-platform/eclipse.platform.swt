@@ -16,7 +16,7 @@ public class C extends Platform {
 		if ("Linux".equals (System.getProperty ("os.name")) && "motif".equals (Platform.PLATFORM)) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			try {
 				Library.loadLibrary ("libXm.so.2", false); //$NON-NLS-1$
-			} catch (UnsatisfiedLinkError ex) {}
+			} catch (Throwable ex) {}
 		}
 		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
