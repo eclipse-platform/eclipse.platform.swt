@@ -293,7 +293,11 @@ void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOExce
 	//TEMPORARY CODE
 	boolean use3_2 = System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") != null;
 	InputStream inflaterStream = use3_2 ? null : Compatibility.newInflaterInputStream(stream);
-	if (inflaterStream == null) stream = new PngDecodingDataStream(stream);
+	if (inflaterStream != null) {
+		stream = inflaterStream;
+	} else {
+		stream = new PngDecodingDataStream(stream);
+	}
 	int interlaceMethod = headerChunk.getInterlaceMethod();
 	if (interlaceMethod == PngIhdrChunk.INTERLACE_METHOD_NONE) {
 		readNonInterlacedImage(stream);
