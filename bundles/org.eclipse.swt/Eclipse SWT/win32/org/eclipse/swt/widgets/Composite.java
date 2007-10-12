@@ -1045,7 +1045,7 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_NEXT:
 				int uiState = (int)/*64*/OS.SendMessage (msg.hwnd, OS.WM_QUERYUISTATE, 0, 0);
 				if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
-					OS.SendMessage (msg.hwnd, OS.WM_UPDATEUISTATE, OS.UIS_INITIALIZE, 0);
+					OS.SendMessage (msg.hwnd, OS.WM_UPDATEUISTATE, OS.MAKEWPARAM (OS.UIS_CLEAR, OS.UISF_HIDEFOCUS), 0);
 				}
 				break;
 		}
@@ -1118,7 +1118,7 @@ void updateUIState () {
 	int /*long*/ hwndShell = getShell ().handle;
 	int uiState = /*64*/(int)OS.SendMessage (hwndShell, OS.WM_QUERYUISTATE, 0, 0);
 	if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
-		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_CLEAR | OS.UISF_HIDEFOCUS, 0);
+		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.MAKEWPARAM (OS.UIS_CLEAR, OS.UISF_HIDEFOCUS), 0);
 	}
 }
 
