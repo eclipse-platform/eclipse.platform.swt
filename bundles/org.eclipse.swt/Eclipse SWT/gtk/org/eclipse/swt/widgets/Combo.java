@@ -555,7 +555,7 @@ boolean filterKey (int keyval, int /*long*/ event) {
 	return false;
 }
 
-int findPopupHandle (int /*long*/ oldList) {
+int /*long*/ findPopupHandle (int /*long*/ oldList) {
 	int /*long*/ hdl = 0;
 	int /*long*/ currentList = OS.gtk_window_list_toplevels();
 	int /*long*/ oldFromList = oldList;
