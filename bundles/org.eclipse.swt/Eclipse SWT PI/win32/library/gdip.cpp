@@ -1111,19 +1111,6 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ScaleTransform)
 }
 #endif
 
-#ifndef NO_Graphics_1SetClip__II
-extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__II)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClip__II_FUNC);
-	rc = (jint)((Graphics *)arg0)->SetClip((GraphicsPath *)arg1);
-	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClip__II_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_Graphics_1SetClip__III
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)
@@ -1748,6 +1735,19 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetGraphicsPath)
 	Gdip_NATIVE_ENTER(env, that, PathGradientBrush_1SetGraphicsPath_FUNC);
 	rc = (jint)((PathGradientBrush *)arg0)->SetGraphicsPath((GraphicsPath *)arg1);
 	Gdip_NATIVE_EXIT(env, that, PathGradientBrush_1SetGraphicsPath_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PathGradientBrush_1SetWrapMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetWrapMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetWrapMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, PathGradientBrush_1SetWrapMode_FUNC);
+	rc = (jint)((PathGradientBrush *)arg0)->SetWrapMode((WrapMode)arg1);
+	Gdip_NATIVE_EXIT(env, that, PathGradientBrush_1SetWrapMode_FUNC);
 	return rc;
 }
 #endif

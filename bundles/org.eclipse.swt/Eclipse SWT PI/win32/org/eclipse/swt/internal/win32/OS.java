@@ -3950,6 +3950,7 @@ public static final native boolean TransparentImage (int /*long*/ hdcDest, int D
 public static final native boolean UnhookWindowsHookEx (int /*long*/ hhk);
 public static final native boolean UnregisterClassW (char [] lpClassName, int /*long*/ hInstance);
 public static final native boolean UnregisterClassA (byte [] lpClassName, int /*long*/ hInstance);
+public static final native boolean UpdateLayeredWindow (int /*long*/ hwnd, int /*long*/ hdcDst, POINT pptDst, SIZE psize, int /*long*/ hdcSrc, POINT pptSrc, int crKey, BLENDFUNCTION pblend, int dwFlags);
 public static final native boolean UpdateWindow (int /*long*/ hWnd);
 public static final native boolean ValidateRect (int /*long*/ hWnd, RECT lpRect);
 public static final native short VkKeyScanW (short ch);

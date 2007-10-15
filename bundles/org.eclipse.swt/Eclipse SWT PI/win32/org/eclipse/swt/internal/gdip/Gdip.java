@@ -201,8 +201,9 @@ public static final native int Graphics_Restore(int /*long*/ graphics, int gstat
 public static final native int Graphics_Save(int /*long*/ graphics);
 public static final native int Graphics_ScaleTransform(int /*long*/ graphics, float sx, float sy, int order);
 public static final native int Graphics_SetClip(int /*long*/ graphics, int /*long*/ hrgn, int combineMode);
-public static final native int Graphics_SetClip(int /*long*/ graphics, int /*long*/ path);
 public static final native int Graphics_SetClip(int /*long*/ graphics, Rect rect, int combineMode);
+public static final native int Graphics_SetClipPath(int /*long*/ graphics, int /*long*/ path);
+public static final native int Graphics_SetClipPath(int /*long*/ graphics, int /*long*/ path, int combineMode);
 public static final native int Graphics_SetCompositingQuality(int /*long*/ graphics, int compositingQuality);
 public static final native int Graphics_SetPageUnit(int /*long*/ graphics, int unit);
 public static final native int Graphics_SetPixelOffsetMode(int /*long*/ graphics, int pixelOffsetMode);
@@ -270,8 +271,10 @@ public static final native int /*long*/ PathGradientBrush_new(int /*long*/ path)
 public static final native void PathGradientBrush_delete(int /*long*/ brush);
 public static final native int PathGradientBrush_SetCenterColor(int /*long*/ brush, int /*long*/ color);
 public static final native int PathGradientBrush_SetCenterPoint(int /*long*/ brush, PointF pt);
+public static final native int PathGradientBrush_SetInterpolationColors(int /*long*/ brush, int /*long*/[] presetColors, float[] blendPositions, int count);
 public static final native int PathGradientBrush_SetSurroundColors(int /*long*/ brush, int /*long*/[] colors, int[] count);
 public static final native int PathGradientBrush_SetGraphicsPath(int /*long*/ brush, int /*long*/ path);
+public static final native int PathGradientBrush_SetWrapMode(int /*long*/ brush, int wrapMode);
 public static final native int /*long*/ Pen_new(int /*long*/ brush, float width);
 public static final native void Pen_delete(int /*long*/ pen);
 public static final native int /*long*/ Pen_GetBrush(int /*long*/ pen);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 170;
-int Gdip_nativeFunctionCallCount[170];
+int Gdip_nativeFunctionCount = 173;
+int Gdip_nativeFunctionCallCount[173];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -100,9 +100,10 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1Restore",
 	"Graphics_1Save",
 	"Graphics_1ScaleTransform",
-	"Graphics_1SetClip__II",
 	"Graphics_1SetClip__III",
 	"Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I",
+	"Graphics_1SetClipPath__II",
+	"Graphics_1SetClipPath__III",
 	"Graphics_1SetCompositingQuality",
 	"Graphics_1SetInterpolationMode",
 	"Graphics_1SetPageUnit",
@@ -150,7 +151,9 @@ char * Gdip_nativeFunctionNames[] = {
 	"PathGradientBrush_1SetCenterColor",
 	"PathGradientBrush_1SetCenterPoint",
 	"PathGradientBrush_1SetGraphicsPath",
+	"PathGradientBrush_1SetInterpolationColors",
 	"PathGradientBrush_1SetSurroundColors",
+	"PathGradientBrush_1SetWrapMode",
 	"PathGradientBrush_1delete",
 	"PathGradientBrush_1new",
 	"Pen_1GetBrush",

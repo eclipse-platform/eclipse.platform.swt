@@ -504,16 +504,15 @@
 #define NO_TransparentBlt
 #define NO_UnhookWindowsHookEx
 #define NO_UnregisterClassA
+#define NO_UpdateLayeredWindow
 #define NO_VkKeyScanA
 #define NO_VkKeyScanW
 #define NO_VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2
-
 #define NO_WaitMessage
 #define NO_WindowFromDC
 
 #define GetWindowLongPtrW GetWindowLongW
 #define SetWindowLongPtrW SetWindowLongW
-
 #define ChooseColorW ChooseColor
 #define CHOOSECOLORW CHOOSECOLOR
 #define LPCHOOSECOLORW LPCHOOSECOLOR

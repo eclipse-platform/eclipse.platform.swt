@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 920;
-int OS_nativeFunctionCallCount[920];
+int OS_nativeFunctionCount = 921;
+int OS_nativeFunctionCallCount[921];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -910,6 +910,7 @@ char * OS_nativeFunctionNames[] = {
 	"UnhookWindowsHookEx",
 	"UnregisterClassA",
 	"UnregisterClassW",
+	"UpdateLayeredWindow",
 	"UpdateWindow",
 	"ValidateRect",
 	"VkKeyScanA",

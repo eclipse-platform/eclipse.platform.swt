@@ -14350,6 +14350,47 @@ fail:
 }
 #endif
 
+#ifndef NO_UpdateLayeredWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(UpdateLayeredWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jobject arg5, jint arg6, jobject arg7, jint arg8)
+{
+	POINT _arg2, *lparg2=NULL;
+	SIZE _arg3, *lparg3=NULL;
+	POINT _arg5, *lparg5=NULL;
+	BLENDFUNCTION _arg7, *lparg7=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UpdateLayeredWindow_FUNC);
+	if (arg2) if ((lparg2 = getPOINTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getSIZEFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getPOINTFields(env, arg5, &_arg5)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getBLENDFUNCTIONFields(env, arg7, &_arg7)) == NULL) goto fail;
+/*
+	rc = (jboolean)UpdateLayeredWindow((HWND)arg0, (HDC)arg1, lparg2, lparg3, (HDC)arg4, lparg5, (COLORREF)arg6, lparg7, arg8);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(UpdateLayeredWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "UpdateLayeredWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HWND)arg0, (HDC)arg1, lparg2, lparg3, (HDC)arg4, lparg5, (COLORREF)arg6, lparg7, arg8);
+		}
+	}
+fail:
+	if (arg7 && lparg7) setBLENDFUNCTIONFields(env, arg7, lparg7);
+	if (arg5 && lparg5) setPOINTFields(env, arg5, lparg5);
+	if (arg3 && lparg3) setSIZEFields(env, arg3, lparg3);
+	if (arg2 && lparg2) setPOINTFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, UpdateLayeredWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UpdateWindow
 JNIEXPORT jboolean JNICALL OS_NATIVE(UpdateWindow)
 	(JNIEnv *env, jclass that, jint arg0)

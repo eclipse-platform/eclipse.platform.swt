@@ -918,6 +918,7 @@ typedef enum {
 	UnhookWindowsHookEx_FUNC,
 	UnregisterClassA_FUNC,
 	UnregisterClassW_FUNC,
+	UpdateLayeredWindow_FUNC,
 	UpdateWindow_FUNC,
 	ValidateRect_FUNC,
 	VkKeyScanA_FUNC,

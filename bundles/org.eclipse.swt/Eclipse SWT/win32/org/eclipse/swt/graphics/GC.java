@@ -4019,7 +4019,7 @@ public void setClipping (Path path) {
 		initGdip();
 		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
 		Gdip.GraphicsPath_SetFillMode(path.handle, mode);
-		Gdip.Graphics_SetClip(data.gdipGraphics, path.handle);
+		Gdip.Graphics_SetClipPath(data.gdipGraphics, path.handle);
 	}
 }
 

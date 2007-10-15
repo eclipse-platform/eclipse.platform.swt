@@ -188,6 +188,61 @@ fail:
 }
 #endif
 
+#ifndef NO_Graphics_1SetClipPath__II
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClipPath__II_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetClip((GraphicsPath *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClipPath__II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetClipPath__III
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__III)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClipPath__III_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetClip((GraphicsPath *)arg1, (CombineMode)arg2);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClipPath__III_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PathGradientBrush_1SetInterpolationColors
+JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetInterpolationColors)
+	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTRArray arg1, jfloatArray arg2, jint arg3)
+{
+	Color *colors=NULL;
+	SWT_PTR *lparg1=NULL;
+	jfloat *lparg2=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, PathGradientBrush_1SetInterpolationColors_FUNC);
+	if (arg1) if ((lparg1 = env->GetSWT_PTRArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = env->GetFloatArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (lparg1) {
+		colors = new Color[arg3];
+		for (int i=0; i<arg3; i++) {
+			colors[i] = *(Color *)lparg1[i];
+		}
+	}
+	rc = (jint)((PathGradientBrush *)arg0)->SetInterpolationColors(colors, (const REAL *)lparg2, arg3);
+fail:
+	if (lparg1 && colors) {
+		delete colors;
+	}
+	if (arg2 && lparg2) env->ReleaseFloatArrayElements(arg2, lparg2, 0);
+	if (arg1 && lparg1) env->ReleaseSWT_PTRArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, PathGradientBrush_1SetInterpolationColors_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PathGradientBrush_1SetSurroundColors
 JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetSurroundColors)
 	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTRArray arg1, jintArray arg2)

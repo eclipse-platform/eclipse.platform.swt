@@ -73,3 +73,4 @@
 #define SetProcessDPIAware_LIB "user32.dll"
 #define SetWindowTheme_LIB "uxtheme.dll"
 #define TransparentBlt_LIB "msimg32.dll"
+#define UpdateLayeredWindow_LIB "user32.dll"
