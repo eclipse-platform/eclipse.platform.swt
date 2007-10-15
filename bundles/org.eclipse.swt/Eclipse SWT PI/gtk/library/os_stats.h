@@ -1076,6 +1076,7 @@ typedef enum {
 	_1gtk_1window_1get_1position_FUNC,
 	_1gtk_1window_1get_1size_FUNC,
 	_1gtk_1window_1iconify_FUNC,
+	_1gtk_1window_1list_1toplevels_FUNC,
 	_1gtk_1window_1maximize_FUNC,
 	_1gtk_1window_1move_FUNC,
 	_1gtk_1window_1new_FUNC,

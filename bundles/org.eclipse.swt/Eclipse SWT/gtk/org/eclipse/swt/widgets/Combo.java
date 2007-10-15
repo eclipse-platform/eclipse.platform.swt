@@ -53,7 +53,7 @@ import org.eclipse.swt.events.*;
  * @see List
  */
 public class Combo extends Composite {
-	int /*long*/ buttonHandle, entryHandle, listHandle, textRenderer;
+	int /*long*/ buttonHandle, entryHandle, listHandle, textRenderer, cellHandle, popupHandle;
 	int lastEventTime, visibleCount = 5;
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
@@ -169,6 +169,9 @@ public void add (String string, int index) {
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.gtk_combo_box_insert_text (handle, index, buffer);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
+		}
 	} else {
 		/*
 		* Feature in GTK. When the list is empty and the first item
@@ -416,15 +419,19 @@ void createHandle (int index) {
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		int oldList = OS.gtk_window_list_toplevels ();  
 		if ((style & SWT.READ_ONLY) != 0) {
 			handle = OS.gtk_combo_box_new_text ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			cellHandle = OS.gtk_bin_get_child (handle);
+			if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		} else {
 			handle = OS.gtk_combo_box_entry_new_text ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			entryHandle = OS.gtk_bin_get_child (handle);
 			if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		}
+		popupHandle = findPopupHandle (oldList);    
 		OS.gtk_container_add (fixedHandle, handle);
 		textRenderer = OS.gtk_cell_renderer_text_new ();
 		if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
@@ -546,6 +553,34 @@ boolean filterKey (int keyval, int /*long*/ event) {
 	}
 	gdkEventKey = event;
 	return false;
+}
+
+int findPopupHandle (int oldList) {
+	int hdl = 0;
+	int currentList = OS.gtk_window_list_toplevels();
+	int oldFromList = oldList, newFromList = currentList;
+	boolean isFound;
+	while (newFromList != 0) {
+		int newToplevel = OS.g_list_data(newFromList);
+		isFound = false;
+		oldFromList = oldList;
+		while (oldFromList != 0) {
+			int oldToplevel = OS.g_list_data(oldFromList);
+			if (newToplevel == oldToplevel) {
+				isFound = true;
+				break;
+			}
+			oldFromList = OS.g_list_next(oldFromList);
+		}
+		if (!isFound) {
+			hdl = newToplevel;
+			break;
+		}
+		newFromList = OS.g_list_next(newFromList);
+	}
+	OS.g_list_free(oldList);
+	OS.g_list_free(currentList);
+	return hdl;
 }
 
 void fixIM () {
@@ -1644,6 +1679,9 @@ public void setItem (int index, String string) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.gtk_combo_box_remove_text (handle, index);
 		OS.gtk_combo_box_insert_text (handle, index, buffer);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
+		}
 	} else {
 		ignoreSelect = true;
 		int /*long*/ children = OS.gtk_container_get_children (listHandle);
@@ -1687,6 +1725,9 @@ public void setItems (String [] items) {
 			String string = items [i];
 			byte [] buffer = Converter.wcsToMbcs (null, string, true);
 			OS.gtk_combo_box_insert_text (handle, i, buffer);
+			if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+				OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
+			}
 		}
 	} else {
 		lockText = ignoreSelect = true;
@@ -1728,6 +1769,7 @@ void setOrientation() {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (listHandle != 0) OS.gtk_widget_set_direction (listHandle, OS.GTK_TEXT_DIR_RTL);
 		if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, OS.GTK_TEXT_DIR_RTL);
+		if (cellHandle != 0) OS.gtk_widget_set_direction (cellHandle, OS.GTK_TEXT_DIR_RTL);
 	}
 }
 
@@ -1767,6 +1809,8 @@ public void setOrientation (int orientation) {
 			OS.g_list_free (itemsList);
 		}
 	}
+	if (cellHandle != 0) OS.gtk_widget_set_direction (cellHandle, dir);
+	if (popupHandle != 0) OS.gtk_container_forall (popupHandle, display.setDirectionProc, dir);
 }
 
 /**

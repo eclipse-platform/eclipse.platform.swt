@@ -9276,6 +9276,15 @@ public static final void gtk_window_iconify(int /*long*/ handle) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_window_list_toplevels ();
+public static final int /*long*/ gtk_window_list_toplevels () {
+	lock.lock();
+	try {
+		return _gtk_window_list_toplevels ();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_window_maximize(int /*long*/ handle);
 public static final void gtk_window_maximize(int /*long*/ handle) {
 	lock.lock();

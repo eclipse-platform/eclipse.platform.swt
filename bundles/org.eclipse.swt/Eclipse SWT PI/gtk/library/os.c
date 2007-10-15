@@ -15198,6 +15198,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1iconify)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1list_1toplevels
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1list_1toplevels)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1list_1toplevels_FUNC);
+	rc = (jint)gtk_window_list_toplevels();
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1list_1toplevels_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1window_1maximize
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1maximize)
 	(JNIEnv *env, jclass that, jint arg0)
