@@ -419,7 +419,7 @@ void createHandle (int index) {
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		int oldList = OS.gtk_window_list_toplevels ();  
+		int /*long*/ oldList = OS.gtk_window_list_toplevels ();  
 		if ((style & SWT.READ_ONLY) != 0) {
 			handle = OS.gtk_combo_box_new_text ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -557,15 +557,16 @@ boolean filterKey (int keyval, int /*long*/ event) {
 
 int findPopupHandle (int oldList) {
 	int hdl = 0;
-	int currentList = OS.gtk_window_list_toplevels();
-	int oldFromList = oldList, newFromList = currentList;
+	int /*long*/ currentList = OS.gtk_window_list_toplevels();
+	int /*long*/ oldFromList = oldList;
+	int /*long*/ newFromList = currentList;
 	boolean isFound;
 	while (newFromList != 0) {
-		int newToplevel = OS.g_list_data(newFromList);
+		int /*long*/ newToplevel = OS.g_list_data(newFromList);
 		isFound = false;
 		oldFromList = oldList;
 		while (oldFromList != 0) {
-			int oldToplevel = OS.g_list_data(oldFromList);
+			int /*long*/ oldToplevel = OS.g_list_data(oldFromList);
 			if (newToplevel == oldToplevel) {
 				isFound = true;
 				break;
