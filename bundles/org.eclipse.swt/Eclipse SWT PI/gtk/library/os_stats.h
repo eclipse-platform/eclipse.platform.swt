@@ -726,6 +726,7 @@ typedef enum {
 	_1gtk_1paint_1slider_FUNC,
 	_1gtk_1paint_1tab_FUNC,
 	_1gtk_1paint_1vline_FUNC,
+	_1gtk_1paper_1size_1free_FUNC,
 	_1gtk_1paper_1size_1get_1display_1name_FUNC,
 	_1gtk_1paper_1size_1get_1height_FUNC,
 	_1gtk_1paper_1size_1get_1name_FUNC,

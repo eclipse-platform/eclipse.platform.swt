@@ -711,7 +711,7 @@ protected void init() {
 			paper_size = OS.gtk_paper_size_new(name);
 		}
 		OS.gtk_page_setup_set_paper_size(pageSetup, paper_size);
-		OS.g_free(paper_size);
+		OS.gtk_paper_size_free(paper_size);
 	}
 	
 	/* Set values of settings from PrinterData. */

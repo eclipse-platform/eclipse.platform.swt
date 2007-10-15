@@ -10062,6 +10062,32 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1paper_1size_1free
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paper_1size_1free)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1free_FUNC);
+/*
+	gtk_paper_size_free(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_free_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_free");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1free_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1paper_1size_1get_1display_1name
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1display_1name)
 	(JNIEnv *env, jclass that, jint arg0)
