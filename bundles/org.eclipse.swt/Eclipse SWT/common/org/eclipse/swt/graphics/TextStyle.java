@@ -239,6 +239,37 @@ public int hashCode() {
 	return hash;
 }
 
+boolean isAdherentBorder(TextStyle style) {
+	if (this == style) return true;
+	if (style == null) return false;
+	if (borderStyle != style.borderStyle) return false;
+	if (borderColor != null) {
+		if (!borderColor.equals(style.borderColor)) return false;
+	} else if (style.borderColor != null) return false;
+	return true;
+}
+
+boolean isAdherentUnderline(TextStyle style) {
+	if (this == style) return true;
+	if (style == null) return false;
+	if (underline != style.underline) return false;
+	if (underlineStyle != style.underlineStyle) return false;
+	if (underlineColor != null) {
+		if (!underlineColor.equals(style.underlineColor)) return false;
+	} else if (style.underlineColor != null) return false;
+	return true;
+}
+
+boolean isAdherentStrikeout(TextStyle style) {
+	if (this == style) return true;
+	if (style == null) return false;
+	if (strikeout != style.strikeout) return false;
+	if (strikeoutColor != null) {
+		if (!strikeoutColor.equals(style.strikeoutColor)) return false;
+	} else if (style.strikeoutColor != null) return false;
+	return true;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

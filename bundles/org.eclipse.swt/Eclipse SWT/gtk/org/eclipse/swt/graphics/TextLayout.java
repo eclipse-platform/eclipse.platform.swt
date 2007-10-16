@@ -568,41 +568,39 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 	for (int i = 0; i < styles.length - 1; i++) {
 		TextStyle style = styles[i].style;
 		if (style == null) continue;
-		boolean drawUnderline = false;
-		if (style.underline && style.underlineColor != null) drawUnderline = true;
-		if (style.underline && style.underlineStyle == SWT.UNDERLINE_ERROR && OS.GTK_VERSION < OS.VERSION(2, 4, 0)) drawUnderline = true;
-		boolean drawStrikeout = false;
-		if (style.strikeout && style.strikeoutColor != null) drawStrikeout = true;
+		
 		boolean drawBorder = style.borderStyle != SWT.NONE;
-		if (!drawUnderline && !drawBorder && !drawStrikeout) continue;
-
-		int start = translateOffset(styles[i].start);
-		int end = translateOffset(styles[i+1].start - 1);
-		int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
-		int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
-		int[] ranges = new int[]{byteStart, byteEnd};
-		int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
-		if (rgn != 0) {
-			int[] nRects = new int[1];
-			int /*long*/[] rects = new int /*long*/[1];
-			OS.gdk_region_get_rectangles(rgn, rects, nRects);
-			GdkRectangle rect = new GdkRectangle();
-			if (drawBorder) {
+		if (drawBorder && !style.isAdherentBorder(styles[i+1].style)) {
+			int start = styles[i].start;
+			for (int j = i; j > 0 && style.isAdherentBorder(styles[j-1].style); j--) {
+				start = styles[j - 1].start;
+			}
+			start = translateOffset(start);
+			int end = translateOffset(styles[i+1].start - 1);
+			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+			int[] ranges = new int[]{byteStart, byteEnd};
+			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			if (rgn != 0) {
+				int[] nRects = new int[1];
+				int /*long*/[] rects = new int /*long*/[1];
+				OS.gdk_region_get_rectangles(rgn, rects, nRects);
+				GdkRectangle rect = new GdkRectangle();
 				GdkColor color = null;
 				if (color == null && style.borderColor != null) color = style.borderColor.handle;
 				if (color == null && selectionColor != null) color = selectionColor;
 				if (color == null && style.foreground != null) color = style.foreground.handle;
 				if (color == null) color = data.foreground;
+				int width = 1;
+				float[] dashes = null;
+				switch (style.borderStyle) {
+					case SWT.BORDER_SOLID: break;
+					case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+					case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+				}
 				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-					int width = 1;
 					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 					Cairo.cairo_set_line_width(cairo, width);
-					float[] dashes = null;
-					switch (style.borderStyle) {
-						case SWT.BORDER_SOLID: break;
-						case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
-						case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
-					}
 					if (dashes != null) {
 						double[] cairoDashes = new double[dashes.length];
 						for (int j = 0; j < cairoDashes.length; j++) {
@@ -626,13 +624,6 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 					int cap_style = OS.GDK_CAP_BUTT;
 					int join_style = OS.GDK_JOIN_MITER;
 					int line_style = 0;
-					int width = 1;
-					float[] dashes = null;
-					switch (style.borderStyle) {
-						case SWT.BORDER_SOLID: break;
-						case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
-						case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
-					}
 					if (dashes != null) {
 						byte[] dash_list = new byte[dashes.length];
 						for (int j = 0; j < dash_list.length; j++) {
@@ -649,8 +640,30 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 						OS.gdk_draw_rectangle(data.drawable, gdkGC, 0, rect.x, rect.y, rect.width - 1, rect.height - 1);
 					}
 				}
+				if (rects[0] != 0) OS.g_free(rects[0]);
+				OS.gdk_region_destroy(rgn);
 			}
-			if (drawUnderline) {
+		}
+		
+		boolean drawUnderline = false;
+		if (style.underline && style.underlineColor != null) drawUnderline = true;
+		if (style.underline && style.underlineStyle == SWT.UNDERLINE_ERROR && OS.GTK_VERSION < OS.VERSION(2, 4, 0)) drawUnderline = true;
+		if (drawUnderline && !style.isAdherentUnderline(styles[i+1].style)) {
+			int start = styles[i].start;
+			for (int j = i; j > 0 && style.isAdherentUnderline(styles[j-1].style); j--) {
+				start = styles[j - 1].start;
+			}
+			start = translateOffset(start);
+			int end = translateOffset(styles[i+1].start - 1);
+			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+			int[] ranges = new int[]{byteStart, byteEnd};
+			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			if (rgn != 0) {
+				int[] nRects = new int[1];
+				int /*long*/[] rects = new int /*long*/[1];
+				OS.gdk_region_get_rectangles(rgn, rects, nRects);
+				GdkRectangle rect = new GdkRectangle();
 				GdkColor color = null;
 				if (color == null && style.underlineColor != null) color = style.underlineColor.handle;
 				if (color == null && selectionColor != null) color = selectionColor;
@@ -659,6 +672,10 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 				} else {
+					if (gcValues == null) {
+						gcValues = new GdkGCValues();
+						OS.gdk_gc_get_values(gdkGC, gcValues);
+					}
 					OS.gdk_gc_set_foreground(gdkGC, color);
 				}
 				int underlinePosition = -1;
@@ -721,8 +738,29 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 							break;
 					}
 				}
+				if (rects[0] != 0) OS.g_free(rects[0]);
+				OS.gdk_region_destroy(rgn);
 			}
-			if (drawStrikeout) {
+		}
+		
+		boolean drawStrikeout = false;
+		if (style.strikeout && style.strikeoutColor != null) drawStrikeout = true;
+		if (drawStrikeout && !style.isAdherentStrikeout(styles[i+1].style)) {
+			int start = styles[i].start;
+			for (int j = i; j > 0 && style.isAdherentStrikeout(styles[j-1].style); j--) {
+				start = styles[j - 1].start;
+			}
+			start = translateOffset(start);
+			int end = translateOffset(styles[i+1].start - 1);
+			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+			int[] ranges = new int[]{byteStart, byteEnd};
+			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			if (rgn != 0) {
+				int[] nRects = new int[1];
+				int /*long*/[] rects = new int /*long*/[1];
+				OS.gdk_region_get_rectangles(rgn, rects, nRects);
+				GdkRectangle rect = new GdkRectangle();
 				GdkColor color = null;
 				if (color == null && style.strikeoutColor != null) color = style.strikeoutColor.handle;
 				if (color == null && selectionColor != null) color = selectionColor;
@@ -731,6 +769,10 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 					Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 				} else {
+					if (gcValues == null) {
+						gcValues = new GdkGCValues();
+						OS.gdk_gc_get_values(gdkGC, gcValues);
+					}
 					OS.gdk_gc_set_foreground(gdkGC, color);
 				}
 				int strikeoutPosition = -1;
@@ -761,9 +803,9 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 						OS.gdk_draw_rectangle(data.drawable, gdkGC, 1, rect.x, strikeoutY, rect.width, strikeoutThickness);
 					}
 				}
+				if (rects[0] != 0) OS.g_free(rects[0]);
+				OS.gdk_region_destroy(rgn);
 			}
-			if (rects[0] != 0) OS.g_free(rects[0]);
-			OS.gdk_region_destroy(rgn);
 		}
 	}
 	if (gcValues != null) {
