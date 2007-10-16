@@ -1043,6 +1043,20 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int [] modifiers = new int [1];
+		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+		if (modifiers [0] == OS.cmdKey) {
+			switch (keyCode [0]) {
+				case 7: /* X */
+					cut ();
+					return OS.noErr;
+				case 9: /* V */
+					paste ();
+					return OS.noErr;
+			}
+		}
+	}
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
@@ -1341,6 +1355,7 @@ boolean sendKeyEvent (int type, Event event) {
 	if (type != SWT.KeyDown) return true;
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (event.character == 0) return true;
+	if ((event.stateMask & SWT.COMMAND) != 0) return true;
 	String oldText = "", newText = "";
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int charCount = getCharCount ();
