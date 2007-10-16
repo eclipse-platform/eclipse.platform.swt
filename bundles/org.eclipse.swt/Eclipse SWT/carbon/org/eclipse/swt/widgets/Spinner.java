@@ -544,6 +544,44 @@ Rect inset () {
 	return display.editTextInset;
 }
 
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+		String roleText = OS.kAXGroupRole;
+		buffer = new char [roleText.length ()];
+		roleText.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (attributeName.equals (OS.kAXRoleAttribute)) {
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+		if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+			if (stringRef [0] != 0) {
+				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+				OS.CFRelease(stringRef [0]);
+				OS.CFRelease(stringRef2);
+			}
+		}
+	}
+	return code;
+}
+
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) {
@@ -572,7 +610,7 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		case 76: /* KP Enter */
 		case 36: /* Return */
 			postEvent (SWT.DefaultSelection);
-			break;
+			return OS.noErr;
 		case 116: /* Page Up */ delta = pageIncrement; break;
 		case 121: /* Page Down */ delta = -pageIncrement; break;
 		case 125: /* Down */ delta = -increment; break;
@@ -981,7 +1019,8 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 		OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
-		redrawWidget (textHandle, false);
+		short [] selection = new short [] {0, (short)string.length ()};
+		OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
 		sendEvent (SWT.Modify);
 	}
 	if (notify) postEvent (SWT.Selection);
