@@ -4077,33 +4077,33 @@ public void select (TreeItem item) {
 		* then scroll back to the original position and redraw
 		* the entire tree.
 		*/
-		SCROLLINFO hInfo = null, vInfo = null;
+		SCROLLINFO hInfo = null;
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.TVS_NOHSCROLL) == 0) {
+			hInfo = new SCROLLINFO ();
+			hInfo.cbSize = SCROLLINFO.sizeof;
+			hInfo.fMask = OS.SIF_ALL;
+			OS.GetScrollInfo (handle, OS.SB_HORZ, hInfo);
+		}
+		SCROLLINFO vInfo = new SCROLLINFO ();
+		vInfo.cbSize = SCROLLINFO.sizeof;
+		vInfo.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (handle, OS.SB_VERT, vInfo);
 		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 		if (redraw) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_NOHSCROLL) == 0) {
-				hInfo = new SCROLLINFO ();
-				hInfo.cbSize = SCROLLINFO.sizeof;
-				hInfo.fMask = OS.SIF_ALL;
-				OS.GetScrollInfo (handle, OS.SB_HORZ, hInfo);
-			}
-			vInfo = new SCROLLINFO ();
-			vInfo.cbSize = SCROLLINFO.sizeof;
-			vInfo.fMask = OS.SIF_ALL;
-			OS.GetScrollInfo (handle, OS.SB_VERT, vInfo);
 			OS.UpdateWindow (handle);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, item.handle);
 		ignoreSelect = false;
+		if (hInfo != null) {
+			int /*long*/ hThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, hInfo.nPos);
+			OS.SendMessage (handle, OS.WM_HSCROLL, hThumb, 0);
+		}
+		int /*long*/ vThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, vInfo.nPos);
+		OS.SendMessage (handle, OS.WM_VSCROLL, vThumb, 0);
 		if (redraw) {
-			if (hInfo != null) {
-				int /*long*/ hThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, hInfo.nPos);
-				OS.SendMessage (handle, OS.WM_HSCROLL, hThumb, 0);
-			}
-			int /*long*/ vThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, vInfo.nPos);
-			OS.SendMessage (handle, OS.WM_VSCROLL, vThumb, 0);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.InvalidateRect (handle, null, true);
 			if ((style & SWT.DOUBLE_BUFFERED) == 0) {
