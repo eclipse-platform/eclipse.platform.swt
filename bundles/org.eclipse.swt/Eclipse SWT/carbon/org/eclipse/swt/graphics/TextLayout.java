@@ -640,20 +640,26 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		TextStyle style = run.style;
 		if (style == null) continue;
 		boolean drawUnderline = style.underline && style.underlineStyle != SWT.UNDERLINE_SINGLE && style.underlineStyle != SWT.UNDERLINE_DOUBLE;
+		drawUnderline = drawUnderline && (j + 1 == styles.length || !style.isAdherentUnderline(styles[j + 1].style)); 
 		boolean drawBorder = style.borderStyle != SWT.NONE;
+		drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
 		if (!drawUnderline && !drawBorder) continue;
-		int start = translateOffset(run.start);
+		if (rgn == 0) rgn = OS.NewRgn();
 		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
 			int lineBreak = breaks[i];
 			int lineEnd = lineBreak - 1;
-			if (!(start > lineEnd || end < lineStart)) {
-				int highStart = Math.max(lineStart, start);
-				int highEnd = Math.min(lineEnd, end);
-				int highLen = highEnd - highStart + 1;
-				if (highLen > 0) {
-					if (rgn == 0) rgn = OS.NewRgn();
-					if (drawUnderline) {
+			if (drawUnderline) {
+				int start = run.start;
+				for (int k = j; k > 0 && style.isAdherentUnderline(styles[k - 1].style); k--) {
+					start = styles[k - 1].start;
+				}
+				start = translateOffset(start);
+				if (!(start > lineEnd || end < lineStart)) {
+					int highStart = Math.max(lineStart, start);
+					int highEnd = Math.min(lineEnd, end);
+					int highLen = highEnd - highStart + 1;
+					if (highLen > 0) {
 						float underlineY = y + lineY;
 						float[] foreground = gc.data.foreground;
 						float lineWidth = 0;
@@ -706,7 +712,20 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						OS.CGContextStrokePath(gc.handle);
 						OS.CGContextRestoreGState(gc.handle);
 					}
-					if (drawBorder) {
+				}
+			}
+			
+			if (drawBorder) {
+				int start = run.start;
+				for (int k = j; k > 0 && style.isAdherentBorder(styles[k - 1].style); k--) {
+					start = styles[k - 1].start;
+				}
+				start = translateOffset(start);
+				if (!(start > lineEnd || end < lineStart)) {
+					int highStart = Math.max(lineStart, start);
+					int highEnd = Math.min(lineEnd, end);
+					int highLen = highEnd - highStart + 1;
+					if (highLen > 0) {
 						OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, rgn);
 						OS.CGContextSaveGState(gc.handle);
 						if (borderCallback == null) {
