@@ -1093,9 +1093,9 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 			}
 		}
 	}
-	if (index + 1 >= line.length || line[index + 1].style != style) {
+	if (index + 1 >= line.length || !style.isAdherentBorder(line[index + 1].style)) {
 		int left = run.x;
-		for (int i = index; i > 0 && line[i - 1].style == style; i--) {
+		for (int i = index; i > 0 && style.isAdherentBorder(line[i - 1].style); i--) {
 			left = line[i - 1].x;
 		}
 		if (advance) {
@@ -1175,7 +1175,7 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 			LOGBRUSH logBrush = new LOGBRUSH();
 			logBrush.lbStyle = OS.BS_SOLID;
 			logBrush.lbColor = /*64*/(int)color;
-			int /*long*/ newPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
+			int /*long*/ newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
 			int /*long*/ oldPen = OS.SelectObject(graphics, newPen);
 			int /*long*/ oldBrush = OS.SelectObject(graphics, OS.GetStockObject(OS.NULL_BRUSH));
 			OS.Rectangle(graphics, x + left, y, x + run.x + run.width, y + lineHeight);
