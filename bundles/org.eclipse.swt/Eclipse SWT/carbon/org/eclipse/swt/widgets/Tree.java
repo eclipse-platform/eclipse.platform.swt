@@ -808,6 +808,34 @@ public void deselectAll () {
 	ignoreSelect = false;
 }
 
+void deselect (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	ignoreSelect = true;
+	/*
+	* Bug in the Macintosh.  When the DataBroswer selection flags includes
+	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
+	* two items are selected when SetDataBrowserSelectedItems() is called
+	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
+	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
+	* restore kDataBrowserNeverEmptySelectionSet around each call to
+	* SetDataBrowserSelectedItems().
+	*/
+	int [] selectionFlags = null;
+	if ((style & SWT.SINGLE) != 0) {
+		selectionFlags = new int [1];
+		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+	}
+	OS.SetDataBrowserSelectedItems (handle, 1, new int [] {item.id}, OS.kDataBrowserItemsRemove);
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+	}
+	ignoreSelect = false;
+}
+
+
 void destroyItem (TreeColumn column) {
 	int index = 0;
 	while (index < columnCount) {
@@ -2612,6 +2640,34 @@ public void selectAll () {
 	if ((style & SWT.SINGLE) != 0) return;
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsAssign);
+	ignoreSelect = false;
+}
+
+public void select (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	showItem (item, false);
+	ignoreSelect = true;
+	/*
+	* Bug in the Macintosh.  When the DataBroswer selection flags includes
+	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
+    * two items are selected when SetDataBrowserSelectedItems() is called
+    * with kDataBrowserItemsAssign to assign a new seletion despite the fact
+	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
+	* restore kDataBrowserNeverEmptySelectionSet around each call to
+	* SetDataBrowserSelectedItems().
+	*/
+	int [] selectionFlags = null;
+	if ((style & SWT.SINGLE) != 0) {
+		selectionFlags = new int [1];
+		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+	}
+	OS.SetDataBrowserSelectedItems (handle, 1, new int [] {item.id}, OS.kDataBrowserItemsAssign);
+	if ((style & SWT.SINGLE) != 0) {
+		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+	}
 	ignoreSelect = false;
 }
 

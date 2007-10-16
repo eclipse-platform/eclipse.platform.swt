@@ -2296,6 +2296,34 @@ void deselect (int /*long*/ hItem, TVITEM tvItem, int /*long*/ hIgnoreItem) {
 }
 
 /**
+ * Deselects the item at in the receiver.  If the item was already
+ * deselected, it remains deselected.
+ *
+ * @param item the item to be deselected
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void deselect (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+	tvItem.stateMask = OS.TVIS_SELECTED;
+	tvItem.hItem = item.handle;
+	OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+}
+
+/**
  * Deselects all selected items in the receiver.
  *
  * @exception SWTException <ul>
@@ -4002,6 +4030,97 @@ void select (int /*long*/ hItem, TVITEM tvItem) {
 		select (hFirstItem, tvItem);
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
+}
+
+/**
+ * Selects the item at in the receiver.  If the item was already
+ * selected, it remains selected.
+ *
+ * @param item the item to be selected
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void select (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if ((style & SWT.SINGLE) != 0) {
+		int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		if (hItem != 0) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+			tvItem.stateMask = OS.TVIS_SELECTED;
+			tvItem.hItem = hItem;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+				if (hItem == item.handle) return;
+				tvItem.state = 0;
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			}
+		}
+		/*
+		* Feature in Windows.  When an item is selected with
+		* TVM_SELECTITEM and TVGN_CARET, the tree expands and
+		* scrolls to show the new selected item.  Unfortunately,
+		* there is no other way in Windows to set the focus
+		* and select an item.  The fix is to save the current
+		* scroll bar positions, turn off redraw, select the item,
+		* then scroll back to the original position and redraw
+		* the entire tree.
+		*/
+		SCROLLINFO hInfo = null, vInfo = null;
+		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		if (redraw) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_NOHSCROLL) == 0) {
+				hInfo = new SCROLLINFO ();
+				hInfo.cbSize = SCROLLINFO.sizeof;
+				hInfo.fMask = OS.SIF_ALL;
+				OS.GetScrollInfo (handle, OS.SB_HORZ, hInfo);
+			}
+			vInfo = new SCROLLINFO ();
+			vInfo.cbSize = SCROLLINFO.sizeof;
+			vInfo.fMask = OS.SIF_ALL;
+			OS.GetScrollInfo (handle, OS.SB_VERT, vInfo);
+			OS.UpdateWindow (handle);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		}
+		ignoreSelect = true;
+		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, item.handle);
+		ignoreSelect = false;
+		if (redraw) {
+			if (hInfo != null) {
+				int /*long*/ hThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, hInfo.nPos);
+				OS.SendMessage (handle, OS.WM_HSCROLL, hThumb, 0);
+			}
+			int /*long*/ vThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, vInfo.nPos);
+			OS.SendMessage (handle, OS.WM_VSCROLL, vThumb, 0);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.InvalidateRect (handle, null, true);
+			if ((style & SWT.DOUBLE_BUFFERED) == 0) {
+				int oldStyle = style;
+				style |= SWT.DOUBLE_BUFFERED;
+				OS.UpdateWindow (handle);
+				style = oldStyle;
+			}
+		}
+		return;
+	}
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+	tvItem.stateMask = OS.TVIS_SELECTED;
+	tvItem.state = OS.TVIS_SELECTED;
+	tvItem.hItem = item.handle;
+	OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 }
 
 /**

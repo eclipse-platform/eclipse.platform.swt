@@ -929,6 +929,18 @@ void deregister () {
 	if (checkRenderer != 0) display.removeWidget (checkRenderer);
 }
 
+public void deselect (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	boolean fixColumn = showFirstColumn ();
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.gtk_tree_selection_unselect_iter (selection, item.handle);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
+}
+
 /**
  * Deselects all selected items in the receiver.
  *
@@ -2685,6 +2697,19 @@ public void setItemCount (int count) {
 	count = Math.max (0, count);
 	setItemCount (0, count);
 }
+
+public void select (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	boolean fixColumn = showFirstColumn ();
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.gtk_tree_selection_select_iter (selection, item.handle);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
+}
+
 /**
  * Selects all of the items in the receiver.
  * <p>

@@ -583,6 +583,13 @@ void createItem (TreeItem item, int index) {
 	if (redrawIndex > 0 && item.isLastChild ()) redrawIndex--;
 	redrawFromItemDownwards (items [redrawIndex].availableIndex);
 }
+public void deselect (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	deselectItem (item);
+	redrawItem (item.availableIndex, true);
+}
 /**
  * Deselects all selected items in the receiver.
  *
@@ -3284,6 +3291,13 @@ public void removeTreeListener (TreeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (SWT.Expand, listener);
 	removeListener (SWT.Collapse, listener);
+}
+public void select (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	selectItem (item, (style & SWT.MULTI) != 0);
+	redrawItem (item.availableIndex, true);
 }
 /**
  * Selects all of the items in the receiver.
