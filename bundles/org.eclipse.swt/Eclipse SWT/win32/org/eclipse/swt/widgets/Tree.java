@@ -2296,7 +2296,7 @@ void deselect (int /*long*/ hItem, TVITEM tvItem, int /*long*/ hIgnoreItem) {
 }
 
 /**
- * Deselects the item at in the receiver.  If the item was already
+ * Deselects an item in the receiver.  If the item was already
  * deselected, it remains deselected.
  *
  * @param item the item to be deselected
@@ -4033,7 +4033,7 @@ void select (int /*long*/ hItem, TVITEM tvItem) {
 }
 
 /**
- * Selects the item at in the receiver.  If the item was already
+ * Selects an item in the receiver.  If the item was already
  * selected, it remains selected.
  *
  * @param item the item to be selected
@@ -4054,19 +4054,18 @@ public void select (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem != 0) {
+		int /*long*/ hItem = item.handle;
+		int state = 0;
+		if (OS.IsWinCE) {
 			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-			tvItem.stateMask = OS.TVIS_SELECTED;
 			tvItem.hItem = hItem;
+			tvItem.mask = OS.TVIF_STATE;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (hItem == item.handle) return;
-				tvItem.state = 0;
-				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-			}
+			state = tvItem.state;
+		} else {
+			state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
 		}
+		if ((state & OS.TVIS_SELECTED) != 0) return;
 		/*
 		* Feature in Windows.  When an item is selected with
 		* TVM_SELECTITEM and TVGN_CARET, the tree expands and
@@ -4094,9 +4093,7 @@ public void select (TreeItem item) {
 			OS.UpdateWindow (handle);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
-		ignoreSelect = true;
-		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, item.handle);
-		ignoreSelect = false;
+		setSelection (item);
 		if (hInfo != null) {
 			int /*long*/ hThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, hInfo.nPos);
 			OS.SendMessage (handle, OS.WM_HSCROLL, hThumb, 0);
@@ -4218,24 +4215,6 @@ void setBackgroundPixel (int pixel) {
 	* color is set.
 	*/
 	updateFullSelection ();
-}
-
-void setBounds (int x, int y, int width, int height, int flags) {
-	/*
-	* Ensure that the selection is visible when the tree is resized
-	* from a zero size to a size that can show the selection.
-	*/
-	boolean fixSelection = false;
-	if ((flags & OS.SWP_NOSIZE) == 0 && (width != 0 || height != 0)) {
-		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
-			fixSelection = true;
-		}
-	}
-	super.setBounds (x, y, width, height, flags);
-	if (fixSelection) {
-		int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem != 0) showItem (hItem);
-	}
 }
 
 void setCursor () {
