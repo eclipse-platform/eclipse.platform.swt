@@ -602,6 +602,28 @@ void deregister () {
 	display.removeWidget (parentingHandle);
 }
 
+public void deselect (TreeItem item) {
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if ((style & SWT.SINGLE) != 0) {
+		ignoreSelection = true;
+		OS.TreeViewItem_IsSelected (item.handle, false);
+		ignoreSelection = false;
+		return;
+	}
+	int treeType = OS.Object_GetType (handle);
+    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
+    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
+    OS.GCHandle_Free (treeType);
+    OS.GCHandle_Free (propertyName);
+	ignoreSelection = true;
+    OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
+	OS.TreeViewItem_IsSelected (item.handle, false);	
+	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
+	ignoreSelection = false;
+	OS.GCHandle_Free (property);
+}
+
 /**
  * Deselects all selected items in the receiver.
  *
@@ -1923,6 +1945,28 @@ void setItemCount (TreeItem parentItem, int count) {
 public void setLinesVisible (boolean show) {
 	checkWidget ();
 	//TODO
+}
+
+public void select (TreeItem item) {
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if ((style & SWT.SINGLE) != 0) {
+		ignoreSelection = true;
+		OS.TreeViewItem_IsSelected (item.handle, true);
+		ignoreSelection = false;
+		return;
+	}
+	int treeType = OS.Object_GetType (handle);
+    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
+    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
+    OS.GCHandle_Free (treeType);
+    OS.GCHandle_Free (propertyName);
+	ignoreSelection = true;
+    OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
+	OS.TreeViewItem_IsSelected (item.handle, true);	
+	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
+	ignoreSelection = false;
+	OS.GCHandle_Free (property);
 }
 
 /**
