@@ -144,13 +144,17 @@ void computeRuns () {
 					if (pen != 0) OS.GCHandle_Free(pen);
 				}
 				if (style.underline) {
-					int pen = 0;
+					Color color = device.getSystemColor(SWT.COLOR_BLACK);
 					if (style.underlineColor != null) {
-						int color = style.underlineColor.handle;
-						int brush = OS.gcnew_SolidColorBrush(color);
-						pen = OS.gcnew_Pen(brush, 1f);
-						OS.GCHandle_Free(brush);
+						color = style.underlineColor;
+					} else {
+						if (style.foreground != null) {
+							color = style.foreground;
+						}
 					}
+					int brush = OS.gcnew_SolidColorBrush(color.handle);
+					int pen = OS.gcnew_Pen(brush, 1f);
+					OS.GCHandle_Free(brush);
 					int underline;
 					switch (style.underlineStyle) {
 						case SWT.UNDERLINE_ERROR:
@@ -443,6 +447,69 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 
 		drawY = nextDrawY;
 	}
+	for (int i = 0; i < styles.length - 1; i++) {
+		StyleItem run = styles[i];
+		TextStyle style = run.style;
+		if (style == null) continue;
+		if (style.borderStyle != SWT.NONE && (i + 1 >= styles.length || !style.isAdherentBorder(styles[i + 1].style))) {
+			int start = run.start;
+			int end = styles[i + 1].start - 1;
+			for (int j = i; j > 0 && style.isAdherentBorder(styles[j - 1].style); j--) {
+				start = styles[j - 1].start;
+			}
+			Color color = style.borderColor;
+			if (color == null) color = style.foreground;
+			if (color == null) color = gc.getForeground();
+			int brush = OS.gcnew_SolidColorBrush(color.handle);
+			int pen = OS.gcnew_Pen(brush, 1);
+			OS.GCHandle_Free(brush);
+			int dashStyle = 0;
+			switch (style.borderStyle) {
+				case SWT.BORDER_SOLID:
+					dashStyle = OS.DashStyles_Solid(); break;
+				case SWT.BORDER_DOT:
+					dashStyle = OS.DashStyles_Dot(); break;
+				case SWT.BORDER_DASH:
+					dashStyle = OS.DashStyles_Dash(); break;
+			}
+			OS.Pen_DashStyle(pen, dashStyle);
+			if (dashStyle != 0) OS.GCHandle_Free(dashStyle);
+			int lineY = y;
+			lineStart = lineEnd = 0;
+			for (int j = 0; j < lines.length; j++) {
+				int lineLength = OS.TextLine_Length(lines[j]);
+				lineStart = lineEnd;
+				lineEnd = lineStart + lineLength;
+				if (start < lineEnd) {
+					if (end < lineStart) break;
+					int rangeStart = Math.max(start, lineStart);
+					int rangLength = Math.min(end, lineEnd) - rangeStart + 1;
+					int rects = OS.TextLine_GetTextBounds(lines[j], rangeStart, rangLength);	
+					if (rects != 0) {
+						int enumerator = OS.TextBoundsCollection_GetEnumerator(rects);
+						while (OS.IEnumerator_MoveNext(enumerator)) {
+							int bounds = OS.TextBoundsCollection_Current(enumerator);
+							int textRect = OS.TextBounds_Rectangle(bounds);
+							OS.Rect_Y(textRect, OS.Rect_Y(textRect) + lineY);
+							OS.Rect_X(textRect, OS.Rect_X(textRect) + x);
+							OS.Rect_Width(textRect, OS.Rect_Width(textRect) - 1);
+							OS.Rect_Height(textRect, OS.Rect_Height(textRect) - 1);
+							OS.DrawingContext_DrawRectangle(drawingContext, 0, pen, textRect);
+							OS.GCHandle_Free(textRect);
+							OS.GCHandle_Free(bounds);
+						}
+						OS.GCHandle_Free(enumerator);
+					}
+					OS.GCHandle_Free(rects);
+				}
+				int lineHeight = (int)OS.TextLine_Height(lines[j]);
+				if (ascent != -1 && descent != -1) lineHeight = Math.max(lineHeight, ascent + descent);
+				lineY += lineHeight + lineSpacing;
+			}
+			OS.GCHandle_Free(pen);
+		} 
+	}
+	
 	if (selGeometry != 0) {
 		OS.DrawingContext_PushOpacity(drawingContext, 0.4);
 		OS.DrawingContext_DrawGeometry(drawingContext, selBrush, 0, selGeometry);
