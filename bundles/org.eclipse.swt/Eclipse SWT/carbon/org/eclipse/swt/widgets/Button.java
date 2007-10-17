@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
@@ -413,6 +414,47 @@ public String getText () {
 Rect getInset () {
 	if ((style & SWT.PUSH) == 0) return super.getInset();
 	return display.buttonInset;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	if ((style & SWT.RADIO) != 0) {
+		int [] stringRef = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+		int length = 0;
+		if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+		char [] buffer = new char [length];
+		CFRange range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (stringRef [0], range, buffer);
+		String attributeName = new String(buffer);
+		if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+			String roleText = OS.kAXRadioButtonRole;
+			buffer = new char [roleText.length ()];
+			roleText.getChars (0, buffer.length, buffer, 0);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (attributeName.equals (OS.kAXRoleAttribute)) {
+				if (stringRef [0] != 0) {
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+					OS.CFRelease(stringRef [0]);
+					return OS.noErr;
+				}
+			}
+			if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+				if (stringRef [0] != 0) {
+					int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+					OS.CFRelease(stringRef [0]);
+					OS.CFRelease(stringRef2);
+					return OS.noErr;
+				}
+			}
+		}
+	}
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	return code;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
