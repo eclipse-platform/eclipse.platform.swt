@@ -457,6 +457,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							}
 						}
 					}
+					drawBorder(gc, lineRuns, i, drawX, drawY, lineHeight, foreground);
 				}
 			}
 			drawX += run.width;
@@ -467,7 +468,49 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	gc.setFont(gcFont);
 }
 
-private void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean selection) {
+void drawBorder(GC gc, StyleItem[] line, int index, int x, int y, int lineHeight, Color color) {
+	StyleItem run = line[index];
+	TextStyle style = run.style;
+	if (style == null) return;
+	if (style.borderStyle != SWT.NONE && (index + 1 >= line.length || !style.isAdherentBorder(line[index + 1].style))) {
+		int width = run.width;
+		for (int i = index; i > 0 && style.isAdherentBorder(line[i - 1].style); i--) {
+			x -= line[i - 1].width;
+			width += line[i - 1].width;
+		}
+		if (style.borderColor != null) {
+			color = style.borderColor; 
+		} else {
+			if (style.foreground != null) {
+				color = style.foreground;
+			}
+		}
+		gc.setForeground(color);
+		int lineStyle = gc.getLineStyle();
+		int[] dashes = null;
+		if (lineStyle == SWT.LINE_CUSTOM) {
+			dashes = gc.getLineDash();
+		}
+		switch (style.borderStyle) {
+			case SWT.BORDER_SOLID:
+				gc.setLineStyle(SWT.LINE_SOLID);
+				break;
+			case SWT.BORDER_DASH:
+				gc.setLineStyle(SWT.LINE_DASH);
+				break;
+			case SWT.BORDER_DOT:
+				gc.setLineStyle(SWT.LINE_DOT);
+				break;
+		}
+		gc.drawRectangle(x, y, width - 1, lineHeight - 1);
+		gc.setLineStyle(lineStyle);
+		if (dashes != null) {
+			gc.setLineDash(dashes);
+		}
+	}
+} 
+
+void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean selection) {
 	TextStyle style = run.style;
 	if (style == null) return;
 	if (style.underline) {
