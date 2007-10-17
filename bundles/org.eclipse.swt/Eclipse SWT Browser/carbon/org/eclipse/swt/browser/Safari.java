@@ -1270,7 +1270,7 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 	String path = dialog.open();
 	if (path == null) {
 		/* cancel pressed */
-		Cocoa.objc_msgSend(download, Cocoa.S_release);
+		Cocoa.objc_msgSend(download, Cocoa.S_cancel);
 		return;
 	}
 	length = path.length();
