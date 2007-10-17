@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
@@ -688,6 +689,11 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
+	int accessibilityProc = display.accessibilityProc;
+	int [] mask3 = new int [] {
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetNamedAttribute,
+	};
+	OS.InstallEventHandler (controlTarget, accessibilityProc, mask3.length / 2, mask3, handle, null);
 	if (iconHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (iconHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, iconHandle, null);
@@ -735,6 +741,42 @@ void invalWindowRgn (int window, int rgn) {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+		String roleText = OS.kAXGroupRole;
+		buffer = new char [roleText.length ()];
+		roleText.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (attributeName.equals (OS.kAXRoleAttribute)) {
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+		if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+			if (stringRef [0] != 0) {
+				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+				OS.CFRelease(stringRef [0]);
+				OS.CFRelease(stringRef2);
+				return OS.noErr;
+			}
+		}
+	}
+	return code;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
