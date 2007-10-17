@@ -545,9 +545,6 @@ Rect inset () {
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
 	int code = OS.CallNextEventHandler (nextHandler, theEvent);
 	int [] stringRef = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
@@ -576,8 +573,12 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
 				OS.CFRelease(stringRef [0]);
 				OS.CFRelease(stringRef2);
+				return OS.noErr;
 			}
 		}
+	}
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
 	}
 	return code;
 }
