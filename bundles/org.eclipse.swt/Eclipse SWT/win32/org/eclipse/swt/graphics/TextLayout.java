@@ -858,7 +858,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								Gdip.Graphics_Restore(gdipGraphics, gstate2);
 							}
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-							drawLines(gdip, gdipGraphics, x, drawRunY, lineRuns, i, selBrushFg, null, alpha);
+							drawLines(gdip, gdipGraphics, x, drawRunY, lineRuns, i, selBrushFg, rect, alpha);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
 						borderClip = drawBorder(gdip, gdipGraphics, x, drawY, lineHeight, foregroundBrush, selBrushFg, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
@@ -923,10 +923,25 @@ void drawLines(boolean advance, int /*long*/ graphics, int linex, int y, StyleIt
 					int squigglyThickness = 1;
 					int squigglyHeight = 2 * squigglyThickness;
 					int squigglyY = Math.min(underlineY, y + run.ascent + run.descent - squigglyHeight - 1);
-					int[] points = computePolyline(x, squigglyY, x + run.width, squigglyY + squigglyHeight);
+					int squigglyX = x;
+					for (int i = index; i > 0 && style.isAdherentUnderline(line[i - 1].style); i--) {
+						squigglyX = linex + line[i - 1].x;
+					}
+					int gstate = 0;
+					if (clipRect == null) {
+						gstate = Gdip.Graphics_Save(graphics);
+						Rect gdipRect = new Rect();
+						gdipRect.X = x;
+						gdipRect.Y = y;
+						gdipRect.Width = run.width;
+						gdipRect.Height = run.ascent + run.descent;
+						Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
+					}
+					int[] points = computePolyline(squigglyX, squigglyY, x + run.width, squigglyY + squigglyHeight);
 					int /*long*/ pen = Gdip.Pen_new(brush, squigglyThickness);
 					Gdip.Graphics_DrawLines(graphics, pen, points, points.length / 2);
 					Gdip.Pen_delete(pen);
+					if (gstate != 0) Gdip.Graphics_Restore(graphics, gstate);
 					break;
 				}
 				case SWT.UNDERLINE_SINGLE:
