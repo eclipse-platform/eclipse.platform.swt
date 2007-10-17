@@ -28,3 +28,4 @@
 #define HIShapeCreateWithQDRgn_LIB "com.apple.Carbon"
 #define HIShapeReplacePathInCGContext_LIB "com.apple.Carbon"
 #define AXUIElementGetDataBrowserItemInfo_LIB "com.apple.Carbon"
+#define AXUIElementCreateWithDataBrowserAndItemInfo_LIB "com.apple.Carbon"

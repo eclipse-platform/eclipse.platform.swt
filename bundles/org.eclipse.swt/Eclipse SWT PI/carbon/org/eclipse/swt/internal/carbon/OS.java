@@ -1931,11 +1931,14 @@ public static final native void memmove(int dest, ATSUTab src, int size);
 public static final native void memmove(int[] dest, TXNTab src, int size);
 
 public static final native int AXUIElementCreateWithHIObjectAndIdentifier(int inHIObject, long inIdentifier);
+public static final native int AXUIElementCreateWithDataBrowserAndItemInfo(int inDataBrowser, DataBrowserAccessibilityItemInfo inInfo);
 public static final native void AXNotificationHIObjectNotify(int inNotification, int inHIObject, long inIdentifier);
 public static final native void AXUIElementGetIdentifier(int inUIElement, long[] outIdentifier);
+public static final native int AXUIElementGetHIObject(int inUIElement);
 public static final native int AXUIElementGetDataBrowserItemInfo(int inElement, int inDataBrowser, int inDesiredInfoVersion, DataBrowserAccessibilityItemInfo outInfo);
 public static final native int AXValueCreate (int theType, CFRange range);
 public static final native int HIObjectSetAccessibilityIgnored(int inObject, boolean inIgnored);
+public static final native int AXUIElementCopyAttributeValue (int element, int attribute, int [] value);
 
 public static final int kEventClassAccessibility = ('a'<<24) + ('c'<<16) + ('c'<<8) + 'e';
 
@@ -2219,6 +2222,7 @@ public static final String kAXRowCountChangedNotification  = "AXRowCountChanged"
      
 //   Miscellaneous notifications
 public static final String kAXSelectedChildrenChangedNotification = "AXSelectedChildrenChanged";
+public static final String kAXSelectedTextChangedNotification = "AXSelectedTextChanged";
 public static final String kAXResizedNotification          = "AXResized";
 public static final String kAXMovedNotification            = "AXMoved";
 public static final String kAXCreatedNotification          = "AXCreated";

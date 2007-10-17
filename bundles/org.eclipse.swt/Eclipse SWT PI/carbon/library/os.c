@@ -867,6 +867,55 @@ JNIEXPORT void JNICALL OS_NATIVE(AXNotificationHIObjectNotify)
 }
 #endif
 
+#ifndef NO_AXUIElementCopyAttributeValue
+JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementCopyAttributeValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AXUIElementCopyAttributeValue_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)AXUIElementCopyAttributeValue((AXUIElementRef)arg0, (CFStringRef)arg1, (CFTypeRef *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, AXUIElementCopyAttributeValue_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AXUIElementCreateWithDataBrowserAndItemInfo
+JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementCreateWithDataBrowserAndItemInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DataBrowserAccessibilityItemInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AXUIElementCreateWithDataBrowserAndItemInfo_FUNC);
+	if (arg1) if ((lparg1 = getDataBrowserAccessibilityItemInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jint)AXUIElementCreateWithDataBrowserAndItemInfo(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, DataBrowserAccessibilityItemInfo *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(AXUIElementCreateWithDataBrowserAndItemInfo_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("AXUIElementCreateWithDataBrowserAndItemInfo"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setDataBrowserAccessibilityItemInfoFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, AXUIElementCreateWithDataBrowserAndItemInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AXUIElementCreateWithHIObjectAndIdentifier
 JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementCreateWithHIObjectAndIdentifier)
 	(JNIEnv *env, jclass that, jint arg0, jlong arg1)
@@ -908,6 +957,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementGetDataBrowserItemInfo)
 fail:
 	if (arg3 && lparg3) setDataBrowserAccessibilityItemInfoFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, AXUIElementGetDataBrowserItemInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AXUIElementGetHIObject
+JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementGetHIObject)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AXUIElementGetHIObject_FUNC);
+	rc = (jint)AXUIElementGetHIObject((AXUIElementRef)arg0);
+	OS_NATIVE_EXIT(env, that, AXUIElementGetHIObject_FUNC);
 	return rc;
 }
 #endif
