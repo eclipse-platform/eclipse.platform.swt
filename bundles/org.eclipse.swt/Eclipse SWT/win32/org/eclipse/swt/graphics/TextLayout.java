@@ -842,7 +842,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							Gdip.Graphics_Restore(gdipGraphics, gstate2);
 						}
 						Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-						drawLines(gdip, gdipGraphics, drawX, drawRunY, run, brush, null, alpha);
+						drawLines(gdip, gdipGraphics, x, drawRunY, lineRuns, i, brush, null, alpha);
 						if (partialSelection) {
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 							gstate = Gdip.Graphics_Save(gdipGraphics);
@@ -858,7 +858,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								Gdip.Graphics_Restore(gdipGraphics, gstate2);
 							}
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg, null, alpha);
+							drawLines(gdip, gdipGraphics, x, drawRunY, lineRuns, i, selBrushFg, null, alpha);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
 						borderClip = drawBorder(gdip, gdipGraphics, x, drawY, lineHeight, foregroundBrush, selBrushFg, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
@@ -873,11 +873,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						}
 						OS.SetTextColor(hdc, fg);
 						OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-						drawLines(gdip, hdc, drawX, drawRunY, run, fg, null, alpha);
+						drawLines(gdip, hdc, x, drawRunY, lineRuns, i, fg, null, alpha);
 						if (partialSelection && fg != selectionForeground.handle) {
 							OS.SetTextColor(hdc, selectionForeground.handle);
 							OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle, rect, alpha);
+							drawLines(gdip, hdc, x, drawRunY, lineRuns, i, selectionForeground.handle, rect, alpha);
 						}
 						int selForeground = selectionForeground != null ? selectionForeground.handle : 0;
 						borderClip = drawBorder(gdip, hdc, x, drawY, lineHeight, foreground, selForeground, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
@@ -899,10 +899,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 }
 
-void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem run, int /*long*/ color, RECT clipRect, int alpha) {
+void drawLines(boolean advance, int /*long*/ graphics, int linex, int y, StyleItem[] line, int index, int /*long*/ color, RECT clipRect, int alpha) {
+	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return;
 	if (!style.underline && !style.strikeout) return;
+	int x = linex + run.x;
 	int underlineY = y + run.ascent - run.underlinePos;
 	int strikeoutY = y + run.ascent - run.strikeoutPos;
 	if (advance) {
@@ -976,12 +978,17 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					int squigglyThickness = 1;
 					int squigglyHeight = 2 * squigglyThickness;
 					int squigglyY = Math.min(underlineY, y + run.ascent + run.descent - squigglyHeight - 1);
-					int state = 0;
-					if (clipRect != null) {
-						state = OS.SaveDC(graphics);
-						OS.IntersectClipRect(graphics, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+					int squigglyX = x;
+					for (int i = index; i > 0 && style.isAdherentUnderline(line[i - 1].style); i--) {
+						squigglyX = linex + line[i - 1].x;
 					}
-					int[] points = computePolyline(x, squigglyY, x + run.width, squigglyY + squigglyHeight);
+					int state = OS.SaveDC(graphics);
+					if (clipRect != null) {
+						OS.IntersectClipRect(graphics, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+					} else {
+						OS.IntersectClipRect(graphics, x, y, x + run.width, y + run.ascent + run.descent);
+					}
+					int[] points = computePolyline(squigglyX, squigglyY, x + run.width, squigglyY + squigglyHeight);
 					int /*long*/ pen = OS.CreatePen(OS.PS_SOLID, squigglyThickness, colorRefUnderline);
 					int /*long*/ oldPen = OS.SelectObject(graphics, pen);
 					OS.Polyline(graphics, points, points.length / 2);
@@ -989,7 +996,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem r
 					if (length >= 2 && squigglyThickness <= 1) {
 						OS.SetPixel (graphics, points[length - 2], points[length - 1], colorRefUnderline);
 					}
-					if (state != 0) OS.RestoreDC(graphics, state);
+					OS.RestoreDC(graphics, state);
 					OS.SelectObject(graphics, oldPen);
 					OS.DeleteObject(pen);
 					break;
@@ -1204,7 +1211,7 @@ RECT drawBorder(boolean advance, int /*long*/ graphics, int x, int y, int lineHe
 int[] computePolyline(int left, int top, int right, int bottom) {
 	int height = bottom - top; // can be any number
 	int width = 2 * height; // must be even
-	int peaks = (right - left) / width;
+	int peaks = Compatibility.ceil(right - left, width);
 	if (peaks == 0 && right - left > 2) {
 		peaks = 1;
 	}
@@ -1219,7 +1226,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 		coordinates[index+2] = coordinates[index] + width / 2;
 		coordinates[index+3] = top;
 	}
-	coordinates[length-2] = Math.min(Math.max(0, right - 1), left + (width * peaks));
+	coordinates[length-2] = left + (width * peaks);
 	coordinates[length-1] = bottom;
 	return coordinates;
 }
