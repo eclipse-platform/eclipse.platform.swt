@@ -1668,6 +1668,12 @@ void propagateWidget (boolean enabled) {
 	int xCursor = enabled && cursor != null ? cursor.handle : OS.None;
 	propagateHandle (enabled, handle, xCursor);
 }
+/*public*/ boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
+}
 void realizeChildren () {
 	if (isEnabled ()) {
 		if (cursor != null) {
