@@ -51,7 +51,9 @@ public class TextStyle {
 	public Color background;
 
 	/**
-	 * the underline flag of the style
+	 * the underline flag of the style. The default underline
+	 * style is <code>SWT#UNDERLINE_SINGLE</code>.
+	 * 
 	 * 
 	 * @since 3.1
 	 */	
@@ -65,7 +67,8 @@ public class TextStyle {
 	public Color underlineColor;
 
 	/**
-	 * the underline style
+	 * the underline style. This style is ignored when
+	 * <code>underline</code> is false. 
 	 * 
 	 * @see SWT#UNDERLINE_SINGLE
 	 * @see SWT#UNDERLINE_DOUBLE 
