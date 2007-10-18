@@ -1789,6 +1789,13 @@ public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
+/*public*/ boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
+}
+
 /**
  * Causes the entire bounds of the receiver to be marked
  * as needing to be redrawn. The next time a paint request
