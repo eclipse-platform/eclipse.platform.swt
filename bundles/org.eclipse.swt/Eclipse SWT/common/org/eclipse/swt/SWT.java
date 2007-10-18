@@ -1447,6 +1447,20 @@ public class SWT {
 	public static final int DOUBLE_BUFFERED = 1 << 29;
 	
 	/**
+	 * Style constant for transparent behavior (value is 1&lt;&lt;30).
+	 * <p>
+	 * By default, before a widget paints, the client area is filled with the current background.
+	 * When this style is specified, the background is not filled and widgets that are obscured
+	 * will not draw through.
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Composite</code></li>
+	 * </ul></p>
+	 *
+	 * @since 3.4
+	 */
+	public static final int TRANSPARENT = 1 << 30;
+	
+	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>
