@@ -606,6 +606,11 @@ public void forceActive () {
 	OS.Window_Activate (shellHandle);
 }
 
+/*public*/ int getAlpha () {
+	checkWidget ();
+	return 255;
+}
+
 public Rectangle getBounds () {
 	checkWidget ();
 	int x, y;
@@ -1062,6 +1067,11 @@ void setActiveControl (Control control) {
 			activate [i].sendEvent (SWT.Activate);
 		}
 	}
+}
+
+/*public*/ void setAlpha (int alpha) {
+	checkWidget ();
+	/* Not implemented */
 }
 
 int setBounds (int x, int y, int width, int height, int flags) {

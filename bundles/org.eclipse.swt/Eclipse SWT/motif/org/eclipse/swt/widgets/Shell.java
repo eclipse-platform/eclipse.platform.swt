@@ -829,6 +829,10 @@ public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
 }
+/*public*/ int getAlpha () {
+	checkWidget ();
+	return 255;
+}
 public int getBorderWidth () {
 	checkWidget();
 	int [] argList = {OS.XmNborderWidth, 0};
@@ -1301,6 +1305,10 @@ void setActiveControl (Control control) {
 			activate [i].sendEvent (SWT.Activate);
 		}
 	}
+}
+/*public*/ void setAlpha (int alpha) {
+	checkWidget ();
+	/* Not implemented */
 }
 /**
  * Sets the input method editor mode to the argument which 

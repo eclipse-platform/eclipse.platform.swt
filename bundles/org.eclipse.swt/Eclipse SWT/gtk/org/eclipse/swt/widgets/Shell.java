@@ -1163,6 +1163,11 @@ void setActiveControl (Control control) {
 	}
 }
 
+/*public*/ void setAlpha (int alpha) {
+	checkWidget ();
+	/* Not implemented */
+}
+
 void resizeBounds (int width, int height, boolean notify) {
 	if (redrawWindow != 0) {
 		OS.gdk_window_resize (redrawWindow, width, height);
@@ -1709,6 +1714,11 @@ public void dispose () {
 public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
+}
+
+/*public*/ int getAlpha () {
+	checkWidget ();
+	return 255;
 }
 
 public Rectangle getBounds () {
