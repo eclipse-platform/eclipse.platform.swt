@@ -68,7 +68,11 @@ public class TextStyle {
 
 	/**
 	 * the underline style. This style is ignored when
-	 * <code>underline</code> is false. 
+	 * <code>underline</code> is false.
+	 * <p> 
+	 * This value should be one of <code>SWT.UNDERLINE_SINGLE</code>,
+	 * <code>SWT.UNDERLINE_DOUBLE</code>, or <code>SWT.UNDERLINE_ERROR</code>.
+	 * </p>
 	 * 
 	 * @see SWT#UNDERLINE_SINGLE
 	 * @see SWT#UNDERLINE_DOUBLE 
@@ -93,7 +97,12 @@ public class TextStyle {
 	public Color strikeoutColor;
 	
 	/**
-	 * the border style
+	 * the border style. The default border style is <code>SWT#NONE</code>.
+	 * <p> 
+	 * This value should be one of <code>SWT.BORDER_SOLID</code>,
+	 * <code>SWT.BORDER_DASH</code>,<code>SWT.BORDER_DOT</code> or
+	 * <code>SWT#NONE</code>.
+	 * </p>
 	 * 
 	 * @see SWT#BORDER_SOLID
 	 * @see SWT#BORDER_DASH 
