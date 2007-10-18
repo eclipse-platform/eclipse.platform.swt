@@ -3532,6 +3532,15 @@ public static final void gdk_window_invalidate_region(int /*long*/ window, int /
 		lock.unlock();
 	}
 }
+public static final native boolean _gdk_window_is_visible(int /*long*/ window);
+public static final boolean gdk_window_is_visible(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gdk_window_is_visible(window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_window_move(int /*long*/ window, int x, int y);
 public static final void gdk_window_move(int /*long*/ window, int x, int y) {
 	lock.lock();

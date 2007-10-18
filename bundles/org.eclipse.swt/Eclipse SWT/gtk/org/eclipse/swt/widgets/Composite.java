@@ -1117,6 +1117,18 @@ int /*long*/ parentingHandle () {
 	return fixedHandle != 0 ? fixedHandle : handle;
 }
 
+void printWidget (int gc, int drawable, int depth, int x, int y) {
+	super.printWidget (gc, drawable, depth, x, y);
+	Control [] children = _getChildren ();
+	for (int i=children.length-1; i>= 0; --i) {
+		Control child = children [i];
+		if (child.getVisible ()) {
+			Point location = child.getLocation ();
+			child.printWidget (gc, drawable, depth, x + location.x, y + location.y);
+		}
+	}
+}
+
 void redrawChildren () {
 	super.redrawChildren ();
 	Control [] children = _getChildren ();

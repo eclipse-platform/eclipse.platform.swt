@@ -5578,6 +5578,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1invalidate_1region)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1is_1visible
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1window_1is_1visible)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1is_1visible_FUNC);
+	rc = (jboolean)gdk_window_is_visible((GdkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1is_1visible_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1window_1lookup
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1window_1lookup)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -10067,23 +10079,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paper_1size_1free)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1free_FUNC);
-/*
 	gtk_paper_size_free(arg0);
-*/
-	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_paper_size_free_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_free");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1free_FUNC);
 }
 #endif

@@ -279,6 +279,65 @@ int /*long*/ paintWindow () {
 	return OS.GTK_WIDGET_WINDOW (paintHandle);
 }
 
+/*public*/ boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int /*long*/ topHandle = topHandle ();
+	OS.gtk_widget_realize (topHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	OS.gdk_window_process_updates (window, true);
+	GCData data = gc.getGCData ();
+	printWidget (gc.handle, data.drawable, OS.gdk_drawable_get_depth (data.drawable), 0, 0);
+	return true;
+}
+
+void printWidget (int gc, int drawable, int depth, int x, int y) {
+	boolean obscured = (state & OBSCURED) != 0;
+	state &= ~OBSCURED;
+	int /*long*/ topHandle = topHandle ();
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	printWindow (this, gc, drawable, depth, window, x, y);
+	if (obscured) state |= OBSCURED;
+}
+	
+void printWindow (Control control, int gc, int drawable, int depth, int window, int x, int y) {
+	if (OS.gdk_drawable_get_depth (window) != depth) return;
+	GdkRectangle rect = new GdkRectangle ();
+	int [] width = new int [1], height = new int [1];
+	OS.gdk_drawable_get_size (window, width, height);
+	rect.width = width [0];
+	rect.height = height [0];
+	OS.gdk_window_invalidate_rect (window, rect, false);
+	OS.gdk_window_begin_paint_rect (window, rect);
+	OS.gdk_window_process_updates (window, false);
+	int [] real_drawable = new int [1], x_offset = new int [1], y_offset = new int [1];
+	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);
+	OS.gdk_draw_drawable (drawable, gc, real_drawable [0], x_offset [0], y_offset [0], x, y, width [0], height [0]);
+	OS.gdk_window_end_paint (window);
+	int /*long*/ children = OS.gdk_window_get_children (window);
+	if (children != 0) {
+		int /*long*/ windows = children;
+		while (windows != 0) {
+			int /*long*/ child = OS.g_list_data (windows);
+			if (OS.gdk_window_is_visible (child)) {
+				int [] data = new int [1];
+				OS.gdk_window_get_user_data (child, data);
+				if (data [0] != 0) {
+					Widget widget = display.findWidget (data [0]);
+					if (widget == null || widget == control) {
+						int [] x_pos = new int [1], y_pos = new int [1];
+						OS.gdk_window_get_position (child, x_pos, y_pos);
+						printWindow (control, gc, drawable, depth, child, x + x_pos [0], y + y_pos [0]);
+					}
+				}
+			}
+			windows = OS.g_list_next (windows);
+		}
+		OS.g_list_free (children);
+	}
+}
+
 /**
  * Returns the preferred size of the receiver.
  * <p>
