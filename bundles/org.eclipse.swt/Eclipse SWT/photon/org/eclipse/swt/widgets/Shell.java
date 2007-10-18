@@ -550,6 +550,11 @@ public void forceActive () {
 	bringToTop (true);
 }
 
+/*public*/ int getAlpha () {
+	checkWidget ();
+	return 255;
+}
+
 public Rectangle getBounds () {
 	checkWidget();
 	PhArea_t area = new PhArea_t ();
@@ -960,6 +965,11 @@ void setActiveControl (Control control) {
 			activate [i].sendEvent (SWT.Activate);
 		}
 	}
+}
+
+/*public*/ void setAlpha (int alpha) {
+	checkWidget ();
+	/*Not implemented */
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
