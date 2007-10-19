@@ -349,6 +349,14 @@ void checkSelection () {
 	if (isDisposed ()) return;
 	int index = indexOf (newText);
 	if (index != -1) postEvent (SWT.Selection);
+	
+	/* Send value changed notification to accessible client. */
+	String string = OS.kAXFocusedWindowChangedNotification;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.AXNotificationHIObjectNotify(stringRef, handle, 0);
+	OS.CFRelease(stringRef);
 }
 
 protected void checkSubclass () {
@@ -418,7 +426,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.GetThemeMetric (OS.kThemeMetricDisclosureButtonWidth, metric);
 		width += metric [0];
-		//NOT DONE
+		//TODO
 		width += 13;
 	} else {
 		OS.GetThemeMetric (OS.kThemeMetricComboBoxLargeDisclosureWidth, metric);
@@ -970,6 +978,35 @@ Rect getInset () {
 	return display.comboInset;
 }
 
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	if ((style & SWT.READ_ONLY) == 0) {
+		int [] stringRef = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+		int length = 0;
+		if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+		char [] buffer = new char [length];
+		CFRange range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (stringRef [0], range, buffer);
+		String attributeName = new String(buffer);
+		if (attributeName.equals (OS.kAXValueAttribute)) {
+			String text = getText ();
+			buffer = new char [text.length ()];
+			text.getChars (0, buffer.length, buffer, 0);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -977,7 +1014,7 @@ int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	* Feature in the Macintosh.  When a combo box gets
 	* kEventControlActivate, it starts the caret blinking.
 	* Because there is no clipping on the Macintosh, the
-	* caret may blink through a widget that is obscurred.
+	* caret may blink through a widget that is obscured.
 	* The fix is to avoid running the default handler.
 	*/
 	return OS.noErr;
