@@ -311,7 +311,8 @@ void printWindow (Control control, int /*long*/  gc, int /*long*/ drawable, int 
 	OS.gdk_window_invalidate_rect (window, rect, false);
 	OS.gdk_window_begin_paint_rect (window, rect);
 	OS.gdk_window_process_updates (window, false);
-	int /*long*/ [] real_drawable = new int /*long*/ [1], x_offset = new int [1], y_offset = new int [1];
+	int /*long*/ [] real_drawable = new int /*long*/ [1];
+	int [] x_offset = new int [1], y_offset = new int [1];
 	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);
 	OS.gdk_draw_drawable (drawable, gc, real_drawable [0], x_offset [0], y_offset [0], x, y, width [0], height [0]);
 	OS.gdk_window_end_paint (window);
