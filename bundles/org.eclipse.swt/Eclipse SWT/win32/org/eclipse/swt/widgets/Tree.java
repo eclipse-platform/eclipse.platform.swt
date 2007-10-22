@@ -3937,8 +3937,26 @@ void setItemCount (int count, int /*long*/ hParent, int /*long*/ hItem) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		itemCount++;
 	}
+	boolean expanded = false;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	if (!redraw && (style & SWT.VIRTUAL) != 0) {
+		if (OS.IsWinCE) {
+			tvItem.hItem = hParent;
+			tvItem.mask = OS.TVIF_STATE;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			expanded = (tvItem.state & OS.TVIS_EXPANDED) != 0;
+		} else {
+			/*
+			* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+			* to return only the bits specified by the stateMask, when called
+			* with TVIS_EXPANDED, the entire state is returned.  The fix is
+			* to explicitly check for the TVIS_EXPANDED bit.
+			*/
+			int state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hParent, OS.TVIS_EXPANDED);
+			expanded = (state & OS.TVIS_EXPANDED) != 0;
+		}
+	}
 	while (hItem != 0) {
 		tvItem.hItem = hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
@@ -3953,7 +3971,9 @@ void setItemCount (int count, int /*long*/ hParent, int /*long*/ hItem) {
 	}
 	if ((style & SWT.VIRTUAL) != 0) {
 		for (int i=itemCount; i<count; i++) {
+			if (expanded) ignoreShrink = true;
 			createItem (null, hParent, OS.TVI_LAST, 0);
+			if (expanded) ignoreShrink = false;
 		}
 	} else {
 		shrink = true;
