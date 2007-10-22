@@ -14722,6 +14722,35 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1hide)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1is_1composited
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1is_1composited)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1is_1composited_FUNC);
+/*
+	rc = (jboolean)gtk_widget_is_composited((GtkWidget *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(GtkWidget *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_widget_is_composited_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_widget_is_composited");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((GtkWidget *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1is_1composited_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1is_1focus
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1is_1focus)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -15192,6 +15221,35 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1window_1get_1modal)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1get_1opacity
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1window_1get_1opacity)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1get_1opacity_FUNC);
+/*
+	rc = (jdouble)gtk_window_get_opacity((GtkWindow *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(GtkWindow *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_window_get_opacity_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_window_get_opacity");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)((GtkWindow *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1get_1opacity_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1window_1get_1position
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1get_1position)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -15360,6 +15418,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1modal)
 	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1modal_FUNC);
 	gtk_window_set_modal((GtkWindow *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1modal_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1window_1set_1opacity
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1opacity)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1opacity_FUNC);
+/*
+	gtk_window_set_opacity((GtkWindow *)arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkWindow *, jdouble);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_window_set_opacity_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_window_set_opacity");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkWindow *)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1opacity_FUNC);
 }
 #endif
 

@@ -788,6 +788,16 @@ void forceResize (int width, int height) {
 	OS.gtk_widget_size_allocate (vboxHandle, allocation);
 }
 
+/*public*/ int getAlpha () {
+	checkWidget ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		if (OS.gtk_widget_is_composited (shellHandle)) {
+			return (int) (OS.gtk_window_get_opacity (shellHandle) * 255);
+		}
+	}
+	return 255;  
+}
+
 public boolean getFullScreen () {
 	checkWidget();
 	return fullScreen;
@@ -1165,7 +1175,12 @@ void setActiveControl (Control control) {
 
 /*public*/ void setAlpha (int alpha) {
 	checkWidget ();
-	/* Not implemented */
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		if (OS.gtk_widget_is_composited (shellHandle)) {
+			alpha &= 0xFF;
+			OS.gtk_window_set_opacity (shellHandle, alpha / 255f);
+		}
+	}
 }
 
 void resizeBounds (int width, int height, boolean notify) {
@@ -1714,11 +1729,6 @@ public void dispose () {
 public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
-}
-
-/*public*/ int getAlpha () {
-	checkWidget ();
-	return 255;
 }
 
 public Rectangle getBounds () {

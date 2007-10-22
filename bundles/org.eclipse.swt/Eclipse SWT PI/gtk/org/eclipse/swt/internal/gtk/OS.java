@@ -8916,6 +8916,15 @@ public static final void gtk_widget_hide(int /*long*/ widget) {
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_widget_is_composited(int /*long*/ widget);
+public static final boolean gtk_widget_is_composited(int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_is_composited(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gtk_widget_is_focus(int /*long*/ widget);
 public static final boolean gtk_widget_is_focus(int /*long*/ widget) {
 	lock.lock();
@@ -9267,6 +9276,15 @@ public static final int gtk_window_get_mnemonic_modifier(int /*long*/ window) {
 		lock.unlock();
 	}
 }
+public static final native double _gtk_window_get_opacity (int /*long*/ window);
+public static final double gtk_window_get_opacity (int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gtk_window_get_opacity (window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_window_get_position(int /*long*/ handle, int[] x, int[] y);
 public static final void gtk_window_get_position(int /*long*/ handle, int[] x, int[] y) {
 	lock.lock();
@@ -9416,6 +9434,15 @@ public static final void gtk_window_set_modal(int /*long*/ window, boolean modal
 	lock.lock();
 	try {
 		_gtk_window_set_modal(window, modal);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_window_set_opacity(int /*long*/ window, double opacity);
+public static final void gtk_window_set_opacity(int /*long*/ window, double opacity) {
+	lock.lock();
+	try {
+		 _gtk_window_set_opacity(window, opacity);
 	} finally {
 		lock.unlock();
 	}
