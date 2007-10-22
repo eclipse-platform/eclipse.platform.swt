@@ -6118,6 +6118,15 @@ public static final void gtk_paint_vline(int /*long*/ style, int /*long*/ window
 		lock.unlock();
 	}
 }
+public static final native void _gtk_paper_size_free(int /*long*/ size);
+public static final void gtk_paper_size_free(int /*long*/ size) {
+	lock.lock();
+	try {
+		_gtk_paper_size_free(size);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_paper_size_new(byte [] name);
 public static final int /*long*/ gtk_paper_size_new(byte [] name) {
 	lock.lock();
