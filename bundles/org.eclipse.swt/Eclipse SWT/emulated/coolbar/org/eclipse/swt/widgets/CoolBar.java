@@ -116,7 +116,7 @@ public CoolBar (Composite parent, int style) {
 		addListener(events[i], listener);	
 	}
 }
-private static int checkStyle (int style) {
+static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	return (style | SWT.NO_REDRAW_RESIZE) & ~(SWT.V_SCROLL | SWT.H_SCROLL);
 }
