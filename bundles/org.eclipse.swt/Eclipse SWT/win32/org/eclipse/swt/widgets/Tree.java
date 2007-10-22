@@ -5288,7 +5288,14 @@ void updateScrollBar () {
 				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 			} else {
 				OS.GetScrollInfo (handle, OS.SB_VERT, info);
-				if (info.nPage == 0) info.nPage = info.nMax + 1;
+				if (info.nPage == 0) {
+					SCROLLBARINFO psbi = new SCROLLBARINFO ();
+					psbi.cbSize = SCROLLBARINFO.sizeof;
+					OS.GetScrollBarInfo (handle, OS.OBJID_VSCROLL, psbi);
+					if ((psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) != 0) {
+						info.nPage = info.nMax + 1;
+					}
+				}
 				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 			}
 		}
