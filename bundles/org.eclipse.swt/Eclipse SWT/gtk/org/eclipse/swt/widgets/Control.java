@@ -292,7 +292,7 @@ int /*long*/ paintWindow () {
 	return true;
 }
 
-void printWidget (int gc, int drawable, int depth, int x, int y) {
+void printWidget (int /*long*/ gc, int /*long*/ drawable, int depth, int x, int y) {
 	boolean obscured = (state & OBSCURED) != 0;
 	state &= ~OBSCURED;
 	int /*long*/ topHandle = topHandle ();
@@ -301,7 +301,7 @@ void printWidget (int gc, int drawable, int depth, int x, int y) {
 	if (obscured) state |= OBSCURED;
 }
 	
-void printWindow (Control control, int gc, int drawable, int depth, int window, int x, int y) {
+void printWindow (Control control, int /*long*/  gc, int /*long*/ drawable, int depth, int /*long*/ window, int x, int y) {
 	if (OS.gdk_drawable_get_depth (window) != depth) return;
 	GdkRectangle rect = new GdkRectangle ();
 	int [] width = new int [1], height = new int [1];
