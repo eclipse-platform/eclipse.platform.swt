@@ -124,6 +124,7 @@
 #define gtk_page_setup_set_paper_size_LIB "libgtk-x11-2.0.so.0"
 #define gtk_page_setup_set_right_margin_LIB "libgtk-x11-2.0.so.0"
 #define gtk_page_setup_set_top_margin_LIB "libgtk-x11-2.0.so.0"
+#define gtk_paper_size_free_LIB "libgtk-x11-2.0.so.0"
 #define gtk_paper_size_get_display_name_LIB "libgtk-x11-2.0.so.0"
 #define gtk_paper_size_get_name_LIB "libgtk-x11-2.0.so.0"
 #define gtk_paper_size_get_ppd_name_LIB "libgtk-x11-2.0.so.0"
