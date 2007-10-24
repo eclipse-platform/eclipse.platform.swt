@@ -448,11 +448,24 @@ public class StyledText extends Canvas {
 			printLayout.setFont(printerFont);
 		}
 		if (printOptions.printLineNumbers) {
+			int numberingWidth = 0;
 			int count = endLine - startLine + 1;
-			StringBuffer buffer = new StringBuffer("0");
-			while ((count /= 10) > 0) buffer.append("0");
-			printLayout.setText(buffer.toString());
-			int numberingWidth = printLayout.getBounds().width + printMargin;
+			String[] lineLabels = printOptions.lineLabels;
+			if (lineLabels != null) {
+				for (int i = startLine; i < Math.min(count, lineLabels.length); i++) {
+					if (lineLabels[i] != null) {
+						printLayout.setText(lineLabels[i]);
+						int lineWidth = printLayout.getBounds().width;
+						numberingWidth = Math.max(numberingWidth, lineWidth);
+					}
+				}
+			} else {
+				StringBuffer buffer = new StringBuffer("0");
+				while ((count /= 10) > 0) buffer.append("0");
+				printLayout.setText(buffer.toString());
+				numberingWidth = printLayout.getBounds().width;
+			}
+			numberingWidth += printMargin;
 			if (numberingWidth > width) numberingWidth = width;
 			paintX += numberingWidth;
 			width -= numberingWidth;
@@ -598,7 +611,16 @@ public class StyledText extends Canvas {
 			FontMetrics metrics = layout.getLineMetrics(0);
 			printLayout.setAscent(metrics.getAscent() + metrics.getDescent());
 			printLayout.setDescent(metrics.getDescent());
-			printLayout.setText(String.valueOf(index));
+			String[] lineLabels = printOptions.lineLabels;
+			if (lineLabels != null) {
+				if (0 <= index && index < lineLabels.length && lineLabels[index] != null) {
+					printLayout.setText(lineLabels[index]);
+				} else {
+					printLayout.setText("");
+				}
+			} else {
+				printLayout.setText(String.valueOf(index));
+			}
 			int paintX = x - printMargin - printLayout.getBounds().width;
 			printLayout.draw(gc, paintX, y);
 			printLayout.setAscent(-1);

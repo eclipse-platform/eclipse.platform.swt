@@ -91,5 +91,11 @@ public class StyledTextPrintOptions {
 	 */
 	public boolean printLineNumbers = false;
 	
+	/**
+	 * Line labels.
+	 * 
+	 * @since 3.4
+	 */
+	public String[] lineLabels = null;
 	
 }
