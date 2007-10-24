@@ -971,7 +971,14 @@ int /*long*/ [] createGdipImage() {
 			int imgWidth = bm.bmWidth;
 			int imgHeight = hBitmap == iconInfo.hbmMask ? bm.bmHeight / 2 : bm.bmHeight;
 			int /*long*/ img = 0, pixels = 0;
-			if (imgWidth > imgHeight) {
+			/*
+			* Bug in GDI+.  Bitmap_new() segments fault if the image width
+			* is greater than the image height.
+			* 
+			* Note that it also fails to generated an appropriate alpha
+			* channel when the icon depth is 32.
+			*/
+			if (imgWidth > imgHeight || bm.bmBitsPixel == 32) {
 				int /*long*/ hDC = device.internal_new_GC(null);
 				int /*long*/ srcHdc = OS.CreateCompatibleDC(hDC);
 				int /*long*/ oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
@@ -988,14 +995,16 @@ int /*long*/ [] createGdipImage() {
 				OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
 				OS.DeleteObject(memDib);
 				OS.SelectObject(srcHdc, iconInfo.hbmMask);
-				for (int y = 0, dp = 0; y < imgHeight; ++y) {
-					for (int x = 0; x < imgWidth; ++x) {
-						if (OS.GetPixel(srcHdc, x, y) != 0) {
-							srcData[dp + 3] = (byte)0;
-						} else {
-							srcData[dp + 3] = (byte)0xFF;
+				if (bm.bmBitsPixel != 32) {
+					for (int y = 0, dp = 0; y < imgHeight; ++y) {
+						for (int x = 0; x < imgWidth; ++x) {
+								if (OS.GetPixel(srcHdc, x, y) != 0) {
+									srcData[dp + 3] = (byte)0;
+								} else {
+									srcData[dp + 3] = (byte)0xFF;
+								}
+							dp += 4;
 						}
-						dp += 4;
 					}
 				}
 				OS.SelectObject(srcHdc, oldSrcBitmap);
