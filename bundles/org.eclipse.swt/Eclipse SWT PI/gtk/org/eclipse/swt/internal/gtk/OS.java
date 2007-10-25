@@ -9303,6 +9303,33 @@ public static final void gtk_window_get_size(int /*long*/ handle, int[] x, int[]
 		lock.unlock();
 	}
 }
+public static final native void _gtk_window_group_add_window(int /*long*/ group, int /*long*/ window);
+public static final void gtk_window_group_add_window(int /*long*/ group, int /*long*/ window) {
+	lock.lock();
+	try {
+		_gtk_window_group_add_window(group, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_window_group_remove_window(int /*long*/ group, int /*long*/ window);
+public static final void gtk_window_group_remove_window(int /*long*/ group, int /*long*/ window) {
+	lock.lock();
+	try {
+		_gtk_window_group_remove_window(group, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_window_group_new();
+public static final int /*long*/ gtk_window_group_new() {
+	lock.lock();
+	try {
+		return _gtk_window_group_new();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_window_iconify(int /*long*/ handle);
 public static final void gtk_window_iconify(int /*long*/ handle) {
 	lock.lock();

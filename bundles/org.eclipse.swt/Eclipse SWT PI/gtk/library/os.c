@@ -15284,6 +15284,38 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1window_1group_1add_1window
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1group_1add_1window)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1group_1add_1window_FUNC);
+	gtk_window_group_add_window((GtkWindowGroup*)arg0, (GtkWindow*)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1group_1add_1window_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1window_1group_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1group_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1group_1new_FUNC);
+	rc = (jint)gtk_window_group_new();
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1group_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1window_1group_1remove_1window
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1group_1remove_1window)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1group_1remove_1window_FUNC);
+	gtk_window_group_remove_window((GtkWindowGroup*)arg0, (GtkWindow*)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1group_1remove_1window_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1window_1iconify
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1iconify)
 	(JNIEnv *env, jclass that, jint arg0)
