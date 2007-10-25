@@ -4153,6 +4153,7 @@ LRESULT WM_MENUSELECT (int /*long*/ wParam, int /*long*/ lParam) {
 						ancestor.sendEvent (SWT.Hide);
 						if (ancestor.isDisposed ()) break;
 						ancestor = ancestor.getParentMenu ();
+						if (ancestor == null) break;
 					}
 					/*
 					* The shell and/or the item could be disposed when
