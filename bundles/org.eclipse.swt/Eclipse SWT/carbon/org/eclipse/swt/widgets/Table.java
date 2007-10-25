@@ -2165,7 +2165,7 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		for (columnIndex = 0; columnIndex < columnCount; columnIndex++) {
 			if (columns [columnIndex].id == itemInfo.v0_columnProperty) break;
 		}
-		if (columnIndex != columnCount) {
+		if (columnIndex != columnCount || columnCount == 0) {
 			int index = itemInfo.v0_item - 1;
 			if (0 <= index && index < itemCount) {
 				TableItem tableItem = _getItem (index);
