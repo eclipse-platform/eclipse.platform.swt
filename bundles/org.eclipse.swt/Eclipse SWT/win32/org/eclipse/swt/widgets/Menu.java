@@ -568,12 +568,17 @@ void destroyItem (MenuItem item) {
 }
 
 void destroyWidget () {
+	MenuItem parentItem = cascade;
 	int /*long*/ hMenu = handle, hCB = hwndCB;
 	releaseHandle ();
 	if (OS.IsWinCE && hCB != 0) {
 		OS.CommandBar_Destroy (hCB);
 	} else {
-		if (hMenu != 0) OS.DestroyMenu (hMenu);
+		if (parentItem != null) {
+			if (!OS.IsSP) parentItem.setMenu (null, true);
+		} else {
+			if (hMenu != 0) OS.DestroyMenu (hMenu);
+		}
 	}
 }
 
@@ -1098,6 +1103,7 @@ void redraw () {
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = hwndCB = 0;
+	cascade = null;
 }
 
 void releaseChildren (boolean destroy) {
@@ -1144,7 +1150,6 @@ void releaseWidget () {
 	}
 	if (parent != null) parent.removeMenu (this);
 	parent = null;
-	cascade = null;
 }
 
 /**

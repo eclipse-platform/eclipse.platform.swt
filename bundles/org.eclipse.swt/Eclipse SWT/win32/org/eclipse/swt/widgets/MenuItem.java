@@ -500,7 +500,6 @@ void releaseHandle () {
 }
 
 void releaseMenu () {
-	if (!OS.IsSP) setMenu (null);
 	menu = null;
 }
 
@@ -781,6 +780,10 @@ public void setMenu (Menu menu) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
 	}
+	setMenu (menu, false);
+}
+
+void setMenu (Menu menu, boolean dispose) {
 
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
@@ -848,8 +851,8 @@ public void setMenu (Menu menu) {
 			info.fMask |= OS.MIIM_SUBMENU;
 			info.hSubMenu = menu.handle;
 		}
-		OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
 		if (OS.IsWinCE) {
+			OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
 			/*
 			* On WinCE, InsertMenuItem() is not available.  The fix is to
 			* use SetMenuItemInfo() but this call does not set the menu item
@@ -876,7 +879,12 @@ public void setMenu (Menu menu) {
 				}
 			}
 		} else {
-			success = OS.InsertMenuItem (hMenu, index, true, info);
+			if (dispose || oldMenu == null) {
+				success = OS.SetMenuItemInfo (hMenu, index, true, info);
+			} else {
+				OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
+				success = OS.InsertMenuItem (hMenu, index, true, info);
+			}
 			/*
 			* Restore the bitmap that was removed to work around a problem
 			* in GetMenuItemInfo() and menu items that have bitmaps set with
