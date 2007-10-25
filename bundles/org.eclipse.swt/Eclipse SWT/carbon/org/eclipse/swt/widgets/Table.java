@@ -2153,31 +2153,6 @@ int itemNotificationProc (int browser, int id, int message) {
 	return OS.noErr;
 }
 
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] ref = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleObject, OS.typeCFTypeRef, null, 4, null, ref);
-	int axuielementref = ref [0];
-	DataBrowserAccessibilityItemInfo itemInfo = new DataBrowserAccessibilityItemInfo ();
-	int err = OS.AXUIElementGetDataBrowserItemInfo (axuielementref, handle, 0, itemInfo);
-	if (err == OS.noErr && itemInfo.v0_columnProperty != OS.kDataBrowserItemNoProperty && itemInfo.v0_item != OS.kDataBrowserNoItem && itemInfo.v0_propertyPart == OS.kDataBrowserPropertyEnclosingPart) {
-		int [] arrayRef = new int[1];
-		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
-		int stringArrayRef = arrayRef[0];
-		String string = OS.kAXTitleAttribute;
-		char [] buffer = new char [string.length ()];
-		string.getChars (0, buffer.length, buffer, 0);
-		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		OS.CFArrayAppendValue(stringArrayRef, stringRef);
-		OS.CFRelease(stringRef);
-		return OS.noErr;
-	}
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
-	}
-	return code;
-}
-
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 	int code = OS.CallNextEventHandler (nextHandler, theEvent);
 	int [] ref = new int [1];
