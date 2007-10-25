@@ -1073,7 +1073,10 @@ public class Accessible {
 				if (checked) event.detail |= ACC.STATE_CHECKED;
 			} else if (control instanceof Table && (control.getStyle() & SWT.CHECK) != 0) {
 				Table table = (Table) control;
-				TableItem item = table.getItem(event.childID);
+				TableItem item = null;
+				try {
+					item = table.getItem(event.childID);
+				} catch (IllegalArgumentException ex) {}
 				if (item != null) {
 					if (item.getChecked()) event.detail |= ACC.STATE_CHECKED;
 				}
