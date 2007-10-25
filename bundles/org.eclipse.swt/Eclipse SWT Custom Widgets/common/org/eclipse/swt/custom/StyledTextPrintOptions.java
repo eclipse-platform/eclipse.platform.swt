@@ -92,7 +92,7 @@ public class StyledTextPrintOptions {
 	public boolean printLineNumbers = false;
 	
 	/**
-	 * Line labels.
+	 * Labels used for printing line numbers.
 	 * 
 	 * @since 3.4
 	 */
