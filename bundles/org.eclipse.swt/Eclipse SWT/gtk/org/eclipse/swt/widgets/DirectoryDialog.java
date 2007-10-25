@@ -167,7 +167,15 @@ String openChooserDialog () {
 	String answer = null;
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
-	int response = OS.gtk_dialog_run (handle);	
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
 		if (path != 0) {
@@ -237,7 +245,15 @@ String openClassicDialog () {
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
 	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
 		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);

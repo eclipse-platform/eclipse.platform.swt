@@ -114,7 +114,7 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow;
+	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
 	boolean mapped, moved, resized, opened, fullScreen;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
@@ -609,11 +609,6 @@ void createHandle (int index) {
 			OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
 			OS.gtk_widget_modify_bg (shellHandle,  OS.GTK_STATE_NORMAL, color);
 		}
-		int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-		boolean modal = (style & bits) != 0;
-		//TEMPORARY CODE
-		if ((style & SWT.ON_TOP) == 0) modal |= (parent != null && (parent.style & bits) != 0);
-		OS.gtk_window_set_modal (shellHandle, modal);
 	} else {
 		vboxHandle = OS.gtk_bin_get_child (shellHandle);
 		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -626,6 +621,8 @@ void createHandle (int index) {
 		handle = OS.gtk_bin_get_child (scrolledHandle);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+	group = OS.gtk_window_group_new ();
+	if (group == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
 	* Feature in GTK.  Realizing the shell triggers a size allocate event,
 	* which may be confused for a resize event from the window manager if
@@ -835,6 +832,34 @@ public Point getMinimumSize () {
 	int width = Math.max (1, minWidth + trimWidth ());
 	int height = Math.max (1, minHeight + trimHeight ());
 	return new Point (width, height);
+}
+
+Shell getModalShell () {
+	Shell shell = null;
+	Shell [] modalShells = display.modalShells;
+	if (modalShells != null) {
+		int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		int index = modalShells.length;
+		while (--index >= 0) {
+			Shell modal = modalShells [index];
+			if (modal != null) {
+				if ((modal.style & bits) != 0) {
+					Control control = this;
+					while (control != null) {
+						if (control == modal) break;
+						control = control.parent;
+					}
+					if (control != modal) return modal;
+					break;
+				}
+				if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
+					if (shell == null) shell = getShell ();
+					if (modal.parent == shell) return modal;
+				}
+			}
+		}
+	}
+	return null;
 }
 
 public Point getSize () {
@@ -1516,6 +1541,18 @@ public void setText (String string) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & mask) != 0) {
+		if (visible) {
+			display.setModalShell (this);
+			OS.gtk_window_set_modal (shellHandle, true);
+		} else {
+			display.clearModal (this);
+			OS.gtk_window_set_modal (shellHandle, false);
+		}
+	} else {
+		updateModal ();
+	}
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
@@ -1563,7 +1600,6 @@ public void setVisible (boolean visible) {
 		}
 		mapped = true;
 
-		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 		if ((style & mask) != 0) {
 			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 		}
@@ -1689,6 +1725,35 @@ int trimWidth () {
 	return 0;
 }
 
+void updateModal () {
+	int /*long*/ group = 0;
+	if (display.getModalDialog () == null) {
+		Shell modal = getModalShell ();
+		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		Composite shell = null;
+		if (modal == null) {
+			if ((style & mask) != 0) shell = this;
+		} else {
+			shell = modal;
+		}
+		while (shell != null) {
+			if ((shell.style & mask) == 0) {
+				group = shell.getShell ().group;
+				break;
+			}
+			shell = shell.parent;
+		}
+	}
+	if (group != 0) {
+		OS.gtk_window_group_add_window (group, shellHandle);
+	} else {
+		if (modalGroup != 0) {
+			OS.gtk_window_group_remove_window (modalGroup, shellHandle);
+		}
+	}
+	modalGroup = group;
+}
+
 void deregister () {
 	super.deregister ();
 	display.removeWidget (shellHandle);
@@ -1763,9 +1828,12 @@ void releaseChildren (boolean destroy) {
 void releaseWidget () {
 	super.releaseWidget ();
 	destroyAccelGroup ();
+	display.clearModal (this);
 	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
+	if (group != 0) OS.g_object_unref (group);
+	group = modalGroup = 0;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	region = null;

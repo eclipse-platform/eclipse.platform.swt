@@ -34,6 +34,8 @@ public class PrintDialog extends Dialog {
 	int index;
 	byte [] settingsData;
 	
+	static final String GET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.getModalDialog";
+	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.setModalDialog";
 	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.addIdleProc";
 	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.removeIdleProc";
 
@@ -253,7 +255,16 @@ public PrinterData open() {
 		//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
 		Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
 		display.setData (ADD_IDLE_PROC_KEY, null);
-		if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+		Object oldModal = null;
+		if (OS.gtk_window_get_modal (handle)) {
+			oldModal = display.getData (GET_MODAL_DIALOG);
+			display.setData (SET_MODAL_DIALOG, this);
+		}
+		int response = OS.gtk_dialog_run (handle);
+		if (OS.gtk_window_get_modal (handle)) {
+			display.setData (SET_MODAL_DIALOG, oldModal);
+		}
+		if (response == OS.GTK_RESPONSE_OK) {
 			int /*long*/ printer = OS.gtk_print_unix_dialog_get_selected_printer(handle);
 			if (printer != 0) {
 				/* Get state from print dialog. */

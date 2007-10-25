@@ -132,7 +132,13 @@ public class Display extends Device {
 		buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX2", true);
 		SWT_OBJECT_INDEX2 = OS.g_quark_from_string (buffer);
 	}
-		
+
+	/* Modality */
+	Shell [] modalShells;
+	Dialog modalDialog;
+	static final String GET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.getModalDialog";
+	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.setModalDialog";
+
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
@@ -775,6 +781,22 @@ protected void checkSubclass () {
 	if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void clearModal (Shell shell) {
+	if (modalShells == null) return;
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) break;
+		if (modalShells [index] == null) return;
+		index++;
+	}
+	if (index == length) return;
+	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
+	modalShells [length] = null;
+	if (index == 0 && modalShells [0] == null) modalShells = null;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+}
+
 /**
  * Requests that the connection between SWT and the underlying
  * operating system be closed.
@@ -1137,61 +1159,8 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
-	/*
-	* Feature in GTK.  GTK implements modality by adding a grab
-	* to the GTK top level window.  Normally, all mouse and 
-	* keyboard events are delivered to child widgets and the
-	* shell when the grab is active.  When an override redirect
-	* shell is created as a child of a dialog, then events are
-	* grabbed by the dialog instead of the override redirect
-	* shell.  The fix is to add a temporary grab to the override
-	* redirect window when there is not already a grab in a
-	* child widget of the override redirect shell (for example,
-	* in a scroll bar).  
-	*/
-	Shell shell = null;
-	Control control = null;
-	int /*long*/ grabHandle = OS.gtk_grab_get_current ();
-	if (grabHandle != 0 && OS.GTK_IS_WINDOW (grabHandle) && OS.gtk_window_get_modal (grabHandle)) {
-		switch (eventType) {
-			case OS.GDK_KEY_PRESS:
-			case OS.GDK_KEY_RELEASE:
-			case OS.GDK_ENTER_NOTIFY:
-			case OS.GDK_LEAVE_NOTIFY:
-			case OS.GDK_BUTTON_PRESS:
-			case OS.GDK_2BUTTON_PRESS: 
-			case OS.GDK_3BUTTON_PRESS:
-			case OS.GDK_BUTTON_RELEASE: 
-			case OS.GDK_MOTION_NOTIFY:  {
-				int /*long*/ window = OS.GDK_EVENT_WINDOW (event);
-				int /*long*/ [] user_data = new int /*long*/ [1];
-				do {
-					OS.gdk_window_get_user_data (window, user_data);
-					int /*long*/ handle = user_data [0];
-					if (handle != 0) {
-						Widget widget = getWidget (handle);
-						if (widget != null && widget instanceof Control) {
-							control = (Control) widget;
-							break;
-						}
-					}
-				} while ((window = OS.gdk_window_get_parent (window)) != 0);
-			}
-		}
-		if (control != null) {		
-			shell = control.getShell ();
-			if ((shell.style & SWT.ON_TOP) != 0) {
-				OS.gtk_grab_add (shell.shellHandle);
-			}
-		}
-	}
 	OS.gtk_main_do_event (event);
 	if (dispatchEvents == null) putGdkEvents ();
-	if (control != null) {
-		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
-			OS.gtk_grab_remove (shell.shellHandle);
-		}
-	}
 	return 0;
 }
 
@@ -1523,6 +1492,9 @@ public Object getData (String key) {
 	if (key.equals (DISPATCH_EVENT_KEY)) {
 		return dispatchEvents;
 	}
+	if (key.equals (GET_MODAL_DIALOG)) {
+		return modalDialog;
+	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -1759,6 +1731,10 @@ int getLastEventTime () {
 
 int getMessageCount () {
 	return synchronizer.getMessageCount ();
+}
+
+Dialog getModalDialog () {
+	return modalDialog;
 }
 
 /**
@@ -3496,7 +3472,10 @@ public void setData (String key, Object value) {
 			return;
 		}
 	}
-	
+	if (key.equals (SET_MODAL_DIALOG)) {
+		setModalDialog ((Dialog) data);
+		return;
+	}
 	if (key.equals (ADD_WIDGET_KEY)) {
 		Object [] data = (Object []) value;
 		int /*long*/ handle = ((LONG) data [0]).value;
@@ -3507,7 +3486,6 @@ public void setData (String key, Object value) {
 			removeWidget (handle);
 		}
 	}
-	
 	if (key.equals (ADD_IDLE_PROC_KEY)) {	
 		addIdleProc ();
 		return;
@@ -3595,6 +3573,30 @@ int /*long*/ setDirectionProc (int /*long*/ widget, int /*long*/ direction) {
 		OS.gtk_container_forall (widget, setDirectionProc, direction);
 	}
 	return 0;
+}
+
+void setModalDialog (Dialog modalDailog) {
+	this.modalDialog = modalDailog;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+}
+
+void setModalShell (Shell shell) {
+	if (modalShells == null) modalShells = new Shell [4];
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) return;
+		if (modalShells [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Shell [] newModalShells = new Shell [length + 4];
+		System.arraycopy (modalShells, 0, newModalShells, 0, length);
+		modalShells = newModalShells;
+	}
+	modalShells [index] = shell;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 /**

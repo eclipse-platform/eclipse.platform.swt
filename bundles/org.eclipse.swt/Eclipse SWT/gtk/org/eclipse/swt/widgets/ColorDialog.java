@@ -132,7 +132,15 @@ public RGB open () {
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
 	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
 		OS.gtk_color_selection_get_current_color (dialog.colorsel, color);

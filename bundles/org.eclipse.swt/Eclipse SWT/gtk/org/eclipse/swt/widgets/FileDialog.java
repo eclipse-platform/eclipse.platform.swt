@@ -324,7 +324,16 @@ String openChooserDialog () {
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
 	String answer = null;
-	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
+	if (response == OS.GTK_RESPONSE_OK) {
 		answer = computeResultChooserDialog ();
 	}
 	display.removeIdleProc ();
@@ -347,7 +356,16 @@ String openClassicDialog () {
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
 	String answer = null;
-	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
+	if (response == OS.GTK_RESPONSE_OK) {
 		answer = computeResultClassicDialog ();
 	}
 	display.removeIdleProc ();

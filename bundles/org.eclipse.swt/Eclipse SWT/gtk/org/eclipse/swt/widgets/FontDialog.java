@@ -156,7 +156,15 @@ public FontData open () {
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
-	int response = OS.gtk_dialog_run(handle);
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
 		int /*long*/ fontName = OS.gtk_font_selection_dialog_get_font_name (handle);

@@ -149,10 +149,18 @@ public int open () {
 	OS.gtk_window_set_title(handle,buffer);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
-	int result = OS.gtk_dialog_run (handle);
+	Dialog oldModal = null;
+	if (OS.gtk_window_get_modal (handle)) {
+		oldModal = display.getModalDialog ();
+		display.setModalDialog (this);
+	}
+	int response = OS.gtk_dialog_run (handle);
+	if (OS.gtk_window_get_modal (handle)) {
+		display.setModalDialog (oldModal);
+	}	
 	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
-	return result;
+	return response;
 }
 
 private void createButtons() {
