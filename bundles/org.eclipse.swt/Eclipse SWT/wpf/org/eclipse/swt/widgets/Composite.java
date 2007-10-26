@@ -90,6 +90,11 @@ public Composite (Composite parent, int style) {
 	super (parent, style);
 }
 
+static int checkStyle (int style) {
+	style &= ~SWT.TRANSPARENT;
+	return style;
+}
+
 int getCaretHandle () {
 	return 0;
 }

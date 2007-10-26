@@ -73,7 +73,7 @@ Canvas () {
  * @see Widget#getStyle
  */
 public Canvas (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (style));
 }
 
 void clearArea (int x, int y, int width, int height) {

@@ -42,6 +42,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	Accessible accessible;
 	Image backgroundImage;
+	Region region;
 //	int drawCount;
 	int foreground, background;
 	Font font;
@@ -1130,6 +1131,11 @@ Control [] getPath () {
 	return result;
 }
 
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -1789,7 +1795,7 @@ public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
-/*public*/ boolean print (GC gc) {
+public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -1895,6 +1901,7 @@ void releaseWidget () {
 		accessible.internal_dispose_Accessible ();
 	}
 	accessible = null;
+	region = null;
 }
 
 /**
@@ -2821,6 +2828,13 @@ public void setRedraw (boolean redraw) {
 //		}
 //	}
 	redraw ();
+}
+
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	OS.UIElement_Clip (topHandle (), region.handle);
+	this.region = region;
 }
 
 boolean setSavedFocus () {
