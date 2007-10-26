@@ -74,7 +74,7 @@ public DirectoryDialog (Shell parent) {
  * </ul>
  */
 public DirectoryDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, parent == null? style : checkStyle (parent, style));
 	checkSubclass ();
 }
 /**
@@ -166,6 +166,10 @@ String openChooserDialog () {
 	}
 	String answer = null;
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
@@ -244,6 +248,10 @@ String openClassicDialog () {
 		OS.gtk_widget_show (labelHandle);
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
