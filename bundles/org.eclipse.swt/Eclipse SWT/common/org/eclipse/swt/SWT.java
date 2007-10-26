@@ -1457,6 +1457,8 @@ public class SWT {
 	 * </ul></p>
 	 *
 	 * @since 3.4
+	 * 
+	 * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
 	 */
 	public static final int TRANSPARENT = 1 << 30;
 	

@@ -284,6 +284,10 @@ void checkBorder () {
 	/* Do nothing */
 }
 
+void checkComposited (Composite parent) {
+	/* Do nothing */
+}
+
 void checkOpened () {
 	if (!opened) resized = false;
 }

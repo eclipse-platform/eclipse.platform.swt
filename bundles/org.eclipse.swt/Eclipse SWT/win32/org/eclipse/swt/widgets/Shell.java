@@ -387,6 +387,7 @@ public static Shell internal_new (Display display, int /*long*/ handle) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
+	style &=~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
@@ -824,7 +825,7 @@ void forceResize () {
  * 
  * @since 3.4
  */
-/*public*/ int getAlpha () {
+public int getAlpha () {
 	checkWidget ();
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		byte [] pbAlpha = new byte [1];
@@ -998,6 +999,7 @@ public Point getMinimumSize () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -1205,7 +1207,6 @@ void releaseWidget () {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
 	lastActive = null;
-	region = null;
 	toolTitle = balloonTitle = null;
 	lockToolTipControl = null;
 }
@@ -1343,7 +1344,7 @@ void setActiveControl (Control control) {
  * 
  * @since 3.4
  */
-/*public*/ void setAlpha (int alpha) {
+public void setAlpha (int alpha) {
 	checkWidget ();
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		alpha &= 0xFF;
@@ -1573,14 +1574,7 @@ void setParent () {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ hRegion = 0;
-	if (region != null) {
-		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.CombineRgn (hRegion, region.handle, hRegion, OS.RGN_OR);
-	}
-	OS.SetWindowRgn (handle, hRegion, true);
-	this.region = region;
+	super.setRegion (region);
 }
 
 void setToolTipText (int /*long*/ hwnd, String text) {
