@@ -200,8 +200,8 @@ public class Display extends Device {
 	int /*long*/ idleProc;
 	int idleHandle;
 	Callback idleCallback;
-	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.addIdleProc";
-	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.removeIdleProc";
+	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.addIdleProc";
+	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.removeIdleProc";
 	Object idleLock = new Object();
 	boolean idleNeeded;
 	

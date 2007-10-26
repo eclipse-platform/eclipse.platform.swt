@@ -36,8 +36,8 @@ public class PrintDialog extends Dialog {
 	
 	static final String GET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.getModalDialog";
 	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.setModalDialog";
-	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.addIdleProc";
-	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.removeIdleProc";
+	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.addIdleProc";
+	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.removeIdleProc";
 
 /**
  * Constructs a new instance of this class given only its parent.
