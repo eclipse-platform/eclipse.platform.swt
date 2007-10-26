@@ -485,14 +485,23 @@ void createHandle () {
 	super.createHandle ();
 	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
 	
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
-		state |= THEME_BACKGROUND;
-	}
+	/* Set the theme background */
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		/* 
+		* NOTE: On Vista this causes problems when the tab
+		* key is pressed for push buttons so disable the
+		* theme background drawing for these widgets for
+		* now.
+		*/
 		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
 			state |= THEME_BACKGROUND;
+		} else {
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
+				state |= THEME_BACKGROUND;
+			}
 		}
 	}
+	
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
@@ -508,15 +517,21 @@ void createHandle () {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
 	}
+	
 	/*
 	* Feature in Windows.  Push buttons draw border around
 	* the button using the default background color instead
 	* of using the color provided by WM_CTRLCOLOR.  The fix
 	* is to draw the background in WM_CTRLCOLOR.
+	* 
+	* NOTE: On Vista this causes problems when the tab key
+	* is pressed for push buttons so disable the fix for now.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-			state |= DRAW_BACKGROUND;
+		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+				state |= DRAW_BACKGROUND;
+			}
 		}
 	}
 }
