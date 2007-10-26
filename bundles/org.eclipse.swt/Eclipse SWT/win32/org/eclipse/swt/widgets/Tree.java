@@ -4508,6 +4508,7 @@ public void setRedraw (boolean redraw) {
 				hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
 			}
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			updateScrollBar ();
 		}
 	}
 	super.setRedraw (redraw);
