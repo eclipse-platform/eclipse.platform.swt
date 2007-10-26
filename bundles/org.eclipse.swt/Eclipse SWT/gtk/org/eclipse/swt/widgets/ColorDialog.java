@@ -81,7 +81,7 @@ public ColorDialog (Shell parent) {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, parent == null? style : checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -111,6 +111,11 @@ public RGB getRGB () {
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ handle = OS.gtk_color_selection_dialog_new (buffer);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}		
 	if (parent != null) {
 		int /*long*/ shellHandle = parent.topHandle ();
 		OS.gtk_window_set_transient_for (handle, shellHandle);
@@ -130,7 +135,6 @@ public RGB open () {
 		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
 	}
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {

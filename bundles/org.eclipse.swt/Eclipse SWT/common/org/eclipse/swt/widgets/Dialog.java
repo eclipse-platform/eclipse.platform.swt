@@ -163,6 +163,17 @@ void checkParent (Shell parent) {
 	parent.checkWidget ();
 }
 
+static int checkStyle (Shell parent, int style) {
+	style &= ~SWT.MIRRORED;
+	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
+		if (parent != null) {
+			if ((parent.style & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
+			if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
+		}
+	}
+	return Widget.checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
+}
+
 /**
  * Does whatever dialog specific cleanup is required, and then
  * uses the code in <code>SWTError.error</code> to handle the error.
