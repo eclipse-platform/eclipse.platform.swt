@@ -46,6 +46,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	Image backgroundImage;
 	Font font;
+	Region region;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
@@ -279,29 +280,29 @@ int /*long*/ paintWindow () {
 	return OS.GTK_WIDGET_WINDOW (paintHandle);
 }
 
-/*public*/ boolean print (GC gc) {
+public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ topHandle = topHandle ();
 	OS.gtk_widget_realize (topHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
-	OS.gdk_window_process_updates (window, true);
 	GCData data = gc.getGCData ();
-	printWidget (gc.handle, data.drawable, OS.gdk_drawable_get_depth (data.drawable), 0, 0);
+	OS.gdk_window_process_updates (window, true);
+	printWidget (gc, data.drawable, OS.gdk_drawable_get_depth (data.drawable), 0, 0);
 	return true;
 }
 
-void printWidget (int /*long*/ gc, int /*long*/ drawable, int depth, int x, int y) {
+void printWidget (GC gc, int /*long*/ drawable, int depth, int x, int y) {
 	boolean obscured = (state & OBSCURED) != 0;
 	state &= ~OBSCURED;
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
-	printWindow (this, gc, drawable, depth, window, x, y);
+	printWindow (true, this, gc.handle, drawable, depth, window, x, y);
 	if (obscured) state |= OBSCURED;
 }
 	
-void printWindow (Control control, int /*long*/  gc, int /*long*/ drawable, int depth, int /*long*/ window, int x, int y) {
+void printWindow (boolean first, Control control, int /*long*/ gc, int /*long*/ drawable, int depth, int /*long*/ window, int x, int y) {
 	if (OS.gdk_drawable_get_depth (window) != depth) return;
 	GdkRectangle rect = new GdkRectangle ();
 	int [] width = new int [1], height = new int [1];
@@ -314,7 +315,55 @@ void printWindow (Control control, int /*long*/  gc, int /*long*/ drawable, int 
 	int /*long*/ [] real_drawable = new int /*long*/ [1];
 	int [] x_offset = new int [1], y_offset = new int [1];
 	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);
-	OS.gdk_draw_drawable (drawable, gc, real_drawable [0], x_offset [0], y_offset [0], x, y, width [0], height [0]);
+	if (window == paintWindow ()) {
+		if (hooks (SWT.Paint) || filters (SWT.Paint)) {
+			GCData data = new GCData ();
+			int /*long*/ gdkGC = OS.gdk_gc_new (real_drawable [0]);
+			if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
+			if (data != null) {
+				int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+				if ((data.style & mask) == 0) {
+					data.style |= style & (mask | SWT.MIRRORED);
+				} else {
+					if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
+						data.style |= SWT.MIRRORED;
+					}
+				}
+				data.realDrawable = true;
+				data.drawable = real_drawable [0];
+				data.device = display;
+				data.foreground = getForegroundColor ();
+				Control backgroundControl = findBackgroundControl ();
+				if (backgroundControl == null) backgroundControl = this;
+				data.background = backgroundControl.getBackgroundColor ();
+				data.font = font != null ? font.handle : defaultFont (); 
+			}
+			Event event = new Event ();
+			event.width = width [0];
+			event.height = height [0];
+			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+			GC paintGC = event.gc = GC.gtk_new (gdkGC, data);
+			sendEvent (SWT.Paint, event);
+			paintGC.dispose ();
+			OS.g_object_unref (gdkGC);
+		}
+	}
+	int srcX = x_offset [0], srcY = y_offset [0];
+	int destX = x, destY = y, destWidth = width [0], destHeight = height [0];
+	if (!first) {
+		int [] cX = new int [1], cY = new int [1];
+		OS.gdk_window_get_position (window, cX, cY);
+		int /*long*/ parentWindow = OS.gdk_window_get_parent (window);
+		int [] pW = new int [1], pH = new int [1];
+		OS.gdk_drawable_get_size (parentWindow, pW, pH);
+		srcX = x_offset [0] - cX [0];
+		srcY = y_offset [0] - cY [0];
+		destX = x - cX [0];
+		destY = y - cY [0];
+		destWidth = Math.min (cX [0] + width [0], pW [0]);
+		destHeight = Math.min (cY [0] + height [0], pH [0]);
+	}
+	OS.gdk_draw_drawable (drawable, gc, real_drawable [0], srcX, srcY, destX, destY, destWidth, destHeight);
 	OS.gdk_window_end_paint (window);
 	int /*long*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) {
@@ -329,7 +378,7 @@ void printWindow (Control control, int /*long*/  gc, int /*long*/ drawable, int 
 					if (widget == null || widget == control) {
 						int [] x_pos = new int [1], y_pos = new int [1];
 						OS.gdk_window_get_position (child, x_pos, y_pos);
-						printWindow (control, gc, drawable, depth, child, x + x_pos [0], y + y_pos [0]);
+						printWindow (false, control, gc, drawable, depth, child, x + x_pos [0], y + y_pos [0]);
 					}
 				}
 			}
@@ -881,6 +930,16 @@ public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
+}
+
+public void setRegion (Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle ());
+	int /*long*/ shape_region = (region == null) ? 0 : region.handle;
+	OS.gdk_window_shape_combine_region (window, shape_region, 0, 0);
+	this.region = region;
 }
 
 void setRelations () {
@@ -2330,6 +2389,11 @@ Control [] getPath () {
 	return result;
 }
 
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -2558,7 +2622,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	}
 	return 0;
 }
-	
+
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
@@ -3128,6 +3192,7 @@ void releaseWidget () {
 	toolTipText = null;
 	layoutData = null;
 	accessible = null;
+	region = null;
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {

@@ -42,6 +42,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	Image backgroundImage;
 	Font font;
+	Region region;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
@@ -1668,7 +1669,7 @@ void propagateWidget (boolean enabled) {
 	int xCursor = enabled && cursor != null ? cursor.handle : OS.None;
 	propagateHandle (enabled, handle, xCursor);
 }
-/*public*/ boolean print (GC gc) {
+public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -1792,6 +1793,7 @@ void releaseWidget () {
 		}
 	}
 	layoutData = null;
+	region = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -2831,6 +2833,23 @@ public void setRedraw (boolean redraw) {
 			}
 		}
 	}
+}
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int topHandle = topHandle ();
+	Shell shell = getShell ();
+	if (!OS.XtIsRealized (topHandle)) shell.realizeWidget ();
+	int xDisplay = OS.XtDisplay (topHandle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (topHandle);
+	if (xWindow == 0) return;
+	if (region != null) {
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, region.handle, OS.ShapeSet);
+	} else {
+		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
+	}
+	this.region = region;
 }
 boolean setTabGroupFocus (boolean next) {
 	return setTabItemFocus (next);

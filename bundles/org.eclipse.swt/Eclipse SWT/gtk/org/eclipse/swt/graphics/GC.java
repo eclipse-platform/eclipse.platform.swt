@@ -177,6 +177,13 @@ static int checkStyle (int style) {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+public static GC gtk_new(int handle, GCData data) {
+	GC gc = new GC();
+	gc.device = data.device;
+	gc.init(null, data, handle);
+	return gc;
+}
+
 public static GC gtk_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int /*long*/ gdkGC = drawable.internal_new_GC(data);
@@ -561,8 +568,9 @@ public void dispose() {
 
 	/* Dispose the GC */
 	Device device = data.device;
-	drawable.internal_dispose_GC(handle, data);
-
+	if (drawable != null) {
+		drawable.internal_dispose_GC(handle, data);
+	}
 	data.drawable = data.clipRgn = 0;
 	drawable = null;
 	handle = 0;
@@ -1025,7 +1033,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int /*long*/ maskPixmap, int maskType) {
 	int translateX = 0, translateY = 0;
 	int /*long*/ drawable = data.drawable;
-	if (data.image == null) {
+	if (data.image == null && !data.realDrawable) {
 		int[] x = new int[1], y = new int[1];
 		int /*long*/ [] real_drawable = new int /*long*/ [1];
 		OS.gdk_window_get_internal_paint_info(drawable, real_drawable, x, y);
@@ -2792,12 +2800,14 @@ void initCairo() {
 	if (data.image != null) {
 		xDrawable = OS.GDK_PIXMAP_XID(drawable);
 	} else {
-		int[] x = new int[1], y = new int[1];
-		int /*long*/ [] real_drawable = new int /*long*/ [1];
-		OS.gdk_window_get_internal_paint_info(drawable, real_drawable, x, y);
-		xDrawable = OS.gdk_x11_drawable_get_xid(real_drawable[0]);
-		translateX = -x[0];
-		translateY = -y[0];
+		if (!data.realDrawable) {
+			int[] x = new int[1], y = new int[1];
+			int /*long*/ [] real_drawable = new int /*long*/ [1];
+			OS.gdk_window_get_internal_paint_info(drawable, real_drawable, x, y);
+			xDrawable = OS.gdk_x11_drawable_get_xid(real_drawable[0]);
+			translateX = -x[0];
+			translateY = -y[0];
+		}
 	}
 	int[] w = new int[1], h = new int[1];
 	OS.gdk_drawable_get_size(drawable, w, h);

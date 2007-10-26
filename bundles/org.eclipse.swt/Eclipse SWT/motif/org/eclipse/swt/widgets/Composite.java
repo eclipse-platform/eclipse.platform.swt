@@ -92,6 +92,10 @@ Composite () {
 public Composite (Composite parent, int style) {
 	super (parent, style);
 }
+static int checkStyle (int style) {
+	style &= ~SWT.TRANSPARENT;
+	return style;
+}
 Control [] _getChildren () {
 	int [] argList = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);

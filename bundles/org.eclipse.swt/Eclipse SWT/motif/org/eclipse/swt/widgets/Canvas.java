@@ -69,7 +69,7 @@ Canvas () {
  * @see Widget#getStyle
  */
 public Canvas (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (style));
 }
 /** 
  * Fills the interior of the rectangle specified by the arguments,

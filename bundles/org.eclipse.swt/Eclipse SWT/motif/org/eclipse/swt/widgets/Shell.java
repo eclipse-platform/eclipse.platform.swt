@@ -118,7 +118,6 @@ public class Shell extends Decorations {
 	boolean reparented, realized, moved, resized, opened;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
-	Region region;
 
 	static final  int MAXIMUM_TRIM = 128;
 	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
@@ -346,6 +345,7 @@ public Shell (Shell parent, int style) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
+	style &= ~SWT.TRANSPARENT;
 	if ((style & SWT.ON_TOP) != 0) style &= ~SWT.SHELL_TRIM;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
@@ -829,7 +829,7 @@ public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
 }
-/*public*/ int getAlpha () {
+public int getAlpha () {
 	checkWidget ();
 	return 255;
 }
@@ -1022,6 +1022,7 @@ public Point getMinimumSize () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -1210,7 +1211,6 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	lastActive = null;
-	region = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1306,7 +1306,7 @@ void setActiveControl (Control control) {
 		}
 	}
 }
-/*public*/ void setAlpha (int alpha) {
+public void setAlpha (int alpha) {
 	checkWidget ();
 	/* Not implemented */
 }
@@ -1574,17 +1574,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (!OS.XtIsRealized (shellHandle)) realizeWidget ();
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) return;
-	if (region != null) {
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, region.handle, OS.ShapeSet);
-	} else {
-		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
-	}
-	this.region = region;
+	super.setRegion (region);
 }
 public void setText (String string) {
 	checkWidget();
