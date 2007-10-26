@@ -56,7 +56,7 @@ abstract class Tab {
 	static final int LARGE_SIZE		= 100;
 	
 	/* Right-to-left support */
-	static final boolean RTL_SUPPORT_ENABLE = false;
+	static final boolean RTL_SUPPORT_ENABLE = true;
 	Group orientationGroup;
 	Button rtlButton, ltrButton, defaultOrietationButton;
 
