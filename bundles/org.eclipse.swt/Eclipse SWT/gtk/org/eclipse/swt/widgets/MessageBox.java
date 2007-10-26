@@ -80,7 +80,7 @@ public MessageBox (Shell parent) {
  * </ul>
  */
 public MessageBox (Shell parent, int style) {
-	super(parent, checkStyle(style));
+	super(parent, parent == null? checkStyle (style) : checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -148,6 +148,10 @@ public int open () {
 	buffer = Converter.wcsToMbcs(null, title, true);
 	OS.gtk_window_set_title(handle,buffer);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}	
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
@@ -181,6 +185,10 @@ private static int checkStyle (int style) {
 	if (bits == (SWT.RETRY | SWT.CANCEL) || bits == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) return style;
 	style = (style & ~mask) | SWT.OK;
 	return style;
+}
+
+static int checkStyle (Shell parent, int style) {
+	return checkStyle(Dialog.checkStyle(parent, style));
 }
 
 char[] fixPercent (String string) {
