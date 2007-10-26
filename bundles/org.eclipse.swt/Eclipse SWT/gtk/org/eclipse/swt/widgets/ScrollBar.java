@@ -598,8 +598,10 @@ public void setMinimum (int value) {
 void setOrientation () {
 	super.setOrientation ();
 	if ((parent.style & SWT.MIRRORED) != 0) {
-		if ((style & SWT.HORIZONTAL) != 0) {
-			OS.gtk_range_set_inverted (handle, true);
+		if ((parent.state & CANVAS) != 0) {
+			if ((style & SWT.HORIZONTAL) != 0) {
+				OS.gtk_range_set_inverted (handle, true);
+			}
 		}
 	}
 }
