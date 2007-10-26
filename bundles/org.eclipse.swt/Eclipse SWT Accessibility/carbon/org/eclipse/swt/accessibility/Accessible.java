@@ -283,7 +283,7 @@ public class Accessible {
 			
 			/* Or the application can answer a valid child ID, including CHILDID_SELF and CHILDID_NONE. */
 			if (event.childID == ACC.CHILDID_SELF) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleChild, OS.typeCFTypeRef, 4, new int[] {axuielementref});
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleChild, OS.typeCFTypeRef, 4, new int[] {0});
 				return OS.noErr;
 			}
 			if (event.childID == ACC.CHILDID_NONE) {
@@ -300,11 +300,8 @@ public class Accessible {
 				return OS.noErr;
 			}
 			
-			/* Invalid childID means the application did not implement getFocus, so return the native focus. */
-			if (control.isFocusControl()) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleChild, OS.typeCFTypeRef, 4, new int[] {axuielementref});
-				return OS.noErr;
-			}
+			/* Invalid childID means the application did not implement getFocus. */
+			return OS.eventNotHandledErr;
 		}
 		return OS.noErr;
 	}
@@ -528,7 +525,6 @@ public class Accessible {
 				return OS.noErr;
 			}
 		}
-		//return OS.CallNextEventHandler (nextHandler, theEvent);
 		return code;
 	}
 	
@@ -641,20 +637,14 @@ public class Accessible {
 			return OS.noErr;
 		}
 
-		/* Invalid childID means the application did not implement getFocus, so return the native focus. */
-		if (OS.CFEqual(axuielementref, osChildID[0])) {
-			boolean hasFocus =  control.isFocusControl();
-			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus});
-			return OS.noErr;
-		}
-		return OS.CallNextEventHandler (nextHandler, theEvent);
+		/* Invalid childID at this point means the application did not implement getFocus. */
+		return OS.eventNotHandledErr;
 	}
 	
 	int getParentAttribute (int nextHandler, int theEvent, int userData) {
 		int code = OS.CallNextEventHandler (nextHandler, theEvent);
 		if (code == OS.eventNotHandledErr) {
 			/* If the childID was created by the application, the parent is the accessible for the control. */
-			// TODO: typeCFTypeRef?... should be AXUIElementRef
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFTypeRef, 4, new int [] {axuielementref});
 			return OS.noErr;
 		}
@@ -757,7 +747,31 @@ public class Accessible {
 		}
 	
 	int getDescriptionAttribute (int nextHandler, int theEvent, int userData) {
-		return getAttribute (nextHandler, theEvent, userData);
+		int code = OS.CallNextEventHandler (nextHandler, theEvent);
+		String osDescriptionAttribute = null;
+		int [] stringRef = new int [1];
+		if (code == OS.noErr) {
+			int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, null, 4, null, stringRef);
+			if (status == OS.noErr) {
+				osDescriptionAttribute = stringRefToString (stringRef [0]);
+			}
+		}
+		AccessibleEvent event = new AccessibleEvent(this);
+		event.childID = getChildIDFromEvent(theEvent);
+		event.result = osDescriptionAttribute;
+		for (int i = 0; i < accessibleListeners.size(); i++) {
+			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+			listener.getName(event);
+		}
+		if (event.result != null) {
+			stringRef [0] = stringToStringRef (event.result);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+		return code;
 	}
 	
 	int getNumberOfCharactersAttribute (int nextHandler, int theEvent, int userData) {
@@ -1082,7 +1096,7 @@ public class Accessible {
 
 	String roleToOs(int role) {
 		switch (role) {
-			case ACC.ROLE_CLIENT_AREA: return OS.kAXWindowRole;
+			case ACC.ROLE_CLIENT_AREA: return OS.kAXGroupRole;
 			case ACC.ROLE_WINDOW: return OS.kAXWindowRole;
 			case ACC.ROLE_MENUBAR: return OS.kAXMenuBarRole;
 			case ACC.ROLE_MENU: return OS.kAXMenuRole;
