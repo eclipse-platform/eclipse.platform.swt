@@ -83,7 +83,7 @@ public FileDialog (Shell parent) {
  * </ul>
  */
 public FileDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, parent == null? style : checkStyle (parent, style));
 	checkSubclass ();
 }
 String computeResultChooserDialog () {
@@ -322,6 +322,10 @@ String openChooserDialog () {
 	}
 	presetChooserDialog ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}	
 	display.addIdleProc ();
 	String answer = null;
 	Dialog oldModal = null;
@@ -354,6 +358,10 @@ String openClassicDialog () {
 	}
 	presetClassicDialog ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}
 	display.addIdleProc ();
 	String answer = null;
 	Dialog oldModal = null;
