@@ -42,6 +42,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	String toolTipText;
 	Image backgroundImage;
+	Region region;
 	int toolTipHandle;
 	Accessible accessible;
 	
@@ -1135,6 +1136,11 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -1496,7 +1502,7 @@ public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
-/*public*/ boolean print (GC gc) {
+public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -1865,6 +1871,7 @@ void releaseWidget () {
 	menu = null;
 	cursor = null;
 	layoutData = null;
+	region = null;
 }
 
 /**
@@ -2792,6 +2799,13 @@ public void setRedraw (boolean redraw) {
 	} else {
 		OS.PtContainerHold (handle);
 	}
+}
+
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	// TODO implement setRegion
+	this.region = region;
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.

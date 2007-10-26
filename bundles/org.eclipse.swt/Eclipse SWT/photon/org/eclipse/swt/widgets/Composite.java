@@ -87,7 +87,12 @@ Composite () {
 public Composite (Composite parent, int style) {
 	super (parent, style);
 }
-	
+
+static int checkStyle (int style) {
+	style &= SWT.TRANSPARENT;
+	return style;
+}
+
 Control [] _getChildren () {
 	int count = 0;
 	int parentHandle = parentingHandle ();

@@ -118,7 +118,6 @@ public class Shell extends Decorations {
 	Menu activeMenu;
 	int blockedList;
 	Control lastActive;
-	Region region;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -379,6 +378,7 @@ void bringToTop (boolean force) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
+	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
@@ -550,7 +550,7 @@ public void forceActive () {
 	bringToTop (true);
 }
 
-/*public*/ int getAlpha () {
+public int getAlpha () {
 	checkWidget ();
 	return 255;
 }
@@ -673,6 +673,7 @@ public Point getMinimumSize () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -873,7 +874,6 @@ void releaseWidget () {
 	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 	blockedList = 0;
 	lastActive = null;
-	region = null;
 }
 
 /**
@@ -967,7 +967,7 @@ void setActiveControl (Control control) {
 	}
 }
 
-/*public*/ void setAlpha (int alpha) {
+public void setAlpha (int alpha) {
 	checkWidget ();
 	/*Not implemented */
 }
@@ -1155,9 +1155,7 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	// TODO implement setRegion
-	this.region = region;
+	super.setRegion (region);
 }
 
 /**
