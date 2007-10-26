@@ -65,6 +65,7 @@ public abstract class Control extends Widget implements Drawable {
 	Image backgroundImage;
 	Font font;
 	Cursor cursor;
+	Region region;
 	GCData gcs[];
 	Accessible accessible;
 
@@ -767,8 +768,8 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	return OS.WaitMouseMoved (pt1);
 }
 
-void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, Rect inset) {
-	fillBackground (control, context, null);
+void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, boolean drawBackground, Rect inset) {
+	if (drawBackground) fillBackground (control, context, null);
 	CGRect rect = new CGRect ();
 	OS.HIViewGetBounds (control, rect);
 	rect.x += inset.left;
@@ -1312,6 +1313,11 @@ Control [] getPath () {
 	return result;
 }
 
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -1490,13 +1496,14 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 		OS.kEventClassControl, OS.kEventControlDeactivate,
 		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlGetClickActivation,
+		OS.kEventClassControl, OS.kEventControlGetFocusPart,
+		OS.kEventClassControl, OS.kEventControlGetPartRegion,
 		OS.kEventClassControl, OS.kEventControlHit,
+		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
-		OS.kEventClassControl, OS.kEventControlGetFocusPart,
 		OS.kEventClassControl, OS.kEventControlTrack,
-		OS.kEventClassControl, OS.kEventControlHitTest,
-		OS.kEventClassControl, OS.kEventControlGetClickActivation,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
@@ -1893,6 +1900,24 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlGetPartRegion (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (region != null && this != getShell ()) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode , null, 2, null, part);
+		if (part [0] == OS.kControlStructureMetaPart) {
+			int [] rgn = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamControlRegion, OS.typeQDRgnHandle , null, 4, null, rgn);
+			OS.CopyRgn (region.handle, rgn[0]);
+			Rect rect = getInset ();
+			OS.OffsetRgn (rgn [0], (short)-rect.left, (short)-rect.top);
+			return OS.noErr;
+		}
+	}
+	return result;
+}
+
 int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHitTest (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -1905,6 +1930,15 @@ int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{1});
 		}
 		return OS.noErr;
+	}
+	if (region != null && this != getShell ()) {
+		int code = OS.CallNextEventHandler (nextHandler, theEvent);
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		if (!region.contains ((int) pt.x, (int) pt.y)) {
+			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short [1]);
+		}
+		return code;
 	}
 	return result;
 }
@@ -2208,6 +2242,25 @@ public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] outImage = new int [1];
+	CGRect outFrame = new CGRect ();
+	if (OS.HIViewCreateOffscreenImage (handle, 0, outFrame, outImage) == OS.noErr) {
+		int width = OS.CGImageGetWidth (outImage [0]);
+		int height = OS.CGImageGetHeight (outImage [0]);
+	 	CGRect rect = new CGRect();
+	 	rect.width = width;
+		rect.height = height;
+		//TODO - does not draw the browser (cocoa widgets?)
+		OS.HIViewDrawCGImage (gc.handle, rect, outImage [0]);
+		OS.CGImageRelease (outImage [0]);
+	}
+	return true;
+}
+
 /**
  * Causes the entire bounds of the receiver to be marked
  * as needing to be redrawn. The next time a paint request
@@ -2300,6 +2353,7 @@ void releaseWidget () {
 		accessible.internal_dispose_Accessible ();
 	}
 	accessible = null;
+	region = null;
 }
 
 /**
@@ -3401,6 +3455,13 @@ public void setRedraw (boolean redraw) {
 		}
 		drawCount++;
 	}
+}
+
+public void setRegion (Region region) {
+	checkWidget ();
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.region = region;
+	redrawWidget (handle, true);
 }
 
 boolean setRadioSelection (boolean value){

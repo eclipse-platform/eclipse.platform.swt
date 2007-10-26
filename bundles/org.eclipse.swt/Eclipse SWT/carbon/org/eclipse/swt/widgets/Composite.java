@@ -269,18 +269,19 @@ void drawBackground (int control, int context) {
 		Composite parent = this;
 		Shell shell = getShell ();
 		if (shell != this) parent = this.parent;
+		boolean drawBackground = (style & SWT.TRANSPARENT) == 0;
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), inset ());
+			parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), drawBackground, inset ());
 		} else {
 			if (hasBorder ()) {
-				parent.drawFocus (control, context, false, hasBorder (), inset ());
+				parent.drawFocus (control, context, false, hasBorder (), drawBackground, inset ());
 			} else {
 				parent.fillBackground (control, context, null);
 			}
 		}
 	} else {
 		if ((state & CANVAS) != 0) {
-			if ((style & SWT.NO_BACKGROUND) == 0) {
+			if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) == 0) {
 				fillBackground (control, context, null);
 			}	
 		}

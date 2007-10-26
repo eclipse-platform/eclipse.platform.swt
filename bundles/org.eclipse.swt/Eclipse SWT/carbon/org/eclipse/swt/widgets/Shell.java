@@ -359,6 +359,7 @@ public static Shell internal_new (Display display, int handle) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
+	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
@@ -669,7 +670,7 @@ public void forceActive () {
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
 
-/*public*/ int getAlpha () {
+public int getAlpha () {
 	checkWidget ();
 	float [] alpha = new float [1];
 	if (OS.GetWindowAlpha (shellHandle, alpha) == OS.noErr) {
@@ -781,6 +782,7 @@ float [] getParentBackground () {
  *
  */
 public Region getRegion () {
+	/* This method is needed for the @since 3.0 Javadoc */
 	checkWidget ();
 	return region;
 }
@@ -1226,7 +1228,6 @@ void releaseWidget () {
 	if (imHandle != 0) OS.DeleteTSMDocument (imHandle);
 	imHandle = invalRgn = windowGroup = 0;
 	lastActive = null;
-	region = null;
 }
 
 /**
@@ -1321,7 +1322,7 @@ void setActiveControl (Control control) {
 	}
 }
 
-/*public*/ void setAlpha (int alpha) {
+public void setAlpha (int alpha) {
 	checkWidget ();
 	alpha &= 0xFF;
 	OS.SetWindowAlpha (shellHandle, alpha / 255f);

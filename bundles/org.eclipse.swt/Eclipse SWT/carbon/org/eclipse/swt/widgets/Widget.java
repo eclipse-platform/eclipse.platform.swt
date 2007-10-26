@@ -361,6 +361,7 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
 		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
 		case OS.kEventControlDraw:					return kEventControlDraw (nextHandler, theEvent, userData);
+		case OS.kEventControlGetPartRegion:			return kEventControlGetPartRegion (nextHandler, theEvent, userData);
 		case OS.kEventControlHit:					return kEventControlHit (nextHandler, theEvent, userData);
 		case OS.kEventControlSetCursor:				return kEventControlSetCursor (nextHandler, theEvent, userData);
 		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
@@ -1044,6 +1045,10 @@ int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -1542,7 +1547,6 @@ void sendEvent (int eventType, Event event, boolean send) {
 		display.postEvent (event);
 	}
 }
-
 
 boolean sendKeyEvent (int type, int theEvent) {
 	int [] length = new int [1];
