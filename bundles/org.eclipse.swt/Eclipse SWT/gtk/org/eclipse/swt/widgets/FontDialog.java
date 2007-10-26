@@ -74,7 +74,7 @@ public FontDialog (Shell parent) {
  * </ul>
  */
 public FontDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, parent == null? style : checkStyle (parent, style));
 	checkSubclass ();
 }
 
@@ -133,7 +133,13 @@ public FontData open () {
 	int /*long*/ handle;
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (null, title, true);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	handle = OS.gtk_font_selection_dialog_new (titleBytes);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}		
+
 	if (parent!=null) {
 		int /*long*/ shellHandle = parent.topHandle ();
 		OS.gtk_window_set_transient_for(handle, shellHandle);
@@ -144,7 +150,6 @@ public FontData open () {
 		}
 	}
 	if (fontData != null) {
-		Display display = parent != null ? parent.display : Display.getCurrent ();
 		Font font = new Font (display, fontData);
 		int /*long*/ fontName = OS.pango_font_description_to_string (font.handle);
 		int length = OS.strlen (fontName);
@@ -154,7 +159,6 @@ public FontData open () {
 		OS.g_free (fontName);
 		OS.gtk_font_selection_dialog_set_font_name (handle, buffer);
 	}
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
