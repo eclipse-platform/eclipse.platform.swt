@@ -216,6 +216,7 @@ public class Display extends Device {
 	/* Set direction callback */
 	int /*long*/ setDirectionProc;
 	Callback setDirectionCallback;
+	static final String GET_DIRECTION_PROC_KEY = "org.eclipse.swt.internal.gtk.getDirectionProc";
 	
 	/* Get all children callback */
 	int /*long*/ allChildrenProc, allChildren;
@@ -1494,6 +1495,9 @@ public Object getData (String key) {
 	}
 	if (key.equals (GET_MODAL_DIALOG)) {
 		return modalDialog;
+	}
+	if (key.equals (GET_DIRECTION_PROC_KEY)) {
+		return new LONG (setDirectionProc);
 	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {

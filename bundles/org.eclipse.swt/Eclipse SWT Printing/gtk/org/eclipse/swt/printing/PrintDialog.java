@@ -38,6 +38,7 @@ public class PrintDialog extends Dialog {
 	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.setModalDialog";
 	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.addIdleProc";
 	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.removeIdleProc";
+	static final String GET_DIRECTION_PROC_KEY = "org.eclipse.swt.internal.gtk.getDirectionProc";
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -89,8 +90,31 @@ public PrintDialog (Shell parent) {
  * @see Widget#getStyle
  */
 public PrintDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, parent == null? style : checkStyleBit (parent, style));
 	checkSubclass ();
+}
+
+static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
+	int mask = int0 | int1 | int2 | int3 | int4 | int5;
+	if ((style & mask) == 0) style |= int0;
+	if ((style & int0) != 0) style = (style & ~mask) | int0;
+	if ((style & int1) != 0) style = (style & ~mask) | int1;
+	if ((style & int2) != 0) style = (style & ~mask) | int2;
+	if ((style & int3) != 0) style = (style & ~mask) | int3;
+	if ((style & int4) != 0) style = (style & ~mask) | int4;
+	if ((style & int5) != 0) style = (style & ~mask) | int5;
+	return style;
+}
+
+static int checkStyleBit (Shell parent, int style) {
+	style &= ~SWT.MIRRORED;
+	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
+		if (parent != null) {
+			if ((parent.getStyle () & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
+			if ((parent.getStyle () & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
+		}
+	}
+	return checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
 }
 
 protected void checkSubclass() {
@@ -254,6 +278,10 @@ public PrinterData open() {
 		PrinterData data = null;
 		//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
 		Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
+		if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+			OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+			OS.gtk_container_forall (handle, ((LONG) display.getData (GET_DIRECTION_PROC_KEY)).value, OS.GTK_TEXT_DIR_RTL);
+		}	
 		display.setData (ADD_IDLE_PROC_KEY, null);
 		Object oldModal = null;
 		if (OS.gtk_window_get_modal (handle)) {
