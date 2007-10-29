@@ -177,7 +177,7 @@ static int checkStyle (int style) {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
-public static GC gtk_new(int handle, GCData data) {
+public static GC gtk_new(int /*long*/ handle, GCData data) {
 	GC gc = new GC();
 	gc.device = data.device;
 	gc.init(null, data, handle);
