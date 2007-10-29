@@ -55,14 +55,31 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	// Test FileDialog(Shell, int)
 	FileDialog fd;
 	fd = new FileDialog(shell, SWT.NULL);
-	assertTrue(fd.getStyle()==SWT.NULL);
+	int style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.NULL);
+	
 	fd = new FileDialog(shell, SWT.APPLICATION_MODAL);
-	assertTrue(fd.getStyle()==SWT.APPLICATION_MODAL);
+	style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.APPLICATION_MODAL);
+	
 	fd = new FileDialog(shell, SWT.PRIMARY_MODAL);
-	assertTrue(fd.getStyle()==SWT.PRIMARY_MODAL);
+	style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.PRIMARY_MODAL);
+	
 	fd = new FileDialog(shell, SWT.SYSTEM_MODAL);
-	assertTrue(fd.getStyle()==SWT.SYSTEM_MODAL);
+	style = fd.getStyle();
+	style &= ~SWT.LEFT_TO_RIGHT;
+	style &= ~SWT.RIGHT_TO_LEFT;
+	assertTrue(style==SWT.SYSTEM_MODAL);
 }
+
+
 public void test_getFileName() {
 	//	tested in test_setFileNameLjava_lang_String()
 }
