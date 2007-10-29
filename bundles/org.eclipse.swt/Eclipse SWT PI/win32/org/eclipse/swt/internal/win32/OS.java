@@ -1099,6 +1099,7 @@ public class OS extends C {
 	public static final int MIIM_DATA = 0x20;
 	public static final int MIIM_ID = 0x2;
 	public static final int MIIM_STATE = 0x1;
+	public static final int MIIM_STRING = 0x40;
 	public static final int MIIM_SUBMENU = 0x4;
 	public static final int MIIM_TYPE = 0x10;
 	public static final int MIM_BACKGROUND = 0x2;
