@@ -1893,7 +1893,7 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 
 	boolean exceptionThrown = false;
 	try {
-		text.print(null);
+		text.print((Printer) null);
 	} catch (IllegalArgumentException ex) {
 		exceptionThrown = true;
 	}	
