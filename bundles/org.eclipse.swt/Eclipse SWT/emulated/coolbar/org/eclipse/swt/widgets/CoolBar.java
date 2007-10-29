@@ -303,7 +303,7 @@ public int indexOf (CoolItem item) {
 void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 	int barWidth = getWidth();
 	int rowY = items[rowIndex][0].internalGetBounds().y;
-	int x = Math.max(0, x_root - toDisplay(new Point(0, 0)).x);
+	int x = Math.max(0, Math.abs(x_root - toDisplay(new Point(0, 0)).x));
 	
 	/* Find the insertion index and add the item. */
 	int index;
@@ -603,7 +603,7 @@ void onMouseMove(Event event) {
 	fixEvent(event);
 	CoolItem grabbed = getGrabbedItem(event.x, event.y);
 	if (dragging != null) {
-		int left_root = toDisplay(new Point(event.x, event.y)).x - itemXOffset;
+		int left_root = toDisplay(new Point(event.x - itemXOffset, event.y)).x;
 		Rectangle bounds = dragging.internalGetBounds();
 		if (event.y < bounds.y) {
 			moveUp(dragging, left_root);
