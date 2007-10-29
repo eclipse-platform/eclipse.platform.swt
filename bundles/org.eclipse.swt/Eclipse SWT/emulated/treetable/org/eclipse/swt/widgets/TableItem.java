@@ -1868,7 +1868,7 @@ public void setImage (int columnIndex, Image value) {
 				columns [0].getX (), 0,
 				columns [0].width,
 				parent.clientArea.height,
-				true);
+				false);
 		}
 		return;
 	}
