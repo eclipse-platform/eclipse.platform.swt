@@ -729,19 +729,22 @@ boolean redrawChildren () {
 }
 
 void releaseParent () {
-	if ((style & SWT.TRANSPARENT) != 0) {
-		int /*long*/ hwndParent = parent.handle;
-		int /*long*/ hwndChild = OS.GetWindow (hwndParent, OS.GW_CHILD);
-		while (hwndChild != 0) {
-			if (hwndChild != handle) {
-				int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
-				if ((bits & OS.WS_EX_TRANSPARENT) != 0) return;
+	super.releaseParent ();
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.TRANSPARENT) != 0) {
+			int /*long*/ hwndParent = parent.handle;
+			int /*long*/ hwndChild = OS.GetWindow (hwndParent, OS.GW_CHILD);
+			while (hwndChild != 0) {
+				if (hwndChild != handle) {
+					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+					if ((bits & OS.WS_EX_TRANSPARENT) != 0) return;
+				}
+				hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
 			}
-			hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+			int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+			bits &= ~OS.WS_EX_COMPOSITED;
+			OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, bits);
 		}
-		int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
-		bits &= ~OS.WS_EX_COMPOSITED;
-		OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, bits);
 	}
 }
 
