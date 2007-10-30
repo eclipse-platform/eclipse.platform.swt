@@ -785,7 +785,7 @@ void forceResize (int width, int height) {
 	OS.gtk_widget_size_allocate (vboxHandle, allocation);
 }
 
-/*public*/ int getAlpha () {
+public int getAlpha () {
 	checkWidget ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
 		if (OS.gtk_widget_is_composited (shellHandle)) {
@@ -1199,7 +1199,7 @@ void setActiveControl (Control control) {
 	}
 }
 
-/*public*/ void setAlpha (int alpha) {
+public void setAlpha (int alpha) {
 	checkWidget ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
 		if (OS.gtk_widget_is_composited (shellHandle)) {
