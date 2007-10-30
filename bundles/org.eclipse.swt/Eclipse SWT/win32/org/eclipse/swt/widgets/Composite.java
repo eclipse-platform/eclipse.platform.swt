@@ -883,6 +883,9 @@ public void setBackgroundMode (int mode) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	if (display.resizeCount > Display.RESIZE_LIMIT) {
+		defer = false;
+	}
 	if (!defer && (state & CANVAS) != 0) {
 		state &= ~RESIZE_OCCURRED | MOVE_OCCURRED;
 		state |= RESIZE_DEFERRED | MOVE_DEFERRED;
@@ -1009,11 +1012,12 @@ void setResizeChildren (boolean resize) {
 	if (resize) {
 		resizeChildren ();
 	} else {
-		if (display.resizeCount < Display.RESIZE_LIMIT) {
-			int count = getChildrenCount ();
-			if (count > 1 && lpwp == null) {
-				lpwp = new WINDOWPOS [count];
-			}
+		if (display.resizeCount > Display.RESIZE_LIMIT) {
+			return;
+		}
+		int count = getChildrenCount ();
+		if (count > 1 && lpwp == null) {
+			lpwp = new WINDOWPOS [count];
 		}
 	}
 }
