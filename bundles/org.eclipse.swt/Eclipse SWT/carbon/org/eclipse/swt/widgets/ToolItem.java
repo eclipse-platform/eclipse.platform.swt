@@ -786,17 +786,18 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		}
 	}
 	if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
-		String tooltip = getToolTipText();
-		if (tooltip != null && getText().equals("")) {
-			//TODO: TEMPORARY CODE: return the tooltip for an icon-only tool item (should send getName to the app)
-			buffer = new char [tooltip.length ()];
-			tooltip.getChars (0, buffer.length, buffer, 0);
+		//TODO: TEMPORARY CODE: return the tooltip/text (should send getName to the app's accessible instead)
+		String accessibleText = toolTipText;
+		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
+		if (!(accessibleText == null || accessibleText.equals(""))) {
+			buffer = new char [accessibleText.length ()];
+			accessibleText.getChars (0, buffer.length, buffer, 0);
 			int ref = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {ref});
 			OS.CFRelease(ref);
 			return OS.noErr;
-			// END TEMPORARY CODE
 		}
+		// END TEMPORARY CODE
 	}
 	return code;
 }
