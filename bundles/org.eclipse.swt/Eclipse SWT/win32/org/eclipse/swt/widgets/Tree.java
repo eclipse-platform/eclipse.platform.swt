@@ -6071,12 +6071,14 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-			if (hNewItem == hOldItem && lpht.hItem != hOldItem) {
-				OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
-				hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			}
-			if (!dragStarted && lpht.hItem != 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-				dragStarted = dragDetect (handle, lpht.x, lpht.y, false, null, null);
+			if (lpht.hItem != 0) {
+				if (hOldItem == 0 || (hNewItem == hOldItem && lpht.hItem != hOldItem)) {
+					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+					hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+				}
+				if (!dragStarted && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+					dragStarted = dragDetect (handle, lpht.x, lpht.y, false, null, null);
+				}
 			}
 		}
 	}
