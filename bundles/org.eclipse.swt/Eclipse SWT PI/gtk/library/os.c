@@ -4643,6 +4643,62 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1width)
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1loader_1close
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1loader_1close)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1loader_1close_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_pixbuf_loader_close((GdkPixbufLoader *)arg0, (GError **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1loader_1close_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1loader_1get_1pixbuf
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1loader_1get_1pixbuf)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1loader_1get_1pixbuf_FUNC);
+	rc = (jint)gdk_pixbuf_loader_get_pixbuf((GdkPixbufLoader *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1loader_1get_1pixbuf_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1loader_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1loader_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1loader_1new_FUNC);
+	rc = (jint)gdk_pixbuf_loader_new();
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1loader_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1loader_1write
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1loader_1write)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1loader_1write_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_pixbuf_loader_write((GdkPixbufLoader *)arg0, (const guchar *)arg1, (gsize)arg2, (GError **)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1loader_1write_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1new)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jint arg2, jint arg3, jint arg4)
@@ -4708,6 +4764,51 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1to_1drawable_1alpha)
 	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC);
 	gdk_pixbuf_render_to_drawable_alpha((GdkPixbuf *)arg0, (GdkDrawable *)arg1, arg2, arg3, arg4, arg5, arg6, arg7, (GdkPixbufAlphaMode)arg8, arg9, (GdkRgbDither)arg10, arg11, arg12);
 	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1save_1to_1buffer
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1save_1to_1buffer)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jbyteArray arg3, jintArray arg4, jbyteArray arg5)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1save_1to_1buffer_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gdk_pixbuf_save_to_buffer((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (GError **)lparg4, (char *)lparg5);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(GdkPixbuf *, gchar **, gsize *, const char *, GError **, char *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_pixbuf_save_to_buffer_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_pixbuf_save_to_buffer");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (GError **)lparg4, (char *)lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1save_1to_1buffer_FUNC);
+	return rc;
 }
 #endif
 
