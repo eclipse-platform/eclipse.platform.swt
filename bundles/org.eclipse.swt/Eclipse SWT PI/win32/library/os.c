@@ -1376,14 +1376,44 @@ fail:
 }
 #endif
 
-#ifndef NO_CreateDIBSection
-JNIEXPORT jint JNICALL OS_NATIVE(CreateDIBSection)
+#ifndef NO_CreateDIBSection__III_3III
+JNIEXPORT jint JNICALL OS_NATIVE(CreateDIBSection__III_3III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jint arg5)
+{
+	jint *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateDIBSection__III_3III_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	}
+	rc = (jint)CreateDIBSection((HDC)arg0, (BITMAPINFO *)arg1, arg2, (VOID **)lparg3, (HANDLE)arg4, arg5);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, 0);
+	} else
+#endif
+	{
+		if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	}
+	OS_NATIVE_EXIT(env, that, CreateDIBSection__III_3III_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateDIBSection__I_3BI_3III
+JNIEXPORT jint JNICALL OS_NATIVE(CreateDIBSection__I_3BI_3III)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jint arg4, jint arg5)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CreateDIBSection_FUNC);
+	OS_NATIVE_ENTER(env, that, CreateDIBSection__I_3BI_3III_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
@@ -1406,7 +1436,7 @@ fail:
 		if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 		if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	}
-	OS_NATIVE_EXIT(env, that, CreateDIBSection_FUNC);
+	OS_NATIVE_EXIT(env, that, CreateDIBSection__I_3BI_3III_FUNC);
 	return rc;
 }
 #endif
@@ -8104,6 +8134,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(MonitorFromWindow)
 }
 #endif
 
+#ifndef NO_MoveMemory__III
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, MoveMemory__III_FUNC);
+	MoveMemory((PVOID)arg0, (CONST VOID *)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, MoveMemory__III_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -8571,6 +8611,20 @@ fail:
 		if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, JNI_ABORT);
 	}
 	OS_NATIVE_EXIT(env, that, MoveMemory__I_3SI_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	BITMAPINFOHEADER _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setBITMAPINFOHEADERFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2II_FUNC);
 }
 #endif
 
