@@ -327,7 +327,7 @@ class TreeTab extends ScrollableTab {
 				TreeColumn treeColumn = new TreeColumn(tree2, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
 				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitles[i]}));
-				if (headerImagesButton.getSelection()) treeColumn.setImage(image);
+				if (headerImagesButton.getSelection()) treeColumn.setImage(instance.images [i % 3]);
 			}
 		}
 		for (int i = 0; i < 4; i++) {
