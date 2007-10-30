@@ -2983,6 +2983,42 @@ public static final int gdk_pixbuf_get_width(int /*long*/ pixbuf) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_pixbuf_loader_new();
+public static final int /*long*/ gdk_pixbuf_loader_new() {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_loader_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gdk_pixbuf_loader_close(int /*long*/ loader, int /*long*/ [] error);
+public static final boolean gdk_pixbuf_loader_close(int /*long*/ loader, int /*long*/ [] error) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_loader_close(loader, error);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gdk_pixbuf_loader_get_pixbuf(int /*long*/ loader);
+public static final int /*long*/ gdk_pixbuf_loader_get_pixbuf(int /*long*/ loader) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_loader_get_pixbuf(loader);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gdk_pixbuf_loader_write(int /*long*/ loader, int /*long*/ buffer, int count, int /*long*/ [] error);
+public static final boolean gdk_pixbuf_loader_write(int /*long*/ loader, int /*long*/ buffer, int count, int /*long*/ [] error) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_loader_write(loader, buffer, count, error);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_pixbuf_new(int colorspace, boolean has_alpha, int bits_per_sample, int width, int height);
 public static final int /*long*/ gdk_pixbuf_new(int colorspace, boolean has_alpha, int bits_per_sample, int width, int height) {
 	lock.lock();
@@ -3024,6 +3060,15 @@ public static final void gdk_pixbuf_render_pixmap_and_mask(int /*long*/ pixbuf, 
 	lock.lock();
 	try {
 		_gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, mask_return, alpha_threshold);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gdk_pixbuf_save_to_buffer(int /*long*/ pixbuf, int /*long*/ [] buffer, int [] buffer_size, byte [] type, int /*long*/ [] error, byte [] terminate);
+public static final boolean gdk_pixbuf_save_to_buffer(int /*long*/ pixbuf, int /*long*/ [] buffer, int [] buffer_size, byte [] type, int /*long*/ [] error, byte [] terminate) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_save_to_buffer(pixbuf, buffer, buffer_size, type, error, terminate);
 	} finally {
 		lock.unlock();
 	}
