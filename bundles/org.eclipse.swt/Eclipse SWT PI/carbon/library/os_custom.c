@@ -255,3 +255,17 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1_1BIG_1ENDIAN_1_1)
 	return rc;
 }
 #endif
+
+#ifndef QDPictGetBounds
+JNIEXPORT void JNICALL OS_NATIVE(QDPictGetBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, QDPictGetBounds_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	*lparg1 = QDPictGetBounds((QDPictRef)arg0);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, QDPictGetBounds_FUNC);
+}
+#endif

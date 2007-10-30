@@ -2745,6 +2745,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGImageGetColorSpace)
 }
 #endif
 
+#ifndef NO_CGImageGetDataProvider
+JNIEXPORT jint JNICALL OS_NATIVE(CGImageGetDataProvider)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageGetDataProvider_FUNC);
+	rc = (jint)CGImageGetDataProvider((CGImageRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGImageGetDataProvider_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGImageGetHeight
 JNIEXPORT jint JNICALL OS_NATIVE(CGImageGetHeight)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3251,6 +3263,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(CloseDataBrowserContainer)
 	rc = (jint)CloseDataBrowserContainer((ControlRef)arg0, (DataBrowserItemID)arg1);
 	OS_NATIVE_EXIT(env, that, CloseDataBrowserContainer_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_ClosePicture
+JNIEXPORT void JNICALL OS_NATIVE(ClosePicture)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, ClosePicture_FUNC);
+	ClosePicture();
+	OS_NATIVE_EXIT(env, that, ClosePicture_FUNC);
 }
 #endif
 
@@ -4381,6 +4403,20 @@ JNIEXPORT void JNICALL OS_NATIVE(DrawMenuBar)
 	OS_NATIVE_ENTER(env, that, DrawMenuBar_FUNC);
 	DrawMenuBar();
 	OS_NATIVE_EXIT(env, that, DrawMenuBar_FUNC);
+}
+#endif
+
+#ifndef NO_DrawPicture
+JNIEXPORT void JNICALL OS_NATIVE(DrawPicture)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, DrawPicture_FUNC);
+	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	DrawPicture((PicHandle)arg0, (const Rect *)lparg1);
+fail:
+	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, DrawPicture_FUNC);
 }
 #endif
 
@@ -9216,6 +9252,16 @@ fail:
 }
 #endif
 
+#ifndef NO_KillPicture
+JNIEXPORT void JNICALL OS_NATIVE(KillPicture)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, KillPicture_FUNC);
+	KillPicture((PicHandle)arg0);
+	OS_NATIVE_EXIT(env, that, KillPicture_FUNC);
+}
+#endif
+
 #ifndef NO_LSCopyAllRoleHandlersForContentType
 JNIEXPORT jint JNICALL OS_NATIVE(LSCopyAllRoleHandlersForContentType)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -9777,6 +9823,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(OpenDataBrowserContainer)
 	OS_NATIVE_ENTER(env, that, OpenDataBrowserContainer_FUNC);
 	rc = (jint)OpenDataBrowserContainer((ControlRef)arg0, (DataBrowserItemID)arg1);
 	OS_NATIVE_EXIT(env, that, OpenDataBrowserContainer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OpenPicture
+JNIEXPORT jint JNICALL OS_NATIVE(OpenPicture)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, OpenPicture_FUNC);
+	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)OpenPicture((const Rect *)lparg0);
+fail:
+	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, OpenPicture_FUNC);
 	return rc;
 }
 #endif
@@ -10562,6 +10624,44 @@ JNIEXPORT void JNICALL OS_NATIVE(QDFlushPortBuffer)
 	OS_NATIVE_ENTER(env, that, QDFlushPortBuffer_FUNC);
 	QDFlushPortBuffer((CGrafPtr)arg0, (RgnHandle)arg1);
 	OS_NATIVE_EXIT(env, that, QDFlushPortBuffer_FUNC);
+}
+#endif
+
+#ifndef NO_QDPictCreateWithProvider
+JNIEXPORT jint JNICALL OS_NATIVE(QDPictCreateWithProvider)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, QDPictCreateWithProvider_FUNC);
+	rc = (jint)QDPictCreateWithProvider((CGDataProviderRef)arg0);
+	OS_NATIVE_EXIT(env, that, QDPictCreateWithProvider_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_QDPictDrawToCGContext
+JNIEXPORT jint JNICALL OS_NATIVE(QDPictDrawToCGContext)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, QDPictDrawToCGContext_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)QDPictDrawToCGContext((CGContextRef)arg0, *(CGRect *)lparg1, (QDPictRef)arg2);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, QDPictDrawToCGContext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_QDPictRelease
+JNIEXPORT void JNICALL OS_NATIVE(QDPictRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, QDPictRelease_FUNC);
+	QDPictRelease((QDPictRef)arg0);
+	OS_NATIVE_EXIT(env, that, QDPictRelease_FUNC);
 }
 #endif
 
