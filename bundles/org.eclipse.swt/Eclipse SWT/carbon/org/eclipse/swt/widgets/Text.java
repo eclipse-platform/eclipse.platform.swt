@@ -1370,6 +1370,16 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 			case 48: { /* Tab */
 				return OS.noErr;
 			}
+			/*
+			* Bug in the Macintosh (Leopard).  When focus is changed to another control
+			* when an arrow key is pressed inside of kEventUnicodeKeyPressed, when 
+			* the window that contains the text control is disposed, it crashes.
+			* The fix is to avoid calling the default handler when focus changes.
+			*/
+			case 125: /* Down */
+			case 126: { /* Up*/
+				if (!hasFocus ()) return OS.noErr;
+			}
 		}
 	}
 	return result;
