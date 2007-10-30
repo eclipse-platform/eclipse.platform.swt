@@ -2328,6 +2328,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(DashStyles_1Solid)
 }
 #endif
 
+#ifndef NO_DataFormats_1Bitmap
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1Bitmap)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1Bitmap)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataFormats_1Bitmap_FUNC);
+	rc = (jint)TO_HANDLE(DataFormats::Bitmap);
+	OS_NATIVE_EXIT(env, that, DataFormats_1Bitmap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DataFormats_1FileDrop
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1FileDrop)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1FileDrop)

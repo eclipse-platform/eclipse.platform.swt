@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1274;
-int OS_nativeFunctionCallCount[1274];
+int OS_nativeFunctionCount = 1275;
+int OS_nativeFunctionCallCount[1275];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -205,6 +205,7 @@ char * OS_nativeFunctionNames[] = {
 	"DashStyles_1DashDotDot",
 	"DashStyles_1Dot",
 	"DashStyles_1Solid",
+	"DataFormats_1Bitmap",
 	"DataFormats_1FileDrop",
 	"DataFormats_1Html",
 	"DataFormats_1Rtf",

@@ -597,6 +597,7 @@ public static final native int DashStyles_DashDot();
 public static final native int DashStyles_DashDotDot();
 public static final native int DashStyles_Dot();
 public static final native int DashStyles_Solid();
+public static final native int DataFormats_Bitmap();
 public static final native int DataFormats_FileDrop();
 public static final native int DataFormats_Html();
 public static final native int DataFormats_Rtf();

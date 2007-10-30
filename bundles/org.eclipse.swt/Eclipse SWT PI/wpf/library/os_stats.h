@@ -213,6 +213,7 @@ typedef enum {
 	DashStyles_1DashDotDot_FUNC,
 	DashStyles_1Dot_FUNC,
 	DashStyles_1Solid_FUNC,
+	DataFormats_1Bitmap_FUNC,
 	DataFormats_1FileDrop_FUNC,
 	DataFormats_1Html_FUNC,
 	DataFormats_1Rtf_FUNC,
