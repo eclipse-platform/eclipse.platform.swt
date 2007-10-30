@@ -5648,7 +5648,10 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					tvItem.stateMask = OS.TVIS_SELECTED;
 					int /*long*/ hDeselectItem = hItem;					
 					RECT rect1 = new RECT ();
-					OS.TreeView_GetItemRect (handle, hAnchor, rect1, false);
+					if (!OS.TreeView_GetItemRect (handle, hAnchor, rect1, false)) {
+						hAnchor = hItem;
+						OS.TreeView_GetItemRect (handle, hAnchor, rect1, false);
+					}
 					RECT rect2 = new RECT ();
 					OS.TreeView_GetItemRect (handle, hDeselectItem, rect2, false);
 					int flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
@@ -5885,9 +5888,9 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			return LRESULT.ZERO;
 		}
 		boolean fixSelection = false, deselected = false;
+		int /*long*/ hOldSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (lpht.hItem != 0 && (style & SWT.MULTI) != 0) {
-			int /*long*/ hSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			if (hSelection != 0) {
+			if (hOldSelection != 0) {
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 				tvItem.hItem = lpht.hItem;
@@ -5897,6 +5900,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					tvItem.stateMask = OS.TVIS_SELECTED;
 					int /*long*/ hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
 					while (hNext != 0) {
+						if (hNext == hAnchor) hAnchor = 0;
 						tvItem.hItem = hNext;
 						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 						if ((tvItem.state & OS.TVIS_SELECTED) != 0) deselected = true;
@@ -5915,6 +5919,8 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
 		int /*long*/ code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
+		int /*long*/ hNewSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		if (hOldSelection != hNewSelection) hAnchor = hNewSelection;
 		if (dragStarted) {
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
