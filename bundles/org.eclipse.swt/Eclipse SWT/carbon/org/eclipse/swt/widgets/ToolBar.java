@@ -334,7 +334,7 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			if (stringRef [0] != 0) {
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
+				code = OS.noErr;
 			}
 		}
 		if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
@@ -343,12 +343,13 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
 				OS.CFRelease(stringRef [0]);
 				OS.CFRelease(stringRef2);
-				return OS.noErr;
+				code = OS.noErr;
 			}
 		}
 	}
 	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		int err = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		if (err != OS.eventNotHandledErr) return err;
 	}
 	return code;
 }
