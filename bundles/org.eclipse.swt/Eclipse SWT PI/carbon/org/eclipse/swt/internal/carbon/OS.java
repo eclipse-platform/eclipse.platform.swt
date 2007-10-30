@@ -133,6 +133,7 @@ public class OS extends C {
 	public static final int kCFRunLoopRunTimedOut = 3;
 	public static final int kCFRunLoopRunHandledSource = 4;
 	public static final int kAvailBoundsChangedForDock = 1 << 0;
+	public static final int kCGBlendModeNormal = 0;
 	public static final int kCGBlendModeDifference = 10;
 	public static final int kCGBitmapByteOrderDefault = 0 << 12;
 	public static final int kCGBitmapByteOrder16Little = 1 << 12;
