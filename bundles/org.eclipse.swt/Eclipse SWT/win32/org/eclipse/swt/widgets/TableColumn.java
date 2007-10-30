@@ -687,10 +687,12 @@ void setSortDirection (int direction) {
 			case SWT.UP:
 				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
 				hdItem.fmt |= OS.HDF_SORTUP;
+				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
 				break;
 			case SWT.DOWN:
 				hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
 				hdItem.fmt |= OS.HDF_SORTDOWN;
+				if (image == null) hdItem.mask &= ~OS.HDI_IMAGE;
 				break;
 			case SWT.NONE:
 				hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
