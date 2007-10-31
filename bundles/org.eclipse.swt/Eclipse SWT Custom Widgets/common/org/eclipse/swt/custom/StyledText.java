@@ -609,7 +609,7 @@ public class StyledText extends Canvas {
 		}
 		if (printOptions.printLineNumbers) {
 			FontMetrics metrics = layout.getLineMetrics(0);
-			printLayout.setAscent(metrics.getAscent() + metrics.getDescent());
+			printLayout.setAscent(metrics.getAscent() + metrics.getLeading());
 			printLayout.setDescent(metrics.getDescent());
 			String[] lineLabels = printOptions.lineLabels;
 			if (lineLabels != null) {
