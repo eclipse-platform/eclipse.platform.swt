@@ -1314,6 +1314,7 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public Control getCursorControl () {
+	checkDevice ();
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (where);
 	int [] theWindow = new int [1];
