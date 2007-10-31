@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Copy/paste image from/to clipboard.
+ * Copy/paste image to/from clipboard.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
