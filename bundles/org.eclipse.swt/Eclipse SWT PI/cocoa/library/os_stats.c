@@ -14,12 +14,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 30;
-int OS_nativeFunctionCallCount[30];
+int OS_nativeFunctionCount = 31;
+int OS_nativeFunctionCallCount[31];
 char * OS_nativeFunctionNames[] = {
-	"CPSEnableForegroundOperation",
-	"CPSSetProcessName",
 	"GetCurrentProcess",
+	"NSBitsPerPixelFromDepth",
 	"SetFrontProcess",
 	"TransformProcessType",
 	"class_1addMethods",
@@ -45,7 +44,9 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2",
+	"objc_1msgSend__II_3CI",
 	"objc_1msgSend__II_3IIIIIIIIIII",
+	"objc_1msgSend_1stret",
 	"sel_1registerName",
 };
 

@@ -11,16 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.ATSFontMetrics;
-import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.CGPoint;
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.HMHelpContentRec;
-import org.eclipse.swt.internal.carbon.HIThemeFrameDrawInfo;
-import org.eclipse.swt.internal.carbon.Rect;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -59,17 +49,18 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	String toolTipText;
 	Object layoutData;
-	int drawCount, visibleRgn;
+	int drawCount;
+//	int visibleRgn;
 	Menu menu;
 	float [] foreground, background;
 	Image backgroundImage;
 	Font font;
 	Cursor cursor;
 	Region region;
-	GCData gcs[];
+//	GCData gcs[];
 	Accessible accessible;
 
-	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
+//	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
 
 Control () {
 	/* Do nothing */
@@ -107,14 +98,6 @@ public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	createWidget ();
-}
-
-int actionProc (int theControl, int partCode) {
-	int result = super.actionProc (theControl, partCode);
-	if (result == OS.noErr) return result;
-	if (isDisposed ()) return OS.noErr;
-	sendTrackEvents ();
-	return result;
 }
 
 /**
@@ -453,33 +436,6 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
-int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
-	switch (inMessage) {
-		case OS.kControlMsgApplyTextColor: {
-			if (foreground != null) {
-				OS.RGBForeColor (toRGBColor (foreground));
-			} else {
-				OS.SetThemeTextColor ((short) OS.kThemeTextColorDialogActive, (short) inDrawDepth, inDrawInColor != 0);
-			}
-			return OS.noErr;
-		}
-		case OS.kControlMsgSetUpBackground: {
-			float [] background = this.background != null ? this.background : getParentBackground ();
-			if (background != null) {
-				OS.RGBBackColor (toRGBColor (background));
-			} else {
-				OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) inDrawDepth, inDrawInColor != 0);
-			}
-			return OS.noErr;
-		}
-	}
-	return OS.eventNotHandledErr;
-}
-
-int callFocusEventHandler (int nextHandler, int theEvent) {
-	return OS.CallNextEventHandler (nextHandler, theEvent);
-}
-
 void checkBackground () {
 	Shell shell = getShell ();
 	if (this == shell) return;
@@ -630,36 +586,24 @@ Color defaultBackground () {
 }
 
 Font defaultFont () {
-	byte [] family = new byte [256];
-	short [] size = new short [1];
-	byte [] style = new byte [1];
-	OS.GetThemeFont ((short) defaultThemeFont (), (short) OS.smSystemScript, family, size, style);
-	short id = OS.FMGetFontFamilyFromName (family);
-	int [] font = new int [1]; 
-	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	return Font.carbon_new (display, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0]);
+	return null;
 }
 
 Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_WIDGET_FOREGROUND);
 }
 
-int defaultThemeFont () {
-	if (display.smallFonts) return OS.kThemeSmallSystemFont;
-	return OS.kThemeSystemFont;
-}
-
 void deregister () {
 	super.deregister ();
-	display.removeWidget (handle);
+	//display.removeWidget (handle);
 }
 
 void destroyWidget () {
-	int theControl = topHandle ();
+//	int theControl = topHandle ();
 	releaseHandle ();
-	if (theControl != 0) {
-		OS.DisposeControl (theControl);
-	}
+//	if (theControl != 0) {
+//		OS.DisposeControl (theControl);
+//	}
 }
 
 /**
@@ -753,88 +697,33 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	CGPoint pt = new CGPoint ();
-	OS.HIViewConvertPoint (pt, handle, 0);
-	x += (int) pt.x;
-	y += (int) pt.y;
-	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	x += rect.left;
-	y += rect.top;
-	org.eclipse.swt.internal.carbon.Point pt1 = new org.eclipse.swt.internal.carbon.Point ();
-	pt1.h = (short) x;
-	pt1.v = (short) y;
-	return OS.WaitMouseMoved (pt1);
-}
-
-void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, boolean drawBackground, Rect inset) {
-	if (drawBackground) fillBackground (control, context, null);
-	CGRect rect = new CGRect ();
-	OS.HIViewGetBounds (control, rect);
-	rect.x += inset.left;
-	rect.y += inset.top;
-	rect.width -= inset.right + inset.left;
-	rect.height -= inset.bottom + inset.top;
-	int state;
-	if (OS.IsControlEnabled (control)) {
-		state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-	} else {
-		state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-	}
-	if (hasBorder) {
-		HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
-		info.state = state;
-		info.kind = OS.kHIThemeFrameTextFieldSquare;
-		info.isFocused = hasFocus;
-		OS.HIThemeDrawFrame (rect, info, context, OS.kHIThemeOrientationNormal);
-	} else {
-		OS.HIThemeDrawFocusRect (rect, hasFocus, context, OS.kHIThemeOrientationNormal);
-	}
-}
-
-boolean drawFocusRing () {
-	return hasBorder ();
+//	Rect rect = new Rect ();
+//	int window = OS.GetControlOwner (handle);
+//	CGPoint pt = new CGPoint ();
+//	OS.HIViewConvertPoint (pt, handle, 0);
+//	x += (int) pt.x;
+//	y += (int) pt.y;
+//	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+//	x += rect.left;
+//	y += rect.top;
+//	org.eclipse.swt.internal.carbon.Point pt1 = new org.eclipse.swt.internal.carbon.Point ();
+//	pt1.h = (short) x;
+//	pt1.v = (short) y;
+//	return OS.WaitMouseMoved (pt1);
+	return false;
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
-	if (control != handle) return;
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
-
-	/* Retrieve the damage rect */
-	Rect rect = new Rect ();
-	OS.GetRegionBounds (visibleRgn, rect);
-
-	/* Send paint event */
-	int [] port = new int [1];
-	OS.GetPort (port);
-	GCData data = new GCData ();
-	data.port = port [0];
-	data.paintEvent = theEvent;
-	data.visibleRgn = visibleRgn;
-	GC gc = GC.carbon_new (this, data);
-	Event event = new Event ();
-	event.gc = gc;
-	event.x = rect.left;
-	event.y = rect.top;
-	event.width = rect.right - rect.left;
-	event.height = rect.bottom - rect.top;
-	sendEvent (SWT.Paint, event);
-	event.gc = null;
-	gc.dispose ();
-}
-
 void enableWidget (boolean enabled) {
-	int topHandle = topHandle ();
-	if (enabled) {
-		OS.EnableControl (topHandle);
-	} else {
-		OS.DisableControl (topHandle);
-	}
+//	int topHandle = stopHandle ();
+//	if (enabled) {
+//		OS.EnableControl (topHandle);
+//	} else {
+//		OS.DisableControl (topHandle);
+//	}
 }
 
 boolean equals(float[] color1, float[] color2) {
@@ -845,56 +734,6 @@ boolean equals(float[] color1, float[] color2) {
 		if (color1 [i] != color2 [i]) return false;
 	}	
 	return true;
-}
-
-void fillBackground (int control, int context, Rectangle bounds) {
-	OS.CGContextSaveGState (context);
-	CGRect rect = new CGRect ();
-	if (bounds != null) {
-		rect.x = bounds.x;
-		rect.y = bounds.y;
-		rect.width = bounds.width;
-		rect.height = bounds.height;
-	} else {
-		OS.HIViewGetBounds (control, rect);
-	}
-	Control widget = findBackgroundControl ();
-	if (widget != null && widget.backgroundImage != null) {
-		CGPoint pt = new CGPoint();
-		OS.HIViewConvertPoint (pt, control, widget.handle);
-		OS.CGContextTranslateCTM (context, -pt.x, -pt.y);
-		Pattern pattern = new Pattern (display, widget.backgroundImage);
-		GCData data = new GCData ();
-		data.device = display;
-		data.background = widget.getBackgroundColor ().handle;
-		GC gc = GC.carbon_new (context, data);
-		gc.setBackgroundPattern (pattern);
-		gc.fillRectangle ((int) (rect.x + pt.x), (int) (rect.y + pt.y), (int) rect.width, (int) rect.height);
-		gc.dispose ();
-		pattern.dispose();
-	} else if (widget != null && widget.background != null) {
-		int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
-		OS.CGContextSetFillColorSpace (context, colorspace);
-		OS.CGContextSetFillColor (context, widget.background);
-		OS.CGColorSpaceRelease (colorspace);
-		OS.CGContextSetAlpha (context, getThemeAlpha ());
-		OS.CGContextFillRect (context, rect);
-	} else {
-		if (OS.VERSION >= 0x1040) {
-			OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
-			OS.CGContextSetAlpha (context, getThemeAlpha ());
-			OS.CGContextFillRect (context, rect);
-		} else {
-			Rect rect1 = new Rect ();
-			rect1.left = (short) rect.x;
-			rect1.top = (short) rect.y;
-			rect1.right = (short) (rect.x + rect.width);
-			rect1.bottom = (short) (rect.y + rect.height);
-			OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
-			OS.EraseRect (rect1);
-		}
-	}
-	OS.CGContextRestoreGState (context);
 }
 
 Cursor findCursor () {
@@ -924,16 +763,12 @@ void fixFocus (Control focusControl) {
 		if (control.setFocus ()) return;
 	}
 	shell.setSavedFocus (focusControl);
-	int window = OS.GetControlOwner (handle);
-	OS.ClearKeyboardFocus (window);
+//	int window = OS.GetControlOwner (handle);
+//	OS.ClearKeyboardFocus (window);
 }
 
 int focusHandle () {
 	return handle;
-}
-
-int focusPart () {
-	return OS.kControlFocusNextPart;
 }
 
 /**
@@ -951,7 +786,7 @@ int focusPart () {
  */
 public boolean forceFocus () {
 	checkWidget();
-	if (display.focusEvent == SWT.FocusOut) return false;
+//	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
@@ -969,18 +804,18 @@ public boolean forceFocus () {
 	* focus events to happen.  The fix is to ignore focus events and issue them only
 	* if the focus control changed.
 	*/
-	int focusHandle = focusHandle ();
-	int window = OS.GetControlOwner (focusHandle);
-	Control oldFocus = display.getFocusControl (window, true);
-	if (oldFocus == this) return true;
-	display.ignoreFocus = true;
-	OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
-	display.ignoreFocus = false;
-	Control newFocus = display.getFocusControl ();
-	if (oldFocus != newFocus) {
-		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
-		if (newFocus != null && !newFocus.isDisposed () && newFocus.isEnabled ()) newFocus.sendFocusEvent (SWT.FocusIn, false);
-	}
+//	int focusHandle = focusHandle ();
+//	int window = OS.GetControlOwner (focusHandle);
+//	Control oldFocus = display.getFocusControl (window, true);
+//	if (oldFocus == this) return true;
+//	display.ignoreFocus = true;
+//	OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
+//	display.ignoreFocus = false;
+//	Control newFocus = display.getFocusControl ();
+//	if (oldFocus != newFocus) {
+//		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
+//		if (newFocus != null && !newFocus.isDisposed () && newFocus.isEnabled ()) newFocus.sendFocusEvent (SWT.FocusIn, false);
+//	}
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	return hasFocus ();
@@ -1079,7 +914,7 @@ public int getBorderWidth () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return getControlBounds (topHandle ());
+	return null;
 }
 
 /**
@@ -1098,11 +933,6 @@ public Rectangle getBounds () {
 public boolean getDragDetect () {
 	checkWidget ();
 	return (state & DRAG_DETECT) != 0;
-}
-
-int getDrawCount (int control) {
-	if (!isTrimHandle (control) && drawCount > 0) return drawCount;
-	return parent.getDrawCount (control);
 }
 
 /**
@@ -1208,8 +1038,7 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget();
-	Rectangle rect = getControlBounds (topHandle ());
-	return new Point (rect.x, rect.y);
+	return null;
 }
 
 /**
@@ -1353,7 +1182,7 @@ public Shell getShell () {
  */
 public Point getSize () {
 	checkWidget();
-	return getControlSize (topHandle ());
+	return null;
 }
 
 /**
@@ -1370,10 +1199,6 @@ public Point getSize () {
 public String getToolTipText () {
 	checkWidget();
 	return toolTipText;
-}
-
-float getThemeAlpha () {
-	return 1 * parent.getThemeAlpha ();
 }
 
 /**
@@ -1398,17 +1223,6 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
-int getVisibleRegion (int control, boolean clipChildren) {
-	if (!clipChildren) return super.getVisibleRegion (control, clipChildren);
-	if (visibleRgn == 0) {
-		visibleRgn = OS.NewRgn ();
-		calculateVisibleRegion (control, visibleRgn, clipChildren);
-	}
-	int result = OS.NewRgn ();
-	OS.CopyRgn (visibleRgn, result);
-	return result;
-}
-
 boolean hasBorder () {
 	return (style & SWT.BORDER) != 0;
 }
@@ -1417,111 +1231,10 @@ boolean hasFocus () {
 	return this == display.getFocusControl ();
 }
 
-int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-    switch (inRequest) {
-		case OS.kHMSupplyContent: {
-			short [] contentProvided = {OS.kHMContentNotProvidedDontPropagate};
-			if (toolTipText != null && toolTipText.length () != 0) {
-				char [] buffer = new char [toolTipText.length ()];
-				toolTipText.getChars (0, buffer.length, buffer, 0);
-				int length = fixMnemonic (buffer);
-				if (display.helpString != 0) OS.CFRelease (display.helpString);
-				display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-				HMHelpContentRec helpContent = new HMHelpContentRec ();
-				OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
-				helpContent.version = OS.kMacHelpVersion;
-
-				/*
-				* Feature in the Macintosh.  Despite the fact that the Mac
-				* provides 23 different types of alignment for the help text,
-				* it does not allow the text to be positioned at the current
-				* mouse position.  The fix is to center the text in a rectangle
-				* that surrounds the original position of the mouse.  As the
-				* mouse is moved, this rectangle is grown to include the new
-				* location of the mouse.  The help text is then centered by
-				* the  Mac in the new rectangle that was carefully constructed
-				* such that the help text will stay in the same position.
-				*/
-				int cursorHeight = 16;
-				helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
-				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				OS.memmove(pt, new int[] {inGlobalMouse}, 4);
-				int x = pt.h;
-				int y = pt.v;
-				if (display.helpWidget != this) {
-					display.lastHelpX = x + cursorHeight / 2;
-					display.lastHelpY = y + cursorHeight + cursorHeight / 2;			
-				}
-				int jitter = 4;
-				int deltaX = Math.abs (display.lastHelpX - x) + jitter;
-				int deltaY = Math.abs (display.lastHelpY - y) + jitter;
-				x = display.lastHelpX - deltaX;
-				y = display.lastHelpY - deltaY;
-				int width = deltaX * 2;
-				int height = deltaY * 2;
-				display.helpWidget = this;
-				helpContent.absHotRect_left = (short) x;
-				helpContent.absHotRect_top = (short) y;
-				helpContent.absHotRect_right = (short) (x + width);
-				helpContent.absHotRect_bottom = (short) (y + height);
-
-				helpContent.content0_contentType = OS.kHMCFStringContent;
-				helpContent.content0_tagCFString = display.helpString;
-				helpContent.content1_contentType = OS.kHMCFStringContent;
-				helpContent.content1_tagCFString = display.helpString;
-				OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
-				contentProvided [0] = OS.kHMContentProvided;
-			}
-			OS.memmove (outContentProvided, contentProvided, 2);
-			break;
-		}
-		case OS.kHMDisposeContent: {
-			if (display.helpString != 0) OS.CFRelease (display.helpString);
-			display.helpWidget = null;
-			display.helpString = 0;
-			break;
-		}
-	}
-	return OS.noErr;
-}
 
 void hookEvents () {
 	super.hookEvents ();
-	int controlProc = display.controlProc;
-	int [] mask = new int [] {
-		OS.kEventClassControl, OS.kEventControlActivate,
-		OS.kEventClassControl, OS.kEventControlApplyBackground,
-		OS.kEventClassControl, OS.kEventControlBoundsChanged,
-		OS.kEventClassControl, OS.kEventControlClick,
-		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
-		OS.kEventClassControl, OS.kEventControlDeactivate,
-		OS.kEventClassControl, OS.kEventControlDraw,
-		OS.kEventClassControl, OS.kEventControlGetClickActivation,
-		OS.kEventClassControl, OS.kEventControlGetFocusPart,
-		OS.kEventClassControl, OS.kEventControlGetPartRegion,
-		OS.kEventClassControl, OS.kEventControlHit,
-		OS.kEventClassControl, OS.kEventControlHitTest,
-		OS.kEventClassControl, OS.kEventControlSetCursor,
-		OS.kEventClassControl, OS.kEventControlSetFocusPart,
-		OS.kEventClassControl, OS.kEventControlTrack,
-	};
-	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
-	int accessibilityProc = display.accessibilityProc;
-	mask = new int [] {
-		OS.kEventClassAccessibility, OS.kEventAccessibleGetChildAtPoint,
-		OS.kEventClassAccessibility, OS.kEventAccessibleGetFocusedChild,
-		OS.kEventClassAccessibility, OS.kEventAccessibleGetAllAttributeNames,
-		OS.kEventClassAccessibility, OS.kEventAccessibleGetNamedAttribute,
-	};
-	OS.InstallEventHandler (controlTarget, accessibilityProc, mask.length / 2, mask, handle, null);
-	int helpProc = display.helpProc;
-	OS.HMInstallControlContentCallback (handle, helpProc);
-	int colorProc = display.colorProc;
-	OS.SetControlColorProc (handle, colorProc);
-	if (OS.GetControlAction (handle) == 0) {
-		OS.SetControlAction (handle, display.actionProc);
-	}
+	
 }
 
 /**	 
@@ -1539,82 +1252,83 @@ void hookEvents () {
  */
 public int internal_new_GC (GCData data) {
 	checkWidget();
-	int window = OS.GetControlOwner (handle);
-	int port = data != null ? data.port : 0;
-	if (port == 0) port = OS.GetWindowPort (window);
-	int context;
-	int [] buffer = new int [1];
-	boolean isPaint = data != null && data.paintEvent != 0; 
-	if (isPaint) {
-		OS.GetEventParameter (data.paintEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
-	} else {
-		OS.CreateCGContextForPort (port, buffer);
-	}
-	context = buffer [0];
-	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int visibleRgn = 0;
-	if (data != null && data.paintEvent != 0) {
-		visibleRgn = data.visibleRgn;
-	} else {
-		if (getDrawCount (handle) > 0) {
-			visibleRgn = OS.NewRgn ();
-		} else {
-			visibleRgn = getVisibleRegion (handle, true);
-		}
-	}
-	Rect rect = new Rect ();
-	Rect portRect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	OS.GetPortBounds (port, portRect);
-	if (isPaint) {
-		rect.right += rect.left;
-		rect.bottom += rect.top;
-		rect.left = rect.top = 0;
-	} else {
-		int [] contentView = new int [1];
-		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
-		CGPoint pt = new CGPoint ();
-		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
-		rect.left += (int) pt.x;
-		rect.top += (int) pt.y;
-		rect.right += (int) pt.x;
-		rect.bottom += (int) pt.y;
-		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
-		int portHeight = portRect.bottom - portRect.top;
-		OS.CGContextScaleCTM (context, 1, -1);
-		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-	}
-	if (data != null) {
-		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-		if ((data.style & mask) == 0) {
-			data.style |= style & (mask | SWT.MIRRORED);
-		}
-		data.device = display;
-		data.thread = display.thread;
-		data.foreground = getForegroundColor ().handle;
-		Control control = findBackgroundControl ();
-		if (control == null) control = this;
-		data.background = control.getBackgroundColor ().handle;
-		data.font = font != null ? font : defaultFont ();
-		data.visibleRgn = visibleRgn;
-		data.control = handle;
-		data.portRect = portRect;
-		data.controlRect = rect;
-		data.insetRect = getInset ();
-	
-		if (data.paintEvent == 0) {
-			if (gcs == null) gcs = new GCData [4];
-			int index = 0;
-			while (index < gcs.length && gcs [index] != null) index++;
-			if (index == gcs.length) {
-				GCData [] newGCs = new GCData [gcs.length + 4];
-				System.arraycopy (gcs, 0, newGCs, 0, gcs.length);
-				gcs = newGCs;
-			}
-			gcs [index] = data;
-		}
-	}
-	return context;
+//	int window = OS.GetControlOwner (handle);
+//	int port = data != null ? data.port : 0;
+//	if (port == 0) port = OS.GetWindowPort (window);
+//	int context;
+//	int [] buffer = new int [1];
+//	boolean isPaint = data != null && data.paintEvent != 0; 
+//	if (isPaint) {
+//		OS.GetEventParameter (data.paintEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+//	} else {
+//		OS.CreateCGContextForPort (port, buffer);
+//	}
+//	context = buffer [0];
+//	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+//	int visibleRgn = 0;
+//	if (data != null && data.paintEvent != 0) {
+//		visibleRgn = data.visibleRgn;
+//	} else {
+//		if (getDrawCount (handle) > 0) {
+//			visibleRgn = OS.NewRgn ();
+//		} else {
+//			visibleRgn = getVisibleRegion (handle, true);
+//		}
+//	}
+//	Rect rect = new Rect ();
+//	Rect portRect = new Rect ();
+//	OS.GetControlBounds (handle, rect);
+//	OS.GetPortBounds (port, portRect);
+//	if (isPaint) {
+//		rect.right += rect.left;
+//		rect.bottom += rect.top;
+//		rect.left = rect.top = 0;
+//	} else {
+//		int [] contentView = new int [1];
+//		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+//		CGPoint pt = new CGPoint ();
+//		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
+//		rect.left += (int) pt.x;
+//		rect.top += (int) pt.y;
+//		rect.right += (int) pt.x;
+//		rect.bottom += (int) pt.y;
+//		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
+//		int portHeight = portRect.bottom - portRect.top;
+//		OS.CGContextScaleCTM (context, 1, -1);
+//		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
+//	}
+//	if (data != null) {
+//		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+//		if ((data.style & mask) == 0) {
+//			data.style |= style & (mask | SWT.MIRRORED);
+//		}
+//		data.device = display;
+//		data.thread = display.thread;
+//		data.foreground = getForegroundColor ().handle;
+//		Control control = findBackgroundControl ();
+//		if (control == null) control = this;
+//		data.background = control.getBackgroundColor ().handle;
+//		data.font = font != null ? font : defaultFont ();
+//		data.visibleRgn = visibleRgn;
+//		data.control = handle;
+//		data.portRect = portRect;
+//		data.controlRect = rect;
+//		data.insetRect = getInset ();
+//	
+//		if (data.paintEvent == 0) {
+//			if (gcs == null) gcs = new GCData [4];
+//			int index = 0;
+//			while (index < gcs.length && gcs [index] != null) index++;
+//			if (index == gcs.length) {
+//				GCData [] newGCs = new GCData [gcs.length + 4];
+//				System.arraycopy (gcs, 0, newGCs, 0, gcs.length);
+//				gcs = newGCs;
+//			}
+//			gcs [index] = data;
+//		}
+//	}
+//	return context;
+	return 0;
 }
 
 /**	 
@@ -1632,52 +1346,33 @@ public int internal_new_GC (GCData data) {
  */
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
-	if (data != null) {
-		if (data.paintEvent == 0) {
-			if (data.visibleRgn != 0) {
-				OS.DisposeRgn (data.visibleRgn);
-				data.visibleRgn = 0;
-			}
-			
-			int index = 0;
-			while (index < gcs.length && gcs [index] != data) index++;
-			if (index < gcs.length) {
-				gcs [index] = null;
-				index = 0;
-				while (index < gcs.length && gcs [index] == null) index++;
-				if (index == gcs.length) gcs = null;
-			}
-		} else {
-			return;
-		}
-	}
-	
-	/*
-	* This code is intentionally commented. Use CGContextSynchronize
-	* instead of CGContextFlush to improve performance.
-	*/
-//	OS.CGContextFlush (context);
-	OS.CGContextSynchronize (context);
-	OS.CGContextRelease (context);
-}
-
-void invalidateChildrenVisibleRegion (int control) {
-}
-
-void invalidateVisibleRegion (int control) {
-	int index = 0;
-	Control[] siblings = parent._getChildren ();
-	while (index < siblings.length && siblings [index] != this) index++;
-	for (int i=index; i<siblings.length; i++) {
-		Control sibling = siblings [i];
-		sibling.resetVisibleRegion (control);
-		sibling.invalidateChildrenVisibleRegion (control);
-	}
-	parent.resetVisibleRegion (control);
-}
-
-void invalWindowRgn (int window, int rgn) {
-	parent.invalWindowRgn (window, rgn);
+//	if (data != null) {
+//		if (data.paintEvent == 0) {
+//			if (data.visibleRgn != 0) {
+//				OS.DisposeRgn (data.visibleRgn);
+//				data.visibleRgn = 0;
+//			}
+//			
+//			int index = 0;
+//			while (index < gcs.length && gcs [index] != data) index++;
+//			if (index < gcs.length) {
+//				gcs [index] = null;
+//				index = 0;
+//				while (index < gcs.length && gcs [index] == null) index++;
+//				if (index == gcs.length) gcs = null;
+//			}
+//		} else {
+//			return;
+//		}
+//	}
+//	
+//	/*
+//	* This code is intentionally commented. Use CGContextSynchronize
+//	* instead of CGContextFlush to improve performance.
+//	*/
+////	OS.CGContextFlush (context);
+//	OS.CGContextSynchronize (context);
+//	OS.CGContextRelease (context);
 }
 
 /**
@@ -1705,32 +1400,6 @@ boolean isEnabledCursor () {
 	return isEnabled ();
 }
 
-boolean isEnabledModal () {
-	//NOT DONE - fails for multiple APP MODAL shells
-	Shell [] shells = display.getShells ();
-	for (int i = 0; i < shells.length; i++) {
-		Shell modal = shells [i];
-		if (modal != this && modal.isVisible ()) {
-			if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
-				Shell shell = getShell ();
-				if (modal.parent == shell) {
-					return false;
-				}
-			}
-			int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-			if ((modal.style & bits) != 0) {
-				Control control = this;
-				while (control != null) {
-					if (control == modal) break;
-					control = control.parent;
-				}
-				if (control != modal) return false;
-			}
-		}
-	}
-	return true;
-}
-
 boolean isFocusAncestor (Control control) {
 	while (control != null && control != this && !(control instanceof Shell)) {
 		control = control.parent;
@@ -1751,10 +1420,10 @@ boolean isFocusAncestor (Control control) {
  */
 public boolean isFocusControl () {
 	checkWidget();
-	Control focusControl = display.focusControl;
-	if (focusControl != null && !focusControl.isDisposed ()) {
-		return this == focusControl;
-	}
+//	Control focusControl = display.focusControl;
+//	if (focusControl != null && !focusControl.isDisposed ()) {
+//		return this == focusControl;
+//	}
 	return hasFocus ();
 }
 
@@ -1835,302 +1504,6 @@ public boolean isVisible () {
 
 Decorations menuShell () {
 	return parent.menuShell ();
-}
-
-int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetFocusedChild (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	Widget widget = display.getWidget (theControl [0]);
-	while (widget != null && !(widget instanceof Control)) {
-		OS.GetSuperControl (theControl [0], theControl);
-		widget = display.getWidget (theControl [0]);
-	}
-	if (widget == this && isEnabled ()) {
-		int x, y;
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		x = (int) pt.x;
-		y = (int) pt.y;
-		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		x += rect.left;
-		y += rect.top;
-		Event event = new Event ();
-		event.x = x;
-		event.y = y;
-		sendEvent (SWT.MenuDetect, event);
-		if (event.doit) {
-			if (menu != null && !menu.isDisposed ()) {
-				if (event.x != x || event.y != y) {
-					menu.setLocation (event.x, event.y);
-				}
-				menu.setVisible (true);
-			}
-		}
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlGetPartRegion (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (region != null && this != getShell ()) {
-		short [] part = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode , null, 2, null, part);
-		if (part [0] == OS.kControlStructureMetaPart) {
-			int [] rgn = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamControlRegion, OS.typeQDRgnHandle , null, 4, null, rgn);
-			OS.CopyRgn (region.handle, rgn[0]);
-			Rect rect = getInset ();
-			OS.OffsetRgn (rgn [0], (short)-rect.left, (short)-rect.top);
-			return OS.noErr;
-		}
-	}
-	return result;
-}
-
-int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlHitTest (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if ((state & GRAB) != 0) {
-		CGRect rect = new CGRect ();
-		OS.HIViewGetBounds (handle, rect);
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		if (OS.CGRectContainsPoint (rect, pt) != 0) {
-			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{1});
-		}
-		return OS.noErr;
-	}
-	if (region != null && this != getShell ()) {
-		int code = OS.CallNextEventHandler (nextHandler, theEvent);
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		if (!region.contains ((int) pt.x, (int) pt.y)) {
-			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short [1]);
-		}
-		return code;
-	}
-	return result;
-}
-
-int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	if (!isEnabledCursor ()) return OS.noErr;
-	Cursor cursor = null;
-	if (isEnabledModal ()) {
-		if ((cursor = findCursor ()) != null) display.setCursor (cursor.handle);
-	}
-	return cursor != null ? OS.noErr : OS.eventNotHandledErr;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	display.focusCombo = null;
-	int result = callFocusEventHandler (nextHandler, theEvent);
-	if (!display.ignoreFocus) {
-		if (result == OS.noErr) {
-			int window = OS.GetControlOwner (handle);
-			if (window == OS.GetUserFocusWindow ()) {
-				int focusHandle = focusHandle ();
-				int [] focusControl = new int [1];
-				OS.GetKeyboardFocus (window, focusControl);
-				short [] part = new short [1];
-				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-				if (part [0] == OS.kControlFocusNoPart) {
-					if (focusControl [0] == focusHandle) sendFocusEvent (SWT.FocusOut, false);
-				} else {
-					if (focusControl [0] != focusHandle) sendFocusEvent (SWT.FocusIn, false);
-				}
-			}
-			// widget could be disposed at this point
-			if (isDisposed ()) return OS.noErr;
-		}
-	}
-	return result;
-}	
-
-int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	/*
-	* Feature in the Macintosh.  The default handler of kEventControlTrack
-	* calls TrackControl() which consumes key and mouse events until the
-	* tracking is canceled.  The fix is to send those events from the
-	* action proc of the widget by diffing the mouse and modifier keys
-	* state.
-	*/
-	Display display = this.display;
-	display.lastState = OS.GetCurrentEventButtonState ();
-	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
-	display.grabControl = this;
-	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
-	display.grabControl = null;
-	if (isDisposed ()) return OS.noErr;
-	sendTrackEvents ();
-	return result;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	Shell shell = getShell ();
-	display.dragging = false;
-	boolean [] consume = new boolean [1];
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int [] clickCount = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	if (button [0] == 1 && clickCount [0] == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		OS.HIViewConvertPoint (pt, 0, handle);
-		int x = (int) pt.x;
-		int y = (int) pt.y;
-		if (dragDetect (x, y, true, consume)) {
-			display.dragging = true;
-			display.dragButton = button [0];
-			display.dragX = x;
-			display.dragY = y;
-			int [] chord = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-			display.dragState = chord [0];
-			int [] modifiers = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-			display.dragModifiers = modifiers [0];
-		}
-		if (isDisposed ()) return OS.noErr;
-	}
-	if (!sendMouseEvent (SWT.MouseDown, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
-	if (isDisposed ()) return OS.noErr;
-	if (display.clickCount == 2) {
-		if (!sendMouseEvent (SWT.MouseDoubleClick, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
-		if (isDisposed ()) return OS.noErr;
-	}
-	if (!shell.isDisposed ()) shell.setActiveControl (this);
-	return consume [0] ? OS.noErr : OS.eventNotHandledErr;
-}
-
-int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) {
-		if (display.dragging) {
-			display.dragging = false;
-			sendDragEvent (display.dragButton, display.dragState, display.dragModifiers, display.dragX, display.dragY);
-			if (isDisposed ()) return OS.noErr;
-		}
-		int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-		if (isDisposed ()) return OS.noErr;
-		return result;
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) {
-		return sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	return sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-}
-
-int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	if ((state & IGNORE_WHEEL) != 0) return OS.eventNotHandledErr;
-	short [] wheelAxis = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelAxis, OS.typeMouseWheelAxis, null, 2, null, wheelAxis);
-	int [] wheelDelta = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
-	Shell shell = getShell ();
-	Control control = this;
-	while (control != null) {
-		if (!control.sendMouseEvent (SWT.MouseWheel, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
-			break;
-		}
-		if (control.sendMouseWheel (wheelAxis [0], wheelDelta [0])) break;
-		if (control == this) {
-			/*
-			* Feature in the Macintosh.  For some reason, the kEventMouseWheelMoved
-			* event is sent twice to each application handler with the same mouse wheel
-			* data.  The fix is to set an ignore flag before calling the next handler 
-			* in the handler chain.
-			*/
-			state |= IGNORE_WHEEL;
-			int result = OS.CallNextEventHandler (nextHandler, theEvent);
-			state &= ~IGNORE_WHEEL;
-			if (result == OS.noErr) break;
-		}
-		if (control == shell) break;
-		control = control.parent;
-	}
-	return OS.noErr;
-}
-
-int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	int [] keyboardEvent = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	boolean [] consume = new boolean [1];
-	if (translateTraversal (keyCode [0], keyboardEvent [0], consume)) return OS.noErr;
-	if (isDisposed ()) return OS.noErr;	
-	if (keyCode [0] == 114) { /* Help */
-		Control control = this;
-		while (control != null) {
-			if (control.hooks (SWT.Help)) {
-				control.postEvent (SWT.Help);
-				break;
-			}
-			control = control.parent;
-		}
-	}
-	int result = kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
-	if (result == OS.noErr || consume [0]) return OS.noErr;
-	/*
-	* Feature in the Macintosh.  If the focus target is changed
-	* before the default handler for the widget has run, the key
-	* goes to the new focus widget.  The fix is to explicitly
-	* send the event to the original focus widget and stop
-	* the chain of handlers.
-	*/
-	if (!isDisposed () && !hasFocus ()) {
-		OS.SendEventToEventTarget (theEvent, OS.GetControlEventTarget (handle));
-		return OS.noErr;
-	}
-	return result;
-}
-
-int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
-	int [] keyboardEvent = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
-	if (!sendKeyEvent (SWT.KeyDown, keyboardEvent [0])) return OS.noErr;
-	return OS.eventNotHandledErr;
 }
 
 void markLayout (boolean changed, boolean all) {
@@ -2246,19 +1619,20 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	int [] outImage = new int [1];
-	CGRect outFrame = new CGRect ();
-	if (OS.HIViewCreateOffscreenImage (handle, 0, outFrame, outImage) == OS.noErr) {
-		int width = OS.CGImageGetWidth (outImage [0]);
-		int height = OS.CGImageGetHeight (outImage [0]);
-	 	CGRect rect = new CGRect();
-	 	rect.width = width;
-		rect.height = height;
-		//TODO - does not draw the browser (cocoa widgets?)
-		OS.HIViewDrawCGImage (gc.handle, rect, outImage [0]);
-		OS.CGImageRelease (outImage [0]);
-	}
-	return true;
+//	int [] outImage = new int [1];
+//	CGRect outFrame = new CGRect ();
+//	if (OS.HIViewCreateOffscreenImage (handle, 0, outFrame, outImage) == OS.noErr) {
+//		int width = OS.CGImageGetWidth (outImage [0]);
+//		int height = OS.CGImageGetHeight (outImage [0]);
+//	 	CGRect rect = new CGRect();
+//	 	rect.width = width;
+//		rect.height = height;
+//		//TODO - does not draw the browser (cocoa widgets?)
+//		OS.HIViewDrawCGImage (gc.handle, rect, outImage [0]);
+//		OS.CGImageRelease (outImage [0]);
+//	}
+//	return true;
+	return false;
 }
 
 /**
@@ -2282,12 +1656,10 @@ public boolean print (GC gc) {
  */
 public void redraw () {
 	checkWidget();
-	redrawWidget (handle, false);
 }
 
 void redraw (boolean children) {
 //	checkWidget();
-	redrawWidget (handle, true);
 }
 
 /**
@@ -2322,12 +1694,12 @@ void redraw (boolean children) {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	redrawWidget (handle, x, y, width, height, all);
+//	redrawWidget (handle, x, y, width, height, all);
 }
 
 void register () {
 	super.register ();
-	display.addWidget (handle, this);
+//	display.addWidget (handle, this);
 }
 void releaseHandle () {
 	super.releaseHandle ();
@@ -2336,7 +1708,7 @@ void releaseHandle () {
 }
 
 void releaseParent () {
-	setVisible (topHandle (), false);
+//	setVisible (topHandle (), false);
 	parent.removeControl (this);
 }
 
@@ -2345,8 +1717,6 @@ void releaseWidget () {
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
-	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
-	visibleRgn = 0;
 	menu = null;
 	layoutData = null;
 	if (accessible != null) {
@@ -2658,28 +2028,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-void resetVisibleRegion (int control) {
-	if (visibleRgn != 0) {
-		OS.DisposeRgn (visibleRgn);
-		visibleRgn = 0;
-	}
-	if (gcs != null) {
-		int visibleRgn = getVisibleRegion (handle, true);
-		for (int i=0; i<gcs.length; i++) {
-			GCData data = gcs [i];
-			if (data != null) {
-				data.updateClip = true;
-				OS.CopyRgn (visibleRgn, data.visibleRgn);
-			}
-		}
-		OS.DisposeRgn (visibleRgn);
-	}
-	Object runnable = getData (RESET_VISIBLE_REGION);
-	if (runnable != null && runnable instanceof Runnable) {
-		((Runnable) runnable).run ();
-	}
-}
-
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
@@ -2715,8 +2063,8 @@ void sendFocusEvent (int type, boolean post) {
 	* The fix is to remember the focus control and return it during
 	* kEventControlSetFocusPart.
 	*/
-	display.focusControl = this;
-	display.focusEvent = type;
+//	display.focusControl = this;
+//	display.focusEvent = type;
 	if (post) {
 		postEvent (type);
 	} else {
@@ -2740,23 +2088,24 @@ void sendFocusEvent (int type, boolean post) {
 				break;
 		}
 	}
-	display.focusEvent = SWT.None;
-	display.focusControl = null;
+//	display.focusEvent = SWT.None;
+//	display.focusControl = null;
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
-	CGPoint pt = new CGPoint ();
-	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-	OS.HIViewConvertPoint (pt, 0, handle);
-	int x = (int) pt.x;
-	int y = (int) pt.y;
-	display.lastX = x;
-	display.lastY = y;
-	int [] chord = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	return sendMouseEvent (type, button, count, detail, send, chord [0], (short) x, (short) y, modifiers [0]);
+//	CGPoint pt = new CGPoint ();
+//	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+//	OS.HIViewConvertPoint (pt, 0, handle);
+//	int x = (int) pt.x;
+//	int y = (int) pt.y;
+//	display.lastX = x;
+//	display.lastY = y;
+//	int [] chord = new int [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+//	int [] modifiers = new int [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//	return sendMouseEvent (type, button, count, detail, send, chord [0], (short) x, (short) y, modifiers [0]);
+	return false;
 }
 
 boolean sendMouseEvent (int type, short button, int count, boolean send, int chord, short x, short y, int modifiers) {
@@ -2791,94 +2140,8 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 	return false;
 }
 
-void sendTrackEvents () {
-	Display display = this.display;
-	display.runDeferredEvents ();
-	if (isDisposed ()) return;
-	boolean events = false;
-	if (display.dragging) {
-		display.dragging = false;
-		sendDragEvent (display.dragButton, display.dragState, display.dragModifiers, display.dragX, display.dragY);
-		if (isDisposed ()) return;
-		events = true;
-	}
-	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetGlobalMouse (outPt);
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	int newX, newY;
-	CGPoint pt = new CGPoint ();
-	pt.x = outPt.h;
-	pt.y = outPt.v;
-	OS.HIViewConvertPoint (pt, 0, handle);
-	newX = (int) pt.x;
-	newY = (int) pt.y;
-	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	newX -= rect.left;
-	newY -= rect.top;
-	int newModifiers = OS.GetCurrentEventKeyModifiers ();
-	int newState = OS.GetCurrentEventButtonState ();
-	int oldX = display.lastX;
-	int oldY = display.lastY;
-	int oldState = display.lastState;
-	int oldModifiers = display.lastModifiers;
-	display.lastX = newX;
-	display.lastY = newY;
-	display.lastModifiers = newModifiers;
-	display.lastState = newState;
-	if (newState != oldState) {
-		int button = 0, type = SWT.MouseDown;
-		if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
-		if ((oldState & 0x2) == 0 && (newState & 0x2) != 0) button = 2;
-		if ((oldState & 0x4) == 0 && (newState & 0x4) != 0) button = 3;
-		if ((oldState & 0x8) == 0 && (newState & 0x8) != 0) button = 4;
-		if ((oldState & 0x10) == 0 && (newState & 0x10) != 0) button = 5;
-		if (button == 0) {
-			type = SWT.MouseUp;
-			if ((oldState & 0x1) != 0 && (newState & 0x1) == 0) button = 1;
-			if ((oldState & 0x2) != 0 && (newState & 0x2) == 0) button = 2;
-			if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
-			if ((oldState & 0x8) != 0 && (newState & 0x8) == 0) button = 4;
-			if ((oldState & 0x10) != 0 && (newState & 0x10) == 0) button = 5;
-		}
-		if (button != 0) {
-			sendMouseEvent (type, (short)button, 1, false, newState, (short)newX, (short)newY, newModifiers);
-			events = true;
-		}
-	}
-	if (newModifiers != oldModifiers && !isDisposed ()) {
-		int key = 0, type = SWT.KeyDown;
-		if ((newModifiers & OS.alphaLock) != 0 && (oldModifiers & OS.alphaLock) == 0) key = SWT.CAPS_LOCK;
-		if ((newModifiers & OS.shiftKey) != 0 && (oldModifiers & OS.shiftKey) == 0) key = SWT.SHIFT;
-		if ((newModifiers & OS.controlKey) != 0 && (oldModifiers & OS.controlKey) == 0) key = SWT.CONTROL;
-		if ((newModifiers & OS.cmdKey) != 0 && (oldModifiers & OS.cmdKey) == 0)  key = SWT.COMMAND;
-		if ((newModifiers & OS.optionKey) != 0 && (oldModifiers & OS.optionKey) == 0) key = SWT.ALT;
-		if (key == 0) {
-			type = SWT.KeyUp;
-			if ((newModifiers & OS.alphaLock) == 0 && (oldModifiers & OS.alphaLock) != 0) key = SWT.CAPS_LOCK;
-			if ((newModifiers & OS.shiftKey) == 0 && (oldModifiers & OS.shiftKey) != 0) key = SWT.SHIFT;
-			if ((newModifiers & OS.controlKey) == 0 && (oldModifiers & OS.controlKey) != 0) key = SWT.CONTROL;
-			if ((newModifiers & OS.cmdKey) == 0 && (oldModifiers & OS.cmdKey) != 0)  key = SWT.COMMAND;
-			if ((newModifiers & OS.optionKey) == 0 && (oldModifiers & OS.optionKey) != 0) key = SWT.ALT;
-		}
-		if (key != 0) {
-			Event event = new Event ();
-			event.keyCode = key;
-			setInputState (event, type, newState, newModifiers);
-			sendKeyEvent (type, event);
-			events = true;
-		}
-	}
-	if (newX != oldX || newY != oldY && !isDisposed ()) {
-		display.mouseMoved = true;
-		sendMouseEvent (SWT.MouseMove, (short)0, 0, false, newState, (short)newX, (short)newY, newModifiers);
-		events = true;
-	}
-	if (events) display.runDeferredEvents ();
-}
-
 void setBackground () {
-	redrawWidget (handle, false);
+//	redrawWidget (handle, false);
 }
 
 /**
@@ -2908,7 +2171,7 @@ public void setBackground (Color color) {
 	if (equals (background, this.background)) return;
 	this.background = background;
 	setBackground (background);
-	redrawWidget (handle, false);
+//	redrawWidget (handle, false);
 }
 
 /**
@@ -2938,7 +2201,7 @@ public void setBackgroundImage (Image image) {
 	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	backgroundImage = image;
-	redrawWidget (handle, false);
+//	redrawWidget (handle, false);
 }
 
 void setBackground (float [] color) {
@@ -2946,17 +2209,17 @@ void setBackground (float [] color) {
 }
 
 void setBackground (int control, float [] color) {
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (color != null) {
-		fontStyle.backColor_red = (short) (color [0] * 0xffff);
-		fontStyle.backColor_green = (short) (color [1] * 0xffff);
-		fontStyle.backColor_blue = (short) (color [2] * 0xffff);
-		fontStyle.flags |= OS.kControlUseBackColorMask;
-	} else {
-		fontStyle.flags &= ~OS.kControlUseBackColorMask;
-	}
-	OS.SetControlFontStyle (control, fontStyle);
+//	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+//	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+//	if (color != null) {
+//		fontStyle.backColor_red = (short) (color [0] * 0xffff);
+//		fontStyle.backColor_green = (short) (color [1] * 0xffff);
+//		fontStyle.backColor_blue = (short) (color [2] * 0xffff);
+//		fontStyle.flags |= OS.kControlUseBackColorMask;
+//	} else {
+//		fontStyle.flags &= ~OS.kControlUseBackColorMask;
+//	}
+//	OS.SetControlFontStyle (control, fontStyle);
 }
 
 /**
@@ -2988,7 +2251,8 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	return setBounds (topHandle (), x, y, width, height, move, resize, events);
+//	return setBounds (topHandle (), x, y, width, height, move, resize, events);
+	return 0;
 }
 
 /**
@@ -3055,67 +2319,67 @@ public void setCursor (Cursor cursor) {
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
 	if (!isEnabled ()) return;
-	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetGlobalMouse (where);
-	int [] theWindow = new int [1];
-	if (display.grabControl == this) {
-		theWindow [0] = OS.GetControlOwner (handle);
-	} else {
-		if (OS.FindWindow (where, theWindow) != OS.inContent) return;
-		if (theWindow [0] == 0) return;
-	}
-	Rect rect = new Rect ();
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
-	int [] theControl = new int [1];
-	if (display.grabControl == this) {
-		theControl [0] = handle;
-	} else {
-		CGPoint inPoint = new CGPoint ();
-		inPoint.x = where.h - rect.left;
-		inPoint.y = where.v - rect.top;
-		int [] theRoot = new int [1];
-		OS.GetRootControl (theWindow [0], theRoot);
-		OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-		int cursorControl = theControl [0];
-		while (theControl [0] != 0 && theControl [0] != handle) {
-			OS.GetSuperControl (theControl [0], theControl);
-		}
-		if (theControl [0] == 0) return;
-		theControl [0] = cursorControl;
-		do {
-			Widget widget = display.getWidget (theControl [0]);
-			if (widget != null) {
-				if (widget instanceof Control) {
-					Control control = (Control) widget;
-					if (control.isEnabled ()) break;
-				}
-			}
-			OS.GetSuperControl (theControl [0], theControl);
-		} while (theControl [0] != 0);
-		if (theControl [0] == 0) {
-			theControl [0] = theRoot [0];
-			Widget widget = display.getWidget (theControl [0]);
-			if (widget != null && widget instanceof Control) {
-				Control control = (Control) widget;
-				theControl [0] = control.handle;
-			}
-		}
-	}
-	CGPoint pt = new CGPoint ();
-	OS.HIViewConvertPoint (pt, theControl [0], 0);
-	where.h -= (int) pt.x;
-	where.v -= (int) pt.y;
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
-	where.h -= rect.left;
-	where.v -= rect.top;
-	int modifiers = OS.GetCurrentEventKeyModifiers ();
-	boolean [] cursorWasSet = new boolean [1];
-	OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
-	if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+//	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+//	OS.GetGlobalMouse (where);
+//	int [] theWindow = new int [1];
+//	if (display.grabControl == this) {
+//		theWindow [0] = OS.GetControlOwner (handle);
+//	} else {
+//		if (OS.FindWindow (where, theWindow) != OS.inContent) return;
+//		if (theWindow [0] == 0) return;
+//	}
+//	Rect rect = new Rect ();
+//	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+//	int [] theControl = new int [1];
+//	if (display.grabControl == this) {
+//		theControl [0] = handle;
+//	} else {
+//		CGPoint inPoint = new CGPoint ();
+//		inPoint.x = where.h - rect.left;
+//		inPoint.y = where.v - rect.top;
+//		int [] theRoot = new int [1];
+//		OS.GetRootControl (theWindow [0], theRoot);
+//		OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+//		int cursorControl = theControl [0];
+//		while (theControl [0] != 0 && theControl [0] != handle) {
+//			OS.GetSuperControl (theControl [0], theControl);
+//		}
+//		if (theControl [0] == 0) return;
+//		theControl [0] = cursorControl;
+//		do {
+//			Widget widget = display.getWidget (theControl [0]);
+//			if (widget != null) {
+//				if (widget instanceof Control) {
+//					Control control = (Control) widget;
+//					if (control.isEnabled ()) break;
+//				}
+//			}
+//			OS.GetSuperControl (theControl [0], theControl);
+//		} while (theControl [0] != 0);
+//		if (theControl [0] == 0) {
+//			theControl [0] = theRoot [0];
+//			Widget widget = display.getWidget (theControl [0]);
+//			if (widget != null && widget instanceof Control) {
+//				Control control = (Control) widget;
+//				theControl [0] = control.handle;
+//			}
+//		}
+//	}
+//	CGPoint pt = new CGPoint ();
+//	OS.HIViewConvertPoint (pt, theControl [0], 0);
+//	where.h -= (int) pt.x;
+//	where.v -= (int) pt.y;
+//	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
+//	where.h -= rect.left;
+//	where.v -= rect.top;
+//	int modifiers = OS.GetCurrentEventKeyModifiers ();
+//	boolean [] cursorWasSet = new boolean [1];
+//	OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
+//	if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 }
 
 void setDefaultFont () {
-	if (display.smallFonts) setFontStyle (defaultFont ());
+//	if (display.smallFonts) setFontStyle (defaultFont ());
 }
 
 /**
@@ -3160,10 +2424,10 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-		if (display.focusEvent != SWT.FocusOut) {
+//		if (display.focusEvent != SWT.FocusOut) {
 			control = display.getFocusControl ();
 			fixFocus = isFocusAncestor (control);
-		}
+//		}
 	}
 	if (enabled) {
 		state &= ~DISABLED;
@@ -3215,27 +2479,12 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	setFontStyle (display.smallFonts ? (font != null ? font : defaultFont ()) : font);
-	redrawWidget (handle, false);
+//	setFontStyle (display.smallFonts ? (font != null ? font : defaultFont ()) : font);
+//	redrawWidget (handle, false);
 }
 
 void setFontStyle (Font font) {
-	setFontStyle (handle, font);
-}
-
-void setFontStyle (int control, Font font) {
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	fontStyle.flags &= ~(OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask | OS.kControlUseThemeFontIDMask);
-	if (font != null) {
-		short [] family = new short [1], style = new short [1];
-		OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
-		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-		fontStyle.font = family [0];
-		fontStyle.style = (short) (style [0] | font.style);
-		fontStyle.size = (short) font.size;
-	}
-	OS.SetControlFontStyle (control, fontStyle);
+//	setFontStyle (handle, font);
 }
 
 /**
@@ -3264,7 +2513,7 @@ public void setForeground (Color color) {
 	if (equals (foreground, this.foreground)) return;
 	this.foreground = foreground;
 	setForeground (foreground);
-	redrawWidget (handle, false);
+//	redrawWidget (handle, false);
 }
 
 void setForeground (float [] color) {
@@ -3272,17 +2521,17 @@ void setForeground (float [] color) {
 }
 
 void setForeground (int control, float [] color) {
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	if (color != null) {
-		fontStyle.foreColor_red = (short) (color [0] * 0xffff);
-		fontStyle.foreColor_green = (short) (color [1] * 0xffff);
-		fontStyle.foreColor_blue = (short) (color [2] * 0xffff);
-		fontStyle.flags |= OS.kControlUseForeColorMask;
-	} else {
-		fontStyle.flags &= ~OS.kControlUseForeColorMask;
-	}
-	OS.SetControlFontStyle (control, fontStyle);
+//	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+//	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+//	if (color != null) {
+//		fontStyle.foreColor_red = (short) (color [0] * 0xffff);
+//		fontStyle.foreColor_green = (short) (color [1] * 0xffff);
+//		fontStyle.foreColor_blue = (short) (color [2] * 0xffff);
+//		fontStyle.flags |= OS.kControlUseForeColorMask;
+//	} else {
+//		fontStyle.flags &= ~OS.kControlUseForeColorMask;
+//	}
+//	OS.SetControlFontStyle (control, fontStyle);
 }
 
 /**
@@ -3409,10 +2658,10 @@ public boolean setParent (Composite parent) {
 		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
-	int topHandle = topHandle ();
-	OS.HIViewAddSubview (parent.handle, topHandle);
-	OS.HIViewSetVisible (topHandle, (state & HIDDEN) == 0);
-	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+//	int topHandle = topHandle ();
+//	OS.HIViewAddSubview (parent.handle, topHandle);
+//	OS.HIViewSetVisible (topHandle, (state & HIDDEN) == 0);
+//	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
 	this.parent = parent;
 	return true;
 }
@@ -3444,14 +2693,14 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
-			OS.HIViewSetDrawingEnabled (handle, true);
-			invalidateVisibleRegion (handle);
-			redrawWidget (handle, true);
+//			OS.HIViewSetDrawingEnabled (handle, true);
+//			invalidateVisibleRegion (handle);
+//			redrawWidget (handle, true);
 		}
 	} else {
 		if (drawCount == 0) {
-			OS.HIViewSetDrawingEnabled (handle, false);
-			invalidateVisibleRegion (handle);
+//			OS.HIViewSetDrawingEnabled (handle, false);
+//			invalidateVisibleRegion (handle);
 		}
 		drawCount++;
 	}
@@ -3461,7 +2710,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.region = region;
-	redrawWidget (handle, true);
+//	redrawWidget (handle, true);
 }
 
 boolean setRadioSelection (boolean value){
@@ -3536,11 +2785,11 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (display.helpWidget == this) {
-		display.helpWidget = null;
-		OS.HMInstallControlContentCallback (handle, 0);
-		OS.HMInstallControlContentCallback (handle, display.helpProc);
-	}
+//	if (display.helpWidget == this) {
+//		display.helpWidget = null;
+//		OS.HMInstallControlContentCallback (handle, 0);
+//		OS.HMInstallControlContentCallback (handle, display.helpProc);
+//	}
 }
 
 /**
@@ -3589,12 +2838,12 @@ public void setVisible (boolean visible) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!visible) {
-		if (display.focusEvent != SWT.FocusOut) {
+//		if (display.focusEvent != SWT.FocusOut) {
 			control = display.getFocusControl ();
 			fixFocus = isFocusAncestor (control);
-		}
+//		}
 	}
-	setVisible (topHandle (), visible);
+//	setVisible (topHandle (), visible);
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -3608,19 +2857,19 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder () {
-	int topHandle = topHandle ();
-	int parentHandle = parent.handle;
-	OS.HIViewAddSubview (parentHandle, topHandle);
-	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
-	Rect rect = getInset ();
-	rect.right = rect.left;
-	rect.bottom = rect.top;
-	OS.SetControlBounds (topHandle, rect);
+//	int topHandle = topHandle ();
+//	int parentHandle = parent.handle;
+//	OS.HIViewAddSubview (parentHandle, topHandle);
+//	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+//	Rect rect = getInset ();
+//	rect.right = rect.left;
+//	rect.bottom = rect.top;
+//	OS.SetControlBounds (topHandle, rect);
 }
 
 void setZOrder (Control control, boolean above) {
 	int otherControl = control == null ? 0 : control.topHandle ();
-	setZOrder (topHandle (), otherControl, above);
+//	setZOrder (topHandle (), otherControl, above);
 }
 
 void sort (int [] items) {
@@ -3640,36 +2889,38 @@ void sort (int [] items) {
 }
 
 Point textExtent (int ptr, int wHint) {
-	if (ptr != 0 && OS.CFStringGetLength (ptr) > 0) {		
-		float [] w = new float [1], h = new float [1];
-		HIThemeTextInfo info = new HIThemeTextInfo ();
-		info.state = OS.kThemeStateActive;
-		if (font != null) {
-			short [] family = new short [1], style = new short [1];
-			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
-			OS.TextFont (family [0]);
-			OS.TextFace ((short) (style [0] | font.style));
-			OS.TextSize ((short) font.size);
-			info.fontID = (short) OS.kThemeCurrentPortFont; 
-		} else {
-			info.fontID = (short) defaultThemeFont ();
-		}
-		OS.HIThemeGetTextDimensions (ptr, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
-		return new Point((int) w [0], (int) h [0]);
-	} else {
-		Font font = getFont ();
-		ATSFontMetrics metrics = new ATSFontMetrics();
-		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-		return new Point(0, (int)(0.5f + (metrics.ascent -metrics.descent + metrics.leading) * font.size));
-	}
+//	if (ptr != 0 && OS.CFStringGetLength (ptr) > 0) {		
+//		float [] w = new float [1], h = new float [1];
+//		HIThemeTextInfo info = new HIThemeTextInfo ();
+//		info.state = OS.kThemeStateActive;
+//		if (font != null) {
+//			short [] family = new short [1], style = new short [1];
+//			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
+//			OS.TextFont (family [0]);
+//			OS.TextFace ((short) (style [0] | font.style));
+//			OS.TextSize ((short) font.size);
+//			info.fontID = (short) OS.kThemeCurrentPortFont; 
+//		} else {
+//			info.fontID = (short) defaultThemeFont ();
+//		}
+//		OS.HIThemeGetTextDimensions (ptr, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
+//		return new Point((int) w [0], (int) h [0]);
+//	} else {
+//		Font font = getFont ();
+//		ATSFontMetrics metrics = new ATSFontMetrics();
+//		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+//		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+//		return new Point(0, (int)(0.5f + (metrics.ascent -metrics.descent + metrics.leading) * font.size));
+//	}
+	return null;
 }
 
 Point textExtent(char[] chars, int wHint) {
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-	Point result = textExtent (ptr, wHint);
-	if (ptr != 0) OS.CFRelease (ptr);
-	return result;
+//	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+//	Point result = textExtent (ptr, wHint);
+//	if (ptr != 0) OS.CFRelease (ptr);
+//	return result;
+	return null;
 }
 
 /**
@@ -3690,19 +2941,7 @@ Point textExtent(char[] chars, int wHint) {
  */
 public Point toControl (int x, int y) {
 	checkWidget();
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	CGPoint pt = new CGPoint ();
-	OS.HIViewConvertPoint (pt, handle, 0);
-	x -= (int) pt.x;
-	y -= (int) pt.y;
-	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	x -= rect.left;
-	y -= rect.top;
-	Rect inset = getInset ();
-	x += inset.left;
-	y += inset.top;
-    return new Point (x, y);
+    return display.map (null, this, x, y);
 }
 
 /**
@@ -3745,19 +2984,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget();
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	CGPoint pt = new CGPoint ();
-	OS.HIViewConvertPoint (pt, handle, 0);
-	x += (int) pt.x;
-	y += (int) pt.y;
-	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	x += rect.left;
-	y += rect.top;
-	Rect inset = getInset ();
-	x -= inset.left;
-	y -= inset.top;
-    return new Point (x, y);
+	return display.map (this, null, x, y);
 }
 
 /**
@@ -3803,10 +3030,10 @@ boolean translateTraversal (int key, int theEvent, boolean [] consume) {
 			break;
 		}
 		case 48: /* Tab */ {
-			int [] modifiers = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-			boolean next = (modifiers [0] & OS.shiftKey) == 0;
-			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
+//			int [] modifiers = new int [1];
+//			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//			boolean next = (modifiers [0] & OS.shiftKey) == 0;
+//			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
 		case 126: /* Up arrow */
@@ -3820,10 +3047,10 @@ boolean translateTraversal (int key, int theEvent, boolean [] consume) {
 		case 116: /* Page up */
 		case 121: /* Page down */ {
 			all = true;
-			int [] modifiers = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-			if ((modifiers [0] & OS.controlKey) == 0) return false;
-			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+//			int [] modifiers = new int [1];
+//			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//			if ((modifiers [0] & OS.controlKey) == 0) return false;
+//			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
 		default:
@@ -3995,7 +3222,7 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	//TODO - not all
-	OS.HIViewRender (handle);
+//	OS.HIViewRender (handle);
 }
 
 void updateBackgroundMode () {

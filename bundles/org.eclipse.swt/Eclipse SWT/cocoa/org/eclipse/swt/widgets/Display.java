@@ -590,7 +590,7 @@ void createDisplay (DeviceData data) {
 //			}
 //		}
 //		if (buffer != null) OS.CPSSetProcessName (psn, buffer);	
-		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
+		OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
 		OS.SetFrontProcess (psn);
 //		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
 //		if (ptr != 0) {
@@ -812,7 +812,7 @@ public Shell getActiveShell () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	return null;
+	return super.getBounds ();
 }
 
 /**
@@ -847,7 +847,7 @@ int getCaretBlinkTime () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	return null;
+	return super.getClientArea ();
 }
 
 /**
@@ -1147,41 +1147,25 @@ int getMessageCount () {
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
-//	int count = 0;
-//	Monitor [] monitors = new Monitor [1];
-//	Rect rect = new Rect ();
-//	GDevice device = new GDevice ();
-//	int gdevice = OS.GetDeviceList ();
-//	while (gdevice != 0) {
-//		if (count >= monitors.length) {
-//			Monitor [] newMonitors = new Monitor [monitors.length + 4];
-//			System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
-//			monitors = newMonitors;
-//		}
-//		Monitor monitor = new Monitor ();
-//		monitor.handle = gdevice;
-//		int [] ptr = new int [1];
-//		OS.memmove (ptr, gdevice, 4);
-//		OS.memmove (device, ptr [0], GDevice.sizeof);				
-//		monitor.x = device.left;
-//		monitor.y = device.top;
-//		monitor.width = device.right - device.left;
-//		monitor.height = device.bottom - device.top;
-//		OS.GetAvailableWindowPositioningBounds (gdevice, rect);
-//		monitor.clientX = rect.left;
-//		monitor.clientY = rect.top;
-//		monitor.clientWidth = rect.right - rect.left;
-//		monitor.clientHeight = rect.bottom - rect.top;
-//		monitors [count++] = monitor;
-//		gdevice = OS.GetNextDevice (gdevice);		
-//	}
-//	if (count < monitors.length) {
-//		Monitor [] newMonitors = new Monitor [count];
-//		System.arraycopy (monitors, 0, newMonitors, 0, count);
-//		monitors = newMonitors;
-//	}	
-//	return monitors;
-	return null;
+	NSArray screens = NSScreen.screens();
+	int count = screens.count();
+	Monitor [] monitors = new Monitor [count];
+	for (int i=0; i<count; i++) {
+		Monitor monitor = new Monitor ();
+		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
+		NSRect frame = screen.frame();
+		monitor.x = (int)frame.x;
+		monitor.y = (int)frame.y;
+		monitor.width = (int)frame.width;
+		monitor.height = (int)frame.height;
+		NSRect visibleFrame = screen.visibleFrame();
+		monitor.clientX = (int)visibleFrame.x;
+		monitor.clientY = (int)visibleFrame.y;
+		monitor.clientWidth = (int)visibleFrame.width;
+		monitor.clientHeight = (int)visibleFrame.height;
+		monitors [i] = monitor;
+	}
+	return monitors;
 }
 
 /**
@@ -1193,25 +1177,19 @@ public Monitor [] getMonitors () {
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
-//	int gdevice = OS.GetMainDevice ();
-//	Monitor monitor = new Monitor ();
-//	monitor.handle = gdevice;
-//	int [] ptr = new int [1];
-//	OS.memmove (ptr, gdevice, 4);
-//	GDevice device = new GDevice ();
-//	OS.memmove (device, ptr [0], GDevice.sizeof);		
-//	monitor.x = device.left;
-//	monitor.y = device.top;
-//	monitor.width = device.right - device.left;
-//	monitor.height = device.bottom - device.top;
-//	Rect rect = new Rect ();		
-//	OS.GetAvailableWindowPositioningBounds (gdevice, rect);
-//	monitor.clientX = rect.left;
-//	monitor.clientY = rect.top;
-//	monitor.clientWidth = rect.right - rect.left;
-//	monitor.clientHeight = rect.bottom - rect.top;
-//	return monitor;
-	return null;
+	Monitor monitor = new Monitor ();
+	NSScreen screen = NSScreen.mainScreen();
+	NSRect frame = screen.frame();
+	monitor.x = (int)frame.x;
+	monitor.y = (int)frame.y;
+	monitor.width = (int)frame.width;
+	monitor.height = (int)frame.height;
+	NSRect visibleFrame = screen.visibleFrame();
+	monitor.clientX = (int)visibleFrame.x;
+	monitor.clientY = (int)visibleFrame.y;
+	monitor.clientWidth = (int)visibleFrame.width;
+	monitor.clientHeight = (int)visibleFrame.height;
+	return monitor;
 }
 
 /**
@@ -1251,7 +1229,7 @@ public Shell [] getShells () {
 //	Shell [] newResult = new Shell [index];
 //	System.arraycopy (result, 0, newResult, 0, index);
 //	return newResult;
-	return null;
+	return new Shell[0];
 }
 
 /**
@@ -1494,7 +1472,11 @@ public Thread getThread () {
  */
 protected void init () {
 	super.init ();
+	initClasses ();
+}
 
+void initClasses () {
+	
 }
 
 /**	 

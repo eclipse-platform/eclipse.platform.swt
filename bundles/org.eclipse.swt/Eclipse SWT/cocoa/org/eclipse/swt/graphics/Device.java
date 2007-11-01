@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -219,13 +220,9 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-//	int gdevice = OS.GetMainDevice();
-//	int[] ptr = new int[1];
-//	OS.memmove(ptr, gdevice, 4);
-//	GDevice device = new GDevice();
-//	OS.memmove(device, ptr[0], GDevice.sizeof);	
-//	return new Rectangle(device.left, device.top, device.right - device.left, device.bottom - device.top);
-	return null;
+	NSScreen screen = NSScreen.mainScreen();
+	NSRect rect = screen.frame();
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -284,7 +281,9 @@ public DeviceData getDeviceData () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	return null;
+	NSScreen screen = NSScreen.mainScreen();
+	NSRect rect = screen.visibleFrame();
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -301,7 +300,7 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();	
-	return 32;
+	return OS.NSBitsPerPixelFromDepth(NSScreen.mainScreen().depth());
 }
 
 /**

@@ -11,8 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -99,45 +97,12 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	Control control = findBackgroundControl ();
-	if (control != null) {
-		control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height));
-	} else {
-		gc.fillRectangle (x, y, width, height);
-	}
-}
-
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
-	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
-	if (OS.VERSION >= 0x1040) {
-		if (control != handle) return;
-		if (caret == null) return;
-		if (caret.isShowing) {
-			OS.CGContextSaveGState (context);
-			CGRect rect = new CGRect ();
-			rect.x = caret.x;
-			rect.y = caret.y;
-			Image image = caret.image;
-			OS.CGContextSetBlendMode (context, OS.kCGBlendModeDifference);
-			if (image != null) {
-				rect.width = OS.CGImageGetWidth (image.handle);
-				rect.height = OS.CGImageGetHeight (image.handle);
-			 	OS.CGContextScaleCTM (context, 1, -1);
-			 	OS.CGContextTranslateCTM (context, 0, -(rect.height + 2 * rect.y));
-				OS.CGContextDrawImage (context, rect, image.handle);
-			} else {
-				rect.width = caret.width != 0 ? caret.width : Caret.DEFAULT_WIDTH;
-				rect.height = caret.height;
-				OS.CGContextSetShouldAntialias (context, false);
-				int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
-				OS.CGContextSetFillColorSpace (context, colorspace);
-				OS.CGContextSetFillColor (context, new float[]{1, 1, 1, 1});
-				OS.CGColorSpaceRelease (colorspace);
-				OS.CGContextFillRect (context, rect);
-			}
-			OS.CGContextRestoreGState (context);
-		}
-	}
+//	Control control = findBackgroundControl ();
+//	if (control != null) {
+//		control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height));
+//	} else {
+//		gc.fillRectangle (x, y, width, height);
+//	}
 }
 
 /**
@@ -168,80 +133,19 @@ public IME getIME () {
     return ime;
 }
 
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	boolean isFocus = OS.VERSION < 0x1040 && theControl [0] == handle && caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-	if (isFocus) caret.setFocus ();
-	return result;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) {
-		if (!isDisposed ()) {
-			Shell shell = getShell ();
-			short [] part = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-			if (part [0] != OS.kControlFocusNoPart) {
-				if (caret != null) caret.setFocus ();
-				OS.ActivateTSMDocument (shell.imHandle);
-			} else {
-				if (caret != null) caret.killFocus ();
-				OS.DeactivateTSMDocument (shell.imHandle);
-			}
-		}
-	}
-	return result;
-}
-
-int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
-	if (ime != null) {
-		int result = ime.kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
-		if (result != OS.eventNotHandledErr) return result;
-	}
-	return super.kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
-}
-
-int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
-	if (ime != null) {
-		int result = ime.kEventTextInputPosToOffset (nextHandler, theEvent, userData);
-		if (result != OS.eventNotHandledErr) return result;
-	}
-	return super.kEventTextInputPosToOffset (nextHandler, theEvent, userData);
-}
-
-int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
-	if (ime != null) {
-		int result = ime.kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
-		if (result != OS.eventNotHandledErr) return result;
-	}
-	return super.kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
-}
-
-int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
-	if (ime != null) {
-		int result = ime.kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
-		if (result != OS.eventNotHandledErr) return result;
-	}
-	return super.kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
-}
-
-void redrawWidget (int control, boolean children) {
-	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	super.redrawWidget (control, children);
-	if (isFocus) caret.setFocus ();
-}
-
-void redrawWidget (int control, int x, int y, int width, int height, boolean all) {
-	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	super.redrawWidget (control, x, y, width, height, all);
-	if (isFocus) caret.setFocus ();
-}
+//void redrawWidget (int control, boolean children) {
+//	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
+//	if (isFocus) caret.killFocus ();
+//	super.redrawWidget (control, children);
+//	if (isFocus) caret.setFocus ();
+//}
+//
+//void redrawWidget (int control, int x, int y, int width, int height, boolean all) {
+//	boolean isFocus = OS.VERSION < 0x1040 && caret != null && caret.isFocusCaret ();
+//	if (isFocus) caret.killFocus ();
+//	super.redrawWidget (control, x, y, width, height, all);
+//	if (isFocus) caret.setFocus ();
+//}
 
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
@@ -282,23 +186,23 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
-	if (!isDrawing (handle)) return;
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	Rectangle clientRect = getClientArea ();
-	Rectangle sourceRect = new Rectangle (x, y, width, height);
-	if (sourceRect.intersects (clientRect)) {
-		update (all);
-	}
-	Control control = findBackgroundControl ();
-	if (control != null && control.backgroundImage != null) {
-		redrawWidget (handle, x, y, width, height, false);
-		redrawWidget (handle, destX, destY, width, height, false);
-	} else {
-	    GC gc = new GC (this);
-	    gc.copyArea (x, y, width, height, destX, destY);
-	    gc.dispose ();
-	}
+//	if (!isDrawing (handle)) return;
+//	boolean isFocus = caret != null && caret.isFocusCaret ();
+//	if (isFocus) caret.killFocus ();
+//	Rectangle clientRect = getClientArea ();
+//	Rectangle sourceRect = new Rectangle (x, y, width, height);
+//	if (sourceRect.intersects (clientRect)) {
+//		update (all);
+//	}
+//	Control control = findBackgroundControl ();
+//	if (control != null && control.backgroundImage != null) {
+//		redrawWidget (handle, x, y, width, height, false);
+//		redrawWidget (handle, destX, destY, width, height, false);
+//	} else {
+//	    GC gc = new GC (this);
+//	    gc.copyArea (x, y, width, height, destX, destY);
+//	    gc.dispose ();
+//	}
     if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
@@ -310,7 +214,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 			}
 		}
 	}
-	if (isFocus) caret.setFocus ();
+//	if (isFocus) caret.setFocus ();
 }
 
 /**

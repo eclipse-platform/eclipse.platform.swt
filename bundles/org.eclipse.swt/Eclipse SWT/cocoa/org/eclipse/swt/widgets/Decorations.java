@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.OS;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -387,16 +387,17 @@ void releaseChildren (boolean destroy) {
 	} 
 	Display display = this.display;
 	super.releaseChildren (destroy);
-	Menu [] menus = display.getMenus (this);
-	if (menus != null) {
-		for (int i=0; i<menus.length; i++) {
-			Menu menu = menus [i];
-			if (menu != null && !menu.isDisposed ()) {
-				menu.dispose ();
-			}
-		}
-		menus = null;
-	}
+	//TODO
+//	Menu [] menus = display.getMenus (this);
+//	if (menus != null) {
+//		for (int i=0; i<menus.length; i++) {
+//			Menu menu = menus [i];
+//			if (menu != null && !menu.isDisposed ()) {
+//				menu.dispose ();
+//			}
+//		}
+//		menus = null;
+//	}
 }
 void releaseWidget () {
 	super.releaseWidget ();
@@ -413,11 +414,11 @@ boolean restoreFocus () {
 }
 
 void saveFocus () {
-	int window = OS.GetControlOwner (handle);
-	Control control = display.getFocusControl (window, false);
-	if (control != null && control != this && this == control.menuShell ()) {
-		setSavedFocus (control);
-	}
+//	int window = OS.GetControlOwner (handle);
+//	Control control = display.getFocusControl (window, false);
+//	if (control != null && control != this && this == control.menuShell ()) {
+//		setSavedFocus (control);
+//	}
 }
 
 /**
@@ -484,13 +485,13 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 	if (parent != null) return;
-	if (display.dockImage == 0) {
-		if (image != null) {
-			OS.SetApplicationDockTileImage (image.handle);
-		} else {
-			OS.RestoreApplicationDockTileImage ();
-		}
-	}
+//	if (display.dockImage == 0) {
+//		if (image != null) {
+//			OS.SetApplicationDockTileImage (image.handle);
+//		} else {
+//			OS.RestoreApplicationDockTileImage ();
+//		}
+//	}
 }
 
 /**
@@ -525,15 +526,15 @@ public void setImages (Image [] images) {
 	}
 	this.images = images;
 	if (parent != null) return;
-	if (display.dockImage == 0) {
-		if (images != null && images.length > 1) {
-			Image [] bestImages = new Image [images.length];
-			System.arraycopy (images, 0, bestImages, 0, images.length);
-			sort (bestImages);
-			images = bestImages;
-		}
-		OS.SetApplicationDockTileImage (images [0].handle);
-	}
+//	if (display.dockImage == 0) {
+//		if (images != null && images.length > 1) {
+//			Image [] bestImages = new Image [images.length];
+//			System.arraycopy (images, 0, bestImages, 0, images.length);
+//			sort (bestImages);
+//			images = bestImages;
+//		}
+//		OS.SetApplicationDockTileImage (images [0].handle);
+//	}
 }
 
 /**

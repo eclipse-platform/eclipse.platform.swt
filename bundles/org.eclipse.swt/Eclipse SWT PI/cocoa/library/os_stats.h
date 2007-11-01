@@ -25,9 +25,8 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	CPSEnableForegroundOperation_FUNC,
-	CPSSetProcessName_FUNC,
 	GetCurrentProcess_FUNC,
+	NSBitsPerPixelFromDepth_FUNC,
 	SetFrontProcess_FUNC,
 	TransformProcessType_FUNC,
 	class_1addMethods_FUNC,
@@ -53,6 +52,8 @@ typedef enum {
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ_FUNC,
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+	objc_1msgSend__II_3CI_FUNC,
 	objc_1msgSend__II_3IIIIIIIIIII_FUNC,
+	objc_1msgSend_1stret_FUNC,
 	sel_1registerName_FUNC,
 } OS_FUNCS;

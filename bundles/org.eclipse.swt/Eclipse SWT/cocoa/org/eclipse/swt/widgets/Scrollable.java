@@ -11,11 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.ControlKind;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -103,16 +98,17 @@ public Scrollable (Composite parent, int style) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-	if (horizontalBar != null) height += outMetric [0];
-	if (verticalBar != null) width += outMetric [0];
-	Rect inset = inset ();
-	x -= inset.left;
-	y -= inset.top;
-	width += inset.left + inset.right;
-	height += inset.top + inset.bottom;
-	return new Rectangle (x, y, width, height);
+//	int [] outMetric = new int [1];
+//	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+//	if (horizontalBar != null) height += outMetric [0];
+//	if (verticalBar != null) width += outMetric [0];
+//	Rect inset = inset ();
+//	x -= inset.left;
+//	y -= inset.top;
+//	width += inset.left + inset.right;
+//	height += inset.top + inset.bottom;
+//	return new Rectangle (x, y, width, height);
+	return null;
 }
 
 ScrollBar createScrollBar (int style) {
@@ -120,36 +116,37 @@ ScrollBar createScrollBar (int style) {
 }
 
 ScrollBar createStandardBar (int style) {
-	int parentHandle = scrolledHandle != 0 ? scrolledHandle : handle;
-	short [] count = new short [1];
-	OS.CountSubControls (parentHandle, count);
-	if (count [0] == 0) return null;
-	int barHandle = 0;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-	int [] outControl = new int [1];
-	ControlKind kind = new ControlKind ();
-	for (int i = 0; i < count [0]; i++) {
-		OS.GetIndexedSubControl (parentHandle, (short) (i + 1), outControl);		
-		OS.GetControlKind (outControl [0], kind);
-		if (kind.kind == OS.kControlKindScrollBar) {
-			Point point = getControlSize (outControl [0]);
-			if ((style & SWT.H_SCROLL) != 0) {
-				if (point.y == outMetric [0]) barHandle = outControl [0];
-			} else {
-				if (point.x == outMetric [0]) barHandle = outControl [0];
-			}
-		}
-	}
-	if (barHandle == 0) return null;
-	ScrollBar bar = new ScrollBar ();
-	bar.parent = this;
-	bar.style = style;
-	bar.display = display;
-	bar.handle = barHandle;
-	bar.register ();
-	bar.hookEvents ();
-	return bar;
+//	int parentHandle = scrolledHandle != 0 ? scrolledHandle : handle;
+//	short [] count = new short [1];
+//	OS.CountSubControls (parentHandle, count);
+//	if (count [0] == 0) return null;
+//	int barHandle = 0;
+//	int [] outMetric = new int [1];
+//	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+//	int [] outControl = new int [1];
+//	ControlKind kind = new ControlKind ();
+//	for (int i = 0; i < count [0]; i++) {
+//		OS.GetIndexedSubControl (parentHandle, (short) (i + 1), outControl);		
+//		OS.GetControlKind (outControl [0], kind);
+//		if (kind.kind == OS.kControlKindScrollBar) {
+//			Point point = getControlSize (outControl [0]);
+//			if ((style & SWT.H_SCROLL) != 0) {
+//				if (point.y == outMetric [0]) barHandle = outControl [0];
+//			} else {
+//				if (point.x == outMetric [0]) barHandle = outControl [0];
+//			}
+//		}
+//	}
+//	if (barHandle == 0) return null;
+//	ScrollBar bar = new ScrollBar ();
+//	bar.parent = this;
+//	bar.style = style;
+//	bar.display = display;
+//	bar.handle = barHandle;
+//	bar.register ();
+//	bar.hookEvents ();
+//	return bar;
+	return null;
 }
 
 void createWidget () {
@@ -160,7 +157,7 @@ void createWidget () {
 
 void deregister () {
 	super.deregister ();
-	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
+//	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 
 /**
@@ -179,9 +176,10 @@ void deregister () {
  */
 public Rectangle getClientArea () {
 	checkWidget();
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	return new Rectangle (0, 0, rect.right - rect.left, rect.bottom - rect.top);
+//	Rect rect = new Rect ();
+//	OS.GetControlBounds (handle, rect);
+//	return new Rectangle (0, 0, rect.right - rect.left, rect.bottom - rect.top);
+	return null;
 }
 
 /**
@@ -218,41 +216,10 @@ public ScrollBar getVerticalBar () {
 
 void hookEvents () {
 	super.hookEvents ();
-	if ((state & CANVAS) != 0 && scrolledHandle != 0) {
-		int controlProc = display.controlProc;
-		int [] mask = new int [] {
-			OS.kEventClassControl, OS.kEventControlDraw,
-		};
-		int controlTarget = OS.GetControlEventTarget (scrolledHandle);
-		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, scrolledHandle, null);
-	}
 }
 
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
-}
-
-Rect inset () {
-	if ((state & CANVAS) != 0) {
-		Rect rect = new Rect ();
-		int [] outMetric = new int [1];
-		if (drawFocusRing () && (style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-			rect.left += outMetric [0];
-			rect.top += outMetric [0];
-			rect.right += outMetric [0];
-			rect.bottom += outMetric [0];
-		}
-		if (hasBorder ()) {
-			OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-			rect.left += outMetric [0];
-			rect.top += outMetric [0];
-			rect.right += outMetric [0];
-			rect.bottom += outMetric [0];
-		}
-		return rect;
-	}
-	return EMPTY_RECT;
 }
 
 boolean isTrimHandle (int trimHandle) {
@@ -261,45 +228,9 @@ boolean isTrimHandle (int trimHandle) {
 	return trimHandle == scrolledHandle;
 }
 
-int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
-	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	int result = super.kEventMouseWheelMoved (nextHandler, theEvent, userData);
-	boolean redraw = false;
-	if (verticalBar != null) {
-		int position = verticalBar.getSelection ();
-		if (position != vPosition) {
-			Event event = new Event ();
-			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			verticalBar.sendEvent (SWT.Selection, event);
-			redraw = true;
-		}
-	}
-	if (horizontalBar != null) {
-		int position = horizontalBar.getSelection ();
-		if (position != hPosition) {
-			Event event = new Event ();
-			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-			horizontalBar.sendEvent (SWT.Selection, event);
-			redraw = true;
-		}
-	}
-	if (redraw) redrawBackgroundImage ();
-	return result;
-}
-
-void redrawBackgroundImage () {
-	if (scrolledHandle == 0) {
-		Control control = findBackgroundControl();
-		if (control != null && control.backgroundImage != null) {
-			redrawWidget (handle, false);
-		}
-	}
-}
-
 void register () {
 	super.register ();
-	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
+//	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
 }
 
 void releaseHandle () {
@@ -319,50 +250,44 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
-void resetVisibleRegion (int control) {
-	if (verticalBar != null) verticalBar.resetVisibleRegion (control);
-	if (horizontalBar != null) horizontalBar.resetVisibleRegion (control);
-	super.resetVisibleRegion (control);
-}
-
 void resizeClientArea () {
-	if (scrolledHandle == 0) return;
-	if ((state & CANVAS) == 0) return;
-	int vWidth = 0, hHeight = 0;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
-	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
-	if (isVisibleHBar) hHeight = outMetric [0];
-	if (isVisibleVBar) vWidth = outMetric [0];
-	int width, height;
-	CGRect rect = new CGRect (); 
-	OS.HIViewGetBounds (scrolledHandle, rect);
-	width = (int) rect.width;
-	height = (int) rect.height;
-	Rect inset = inset ();
-	width = Math.max (0, width - vWidth - inset.left - inset.right);
-	height = Math.max (0, height - hHeight - inset.top - inset.bottom);
-	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
-	if (isVisibleHBar) {
-		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
-	}
-	if (isVisibleVBar) {
-		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
-	}
+//	if (scrolledHandle == 0) return;
+//	if ((state & CANVAS) == 0) return;
+//	int vWidth = 0, hHeight = 0;
+//	int [] outMetric = new int [1];
+//	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+//	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
+//	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
+//	if (isVisibleHBar) hHeight = outMetric [0];
+//	if (isVisibleVBar) vWidth = outMetric [0];
+//	int width, height;
+//	CGRect rect = new CGRect (); 
+//	OS.HIViewGetBounds (scrolledHandle, rect);
+//	width = (int) rect.width;
+//	height = (int) rect.height;
+//	Rect inset = inset ();
+//	width = Math.max (0, width - vWidth - inset.left - inset.right);
+//	height = Math.max (0, height - hHeight - inset.top - inset.bottom);
+//	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
+//	if (isVisibleHBar) {
+//		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
+//	}
+//	if (isVisibleVBar) {
+//		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
+//	}
 }
 
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
-	if ((state & CANVAS) != 0) {
-		ScrollBar bar = wheelAxis == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;
-		if (bar != null && bar.getEnabled ()) {
-			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta));
-			Event event = new Event ();
-		    event.detail = wheelDelta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-			bar.sendEvent (SWT.Selection, event);
-			return true;
-		}
-	}
+//	if ((state & CANVAS) != 0) {
+//		ScrollBar bar = wheelAxis == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;
+//		if (bar != null && bar.getEnabled ()) {
+//			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta));
+//			Event event = new Event ();
+//		    event.detail = wheelDelta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+//			bar.sendEvent (SWT.Selection, event);
+//			return true;
+//		}
+//	}
 	return false;
 }
 
@@ -389,7 +314,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 		bar.state |= HIDDEN;
 	}
 	resizeClientArea ();
-	setVisible (bar.handle, visible);
+//	setVisible (bar.handle, visible);
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
 	return true;
@@ -397,7 +322,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 
 void setZOrder () {
 	super.setZOrder ();
-	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+//	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
 int topHandle () {

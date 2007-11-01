@@ -149,16 +149,16 @@ void cacheobjc_classFields(JNIEnv *env, jobject lpObject)
 struct objc_class *getobjc_classFields(JNIEnv *env, jobject lpObject, struct objc_class *lpStruct)
 {
 	if (!objc_classFc.cached) cacheobjc_classFields(env, lpObject);
-	lpStruct->isa = (*env)->GetIntField(env, lpObject, objc_classFc.isa);
-	lpStruct->super_class = (*env)->GetIntField(env, lpObject, objc_classFc.super_class);
-	lpStruct->name = (*env)->GetIntField(env, lpObject, objc_classFc.name);
+	lpStruct->isa = (struct objc_class*)(*env)->GetIntField(env, lpObject, objc_classFc.isa);
+	lpStruct->super_class = (struct objc_class*)(*env)->GetIntField(env, lpObject, objc_classFc.super_class);
+	lpStruct->name = (const char *)(*env)->GetIntField(env, lpObject, objc_classFc.name);
 	lpStruct->version = (*env)->GetIntField(env, lpObject, objc_classFc.version);
 	lpStruct->info = (*env)->GetIntField(env, lpObject, objc_classFc.info);
 	lpStruct->instance_size = (*env)->GetIntField(env, lpObject, objc_classFc.instance_size);
-	lpStruct->ivars = (*env)->GetIntField(env, lpObject, objc_classFc.ivars);
-	lpStruct->methodLists = (*env)->GetIntField(env, lpObject, objc_classFc.methodLists);
-	lpStruct->cache = (*env)->GetIntField(env, lpObject, objc_classFc.cache);
-	lpStruct->protocols = (*env)->GetIntField(env, lpObject, objc_classFc.protocols);
+	lpStruct->ivars = (struct objc_ivar_list*)(*env)->GetIntField(env, lpObject, objc_classFc.ivars);
+	lpStruct->methodLists = (struct objc_method_list**)(*env)->GetIntField(env, lpObject, objc_classFc.methodLists);
+	lpStruct->cache = (struct objc_cache*)(*env)->GetIntField(env, lpObject, objc_classFc.cache);
+	lpStruct->protocols = (struct objc_protocol_list*)(*env)->GetIntField(env, lpObject, objc_classFc.protocols);
 	return lpStruct;
 }
 
@@ -200,9 +200,9 @@ void cacheobjc_methodFields(JNIEnv *env, jobject lpObject)
 struct objc_method *getobjc_methodFields(JNIEnv *env, jobject lpObject, struct objc_method *lpStruct)
 {
 	if (!objc_methodFc.cached) cacheobjc_methodFields(env, lpObject);
-	lpStruct->method_name = (*env)->GetIntField(env, lpObject, objc_methodFc.method_name);
-	lpStruct->method_types = (*env)->GetIntField(env, lpObject, objc_methodFc.method_types);
-	lpStruct->method_imp = (*env)->GetIntField(env, lpObject, objc_methodFc.method_imp);
+	lpStruct->method_name = (SEL)(*env)->GetIntField(env, lpObject, objc_methodFc.method_name);
+	lpStruct->method_types = (char *)(*env)->GetIntField(env, lpObject, objc_methodFc.method_types);
+	lpStruct->method_imp = (IMP)(*env)->GetIntField(env, lpObject, objc_methodFc.method_imp);
 	return lpStruct;
 }
 
@@ -236,7 +236,7 @@ void cacheobjc_method_listFields(JNIEnv *env, jobject lpObject)
 struct objc_method_list *getobjc_method_listFields(JNIEnv *env, jobject lpObject, struct objc_method_list *lpStruct)
 {
 	if (!objc_method_listFc.cached) cacheobjc_method_listFields(env, lpObject);
-	lpStruct->obsolete = (*env)->GetIntField(env, lpObject, objc_method_listFc.obsolete);
+	lpStruct->obsolete = (struct objc_method_list*)(*env)->GetIntField(env, lpObject, objc_method_listFc.obsolete);
 	lpStruct->method_count = (*env)->GetIntField(env, lpObject, objc_method_listFc.method_count);
 	return lpStruct;
 }

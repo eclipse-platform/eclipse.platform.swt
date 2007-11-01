@@ -12,13 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.RGBColor;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.PixMap;
-import org.eclipse.swt.internal.carbon.BitMap;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -88,8 +81,6 @@ public abstract class Widget {
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
-	
-	static final Rect EMPTY_RECT = new Rect ();
 
 Widget () {
 	/* Do nothing */
@@ -131,10 +122,6 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
-int actionProc (int theControl, int partCode) {
-	return OS.eventNotHandledErr;
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when an event of the given type occurs. When the
@@ -167,10 +154,6 @@ public void addListener (int eventType, Listener listener) {
 void _addListener (int eventType, Listener listener) {
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, listener);
-}
-
-int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	return OS.CallNextEventHandler (nextHandler, theEvent);
 }
 
 /**
@@ -209,46 +192,6 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	if ((style & int4) != 0) style = (style & ~mask) | int4;
 	if ((style & int5) != 0) style = (style & ~mask) | int5;
 	return style;
-}
-
-void calculateVisibleRegion (int control, int visibleRgn, boolean clipChildren) {
-	int tempRgn = OS.NewRgn ();
-	if (OS.IsControlVisible (control)) {
-		int childRgn = OS.NewRgn ();
-		int window = OS.GetControlOwner (control);
-		short [] count = new short [1];
-		int [] outControl = new int [1];
-		OS.GetRootControl (window, outControl);
-		int root = outControl [0];
-		OS.GetControlRegion (root, (short) OS.kControlStructureMetaPart, visibleRgn);
-		int tempControl = control, lastControl = 0;
-		while (tempControl != root) {
-			OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
-			OS.HIViewConvertRegion (tempRgn, tempControl, root);
-			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
-			if (OS.EmptyRgn (visibleRgn)) break;
-			if (clipChildren || tempControl != control) {
-				OS.CountSubControls (tempControl, count);
-				for (int i = 0; i < count [0]; i++) {
-					OS.GetIndexedSubControl (tempControl, (short)(count [0] - i), outControl);
-					int child = outControl [0];
-					if (child == lastControl) break;
-					if (!OS.IsControlVisible (child)) continue;
-					OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
-					OS.HIViewConvertRegion (tempRgn, child, root);
-					OS.UnionRgn (tempRgn, childRgn, childRgn);
-				}
-			}
-			lastControl = tempControl;
-			OS.GetSuperControl (tempControl, outControl);
-			tempControl = outControl [0];
-		}
-		OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
-		OS.DisposeRgn (childRgn);
-	} else {
-		OS.CopyRgn (tempRgn, visibleRgn);
-	}
-	OS.DisposeRgn (tempRgn);
 }
 
 void checkOpen () {
@@ -335,253 +278,7 @@ protected void checkWidget () {
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
-int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
-	return OS.eventNotHandledErr;
-}
-
-boolean contains (int shellX, int shellY) {
-	return true;
-}
-
-int clockProc (int nextHandler, int theEvent, int userData) {
-	int kind = OS.GetEventKind (theEvent);
-	switch (kind) {
-		case OS.kEventClockDateOrTimeChanged: return kEventClockDateOrTimeChanged (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int controlProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventControlActivate:				return kEventControlActivate (nextHandler, theEvent, userData);
-		case OS.kEventControlApplyBackground:		return kEventControlApplyBackground (nextHandler, theEvent, userData);
-		case OS.kEventControlBoundsChanged:			return kEventControlBoundsChanged (nextHandler, theEvent, userData);
-		case OS.kEventControlClick:					return kEventControlClick (nextHandler, theEvent, userData);
-		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
-		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
-		case OS.kEventControlDraw:					return kEventControlDraw (nextHandler, theEvent, userData);
-		case OS.kEventControlGetPartRegion:			return kEventControlGetPartRegion (nextHandler, theEvent, userData);
-		case OS.kEventControlHit:					return kEventControlHit (nextHandler, theEvent, userData);
-		case OS.kEventControlSetCursor:				return kEventControlSetCursor (nextHandler, theEvent, userData);
-		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
-		case OS.kEventControlTrack:					return kEventControlTrack (nextHandler, theEvent, userData);
-		case OS.kEventControlGetFocusPart:			return kEventControlGetFocusPart (nextHandler, theEvent, userData);
-		case OS.kEventControlHitTest:				return kEventControlHitTest (nextHandler, theEvent, userData);
-		case OS.kEventControlGetClickActivation:	return kEventControlGetClickActivation (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int accessibilityProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventAccessibleGetChildAtPoint:	return kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
-		case OS.kEventAccessibleGetFocusedChild:	return kEventAccessibleGetFocusedChild (nextHandler, theEvent, userData);
-		case OS.kEventAccessibleGetAllAttributeNames:	return kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
-		case OS.kEventAccessibleGetNamedAttribute:	return kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-void copyToClipboard (char [] buffer) {
-	if (buffer.length == 0) return;
-	OS.ClearCurrentScrap ();
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
-}
-
-int createCIcon (Image image) {
-	int imageHandle = image.handle;
-	int width = OS.CGImageGetWidth(imageHandle);
-	int height = OS.CGImageGetHeight(imageHandle);
-	int bpr = OS.CGImageGetBytesPerRow(imageHandle);
-	int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
-	int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
-	int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
-	
-	int maskBpl = (((width + 7) / 8) + 3) / 4 * 4;
-	int maskSize = height * maskBpl;
-	int pixmapSize = height * bpr;
-	
-	/* Create the icon */
-	int iconSize = PixMap.sizeof + BitMap.sizeof * 2 + 4 + maskSize;
-	int iconHandle = OS.NewHandle(iconSize);
-	if (iconHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.HLock(iconHandle);
-	int[] iconPtr = new int[1];
-	OS.memmove(iconPtr, iconHandle, 4);
-
-	/* Initialize the pixmap */
-	PixMap iconPMap = new PixMap();
-	iconPMap.rowBytes = (short)(bpr | 0x8000);
-	iconPMap.right = (short)width;
-	iconPMap.bottom = (short)height;
-	iconPMap.cmpCount = 3;
-	iconPMap.cmpSize = (short)bpc;
-	iconPMap.pmTable = OS.NewHandle(0);
-	iconPMap.hRes = 72 << 16;
-	iconPMap.vRes = 72 << 16;
-	iconPMap.pixelType = (short)OS.RGBDirect;
-	iconPMap.pixelSize = (short)bpp;
-	iconPMap.pixelFormat = (short)bpp;
-	OS.memmove(iconPtr[0], iconPMap, PixMap.sizeof);
-
-	/* Initialize the mask */
-	BitMap iconMask = new BitMap();
-	iconMask.rowBytes = (short)maskBpl;
-	iconMask.right = (short)width;
-	iconMask.bottom = (short)height;
-	OS.memmove(iconPtr[0] + PixMap.sizeof, iconMask, BitMap.sizeof);
-
-	/* Initialize the icon data */
-	int iconData = OS.NewHandle(pixmapSize);
-	OS.HLock(iconData);
-	int[] iconDataPtr = new int[1];
-	OS.memmove(iconDataPtr, iconData, 4);
-	OS.memmove(iconDataPtr[0], image.data, pixmapSize);
-	OS.HUnlock(iconData);
-	OS.memmove(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, new int[]{iconData}, 4);
-
-	/* Initialize the mask data */
-	if (alphaInfo != OS.kCGImageAlphaFirst) {
-		OS.memset(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, -1, maskSize);
-	} else {
-		byte[] srcData = new byte[pixmapSize];
-		OS.memmove(srcData, image.data, pixmapSize);
-		byte[] maskData = new byte[maskSize];
-		int offset = 0, maskOffset = 0;
-		for (int y = 0; y<height; y++) {
-			for (int x = 0; x<width; x++) {
-				if ((srcData[offset] & 0xFF) > 128) {
-					maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
-				} else {
-					maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
-				}
-				offset += 4;
-			}
-			maskOffset += maskBpl;
-		}
-		OS.memmove(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, maskData, maskData.length);
-	}
-	
-	OS.HUnlock(iconHandle);	
-	return iconHandle;
-}
-
 void createHandle () {
-}
-
-int createIconRef (Image image) {
-	int imageHandle = image.handle;
-	int imageData = image.data;
-	int width = OS.CGImageGetWidth(imageHandle);
-	int height = OS.CGImageGetHeight(imageHandle);
-	int bpr = OS.CGImageGetBytesPerRow(imageHandle);
-	int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
-	
-	int type = 0, maskType = 0;
-	if (width == 16 && height == 16) {
-		type = OS.kSmall32BitData;
-		maskType = OS.kSmall8BitMask;
-	} else if (width == 32 && height == 32) {
-		type = OS.kLarge32BitData;
-		maskType = OS.kLarge8BitMask;
-	} else if (width == 48 && height == 48) {
-		type = OS.kHuge32BitData;
-		maskType = OS.kHuge8BitMask;
-	} else if (width == 128 && height == 128) {
-		type = OS.kThumbnail32BitData;
-		maskType = OS.kThumbnail8BitMask;
-	} else {
-		type = OS.kSmall32BitData;
-		maskType = OS.kSmall8BitMask;
-		int size = 16;
-		if (width > 16 || height > 16) {
-			type = OS.kHuge32BitData;
-			maskType = OS.kHuge8BitMask;
-			size = 32;
-		}
-		if (width > 32 || height > 32) {
-			type = OS.kHuge32BitData;
-			maskType = OS.kHuge8BitMask;
-			size = 48;			
-		}
-		if (width > 48 || height > 48) {
-			type = OS.kThumbnail32BitData;
-			maskType = OS.kThumbnail8BitMask;
-			size = 128;
-		}
-		width = height = size;
-		bpr = width * 4;
-		int dataSize = height * bpr;
-		imageData = OS.NewPtr(dataSize);
-		if (imageData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int colorspace = OS.CGColorSpaceCreateDeviceRGB();
-		if (colorspace == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int context = OS.CGBitmapContextCreate(imageData, width, height, 8, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
-		OS.CGColorSpaceRelease(colorspace);
-		if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		CGRect rect = new CGRect();
-		rect.width = width;
-		rect.height = height;
-		OS.CGContextDrawImage(context, rect, imageHandle);
-		OS.CGContextRelease(context);		
-	}
-	if (type == 0) return 0;
-	
-	int iconFamily = OS.NewHandle(0);
-	if (iconFamily == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	
-	int dataSize = height * bpr;
-	int dataHandle = OS.NewHandle(dataSize);
-	if (dataHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int[] dataPtr = new int[1];
-	OS.HLock(dataHandle);
-	OS.memmove(dataPtr, dataHandle, 4);
-	OS.memmove(dataPtr[0], imageData, dataSize);
-	OS.HUnlock(dataHandle);
-	OS.SetIconFamilyData(iconFamily, type, dataHandle);
-	OS.DisposeHandle(dataHandle);
-
-	/* Initialize the mask data */
-	int maskSize = width * height;
-	int maskHandle = OS.NewHandle (maskSize);	
-	if (maskHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.HLock(maskHandle);
-	int[] maskPtr = new int[1];
-	OS.memmove(maskPtr, maskHandle, 4);
-	if (alphaInfo != OS.kCGImageAlphaFirst) {
-		OS.memset(maskPtr[0], 0xFF, maskSize);
-	} else {
-		byte[] srcData = new byte[dataSize];
-		OS.memmove(srcData, imageData, dataSize);
-		byte[] maskData = new byte[maskSize];
-		int offset = 0, maskOffset = 0;
-		for (int y = 0; y<height; y++) {
-			for (int x = 0; x<width; x++) {
-				maskData[maskOffset++] = srcData[offset];
-				offset += 4;
-			}
-		}
-		OS.memmove(maskPtr[0], maskData, maskData.length);
-	}
-	OS.HUnlock(maskHandle);
-	OS.SetIconFamilyData(iconFamily, maskType, maskHandle);
-	OS.DisposeHandle(maskHandle);
-	
-	if (imageData != image.data) OS.DisposePtr(imageData);
-
-	/* Create the icon ref */
-	int[] iconRef = new int[1];
-	OS.HLock(iconFamily);
-	int[] iconPtr = new int[1];
-	OS.memmove(iconPtr, iconFamily, 4);
-	OS.GetIconRefFromIconFamilyPtr(iconPtr[0], OS.GetHandleSize(iconFamily), iconRef);
-	OS.HUnlock(iconFamily);	
-	OS.DisposeHandle(iconFamily);
-	return iconRef[0];
 }
 
 void createWidget () {
@@ -590,44 +287,11 @@ void createWidget () {
 	hookEvents ();
 }
 
-int commandProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventProcessCommand:	return kEventProcessCommand (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-	
 void deregister () {
 }
 
 void destroyWidget () {
 	releaseHandle ();
-}
-
-void destroyCIcon (int iconHandle) {
-	OS.HLock(iconHandle);
-	
-	/* Dispose the ColorTable */
-	int[] iconPtr = new int[1];
-	OS.memmove(iconPtr, iconHandle, 4);	
-	PixMap iconPMap = new PixMap();
-	OS.memmove(iconPMap, iconPtr[0], PixMap.sizeof);
-	if (iconPMap.pmTable != 0) OS.DisposeHandle(iconPMap.pmTable);
-
-	/* Dispose the icon data */
-	int[] iconData = new int[1];
-	OS.memmove(iconData, iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, 4);
-	if (iconData[0] != 0) OS.DisposeHandle(iconData[0]);
-	
-	OS.HUnlock(iconHandle);
-	
-	/* Dispose the icon */
-	OS.DisposeHandle(iconHandle);
-}
-
-int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
-	return OS.noErr;
 }
 
 /**
@@ -688,61 +352,6 @@ int fixMnemonic (char [] buffer) {
 		}
 	}
 	return j;
-}
-
-String getClipboardText () {
-	String result = "";
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) == OS.noErr) {
-		if (size [0] != 0) {
-			char [] buffer = new char [size [0] / 2];
-			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) == OS.noErr) {
-				result = new String (buffer);
-			}
-		}
-	} else if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) == OS.noErr) {
-		if (size [0] != 0) {
-			byte [] buffer = new byte [size [0]];
-			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) == OS.noErr) {
-				int encoding = OS.CFStringGetSystemEncoding();
-				int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
-				if (cfstring != 0) {
-					int length = OS.CFStringGetLength(cfstring);
-					if (length != 0) {
-						char[] chars = new char[length];
-						CFRange range = new CFRange();
-						range.length = length;
-						OS.CFStringGetCharacters(cfstring, range, chars);
-						result = new String(chars);
-					}
-					OS.CFRelease(cfstring);
-				}
-			}
-		}
-	}
-	return result;
-}
-
-Rectangle getControlBounds (int control) {
-	CGRect rect = new CGRect ();
-	OS.HIViewGetFrame (control, rect);
-	Rect inset = getInset ();
-	rect.x -= inset.left;
-	rect.y -= inset.top;
-	rect.width += inset.right + inset.left;
-	rect.height += inset.bottom + inset.top;
-	return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
-}
-
-Point getControlSize (int control) {
-	CGRect rect = new CGRect ();
-	OS.HIViewGetFrame (control, rect);
-	Rect inset = getInset ();
-	int width = (int) rect.width + inset.left + inset.right;
-	int height = (int) rect.height + inset.top + inset.bottom;
-	return new Point (width, height);
 }
 
 /**
@@ -829,14 +438,6 @@ public Display getDisplay () {
 	return display;
 }
 
-int getDrawCount (int control) {
-	return 0;
-}
-
-Rect getInset () {
-	return EMPTY_RECT;
-}
-
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
@@ -873,34 +474,12 @@ public int getStyle () {
 	return style;
 }
 
-int getVisibleRegion (int control, boolean clipChildren) {
-	int visibleRgn = OS.NewRgn ();
-	calculateVisibleRegion (control, visibleRgn, clipChildren);
-	return visibleRgn;
-}
-
-int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-	return OS.eventNotHandledErr;
-}
-
-int hitTestProc (int browser, int item, int property, int theRect, int mouseRect) {
-	/* Return true to indicate that the item can be selected */
-	return 1;
-}
-
 void hookEvents () {
 }
 
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
-}
-
-void invalidateVisibleRegion (int control) {
-}
-
-void invalWindowRgn (int window, int rgn) {
-	OS.InvalWindowRgn (window, rgn);
 }
 
 /**
@@ -916,10 +495,6 @@ void invalWindowRgn (int window, int rgn) {
  */
 public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
-}
-
-boolean isDrawing (int control) {
-	return OS.IsControlVisible (control) && getDrawCount (control) == 0;
 }
 
 boolean isEnabled () {
@@ -959,343 +534,6 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	return OS.noErr;
-}
-
-int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
-	return OS.noErr;
-}
-
-int itemNotificationProc (int browser, int item, int message) {
-	return OS.noErr;
-}
-
-int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlApplyBackground (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-	
-int kEventControlActivate (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlClick (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	int [] region = new int [1];	
-	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	Display display = this.display;
-	boolean oldInPaint = display.inPaint;
-	display.inPaint = true;
-	int[] context = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-	int visibleRgn = region [0];
-	drawBackground (theControl [0], context [0]);
-	callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
-	drawWidget (theControl [0], context [0], region [0], visibleRgn, theEvent);
-	display.inPaint = oldInPaint;
-	return OS.noErr;
-}
-
-int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlHit (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	OS.CFRetain (theControl[0]);
-	int result = OS.CallNextEventHandler (nextHandler, theEvent);
-	OS.CFRelease (theControl[0]);
-	return result;
-}
-
-int kEventMenuCalculateSize (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuCreateFrameView (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuDrawItem (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	return kEventRawKeyPressed (nextHandler, theEvent, userData);
-}
-
-int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
-	Display display = this.display;
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
-	int lastModifiers = display.lastModifiers;
-	int chord = OS.GetCurrentEventButtonState ();
-	int type = SWT.KeyUp;
-	if ((modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) type = SWT.KeyDown;
-	if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) type = SWT.KeyDown;
-	if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) type = SWT.KeyDown;
-	if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) type = SWT.KeyDown;
-	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
-	if (type == SWT.KeyUp && (modifiers [0] & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
-		Event event = new Event ();
-		event.keyCode = SWT.CAPS_LOCK;
-		setInputState (event, SWT.KeyDown, chord, modifiers [0]);
-		sendKeyEvent (SWT.KeyDown, event);
-	}
-	Event event = new Event ();
-	setInputState (event, type, chord, modifiers [0]);
-	if (event.keyCode == 0 && event.character == 0) return OS.eventNotHandledErr;
-	boolean result = sendKeyEvent (type, event);
-	if (type == SWT.KeyDown && (modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
-		event = new Event ();
-		event.keyCode = SWT.CAPS_LOCK;
-		setInputState (event, SWT.KeyUp, chord, modifiers [0]);
-		sendKeyEvent (SWT.KeyUp, event);
-	}
-	display.lastModifiers = modifiers [0];
-	return result ? OS.eventNotHandledErr : OS.noErr;
-}
-
-int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	return kEventRawKeyPressed (nextHandler, theEvent, userData);
-}
-
-int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
-	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
-	return OS.eventNotHandledErr;
-}
-
-int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventTextInputOffsetToPos (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventTextInputGetSelectedText (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowClose (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowDrawContent (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowGetClickModality (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowHidden (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowShown (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int keyboardProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventRawKeyDown:				return kEventRawKeyDown (nextHandler, theEvent, userData);
-		case OS.kEventRawKeyModifiersChanged:	return kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
-		case OS.kEventRawKeyRepeat:			return kEventRawKeyRepeat (nextHandler, theEvent, userData);
-		case OS.kEventRawKeyUp:				return kEventRawKeyUp (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int menuProc (int nextHandler, int theEvent, int userData) {	
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventMenuCalculateSize:		return kEventMenuCalculateSize (nextHandler, theEvent, userData);
-		case OS.kEventMenuClosed:				return kEventMenuClosed (nextHandler, theEvent, userData);
-		case OS.kEventMenuCreateFrameView:	return kEventMenuCreateFrameView (nextHandler, theEvent, userData);
-		case OS.kEventMenuDrawItem: 			return kEventMenuDrawItem (nextHandler, theEvent, userData);
-		case OS.kEventMenuDrawItemContent: 	return kEventMenuDrawItemContent (nextHandler, theEvent, userData);
-		case OS.kEventMenuGetFrameBounds: 	return kEventMenuGetFrameBounds (nextHandler, theEvent, userData);
-		case OS.kEventMenuMeasureItemWidth: 	return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
-		case OS.kEventMenuOpening:			return kEventMenuOpening (nextHandler, theEvent, userData);
-		case OS.kEventMenuTargetItem:			return kEventMenuTargetItem (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int mouseProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventMouseDown: 		return kEventMouseDown (nextHandler, theEvent, userData);
-		case OS.kEventMouseUp: 		return kEventMouseUp (nextHandler, theEvent, userData);
-		case OS.kEventMouseDragged:	return kEventMouseDragged (nextHandler, theEvent, userData);
-//		case OS.kEventMouseEntered:		return kEventMouseEntered (nextHandler, theEvent, userData);
-//		case OS.kEventMouseExited:		return kEventMouseExited (nextHandler, theEvent, userData);
-		case OS.kEventMouseMoved:		return kEventMouseMoved (nextHandler, theEvent, userData);
-		case OS.kEventMouseWheelMoved:	return kEventMouseWheelMoved (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -1327,59 +565,6 @@ void postEvent (int eventType) {
 
 void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
-}
-
-void redrawChildren (int control) {
-	int child = OS.HIViewGetFirstSubview (control);
-	while (child != 0) {
-		OS.HIViewSetNeedsDisplay (child, true);
-		redrawChildren (child);
-		child = OS.HIViewGetNextView (child);
-	}
-}
-
-void redrawChildren (int control, int rgn) {
-	int child = OS.HIViewGetFirstSubview (control);
-	while (child != 0) {
-		OS.HIViewConvertRegion(rgn, control, child);
-		OS.HIViewSetNeedsDisplayInRegion (child, rgn, true);
-		redrawChildren (child, rgn);
-		OS.HIViewConvertRegion(rgn, child, control);
-		child = OS.HIViewGetNextView (child);
-	}
-}
-
-void redrawWidget (int control, boolean children) {
-	if (display.inPaint) {
-		int rgn = OS.NewRgn ();
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		rect.right += rect.left;
-		rect.bottom += rect.top;
-		rect.top = rect.left = 0;
-		OS.RectRgn (rgn, rect);
-		OS.HIViewConvertRegion (rgn, control, 0);
-		invalWindowRgn (0, rgn);
-		OS.DisposeRgn (rgn);
-	} else {
-		OS.HIViewSetNeedsDisplay (control, true);
-		if (children) redrawChildren (control);
-	}
-}
-
-void redrawWidget (int control, int x, int y, int width, int height, boolean children) {
-	int rgn = OS.NewRgn ();
-	Rect rect = new Rect ();
-	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
-	OS.RectRgn (rgn, rect);
-	if (display.inPaint) {
-		OS.HIViewConvertRegion (rgn, control, 0);
-		invalWindowRgn (0, rgn);
-	} else {
-		OS.HIViewSetNeedsDisplayInRegion (control, rgn, true);
-		if (children) redrawChildren (control, rgn);
-	}
-	OS.DisposeRgn (rgn);
 }
 
 void register () {
@@ -1507,14 +692,6 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-int searchProc (int nextHandler, int theEvent, int userData) {
-	int kind = OS.GetEventKind (theEvent);
-	switch (kind) {
-		case OS.kEventSearchFieldCancelClicked: return kEventSearchFieldCancelClicked (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
 void sendEvent (Event event) {
 	Display display = event.display;
 	if (!display.filterEvent (event)) {
@@ -1549,32 +726,33 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
-	int [] length = new int [1];
-	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
-	if (status == OS.noErr && length [0] > 2) {
-		int count = 0;
-		int [] chord = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-		int [] modifiers = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-		char [] chars = new char [length [0] / 2];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
-		for (int i=0; i<chars.length; i++) {
-			Event event = new Event ();
-			event.character = chars [i];
-			setInputState (event, type, chord [0], modifiers [0]);
-			if (sendKeyEvent (type, event)) chars [count++] = chars [i];
-		}
-		if (count == 0) return false;
-		if (count != chars.length - 1) {
-			OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
-		}
-		return true;
-	} else {
-		Event event = new Event ();
-		if (!setKeyState (event, type, theEvent)) return true;
-		return sendKeyEvent (type, event);
-	}
+//	int [] length = new int [1];
+//	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+//	if (status == OS.noErr && length [0] > 2) {
+//		int count = 0;
+//		int [] chord = new int [1];
+//		OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+//		int [] modifiers = new int [1];
+//		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//		char [] chars = new char [length [0] / 2];
+//		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
+//		for (int i=0; i<chars.length; i++) {
+//			Event event = new Event ();
+//			event.character = chars [i];
+//			setInputState (event, type, chord [0], modifiers [0]);
+//			if (sendKeyEvent (type, event)) chars [count++] = chars [i];
+//		}
+//		if (count == 0) return false;
+//		if (count != chars.length - 1) {
+//			OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
+//		}
+//		return true;
+//	} else {
+//		Event event = new Event ();
+//		if (!setKeyState (event, type, theEvent)) return true;
+//		return sendKeyEvent (type, event);
+//	}
+	return false;
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -1589,70 +767,6 @@ boolean sendKeyEvent (int type, Event event) {
 	*/
 	if (isDisposed ()) return false;
 	return event.doit;
-}
-
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	boolean sameOrigin = true, sameExtent = true;
-	CGRect oldBounds = new CGRect ();
-	OS.HIViewGetFrame (control, oldBounds);
-	Rect inset = getInset ();
-	oldBounds.x -= inset.left;
-	oldBounds.y -= inset.top;
-	oldBounds.width += inset.left + inset.right;
-	oldBounds.height += inset.top + inset.bottom;
-	if (!move) {
-		x = (int) oldBounds.x;
-		y = (int) oldBounds.y;
-	}
-	if (!resize) {
-		width = (int) oldBounds.width;
-		height = (int) oldBounds.height;
-	}
-	CGRect newBounds = new CGRect ();
-	newBounds.x = x + inset.left;
-	newBounds.y = y + inset.top;
-	newBounds.width = width - inset.right - inset.left;
-	newBounds.height = height - inset.bottom - inset.top;
-	sameOrigin = newBounds.x == oldBounds.x && newBounds.y == oldBounds.y;
-	sameExtent = newBounds.width == oldBounds.width && newBounds.height == oldBounds.height;
-	if (sameOrigin && sameExtent) return 0;
-	OS.HIViewSetFrame (control, newBounds);
-	invalidateVisibleRegion (control);
-	
-	/*
-	* Bug in the Macintosh.  When HIViewSetDrawingEnabled() is used to
-	* turn off drawing for a control and the control is moved or resized, 
-	* the Mac does not redraw the area where the control once was in the
-	* parent.  The fix is to detect this case and redraw the area.
-	*/
-	if (!OS.HIViewIsDrawingEnabled (control)) {
-		int parent = OS.HIViewGetSuperview (control);
-		if (parent != 0 && OS.HIViewIsDrawingEnabled (parent)) {
-			int rgn = OS.NewRgn ();
-			Rect rect = new Rect ();
-			OS.SetRect (rect, (short) oldBounds.x, (short) oldBounds.y, (short) (oldBounds.x + oldBounds.width), (short) (oldBounds.y + oldBounds.height));
-			OS.RectRgn (rgn, rect);
-			if (display.inPaint) {
-				OS.HIViewConvertRegion (rgn, parent, 0);
-				invalWindowRgn (0, rgn);
-			} else {
-				OS.HIViewSetNeedsDisplayInRegion (parent, rgn, true);
-			}
-			OS.DisposeRgn (rgn);
-		}
-	}
-
-	/* Send events */
-	int result = 0;
-	if (move && !sameOrigin) {
-		if (events) sendEvent (SWT.Move);
-		result |= MOVED;
-	}
-	if (resize && !sameExtent) {
-		if (events) sendEvent (SWT.Resize);
-		result |= RESIZED;
-	}
-	return result;
 }
 
 /**
@@ -1756,214 +870,183 @@ public void setData (String key, Object value) {
 }
 
 boolean setInputState (Event event, int type, int chord, int modifiers) {
-	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
-	if ((chord & 0x04) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((chord & 0x08) != 0) event.stateMask |= SWT.BUTTON4;
-	if ((chord & 0x10) != 0) event.stateMask |= SWT.BUTTON5;
-	
-	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
-	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
-	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
-	if ((modifiers & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
-	switch (type) {
-		case SWT.MouseDown:
-		case SWT.MouseDoubleClick:
-			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
-			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
-			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
-			if (event.button == 4)  event.stateMask &= ~SWT.BUTTON4;
-			if (event.button == 5)  event.stateMask &= ~SWT.BUTTON5;
-			break;
-		case SWT.MouseUp:
-			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
-			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
-			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
-			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
-			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
-			break;
-		case SWT.KeyDown:
-		case SWT.Traverse: {
-			if (event.keyCode != 0 || event.character != 0) return true;
-			int lastModifiers = display.lastModifiers;
-			if ((modifiers & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
-				event.keyCode = SWT.CAPS_LOCK;
-				return true;
-			}
-			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
-				event.stateMask &= ~SWT.SHIFT;
-				event.keyCode = SWT.SHIFT;
-				return true;
-			}
-			if ((modifiers & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
-				event.stateMask &= ~SWT.CONTROL;
-				event.keyCode = SWT.CONTROL;
-				return true;
-			}
-			if ((modifiers & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
-				event.stateMask &= ~SWT.COMMAND;
-				event.keyCode = SWT.COMMAND;
-				return true;
-			}	
-			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
-				event.stateMask &= ~SWT.ALT;
-				event.keyCode = SWT.ALT;
-				return true;
-			}
-			break;
-		}
-		case SWT.KeyUp: {
-			if (event.keyCode != 0 || event.character != 0) return true;
-			int lastModifiers = display.lastModifiers;
-			if ((modifiers & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
-				event.keyCode = SWT.CAPS_LOCK;
-				return true;
-			}
-			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
-				event.stateMask |= SWT.SHIFT;
-				event.keyCode = SWT.SHIFT;
-				return true;
-			}
-			if ((modifiers & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
-				event.stateMask |= SWT.CONTROL;
-				event.keyCode = SWT.CONTROL;
-				return true;
-			}
-			if ((modifiers & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
-				event.stateMask |= SWT.COMMAND;
-				event.keyCode = SWT.COMMAND;
-				return true;
-			}
-			if ((modifiers & OS.optionKey) == 0 && (lastModifiers & OS.optionKey) != 0) {
-				event.stateMask |= SWT.ALT;
-				event.keyCode = SWT.ALT;
-				return true;
-			}
-			break;
-		}
-	}
+//	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
+//	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
+//	if ((chord & 0x04) != 0) event.stateMask |= SWT.BUTTON2;
+//	if ((chord & 0x08) != 0) event.stateMask |= SWT.BUTTON4;
+//	if ((chord & 0x10) != 0) event.stateMask |= SWT.BUTTON5;
+//	
+//	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
+//	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
+//	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
+//	if ((modifiers & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
+//	switch (type) {
+//		case SWT.MouseDown:
+//		case SWT.MouseDoubleClick:
+//			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
+//			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
+//			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
+//			if (event.button == 4)  event.stateMask &= ~SWT.BUTTON4;
+//			if (event.button == 5)  event.stateMask &= ~SWT.BUTTON5;
+//			break;
+//		case SWT.MouseUp:
+//			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
+//			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
+//			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
+//			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
+//			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
+//			break;
+//		case SWT.KeyDown:
+//		case SWT.Traverse: {
+//			if (event.keyCode != 0 || event.character != 0) return true;
+//			int lastModifiers = display.lastModifiers;
+//			if ((modifiers & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
+//				event.keyCode = SWT.CAPS_LOCK;
+//				return true;
+//			}
+//			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
+//				event.stateMask &= ~SWT.SHIFT;
+//				event.keyCode = SWT.SHIFT;
+//				return true;
+//			}
+//			if ((modifiers & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
+//				event.stateMask &= ~SWT.CONTROL;
+//				event.keyCode = SWT.CONTROL;
+//				return true;
+//			}
+//			if ((modifiers & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
+//				event.stateMask &= ~SWT.COMMAND;
+//				event.keyCode = SWT.COMMAND;
+//				return true;
+//			}	
+//			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
+//				event.stateMask &= ~SWT.ALT;
+//				event.keyCode = SWT.ALT;
+//				return true;
+//			}
+//			break;
+//		}
+//		case SWT.KeyUp: {
+//			if (event.keyCode != 0 || event.character != 0) return true;
+//			int lastModifiers = display.lastModifiers;
+//			if ((modifiers & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
+//				event.keyCode = SWT.CAPS_LOCK;
+//				return true;
+//			}
+//			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
+//				event.stateMask |= SWT.SHIFT;
+//				event.keyCode = SWT.SHIFT;
+//				return true;
+//			}
+//			if ((modifiers & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
+//				event.stateMask |= SWT.CONTROL;
+//				event.keyCode = SWT.CONTROL;
+//				return true;
+//			}
+//			if ((modifiers & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
+//				event.stateMask |= SWT.COMMAND;
+//				event.keyCode = SWT.COMMAND;
+//				return true;
+//			}
+//			if ((modifiers & OS.optionKey) == 0 && (lastModifiers & OS.optionKey) != 0) {
+//				event.stateMask |= SWT.ALT;
+//				event.keyCode = SWT.ALT;
+//				return true;
+//			}
+//			break;
+//		}
+//	}
 	return true; 
 }
 
 boolean setKeyState (Event event, int type, int theEvent) {
-	boolean isNull = false;
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	event.keyCode = Display.translateKey (keyCode [0]);
-	switch (event.keyCode) {
-		case SWT.LF: {
-			/*
-			* Feature in the Macintosh.  When the numeric key pad
-			* Enter key is pressed, it generates '\n'.  This is the
-			* correct platform behavior but is not portable.  The
-			* fix is to convert the '\n' into '\r'.
-			*/
-			event.keyCode = SWT.KEYPAD_CR;
-			event.character = '\r';
-			break;
-		}
-		case SWT.BS: event.character = '\b'; break;
-		case SWT.CR: event.character = '\r'; break;
-		case SWT.DEL: event.character = 0x7F; break;
-		case SWT.ESC: event.character = 0x1B; break;
-		case SWT.TAB: event.character = '\t'; break;
-		default: {
-			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
-				int [] length = new int [1];
-				int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
-				if (status == OS.noErr && length [0] != 0) {
-					char [] chars = new char [1];
-					OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
-					event.character = chars [0];
-				}
-				/*
-				* Bug in the Mactonish.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
-				* fail to give 0x0 (^@ or ASCII NUL) and 0x1e (^^).  Other control character
-				* key sequences such as ^A or even Ctrl+Shift+'-' (^_ or 0x1f) are correctly
-				* translated to control characters.  Since it is not possible to know which
-				* key combination gives '@' on an international keyboard, there is no way to
-				* test for either character and convert it to a control character (Shift+'2'
-				* gives '@' only on an English keyboard) to work around the problem.
-				*
-				* There is no fix at this time.
-				*/
-			}
-			if (event.keyCode == 0) {
-				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
-				if (display.kchrPtr != kchrPtr) {
-					display.kchrPtr = kchrPtr;
-					display.kchrState [0] = 0;
-				}
-				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
-				if (result <= 0x7f) {
-					event.keyCode = result & 0x7f;
-				} else {
-					int [] encoding = new int [1];
-					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
-					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
-						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
-							encoding [0] = OS.kTextEncodingMacRoman;
-						}
-					}
-					int [] encodingInfo = new int [1];
-					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
-					if (encodingInfo [0] != 0) {
-						char [] chars = new char [1];
-						int [] nchars = new int [1];
-						byte [] buffer = new byte [2];
-						buffer [0] = 1;
-						buffer [1] = (byte) (result & 0xFF);
-						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
-						OS.DisposeTextToUnicodeInfo (encodingInfo);
-						event.keyCode = chars [0];
-					}
-				}
-			}
-			break;
-		}
-	}
-	if (event.keyCode == 0 && event.character == 0) {
-		if (!isNull) return false;
-	}
-	int [] chord = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	return setInputState (event, type, chord [0], modifiers [0]);
+//	boolean isNull = false;
+//	int [] keyCode = new int [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+//	event.keyCode = Display.translateKey (keyCode [0]);
+//	switch (event.keyCode) {
+//		case SWT.LF: {
+//			/*
+//			* Feature in the Macintosh.  When the numeric key pad
+//			* Enter key is pressed, it generates '\n'.  This is the
+//			* correct platform behavior but is not portable.  The
+//			* fix is to convert the '\n' into '\r'.
+//			*/
+//			event.keyCode = SWT.KEYPAD_CR;
+//			event.character = '\r';
+//			break;
+//		}
+//		case SWT.BS: event.character = '\b'; break;
+//		case SWT.CR: event.character = '\r'; break;
+//		case SWT.DEL: event.character = 0x7F; break;
+//		case SWT.ESC: event.character = 0x1B; break;
+//		case SWT.TAB: event.character = '\t'; break;
+//		default: {
+//			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
+//				int [] length = new int [1];
+//				int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+//				if (status == OS.noErr && length [0] != 0) {
+//					char [] chars = new char [1];
+//					OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
+//					event.character = chars [0];
+//				}
+//				/*
+//				* Bug in the Mactonish.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
+//				* fail to give 0x0 (^@ or ASCII NUL) and 0x1e (^^).  Other control character
+//				* key sequences such as ^A or even Ctrl+Shift+'-' (^_ or 0x1f) are correctly
+//				* translated to control characters.  Since it is not possible to know which
+//				* key combination gives '@' on an international keyboard, there is no way to
+//				* test for either character and convert it to a control character (Shift+'2'
+//				* gives '@' only on an English keyboard) to work around the problem.
+//				*
+//				* There is no fix at this time.
+//				*/
+//			}
+//			if (event.keyCode == 0) {
+//				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
+//				if (display.kchrPtr != kchrPtr) {
+//					display.kchrPtr = kchrPtr;
+//					display.kchrState [0] = 0;
+//				}
+//				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
+//				if (result <= 0x7f) {
+//					event.keyCode = result & 0x7f;
+//				} else {
+//					int [] encoding = new int [1];
+//					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+//					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+//					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+//						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+//							encoding [0] = OS.kTextEncodingMacRoman;
+//						}
+//					}
+//					int [] encodingInfo = new int [1];
+//					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
+//					if (encodingInfo [0] != 0) {
+//						char [] chars = new char [1];
+//						int [] nchars = new int [1];
+//						byte [] buffer = new byte [2];
+//						buffer [0] = 1;
+//						buffer [1] = (byte) (result & 0xFF);
+//						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
+//						OS.DisposeTextToUnicodeInfo (encodingInfo);
+//						event.keyCode = chars [0];
+//					}
+//				}
+//			}
+//			break;
+//		}
+//	}
+//	if (event.keyCode == 0 && event.character == 0) {
+//		if (!isNull) return false;
+//	}
+//	int [] chord = new int [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+//	int [] modifiers = new int [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//	return setInputState (event, type, chord [0], modifiers [0]);
+	return false;
 }
-
-void setVisible (int control, boolean visible) {
-	OS.HIViewSetVisible (control, visible);
-	invalidateVisibleRegion (control);
-}
-
-void setZOrder (int control, int otheControl, boolean above) {
-	int inOp = above ?  OS.kHIViewZOrderAbove :  OS.kHIViewZOrderBelow;
-	OS.HIViewSetZOrder (control, inOp, otheControl);
-	invalidateVisibleRegion (control);
-}
-
-int textInputProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventTextInputUnicodeForKeyEvent: return kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
-		case OS.kEventTextInputUpdateActiveInputArea: return kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
-		case OS.kEventTextInputOffsetToPos: return kEventTextInputOffsetToPos (nextHandler, theEvent, userData);
-		case OS.kEventTextInputPosToOffset: return kEventTextInputPosToOffset (nextHandler, theEvent, userData);
-		case OS.kEventTextInputGetSelectedText: return kEventTextInputGetSelectedText (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-RGBColor toRGBColor (float [] color) {
-	RGBColor rgb = new RGBColor ();
-	rgb.red = (short) (color [0] * 0xffff);
-	rgb.green = (short) (color [1] * 0xffff);
-	rgb.blue = (short) (color [2] * 0xffff);
-	return rgb;
-}
-
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -1982,26 +1065,6 @@ public String toString () {
 int trackingProc (int browser, int itemID, int property, int theRect, int startPt, int modifiers) {
 	/* Return one to indicate that the data browser should process the click */
 	return 1;
-}
-
-int windowProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventWindowActivated:			return kEventWindowActivated (nextHandler, theEvent, userData);	
-		case OS.kEventWindowBoundsChanged:		return kEventWindowBoundsChanged (nextHandler, theEvent, userData);
-		case OS.kEventWindowClose:				return kEventWindowClose (nextHandler, theEvent, userData);
-		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
-		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
-		case OS.kEventWindowDrawContent:		return kEventWindowDrawContent (nextHandler, theEvent, userData);
-		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
-		case OS.kEventWindowGetRegion:			return kEventWindowGetRegion (nextHandler, theEvent, userData);
-		case OS.kEventWindowHidden:				return kEventWindowHidden (nextHandler, theEvent, userData);
-		case OS.kEventWindowHitTest:			return kEventWindowHitTest (nextHandler, theEvent, userData);
-		case OS.kEventWindowShown:				return kEventWindowShown (nextHandler, theEvent, userData);
-		case OS.kEventWindowUpdate:				return kEventWindowUpdate (nextHandler, theEvent, userData);
-		case OS.kEventWindowGetClickModality:	return kEventWindowGetClickModality (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
 }
 
 }
