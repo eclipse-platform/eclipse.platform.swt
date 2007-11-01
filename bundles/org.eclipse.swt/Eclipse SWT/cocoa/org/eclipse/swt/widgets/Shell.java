@@ -531,11 +531,7 @@ public void forceActive () {
 
 public int getAlpha () {
 	checkWidget ();
-//	float [] alpha = new float [1];
-//	if (OS.GetWindowAlpha (shellHandle, alpha) == OS.noErr) {
-//		return (int)(alpha [0] * 255);
-//	}
-	return 0xFF;
+	return (int)(window.alphaValue() * 255);
 }
 
 public Rectangle getBounds () {
@@ -888,7 +884,7 @@ void setActiveControl (Control control) {
 public void setAlpha (int alpha) {
 	checkWidget ();
 	alpha &= 0xFF;
-//	OS.SetWindowAlpha (shellHandle, alpha / 255f);
+	window.setAlphaValue (alpha / 255f);
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -1039,12 +1035,12 @@ public void setMinimized (boolean minimized) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget();
-	int clientWidth = 0, clientHeight = 0;
-	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
-	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-		clientWidth = DEFAULT_CLIENT_WIDTH;
-		clientHeight = DEFAULT_CLIENT_HEIGHT;
-	}
+//	int clientWidth = 0, clientHeight = 0;
+//	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+//	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+//		clientWidth = DEFAULT_CLIENT_WIDTH;
+//		clientHeight = DEFAULT_CLIENT_HEIGHT;
+//	}
 //	Rect rect = new Rect ();
 //	OS.GetWindowStructureWidths (shellHandle, rect);
 //	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();

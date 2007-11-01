@@ -10,6 +10,10 @@ public NSWindow(int id) {
 	super(id);
 }
 
+public float alphaValue() {
+	return (float)OS.objc_msgSend_fpret(id, OS.sel_alphaValue);
+}
+
 public NSObject contentView() {
 	int id = OS.objc_msgSend(this.id, OS.sel_contentView);
 	if (id == 0) return null;
@@ -39,6 +43,10 @@ public void orderOut(NSObject sender) {
 
 public void orderFront(NSObject sender) {
 	OS.objc_msgSend(id, OS.sel_orderFront_1, sender != null ? sender.id : 0);
+}
+
+public void setAlphaValue(float alpha) {
+	OS.objc_msgSend(id, OS.sel_setAlphaValue_1, alpha);	
 }
 
 public void setDelegate(NSObject delegate) {

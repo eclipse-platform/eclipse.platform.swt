@@ -54,6 +54,7 @@ typedef enum {
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
 	objc_1msgSend__II_3CI_FUNC,
 	objc_1msgSend__II_3IIIIIIIIIII_FUNC,
+	objc_1msgSend_1fpret_FUNC,
 	objc_1msgSend_1stret_FUNC,
 	sel_1registerName_FUNC,
 } OS_FUNCS;

@@ -31,7 +31,8 @@ public class OS extends Platform {
 	public static final int class_NSScreen = OS.objc_getClass("NSScreen");
 	public static final int class_NSAutoreleasePool = OS.objc_getClass("NSAutoreleasePool");
 	
-	/** Selectors */
+	/** Selectors */	
+	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
 	public static final int sel_alloc = OS.sel_registerName("alloc");
 	public static final int sel_contentView = OS.sel_registerName("contentView");
 	public static final int sel_count = OS.sel_registerName("count");
@@ -50,6 +51,7 @@ public class OS extends Platform {
 	public static final int sel_respondsToSelector_1 = OS.sel_registerName("respondsToSelector:");
 	public static final int sel_run = OS.sel_registerName("run");
 	public static final int sel_screens = OS.sel_registerName("screens");
+	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");
 	public static final int sel_setDelegate_1 = OS.sel_registerName("setDelegate:");
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
@@ -84,6 +86,7 @@ public static final int objc_getClass(String className) {
 }
 public static final native int objc_lookUpClass(byte[] className);
 public static final native void objc_msgSend_stret(NSRect rect, int object, int selector);
+public static final native double objc_msgSend_fpret(int object, int selector);
 public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);
 public static final native int objc_msgSend(int object, int selector, float arg0);

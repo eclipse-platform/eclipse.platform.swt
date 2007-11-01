@@ -30,7 +30,7 @@ CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_S
 	-I /System/Library/Frameworks/Cocoa.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
-SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o
+SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o os_custom.o
 
 
 all: $(SWT_LIB) $(SWTPI_LIB)

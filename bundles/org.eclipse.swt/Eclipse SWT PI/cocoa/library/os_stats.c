@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 31;
-int OS_nativeFunctionCallCount[31];
+int OS_nativeFunctionCount = 32;
+int OS_nativeFunctionCallCount[32];
 char * OS_nativeFunctionNames[] = {
 	"GetCurrentProcess",
 	"NSBitsPerPixelFromDepth",
@@ -46,6 +46,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2",
 	"objc_1msgSend__II_3CI",
 	"objc_1msgSend__II_3IIIIIIIIIII",
+	"objc_1msgSend_1fpret",
 	"objc_1msgSend_1stret",
 	"sel_1registerName",
 };

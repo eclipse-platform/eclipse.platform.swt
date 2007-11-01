@@ -19,4 +19,8 @@
 
 //#include "os_custom.h"
 
+#ifndef __i386__
+#define objc_msgSend_fpret (int)objc_msgSend
+#endif
+
 #endif /* INC_os_H */

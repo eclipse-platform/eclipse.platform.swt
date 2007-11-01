@@ -414,6 +414,18 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend_1fpret
+JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1fpret_FUNC);
+	rc = (jdouble)objc_msgSend_fpret((id)arg0, (SEL)arg1);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1fpret_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1stret
 JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
