@@ -27,6 +27,18 @@ JNIEXPORT jint JNICALL C_NATIVE(PTR_1sizeof)
 }
 #endif
 
+#ifndef NO_calloc
+JNIEXPORT jint JNICALL C_NATIVE(calloc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	C_NATIVE_ENTER(env, that, calloc_FUNC);
+	rc = (jint)calloc(arg0, arg1);
+	C_NATIVE_EXIT(env, that, calloc_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_free
 JNIEXPORT void JNICALL C_NATIVE(free)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -26,6 +26,7 @@ public class C extends Platform {
 public static final native void free (int /*long*/ ptr);
 public static final native int /*long*/ getenv (byte[] wcsToMbcs);
 public static final native int /*long*/ malloc (int /*long*/ size);
+public static final native int /*long*/ calloc (int /*long*/ count, int /*long*/ size);
 public static final native void memmove (int /*long*/ dest, byte[] src, int /*long*/ size);
 public static final native void memmove (int /*long*/ dest, char[] src, int /*long*/ size);
 public static final native void memmove (int /*long*/ dest, double[] src, int /*long*/ size);

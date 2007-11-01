@@ -14,10 +14,11 @@
 
 #ifdef NATIVE_STATS
 
-int C_nativeFunctionCount = 23;
-int C_nativeFunctionCallCount[23];
+int C_nativeFunctionCount = 24;
+int C_nativeFunctionCallCount[24];
 char * C_nativeFunctionNames[] = {
 	"PTR_1sizeof",
+	"calloc",
 	"free",
 	"getenv",
 	"malloc",
