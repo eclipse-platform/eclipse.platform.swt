@@ -422,6 +422,13 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	}
 }
 
+void fixModal(int /*long*/ group, int /*long*/ modalGroup)  {
+	Control[] controls = _getChildren ();
+	for (int i = 0; i < controls.length; i++) {
+		controls[i].fixModal (group, modalGroup);
+	}
+}
+
 void fixStyle () {
 	super.fixStyle ();
 	if (scrolledHandle == 0) fixStyle (handle);

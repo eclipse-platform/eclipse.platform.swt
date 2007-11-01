@@ -2046,6 +2046,9 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
 	return 0;
 }
 
+void fixModal(int /*long*/ group, int /*long*/ modalGroup) {	
+}
+
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.

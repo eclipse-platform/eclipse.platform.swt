@@ -1748,6 +1748,9 @@ void updateModal () {
 			OS.gtk_window_group_remove_window (modalGroup, shellHandle);
 		}
 	}
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		fixModal (group, modalGroup);
+	}
 	modalGroup = group;
 }
 
