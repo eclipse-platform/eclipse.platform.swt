@@ -384,6 +384,15 @@ public boolean getEnabled () {
 		OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, info);
 		return (info.fsState & OS.TBSTATE_ENABLED) != 0;
 	}
+	/*
+	* Feature in Windows.  For some reason, when the menu item
+	* is a separator, GetMenuItemInfo() always indicates that
+	* the item is not enabled.  The fix is to track the enabled
+	* state for separators.
+	*/
+	if ((style & SWT.SEPARATOR) != 0) {
+		return (state & DISABLED) == 0;
+	}
 	int /*long*/ hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
@@ -646,6 +655,19 @@ public void setEnabled (boolean enabled) {
 		if (enabled) info.fsState |= OS.TBSTATE_ENABLED;
 		OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info);		
 	} else {
+		/*
+		* Feature in Windows.  For some reason, when the menu item
+		* is a separator, GetMenuItemInfo() always indicates that
+		* the item is not enabled.  The fix is to track the enabled
+		* state for separators.
+		*/
+		if ((style & SWT.SEPARATOR) != 0) {
+			if (enabled) {
+				state &= ~DISABLED;
+			} else {
+				state |= DISABLED;
+			}
+		}
 		int /*long*/ hMenu = parent.handle;
 		if (OS.IsWinCE) {
 			int index = parent.indexOf (this);
