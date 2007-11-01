@@ -29,3 +29,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IIF)
 }
 #endif
 
+#ifndef NO_JNIGetObject
+JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jobject rc = 0;
+	OS_NATIVE_ENTER(env, that, JNIGetObject_FUNC);
+	rc = (jobject)arg0;
+	OS_NATIVE_EXIT(env, that, JNIGetObject_FUNC);
+	return rc;
+}
+#endif
+

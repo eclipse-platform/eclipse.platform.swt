@@ -14,20 +14,19 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 32;
-int OS_nativeFunctionCallCount[32];
+int OS_nativeFunctionCount = 34;
+int OS_nativeFunctionCallCount[34];
 char * OS_nativeFunctionNames[] = {
+	"DeleteGlobalRef",
 	"GetCurrentProcess",
+	"JNIGetObject",
 	"NSBitsPerPixelFromDepth",
+	"NewGlobalRef",
 	"SetFrontProcess",
 	"TransformProcessType",
-	"class_1addMethods",
-	"memmove__ILorg_eclipse_swt_internal_cocoa_objc_1class_2I",
-	"memmove__ILorg_eclipse_swt_internal_cocoa_objc_1method_1list_2I",
-	"memmove__ILorg_eclipse_swt_internal_cocoa_objc_1method_2I",
-	"memmove__Lorg_eclipse_swt_internal_cocoa_objc_1class_2II",
-	"memmove__Lorg_eclipse_swt_internal_cocoa_objc_1method_1list_2II",
-	"objc_1addClass",
+	"class_1addIvar",
+	"class_1addMethod",
+	"objc_1allocateClassPair",
 	"objc_1getClass",
 	"objc_1lookUpClass",
 	"objc_1msgSend__II",
@@ -48,6 +47,9 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__II_3IIIIIIIIIII",
 	"objc_1msgSend_1fpret",
 	"objc_1msgSend_1stret",
+	"objc_1registerClassPair",
+	"object_1getInstanceVariable",
+	"object_1setInstanceVariable",
 	"sel_1registerName",
 };
 

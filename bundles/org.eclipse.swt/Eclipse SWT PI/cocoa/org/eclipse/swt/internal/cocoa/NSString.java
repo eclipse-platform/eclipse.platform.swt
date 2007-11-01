@@ -6,6 +6,10 @@ public NSString(int id) {
 	super(id);
 }
 
+public int get_class() {
+	return OS.class_NSString;
+}
+
 public static NSString stringWith(char[] chars, int length) {
 	int id = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_1length_1, chars, length);
 	return id != 0 ? new NSString(id) : null;

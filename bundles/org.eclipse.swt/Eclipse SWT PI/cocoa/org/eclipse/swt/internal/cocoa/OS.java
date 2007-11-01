@@ -7,7 +7,7 @@ public class OS extends Platform {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
 
-	
+	/** Constants */
 	public static final int NSBackingStoreRetained     = 0;
 	public static final int NSBackingStoreNonretained  = 1;
 	public static final int NSBackingStoreBuffered     = 2;	
@@ -19,13 +19,11 @@ public class OS extends Platform {
 	public static final int NSTexturedBackgroundWindowMask = 1 << 8;
 	public static final int kProcessTransformToForegroundApplication = 1;
 	public static final int noErr = 0;
-
-	public static final int CLS_CLASS = 1;
-	public static final int CLS_META = 2;
 	
 	/** Classes */
 	public static final int class_NSObject = OS.objc_getClass("NSObject");
 	public static final int class_NSString = OS.objc_getClass("NSString");
+	public static final int class_NSArray = OS.objc_getClass("NSString");
 	public static final int class_NSApplication = OS.objc_getClass("NSApplication");
 	public static final int class_NSWindow = OS.objc_getClass("NSWindow");
 	public static final int class_NSScreen = OS.objc_getClass("NSScreen");
@@ -34,6 +32,7 @@ public class OS extends Platform {
 	/** Selectors */	
 	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
 	public static final int sel_alloc = OS.sel_registerName("alloc");
+	public static final int sel_close = OS.sel_registerName("close");
 	public static final int sel_contentView = OS.sel_registerName("contentView");
 	public static final int sel_count = OS.sel_registerName("count");
 	public static final int sel_depth = OS.sel_registerName("depth");
@@ -64,27 +63,20 @@ public class OS extends Platform {
 	public static final int sel_windowShouldClose_1 = OS.sel_registerName("windowShouldClose:");	
 	
 
+	//TODO - don't hard code
 	public static final int VERSION = 0x1040;
+	public static final int PTR_SIZEOF = 4;
+
+/** JNI natives */
+public static final native int NewGlobalRef(Object object);
+public static final native void DeleteGlobalRef(int globalRef);
+public static final native Object JNIGetObject(int globalRef);
 	
-static byte [] ascii (String name) {
-	int length = name.length ();
-	char [] chars = new char [length];
-	name.getChars (0, length, chars, 0);
-	byte [] buffer = new byte [length + 1];
-	for (int i=0; i<length; i++) {
-		buffer [i] = (byte) chars [i];
-	}
-	return buffer;
-}
-
-
-public static final native void objc_addClass(int myClass);
-public static final native void class_addMethods(int aClass, int methodList);
-public static final native int objc_getClass(byte[] className);
-public static final int objc_getClass(String className) {
-	return objc_getClass(ascii(className));
-}
-public static final native int objc_lookUpClass(byte[] className);
+public static final native boolean class_addIvar(int cls, String name, int size, byte alignment, String types);
+public static final native boolean class_addMethod(int cls, int name, int imp, String types);
+public static final native int objc_allocateClassPair(int superclass, String name, int extraBytes);
+public static final native int objc_getClass(String className);
+public static final native int objc_lookUpClass(String className);
 public static final native void objc_msgSend_stret(NSRect rect, int object, int selector);
 public static final native double objc_msgSend_fpret(int object, int selector);
 public static final native int objc_msgSend(int object, int selector);
@@ -103,18 +95,12 @@ public static final native int objc_msgSend(int object, int selector, int arg0, 
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
 public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
-public static final native int sel_registerName(byte[] selectorName);
-public static final int sel_registerName(String selectorName) {
-	return sel_registerName(ascii(selectorName));
-}
+public static final native void objc_registerClassPair(int cls);
+public static final native int object_getInstanceVariable(int obj, String name, int[] outValue);
+public static final native int object_setInstanceVariable(int obj, String name, int value);
+public static final native int sel_registerName(String selectorName);
 
 public static final native int NSBitsPerPixelFromDepth(int depth);
-
-public static final native void memmove(objc_class dest, int src, int size);
-public static final native void memmove(objc_method_list dest, int src, int size);
-public static final native void memmove(int dest, objc_class src, int size);
-public static final native void memmove(int dest, objc_method_list src, int size);
-public static final native void memmove(int dest, objc_method src, int size);
 
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);

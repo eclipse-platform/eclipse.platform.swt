@@ -24,7 +24,7 @@ SWTPI_LIB=lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 #NATIVE_STATS = -DNATIVE_STATS
 
 #SWT_DEBUG = -g
-ARCHS = #-arch i386 -arch ppc
+ARCHS = -arch i386 -arch ppc
 CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA \
 	-I /System/Library/Frameworks/JavaVM.framework/Headers \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers

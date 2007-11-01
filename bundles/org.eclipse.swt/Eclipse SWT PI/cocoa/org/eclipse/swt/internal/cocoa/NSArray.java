@@ -6,6 +6,10 @@ public NSArray(int id) {
 	super(id);
 }
 
+public int get_class() {
+	return OS.class_NSArray;
+}
+
 public int count() {
 	return OS.objc_msgSend(id, OS.sel_count);
 }

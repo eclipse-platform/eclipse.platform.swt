@@ -47,39 +47,3 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct);
 #define NSSize_sizeof() 0
 #endif
 
-#ifndef NO_objc_class
-void cacheobjc_classFields(JNIEnv *env, jobject lpObject);
-struct objc_class *getobjc_classFields(JNIEnv *env, jobject lpObject, struct objc_class *lpStruct);
-void setobjc_classFields(JNIEnv *env, jobject lpObject, struct objc_class *lpStruct);
-#define objc_class_sizeof() sizeof(objc_class)
-#else
-#define cacheobjc_classFields(a,b)
-#define getobjc_classFields(a,b,c) NULL
-#define setobjc_classFields(a,b,c)
-#define objc_class_sizeof() 0
-#endif
-
-#ifndef NO_objc_method
-void cacheobjc_methodFields(JNIEnv *env, jobject lpObject);
-struct objc_method *getobjc_methodFields(JNIEnv *env, jobject lpObject, struct objc_method *lpStruct);
-void setobjc_methodFields(JNIEnv *env, jobject lpObject, struct objc_method *lpStruct);
-#define objc_method_sizeof() sizeof(objc_method)
-#else
-#define cacheobjc_methodFields(a,b)
-#define getobjc_methodFields(a,b,c) NULL
-#define setobjc_methodFields(a,b,c)
-#define objc_method_sizeof() 0
-#endif
-
-#ifndef NO_objc_method_list
-void cacheobjc_method_listFields(JNIEnv *env, jobject lpObject);
-struct objc_method_list *getobjc_method_listFields(JNIEnv *env, jobject lpObject, struct objc_method_list *lpStruct);
-void setobjc_method_listFields(JNIEnv *env, jobject lpObject, struct objc_method_list *lpStruct);
-#define objc_method_list_sizeof() sizeof(objc_method_list)
-#else
-#define cacheobjc_method_listFields(a,b)
-#define getobjc_method_listFields(a,b,c) NULL
-#define setobjc_method_listFields(a,b,c)
-#define objc_method_list_sizeof() 0
-#endif
-

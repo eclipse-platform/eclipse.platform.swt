@@ -14,6 +14,10 @@ public float alphaValue() {
 	return (float)OS.objc_msgSend_fpret(id, OS.sel_alphaValue);
 }
 
+public void close() {
+	OS.objc_msgSend(id, OS.sel_close);	
+}
+
 public NSObject contentView() {
 	int id = OS.objc_msgSend(this.id, OS.sel_contentView);
 	if (id == 0) return null;

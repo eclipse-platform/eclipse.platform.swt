@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
@@ -103,6 +104,8 @@ public class Display extends Device {
 	
 	NSApplication application;
 	NSAutoreleasePool pool;
+
+	Callback windowDelegateCallback2, windowDelegateCallback3;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -1476,7 +1479,20 @@ protected void init () {
 }
 
 void initClasses () {
-	
+	windowDelegateCallback3 = new Callback(this, "windowDelegateProc", 3);
+	int proc3 = windowDelegateCallback3.getAddress();
+	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowDelegateCallback2 = new Callback(this, "windowDelegateProc", 2);
+	int proc2 = windowDelegateCallback2.getAddress();
+	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	String className = "SWTWindowDelegate";
+	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
@@ -2058,7 +2074,10 @@ void releaseDisplay () {
 		if (cursors [i] != null) cursors [i].dispose ();
 	}
 	cursors = null;
-	
+
+	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
+	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
+	windowDelegateCallback2 = windowDelegateCallback3 = null;
 }
 
 /**
@@ -2539,5 +2558,31 @@ public void wake () {
 }
 
 void wakeThread () {
+}
+
+int windowDelegateProc(int delegate, int sel) {
+	if (sel == OS.sel_tag) {
+		int[] tag = new int[1];
+		OS.object_getInstanceVariable(delegate, "tag", tag);	
+		return tag[0];
+	}
+	return 0;
+}
+
+int windowDelegateProc(int delegate, int sel, int arg0) {	
+	if (sel == OS.sel_setTag_1) {
+		OS.object_setInstanceVariable(delegate, "tag", arg0);
+		return 0;
+	}
+	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
+	if (jniRef == 0) return 0;
+	Shell shell = (Shell)OS.JNIGetObject(jniRef);
+	if (shell == null) return 0;
+	if (sel == OS.sel_windowWillClose_1) {
+		shell.windowWillClose(arg0);
+	} else if (sel == OS.sel_windowShouldClose_1) {
+		return shell.windowShouldClose(arg0) ? 1 : 0;
+	}
+	return 0;
 }
 }

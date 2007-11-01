@@ -114,6 +114,8 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Shell extends Decorations {
 	NSWindow window;
+	SWTWindowDelegate windowDelegate;
+	int jniRef;
 	boolean opened, moved, resized, fullScreen;
 //	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	Control lastActive;
@@ -464,6 +466,11 @@ void createHandle () {
 		}
 		window = window.initWithContentRect(rect, styleMask, OS.NSBackingStoreBuffered, true);
 	}
+	
+	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	window.setDelegate(windowDelegate);
+	jniRef = OS.NewGlobalRef(this);
+	windowDelegate.setTag(jniRef);
 }
 
 void createWidget () {
@@ -479,9 +486,13 @@ void deregister () {
 }
 
 void destroyWidget () {
+	Display display = this.display;
 	NSWindow window = this.window;
 	releaseHandle ();
-	if (window != null) window.release();
+	if (window != null) window.close();
+	
+	//TODO remove this when readAndDispatch works
+	display.application.stop(null);
 }
 
 Control findBackgroundControl () {
@@ -700,8 +711,7 @@ boolean hasBorder () {
 }
 
 void hookEvents () {
-	super.hookEvents ();
-	
+	super.hookEvents ();	
 }
 
 public boolean isEnabled () {
@@ -1214,6 +1224,14 @@ void updateSystemUIMode () {
 //	} else {
 //		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
 //	}
+}
+
+boolean windowShouldClose(int window) {
+	closeWidget ();
+	return false;
+}
+
+void windowWillClose(int notification) {
 }
 
 }

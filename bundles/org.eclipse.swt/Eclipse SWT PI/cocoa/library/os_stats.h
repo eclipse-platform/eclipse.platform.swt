@@ -25,17 +25,16 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	DeleteGlobalRef_FUNC,
 	GetCurrentProcess_FUNC,
+	JNIGetObject_FUNC,
 	NSBitsPerPixelFromDepth_FUNC,
+	NewGlobalRef_FUNC,
 	SetFrontProcess_FUNC,
 	TransformProcessType_FUNC,
-	class_1addMethods_FUNC,
-	memmove__ILorg_eclipse_swt_internal_cocoa_objc_1class_2I_FUNC,
-	memmove__ILorg_eclipse_swt_internal_cocoa_objc_1method_1list_2I_FUNC,
-	memmove__ILorg_eclipse_swt_internal_cocoa_objc_1method_2I_FUNC,
-	memmove__Lorg_eclipse_swt_internal_cocoa_objc_1class_2II_FUNC,
-	memmove__Lorg_eclipse_swt_internal_cocoa_objc_1method_1list_2II_FUNC,
-	objc_1addClass_FUNC,
+	class_1addIvar_FUNC,
+	class_1addMethod_FUNC,
+	objc_1allocateClassPair_FUNC,
 	objc_1getClass_FUNC,
 	objc_1lookUpClass_FUNC,
 	objc_1msgSend__II_FUNC,
@@ -56,5 +55,8 @@ typedef enum {
 	objc_1msgSend__II_3IIIIIIIIIII_FUNC,
 	objc_1msgSend_1fpret_FUNC,
 	objc_1msgSend_1stret_FUNC,
+	objc_1registerClassPair_FUNC,
+	object_1getInstanceVariable_FUNC,
+	object_1setInstanceVariable_FUNC,
 	sel_1registerName_FUNC,
 } OS_FUNCS;
