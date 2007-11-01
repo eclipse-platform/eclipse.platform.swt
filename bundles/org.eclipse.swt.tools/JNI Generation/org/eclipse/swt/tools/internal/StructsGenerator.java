@@ -156,18 +156,28 @@ void generateBlankMacros(Class clazz) {
 
 void generatePrototypes(Class clazz) {
 	String clazzName = getClassName(clazz);
+	ClassData classData = metaData.getMetaData(clazz);
 	output("void cache");
 	output(clazzName);
 	outputln("Fields(JNIEnv *env, jobject lpObject);");
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	output(" *get");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	outputln(" *lpStruct);");
 	output("void set");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	outputln(" *lpStruct);");
 	output("#define ");
@@ -385,10 +395,17 @@ void generateGetFields(Class clazz) {
 
 void generateGetFunction(Class clazz) {
 	String clazzName = getClassName(clazz);
+	ClassData classData = metaData.getMetaData(clazz);
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	output(" *get");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	outputln(" *lpStruct)");
 	outputln("{");
@@ -528,6 +545,10 @@ void generateSetFunction(Class clazz) {
 	output("void set");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
+	ClassData classData = metaData.getMetaData(clazz);
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	outputln(" *lpStruct)");
 	outputln("{");

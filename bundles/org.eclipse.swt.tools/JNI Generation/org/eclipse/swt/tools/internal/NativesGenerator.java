@@ -348,6 +348,10 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 			}
 			output("= NULL;");
 		} else {
+			ClassData classData = metaData.getMetaData(paramType);
+			if (classData.getFlag(Flags.FLAG_STRUCT)) {
+				output("struct ");
+			}
 			output(getClassName(paramType));
 			output(" _arg" + i);
 			if (paramData.getFlag(FLAG_INIT)) output("={0}");
