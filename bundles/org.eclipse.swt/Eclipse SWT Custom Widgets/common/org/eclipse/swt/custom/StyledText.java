@@ -523,7 +523,7 @@ public class StyledText extends Canvas {
 			}
 			printerRenderer.disposeTextLayout(layout);
 		}
-		if (paintY > clientArea.y) {
+		if (page <= endPage && paintY > clientArea.y) {
 			// close partial page
 			printDecoration(page, false, printLayout);
 			printer.endPage();
