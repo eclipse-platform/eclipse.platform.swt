@@ -34,6 +34,11 @@ CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJS = swt.o cde.o cde_structs.o cde_stats.o
 CDE_LIBS = -G -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lDtSvc
 
+GLX_PREFIX = swt-glx
+GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GLX_OBJS = swt.o glx.o glx_structs.o glx_stats.o
+GLX_LIBS = -G -L/usr/X11R6/lib -lGL -lGLU -lm
+
 CAIRO_PREFIX = swt-cairo
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_OBJS = swt.o cairo.o cairo_structs.o cairo_stats.o
@@ -60,7 +65,7 @@ CFLAGS = -O -s \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-all: make_swt make_cde make_cairo
+all: make_swt make_glx make_cde make_cairo
 
 make_swt: $(SWT_LIB)
 
@@ -83,6 +88,18 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC)  $(CAIROCFLAGS)  $(CFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC)  $(CAIROCFLAGS) $(CFLAGS) -c cairo_stats.c
+
+make_glx: $(GLX_LIB)
+
+$(GLX_LIB): $(GLX_OBJS)
+	ld -o $@ $(GLX_OBJS) $(GLX_LIBS)
+
+glx.o: glx.c
+	$(CC)   $(CFLAGS) -c glx.c
+glx_structs.o: glx_structs.c
+	$(CC)  $(CFLAGS) -c glx_structs.c
+glx_stats.o: glx_stats.c glx_stats.h
+	$(CC)  $(CFLAGS) -c glx_stats.c
 
 install: all
 	cp *.so $(OUTPUT_DIR)

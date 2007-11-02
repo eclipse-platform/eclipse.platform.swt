@@ -104,7 +104,7 @@ CFLAGS = -O \
 LIBS = -G -K PIC -s
 
 
-all: make_swt make_atk make_awt make_cde
+all: make_swt make_atk make_awt make_glx make_cde
 
 #
 # SWT libs
