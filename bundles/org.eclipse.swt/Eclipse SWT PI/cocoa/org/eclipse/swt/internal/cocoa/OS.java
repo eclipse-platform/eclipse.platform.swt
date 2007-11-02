@@ -50,8 +50,10 @@ public class OS extends C {
 	public static final int class_NSObject = OS.objc_getClass("NSObject");
 	public static final int class_NSString = OS.objc_getClass("NSString");
 	public static final int class_NSView = OS.objc_getClass("NSView");
+	public static final int class_NSScrollView = OS.objc_getClass("NSScrollView");
 	public static final int class_NSButton = OS.objc_getClass("NSButton");
-	public static final int class_NSArray = OS.objc_getClass("NSString");
+	public static final int class_NSArray = OS.objc_getClass("NSArray");
+	public static final int class_NSColor = OS.objc_getClass("NSColor");
 	public static final int class_NSApplication = OS.objc_getClass("NSApplication");
 	public static final int class_NSWindow = OS.objc_getClass("NSWindow");
 	public static final int class_NSScreen = OS.objc_getClass("NSScreen");
@@ -63,6 +65,7 @@ public class OS extends C {
 	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
 	public static final int sel_cascadeTopLeftFromPoint_1 = OS.sel_registerName("cascadeTopLeftFromPoint:");
 	public static final int sel_close = OS.sel_registerName("close");
+	public static final int sel_colorWithDeviceRed_1green_1blue_1alpha_1 = OS.sel_registerName("colorWithDeviceRed:green:blue:alpha:");
 	public static final int sel_contentView = OS.sel_registerName("contentView");
 	public static final int sel_count = OS.sel_registerName("count");
 	public static final int sel_depth = OS.sel_registerName("depth");
@@ -72,6 +75,7 @@ public class OS extends C {
 	public static final int sel_initWithContentRect_1styleMask_1backing_1defer_1 = OS.sel_registerName("initWithContentRect:styleMask:backing:defer:");
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
+	public static final int sel_keyDown_1 = OS.sel_registerName("keyDown:");
 	public static final int sel_mainScreen = OS.sel_registerName("mainScreen");
 	public static final int sel_makeKeyAndOrderFront_1 = OS.sel_registerName("makeKeyAndOrderFront:");
 	public static final int sel_mouseDown_1 = OS.sel_registerName("mouseDown:");
@@ -83,7 +87,8 @@ public class OS extends C {
 	public static final int sel_respondsToSelector_1 = OS.sel_registerName("respondsToSelector:");
 	public static final int sel_run = OS.sel_registerName("run");
 	public static final int sel_screens = OS.sel_registerName("screens");
-	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");	
+	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");
+	public static final int sel_setBackgroundColor_1 = OS.sel_registerName("setBackgroundColor:");	
 	public static final int sel_setBezelStyle_1 = OS.sel_registerName("setBezelStyle:");
 	public static final int sel_setButtonType_1 = OS.sel_registerName("setButtonType:");
 	public static final int sel_setContentView_1 = OS.sel_registerName("setContentView:");
@@ -126,6 +131,7 @@ public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);
 public static final native int objc_msgSend(int object, int selector, String arg0);
 public static final native int objc_msgSend(int object, int selector, float arg0);
+public static final native int objc_msgSend(int object, int selector, float arg0, float arg1, float arg2, float arg3);
 public static final native int objc_msgSend(int object, int selector, NSSize arg0);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1, int arg2, boolean arg3);

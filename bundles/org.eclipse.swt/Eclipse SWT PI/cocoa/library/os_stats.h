@@ -39,6 +39,7 @@ typedef enum {
 	objc_1lookUpClass_FUNC,
 	objc_1msgSend__II_FUNC,
 	objc_1msgSend__IIF_FUNC,
+	objc_1msgSend__IIFFFF_FUNC,
 	objc_1msgSend__III_FUNC,
 	objc_1msgSend__IIII_FUNC,
 	objc_1msgSend__IIIII_FUNC,

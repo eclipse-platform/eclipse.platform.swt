@@ -1,6 +1,6 @@
 package org.eclipse.swt.internal.cocoa;
 
-public class SWTView extends NSView {
+public class SWTView extends NSScrollView {
 
 public SWTView() {
 	super(0);
