@@ -492,8 +492,8 @@ void deregister () {
 void destroyWidget () {
 	Display display = this.display;
 	NSWindow window = this.window;
-	releaseHandle ();
 	if (window != null) window.close();
+	releaseHandle ();
 	
 	//TODO remove this when readAndDispatch works
 	display.application.stop(null);
