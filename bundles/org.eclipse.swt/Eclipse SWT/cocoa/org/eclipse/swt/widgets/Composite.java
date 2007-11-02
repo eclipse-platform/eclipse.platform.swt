@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are controls which are capable
@@ -223,39 +224,12 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
-	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
-	if (!scrolled)  state |= THEME_BACKGROUND;
-	if (scrolled || (style & SWT.BORDER) != 0) {
-		createScrolledHandle (parent.handle);
-	} else {
-		createHandle (parent.handle);
-	}
-}
-
-void createHandle (int parentHandle) {
-//	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus;
-//	int [] outControl = new int [1];
-//	int window = OS.GetControlOwner (parentHandle);
-//	OS.CreateUserPaneControl (window, null, features, outControl);
-//	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//	handle = outControl [0];
-//	OS.HIObjectSetAccessibilityIgnored (handle, true);
-}
-
-void createScrolledHandle (int parentHandle) {
-//	int features = OS.kControlSupportsEmbedding;
-//	int [] outControl = new int [1];
-//	int window = OS.GetControlOwner (parentHandle);
-//	OS.CreateUserPaneControl (window, null, features, outControl);
-//	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//	scrolledHandle = outControl [0];
-//	outControl [0] = 0;
-//	features |= OS.kControlSupportsFocus;
-//	OS.CreateUserPaneControl (window, null, features, outControl);
-//	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//	handle = outControl [0];
-//	OS.HIObjectSetAccessibilityIgnored (scrolledHandle, true);
-//	OS.HIObjectSetAccessibilityIgnored (handle, true);
+	view = (SWTView)new SWTView().alloc();
+	view = view.initWithFrame (new NSRect());
+	jniRef = OS.NewGlobalRef(this);
+	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
+	((SWTView)view).setTag(jniRef);
+	parent.view.addSubview(view);
 }
 
 void enableWidget (boolean enabled) {
@@ -723,8 +697,8 @@ public void setBackgroundMode (int mode) {
 	}
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds (x, y, width, height, move, resize, events);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds (x, y, width, height, move, resize);
 	if (layout != null && (result & RESIZED) != 0) {
 		markLayout (false, false);
 		updateLayout (false);

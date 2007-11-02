@@ -115,7 +115,6 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
-	int jniRef;
 	boolean opened, moved, resized, fullScreen;
 //	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	Control lastActive;
@@ -465,6 +464,7 @@ void createHandle () {
 			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
 		}
 		window = window.initWithContentRect(rect, styleMask, OS.NSBackingStoreBuffered, true);
+//		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 
 	jniRef = OS.NewGlobalRef(this);
@@ -909,27 +909,14 @@ public void setAlpha (int alpha) {
 	window.setAlphaValue (alpha / 255f);
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	if (fullScreen) setFullScreen (false);
-//	Rect rect = new Rect ();
-//	if (!move) {
-//		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-//		x = rect.left;
-//		y = rect.top;
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+//	if (fullScreen) setFullScreen (false);
+//	if (move) {
+//		NSPoint point = new NSPoint();
+//		point.x = x;
+//		point.x = y;
+//		window.setFrameTopLeft(point);
 //	}
-//	if (!resize) {
-//		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-//		width = rect.right - rect.left;
-//		height = rect.bottom - rect.top;
-//	} else {
-//		OS.GetWindowStructureWidths (shellHandle, rect);
-//		CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
-//		OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-//		width = Math.max (1, Math.max (width, (int) inMinLimits.x + (rect.left + rect.right)));
-//		height = Math.max (1, Math.max (height, (int) inMinLimits.y + (rect.top + rect.bottom)));
-//	}
-//	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
-//	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 	return 0;
 }
 

@@ -291,15 +291,15 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 	return false;
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds(x, y, width, height, move, resize, false);
-	if ((result & MOVED) != 0) {
-		if (events) sendEvent (SWT.Move);
-	}
-	if ((result & RESIZED) != 0) {
-		resizeClientArea ();
-		if (events) sendEvent (SWT.Resize);
-	}
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(x, y, width, height, move, resize);
+//	if ((result & MOVED) != 0) {
+//		if (events) sendEvent (SWT.Move);
+//	}
+//	if ((result & RESIZED) != 0) {
+//		resizeClientArea ();
+//		if (events) sendEvent (SWT.Resize);
+//	}
 	return result;
 }
 

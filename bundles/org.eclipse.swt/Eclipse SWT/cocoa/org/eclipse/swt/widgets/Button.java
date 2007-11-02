@@ -141,12 +141,7 @@ void click () {
 
 void createHandle () {
 	NSButton widget = (NSButton)new NSButton().alloc();
-	NSRect rect = new NSRect();
-	rect.x = 10;
-	rect.y = 10;
-	rect.width = 100;
-	rect.height = 100;
-	widget.initWithFrame(rect);
+	widget.initWithFrame(new NSRect());
 	
 	int type = OS.NSPushOnPushOffButton;
 	if ((style & SWT.PUSH) != 0) {
@@ -331,18 +326,6 @@ public void setAlignment (int alignment) {
 	
 void _setAlignment (int alignment) {
 	
-}
-
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	/* 
-	* Bug in MacOS X. When setting the height of a bevel button 
-	* to a value less than 20, the button is drawn incorrectly.
-	* The fix is to force the height to be greater than or equal to 20.
-	*/
-	if (resize && (style & SWT.ARROW) == 0) {
-		height = Math.max (20, height);
-	}
-	return super.setBounds (x, y, width, height, move, resize, events);
 }
 
 void setDefault (boolean value) {

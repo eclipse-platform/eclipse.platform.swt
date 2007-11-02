@@ -46,7 +46,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int handle, jniRef;
 	NSView view;
 	Composite parent;
 	String toolTipText;
@@ -916,7 +916,8 @@ public int getBorderWidth () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return null;
+	NSRect rect = view.frame();
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -1040,7 +1041,8 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget();
-	return null;
+	NSRect rect = view.frame();
+	return new Point((int)rect.x, (int)rect.y);
 }
 
 /**
@@ -1184,7 +1186,8 @@ public Shell getShell () {
  */
 public Point getSize () {
 	checkWidget();
-	return null;
+	NSRect rect = view.frame();
+	return new Point((int)rect.width, (int)rect.height);
 }
 
 /**
@@ -2249,11 +2252,28 @@ void setBackground (int control, float [] color) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true, true);
+	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-//	return setBounds (topHandle (), x, y, width, height, move, resize, events);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	if (move && resize) {
+		NSRect rect = new NSRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+		view.setFrame (rect);
+	} else if (move) {
+		NSPoint point = new NSPoint();
+		point.x = x;
+		point.y = y;
+		view.setFrameOrigin(point);
+	} else if (resize) {
+		NSSize size = new NSSize();
+		size.width = width;
+		size.height = height;
+		view.setFrameSize(size);
+	}
 	return 0;
 }
 
@@ -2278,7 +2298,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, Math.max (0, rect.width), Math.max (0, rect.height), true, true, true);
+	setBounds (rect.x, rect.y, Math.max (0, rect.width), Math.max (0, rect.height), true, true);
 }
 
 /**
@@ -2568,7 +2588,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	setBounds (x, y, 0, 0, true, false, true);
+	setBounds (x, y, 0, 0, true, false);
 }
 
 /**
@@ -2588,7 +2608,7 @@ public void setLocation (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (location.x, location.y, 0, 0, true, false, true);
+	setBounds (location.x, location.y, 0, 0, true, false);
 }
 
 /**
@@ -2737,7 +2757,7 @@ boolean setRadioSelection (boolean value){
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true, true);
+	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
 }
 
 /**
@@ -2761,7 +2781,7 @@ public void setSize (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true, true);
+	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
 }
 
 boolean setTabGroupFocus () {
@@ -2870,7 +2890,7 @@ void setZOrder () {
 }
 
 void setZOrder (Control control, boolean above) {
-	int otherControl = control == null ? 0 : control.topHandle ();
+//	int otherControl = control == null ? 0 : control.topHandle ();
 //	setZOrder (topHandle (), otherControl, above);
 }
 
