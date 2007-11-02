@@ -38,6 +38,10 @@ public void setFrameSize(NSSize size) {
 	OS.objc_msgSend(this.id, OS.sel_setFrameSize_1, size);
 }
 
+public void setHidden(boolean hidden) {
+	OS.objc_msgSend(this.id, OS.sel_setHidden_1, hidden ? 1 : 0);
+}
+
 public int tag() {
 	return OS.objc_msgSend(id, OS.sel_tag);
 }

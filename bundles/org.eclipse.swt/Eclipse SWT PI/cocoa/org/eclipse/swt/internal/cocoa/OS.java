@@ -31,6 +31,21 @@ public class OS extends C {
 	public static final int NSMomentaryPushButton    = 0;
 	public static final int NSMomentaryLight         = 7;
 	
+	public static final int NSRoundedBezelStyle           = 1;
+	public static final int NSRegularSquareBezelStyle     = 2;
+	public static final int NSThickSquareBezelStyle       = 3;
+	public static final int NSThickerSquareBezelStyle     = 4;
+	public static final int NSDisclosureBezelStyle        = 5;
+	public static final int NSShadowlessSquareBezelStyle  = 6;
+	public static final int NSCircularBezelStyle          = 7;
+	public static final int NSTexturedSquareBezelStyle    = 8;
+	public static final int NSHelpButtonBezelStyle        = 9;
+	public static final int NSSmallSquareBezelStyle       = 10;
+	public static final int NSTexturedRoundedBezelStyle   = 11;
+	public static final int NSRoundRectBezelStyle         = 12;
+	public static final int NSRecessedBezelStyle          = 13;
+	public static final int NSRoundedDisclosureBezelStyle = 14;
+	
 	/** Classes */
 	public static final int class_NSObject = OS.objc_getClass("NSObject");
 	public static final int class_NSString = OS.objc_getClass("NSString");
@@ -59,6 +74,7 @@ public class OS extends C {
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
 	public static final int sel_mainScreen = OS.sel_registerName("mainScreen");
 	public static final int sel_makeKeyAndOrderFront_1 = OS.sel_registerName("makeKeyAndOrderFront:");
+	public static final int sel_mouseDown_1 = OS.sel_registerName("mouseDown:");
 	public static final int sel_new = OS.sel_registerName("new");
 	public static final int sel_objectAtIndex_1 = OS.sel_registerName("objectAtIndex:");	
 	public static final int sel_orderFront_1 = OS.sel_registerName("orderFront:");
@@ -67,14 +83,15 @@ public class OS extends C {
 	public static final int sel_respondsToSelector_1 = OS.sel_registerName("respondsToSelector:");
 	public static final int sel_run = OS.sel_registerName("run");
 	public static final int sel_screens = OS.sel_registerName("screens");
-	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");
-	public static final int sel_setButtonType_1 = OS.sel_registerName("setButtonType:");	
+	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");	
+	public static final int sel_setBezelStyle_1 = OS.sel_registerName("setBezelStyle:");
+	public static final int sel_setButtonType_1 = OS.sel_registerName("setButtonType:");
 	public static final int sel_setContentView_1 = OS.sel_registerName("setContentView:");
 	public static final int sel_setDelegate_1 = OS.sel_registerName("setDelegate:");
 	public static final int sel_setFrame_1 = OS.sel_registerName("setFrame:");
 	public static final int sel_setFrameOrigin_1 = OS.sel_registerName("setFrameOrigin:");
 	public static final int sel_setFrameSize_1 = OS.sel_registerName("setFrameSize:");
-	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");
+	public static final int sel_setHidden_1 = OS.sel_registerName("setHidden:");	
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
