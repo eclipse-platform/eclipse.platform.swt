@@ -23,6 +23,7 @@ public class OS extends Platform {
 	/** Classes */
 	public static final int class_NSObject = OS.objc_getClass("NSObject");
 	public static final int class_NSString = OS.objc_getClass("NSString");
+	public static final int class_NSButton = OS.objc_getClass("NSButton");
 	public static final int class_NSArray = OS.objc_getClass("NSString");
 	public static final int class_NSApplication = OS.objc_getClass("NSApplication");
 	public static final int class_NSWindow = OS.objc_getClass("NSWindow");
@@ -30,14 +31,16 @@ public class OS extends Platform {
 	public static final int class_NSAutoreleasePool = OS.objc_getClass("NSAutoreleasePool");
 	
 	/** Selectors */	
-	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
+	public static final int sel_addSubview_1 = OS.sel_registerName("addSubview:");
 	public static final int sel_alloc = OS.sel_registerName("alloc");
+	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
 	public static final int sel_close = OS.sel_registerName("close");
 	public static final int sel_contentView = OS.sel_registerName("contentView");
 	public static final int sel_count = OS.sel_registerName("count");
 	public static final int sel_depth = OS.sel_registerName("depth");
 	public static final int sel_frame = OS.sel_registerName("frame");
 	public static final int sel_init = OS.sel_registerName("init");
+	public static final int sel_initWithFrame_1 = OS.sel_registerName("initWithFrame:");
 	public static final int sel_initWithContentRect_1styleMask_1backing_1defer_1 = OS.sel_registerName("initWithContentRect:styleMask:backing:defer:");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
 	public static final int sel_mainScreen = OS.sel_registerName("mainScreen");

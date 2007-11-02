@@ -18,10 +18,10 @@ public void close() {
 	OS.objc_msgSend(id, OS.sel_close);	
 }
 
-public NSObject contentView() {
+public NSView contentView() {
 	int id = OS.objc_msgSend(this.id, OS.sel_contentView);
 	if (id == 0) return null;
-	return new NSObject(id);
+	return new NSView(id);
 }
 
 public int get_class() {
