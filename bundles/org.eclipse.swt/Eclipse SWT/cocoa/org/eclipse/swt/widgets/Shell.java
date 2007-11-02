@@ -466,11 +466,18 @@ void createHandle () {
 		}
 		window = window.initWithContentRect(rect, styleMask, OS.NSBackingStoreBuffered, true);
 	}
+
+	jniRef = OS.NewGlobalRef(this);
+	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	view = (SWTView)new SWTView().alloc();
+	view = view.initWithFrame (new NSRect());
+	((SWTView)view).setTag(jniRef);
+	window.setContentView (view);
 	
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
-	window.setDelegate(windowDelegate);
-	jniRef = OS.NewGlobalRef(this);
 	windowDelegate.setTag(jniRef);
+	window.setDelegate(windowDelegate);
 }
 
 void createWidget () {

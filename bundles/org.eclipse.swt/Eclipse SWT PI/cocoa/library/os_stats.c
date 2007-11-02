@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 35;
-int OS_nativeFunctionCallCount[35];
+int OS_nativeFunctionCount = 36;
+int OS_nativeFunctionCallCount[36];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",
@@ -49,6 +49,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1fpret",
 	"objc_1msgSend_1stret",
 	"objc_1registerClassPair",
+	"object_1getClassName",
 	"object_1getInstanceVariable",
 	"object_1setInstanceVariable",
 	"sel_1registerName",

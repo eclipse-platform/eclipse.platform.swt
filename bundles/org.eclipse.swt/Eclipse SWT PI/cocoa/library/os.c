@@ -452,6 +452,18 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1registerClassPair)
 }
 #endif
 
+#ifndef NO_object_1getClassName
+JNIEXPORT jint JNICALL OS_NATIVE(object_1getClassName)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, object_1getClassName_FUNC);
+	rc = (jint)object_getClassName((id)arg0);
+	OS_NATIVE_EXIT(env, that, object_1getClassName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_object_1getInstanceVariable
 JNIEXPORT jint JNICALL OS_NATIVE(object_1getInstanceVariable)
 	(JNIEnv *env, jclass that, jint arg0, jstring arg1, jintArray arg2)

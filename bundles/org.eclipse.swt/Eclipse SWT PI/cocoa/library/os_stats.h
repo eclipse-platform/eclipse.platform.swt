@@ -57,6 +57,7 @@ typedef enum {
 	objc_1msgSend_1fpret_FUNC,
 	objc_1msgSend_1stret_FUNC,
 	objc_1registerClassPair_FUNC,
+	object_1getClassName_FUNC,
 	object_1getInstanceVariable_FUNC,
 	object_1setInstanceVariable_FUNC,
 	sel_1registerName_FUNC,

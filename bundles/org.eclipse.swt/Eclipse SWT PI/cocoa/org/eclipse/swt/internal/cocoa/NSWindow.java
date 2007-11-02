@@ -53,6 +53,10 @@ public void setAlphaValue(float alpha) {
 	OS.objc_msgSend(id, OS.sel_setAlphaValue_1, alpha);	
 }
 
+public void setContentView(NSView view) {
+	OS.objc_msgSend(id, OS.sel_setContentView_1, view != null ? view.id : 0);	
+}
+
 public void setDelegate(NSObject delegate) {
 	OS.objc_msgSend(id, OS.sel_setDelegate_1, delegate != null ? delegate.id : 0);	
 }

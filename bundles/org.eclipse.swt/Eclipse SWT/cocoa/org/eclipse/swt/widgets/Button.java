@@ -16,6 +16,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.NSButton;
 import org.eclipse.swt.internal.cocoa.NSRect;
+import org.eclipse.swt.internal.cocoa.NSString;
+import org.eclipse.swt.internal.cocoa.OS;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -146,8 +148,20 @@ void createHandle () {
 	rect.height = 100;
 	widget.initWithFrame(rect);
 	
-	Shell shell = getShell();
-	shell.window.contentView().addSubview(widget);
+	int type = OS.NSPushOnPushOffButton;
+	if ((style & SWT.PUSH) != 0) {
+		
+	} else if ((style & SWT.CHECK) != 0) {
+		type = OS.NSSwitchButton;
+	} else if ((style & SWT.RADIO) != 0) {
+		type = OS.NSRadioButton;		
+	} else if ((style & SWT.TOGGLE) != 0) {	
+	}
+	widget.setButtonType(type);
+	widget.setTitle(NSString.stringWith(""));
+	view = widget;
+	
+	parent.view.addSubview(widget);
 }
 
 /**
@@ -432,6 +446,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
+	NSString str = NSString.stringWith(string);
+	((NSButton)view).setTitle(str);
+//	str.release();
 }
 
 int traversalCode (int key, int theEvent) {

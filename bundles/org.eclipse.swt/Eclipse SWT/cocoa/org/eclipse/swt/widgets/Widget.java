@@ -497,7 +497,7 @@ public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
 }
 
-boolean isEnabled () {
+boolean isFlipped () {
 	return true;
 }
 
@@ -1062,9 +1062,12 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
-int trackingProc (int browser, int itemID, int property, int theRect, int startPt, int modifiers) {
-	/* Return one to indicate that the data browser should process the click */
-	return 1;
+
+boolean windowShouldClose(int window) {
+	return false;
+}
+
+void windowWillClose(int notification) {
 }
 
 }

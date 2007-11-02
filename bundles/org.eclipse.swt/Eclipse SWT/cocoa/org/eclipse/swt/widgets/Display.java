@@ -1493,6 +1493,14 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
+	
+	className = "SWTView";
+	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
@@ -2566,6 +2574,13 @@ int windowDelegateProc(int delegate, int sel) {
 		OS.object_getInstanceVariable(delegate, "tag", tag);	
 		return tag[0];
 	}
+	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
+	if (jniRef == 0) return 0;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	if (widget == null) return 0;
+	if (sel == OS.sel_isFlipped) {
+		return widget.isFlipped() ? 1 : 0;
+	}
 	return 0;
 }
 
@@ -2576,12 +2591,12 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 	}
 	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
 	if (jniRef == 0) return 0;
-	Shell shell = (Shell)OS.JNIGetObject(jniRef);
-	if (shell == null) return 0;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_1) {
-		shell.windowWillClose(arg0);
+		widget.windowWillClose(arg0);
 	} else if (sel == OS.sel_windowShouldClose_1) {
-		return shell.windowShouldClose(arg0) ? 1 : 0;
+		return widget.windowShouldClose(arg0) ? 1 : 0;
 	}
 	return 0;
 }
