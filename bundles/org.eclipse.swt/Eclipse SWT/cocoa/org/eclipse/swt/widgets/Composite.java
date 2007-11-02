@@ -224,9 +224,10 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
-	view = (SWTView)new SWTView().alloc();
-	view = view.initWithFrame (new NSRect());
-	((SWTView)view).setTag(jniRef);
+	SWTView widget = (SWTView)new SWTView().alloc();
+	widget.initWithFrame (new NSRect());
+	widget.setTag(jniRef);
+	view = widget;
 	parent.view.addSubview(view);
 }
 

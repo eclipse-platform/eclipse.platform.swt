@@ -1487,6 +1487,7 @@ void initClasses () {
 	windowDelegateCallback2 = new Callback(this, "windowDelegateProc", 2);
 	int proc2 = windowDelegateCallback2.getAddress();
 	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
@@ -1497,11 +1498,13 @@ void initClasses () {
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTView";
-	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+	cls = OS.objc_allocateClassPair(OS.class_NSScrollView, className, 0);
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2599,6 +2602,10 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.windowWillClose(arg0);
 	} else if (sel == OS.sel_windowShouldClose_1) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
+	} else if (sel == OS.sel_mouseDown_1) {
+		widget.mouseDown(arg0);
+	}else if (sel == OS.sel_keyDown_1) {
+		widget.keyDown(arg0);
 	}
 	return 0;
 }

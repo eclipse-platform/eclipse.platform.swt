@@ -542,6 +542,12 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
+void keyDown(int event) {
+}
+
+void mouseDown(int event) {
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
