@@ -143,14 +143,16 @@ void createHandle () {
 	NSButton widget = (NSButton)new NSButton().alloc();
 	widget.initWithFrame(new NSRect());
 	
-	int type = OS.NSPushOnPushOffButton;
+	int type = OS.NSMomentaryPushButton;
 	if ((style & SWT.PUSH) != 0) {
-		
+		widget.setBezelStyle(OS.NSRoundedBezelStyle);
 	} else if ((style & SWT.CHECK) != 0) {
 		type = OS.NSSwitchButton;
 	} else if ((style & SWT.RADIO) != 0) {
 		type = OS.NSRadioButton;		
-	} else if ((style & SWT.TOGGLE) != 0) {	
+	} else if ((style & SWT.TOGGLE) != 0) {
+//		widget.setBezelStyle(OS.NSRoundedBezelStyle);
+		type = OS.NSToggleButton;
 	}
 	widget.setButtonType(type);
 	widget.setTitle(NSString.stringWith(""));

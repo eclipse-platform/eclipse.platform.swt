@@ -94,6 +94,7 @@ public class OS extends C {
 	public static final int sel_setHidden_1 = OS.sel_registerName("setHidden:");	
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
+	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");	
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
 	public static final int sel_stop_1 = OS.sel_registerName("stop:");
 	public static final int sel_stringWithCharacters_1length_1 = OS.sel_registerName("stringWithCharacters:length:");

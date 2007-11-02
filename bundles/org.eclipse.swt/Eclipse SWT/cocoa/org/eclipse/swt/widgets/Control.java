@@ -727,16 +727,6 @@ void enableWidget (boolean enabled) {
 //	}
 }
 
-boolean equals(float[] color1, float[] color2) {
-	if (color1 == color2) return true;
-	if (color1 == null) return color2 == null;
-	if (color2 == null) return color1 == null;	
-	for (int i = 0; i < color1.length; i++) {
-		if (color1 [i] != color2 [i]) return false;
-	}	
-	return true;
-}
-
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
@@ -2169,7 +2159,7 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	float[] background = color != null ? color.handle : null;
-	if (equals (background, this.background)) return;
+//	if (equals (background, this.background)) return;
 	this.background = background;
 	setBackground (background);
 //	redrawWidget (handle, false);
@@ -2527,7 +2517,7 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	float[] foreground = color != null ? color.handle : null;
-	if (equals (foreground, this.foreground)) return;
+//	if (equals (foreground, this.foreground)) return;
 	this.foreground = foreground;
 	setForeground (foreground);
 //	redrawWidget (handle, false);
@@ -2859,7 +2849,7 @@ public void setVisible (boolean visible) {
 			fixFocus = isFocusAncestor (control);
 //		}
 	}
-//	setVisible (topHandle (), visible);
+	view.setHidden(!visible);
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -2902,41 +2892,6 @@ void sort (int [] items) {
 	    	}
 	    }
 	}
-}
-
-Point textExtent (int ptr, int wHint) {
-//	if (ptr != 0 && OS.CFStringGetLength (ptr) > 0) {		
-//		float [] w = new float [1], h = new float [1];
-//		HIThemeTextInfo info = new HIThemeTextInfo ();
-//		info.state = OS.kThemeStateActive;
-//		if (font != null) {
-//			short [] family = new short [1], style = new short [1];
-//			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
-//			OS.TextFont (family [0]);
-//			OS.TextFace ((short) (style [0] | font.style));
-//			OS.TextSize ((short) font.size);
-//			info.fontID = (short) OS.kThemeCurrentPortFont; 
-//		} else {
-//			info.fontID = (short) defaultThemeFont ();
-//		}
-//		OS.HIThemeGetTextDimensions (ptr, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
-//		return new Point((int) w [0], (int) h [0]);
-//	} else {
-//		Font font = getFont ();
-//		ATSFontMetrics metrics = new ATSFontMetrics();
-//		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-//		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-//		return new Point(0, (int)(0.5f + (metrics.ascent -metrics.descent + metrics.leading) * font.size));
-//	}
-	return null;
-}
-
-Point textExtent(char[] chars, int wHint) {
-//	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-//	Point result = textExtent (ptr, wHint);
-//	if (ptr != 0) OS.CFRelease (ptr);
-//	return result;
-	return null;
 }
 
 /**
