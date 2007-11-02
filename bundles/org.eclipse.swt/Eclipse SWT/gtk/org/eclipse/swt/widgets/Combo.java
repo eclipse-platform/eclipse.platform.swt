@@ -493,6 +493,12 @@ void createHandle (int index) {
 				parentHandle = temp;
 			}
 			popupHandle = parentHandle;
+			if (popupHandle != 0) {
+				int /*long*/ modalGroup = getShell().modalGroup;
+				if (modalGroup != 0) {
+					OS.gtk_window_group_add_window (modalGroup, popupHandle);
+				}
+			}
 		}
 		/*
 		* Feature in GTK.  There is no API to query the arrow
