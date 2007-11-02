@@ -59,7 +59,8 @@ public class OS extends Platform {
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
 	public static final int sel_stop_1 = OS.sel_registerName("stop:");
-	public static final int sel_stringWithCharacters_1length_1 = OS.sel_registerName("stringWithCharacters:length:");	
+	public static final int sel_stringWithCharacters_1length_1 = OS.sel_registerName("stringWithCharacters:length:");
+	public static final int sel_stringWithUTF8String_1 = OS.sel_registerName("stringWithUTF8String:");	
 	public static final int sel_tag = OS.sel_registerName("tag");
 	public static final int sel_visibleFrame = OS.sel_registerName("visibleFrame");
 	public static final int sel_windowWillClose_1 = OS.sel_registerName("windowWillClose:");
@@ -84,6 +85,7 @@ public static final native void objc_msgSend_stret(NSRect rect, int object, int 
 public static final native double objc_msgSend_fpret(int object, int selector);
 public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);
+public static final native int objc_msgSend(int object, int selector, String arg0);
 public static final native int objc_msgSend(int object, int selector, float arg0);
 public static final native int objc_msgSend(int object, int selector, NSSize arg0);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0);

@@ -11,16 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.NSButton;
+import org.eclipse.swt.internal.cocoa.NSRect;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -142,184 +137,17 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
-int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	int [] context = null;
-	if ((style & SWT.ARROW) != 0 && (style & SWT.UP) != 0) {
-		context = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-		OS.CGContextSaveGState (context[0]);
-		OS.CGContextScaleCTM (context[0], 1f, -1);
-		OS.CGContextTranslateCTM (context[0], 0, -getBounds().height);
-	}
-	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
-	if (context != null) OS.CGContextRestoreGState (context[0]);
-	return result;
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
-	// NEEDS WORK - empty string
-	if ((style & SWT.ARROW) != 0) {
-		int [] outMetric = new int [1];
-		OS.GetThemeMetric (OS.kThemeMetricDisclosureTriangleHeight, outMetric);
-		int width = outMetric [0], height = outMetric [0];
-		if (wHint != SWT.DEFAULT) width = wHint;
-		if (hHint != SWT.DEFAULT) height = hHint;
-		return new Point (width, height);
-	}
-
-	int width = 0, height = 0;
-
-	if (isImage && image != null) {
-		Rectangle bounds = image.getBounds ();
-		width = bounds.width;
-		height = bounds.height;
-	}
-	int [] ptr = new int [1];
-	OS.CopyControlTitleAsCFString (handle, ptr);
-	if (ptr [0] != 0) {
-		Point size = textExtent (ptr [0], 0);
-		width += size.x;
-		height = Math.max (height, size.y);
-		OS.CFRelease (ptr [0]);
-		if (image != null && isImage) width += 3;
-	} else {
-		if (image == null) {
-			width = DEFAULT_WIDTH;
-			height = DEFAULT_HEIGHT;
-		}
-	}
-
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		int [] outMetric = new int [1];
-		int metric = ((style & SWT.CHECK) != 0) ? OS.kThemeMetricCheckBoxWidth : OS.kThemeMetricRadioButtonWidth;
-		OS.GetThemeMetric (metric, outMetric);	
- 		width += outMetric [0] + 3; // +3 for gap between button and text/image
-		height = Math.max (outMetric [0], height);
-	} else {
-		if ((style & SWT.FLAT) != 0 || (style & SWT.TOGGLE) != 0) {
-			width += 8;
-			height += 8;
-		} else {
-			width += 28;
-			int [] outMetric = new int [1];
-			OS.GetThemeMetric (OS.kThemeMetricPushButtonHeight, outMetric);
-			height = Math.max (height, outMetric [0]);
-		}
-	}
-	
-	Rect inset = getInset ();
-	width += inset.left + inset.right;
-	height += inset.top + inset.bottom;
-	
-	/*
-	 * Feature in Mac OS X. Setting the width of a bevel button
-	 * widget to less than 20 will fail.  This means you can not 
-	 * make a button very small.  By forcing the width to be greater
-	 * than or equal to 20, the height of the button can be made
-	 * very small, even 0.
-	 */
-	width = Math.max(20, width);
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	return new Point (width, height);
-}
-
 void createHandle () {
-	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-				
-	if ((style & SWT.ARROW) != 0) {
-		int orientation = OS.kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
-		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
-		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
-		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)(OS.kThemeDisclosureButton)});
-		OS.SetControl32BitMaximum (handle, 2);
-		OS.SetControl32BitValue (handle, orientation);
-	}
+	NSButton widget = (NSButton)new NSButton().alloc();
+	NSRect rect = new NSRect();
+	rect.x = 10;
+	rect.y = 10;
+	rect.width = 100;
+	rect.height = 100;
+	widget.initWithFrame(rect);
 	
-	if ((style & SWT.CHECK) != 0) {
-		//OS.CreateCheckBoxControl (window, null, 0, 0 /*initially off*/, true, outControl);
-		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeCheckBox});
-	}
-	
-	if ((style & SWT.RADIO) != 0) {
-		//OS.CreateRadioButtonControl(window, null, 0, 0 /*initially off*/, true, outControl);
-		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRadioButton});
-	}
-	
-	if ((style & SWT.TOGGLE) != 0) {
-		OS.CreateBevelButtonControl(window, null, 0, (short)OS.kControlBevelButtonNormalBevel, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		if ((style & SWT.FLAT) == 0 ) {
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRoundedBevelButton});
-		}
-	}
-	
-	if ((style & SWT.PUSH) != 0) {
-		if ((style & SWT.FLAT) != 0) {
-			OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
-		} else {
-			OS.CreatePushButtonControl (window, null, 0, outControl);
-			//OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
-		}
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		if ((style & SWT.FLAT) == 0 ) {
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemePushButton});
-		}
-	}
-
-	ControlFontStyleRec fontRec = new ControlFontStyleRec();
-	fontRec.flags = (short) OS.kControlUseThemeFontIDMask;
-	fontRec.font = (short) defaultThemeFont ();
-	OS.SetControlFontStyle (handle, fontRec);
-	
-	if ((style & SWT.ARROW) != 0) return;
-	_setAlignment (style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER));
-}
-
-int defaultThemeFont () {
-	if (display.smallFonts) return OS.kThemeSmallSystemFont;
-	return OS.kThemePushButtonFont;
-}
-
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
-	if (OS.VERSION < 0x1040 && isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
-		Rect bounds = new Rect(), content = new Rect();
-		OS.GetControlBounds (handle, bounds);
-		ThemeButtonDrawInfo drawInfo = new ThemeButtonDrawInfo();
-		if (OS.IsControlEnabled (handle)) {
-			drawInfo.state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		} else {
-			drawInfo.state = OS.IsControlActive (handle) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-		}
-		drawInfo.adornment = OS.kThemeAdornmentDefault;
-		OS.GetThemeButtonContentBounds (bounds, OS.kThemePushButton, drawInfo, content);
-		int width = image == null ? 0 : OS.CGImageGetWidth (image.handle);
-		int height = image == null ? 0 : OS.CGImageGetHeight (image.handle);
-		int x = (bounds.right - bounds.left - width) / 2;
-		int y = (content.bottom - content.top - height) / 2;
-		GCData data = new GCData ();
-		data.paintEvent = theEvent;
-		data.visibleRgn = visibleRgn;
-		GC gc = GC.carbon_new (this, data);
-		gc.drawImage (image, x, y);
-		gc.dispose ();
-	}
-	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
+	Shell shell = getShell();
+	shell.window.contentView().addSubview(widget);
 }
 
 /**
@@ -391,7 +219,7 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-    return OS.GetControl32BitValue(handle) != 0;
+    return false;
 }
 
 /**
@@ -411,70 +239,8 @@ public String getText () {
 	return text;
 }
 
-Rect getInset () {
-	if ((style & SWT.PUSH) == 0) return super.getInset();
-	return display.buttonInset;
-}
-
-int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
-	if ((style & SWT.RADIO) != 0) {
-		int [] stringRef = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
-		int length = 0;
-		if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
-		char [] buffer = new char [length];
-		CFRange range = new CFRange ();
-		range.length = length;
-		OS.CFStringGetCharacters (stringRef [0], range, buffer);
-		String attributeName = new String(buffer);
-		if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-			String roleText = OS.kAXRadioButtonRole;
-			buffer = new char [roleText.length ()];
-			roleText.getChars (0, buffer.length, buffer, 0);
-			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (attributeName.equals (OS.kAXRoleAttribute)) {
-				if (stringRef [0] != 0) {
-					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-					OS.CFRelease(stringRef [0]);
-					return OS.noErr;
-				}
-			}
-			if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-				if (stringRef [0] != 0) {
-					int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
-					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-					OS.CFRelease(stringRef [0]);
-					OS.CFRelease(stringRef2);
-					return OS.noErr;
-				}
-			}
-		}
-	}
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
-	return code;
-}
-
-int kEventControlHit (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlHit (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
-		}
-	}
-	postEvent (SWT.Selection);
-	return OS.eventNotHandledErr;
-}
-
 void releaseWidget () {
 	super.releaseWidget ();
-	if (cIcon != 0) {
-		destroyCIcon (cIcon);
-		cIcon = 0;
-	}
 }
 
 /**
@@ -550,45 +316,7 @@ public void setAlignment (int alignment) {
 }
 	
 void _setAlignment (int alignment) {
-	if ((style & SWT.ARROW) != 0) {
-		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
-		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		int orientation = OS.kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
-		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
-		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
-		OS.SetControl32BitValue (handle, orientation);
-		return;
-	}
-	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	/* Alignment not honoured when image and text is visible */
-	boolean bothVisible = text != null && text.length () > 0 && image != null;
-	if (bothVisible) {
-		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
-	}
-	int textAlignment = 0;
-	int graphicAlignment = 0;
-	if ((alignment & SWT.LEFT) != 0) {
-		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
-		graphicAlignment = OS.kControlBevelButtonAlignLeft;
-	}
-	if ((alignment & SWT.CENTER) != 0) {
-		textAlignment = OS.kControlBevelButtonAlignTextCenter;
-		graphicAlignment = OS.kControlBevelButtonAlignCenter;
-	}
-	if ((alignment & SWT.RIGHT) != 0) {
-		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
-		graphicAlignment = OS.kControlBevelButtonAlignRight;
-	}
-	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
-	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
-	if (bothVisible) {
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextPlaceTag, 2, new short [] {(short)OS.kControlBevelButtonPlaceToRightOfGraphic});
-	}
+	
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -605,8 +333,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
-	int window = OS.GetControlOwner (handle);
-	OS.SetWindowDefaultButton (window, value ? handle : 0);
+//	int window = OS.GetControlOwner (handle);
+//	OS.SetWindowDefaultButton (window, value ? handle : 0);
 }
 
 /**
@@ -634,42 +362,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (cIcon != 0) {
-		destroyCIcon(cIcon);
-		cIcon = 0;
-	}
 	this.image = image;
-	isImage = true;
-	if (OS.VERSION < 0x1040) {
-		if ((style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {			
-			if (image == null) {
-				setText (text);
-				return;
-			}
-			if (text.length () > 0) {
-				int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
-				if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-				OS.SetControlTitleWithCFString (handle, ptr);
-				OS.CFRelease (ptr);
-			}
-		}
-	}
-	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	if (image != null) {
-		if (OS.VERSION < 0x1040) {
-			cIcon = createCIcon (image);
-			inContent.contentType = (short)OS.kControlContentCIconHandle;
-			inContent.iconRef = cIcon;
-		} else {
-			inContent.contentType = (short)OS.kControlContentCGImageRef;
-			inContent.iconRef = image.handle;
-		}
-	} else {
-		inContent.contentType = (short)OS.kControlContentTextOnly;
-	}
-	OS.SetBevelButtonContentInfo (handle, inContent);
-	setAlignment (style);
-	redraw ();
 }
 
 boolean setRadioSelection (boolean value){
@@ -700,7 +393,7 @@ boolean setRadioSelection (boolean value){
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	OS.SetControl32BitValue (handle, selected ? 1 : 0);
+//	OS.SetControl32BitValue (handle, selected ? 1 : 0);
 }
 
 /**
@@ -739,25 +432,6 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
-	if (OS.VERSION < 0x1040) {
-		if ((style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
-			if (isImage) {
-				ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-				inContent.contentType = (short)OS.kControlContentTextOnly;
-				OS.SetBevelButtonContentInfo(handle, inContent);
-			}
-			isImage = false;
-		}
-	}
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetControlTitleWithCFString (handle, ptr);
-	OS.CFRelease (ptr);
-	setAlignment (style);
-	redraw ();
 }
 
 int traversalCode (int key, int theEvent) {

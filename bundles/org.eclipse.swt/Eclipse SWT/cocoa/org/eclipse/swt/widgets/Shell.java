@@ -450,7 +450,7 @@ void createHandle () {
 	if (window != null) {
 		
 	} else {
-		window = (NSWindow)new NSWindow().alloc();
+		window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
 		Monitor monitor = getMonitor ();
 		Rectangle clientArea = monitor.getClientArea ();
@@ -786,6 +786,11 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	window.setDelegate(null);
+	if (windowDelegate != null) windowDelegate.release();
+	windowDelegate = null;
+	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
+	jniRef = 0;
 	window = null;
 }
 
@@ -1142,7 +1147,7 @@ public void setText (String string) {
 	super.setText (string);
 	NSString str = NSString.stringWith(string);
 	window.setTitle(str);
-	str.release();
+//	str.release();
 }
 
 public void setVisible (boolean visible) {

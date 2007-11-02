@@ -15,6 +15,12 @@ public static NSString stringWith(char[] chars, int length) {
 	return id != 0 ? new NSString(id) : null;
 }
 
+
+public static NSString stringWithUTF8String(String string) {
+	int id = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithUTF8String_1, string);
+	return id != 0 ? new NSString(id) : null;
+}
+
 public static NSString stringWith(String string) {
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);

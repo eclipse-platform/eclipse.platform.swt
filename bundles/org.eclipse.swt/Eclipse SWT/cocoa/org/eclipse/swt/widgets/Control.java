@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -46,6 +47,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * </p>
 	 */
 	public int handle;
+	NSView view;
 	Composite parent;
 	String toolTipText;
 	Object layoutData;

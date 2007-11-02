@@ -272,6 +272,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__IILjava_lang_String_2
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILjava_lang_String_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jstring arg2)
+{
+	const char *lparg2= NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILjava_lang_String_2_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetStringUTFChars(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseStringUTFChars(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILjava_lang_String_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
