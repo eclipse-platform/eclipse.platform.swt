@@ -466,9 +466,6 @@ void createHandle () {
 		window = window.initWithContentRect(rect, styleMask, OS.NSBackingStoreBuffered, true);
 //		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
-
-	jniRef = OS.NewGlobalRef(this);
-	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
 	
 	view = (SWTView)new SWTView().alloc();
 	view = view.initWithFrame (new NSRect());
@@ -792,12 +789,10 @@ void releaseChildren (boolean destroy) {
 }
 
 void releaseHandle () {
-	super.releaseHandle ();
 	window.setDelegate(null);
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
-	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
-	jniRef = 0;
+	super.releaseHandle ();
 	window = null;
 }
 

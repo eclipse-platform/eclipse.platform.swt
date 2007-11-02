@@ -105,6 +105,8 @@ public class Display extends Device {
 	NSApplication application;
 	NSAutoreleasePool pool;
 
+	NSPoint cascade = new NSPoint();
+
 	Callback windowDelegateCallback2, windowDelegateCallback3;
 	
 	/* Menus */

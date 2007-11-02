@@ -428,17 +428,34 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret)
 }
 #endif
 
-#ifndef NO_objc_1msgSend_1stret
-JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret)
+#ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3)
+{
+	NSPoint _arg0, *lparg0=NULL;
+	NSPoint _arg3, *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	objc_msgSend_stret(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+fail:
+	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
 	NSRect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret_FUNC);
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	objc_msgSend_stret(lparg0, (id)arg1, (SEL)arg2);
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret_FUNC);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
 }
 #endif
 

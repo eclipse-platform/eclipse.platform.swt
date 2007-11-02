@@ -14,6 +14,12 @@ public float alphaValue() {
 	return (float)OS.objc_msgSend_fpret(id, OS.sel_alphaValue);
 }
 
+public NSPoint cascadeTopLeftFromPoint(NSPoint topLeft) {
+	NSPoint result = new NSPoint();
+	OS.objc_msgSend_stret(result, id, OS.sel_cascadeTopLeftFromPoint_1, topLeft);
+	return result;
+}
+
 public void close() {
 	OS.objc_msgSend(id, OS.sel_close);	
 }
@@ -59,6 +65,10 @@ public void setContentView(NSView view) {
 
 public void setDelegate(NSObject delegate) {
 	OS.objc_msgSend(id, OS.sel_setDelegate_1, delegate != null ? delegate.id : 0);	
+}
+
+public void setFrameTopLeft(NSPoint topLeft) {
+	OS.objc_msgSend(id, OS.sel_setFrameTopLeftPoint_1, topLeft);	
 }
 
 public void setTitle(NSString string) {

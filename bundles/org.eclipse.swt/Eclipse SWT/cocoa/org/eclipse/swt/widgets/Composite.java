@@ -226,8 +226,6 @@ void createHandle () {
 	state |= CANVAS | GRAB;
 	view = (SWTView)new SWTView().alloc();
 	view = view.initWithFrame (new NSRect());
-	jniRef = OS.NewGlobalRef(this);
-	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
 	((SWTView)view).setTag(jniRef);
 	parent.view.addSubview(view);
 }

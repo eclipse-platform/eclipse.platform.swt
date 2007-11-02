@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -48,6 +49,8 @@ public abstract class Widget {
 	Display display;
 	EventTable eventTable;
 	Object data;
+
+	int jniRef;
 
 	/* Global state flags */
 	static final int DISPOSED         = 1 << 0;
@@ -281,7 +284,13 @@ protected void checkWidget () {
 void createHandle () {
 }
 
+void createJNIRef () {
+	jniRef = OS.NewGlobalRef(this);
+	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
+}
+
 void createWidget () {
+	createJNIRef ();
 	createHandle ();
 	register ();
 	hookEvents ();
@@ -597,6 +606,8 @@ void releaseChildren (boolean destroy) {
 void releaseHandle () {
 	state |= DISPOSED;
 	display = null;
+	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
+	jniRef = 0;
 }
 
 void releaseParent () {

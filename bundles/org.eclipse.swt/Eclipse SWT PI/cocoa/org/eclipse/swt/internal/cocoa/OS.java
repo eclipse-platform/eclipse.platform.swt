@@ -46,6 +46,7 @@ public class OS extends C {
 	public static final int sel_addSubview_1 = OS.sel_registerName("addSubview:");
 	public static final int sel_alloc = OS.sel_registerName("alloc");
 	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
+	public static final int sel_cascadeTopLeftFromPoint_1 = OS.sel_registerName("cascadeTopLeftFromPoint:");
 	public static final int sel_close = OS.sel_registerName("close");
 	public static final int sel_contentView = OS.sel_registerName("contentView");
 	public static final int sel_count = OS.sel_registerName("count");
@@ -70,6 +71,10 @@ public class OS extends C {
 	public static final int sel_setButtonType_1 = OS.sel_registerName("setButtonType:");	
 	public static final int sel_setContentView_1 = OS.sel_registerName("setContentView:");
 	public static final int sel_setDelegate_1 = OS.sel_registerName("setDelegate:");
+	public static final int sel_setFrame_1 = OS.sel_registerName("setFrame:");
+	public static final int sel_setFrameOrigin_1 = OS.sel_registerName("setFrameOrigin:");
+	public static final int sel_setFrameSize_1 = OS.sel_registerName("setFrameSize:");
+	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
@@ -96,7 +101,8 @@ public static final native boolean class_addMethod(int cls, int name, int imp, S
 public static final native int objc_allocateClassPair(int superclass, String name, int extraBytes);
 public static final native int objc_getClass(String className);
 public static final native int objc_lookUpClass(String className);
-public static final native void objc_msgSend_stret(NSRect rect, int object, int selector);
+public static final native void objc_msgSend_stret(NSPoint result, int object, int selector, NSPoint arg0);
+public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
 public static final native double objc_msgSend_fpret(int object, int selector);
 public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);

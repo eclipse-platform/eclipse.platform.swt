@@ -46,7 +46,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle, jniRef;
+	public int handle;
 	NSView view;
 	Composite parent;
 	String toolTipText;

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 36;
-int OS_nativeFunctionCallCount[36];
+int OS_nativeFunctionCount = 37;
+int OS_nativeFunctionCallCount[37];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",
@@ -47,7 +47,8 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__II_3CI",
 	"objc_1msgSend__II_3IIIIIIIIIII",
 	"objc_1msgSend_1fpret",
-	"objc_1msgSend_1stret",
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II",
 	"objc_1registerClassPair",
 	"object_1getClassName",
 	"object_1getInstanceVariable",
