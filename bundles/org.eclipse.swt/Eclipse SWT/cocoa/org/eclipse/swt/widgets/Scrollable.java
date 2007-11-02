@@ -325,9 +325,4 @@ void setZOrder () {
 //	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
-int topHandle () {
-	if (scrolledHandle != 0) return scrolledHandle;
-	return handle;
-}
-
 }

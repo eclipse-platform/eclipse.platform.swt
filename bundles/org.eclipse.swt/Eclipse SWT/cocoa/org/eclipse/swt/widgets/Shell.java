@@ -262,7 +262,7 @@ Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 	this.display = display;
 	if (handle != 0) {
 		if (embedded) {
-			this.handle = handle;
+			view = new NSView(handle);
 		} else {
 			window = new NSWindow(handle);
 			state |= FOREIGN_HANDLE;

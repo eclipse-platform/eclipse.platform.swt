@@ -46,7 +46,6 @@ public abstract class Control extends Widget implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
 	NSView view;
 	Composite parent;
 	String toolTipText;
@@ -767,10 +766,6 @@ void fixFocus (Control focusControl) {
 	shell.setSavedFocus (focusControl);
 //	int window = OS.GetControlOwner (handle);
 //	OS.ClearKeyboardFocus (window);
-}
-
-int focusHandle () {
-	return handle;
 }
 
 /**
@@ -1708,7 +1703,8 @@ void register () {
 }
 void releaseHandle () {
 	super.releaseHandle ();
-	handle = 0;
+	if (view != null) view.release();
+	view = null;
 	parent = null;
 }
 
@@ -2210,7 +2206,6 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackground (float [] color) {
-	setBackground (handle, color);
 }
 
 void setBackground (int control, float [] color) {
@@ -2539,7 +2534,6 @@ public void setForeground (Color color) {
 }
 
 void setForeground (float [] color) {
-	 setForeground (handle, color);
 }
 
 void setForeground (int control, float [] color) {
@@ -3029,10 +3023,6 @@ public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplay (point.x, point.y);
-}
-
-int topHandle () {
-	return handle;
 }
 
 boolean translateTraversal (int key, int theEvent, boolean [] consume) {
