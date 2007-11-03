@@ -2430,12 +2430,12 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-//	setFontStyle (display.smallFonts ? (font != null ? font : defaultFont ()) : font);
-//	redrawWidget (handle, false);
+	setFont (font != null ? font.handle : null);
 }
 
-void setFontStyle (Font font) {
-//	setFontStyle (handle, font);
+void setFont (NSFont font) {
+	//TODO - bad cast
+	((NSControl)view).setFont(font);
 }
 
 /**

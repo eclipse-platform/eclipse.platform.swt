@@ -1,6 +1,6 @@
 package org.eclipse.swt.internal.cocoa;
 
-public class NSButton extends NSView {
+public class NSButton extends NSControl {
 
 public NSButton() {
 	super(0);
