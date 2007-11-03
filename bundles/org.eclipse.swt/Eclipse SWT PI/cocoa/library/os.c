@@ -428,6 +428,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__II_3F
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3F)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloatArray arg2)
+{
+	jfloat *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3F_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3F_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__II_3IIIIIIIIIII
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3IIIIIIIIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
@@ -498,6 +514,20 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC);
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1stret___3FII
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret___3FII)
+	(JNIEnv *env, jclass that, jfloatArray arg0, jint arg1, jint arg2)
+{
+	jfloat *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret___3FII_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetFloatArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	objc_msgSend_stret(lparg0, (id)arg1, (SEL)arg2);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseFloatArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret___3FII_FUNC);
 }
 #endif
 

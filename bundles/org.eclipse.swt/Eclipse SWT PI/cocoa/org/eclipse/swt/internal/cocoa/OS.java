@@ -55,6 +55,7 @@ public class OS extends C {
 	public static final int class_NSString = OS.objc_getClass("NSString");
 	public static final int class_NSView = OS.objc_getClass("NSView");
 	public static final int class_NSImage = OS.objc_getClass("NSImage");
+	public static final int class_NSAffineTransform = OS.objc_getClass("NSAffineTransform");
 	public static final int class_NSBitmapImageRep = OS.objc_getClass("NSBitmapImageRep");
 	public static final int class_NSImageRep = OS.objc_getClass("NSImageRep");
 	public static final int class_NSScrollView = OS.objc_getClass("NSScrollView");
@@ -97,6 +98,7 @@ public class OS extends C {
 	public static final int sel_initWithContentRect_1styleMask_1backing_1defer_1 = OS.sel_registerName("initWithContentRect:styleMask:backing:defer:");
 	public static final int sel_initWithImage_1hotSpot_1 = OS.sel_registerName("initWithImage:hotSpot:");	
 	public static final int sel_initWithSize_1 = OS.sel_registerName("initWithSize:");
+	public static final int sel_invert = OS.sel_registerName("invert");
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
 	public static final int sel_keyDown_1 = OS.sel_registerName("keyDown:");
@@ -108,6 +110,7 @@ public class OS extends C {
 	public static final int sel_objectAtIndex_1 = OS.sel_registerName("objectAtIndex:");	
 	public static final int sel_orderFront_1 = OS.sel_registerName("orderFront:");
 	public static final int sel_orderOut_1 = OS.sel_registerName("orderOut:");
+	public static final int sel_prependTransform_1 = OS.sel_registerName("prependTransform:");
 	public static final int sel_pointingHandCursor = OS.sel_registerName("pointingHandCursor");
 	public static final int sel_pointSize = OS.sel_registerName("pointSize");
 	public static final int sel_release = OS.sel_registerName("release");
@@ -118,7 +121,9 @@ public class OS extends C {
 	public static final int sel_resizeUpCursor = OS.sel_registerName("resizeUpCursor");
 	public static final int sel_resizeUpDownCursor = OS.sel_registerName("resizeUpDownCursor");
 	public static final int sel_respondsToSelector_1 = OS.sel_registerName("respondsToSelector:");
+	public static final int sel_rotateByDegrees_1 = OS.sel_registerName("rotateByDegrees_1");
 	public static final int sel_run = OS.sel_registerName("run");
+	public static final int sel_scaleXBy_1yBy_1 = OS.sel_registerName("scaleXBy:yBy:");
 	public static final int sel_screens = OS.sel_registerName("screens");
 	public static final int sel_set = OS.sel_registerName("set");
 	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");
@@ -136,6 +141,7 @@ public class OS extends C {
 	public static final int sel_setOnMouseEntered_1 = OS.sel_registerName("setOnMouseEntered:");
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
+	public static final int sel_setTransformStruct_1 = OS.sel_registerName("setTransformStruct:");
 	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");	
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
 	public static final int sel_size = OS.sel_registerName("size");
@@ -143,6 +149,10 @@ public class OS extends C {
 	public static final int sel_stringWithCharacters_1length_1 = OS.sel_registerName("stringWithCharacters:length:");
 	public static final int sel_stringWithUTF8String_1 = OS.sel_registerName("stringWithUTF8String:");	
 	public static final int sel_tag = OS.sel_registerName("tag");
+	public static final int sel_transform = OS.sel_registerName("trasnform");
+	public static final int sel_transformPoint_1 = OS.sel_registerName("trasnformPoint:");
+	public static final int sel_transformStruct = OS.sel_registerName("trasnformStruct");
+	public static final int sel_translateXBy_1yBy_1 = OS.sel_registerName("translateXBy:yBy:");
 	public static final int sel_visibleFrame = OS.sel_registerName("visibleFrame");
 	public static final int sel_windowWillClose_1 = OS.sel_registerName("windowWillClose:");
 	public static final int sel_windowShouldClose_1 = OS.sel_registerName("windowShouldClose:");	
@@ -163,6 +173,7 @@ public static final native int objc_allocateClassPair(int superclass, String nam
 public static final native int objc_getClass(String className);
 public static final native int objc_lookUpClass(String className);
 public static final native void objc_msgSend_stret(NSPoint result, int object, int selector, NSPoint arg0);
+public static final native void objc_msgSend_stret(float[] result, int object, int selector);
 public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
 public static final native void objc_msgSend_stret(NSSize result, int object, int selector);
 public static final native double objc_msgSend_fpret(int object, int selector);
@@ -170,6 +181,8 @@ public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);
 public static final native int objc_msgSend(int object, int selector, String arg0);
 public static final native int objc_msgSend(int object, int selector, float arg0);
+public static final native int objc_msgSend(int object, int selector, float[] arg0);
+public static final native int objc_msgSend(int object, int selector, float arg0, float arg1);
 public static final native int objc_msgSend(int object, int selector, int arg0, float arg1);
 public static final native int objc_msgSend(int object, int selector, float arg0, float arg1, float arg2, float arg3);
 public static final native int objc_msgSend(int object, int selector, NSSize arg0);
