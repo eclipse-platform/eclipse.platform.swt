@@ -578,7 +578,7 @@ public Color getBackground() {
 	int red = (transparentPixel >> 16) & 0xFF;
 	int green = (transparentPixel >> 8) & 0xFF;
 	int blue = (transparentPixel >> 0) & 0xFF;
-	return Color.carbon_new(device, new float[]{red / 255f, green / 255f, blue / 255f, 1});
+	return Color.cocoa_new(device, new float[]{red / 255f, green / 255f, blue / 255f, 1});
 }
 
 /**

@@ -849,7 +849,7 @@ public Color getBackground () {
 }
 
 Color getBackgroundColor () {
-	return background != null ? Color.carbon_new (display, background) : defaultBackground ();
+	return background != null ? Color.cocoa_new (display, background) : defaultBackground ();
 }
 
 /**
@@ -993,7 +993,7 @@ public Color getForeground () {
 }
 
 Color getForegroundColor () {
-	return foreground != null ? Color.carbon_new (display, foreground) : defaultForeground ();
+	return foreground != null ? Color.cocoa_new (display, foreground) : defaultForeground ();
 }
 
 /**
