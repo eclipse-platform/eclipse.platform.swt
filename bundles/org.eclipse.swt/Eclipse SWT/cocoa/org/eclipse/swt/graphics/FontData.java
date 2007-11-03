@@ -75,7 +75,7 @@ public final class FontData {
 	public int style;
 
 	/**
-	 * the ATS font name
+	 * the NSFont font name
 	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
@@ -84,7 +84,7 @@ public final class FontData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public String atsName;
+	public String nsName;
 
 	/**
 	 * The locales of the font
@@ -167,10 +167,10 @@ public FontData(String string) {
 	if (end == -1) return;
 	String version2 = string.substring(start, end);
 
-	if (platform.equals("CARBON") && version2.equals("1")) {
+	if (platform.equals("COCOA") && version2.equals("1")) {
 		start = end + 1;
 		end = string.length();
-		if (start < end) atsName = string.substring(start, end);
+		if (start < end) nsName = string.substring(start, end);
 	}
 }
 
@@ -402,7 +402,7 @@ public void setLocale(String locale) {
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.name = name;
-	atsName = null;
+	nsName = null;
 }
 
 /**
@@ -417,7 +417,7 @@ public void setName(String name) {
  */
 public void setStyle(int style) {
 	this.style = style;
-	atsName = null;
+	nsName = null;
 }
 
 /**
@@ -438,8 +438,8 @@ public String toString() {
 	buffer.append("|");
 	buffer.append(getStyle());
 	buffer.append("|");
-	buffer.append("CARBON|1|");
-	if (atsName != null) buffer.append(atsName);
+	buffer.append("COCOA|1|");
+	if (nsName != null) buffer.append(nsName);
 	return buffer.toString();
 }
 
