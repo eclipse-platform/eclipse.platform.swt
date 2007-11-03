@@ -362,6 +362,7 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.image = image;
+	((NSButton)view).setImage(image.handle);
 }
 
 boolean setRadioSelection (boolean value){

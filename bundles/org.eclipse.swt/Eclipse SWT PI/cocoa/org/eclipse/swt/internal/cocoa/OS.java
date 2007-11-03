@@ -46,10 +46,17 @@ public class OS extends C {
 	public static final int NSRecessedBezelStyle          = 13;
 	public static final int NSRoundedDisclosureBezelStyle = 14;
 	
+	public static final int NSAlphaFirstBitmapFormat            = 1 << 0;
+	public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
+	public static final int NSFloatingPointSamplesBitmapFormat  = 1 << 2;
+	
 	/** Classes */
 	public static final int class_NSObject = OS.objc_getClass("NSObject");
 	public static final int class_NSString = OS.objc_getClass("NSString");
 	public static final int class_NSView = OS.objc_getClass("NSView");
+	public static final int class_NSImage = OS.objc_getClass("NSImage");
+	public static final int class_NSBitmapImageRep = OS.objc_getClass("NSBitmapImageRep");
+	public static final int class_NSImageRep = OS.objc_getClass("NSImageRep");
 	public static final int class_NSScrollView = OS.objc_getClass("NSScrollView");
 	public static final int class_NSButton = OS.objc_getClass("NSButton");
 	public static final int class_NSArray = OS.objc_getClass("NSArray");
@@ -61,8 +68,10 @@ public class OS extends C {
 	
 	/** Selectors */	
 	public static final int sel_addSubview_1 = OS.sel_registerName("addSubview:");
+	public static final int sel_addRepresentation_1 = OS.sel_registerName("addRepresentation:");
 	public static final int sel_alloc = OS.sel_registerName("alloc");
 	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
+	public static final int sel_bitmapData = OS.sel_registerName("bitmapData");
 	public static final int sel_cascadeTopLeftFromPoint_1 = OS.sel_registerName("cascadeTopLeftFromPoint:");
 	public static final int sel_close = OS.sel_registerName("close");
 	public static final int sel_colorWithDeviceRed_1green_1blue_1alpha_1 = OS.sel_registerName("colorWithDeviceRed:green:blue:alpha:");
@@ -71,8 +80,10 @@ public class OS extends C {
 	public static final int sel_depth = OS.sel_registerName("depth");
 	public static final int sel_frame = OS.sel_registerName("frame");
 	public static final int sel_init = OS.sel_registerName("init");
+	public static final int sel_initWithBitmapDataPlanes_1pixelsWide_1pixelsHigh_1bitsPerSample_1samplesPerPixel_1hasAlpha_1isPlanar_1colorSpaceName_1bitmapFormat_1bytesPerRow_1bitsPerPixel_1 = OS.sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:");
 	public static final int sel_initWithFrame_1 = OS.sel_registerName("initWithFrame:");
 	public static final int sel_initWithContentRect_1styleMask_1backing_1defer_1 = OS.sel_registerName("initWithContentRect:styleMask:backing:defer:");
+	public static final int sel_initWithSize_1 = OS.sel_registerName("initWithSize:");
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
 	public static final int sel_keyDown_1 = OS.sel_registerName("keyDown:");
@@ -96,11 +107,13 @@ public class OS extends C {
 	public static final int sel_setFrame_1 = OS.sel_registerName("setFrame:");
 	public static final int sel_setFrameOrigin_1 = OS.sel_registerName("setFrameOrigin:");
 	public static final int sel_setFrameSize_1 = OS.sel_registerName("setFrameSize:");
-	public static final int sel_setHidden_1 = OS.sel_registerName("setHidden:");	
+	public static final int sel_setHidden_1 = OS.sel_registerName("setHidden:");
+	public static final int sel_setImage_1 = OS.sel_registerName("setImage:");
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
 	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");	
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
+	public static final int sel_size = OS.sel_registerName("size");
 	public static final int sel_stop_1 = OS.sel_registerName("stop:");
 	public static final int sel_stringWithCharacters_1length_1 = OS.sel_registerName("stringWithCharacters:length:");
 	public static final int sel_stringWithUTF8String_1 = OS.sel_registerName("stringWithUTF8String:");	
@@ -126,6 +139,7 @@ public static final native int objc_getClass(String className);
 public static final native int objc_lookUpClass(String className);
 public static final native void objc_msgSend_stret(NSPoint result, int object, int selector, NSPoint arg0);
 public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
+public static final native void objc_msgSend_stret(NSSize result, int object, int selector);
 public static final native double objc_msgSend_fpret(int object, int selector);
 public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);
@@ -152,6 +166,7 @@ public static final native int object_setInstanceVariable(int obj, String name, 
 public static final native int sel_registerName(String selectorName);
 
 public static final native int NSBitsPerPixelFromDepth(int depth);
+public static final native int NSDeviceRGBColorSpace();
 
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);

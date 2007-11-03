@@ -53,6 +53,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 }
 #endif
 
+#ifndef NO_NSDeviceRGBColorSpace
+JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceRGBColorSpace)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSDeviceRGBColorSpace_FUNC);
+	rc = (jint)NSDeviceRGBColorSpace;
+	OS_NATIVE_EXIT(env, that, NSDeviceRGBColorSpace_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NewGlobalRef
 JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -456,6 +468,20 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NSSize _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC);
+	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	objc_msgSend_stret(lparg0, (id)arg1, (SEL)arg2);
+fail:
+	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC);
 }
 #endif
 

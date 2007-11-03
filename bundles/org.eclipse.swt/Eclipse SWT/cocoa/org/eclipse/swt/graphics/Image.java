@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
  
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 import java.io.*;
  
@@ -86,19 +86,7 @@ public final class Image extends Resource implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
-
-	/**
-	 * The data to the OS image resource.
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 */
-	public int data;
+	public NSImage handle;
 	
 	/**
 	 * specifies the transparent pixel
@@ -222,97 +210,97 @@ public Image(Device device, Image srcImage, int flag) {
 	this.type = srcImage.type;
 
 	/* Get source image size */
- 	int width = OS.CGImageGetWidth(srcImage.handle);
- 	int height = OS.CGImageGetHeight(srcImage.handle);
- 	int bpr = OS.CGImageGetBytesPerRow(srcImage.handle);
- 	int bpc = OS.CGImageGetBitsPerComponent(srcImage.handle);
- 	int bpp = OS.CGImageGetBitsPerPixel(srcImage.handle);
-	int colorspace = OS.CGImageGetColorSpace(srcImage.handle);
-	int alphaInfo = OS.kCGImageAlphaNoneSkipFirst;
- 	
-	/* Copy transparent pixel and alpha data when necessary */
-	alphaInfo = OS.CGImageGetAlphaInfo(srcImage.handle);
-	transparentPixel = srcImage.transparentPixel;
-	alpha = srcImage.alpha;
-	if (srcImage.alphaData != null) {
-		alphaData = new byte[srcImage.alphaData.length];
-		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
-	}
-
-	/* Create the image */
-	int dataSize = height * bpr;
-	data = OS.NewPtr(dataSize);
-	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
-	if (provider == 0) {
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	handle = OS.CGImageCreate(width, height, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
-	OS.CGDataProviderRelease(provider);
-	if (handle == 0) {
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	
-	OS.memmove(data, srcImage.data, dataSize);
-	if (flag == SWT.IMAGE_COPY) return;
-	
-	/* Apply transformation */
-	switch (flag) {
-		case SWT.IMAGE_DISABLE: {
-			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			RGB zeroRGB = zeroColor.getRGB();
-			byte zeroRed = (byte)zeroRGB.red;
-			byte zeroGreen = (byte)zeroRGB.green;
-			byte zeroBlue = (byte)zeroRGB.blue;
-			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-			RGB oneRGB = oneColor.getRGB();
-			byte oneRed = (byte)oneRGB.red;
-			byte oneGreen = (byte)oneRGB.green;
-			byte oneBlue = (byte)oneRGB.blue;
-			byte[] line = new byte[bpr];
-			for (int y=0; y<height; y++) {
-				OS.memmove(line, data + (y * bpr), bpr);
-				int offset = 0;
-				for (int x=0; x<width; x++) {
-					int red = line[offset+1] & 0xFF;
-					int green = line[offset+2] & 0xFF;
-					int blue = line[offset+3] & 0xFF;
-					int intensity = red * red + green * green + blue * blue;
-					if (intensity < 98304) {
-						line[offset+1] = zeroRed;
-						line[offset+2] = zeroGreen;
-						line[offset+3] = zeroBlue;
-					} else {
-						line[offset+1] = oneRed;
-						line[offset+2] = oneGreen;
-						line[offset+3] = oneBlue;
-					}
-					offset += 4;
-				}
-				OS.memmove(data + (y * bpr), line, bpr);
-			}
-			break;
-		}
-		case SWT.IMAGE_GRAY: {			
-			byte[] line = new byte[bpr];
-			for (int y=0; y<height; y++) {
-				OS.memmove(line, data + (y * bpr), bpr);
-				int offset = 0;
-				for (int x=0; x<width; x++) {
-					int red = line[offset+1] & 0xFF;
-					int green = line[offset+2] & 0xFF;
-					int blue = line[offset+3] & 0xFF;
-					byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
-					line[offset+1] = line[offset+2] = line[offset+3] = intensity;
-					offset += 4;
-				}
-				OS.memmove(data + (y * bpr), line, bpr);
-			}
-			break;
-		}
-	}
+// 	int width = OS.CGImageGetWidth(srcImage.handle);
+// 	int height = OS.CGImageGetHeight(srcImage.handle);
+// 	int bpr = OS.CGImageGetBytesPerRow(srcImage.handle);
+// 	int bpc = OS.CGImageGetBitsPerComponent(srcImage.handle);
+// 	int bpp = OS.CGImageGetBitsPerPixel(srcImage.handle);
+//	int colorspace = OS.CGImageGetColorSpace(srcImage.handle);
+//	int alphaInfo = OS.kCGImageAlphaNoneSkipFirst;
+// 	
+//	/* Copy transparent pixel and alpha data when necessary */
+//	alphaInfo = OS.CGImageGetAlphaInfo(srcImage.handle);
+//	transparentPixel = srcImage.transparentPixel;
+//	alpha = srcImage.alpha;
+//	if (srcImage.alphaData != null) {
+//		alphaData = new byte[srcImage.alphaData.length];
+//		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+//	}
+//
+//	/* Create the image */
+//	int dataSize = height * bpr;
+//	data = OS.NewPtr(dataSize);
+//	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
+//	if (provider == 0) {
+//		OS.DisposePtr(data);
+//		SWT.error(SWT.ERROR_NO_HANDLES);
+//	}
+//	handle = OS.CGImageCreate(width, height, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
+//	OS.CGDataProviderRelease(provider);
+//	if (handle == 0) {
+//		OS.DisposePtr(data);
+//		SWT.error(SWT.ERROR_NO_HANDLES);
+//	}
+//	
+//	OS.memmove(data, srcImage.data, dataSize);
+//	if (flag == SWT.IMAGE_COPY) return;
+//	
+//	/* Apply transformation */
+//	switch (flag) {
+//		case SWT.IMAGE_DISABLE: {
+//			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+//			RGB zeroRGB = zeroColor.getRGB();
+//			byte zeroRed = (byte)zeroRGB.red;
+//			byte zeroGreen = (byte)zeroRGB.green;
+//			byte zeroBlue = (byte)zeroRGB.blue;
+//			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+//			RGB oneRGB = oneColor.getRGB();
+//			byte oneRed = (byte)oneRGB.red;
+//			byte oneGreen = (byte)oneRGB.green;
+//			byte oneBlue = (byte)oneRGB.blue;
+//			byte[] line = new byte[bpr];
+//			for (int y=0; y<height; y++) {
+//				OS.memmove(line, data + (y * bpr), bpr);
+//				int offset = 0;
+//				for (int x=0; x<width; x++) {
+//					int red = line[offset+1] & 0xFF;
+//					int green = line[offset+2] & 0xFF;
+//					int blue = line[offset+3] & 0xFF;
+//					int intensity = red * red + green * green + blue * blue;
+//					if (intensity < 98304) {
+//						line[offset+1] = zeroRed;
+//						line[offset+2] = zeroGreen;
+//						line[offset+3] = zeroBlue;
+//					} else {
+//						line[offset+1] = oneRed;
+//						line[offset+2] = oneGreen;
+//						line[offset+3] = oneBlue;
+//					}
+//					offset += 4;
+//				}
+//				OS.memmove(data + (y * bpr), line, bpr);
+//			}
+//			break;
+//		}
+//		case SWT.IMAGE_GRAY: {			
+//			byte[] line = new byte[bpr];
+//			for (int y=0; y<height; y++) {
+//				OS.memmove(line, data + (y * bpr), bpr);
+//				int offset = 0;
+//				for (int x=0; x<width; x++) {
+//					int red = line[offset+1] & 0xFF;
+//					int green = line[offset+2] & 0xFF;
+//					int blue = line[offset+3] & 0xFF;
+//					byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
+//					line[offset+1] = line[offset+2] = line[offset+3] = intensity;
+//					offset += 4;
+//				}
+//				OS.memmove(data + (y * bpr), line, bpr);
+//			}
+//			break;
+//		}
+//	}
 }
 
 /**
@@ -503,34 +491,34 @@ public Image(Device device, String filename) {
 }
 
 void createAlpha () {
-	if (transparentPixel == -1 && alpha == -1 && alphaData == null) return;
-	int height = OS.CGImageGetHeight(handle);
-	int bpr = OS.CGImageGetBytesPerRow(handle);
-	int dataSize = height * bpr;
-	byte[] srcData = new byte[dataSize];
-	OS.memmove(srcData, data, dataSize);
-	if (transparentPixel != -1) {
-		for (int i=0; i<dataSize; i+=4) {
-			int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
-			srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
-		}
-	} else if (alpha != -1) {
-		byte a = (byte)this.alpha;
-		for (int i=0; i<dataSize; i+=4) {
-			srcData[i] = a;				
-		}
-	} else {
-		int width = OS.CGImageGetWidth(handle);
-		int offset = 0, alphaOffset = 0;
-		for (int y = 0; y<height; y++) {
-			for (int x = 0; x<width; x++) {
-				srcData[offset] = alphaData[alphaOffset];
-				offset += 4;
-				alphaOffset += 1;
-			}
-		}
-	}
-	OS.memmove(data, srcData, dataSize);
+//	if (transparentPixel == -1 && alpha == -1 && alphaData == null) return;
+//	int height = OS.CGImageGetHeight(handle);
+//	int bpr = OS.CGImageGetBytesPerRow(handle);
+//	int dataSize = height * bpr;
+//	byte[] srcData = new byte[dataSize];
+//	OS.memmove(srcData, data, dataSize);
+//	if (transparentPixel != -1) {
+//		for (int i=0; i<dataSize; i+=4) {
+//			int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
+//			srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+//		}
+//	} else if (alpha != -1) {
+//		byte a = (byte)this.alpha;
+//		for (int i=0; i<dataSize; i+=4) {
+//			srcData[i] = a;				
+//		}
+//	} else {
+//		int width = OS.CGImageGetWidth(handle);
+//		int offset = 0, alphaOffset = 0;
+//		for (int y = 0; y<height; y++) {
+//			for (int x = 0; x<width; x++) {
+//				srcData[offset] = alphaData[alphaOffset];
+//				offset += 4;
+//				alphaOffset += 1;
+//			}
+//		}
+//	}
+//	OS.memmove(data, srcData, dataSize);
 }
 
 /**
@@ -539,12 +527,12 @@ void createAlpha () {
  * they allocate.
  */
 public void dispose () {
-	if (handle == 0) return;
+	if (handle == null) return;
 	if (device.isDisposed()) return;
 	if (memGC != null) memGC.dispose();
-	OS.CGImageRelease(handle);
+	handle.release();
 	device = null;
-	data = handle = 0;
+	handle = null;
 	memGC = null;
 }
 
@@ -610,7 +598,8 @@ public Rectangle getBounds() {
 	if (width != -1 && height != -1) {
 		return new Rectangle(0, 0, width, height);
 	}
-	return new Rectangle(0, 0, width = OS.CGImageGetWidth(handle), height = OS.CGImageGetHeight(handle));
+	NSSize size = handle.size();
+	return new Rectangle(0, 0, width = (int)size.width, height = (int)size.height);
 }
 
 /**
@@ -630,49 +619,50 @@ public Rectangle getBounds() {
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-	int width = OS.CGImageGetWidth(handle);
-	int height = OS.CGImageGetHeight(handle);
-	int bpr = OS.CGImageGetBytesPerRow(handle);
-	int bpp = OS.CGImageGetBitsPerPixel(handle);	
-	int dataSize = height * bpr;
-	byte[] srcData = new byte[dataSize];
-	OS.memmove(srcData, data, dataSize);
-	
-	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-	ImageData data = new ImageData(width, height, bpp, palette);
-	data.data = srcData;
-	data.bytesPerLine = bpr;
-
-	data.transparentPixel = transparentPixel;
-	if (transparentPixel == -1 && type == SWT.ICON) {
-		/* Get the icon mask data */
-		int maskPad = 2;
-		int maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
-		byte[] maskData = new byte[height * maskBpl];
-		int offset = 0, maskOffset = 0;
-		for (int y = 0; y<height; y++) {
-			for (int x = 0; x<width; x++) {
-				if (srcData[offset] != 0) {
-					maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
-				} else {
-					maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
-				}
-				offset += 4;
-			}
-			maskOffset += maskBpl;
-		}
-		data.maskData = maskData;
-		data.maskPad = maskPad;
-	}
-	for (int i = 0; i < srcData.length; i+= 4) {
-		srcData[i] = 0;
-	}
-	data.alpha = alpha;
-	if (alpha == -1 && alphaData != null) {
-		data.alphaData = new byte[alphaData.length];
-		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
-	}
-	return data;
+//	int width = OS.CGImageGetWidth(handle);
+//	int height = OS.CGImageGetHeight(handle);
+//	int bpr = OS.CGImageGetBytesPerRow(handle);
+//	int bpp = OS.CGImageGetBitsPerPixel(handle);	
+//	int dataSize = height * bpr;
+//	byte[] srcData = new byte[dataSize];
+//	OS.memmove(srcData, data, dataSize);
+//	
+//	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+//	ImageData data = new ImageData(width, height, bpp, palette);
+//	data.data = srcData;
+//	data.bytesPerLine = bpr;
+//
+//	data.transparentPixel = transparentPixel;
+//	if (transparentPixel == -1 && type == SWT.ICON) {
+//		/* Get the icon mask data */
+//		int maskPad = 2;
+//		int maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+//		byte[] maskData = new byte[height * maskBpl];
+//		int offset = 0, maskOffset = 0;
+//		for (int y = 0; y<height; y++) {
+//			for (int x = 0; x<width; x++) {
+//				if (srcData[offset] != 0) {
+//					maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
+//				} else {
+//					maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
+//				}
+//				offset += 4;
+//			}
+//			maskOffset += maskBpl;
+//		}
+//		data.maskData = maskData;
+//		data.maskPad = maskPad;
+//	}
+//	for (int i = 0; i < srcData.length; i+= 4) {
+//		srcData[i] = 0;
+//	}
+//	data.alpha = alpha;
+//	if (alpha == -1 && alphaData != null) {
+//		data.alphaData = new byte[alphaData.length];
+//		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+//	}
+//	return data;
+	return null;
 }
 
 /**	 
@@ -692,12 +682,11 @@ public ImageData getImageData() {
  *
  * @private
  */
-public static Image carbon_new(Device device, int type, int handle, int data) {
+public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	if (device == null) device = Device.getDevice();
 	Image image = new Image();
 	image.type = type;
-	image.handle = handle;
-	image.data = data;
+	image.handle = nsImage;
 	image.device = device;
 	return image;
 }
@@ -713,7 +702,7 @@ public static Image carbon_new(Device device, int type, int handle, int data) {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return handle != null ? handle.id : 0;
 }
 
 void init(Device device, int width, int height) {
@@ -722,45 +711,26 @@ void init(Device device, int width, int height) {
 	}
 	this.device = device;
 	this.type = SWT.BITMAP;
+	this.width = width;
+	this.height = height;
 
-	/* Create the image */
-	int bpr = width * 4;
-	int dataSize = height * bpr;
-	data = OS.NewPtr(dataSize);
-	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
-	if (provider == 0) {
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	int colorspace = device.colorspace;
-	handle = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, true, 0);
-	OS.CGDataProviderRelease(provider);
-	if (handle == 0) {
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-		
-	/* Fill the image with white */
-	int bpc = OS.CGImageGetBitsPerComponent(handle);
-	int context = OS.CGBitmapContextCreate(this.data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
-	if (context == 0) {
-		OS.CGImageRelease(handle);
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	CGRect rect = new CGRect();
-	rect.width = width; rect.height = height;
-	OS.CGContextSetRGBFillColor(context, 1, 1, 1, 1);
-	OS.CGContextFillRect(context, rect);
-	OS.CGContextRelease(context);
+	handle = (NSImage)new NSImage().alloc();
+	NSSize size = new NSSize();
+	size.width = width;
+	size.height = height;
+	handle = handle.initWithSize(size);
+	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	rep = rep.initWithBitmapData(null, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
+	handle.addRepresentation(rep);
+	rep.release();
 }
 
 void init(Device device, ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	int width = image.width;
-	int height = image.height;
+	this.width = image.width;
+	this.height = image.height;
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 			((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
@@ -769,22 +739,6 @@ void init(Device device, ImageData image) {
 	
 	/* Create the image */
 	int dataSize = width * height * 4;
-	data = OS.NewPtr(dataSize);
-	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
-	if (provider == 0) {
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	int colorspace = device.colorspace;
-	int transparency = image.getTransparencyType(); 
-	int alphaInfo = transparency == SWT.TRANSPARENCY_NONE && image.alpha == -1 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaFirst;
-	handle = OS.CGImageCreate(width, height, 8, 32, width * 4, colorspace, alphaInfo, provider, null, true, 0);
-	OS.CGDataProviderRelease(provider);
-	if (handle == 0) {
-		OS.DisposePtr(data);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
 	
 	/* Initialize data */
 	int bpr = width * 4;
@@ -816,6 +770,8 @@ void init(Device device, ImageData image) {
 	}
 	
 	/* Initialize transparency */
+	int transparency = image.getTransparencyType();
+	boolean hasAlpha = transparency != SWT.TRANSPARENCY_NONE;
 	if (transparency == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
 		this.type = image.transparentPixel != -1 ? SWT.BITMAP : SWT.ICON;
 		if (image.transparentPixel != -1) {
@@ -850,6 +806,7 @@ void init(Device device, ImageData image) {
 	} else {
 		this.type = SWT.BITMAP;
 		if (image.alpha != -1) {
+			hasAlpha = true;
 			this.alpha = image.alpha;
 			byte a = (byte)this.alpha;
 			for (int dataIndex=0; dataIndex<buffer.length; dataIndex+=4) {
@@ -868,8 +825,16 @@ void init(Device device, ImageData image) {
 			}
 		}
 	}
-	
-	OS.memmove(data, buffer, dataSize);
+	handle = (NSImage)new NSImage().alloc();
+	NSSize size = new NSSize();
+	size.width = width;
+	size.height = height;
+	handle = handle.initWithSize(size);
+	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	rep = rep.initWithBitmapData(null, width, height, 8, 4, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	OS.memmove(rep.bitmapData(), buffer, dataSize);	
+	handle.addRepresentation(rep);
+	rep.release();
 }
 
 /**	 
@@ -886,31 +851,32 @@ void init(Device device, ImageData image) {
  * @return the platform specific GC handle
  */
 public int internal_new_GC (GCData data) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int width = OS.CGImageGetWidth(handle);
-	int height = OS.CGImageGetHeight(handle);
-	int bpc = OS.CGImageGetBitsPerComponent(handle);
-	int bpr = OS.CGImageGetBytesPerRow(handle);
-	int colorspace = OS.CGImageGetColorSpace(handle);
-	int context = OS.CGBitmapContextCreate(this.data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
-	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.CGContextScaleCTM(context, 1, -1);
-	OS.CGContextTranslateCTM(context, 0, -height);
-	if (data != null) {
-		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-		if ((data.style & mask) == 0) {
-			data.style |= SWT.LEFT_TO_RIGHT;
-		}
-		data.device = device;
-		data.background = device.COLOR_WHITE.handle;
-		data.foreground = device.COLOR_BLACK.handle;
-		data.font = device.systemFont;
-		data.image = this;
-	}
-	return context;
+//	int width = OS.CGImageGetWidth(handle);
+//	int height = OS.CGImageGetHeight(handle);
+//	int bpc = OS.CGImageGetBitsPerComponent(handle);
+//	int bpr = OS.CGImageGetBytesPerRow(handle);
+//	int colorspace = OS.CGImageGetColorSpace(handle);
+//	int context = OS.CGBitmapContextCreate(this.data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+//	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	OS.CGContextScaleCTM(context, 1, -1);
+//	OS.CGContextTranslateCTM(context, 0, -height);
+//	if (data != null) {
+//		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+//		if ((data.style & mask) == 0) {
+//			data.style |= SWT.LEFT_TO_RIGHT;
+//		}
+//		data.device = device;
+//		data.background = device.COLOR_WHITE.handle;
+//		data.foreground = device.COLOR_BLACK.handle;
+//		data.font = device.systemFont;
+//		data.image = this;
+//	}
+//	return context;
+	return 0;
 }
 
 /**	 
@@ -927,7 +893,7 @@ public int internal_new_GC (GCData data) {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
-	OS.CGContextRelease(context);
+//	OS.CGContextRelease(context);
 }
 
 /**
@@ -941,7 +907,7 @@ public void internal_dispose_GC (int context, GCData data) {
  * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == null;
 }
 
 /**
@@ -983,27 +949,27 @@ public void setBackground(Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (transparentPixel == -1) return;
-	byte red = (byte)((transparentPixel >> 16) & 0xFF);
-	byte green = (byte)((transparentPixel >> 8) & 0xFF);
-	byte blue = (byte)((transparentPixel >> 0) & 0xFF);
-	byte newRed = (byte)((int)(color.handle[0] * 255) & 0xFF);
-	byte newGreen = (byte)((int)(color.handle[1] * 255) & 0xFF);
-	byte newBlue = (byte)((int)(color.handle[2] * 255) & 0xFF);
-	int height = OS.CGImageGetHeight(handle);
-	int bpl = OS.CGImageGetBytesPerRow(handle);
-	byte[] line = new byte[bpl];
-	for (int i = 0, offset = 0; i < height; i++, offset += bpl) {
-		OS.memmove(line, data + offset, bpl);
-		for (int j = 0; j  < line.length; j += 4) {
-			if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
-				line[j + 1] = newRed;
-				line[j + 2] = newGreen;
-				line[j + 3] = newBlue;
-			}
-		}
-		OS.memmove(data + offset, line, bpl);
-	}
-	transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
+//	byte red = (byte)((transparentPixel >> 16) & 0xFF);
+//	byte green = (byte)((transparentPixel >> 8) & 0xFF);
+//	byte blue = (byte)((transparentPixel >> 0) & 0xFF);
+//	byte newRed = (byte)((int)(color.handle[0] * 255) & 0xFF);
+//	byte newGreen = (byte)((int)(color.handle[1] * 255) & 0xFF);
+//	byte newBlue = (byte)((int)(color.handle[2] * 255) & 0xFF);
+//	int height = OS.CGImageGetHeight(handle);
+//	int bpl = OS.CGImageGetBytesPerRow(handle);
+//	byte[] line = new byte[bpl];
+//	for (int i = 0, offset = 0; i < height; i++, offset += bpl) {
+//		OS.memmove(line, data + offset, bpl);
+//		for (int j = 0; j  < line.length; j += 4) {
+//			if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
+//				line[j + 1] = newRed;
+//				line[j + 2] = newGreen;
+//				line[j + 3] = newBlue;
+//			}
+//		}
+//		OS.memmove(data + offset, line, bpl);
+//	}
+//	transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
 }
 
 /**

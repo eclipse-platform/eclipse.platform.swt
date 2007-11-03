@@ -22,6 +22,10 @@ public void setBezelStyle(int style) {
 	OS.objc_msgSend(id, OS.sel_setBezelStyle_1, style);
 }
 
+public void setImage(NSImage image) {
+	OS.objc_msgSend(id, OS.sel_setImage_1, image != null ? image.id : 0);
+}
+
 public void setTitle(NSString title) {
 	OS.objc_msgSend(id, OS.sel_setTitle_1, title != null ? title.id : 0);
 }
