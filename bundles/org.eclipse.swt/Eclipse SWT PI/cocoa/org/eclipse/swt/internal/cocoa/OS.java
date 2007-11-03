@@ -61,28 +61,35 @@ public class OS extends C {
 	public static final int class_NSButton = OS.objc_getClass("NSButton");
 	public static final int class_NSArray = OS.objc_getClass("NSArray");
 	public static final int class_NSColor = OS.objc_getClass("NSColor");
+	public static final int class_NSCursor = OS.objc_getClass("NSCursor");
 	public static final int class_NSApplication = OS.objc_getClass("NSApplication");
 	public static final int class_NSWindow = OS.objc_getClass("NSWindow");
 	public static final int class_NSScreen = OS.objc_getClass("NSScreen");
 	public static final int class_NSAutoreleasePool = OS.objc_getClass("NSAutoreleasePool");
 	
 	/** Selectors */	
+	
+	public static final int sel_addCursorRect_1cursor_1 = OS.sel_registerName("addCursorRect:cursor:");
 	public static final int sel_addSubview_1 = OS.sel_registerName("addSubview:");
 	public static final int sel_addRepresentation_1 = OS.sel_registerName("addRepresentation:");
 	public static final int sel_alloc = OS.sel_registerName("alloc");
 	public static final int sel_alphaValue = OS.sel_registerName("alphaValue");
+	public static final int sel_arrowCursor = OS.sel_registerName("arrowCursor");
 	public static final int sel_bitmapData = OS.sel_registerName("bitmapData");
 	public static final int sel_cascadeTopLeftFromPoint_1 = OS.sel_registerName("cascadeTopLeftFromPoint:");
 	public static final int sel_close = OS.sel_registerName("close");
 	public static final int sel_colorWithDeviceRed_1green_1blue_1alpha_1 = OS.sel_registerName("colorWithDeviceRed:green:blue:alpha:");
 	public static final int sel_contentView = OS.sel_registerName("contentView");
 	public static final int sel_count = OS.sel_registerName("count");
+	public static final int sel_crosshairCursor = OS.sel_registerName("crosshairCursor");
 	public static final int sel_depth = OS.sel_registerName("depth");
 	public static final int sel_frame = OS.sel_registerName("frame");
+	public static final int sel_IBeamCursor = OS.sel_registerName("IBeamCursor");
 	public static final int sel_init = OS.sel_registerName("init");
 	public static final int sel_initWithBitmapDataPlanes_1pixelsWide_1pixelsHigh_1bitsPerSample_1samplesPerPixel_1hasAlpha_1isPlanar_1colorSpaceName_1bitmapFormat_1bytesPerRow_1bitsPerPixel_1 = OS.sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:");
 	public static final int sel_initWithFrame_1 = OS.sel_registerName("initWithFrame:");
 	public static final int sel_initWithContentRect_1styleMask_1backing_1defer_1 = OS.sel_registerName("initWithContentRect:styleMask:backing:defer:");
+	public static final int sel_initWithImage_1hotSpot_1 = OS.sel_registerName("initWithImage:hotSpot:");	
 	public static final int sel_initWithSize_1 = OS.sel_registerName("initWithSize:");
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
@@ -94,10 +101,18 @@ public class OS extends C {
 	public static final int sel_objectAtIndex_1 = OS.sel_registerName("objectAtIndex:");	
 	public static final int sel_orderFront_1 = OS.sel_registerName("orderFront:");
 	public static final int sel_orderOut_1 = OS.sel_registerName("orderOut:");
+	public static final int sel_pointingHandCursor = OS.sel_registerName("pointingHandCursor");
 	public static final int sel_release = OS.sel_registerName("release");
+	public static final int sel_resizeLeftRightCursor = OS.sel_registerName("resizeLeftRightCursor");
+	public static final int sel_resizeRightCursor = OS.sel_registerName("resizeRightCursor");
+	public static final int sel_resizeLeftCursor = OS.sel_registerName("resizeLeftCursor");
+	public static final int sel_resizeDownCursor = OS.sel_registerName("resizeDownCursor");
+	public static final int sel_resizeUpCursor = OS.sel_registerName("resizeUpCursor");
+	public static final int sel_resizeUpDownCursor = OS.sel_registerName("resizeUpDownCursor");
 	public static final int sel_respondsToSelector_1 = OS.sel_registerName("respondsToSelector:");
 	public static final int sel_run = OS.sel_registerName("run");
 	public static final int sel_screens = OS.sel_registerName("screens");
+	public static final int sel_set = OS.sel_registerName("set");
 	public static final int sel_setAlphaValue_1 = OS.sel_registerName("setAlphaValue:");
 	public static final int sel_setBackgroundColor_1 = OS.sel_registerName("setBackgroundColor:");	
 	public static final int sel_setBezelStyle_1 = OS.sel_registerName("setBezelStyle:");
@@ -109,6 +124,7 @@ public class OS extends C {
 	public static final int sel_setFrameSize_1 = OS.sel_registerName("setFrameSize:");
 	public static final int sel_setHidden_1 = OS.sel_registerName("setHidden:");
 	public static final int sel_setImage_1 = OS.sel_registerName("setImage:");
+	public static final int sel_setOnMouseEntered_1 = OS.sel_registerName("setOnMouseEntered:");	
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
 	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");	

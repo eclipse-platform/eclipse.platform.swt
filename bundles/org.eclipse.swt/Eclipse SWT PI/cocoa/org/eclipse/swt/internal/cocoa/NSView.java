@@ -11,6 +11,10 @@ public NSView(int id) {
 //	return OS.class_NSView;
 //}
 
+public void addCursor(NSRect rect, NSCursor cursor) {
+	OS.objc_msgSend(this.id, OS.sel_addCursorRect_1cursor_1, rect, cursor != null ? cursor.id : 0);
+}
+
 public NSRect frame() {
 	NSRect rect = new NSRect();
 	OS.objc_msgSend_stret(rect, id, OS.sel_frame);

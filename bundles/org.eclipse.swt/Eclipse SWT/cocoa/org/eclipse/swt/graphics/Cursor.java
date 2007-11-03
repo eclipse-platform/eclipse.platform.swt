@@ -11,7 +11,6 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
@@ -52,9 +51,7 @@ public final class Cursor extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
-
-	static boolean initialized;
+	public NSCursor handle;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -108,31 +105,32 @@ public Cursor(Device device, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	switch (style) {
-		case SWT.CURSOR_HAND: 			handle = OS.kThemePointingHandCursor; break;
-		case SWT.CURSOR_ARROW: 		handle = OS.kThemeArrowCursor; break;
-		case SWT.CURSOR_WAIT: 			handle = OS.kThemeSpinningCursor; break;
-		case SWT.CURSOR_CROSS: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_APPSTARTING: 	handle = OS.kThemeArrowCursor; break;
-		case SWT.CURSOR_HELP: 			handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZENS:			handle = OS.kThemeResizeUpDownCursor; break;
-		case SWT.CURSOR_SIZENWSE: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
-		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeResizeUpCursor; break;
-		case SWT.CURSOR_SIZES: 		handle = OS.kThemeResizeDownCursor; break;
-		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeResizeRightCursor; break;
-		case SWT.CURSOR_SIZEW: 		handle = OS.kThemeResizeLeftCursor; break;
-		case SWT.CURSOR_SIZENE: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZESE: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZESW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZENW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_UPARROW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_IBEAM: 		handle = OS.kThemeIBeamCursor; break;
-		case SWT.CURSOR_NO: 			handle = OS.kThemeNotAllowedCursor; break;
+		case SWT.CURSOR_HAND: 			handle = NSCursor.pointingHandCursor(); break;
+		case SWT.CURSOR_ARROW: 			handle = NSCursor.arrowCursor(); break;
+		case SWT.CURSOR_WAIT: 			handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_CROSS:	 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_APPSTARTING: 	handle = NSCursor.arrowCursor(); break;
+		case SWT.CURSOR_HELP: 			handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZEALL: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZENESW: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZENS:			handle = NSCursor.resizeUpDownCursor(); break;
+		case SWT.CURSOR_SIZENWSE: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZEWE: 		handle = NSCursor.resizeLeftRightCursor(); break;
+		case SWT.CURSOR_SIZEN: 			handle = NSCursor.resizeUpCursor(); break;
+		case SWT.CURSOR_SIZES: 			handle = NSCursor.resizeDownCursor(); break;
+		case SWT.CURSOR_SIZEE: 			handle = NSCursor.resizeRightCursor(); break;
+		case SWT.CURSOR_SIZEW: 			handle = NSCursor.resizeLeftCursor(); break;
+		case SWT.CURSOR_SIZENE: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZESE: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZESW: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_SIZENW: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_UPARROW: 		handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_IBEAM: 			handle = NSCursor.IBeamCursor(); break;
+		case SWT.CURSOR_NO: 			handle = NSCursor.crosshairCursor(); break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	handle.setOnMouseEnter(true);
 }
 
 /**	 
@@ -186,144 +184,53 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (OS.VERSION >= 0x1040) {
-		byte[] data = new byte[source.width * source.height * 4];
-		for (int y = 0; y < source.height; y++) {
-			int offset = y * source.width * 4;
-			for (int x = 0; x < source.width; x++) {
-				int pixel = source.getPixel(x, y);
-				int maskPixel = mask.getPixel(x, y);
-				if (pixel == 0 && maskPixel == 0) {
-					// BLACK
-					data[offset] = (byte)0xFF;
-				} else if (pixel == 0 && maskPixel == 1) {
-					// WHITE - cursor color
-					data[offset] = data[offset + 1] = data[offset + 2] = data[offset + 3] = (byte)0xFF;
-				} else if (pixel == 1 && maskPixel == 0) {
-					// SCREEN
-				} else {
-					/*
-					* Feature in the Macintosh. It is not possible to have
-					* the reverse screen case using NSCursor.
-					* Reverse screen will be the same as screen.
-					*/
-					// REVERSE SCREEN -> SCREEN
-				}
-				offset += 4;
+	byte[] data = new byte[source.width * source.height * 4];
+	for (int y = 0; y < source.height; y++) {
+		int offset = y * source.width * 4;
+		for (int x = 0; x < source.width; x++) {
+			int pixel = source.getPixel(x, y);
+			int maskPixel = mask.getPixel(x, y);
+			if (pixel == 0 && maskPixel == 0) {
+				// BLACK
+				data[offset] = (byte)0xFF;
+			} else if (pixel == 0 && maskPixel == 1) {
+				// WHITE - cursor color
+				data[offset] = data[offset + 1] = data[offset + 2] = data[offset + 3] = (byte)0xFF;
+			} else if (pixel == 1 && maskPixel == 0) {
+				// SCREEN
+			} else {
+				/*
+				* Feature in the Macintosh. It is not possible to have
+				* the reverse screen case using NSCursor.
+				* Reverse screen will be the same as screen.
+				*/
+				// REVERSE SCREEN -> SCREEN
 			}
-		}
-		createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
-		return;
-	}
-	/* Convert depth to 1 */
-	mask = ImageData.convertMask(mask);
-	source = ImageData.convertMask(source);
-
-	/* Find the first non transparent pixel if cursor bigger than 16x16. */
-	int width = source.width;
-	int height = source.height;
-	int minX = 0, minY = 0;
-	if (width > 16 || height > 16) {
-		minX = width;
-		minY = height;
-		int maxX = 0, maxY = 0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				if (!(source.getPixel(x, y) == 1 && mask.getPixel(x, y) == 0)) {
-					minX = Math.min(minX, x);
-					minY = Math.min(minY, y);
-					maxX = Math.max(maxX, x);
-					maxY = Math.max(maxY, y);
-				}
-			}
-		}
-		width = maxX - minX + 1;
-		height = maxY - minY + 1;
-		
-		/* Stretch cursor if still bigger than 16x16. */
-		if (width > 16 || height > 16) {
-			int newWidth = Math.min(width, 16);
-			int newHeight = Math.min(height, 16);
-			ImageData newSource =
-				new ImageData(newWidth, newHeight, source.depth, source.palette,
-					1, null, 0, null, null, -1, -1, source.type,
-					source.x, source.y, source.disposalMethod, source.delayTime);
-			ImageData newMask = new ImageData(newWidth, newHeight, mask.depth,
-					mask.palette, 1, null, 0, null, null, -1, -1, mask.type,
-					mask.x, mask.y, mask.disposalMethod, mask.delayTime);
-			ImageData.blit(ImageData.BLIT_SRC,
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), minX, minY, width, height, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
-				newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
-				false, false);
-			ImageData.blit(ImageData.BLIT_SRC,
-				mask.data, mask.depth, mask.bytesPerLine, mask.getByteOrder(), minX, minY, width, height, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
-				newMask.data, newMask.depth, newMask.bytesPerLine, newMask.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
-				false, false);
-			width = newWidth;
-			height = newHeight;
-			minX = minY = 0;
-			source = newSource;
-			mask = newMask;
+			offset += 4;
 		}
 	}
-
-	/* Create the cursor */
-	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-	byte[] srcData = cursor.data;
-	byte[] maskData = cursor.mask;
-	for (int y = 0; y < height; y++) {
-		short d = 0, m = 0;
-		for (int x = 0; x < width; x++) {
-			int bit = 1 << (width - 1 - x);
-			if (source.getPixel(minX + x, minY + y) == 0) {
-				m |= bit;
-				if (mask.getPixel(minX + x, minY + y) == 0) d |= bit;
-			} else if (mask.getPixel(minX + x, minY + y) != 0) {
-				d |= bit;
-			}
-		}
-		srcData[y * 2] = (byte)(d >> 8);
-		srcData[y * 2 + 1] = (byte)(d & 0xFF);
-		maskData[y * 2] = (byte)(m >> 8);
-		maskData[y * 2 + 1] = (byte)(m & 0xFF);
-	}
-	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotX - minX));
-	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
-	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memmove(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
+	createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
 }
 
 void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
-	if (!initialized) {
-		initialized = true;
-		int window = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.C_NSWindow, Cocoa.S_alloc), Cocoa.S_init);
-		Cocoa.objc_msgSend(window, Cocoa.S_release);
-	}
-	int nsImage = Cocoa.objc_msgSend(Cocoa.C_NSImage, Cocoa.S_alloc);
-	if (nsImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int nsImageRep = Cocoa.objc_msgSend(Cocoa.C_NSBitmapImageRep, Cocoa.S_alloc);
-	if (nsImageRep == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	this.handle = Cocoa.objc_msgSend(Cocoa.C_NSCursor, Cocoa.S_alloc);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	NSImage nsImage = (NSImage)new NSImage().alloc();
+	NSBitmapImageRep nsImageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	handle = (NSCursor)new NSCursor().alloc();
 	NSSize size = new NSSize();
 	size.width = width;
 	size.height =  height;
-	nsImage = Cocoa.objc_msgSend(nsImage, Cocoa.S_initWithSize, size);
-	nsImageRep = Cocoa.objc_msgSend(nsImageRep, Cocoa.S_initWithBitmapDataPlanes, null, width, height,
-			8, 4, 1, 0, Cocoa.NSDeviceRGBColorSpace(),
-			Cocoa.NSAlphaFirstBitmapFormat | Cocoa.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
-	int bitmapData = Cocoa.objc_msgSend(nsImageRep, Cocoa.S_bitmapData);
-	OS.memmove(bitmapData, buffer, buffer.length);
-	Cocoa.objc_msgSend(nsImage, Cocoa.S_addRepresentation, nsImageRep);
+	nsImage = nsImage.initWithSize(size);
+	nsImageRep = nsImageRep.initWithBitmapData(null, width, height,
+			8, 4, true, false, new NSString(OS.NSDeviceRGBColorSpace()),
+			OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	OS.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
+	nsImage.addRepresentation(nsImageRep);
 	NSPoint point = new NSPoint();
 	point.x = hotspotX;
 	point.y = hotspotY;
-	handle = Cocoa.objc_msgSend(handle, Cocoa.S_initWithImage_hotSpot, nsImage, point);
-	Cocoa.objc_msgSend(nsImage, Cocoa.S_release);
-	Cocoa.objc_msgSend(nsImageRep, Cocoa.S_release);
+	handle = handle.init(nsImage, point);
+	nsImageRep.release();
+	nsImage.release();
 }
 
 /**	 
@@ -362,180 +269,57 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-
-	if (OS.VERSION >= 0x1040) {
-		byte[] data = new byte[source.width * source.height * 4];
-		PaletteData palette = source.palette;
-		if (palette.isDirect) {
-			ImageData.blit(ImageData.BLIT_SRC,
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
-				data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
-				false, false);
-		} else {
-			RGB[] rgbs = palette.getRGBs();
-			int length = rgbs.length;
-			byte[] srcReds = new byte[length];
-			byte[] srcGreens = new byte[length];
-			byte[] srcBlues = new byte[length];
-			for (int i = 0; i < rgbs.length; i++) {
-				RGB rgb = rgbs[i];
-				if (rgb == null) continue;
-				srcReds[i] = (byte)rgb.red;
-				srcGreens[i] = (byte)rgb.green;
-				srcBlues[i] = (byte)rgb.blue;
-			}
-			ImageData.blit(ImageData.BLIT_SRC,
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
-				false, false);
+	byte[] data = new byte[source.width * source.height * 4];
+	PaletteData palette = source.palette;
+	if (palette.isDirect) {
+		ImageData.blit(ImageData.BLIT_SRC,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
+			false, false);
+	} else {
+		RGB[] rgbs = palette.getRGBs();
+		int length = rgbs.length;
+		byte[] srcReds = new byte[length];
+		byte[] srcGreens = new byte[length];
+		byte[] srcBlues = new byte[length];
+		for (int i = 0; i < rgbs.length; i++) {
+			RGB rgb = rgbs[i];
+			if (rgb == null) continue;
+			srcReds[i] = (byte)rgb.red;
+			srcGreens[i] = (byte)rgb.green;
+			srcBlues[i] = (byte)rgb.blue;
 		}
-		if (source.maskData != null || source.transparentPixel != -1) {
-			ImageData mask = source.getTransparencyMask();
-			byte[] maskData = mask.data;
-			int maskBpl = mask.bytesPerLine;
-			int offset = 0, maskOffset = 0;
-			for (int y = 0; y<source.height; y++) {
-				for (int x = 0; x<source.width; x++) {
-					data[offset] = ((maskData[maskOffset + (x >> 3)]) & (1 << (7 - (x & 0x7)))) != 0 ? (byte)0xff : 0;
-					offset += 4;
-				}
-				maskOffset += maskBpl;
-			}
-		} else if (source.alpha != -1) {
-			byte alpha = (byte)source.alpha;
-			for (int i=0; i<data.length; i+=4) {
-				data[i] = alpha;				
-			}
-		} else if (source.alphaData != null) {
-			byte[] alphaData = source.alphaData;
-			for (int i=0; i<data.length; i+=4) {
-				data[i] = alphaData[i/4];
-			}
-		}
-		createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
-		return;
+		ImageData.blit(ImageData.BLIT_SRC,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
+			false, false);
 	}
-
-	ImageData mask = source.getTransparencyMask();
-
-	/* Ensure depth is equal to 1 */
-	if (source.depth > 1) {
-		/* Create a destination image with no data */
-		ImageData newSource = new ImageData(
-			source.width, source.height, 1, ImageData.bwPalette(),
-			1, null, 0, null, null, -1, -1, 0, 0, 0, 0, 0);
-
-		byte[] newReds = new byte[]{0, (byte)255}, newGreens = newReds, newBlues = newReds;
-
-		/* Convert the source to a black and white image of depth 1 */
-		PaletteData palette = source.palette;
-		if (palette.isDirect) {
-			ImageData.blit(ImageData.BLIT_SRC,
-					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
-					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
-					false, false);
-		} else {
-			RGB[] rgbs = palette.getRGBs();
-			int length = rgbs.length;
-			byte[] srcReds = new byte[length];
-			byte[] srcGreens = new byte[length];
-			byte[] srcBlues = new byte[length];
-			for (int i = 0; i < rgbs.length; i++) {
-				RGB rgb = rgbs[i];
-				if (rgb == null) continue;
-				srcReds[i] = (byte)rgb.red;
-				srcGreens[i] = (byte)rgb.green;
-				srcBlues[i] = (byte)rgb.blue;
+	if (source.maskData != null || source.transparentPixel != -1) {
+		ImageData mask = source.getTransparencyMask();
+		byte[] maskData = mask.data;
+		int maskBpl = mask.bytesPerLine;
+		int offset = 0, maskOffset = 0;
+		for (int y = 0; y<source.height; y++) {
+			for (int x = 0; x<source.width; x++) {
+				data[offset] = ((maskData[maskOffset + (x >> 3)]) & (1 << (7 - (x & 0x7)))) != 0 ? (byte)0xff : 0;
+				offset += 4;
 			}
-			ImageData.blit(ImageData.BLIT_SRC,
-					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
-					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
-					false, false);
+			maskOffset += maskBpl;
 		}
-		source = newSource;
-	}
-
-	/* Find the first non transparent pixel if cursor bigger than 16x16. */
-	int width = source.width;
-	int height = source.height;
-	int minX = 0, minY = 0;
-	if (width > 16 || height > 16) {
-		minX = width;
-		minY = height;
-		int maxX = 0, maxY = 0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				if (!(source.getPixel(x, y) == 1 && mask.getPixel(x, y) == 0)) {
-					minX = Math.min(minX, x);
-					minY = Math.min(minY, y);
-					maxX = Math.max(maxX, x);
-					maxY = Math.max(maxY, y);
-				}
-			}
+	} else if (source.alpha != -1) {
+		byte alpha = (byte)source.alpha;
+		for (int i=0; i<data.length; i+=4) {
+			data[i] = alpha;				
 		}
-		width = maxX - minX + 1;
-		height = maxY - minY + 1;
-		
-		/* Stretch cursor if still bigger than 16x16. */
-		if (width > 16 || height > 16) {
-			int newWidth = Math.min(width, 16);
-			int newHeight = Math.min(height, 16);
-			ImageData newSource =
-				new ImageData(newWidth, newHeight, source.depth, source.palette,
-					1, null, 0, null, null, -1, -1, source.type,
-					source.x, source.y, source.disposalMethod, source.delayTime);
-			ImageData newMask = new ImageData(newWidth, newHeight, mask.depth,
-					mask.palette, 1, null, 0, null, null, -1, -1, mask.type,
-					mask.x, mask.y, mask.disposalMethod, mask.delayTime);
-			ImageData.blit(ImageData.BLIT_SRC,
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), minX, minY, width, height, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
-				newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
-				false, false);
-			ImageData.blit(ImageData.BLIT_SRC,
-				mask.data, mask.depth, mask.bytesPerLine, mask.getByteOrder(), minX, minY, width, height, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
-				newMask.data, newMask.depth, newMask.bytesPerLine, newMask.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
-				false, false);
-			width = newWidth;
-			height = newHeight;
-			minX = minY = 0;
-			source = newSource;
-			mask = newMask;
+	} else if (source.alphaData != null) {
+		byte[] alphaData = source.alphaData;
+		for (int i=0; i<data.length; i+=4) {
+			data[i] = alphaData[i/4];
 		}
 	}
-
-	/* Create the cursor */
-	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-	byte[] srcData = cursor.data;
-	byte[] maskData = cursor.mask;
-	for (int y= 0; y < height; y++) {
-		short d = 0, m = 0;
-		for (int x = 0; x < width; x++) {
-			int bit = 1 << (width - 1 - x);			
-			if (source.getPixel(x + minX, y + minY) == 0) {
-				if (mask.getPixel(x + minX, y + minY) != 0) {
-					d |= bit;
-					m |= bit;
-				}
-			} else {
-				if (mask.getPixel(x + minX, y + minY) != 0) m |= bit;
-			}
-		}
-		srcData[y * 2] = (byte)(d >> 8);
-		srcData[y * 2 + 1] = (byte)(d & 0xFF);
-		maskData[y * 2] = (byte)(m >> 8);
-		maskData[y * 2 + 1] = (byte)(m & 0xFF);
-	}
-	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotX - minX));
-	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
-	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memmove(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
+	createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
 }
 
 /**
@@ -544,31 +328,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
  * they allocate.
  */
 public void dispose () {
-	if (handle == -1) return;
+	if (handle == null) return;
 	if (device.isDisposed()) return;
-	switch (handle) {
-		case OS.kThemePointingHandCursor:
-		case OS.kThemeArrowCursor:
-		case OS.kThemeSpinningCursor:
-		case OS.kThemeCrossCursor:
-		case OS.kThemeWatchCursor:
-		case OS.kThemeIBeamCursor:
-		case OS.kThemeNotAllowedCursor:
-		case OS.kThemeResizeLeftRightCursor:
-		case OS.kThemeResizeLeftCursor:
-		case OS.kThemeResizeRightCursor:
-		case OS.kThemeResizeUpDownCursor:
-		case OS.kThemeResizeUpCursor:
-		case OS.kThemeResizeDownCursor:
-			break;
-		default:
-			if (OS.VERSION >= 0x1040) {
-				Cocoa.objc_msgSend(handle, Cocoa.S_release);
-			} else {
-				OS.DisposePtr(handle);
-			}
-	}
-	handle = -1;
+	handle.release();
+	handle = null;
 	device = null;
 }
 
@@ -600,7 +363,7 @@ public boolean equals (Object object) {
  * @see #equals
  */
 public int hashCode () {
-	return handle;
+	return handle != null ? handle.id : 0;
 }
 
 /**
@@ -614,7 +377,7 @@ public int hashCode () {
  * @return <code>true</code> when the cursor is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return handle == -1;
+	return handle == null;
 }
 
 /**
@@ -643,7 +406,7 @@ public String toString () {
  * 
  * @private
  */
-public static Cursor carbon_new(Device device, int handle) {
+public static Cursor cocoa_new(Device device, NSCursor handle) {
 	if (device == null) device = Device.getDevice();
 	Cursor cursor = new Cursor();
 	cursor.handle = handle;

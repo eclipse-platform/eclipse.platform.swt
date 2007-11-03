@@ -218,7 +218,7 @@ public RGB getRGB () {
  * 
  * @private
  */
-public static Color carbon_new(Device device, float[] rgbColor) {
+public static Color cocoa_new(Device device, float[] rgbColor) {
 	if (device == null) device = Device.getDevice();
 	Color color = new Color();
 	color.handle = rgbColor;
