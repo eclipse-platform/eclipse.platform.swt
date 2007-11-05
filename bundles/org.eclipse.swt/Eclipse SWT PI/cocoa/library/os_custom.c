@@ -17,6 +17,36 @@
 
 extern id objc_msgSend(id, SEL, ...);
 
+
+#ifndef NO_objc_1msgSend__IID
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IID)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IID_FUNC);
+	rc = ((jint (*) (id, SEL, double))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IID_FUNC);
+	return rc;
+}
+#endif
+
+
+#ifndef NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jfloat arg3, jfloat arg4)
+{
+	NSRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF_FUNC);
+	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = ((jint (*) (id, SEL, id, float, float))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4);
+fail:
+	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__IIF
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IIF)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
