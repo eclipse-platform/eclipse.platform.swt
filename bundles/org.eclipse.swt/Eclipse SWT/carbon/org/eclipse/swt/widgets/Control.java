@@ -2078,8 +2078,18 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	* the chain of handlers.
 	*/
 	if (!isDisposed () && !hasFocus ()) {
-		OS.SendEventToEventTarget (theEvent, OS.GetControlEventTarget (handle));
-		return OS.noErr;
+		Control focusControl = display.getFocusControl ();
+		int focusHandle = focusHandle ();
+		int window = OS.GetControlOwner (focusHandle);
+		display.ignoreFocus = true;
+		OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
+		display.ignoreFocus = false;
+		result = OS.CallNextEventHandler (nextHandler, theEvent);
+		focusHandle = focusControl.focusHandle ();
+		window = OS.GetControlOwner (focusHandle);
+		display.ignoreFocus = true;
+		OS.SetKeyboardFocus (window, focusHandle, (short) focusControl.focusPart ());
+		display.ignoreFocus = false;
 	}
 	return result;
 }
@@ -3942,3 +3952,4 @@ void updateLayout (boolean all) {
 }
 
 }
+
