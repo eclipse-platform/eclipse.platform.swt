@@ -254,7 +254,6 @@ public final class TextLayout extends Resource {
 	int[] segments;
 	int tabsPtr;
 	int[] breaks, hardBreaks, lineX, lineWidth, lineHeight, lineAscent;
-	StyleItem drawStyle;
 
 	static final int TAB_COUNT = 32;
 	static final char ZWS = '\u200B';
@@ -536,7 +535,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	*/
 	int rgn = 0;
 	CGRect rect = null;
-	Callback callback = null;
 	for (int j = 0; j < styles.length; j++) {
 		StyleItem run = styles[j];
 		TextStyle style = run.style;
@@ -551,20 +549,18 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				int highEnd = Math.min(lineEnd, end);
 				int highLen = highEnd - highStart + 1;
 				if (highLen > 0) {
+					OS.CGContextSaveGState(gc.handle);
 					if (rgn == 0) rgn = OS.NewRgn();
 					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, rgn);
-					OS.CGContextSaveGState(gc.handle);
-					if (callback == null) {
-						callback = new Callback(this, "regionToRects", 4);
-						if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-					}
-					OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, callback.getAddress(), gc.handle);
+					int shape = OS.HIShapeCreateWithQDRgn(rgn);
+					OS.HIShapeReplacePathInCGContext(shape, gc.handle);
 					if (rect == null) rect = new CGRect();
 					OS.CGContextGetPathBoundingBox(gc.handle, rect);
 					OS.CGContextEOClip(gc.handle);
 					OS.CGContextSetFillColorSpace(gc.handle, device.colorspace);
 					OS.CGContextSetFillColor(gc.handle, style.background.handle);
 					OS.CGContextFillRect(gc.handle, rect);
+					OS.DisposeControl(shape);
 					OS.CGContextRestoreGState(gc.handle);
 				}
 			}
@@ -573,8 +569,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			lineStart = lineBreak;
 		}
 	}
-	if (callback != null) callback.dispose();
-	callback = null;
 
 	selectionStart = translateOffset(selectionStart);
 	selectionEnd = translateOffset(selectionEnd);
@@ -634,7 +628,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (restoreColor) setLayoutControl(OS.kATSULineHighlightCGColorTag, 0, 4);
 	OS.CGContextRestoreGState(gc.handle);
 
-	Callback borderCallback = null;
 	for (int j = 0; j < styles.length; j++) {
 		StyleItem run = styles[j];
 		TextStyle style = run.style;
@@ -660,6 +653,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					int highEnd = Math.min(lineEnd, end);
 					int highLen = highEnd - highStart + 1;
 					if (highLen > 0) {
+						OS.CGContextSaveGState(gc.handle);
 						float underlineY = y + lineY;
 						float[] foreground = gc.data.foreground;
 						float lineWidth = 0;
@@ -694,21 +688,45 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
 								break;
 						}
-						OS.CGContextSaveGState(gc.handle);
+						int[] count = new int[1];
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, (short)OS.kATSUseDeviceOrigins, 0, 0, count);
+						int trapezoidsPtr = OS.malloc(count[0] * ATSTrapezoid.sizeof);
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, (short)OS.kATSUseDeviceOrigins, count[0], trapezoidsPtr, count);
+						ATSTrapezoid trapezoid = new ATSTrapezoid();
+						for (int k = 0; k < count[0]; k++) {
+							OS.memmove(trapezoid, trapezoidsPtr + (k * ATSTrapezoid.sizeof), ATSTrapezoid.sizeof);
+							float ux, uy, lx, ly, a, b;
+							ux = OS.Fix2Long(trapezoid.upperLeft_x);
+							uy = OS.Fix2Long(trapezoid.upperLeft_y);
+							lx = OS.Fix2Long(trapezoid.lowerLeft_x);
+							ly = OS.Fix2Long(trapezoid.lowerLeft_y);
+							a = (uy - ly) / (ux - lx);
+							b = uy - ux * a;
+							float left = (underlineY - b) / a;
+							ux = OS.Fix2Long(trapezoid.upperRight_x);
+							uy = OS.Fix2Long(trapezoid.upperRight_y);
+							lx = OS.Fix2Long(trapezoid.lowerRight_x);
+							ly = OS.Fix2Long(trapezoid.lowerRight_y);
+							a = (uy - ly) / (ux - lx);
+							b = uy - ux * a;
+							float right = (underlineY - b) / a;
+							switch (style.underlineStyle) {
+								case UNDERLINE_IME_TARGET_CONVERTED:
+								case UNDERLINE_IME_CONVERTED:
+									left += 1;
+									right -= 1;
+							}
+							OS.CGContextMoveToPoint(gc.handle, left, OS.Fix2Long(trapezoid.upperLeft_y));
+							OS.CGContextAddLineToPoint(gc.handle, right, OS.Fix2Long(trapezoid.upperRight_y));
+						}
+						OS.free(trapezoidsPtr);
 						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
 						OS.CGContextSetStrokeColor(gc.handle, foreground);
 						OS.CGContextSetLineWidth(gc.handle, lineWidth);
 						OS.CGContextSetLineCap(gc.handle, lineCap);
 						OS.CGContextSetLineJoin(gc.handle, lineJoin);
 						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
-						OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, rgn);
-						if (callback == null) {
-							callback = new Callback(this, "drawUnderline", 4);
-							if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-						}
-						drawStyle = run;
-						OS.CGContextTranslateCTM (gc.handle, 0.5f, 0.5f);
-						OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, callback.getAddress(), gc.handle);
+						OS.CGContextTranslateCTM(gc.handle, 0.5f, 0.5f);
 						OS.CGContextStrokePath(gc.handle);
 						OS.CGContextRestoreGState(gc.handle);
 					}
@@ -726,14 +744,23 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					int highEnd = Math.min(lineEnd, end);
 					int highLen = highEnd - highStart + 1;
 					if (highLen > 0) {
-						OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, rgn);
 						OS.CGContextSaveGState(gc.handle);
-						if (borderCallback == null) {
-							borderCallback = new Callback(this, "drawBorder", 4);
-							if (borderCallback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+						int[] count = new int[1];
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, (short)OS.kATSUseDeviceOrigins, 0, 0, count);
+						int trapezoidsPtr = OS.malloc(count[0] * ATSTrapezoid.sizeof);
+						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, (short)OS.kATSUseDeviceOrigins, count[0], trapezoidsPtr, count);
+						ATSTrapezoid trapezoid = new ATSTrapezoid();
+						for (int k = 0; k < count[0]; k++) {
+							OS.memmove(trapezoid, trapezoidsPtr + (k * ATSTrapezoid.sizeof), ATSTrapezoid.sizeof);
+							int upperY = y + lineY + 1;
+							int lowerY = y + lineY + lineHeight[i];
+							OS.CGContextMoveToPoint(gc.handle, OS.Fix2Long(trapezoid.lowerLeft_x), lowerY);
+							OS.CGContextAddLineToPoint(gc.handle, OS.Fix2Long(trapezoid.upperLeft_x), upperY);
+							OS.CGContextAddLineToPoint(gc.handle, OS.Fix2Long(trapezoid.upperRight_x) - 1, upperY);
+							OS.CGContextAddLineToPoint(gc.handle, OS.Fix2Long(trapezoid.lowerRight_x) - 1, lowerY);
+							OS.CGContextClosePath(gc.handle);
 						}
-						OS.CGContextTranslateCTM(gc.handle, 0.5f, 0.5f);
-						OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, borderCallback.getAddress(), gc.handle);
+						OS.free(trapezoidsPtr);
 						int width = 1;
 						OS.CGContextSetShouldAntialias(gc.handle, false);
 						OS.CGContextSetLineCap(gc.handle, OS.kCGLineCapButt);
@@ -753,6 +780,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
 							OS.CGContextSetStrokeColor(gc.handle, color);
 						}
+						OS.CGContextTranslateCTM (gc.handle, 0.5f, 0.5f);
 						OS.CGContextStrokePath(gc.handle);
 						OS.CGContextRestoreGState(gc.handle);
 					}
@@ -763,40 +791,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			lineStart = lineBreak;
 		}
 	}
-	if (callback != null) callback.dispose();
-	callback = null;
-	if (borderCallback != null) borderCallback.dispose();
-	borderCallback = null;
 	if (rgn != 0) OS.DisposeRgn(rgn);
-}
-
-int drawBorder(int message, int rgn, int r, int context) {
-	if (message == OS.kQDRegionToRectsMsgParse) {
-		Rect rect = new Rect();
-		OS.memmove(rect, r, Rect.sizeof);
-		OS.CGContextMoveToPoint(context, rect.left, rect.top);
-		OS.CGContextAddLineToPoint(context, rect.right - 1, rect.top);
-		OS.CGContextAddLineToPoint(context, rect.right - 1, rect.bottom - 1);
-		OS.CGContextAddLineToPoint(context, rect.left, rect.bottom - 1);
-		OS.CGContextClosePath(context);
-	}
-	return 0;
-}
-
-int drawUnderline(int message, int rgn, int r, int context) {
-	if (message == OS.kQDRegionToRectsMsgParse) {
-		Rect rect = new Rect();
-		OS.memmove(rect, r, Rect.sizeof);
-		switch (drawStyle.style.underlineStyle) {
-			case UNDERLINE_IME_TARGET_CONVERTED:
-			case UNDERLINE_IME_CONVERTED:
-				rect.left += 1;
-				rect.right -= 1;
-		}
-		OS.CGContextMoveToPoint(context, rect.left, rect.top);
-		OS.CGContextAddLineToPoint(context, rect.right, rect.top);
-	}
-	return 0;
 }
 
 void freeRuns() {
@@ -1588,19 +1583,6 @@ public int getWidth () {
  */
 public boolean isDisposed () {
 	return layout == 0;
-}
-
-int regionToRects(int message, int rgn, int r, int context) {
-	if (message == OS.kQDRegionToRectsMsgParse) {
-		Rect rect = new Rect();
-		OS.memmove(rect, r, Rect.sizeof);
-		OS.CGContextMoveToPoint(context, rect.left, rect.top);
-		OS.CGContextAddLineToPoint(context, rect.right, rect.top);
-		OS.CGContextAddLineToPoint(context, rect.right, rect.bottom);
-		OS.CGContextAddLineToPoint(context, rect.left, rect.bottom);
-		OS.CGContextClosePath(context);
-	}
-	return 0;
 }
 
 /**
