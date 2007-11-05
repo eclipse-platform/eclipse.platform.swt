@@ -257,6 +257,9 @@ void createHandle () {
 	OS.ContentControl_Content (handle, panel);
 	OS.GCHandle_Free (children);
 	OS.GCHandle_Free (panel);
+	int margin = OS.gcnew_Thickness (0, 0, 0, 0);
+	OS.Control_Padding (handle, margin);
+	OS.GCHandle_Free (margin);
 }
 
 void deregister () {
