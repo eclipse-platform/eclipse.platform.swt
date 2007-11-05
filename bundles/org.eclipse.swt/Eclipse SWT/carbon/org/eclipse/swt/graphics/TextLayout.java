@@ -434,9 +434,6 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 	}
 	coordinates[length-2] = left + (width * peaks);
 	coordinates[length-1] = bottom;
-	for (int i = 0; i < coordinates.length; i++) {
-		coordinates[i] += 0.5;
-	}
 	return coordinates;
 }
 
@@ -714,6 +711,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								underlineY += lineAscent [i] + lineHeight [i] + (metrics.descent * font.size);
 								break;
 						}
+						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
+						OS.CGContextSetStrokeColor(gc.handle, foreground);
+						OS.CGContextSetLineWidth(gc.handle, lineWidth);
+						OS.CGContextSetLineCap(gc.handle, lineCap);
+						OS.CGContextSetLineJoin(gc.handle, lineJoin);
+						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
+						OS.CGContextTranslateCTM(gc.handle, 0.5f, 0.5f);
+						
 						int[] count = new int[1];
 						OS.ATSUGetGlyphBounds(layout, OS.Long2Fix(x), OS.X2Fix(underlineY), highStart, highLen, (short)OS.kATSUseDeviceOrigins, 0, 0, count);
 						int trapezoidsPtr = OS.malloc(count[0] * ATSTrapezoid.sizeof);
@@ -764,13 +769,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							}
 						}
 						OS.free(trapezoidsPtr);
-						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
-						OS.CGContextSetStrokeColor(gc.handle, foreground);
-						OS.CGContextSetLineWidth(gc.handle, lineWidth);
-						OS.CGContextSetLineCap(gc.handle, lineCap);
-						OS.CGContextSetLineJoin(gc.handle, lineJoin);
-						OS.CGContextSetLineDash(gc.handle, 0, dashes, dashes != null ? dashes.length : 0);
-						OS.CGContextTranslateCTM(gc.handle, 0.5f, 0.5f);
 						OS.CGContextStrokePath(gc.handle);
 						OS.CGContextRestoreGState(gc.handle);
 					}
