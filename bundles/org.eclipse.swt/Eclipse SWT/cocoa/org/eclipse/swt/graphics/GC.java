@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
 /**
@@ -54,7 +54,7 @@ public final class GC extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public NSGraphicsContext handle;
 	
 	Drawable drawable;
 	GCData data;
@@ -204,169 +204,124 @@ public static GC carbon_new(int context, GCData data) {
 }
 
 void checkGC (int mask) {
+	NSGraphicsContext.setCurrentContext(handle);
 	int state = data.state;
 	if ((state & mask) == mask) return;
 	state = (state ^ mask) & mask;	
 	data.state |= mask;
-	if ((state & FOREGROUND) != 0) {
-		Pattern pattern = data.foregroundPattern;
-		if (pattern != null) {
-			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-			OS.CGContextSetStrokeColorSpace(handle, colorspace);
-			OS.CGColorSpaceRelease(colorspace);
-			if (data.forePattern == 0) data.forePattern = pattern.createPattern(handle);
-			OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
-		} else {
-			OS.CGContextSetStrokeColorSpace(handle, data.device.colorspace);
-			OS.CGContextSetStrokeColor(handle, data.foreground);
-		}
-	}
-	if ((state & FOREGROUND_FILL) != 0) {
-		Pattern pattern = data.foregroundPattern;
-		if (pattern != null) {
-			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-			OS.CGContextSetFillColorSpace(handle, colorspace);
-			OS.CGColorSpaceRelease(colorspace);
-			if (data.forePattern == 0) data.forePattern = pattern.createPattern(handle);
-			OS.CGContextSetFillPattern(handle, data.forePattern, data.foreground);
-		} else {
-			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
-			OS.CGContextSetFillColor(handle, data.foreground);
-		}
-		data.state &= ~BACKGROUND;
-	}
-	if ((state & BACKGROUND) != 0) {
-		Pattern pattern = data.backgroundPattern;
-		if (pattern != null) {
-			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-			OS.CGContextSetFillColorSpace(handle, colorspace);
-			OS.CGColorSpaceRelease(colorspace);
-			if (data.backPattern == 0) data.backPattern = pattern.createPattern(handle);
-			OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
-		} else {
-			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
-			OS.CGContextSetFillColor(handle, data.background);
-		}
-		data.state &= ~FOREGROUND_FILL;
-	}
-	if ((state & FONT) != 0) {
-		setCGFont();
-	}
-	if ((state & LINE_WIDTH) != 0) {
-		OS.CGContextSetLineWidth(handle, data.lineWidth == 0 ?  1 : data.lineWidth);
-		switch (data.lineStyle) {
-			case SWT.LINE_DOT:
-			case SWT.LINE_DASH:
-			case SWT.LINE_DASHDOT:
-			case SWT.LINE_DASHDOTDOT:
-				state |= LINE_STYLE;
-		}
-	}
-	if ((state & LINE_STYLE) != 0) {
-		float[] dashes = null;
-		float width = data.lineWidth;
-		switch (data.lineStyle) {
-			case SWT.LINE_SOLID: break;
-			case SWT.LINE_DASH: dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO; break;
-			case SWT.LINE_DOT: dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO; break;
-			case SWT.LINE_DASHDOT: dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO; break;
-			case SWT.LINE_DASHDOTDOT: dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO; break;
-			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
-		}
-		if (dashes != null) {
-			float[] lengths = new float[dashes.length];
-			for (int i = 0; i < lengths.length; i++) {
-				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
-			}
-			OS.CGContextSetLineDash(handle, data.lineDashesOffset, lengths, lengths.length);
-		} else {
-			OS.CGContextSetLineDash(handle, 0, null, 0);
-		}
-	}
-	if ((state & LINE_MITERLIMIT) != 0) {
-		OS.CGContextSetMiterLimit(handle, data.lineMiterLimit);
-	}
-	if ((state & LINE_JOIN) != 0) {
-		int joinStyle = 0;
-		switch (data.lineJoin) {
-			case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
-			case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
-			case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
-		}
-		OS.CGContextSetLineJoin(handle, joinStyle);
-	}
-	if ((state & LINE_CAP) != 0) {
-		int capStyle = 0;
-		switch (data.lineCap) {
-			case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
-			case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
-			case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
-		}
-		OS.CGContextSetLineCap(handle, capStyle);
-	}
-	if ((state & DRAW_OFFSET) != 0) {
-		data.drawXOffset = data.drawYOffset = 0;
-		float scaling = data.transform != null ? data.transform[0] : 1;
-		if (scaling < 0) scaling = -scaling;
-		float strokeWidth = data.lineWidth * scaling;
-		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-			data.drawXOffset = 0.5f / scaling;
-		}
-		scaling = data.transform != null ? data.transform[3] : 1;
-		if (scaling < 0) scaling = -scaling;
-		strokeWidth = data.lineWidth * scaling;
-		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-			data.drawYOffset = 0.5f / scaling;
-		}
-	}
+	
+//	if ((state & FOREGROUND) != 0) {
+//		Pattern pattern = data.foregroundPattern;
+//		if (pattern != null) {
+//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+//			OS.CGContextSetStrokeColorSpace(handle, colorspace);
+//			OS.CGColorSpaceRelease(colorspace);
+//			if (data.forePattern == 0) data.forePattern = pattern.createPattern(handle);
+//			OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
+//		} else {
+//			OS.CGContextSetStrokeColorSpace(handle, data.device.colorspace);
+//			OS.CGContextSetStrokeColor(handle, data.foreground);
+//		}
+//	}
+//	if ((state & FOREGROUND_FILL) != 0) {
+//		Pattern pattern = data.foregroundPattern;
+//		if (pattern != null) {
+//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+//			OS.CGContextSetFillColorSpace(handle, colorspace);
+//			OS.CGColorSpaceRelease(colorspace);
+//			if (data.forePattern == 0) data.forePattern = pattern.createPattern(handle);
+//			OS.CGContextSetFillPattern(handle, data.forePattern, data.foreground);
+//		} else {
+//			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
+//			OS.CGContextSetFillColor(handle, data.foreground);
+//		}
+//		data.state &= ~BACKGROUND;
+//	}
+//	if ((state & BACKGROUND) != 0) {
+//		Pattern pattern = data.backgroundPattern;
+//		if (pattern != null) {
+//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+//			OS.CGContextSetFillColorSpace(handle, colorspace);
+//			OS.CGColorSpaceRelease(colorspace);
+//			if (data.backPattern == 0) data.backPattern = pattern.createPattern(handle);
+//			OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
+//		} else {
+//			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
+//			OS.CGContextSetFillColor(handle, data.background);
+//		}
+//		data.state &= ~FOREGROUND_FILL;
+//	}
+//	if ((state & FONT) != 0) {
+//		setCGFont();
+//	}
+//	if ((state & LINE_WIDTH) != 0) {
+//		OS.CGContextSetLineWidth(handle, data.lineWidth == 0 ?  1 : data.lineWidth);
+//		switch (data.lineStyle) {
+//			case SWT.LINE_DOT:
+//			case SWT.LINE_DASH:
+//			case SWT.LINE_DASHDOT:
+//			case SWT.LINE_DASHDOTDOT:
+//				state |= LINE_STYLE;
+//		}
+//	}
+//	if ((state & LINE_STYLE) != 0) {
+//		float[] dashes = null;
+//		float width = data.lineWidth;
+//		switch (data.lineStyle) {
+//			case SWT.LINE_SOLID: break;
+//			case SWT.LINE_DASH: dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO; break;
+//			case SWT.LINE_DOT: dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO; break;
+//			case SWT.LINE_DASHDOT: dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO; break;
+//			case SWT.LINE_DASHDOTDOT: dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO; break;
+//			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
+//		}
+//		if (dashes != null) {
+//			float[] lengths = new float[dashes.length];
+//			for (int i = 0; i < lengths.length; i++) {
+//				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
+//			}
+//			OS.CGContextSetLineDash(handle, data.lineDashesOffset, lengths, lengths.length);
+//		} else {
+//			OS.CGContextSetLineDash(handle, 0, null, 0);
+//		}
+//	}
+//	if ((state & LINE_MITERLIMIT) != 0) {
+//		OS.CGContextSetMiterLimit(handle, data.lineMiterLimit);
+//	}
+//	if ((state & LINE_JOIN) != 0) {
+//		int joinStyle = 0;
+//		switch (data.lineJoin) {
+//			case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
+//			case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
+//			case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
+//		}
+//		OS.CGContextSetLineJoin(handle, joinStyle);
+//	}
+//	if ((state & LINE_CAP) != 0) {
+//		int capStyle = 0;
+//		switch (data.lineCap) {
+//			case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
+//			case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
+//			case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
+//		}
+//		OS.CGContextSetLineCap(handle, capStyle);
+//	}
+//	if ((state & DRAW_OFFSET) != 0) {
+//		data.drawXOffset = data.drawYOffset = 0;
+//		float scaling = data.transform != null ? data.transform[0] : 1;
+//		if (scaling < 0) scaling = -scaling;
+//		float strokeWidth = data.lineWidth * scaling;
+//		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+//			data.drawXOffset = 0.5f / scaling;
+//		}
+//		scaling = data.transform != null ? data.transform[3] : 1;
+//		if (scaling < 0) scaling = -scaling;
+//		strokeWidth = data.lineWidth * scaling;
+//		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+//			data.drawYOffset = 0.5f / scaling;
+//		}
+//	}
 }
-
-int convertRgn(int rgn, float[] transform) {
-	int newRgn = OS.NewRgn();
-	Callback callback = new Callback(this, "convertRgn", 4);
-	int proc = callback.getAddress();
-	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	float[] clippingTranform = data.clippingTransform;
-	data.clippingTransform = transform;
-	OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, proc, newRgn);
-	data.clippingTransform = clippingTranform;
-	callback.dispose();
-	return newRgn;
-}
-
-int convertRgn(int message, int rgn, int r, int newRgn) {
-	if (message == OS.kQDRegionToRectsMsgParse) {
-		Rect rect = new Rect();
-		OS.memmove(rect, r, Rect.sizeof);
-		CGPoint point = new CGPoint(); 
-		int polyRgn = OS.NewRgn();
-		OS.OpenRgn();
-		point.x = rect.left;
-		point.y = rect.top;
-		float[] transform = data.clippingTransform;
-		OS.CGPointApplyAffineTransform(point, transform, point);
-		short startX, startY;
-		OS.MoveTo(startX = (short)point.x, startY = (short)point.y);
-		point.x = rect.right;
-		point.y = rect.top;
-		OS.CGPointApplyAffineTransform(point, transform, point);
-		OS.LineTo((short)Math.round(point.x), (short)point.y);
-		point.x = rect.right;
-		point.y = rect.bottom;
-		OS.CGPointApplyAffineTransform(point, transform, point);
-		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
-		point.x = rect.left;
-		point.y = rect.bottom;
-		OS.CGPointApplyAffineTransform(point, transform, point);
-		OS.LineTo((short)point.x, (short)Math.round(point.y));
-		OS.LineTo(startX, startY);
-		OS.CloseRgn(polyRgn);
-		OS.UnionRgn(newRgn, polyRgn, newRgn);
-		OS.DisposeRgn(polyRgn);
-	}
-	return 0;
-}
-
 /**
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
@@ -384,7 +339,7 @@ int convertRgn(int message, int rgn, int r, int newRgn) {
  * </ul>
  */
 public void copyArea(Image image, int x, int y) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.image != null) {
@@ -637,40 +592,6 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
-void createLayout () {
-	int[] buffer = new int[1];
-	OS.ATSUCreateTextLayout(buffer);
-	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	data.layout = buffer[0];
-	int ptr1 = OS.NewPtr(4);
-	buffer[0] = handle;
-	OS.memmove(ptr1, buffer, 4);	
-	int ptr2 = OS.NewPtr(4);
-	buffer[0] = OS.kATSLineUseDeviceMetrics;
-	OS.memmove(ptr2, buffer, 4);
-	int lineDir = OS.kATSULeftToRightBaseDirection;
-	if ((data.style & SWT.RIGHT_TO_LEFT) != 0) lineDir = OS.kATSURightToLeftBaseDirection;
-	int ptr3 = OS.NewPtr(1);
-	OS.memmove(ptr3, new byte[] {(byte)lineDir}, 1);
-	int[] tags = new int[]{OS.kATSUCGContextTag, OS.kATSULineLayoutOptionsTag, OS.kATSULineDirectionTag};
-	int[] sizes = new int[]{4, 4, 1};
-	int[] values = new int[]{ptr1, ptr2, ptr3};
-	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
-	OS.DisposePtr(ptr1);
-	OS.DisposePtr(ptr2);
-	OS.DisposePtr(ptr3);
-}
-
-void createTabs () {
-	ATSUTab tabs = new ATSUTab();
-	int tabWidth = getCharWidth(' ') * 8;
-	int ptr = OS.NewPtr(ATSUTab.sizeof * TAB_COUNT);
-	for (int i=0, offset=ptr; i<TAB_COUNT; i++, offset += ATSUTab.sizeof) {
-		tabs.tabPosition += OS.Long2Fix(tabWidth);
-		OS.memmove(offset, tabs, ATSUTab.sizeof);
-	}
-	data.tabs = ptr;
-}
 
 /**
  * Disposes of the operating system resources associated with
@@ -682,39 +603,23 @@ void createTabs () {
  * </ul>
  */
 public void dispose() {
-	if (handle == 0) return;
+	if (handle == null) return;
 	if (data.device.isDisposed()) return;
 
 	/* Free resources */
-	int clipRgn = data.clipRgn;
-	if (clipRgn != 0) OS.DisposeRgn(clipRgn);
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = null;
-		image.createAlpha();
+//		image.createAlpha();
 	}
-	int layout = data.layout;
-	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
-	int atsuiStyle = data.atsuiStyle;
-	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
-	int stringPtr = data.stringPtr;
-	if (stringPtr != 0) OS.DisposePtr(stringPtr);
-	int tabs = data.tabs;
-	if (tabs != 0) OS.DisposePtr(tabs);
-	int forePattern = data.forePattern;
-	if (forePattern != 0) OS.CGPatternRelease(forePattern);
-	int backPattern = data.backPattern;
-	if (backPattern != 0) OS.CGPatternRelease(backPattern);
 	
 	/* Dispose the GC */
-	if (drawable != null) drawable.internal_dispose_GC(handle, data);
+	if (drawable != null) drawable.internal_dispose_GC(handle.id, data);
 
-	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = data.tabs = data.forePattern = data.backPattern = 0;
 	drawable = null;
 	data.image = null;
-	data.string = null;
 	data = null;
-	handle = 0;
+	handle = null;
 }
 
 /**
@@ -936,19 +841,18 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  * </ul>
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
-	if (x1 == x2 && y1 == y2 && data.lineWidth <= 1) {
-		drawPoint(x1, y1);
-		return;
-	}
-	OS.CGContextBeginPath(handle);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	OS.CGContextMoveToPoint(handle, x1 + xOffset, y1 + yOffset);
-	OS.CGContextAddLineToPoint(handle, x2 + xOffset, y2 + yOffset);
-	OS.CGContextStrokePath(handle);
-	flush();
+	NSBezierPath path = data.path;
+	NSPoint pt = new NSPoint();
+	pt.x = x1;
+	pt.y = y1;
+	path.moveToPoint(pt);
+	pt.x = x2;
+	pt.y = y2;
+	path.lineToPoint(pt);
+	path.stroke();
+	path.removeAllPoints();
 }
 
 /** 
@@ -973,9 +877,8 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  * </ul>
  */
 public void drawOval(int x, int y, int width, int height) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -984,16 +887,15 @@ public void drawOval(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	OS.CGContextBeginPath(handle);
-	OS.CGContextSaveGState(handle);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	OS.CGContextTranslateCTM(handle, x + xOffset + width / 2f, y + yOffset + height / 2f);
-	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-	OS.CGContextMoveToPoint(handle, 1, 0);
-	OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Compatibility.PI), true);
-	OS.CGContextRestoreGState(handle);
-	OS.CGContextStrokePath(handle);
-	flush();
+	NSBezierPath path = data.path;
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	path.appendBezierPathWithOvalInRect(rect);
+	path.stroke();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1020,19 +922,14 @@ public void drawOval(int x, int y, int width, int height) {
  * @since 3.1
  */
 public void drawPath(Path path) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
-	OS.CGContextBeginPath(handle);
-	OS.CGContextSaveGState(handle);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	OS.CGContextTranslateCTM(handle, xOffset, yOffset);
-	OS.CGContextAddPath(handle, path.handle);
-	OS.CGContextRestoreGState(handle);
-	OS.CGContextStrokePath(handle);
-	flush();
+	//float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	NSBezierPath drawPath = data.path;
+	drawPath.appendBezierPath(path.handle);
+	drawPath.stroke();
 }
 
 /** 
@@ -1053,16 +950,17 @@ public void drawPath(Path path) {
  * @since 3.0
  */
 public void drawPoint(int x, int y) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FOREGROUND_FILL);
-	if (data.updateClip) setCGClipping();
-	CGRect rect = new CGRect();
+	NSRect rect = new NSRect();
 	rect.x = x;
 	rect.y = y;
 	rect.width = 1;
 	rect.height = 1;
-	OS.CGContextFillRect(handle, rect);
-	flush();
+	NSBezierPath path = data.path;
+	path.appendBezierPathWithRect(rect);
+	path.fill();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1083,21 +981,25 @@ public void drawPoint(int x, int y) {
  * </ul>
  */
 public void drawPolygon(int[] pointArray) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	float[] points = new float[(pointArray.length / 2) * 2];
-	for (int i=0; i<points.length; i+=2) {
-		points[i] = pointArray[i] + xOffset;
-		points[i+1] = pointArray[i+1] + yOffset;
+	if (pointArray.length < 4) return;
+//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	NSBezierPath path = data.path;
+	NSPoint pt = new NSPoint();
+	pt.x = pointArray[0];
+	pt.y = pointArray[1];
+	path.moveToPoint(pt);
+	int end = pointArray.length / 2 * 2;
+	for (int i = 2; i < end; i+=2) {
+		pt.x = pointArray[i];
+		pt.y = pointArray[i+1];
+		path.lineToPoint(pt);
 	}
-	OS.CGContextBeginPath(handle);
-	OS.CGContextAddLines(handle, points, points.length / 2);
-	OS.CGContextClosePath(handle);
-	OS.CGContextStrokePath(handle);
-	flush();
+	path.closePath();
+	path.stroke();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1118,21 +1020,24 @@ public void drawPolygon(int[] pointArray) {
  * </ul>
  */
 public void drawPolyline(int[] pointArray) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	float[] points = new float[(pointArray.length / 2) * 2];
-	for (int i=0; i<points.length; i+=2) {
-		points[i] = pointArray[i] + xOffset;
-		points[i+1] = pointArray[i+1] + yOffset;
+	if (pointArray.length < 4) return;
+//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	NSBezierPath path = data.path;
+	NSPoint pt = new NSPoint();
+	pt.x = pointArray[0];
+	pt.y = pointArray[1];
+	path.moveToPoint(pt);
+	int end = pointArray.length / 2 * 2;
+	for (int i = 2; i < end; i+=2) {
+		pt.x = pointArray[i];
+		pt.y = pointArray[i+1];
+		path.lineToPoint(pt);
 	}
-	OS.CGContextBeginPath(handle);
-	OS.CGContextAddLines(handle, points, points.length / 2);
-	OS.CGContextStrokePath(handle);
-	flush();
-}
+	path.stroke();
+	path.removeAllPoints();}
 
 /** 
  * Draws the outline of the rectangle specified by the arguments,
@@ -1150,9 +1055,8 @@ public void drawPolyline(int[] pointArray) {
  * </ul>
  */
 public void drawRectangle(int x, int y, int width, int height) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1161,14 +1065,16 @@ public void drawRectangle(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	CGRect rect = new CGRect();
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	rect.x = x + xOffset;
-	rect.y = y + yOffset;
+	NSRect rect = new NSRect();
+//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	rect.x = x;// + xOffset;
+	rect.y = y;// + yOffset;
 	rect.width = width;
 	rect.height = height;
-	OS.CGContextStrokeRect(handle, rect);
-	flush();
+	NSBezierPath path = data.path;
+	path.appendBezierPathWithRect(rect);
+	path.stroke();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1188,6 +1094,7 @@ public void drawRectangle(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawRectangle(Rectangle rect) {
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	drawRectangle (rect.x, rect.y, rect.width, rect.height);
 }
@@ -1214,49 +1121,21 @@ public void drawRectangle(Rectangle rect) {
  * </ul>
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
 	if (arcWidth == 0 || arcHeight == 0) {
 		drawRectangle(x, y, width, height);
     	return;
 	}
-	int nx = x;
-	int ny = y;
-	int nw = width;
-	int nh = height;
-	int naw = arcWidth;
-	int nah = arcHeight;	
-	if (nw < 0) {
-		nw = 0 - nw;
-		nx = nx - nw;
-	}
-	if (nh < 0) {
-		nh = 0 - nh;
-		ny = ny - nh;
-	}
-	if (naw < 0) naw = 0 - naw;
-	if (nah < 0) nah = 0 - nah;
-	if (naw > nw) naw = nw;
-	if (nah > nh) nah = nh;	
-	float naw2 = naw / 2f;
-	float nah2 = nah / 2f;
-	float fw = nw / naw2;
-	float fh = nh / nah2;
-	OS.CGContextBeginPath(handle);
-	OS.CGContextSaveGState(handle);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	OS.CGContextTranslateCTM(handle, nx + xOffset, ny + yOffset);
-	OS.CGContextScaleCTM(handle, naw2, nah2);
-	OS.CGContextMoveToPoint(handle, fw - 1, 0);
-	OS.CGContextAddArcToPoint(handle, 0, 0, 0, 1, 1);
-	OS.CGContextAddArcToPoint(handle, 0, fh, 1, fh, 1);
-	OS.CGContextAddArcToPoint(handle, fw, fh, fw, fh - 1, 1);
-	OS.CGContextAddArcToPoint(handle, fw, 0, fw - 1, 0, 1);
-	OS.CGContextClosePath(handle);
-	OS.CGContextRestoreGState(handle);
-	OS.CGContextStrokePath(handle);
-	flush();
+	NSBezierPath path = data.path;
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
+	path.stroke();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1605,9 +1484,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  * @see #drawOval
  */
 public void fillOval(int x, int y, int width, int height) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
-	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1616,16 +1494,15 @@ public void fillOval(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	OS.CGContextBeginPath(handle);
-    OS.CGContextSaveGState(handle);
-    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
-    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-    OS.CGContextMoveToPoint(handle, 1, 0);
-    OS.CGContextAddArc(handle, 0, 0, 1, 0,  (float)(Compatibility.PI * 2), false);
-    OS.CGContextClosePath(handle);
-    OS.CGContextRestoreGState(handle);
-	OS.CGContextFillPath(handle);
-	flush();
+	NSBezierPath path = data.path;
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	path.appendBezierPathWithOvalInRect(rect);
+	path.fill();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1652,19 +1529,13 @@ public void fillOval(int x, int y, int width, int height) {
  * @since 3.1
  */
 public void fillPath(Path path) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	checkGC(FILL);
-	if (data.updateClip) setCGClipping();
-	OS.CGContextBeginPath(handle);
-	OS.CGContextAddPath(handle, path.handle);
-	if (data.fillRule == SWT.FILL_WINDING) {
-		OS.CGContextFillPath(handle);
-	} else {
-		OS.CGContextEOFillPath(handle);
-	}
-	flush();
+	NSBezierPath drawPath = data.path;
+	drawPath.appendBezierPath(path.handle);
+	drawPath.fill();
 }
 
 /** 
@@ -1687,23 +1558,24 @@ public void fillPath(Path path) {
  * @see #drawPolygon	
  */
 public void fillPolygon(int[] pointArray) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FILL);
-	if (data.updateClip) setCGClipping();
-	float[] points = new float[pointArray.length];
-	for (int i=0; i<points.length; i++) {
-		points[i] = pointArray[i];
+	if (pointArray.length < 4) return;
+	NSBezierPath path = data.path;
+	NSPoint pt = new NSPoint();
+	pt.x = pointArray[0];
+	pt.y = pointArray[1];
+	path.moveToPoint(pt);
+	int end = pointArray.length / 2 * 2;
+	for (int i = 2; i < end; i+=2) {
+		pt.x = pointArray[i];
+		pt.y = pointArray[i+1];
+		path.lineToPoint(pt);
 	}
-	OS.CGContextBeginPath(handle);
-	OS.CGContextAddLines(handle, points, points.length / 2);
-	OS.CGContextClosePath(handle);
-	if (data.fillRule == SWT.FILL_WINDING) {
-		OS.CGContextFillPath(handle);
-	} else {
-		OS.CGContextEOFillPath(handle);
-	}
-	flush();
+	path.closePath();
+	path.fill();
+	path.removeAllPoints();
 }
 
 /** 
@@ -1722,9 +1594,8 @@ public void fillPolygon(int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle(int x, int y, int width, int height) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
-	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1733,16 +1604,16 @@ public void fillRectangle(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	CGRect rect = new CGRect();
+	NSRect rect = new NSRect();
 	rect.x = x;
 	rect.y = y;
 	rect.width = width;
 	rect.height = height;
-	Pattern pattern = data.backgroundPattern;
-	if (pattern != null) pattern.drawRect = rect;
-	OS.CGContextFillRect(handle, rect);
-	if (pattern != null) pattern.drawRect = null;
-	flush();
+	NSBezierPath path = data.path;
+	path.appendBezierPathWithRect(rect);
+	path.stroke();
+	path.removeAllPoints();
+
 }
 
 /** 
@@ -1761,7 +1632,7 @@ public void fillRectangle(int x, int y, int width, int height) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle(Rectangle rect) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	fillRectangle(rect.x, rect.y, rect.width, rect.height);
 }
@@ -1784,59 +1655,24 @@ public void fillRectangle(Rectangle rect) {
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
-	if (data.updateClip) setCGClipping();
 	if (arcWidth == 0 || arcHeight == 0) {
 		fillRectangle(x, y, width, height);
     	return;
 	}
-	int nx = x;
-	int ny = y;
-	int nw = width;
-	int nh = height;
-	int naw = arcWidth;
-	int nah = arcHeight;	
-	if (nw < 0) {
-		nw = 0 - nw;
-		nx = nx - nw;
-	}
-	if (nh < 0) {
-		nh = 0 - nh;
-		ny = ny - nh;
-	}
-	if (naw < 0) naw = 0 - naw;
-	if (nah < 0) nah = 0 - nah;
-	if (naw > nw) naw = nw;
-	if (nah > nh) nah = nh;	
-	float naw2 = naw / 2f;
-	float nah2 = nah / 2f;
-	float fw = nw / naw2;
-	float fh = nh / nah2;
-	OS.CGContextBeginPath(handle);
-	OS.CGContextSaveGState(handle);
-	OS.CGContextTranslateCTM(handle, nx, ny);
-	OS.CGContextScaleCTM(handle, naw2, nah2);
-	OS.CGContextMoveToPoint(handle, fw - 1, 0);
-	OS.CGContextAddArcToPoint(handle, 0, 0, 0, 1, 1);
-	OS.CGContextAddArcToPoint(handle, 0, fh, 1, fh, 1);
-	OS.CGContextAddArcToPoint(handle, fw, fh, fw, fh - 1, 1);
-	OS.CGContextAddArcToPoint(handle, fw, 0, fw - 1, 0, 1);
-	OS.CGContextClosePath(handle);
-	OS.CGContextRestoreGState(handle);
-	OS.CGContextFillPath(handle);
-	flush();
+	NSBezierPath path = data.path;
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
+	path.fill();
+	path.removeAllPoints();
 }
 
 void flush () {
-	if (data.control != 0 && data.paintEvent == 0) {
-		if (data.thread != Thread.currentThread()) {
-			OS.CGContextFlush(handle);
-		} else {
-			OS.CGContextSynchronize(handle);
-		}
-	}
-	if (data.control == 0 && data.window != 0) OS.CGContextSynchronize(handle);
 }
 
 /**
@@ -1855,7 +1691,7 @@ void flush () {
  * </ul>
  */
 public int getAdvanceWidth(char ch) {	
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//NOT DONE
 	return stringExtent(new String(new char[]{ch})).x;
 }
@@ -1870,8 +1706,8 @@ public int getAdvanceWidth(char ch) {
  * </ul>
  */
 public Color getBackground() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Color.carbon_new (data.device, data.background);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return Color.cocoa_new (data.device, data.background);
 }
 
 /** 
@@ -1889,7 +1725,7 @@ public Color getBackground() {
  * @since 3.1
  */
 public Pattern getBackgroundPattern() {	
-	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return data.backgroundPattern;	
 }
 
@@ -1919,7 +1755,7 @@ public Pattern getBackgroundPattern() {
  * @since 3.1
  */
 public boolean getAdvanced() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return true;
 }
 
@@ -1935,7 +1771,7 @@ public boolean getAdvanced() {
  * @since 3.1
  */
 public int getAlpha() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
 }
 
@@ -1956,7 +1792,7 @@ public int getAlpha() {
  * @since 3.1
  */
 public int getAntialias() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.antialias;
 }
 
@@ -1977,7 +1813,7 @@ public int getAntialias() {
  * </ul>
  */
 public int getCharWidth(char ch) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//NOT DONE
 	return stringExtent(new String(new char[]{ch})).x;
 }
@@ -1995,7 +1831,7 @@ public int getCharWidth(char ch) {
  * </ul>
  */
 public Rectangle getClipping() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/* Calculate visible bounds in device space*/
 	Rect rect = null;
 	int x = 0, y = 0, width = 0, height = 0;
@@ -2066,7 +1902,7 @@ public Rectangle getClipping() {
  * </ul>
  */
 public void getClipping(Region region) {	
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rect bounds = null;
@@ -2127,7 +1963,7 @@ public void getClipping(Region region) {
  * @since 3.1
  */
 public int getFillRule() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.fillRule;
 }
 
@@ -2142,7 +1978,7 @@ public int getFillRule() {
  * </ul>
  */
 public Font getFont() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.font;
 }
 
@@ -2158,7 +1994,7 @@ public Font getFont() {
  * </ul>
  */
 public FontMetrics getFontMetrics() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FONT);
 	Font font = data.font;
 	ATSFontMetrics metrics = new ATSFontMetrics();
@@ -2181,8 +2017,8 @@ public FontMetrics getFontMetrics() {
  * </ul>
  */
 public Color getForeground() {	
-	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	return Color.carbon_new(data.device, data.foreground);	
+	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	return Color.cocoa_new(data.device, data.foreground);	
 }
 
 /** 
@@ -2200,7 +2036,7 @@ public Color getForeground() {
  * @since 3.1
  */
 public Pattern getForegroundPattern() {	
-	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return data.foregroundPattern;	
 }
 
@@ -2225,7 +2061,7 @@ public Pattern getForegroundPattern() {
  * @since 3.2
  */
 public GCData getGCData() {	
-	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return data;	
 }
 
@@ -2243,13 +2079,13 @@ public GCData getGCData() {
  * @since 3.1
  */
 public int getInterpolation() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int interpolation = OS.CGContextGetInterpolationQuality(handle);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int interpolation = handle.imageInterpolation();
 	switch (interpolation) {
-		case OS.kCGInterpolationDefault: return SWT.DEFAULT;
-		case OS.kCGInterpolationNone: return SWT.NONE;
-		case OS.kCGInterpolationLow: return SWT.LOW;
-		case OS.kCGInterpolationHigh: return SWT.HIGH;
+		case OS.NSImageInterpolationDefault: return SWT.DEFAULT;
+		case OS.NSImageInterpolationNone: return SWT.NONE;
+		case OS.NSImageInterpolationLow: return SWT.LOW;
+		case OS.NSImageInterpolationHigh: return SWT.HIGH;
 	}
 	return SWT.DEFAULT;
 }
@@ -2266,7 +2102,7 @@ public int getInterpolation() {
  * @since 3.3 
  */
 public LineAttributes getLineAttributes() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] dashes = null;
 	if (data.lineDashes != null) {
 		dashes = new float[data.lineDashes.length];
@@ -2289,7 +2125,7 @@ public LineAttributes getLineAttributes() {
  * @since 3.1 
  */
 public int getLineCap() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineCap;
 }
 
@@ -2306,7 +2142,7 @@ public int getLineCap() {
  * @since 3.1 
  */
 public int[] getLineDash() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineDashes == null) return null;
 	int[] lineDashes = new int[data.lineDashes.length];
 	for (int i = 0; i < lineDashes.length; i++) {
@@ -2329,7 +2165,7 @@ public int[] getLineDash() {
  * @since 3.1 
  */
 public int getLineJoin() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineJoin;
 }
 
@@ -2346,7 +2182,7 @@ public int getLineJoin() {
  * </ul>
  */
 public int getLineStyle() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineStyle;
 }
 
@@ -2363,7 +2199,7 @@ public int getLineStyle() {
  * </ul>
  */
 public int getLineWidth() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (int)data.lineWidth;
 }
 
@@ -2386,7 +2222,7 @@ public int getLineWidth() {
  * @since 2.1.2
  */
 public int getStyle () {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.style;
 }
 
@@ -2407,7 +2243,7 @@ public int getStyle () {
  * @since 3.1
  */
 public int getTextAntialias() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.textAntialias;
 }
 
@@ -2430,12 +2266,13 @@ public int getTextAntialias() {
  * @since 3.1
  */
 public void getTransform (Transform transform) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	float[] cmt = data.transform;
+	NSAffineTransform cmt = data.transform;
 	if (cmt != null) {
-		transform.setElements(cmt[0], cmt[1], cmt[2], cmt[3], cmt[4], cmt[5]);
+		float[] m = cmt.transformStruct();
+		transform.setElements(m[0], m[1], m[2], m[3], m[4], m[5]);
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
@@ -2456,7 +2293,7 @@ public void getTransform (Transform transform) {
  * </ul>
  */
 public boolean getXORMode() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.xorMode;
 }
 
@@ -2475,7 +2312,7 @@ public boolean getXORMode() {
  * @see #equals
  */
 public int hashCode() {
-	return handle;
+	return handle != null ? handle.id : 0;
 }
 
 void init(Drawable drawable, GCData data, int context) {
@@ -2488,8 +2325,8 @@ void init(Drawable drawable, GCData data, int context) {
 	if (image != null) image.memGC = this;
 	this.drawable = drawable;
 	this.data = data;
-	handle = context;
-	
+	handle = new NSGraphicsContext(context);
+	data.path = NSBezierPath.bezierPath();
 }
 
 /**
@@ -2507,7 +2344,7 @@ void init(Drawable drawable, GCData data, int context) {
  * </ul>
  */
 public boolean isClipped() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.clipRgn != 0;
 }
 
@@ -2522,7 +2359,7 @@ public boolean isClipped() {
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == null;
 }
 
 boolean isIdentity(float[] transform) {
@@ -2573,7 +2410,7 @@ boolean isIdentity(float[] transform) {
  * @since 3.1
  */
 public void setAdvanced(boolean advanced) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!advanced) {
 		setAlpha(0xFF);
 		setAntialias(SWT.DEFAULT);
@@ -2606,7 +2443,7 @@ public void setAdvanced(boolean advanced) {
  * @since 3.1
  */
 public void setAlpha(int alpha) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
 	OS.CGContextSetAlpha(handle, data.alpha / 255f);
 }
@@ -2640,7 +2477,7 @@ public void setAlpha(int alpha) {
  * @since 3.1
  */
 public void setAntialias(int antialias) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	boolean mode = true;
 	switch (antialias) {
 		case SWT.DEFAULT:
@@ -2672,12 +2509,10 @@ public void setAntialias(int antialias) {
  * </ul>
  */
 public void setBackground(Color color) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.background = color.handle;
-	if (data.backPattern != 0) OS.CGPatternRelease(data.backPattern);
-	data.backPattern = 0;
 	data.backgroundPattern = null;
 	data.state &= ~BACKGROUND;
 }
@@ -2707,11 +2542,9 @@ public void setBackground(Color color) {
  * @since 3.1
  */
 public void setBackgroundPattern(Pattern pattern) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.backgroundPattern == pattern) return;
-	if (data.backPattern != 0) OS.CGPatternRelease(data.backPattern);
-	data.backPattern = 0;
 	data.backgroundPattern = pattern;
 	data.state &= ~BACKGROUND;
 }
@@ -2750,7 +2583,7 @@ void setClipping(int clipRgn) {
  * </ul>
  */
 public void setClipping(int x, int y, int width, int height) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -2792,7 +2625,7 @@ public void setClipping(int x, int y, int width, int height) {
  * @since 3.1
  */
 public void setClipping(Path path) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setClipping(0);
 	if (path != null) {
@@ -2815,7 +2648,7 @@ public void setClipping(Path path) {
  * </ul>
  */
 public void setClipping(Rectangle rect) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		setClipping(0);
 	} else {
@@ -2840,83 +2673,9 @@ public void setClipping(Rectangle rect) {
  * </ul>
  */
 public void setClipping(Region region) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setClipping(region != null ? region.handle : 0);
-}
-
-void setCGClipping () {
-	data.updateClip = false;
-	if (data.control == 0) {
-		if (data.window != 0 && ! OS.IsWindowVisible(data.window)) OS.ShowWindow (data.window);
-		OS.CGContextScaleCTM(handle, 1, -1);
-		if (data.clipRgn != 0) {
-			OS.ClipCGContextToRegion(handle, new Rect(), data.clipRgn);
-		} else {
-			int rgn = OS.NewRgn();
-			OS.SetRectRgn(rgn, (short)-32768, (short)-32768, (short)32767, (short)32767);
-			OS.ClipCGContextToRegion(handle, new Rect(), rgn);
-			OS.DisposeRgn(rgn);
-		}
-		OS.CGContextScaleCTM(handle, 1, -1);
-		return;
-	}
-	int port = data.port;
-	int window = OS.GetControlOwner(data.control);
-	if (port == 0) {
-		port = OS.GetWindowPort(window);
-	}
-	Rect portRect = data.portRect;
-	Rect rect = data.controlRect;
-	OS.CGContextTranslateCTM(handle, -rect.left, (portRect.bottom - portRect.top) - rect.top);
-	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.GetPortBounds(port, portRect);
-	OS.GetControlBounds(data.control, rect);
-	boolean isPaint = data.paintEvent != 0;
-	if (isPaint) {
-		rect.right += rect.left;
-		rect.bottom += rect.top;
-		rect.left = rect.top = 0;
-	} else {
-		int [] contentView = new int [1];
-		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
-		CGPoint pt = new CGPoint ();
-		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (data.control), contentView [0]);
-		rect.left += (int) pt.x;
-		rect.top += (int) pt.y;
-		rect.right += (int) pt.x;
-		rect.bottom += (int) pt.y;
-	}
-	if (data.clipRgn != 0) {
-		int rgn = OS.NewRgn();
-		OS.CopyRgn(data.clipRgn, rgn);
-		OS.OffsetRgn(rgn, rect.left, rect.top);
-		OS.SectRgn(data.visibleRgn, rgn, rgn);
-		OS.ClipCGContextToRegion(handle, portRect, rgn);
-		OS.DisposeRgn(rgn);
-	} else {
-		OS.ClipCGContextToRegion(handle, portRect, data.visibleRgn);
-	}
-	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.CGContextTranslateCTM(handle, rect.left, -(portRect.bottom - portRect.top) + rect.top);
-}
-
-void setCGFont() {
-	int tabs = data.tabs;
-	if (tabs != 0) OS.DisposePtr(tabs);
-	data.tabs = 0;	
-	Font font = data.font;
-	ATSFontMetrics metrics = new ATSFontMetrics();
-	OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-	OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-	data.fontAscent = (int)(0.5f + metrics.ascent * font.size);
-	data.fontDescent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
-	if (font.atsuiStyle == 0) {
-		if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
-		data.atsuiStyle = font.createStyle();
-	}
-	data.string = null;
-	data.stringWidth = data.stringHeight = -1;
 }
 
 /** 
@@ -2936,7 +2695,7 @@ void setCGFont() {
  * @since 3.1
  */
 public void setFillRule(int rule) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (rule) {
 		case SWT.FILL_WINDING:
 		case SWT.FILL_EVEN_ODD: break;
@@ -2962,7 +2721,7 @@ public void setFillRule(int rule) {
  * </ul>
  */
 public void setFont(Font font) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) font = data.device.systemFont;
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.font = font;
@@ -2984,12 +2743,10 @@ public void setFont(Font font) {
  * </ul>
  */
 public void setForeground(Color color) {	
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
-	if (data.forePattern != 0) OS.CGPatternRelease(data.forePattern);
-	data.forePattern = 0;
 	data.foregroundPattern = null;
 	data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 }
@@ -3018,11 +2775,9 @@ public void setForeground(Color color) {
  * @since 3.1
  */
 public void setForegroundPattern(Pattern pattern) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.foregroundPattern == pattern) return;
-	if (data.forePattern != 0) OS.CGPatternRelease(data.forePattern);
-	data.forePattern = 0;
 	data.foregroundPattern = pattern;
 	data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 }
@@ -3054,17 +2809,17 @@ public void setForegroundPattern(Pattern pattern) {
  * @since 3.1
  */
 public void setInterpolation(int interpolation) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int quality = 0;
 	switch (interpolation) {
-		case SWT.DEFAULT: quality = OS.kCGInterpolationDefault; break;
-		case SWT.NONE: quality = OS.kCGInterpolationNone; break;
-		case SWT.LOW: quality = OS.kCGInterpolationLow; break;
-		case SWT.HIGH: quality = OS.kCGInterpolationHigh; break;
+		case SWT.DEFAULT: quality = OS.NSImageInterpolationDefault; break;
+		case SWT.NONE: quality = OS.NSImageInterpolationNone; break;
+		case SWT.LOW: quality = OS.NSImageInterpolationLow; break;
+		case SWT.HIGH: quality = OS.NSImageInterpolationHigh; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	OS.CGContextSetInterpolationQuality(handle, quality);
+	handle.setImageInterpolation(quality);
 }
 
 /**
@@ -3092,7 +2847,7 @@ public void setInterpolation(int interpolation) {
  * @since 3.3
  */
 public void setLineAttributes(LineAttributes attributes) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int mask = 0;
 	float lineWidth = attributes.width;
@@ -3200,7 +2955,7 @@ public void setLineAttributes(LineAttributes attributes) {
  * @since 3.1 
  */
 public void setLineCap(int cap) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineCap == cap) return;
 	switch (cap) {
 		case SWT.CAP_ROUND:
@@ -3232,7 +2987,7 @@ public void setLineCap(int cap) {
  * @since 3.1 
  */
 public void setLineDash(int[] dashes) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] lineDashes = data.lineDashes;
 	if (dashes != null && dashes.length > 0) {
 		boolean changed = data.lineStyle != SWT.LINE_CUSTOM || lineDashes == null || lineDashes.length != dashes.length;
@@ -3272,7 +3027,7 @@ public void setLineDash(int[] dashes) {
  * @since 3.1 
  */
 public void setLineJoin(int join) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineJoin == join) return;
 	switch (join) {
 		case SWT.JOIN_MITER:
@@ -3302,7 +3057,7 @@ public void setLineJoin(int join) {
  * </ul>
  */
 public void setLineStyle(int lineStyle) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineStyle == lineStyle) return;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
@@ -3340,7 +3095,7 @@ public void setLineStyle(int lineStyle) {
  * </ul>
  */
 public void setLineWidth(int lineWidth) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
 	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);	
@@ -3439,7 +3194,7 @@ int setString(String string, int flags) {
  * @deprecated this functionality is not supported on some platforms
  */
 public void setXORMode(boolean xor) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.xorMode = xor;
 }
 
@@ -3472,7 +3227,7 @@ public void setXORMode(boolean xor) {
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (antialias) {
 		case SWT.DEFAULT:
 		case SWT.OFF:
@@ -3511,28 +3266,19 @@ public void setTextAntialias(int antialias) {
  * @since 3.1
  */
 public void setTransform(Transform transform) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (data.inverseTransform != null) OS.CGContextConcatCTM(handle, data.inverseTransform);
+	NSGraphicsContext.setCurrentContext(handle);
+	if (data.inverseTransform != null) data.inverseTransform.concat();
 	if (transform != null) {
-		OS.CGContextConcatCTM(handle, transform.handle);
-		if (data.transform == null) data.transform = new float[6];
-		if (data.inverseTransform == null) data.inverseTransform = new float[6];
-		System.arraycopy(transform.handle, 0, data.transform, 0, data.transform.length);
-		System.arraycopy(transform.handle, 0, data.inverseTransform, 0, data.inverseTransform.length);
-		OS.CGAffineTransformInvert(data.inverseTransform, data.inverseTransform);
+		transform.handle.concat();
+		if (data.transform != null) data.transform.release();
+		if (data.inverseTransform != null) data.inverseTransform.release();
+		data.transform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
+		data.inverseTransform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
+		data.inverseTransform.invert();
 	} else {
 		data.transform = data.inverseTransform = null;
-	}
-	if (data.forePattern != 0) {
-		OS.CGPatternRelease(data.forePattern);
-		data.forePattern = 0;
-		data.state &= ~(FOREGROUND | FOREGROUND_FILL);
-	}
-	if (data.backPattern != 0) {
-		OS.CGPatternRelease(data.backPattern);
-		data.backPattern = 0;
-		data.state &= ~BACKGROUND;
 	}
 	data.state &= ~DRAW_OFFSET;
 }
@@ -3615,7 +3361,7 @@ public Point textExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string, int flags) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FONT);
 	int length = setString(string, flags);

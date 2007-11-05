@@ -14,10 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.cocoa.NSButton;
-import org.eclipse.swt.internal.cocoa.NSRect;
-import org.eclipse.swt.internal.cocoa.NSString;
-import org.eclipse.swt.internal.cocoa.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -45,8 +42,6 @@ import org.eclipse.swt.internal.cocoa.OS;
 public class Button extends Control {
 	String text = "";
 	Image image;
-	int cIcon;
-	boolean isImage;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -140,9 +135,8 @@ void click () {
 }
 
 void createHandle () {
-	NSButton widget = (NSButton)new NSButton().alloc();
+	NSButton widget = (NSButton)new SWTButton().alloc();
 	widget.initWithFrame(new NSRect());
-	
 	int type = OS.NSMomentaryPushButton;
 	if ((style & SWT.PUSH) != 0) {
 		widget.setBezelStyle(OS.NSRoundedBezelStyle);
@@ -156,8 +150,11 @@ void createHandle () {
 	}
 	widget.setButtonType(type);
 	widget.setTitle(NSString.stringWith(""));
-	view = widget;
-	
+	widget.setImagePosition(OS.NSImageLeft);
+	widget.setTarget(widget);
+	widget.setAction(OS.sel_sendSelection);
+	widget.setTag(jniRef);
+	view = widget;	
 	parent.view.addSubview(widget);
 }
 
@@ -207,6 +204,7 @@ public Image getImage () {
 	checkWidget();
 	return image;
 }
+
 String getNameText () {
 	return getText ();
 }
@@ -230,7 +228,7 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-    return false;
+    return ((NSButton)view).state() == OS.NSOnState;
 }
 
 /**
@@ -252,6 +250,8 @@ public String getText () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	image = null;
+	text = null;
 }
 
 /**
@@ -303,6 +303,12 @@ void selectRadio () {
 	}
 	setSelection (true);
 }
+
+void sendSelection () {
+	//TODO post
+	sendEvent(SWT.Selection);
+}
+
 
 /**
  * Controls how text, images and arrows will be displayed
@@ -393,7 +399,7 @@ boolean setRadioSelection (boolean value){
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-//	OS.SetControl32BitValue (handle, selected ? 1 : 0);
+	((NSButton)view).setState(selected ? OS.NSOnState : OS.NSOffState);
 }
 
 /**

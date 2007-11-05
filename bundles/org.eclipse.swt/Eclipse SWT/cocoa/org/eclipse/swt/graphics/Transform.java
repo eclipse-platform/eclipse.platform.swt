@@ -131,6 +131,7 @@ public Transform (Device device, float m11, float m12, float m21, float m22, flo
 	this.device = device;
 	handle = NSAffineTransform.transform();
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
+	setElements(m11, m12, m21, m22, dx, dy);
 	if (device.tracking) device.new_Object(this);
 }
 

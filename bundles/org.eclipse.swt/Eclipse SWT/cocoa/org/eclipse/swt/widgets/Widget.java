@@ -785,6 +785,9 @@ boolean sendKeyEvent (int type, Event event) {
 	return event.doit;
 }
 
+void sendSelection () {
+}
+
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget

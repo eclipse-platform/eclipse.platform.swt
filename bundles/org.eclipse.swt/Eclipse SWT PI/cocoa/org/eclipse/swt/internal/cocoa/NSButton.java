@@ -10,9 +10,9 @@ public NSButton(int id) {
 	super(id);
 }
 
-public int get_class() {
-	return OS.class_NSButton;
-}
+//public int get_class() {
+//	return OS.class_NSButton;
+//}
 
 public void setButtonType(int type) {
 	OS.objc_msgSend(id, OS.sel_setButtonType_1, type);
@@ -26,7 +26,19 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(id, OS.sel_setImage_1, image != null ? image.id : 0);
 }
 
+public void setImagePosition(int position) {
+	OS.objc_msgSend(id, OS.sel_setImagePosition_1, position);
+}
+
+public void setState(int state) {
+	OS.objc_msgSend(id, OS.sel_setState_1, state);
+}
+
 public void setTitle(NSString title) {
 	OS.objc_msgSend(id, OS.sel_setTitle_1, title != null ? title.id : 0);
+}
+
+public int state() {
+	return OS.objc_msgSend(id, OS.sel_state);
 }
 }

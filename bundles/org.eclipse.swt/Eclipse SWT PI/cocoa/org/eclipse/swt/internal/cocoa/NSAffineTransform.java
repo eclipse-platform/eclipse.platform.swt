@@ -2,13 +2,26 @@ package org.eclipse.swt.internal.cocoa;
 
 public class NSAffineTransform extends NSObject {
 
+public NSAffineTransform() {
+	super(0);
+}
+
 public NSAffineTransform(int id) {
 	super(id);
+}
+
+public NSAffineTransform initWithTransform(NSAffineTransform transform) {
+	int id = OS.objc_msgSend(this.id, OS.sel_initWithTransform_1, transform.id);
+	return id != 0 ? this : null;
 }
 
 public static NSAffineTransform transform() {
 	int id = OS.objc_msgSend(OS.class_NSAffineTransform, OS.sel_transform);
 	return id != 0 ? new NSAffineTransform(id) : null;
+}
+
+public void concat() {
+	OS.objc_msgSend(id, OS.sel_concat);
 }
 
 public void invert() {
@@ -29,6 +42,10 @@ public void scale(float sx, float sy) {
 
 public void setTransformStruct(float[] struct) {
 	OS.objc_msgSend(id, OS.sel_setTransformStruct_1, struct);
+}
+
+public void set() {
+	OS.objc_msgSend(id, OS.sel_set);
 }
 
 public NSPoint transformPoint(NSPoint point) {

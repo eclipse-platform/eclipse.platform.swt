@@ -39,7 +39,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_coco
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF_FUNC);
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = ((jint (*) (id, SEL, id, float, float))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4);
+	rc = ((jint (*) (id, SEL, NSRect, float, float))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF_FUNC);

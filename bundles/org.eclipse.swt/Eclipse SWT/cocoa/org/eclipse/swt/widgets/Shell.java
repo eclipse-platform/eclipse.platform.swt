@@ -467,10 +467,12 @@ void createHandle () {
 //		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 	
-	view = (SWTView)new SWTView().alloc();
-	view = view.initWithFrame (new NSRect());
-	((SWTView)view).setTag(jniRef);
-	window.setContentView (view);
+	SWTView widget = (SWTView)new SWTView().alloc();
+	widget = (SWTView)widget.initWithFrame (new NSRect());
+	widget.setBackgroundColor(NSColor.colorWithDeviceRGBA(1, 0, 0, 1));
+	widget.setTag(jniRef);
+	window.setContentView (widget);
+	view = widget;
 	
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	windowDelegate.setTag(jniRef);

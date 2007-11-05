@@ -14,6 +14,10 @@ public NSObject alloc() {
 	return this;
 }
 
+public int copy() {
+	return OS.objc_msgSend(get_class(), OS.sel_copy);
+}
+
 public int get_class() {
 	String name = getClass().getName();
 	int index = name.lastIndexOf('.');

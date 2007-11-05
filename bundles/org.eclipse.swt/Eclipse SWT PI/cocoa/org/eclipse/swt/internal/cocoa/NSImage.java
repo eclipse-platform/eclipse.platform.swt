@@ -14,6 +14,11 @@ public void addRepresentation(NSImageRep imageRep) {
 	OS.objc_msgSend(id, OS.sel_addRepresentation_1, imageRep.id);
 }
 
+public NSImageRep bestRepresentationForDevice(NSObject deviceDescription) {
+	int id = OS.objc_msgSend(this.id, OS.sel_bestRepresentationForDevice_1, deviceDescription != null ? deviceDescription.id : 0);
+	return id != 0 ? new NSImageRep(id) : null;
+}
+
 public int get_class() {
 	return OS.class_NSImage;
 }

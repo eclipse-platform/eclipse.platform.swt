@@ -1506,6 +1506,14 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
+	
+	className = "SWTButton";
+	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+//	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
@@ -2580,11 +2588,15 @@ int windowDelegateProc(int delegate, int sel) {
 		return tag[0];
 	}
 	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
-	if (jniRef == 0) return 0;
+	if (jniRef == 0 || jniRef == -1) return 0;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
 	if (sel == OS.sel_isFlipped) {
 		return widget.isFlipped() ? 1 : 0;
+	}
+	if (sel == OS.sel_sendSelection) {
+		widget.sendSelection();
+		return 0;
 	}
 	return 0;
 }
@@ -2595,7 +2607,7 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		return 0;
 	}
 	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
-	if (jniRef == 0) return 0;
+	if (jniRef == 0 || jniRef == -1) return 0;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_1) {

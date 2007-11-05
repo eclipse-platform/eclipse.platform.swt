@@ -11,8 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 
@@ -76,31 +76,29 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricNormalProgressBarThickness, outMetric);
-	int width = 0, height = 0;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		height = outMetric [0];
-		width = height * 10;
-	} else {
-		width = outMetric [0];
-		height = width * 10;
-	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	return new Point (width, height);
+//	int [] outMetric = new int [1];
+//	OS.GetThemeMetric (OS.kThemeMetricNormalProgressBarThickness, outMetric);
+//	int width = 0, height = 0;
+//	if ((style & SWT.HORIZONTAL) != 0) {
+//		height = outMetric [0];
+//		width = height * 10;
+//	} else {
+//		width = outMetric [0];
+//		height = width * 10;
+//	}
+//	if (wHint != SWT.DEFAULT) width = wHint;
+//	if (hHint != SWT.DEFAULT) height = hHint;
+//	return new Point (width, height);
+	return null;
 }
 
 void createHandle () {
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateProgressBarControl (window, null, 0, 0, 100, (style & SWT.INDETERMINATE) != 0, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-}
-
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
+	NSProgressIndicator widget = (NSProgressIndicator)new NSProgressIndicator().alloc();
+	widget = (NSProgressIndicator)widget.initWithFrame(new NSRect());
+	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
+	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
+	view = widget;
+	parent.view.addSubview(widget);
 }
 
 /**
@@ -115,7 +113,7 @@ void drawBackground (int control, int context) {
  */
 public int getMaximum () {
 	checkWidget();
-    return OS.GetControl32BitMaximum (handle);
+	return (int)((NSProgressIndicator)view).maxValue();
 }
 
 /**
@@ -130,7 +128,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget();
-    return OS.GetControl32BitMinimum (handle);
+	return (int)((NSProgressIndicator)view).minValue();
 }
 
 /**
@@ -145,7 +143,7 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget();
-    return OS.GetControl32BitValue (handle);
+    return (int)((NSProgressIndicator)view).doubleValue();
 }
 
 /**
@@ -164,10 +162,7 @@ public int getSelection () {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int minimum = OS.GetControl32BitMinimum (handle);
-	if (value > minimum) {
-		OS.SetControl32BitMaximum (handle, value);
-	}
+	((NSProgressIndicator)view).setMaxValue(value);
 }
 
 /**
@@ -186,10 +181,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int maximum = OS.GetControl32BitMaximum (handle);
-	if (value < maximum) {
-		OS.SetControl32BitMinimum (handle, value);
-	}
+	((NSProgressIndicator)view).setMinValue(value);
 }
 
 /**
@@ -206,15 +198,7 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-    OS.SetControl32BitValue (handle, value);
-    /*
-    * Feature in the Macintosh.  Progress bars are always updated
-    * using an event loop timer, even when they are not indeterminate.
-    * This means that nothing is drawn until the event loop.  The
-    * fix is to allow operating system timers to run without dispatching
-    * any other events.
-    */
-	display.runEventLoopTimers ();
+   ((NSProgressIndicator)view).setDoubleValue(value);
 }
 
 }

@@ -12,7 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are descriptions of GCs in terms
@@ -33,8 +33,6 @@ public final class GCData {
 	public Pattern backgroundPattern;
 	public Font font;
 	public int alpha = 0xFF;
-	public float[] transform;
-	public float[] inverseTransform;
 	public float[] clippingTransform;
 	public int clipRgn;
 	public float lineWidth;
@@ -49,29 +47,8 @@ public final class GCData {
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
 
-	public float drawXOffset, drawYOffset;
-	public int forePattern;
-	public int backPattern;
 	public Image image;
-	public int fontAscent;
-	public int fontDescent;
-	public int layout;
-	public int atsuiStyle;
-	public int tabs;
-	public String string;
-	public int stringLength;
-	public int stringWidth = -1;
-	public int stringHeight = -1;
-	public int drawFlags;
-	public int stringPtr;
-	public Thread thread;
-	public int window;
-	public int paintEvent;
-	public int visibleRgn;
-	public int control;
-	public int port;
-	public Rect portRect;
-	public Rect controlRect;
-	public Rect insetRect;
-	public boolean updateClip;
+	
+	NSBezierPath path;
+	NSAffineTransform transform, inverseTransform;
 }

@@ -14,4 +14,8 @@ public static NSColor colorWithDeviceRGBA(float red, float green, float blue, fl
 	int id = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithDeviceRed_1green_1blue_1alpha_1, red, green, blue, alpha);
 	return id != 0 ? new NSColor(id) : null;
 }
+
+public void set() {
+	OS.objc_msgSend(id, OS.sel_set);
+}
 }
