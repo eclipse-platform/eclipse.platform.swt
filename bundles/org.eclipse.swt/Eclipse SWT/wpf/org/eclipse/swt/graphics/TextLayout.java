@@ -157,6 +157,8 @@ void computeRuns () {
 					OS.GCHandle_Free(brush);
 					int underline;
 					switch (style.underlineStyle) {
+						case SWT.UNDERLINE_SQUIGGLE:
+							//TODO implement
 						case SWT.UNDERLINE_ERROR:
 							int dashStyle = OS.DashStyles_Dash();
 							OS.Pen_DashStyle(pen, dashStyle);

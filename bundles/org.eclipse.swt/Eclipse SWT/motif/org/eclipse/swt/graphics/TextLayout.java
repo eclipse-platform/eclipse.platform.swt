@@ -519,6 +519,7 @@ void drawLines(GC gc, StyleItem run, int x, int y, int width, boolean selection)
 			gc.setForeground(style.underlineColor);
 		}
 		switch (style.underlineStyle) {
+			case SWT.UNDERLINE_SQUIGGLE:
 			case SWT.UNDERLINE_ERROR:
 				int squigglyThickness = 1;
 				int squigglyHeight = 2 * squigglyThickness;
