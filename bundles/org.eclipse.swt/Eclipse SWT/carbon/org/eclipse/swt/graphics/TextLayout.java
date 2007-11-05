@@ -414,6 +414,32 @@ void computeRuns() {
 	}
 }
 
+float[] computePolyline(int left, int top, int right, int bottom) {
+	int height = bottom - top; // can be any number
+	int width = 2 * height; // must be even
+	int peaks = Compatibility.ceil(right - left, width);
+	if (peaks == 0 && right - left > 2) {
+		peaks = 1;
+	}
+	int length = ((2 * peaks) + 1) * 2;
+	if (length < 0) return new float[0];
+	
+	float[] coordinates = new float[length];
+	for (int i = 0; i < peaks; i++) {
+		int index = 4 * i;
+		coordinates[index] = left + (width * i);
+		coordinates[index+1] = bottom;
+		coordinates[index+2] = coordinates[index] + width / 2;
+		coordinates[index+3] = top;
+	}
+	coordinates[length-2] = left + (width * peaks);
+	coordinates[length-1] = bottom;
+	for (int i = 0; i < coordinates.length; i++) {
+		coordinates[i] += 0.5;
+	}
+	return coordinates;
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the text layout. Applications must dispose of all allocated text layouts.
@@ -637,7 +663,6 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		boolean drawBorder = style.borderStyle != SWT.NONE;
 		drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
 		if (!drawUnderline && !drawBorder) continue;
-		if (rgn == 0) rgn = OS.NewRgn();
 		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
 			int lineBreak = breaks[i];
@@ -656,14 +681,18 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						OS.CGContextSaveGState(gc.handle);
 						float underlineY = y + lineY;
 						float[] foreground = gc.data.foreground;
-						float lineWidth = 0;
+						float lineWidth = 1;
 						float[] dashes = null;
 						int lineCap = OS.kCGLineCapButt;
 						int lineJoin = OS.kCGLineJoinMiter;
 						switch (style.underlineStyle) {
-							case SWT.UNDERLINE_ERROR: {
+							case SWT.UNDERLINE_ERROR:
 								lineWidth = 2;
-								underlineY += 2 * lineAscent [i] + lineWidth;
+								dashes = new float[]{1, 3};
+								lineCap = OS.kCGLineCapRound;
+								lineJoin = OS.kCGLineJoinRound;
+								//FALLTHROUGH
+							case SWT.UNDERLINE_SQUIGGLE: 
 								if (style.underlineColor != null) {
 									foreground = style.underlineColor.handle;
 								} else {
@@ -671,11 +700,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 										foreground = style.foreground.handle;
 									}
 								}
-								dashes = new float[]{1f,3};
-								lineCap = OS.kCGLineCapRound;
-								lineJoin = OS.kCGLineJoinRound;
+								underlineY += 2 * lineAscent [i] + lineWidth;
 								break;
-							}
 							case UNDERLINE_IME_INPUT:
 							case UNDERLINE_IME_TARGET_CONVERTED:
 							case UNDERLINE_IME_CONVERTED:
@@ -695,29 +721,47 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						ATSTrapezoid trapezoid = new ATSTrapezoid();
 						for (int k = 0; k < count[0]; k++) {
 							OS.memmove(trapezoid, trapezoidsPtr + (k * ATSTrapezoid.sizeof), ATSTrapezoid.sizeof);
-							float ux, uy, lx, ly, a, b;
-							ux = OS.Fix2Long(trapezoid.upperLeft_x);
-							uy = OS.Fix2Long(trapezoid.upperLeft_y);
-							lx = OS.Fix2Long(trapezoid.lowerLeft_x);
-							ly = OS.Fix2Long(trapezoid.lowerLeft_y);
-							a = (uy - ly) / (ux - lx);
-							b = uy - ux * a;
-							float left = (underlineY - b) / a;
-							ux = OS.Fix2Long(trapezoid.upperRight_x);
-							uy = OS.Fix2Long(trapezoid.upperRight_y);
-							lx = OS.Fix2Long(trapezoid.lowerRight_x);
-							ly = OS.Fix2Long(trapezoid.lowerRight_y);
-							a = (uy - ly) / (ux - lx);
-							b = uy - ux * a;
-							float right = (underlineY - b) / a;
+							float left, right;
+							if (trapezoid.upperLeft_x != trapezoid.lowerLeft_x) {
+								float ux = OS.Fix2Long(trapezoid.upperLeft_x);
+								float uy = OS.Fix2Long(trapezoid.upperLeft_y);
+								float lx = OS.Fix2Long(trapezoid.lowerLeft_x);
+								float ly = OS.Fix2Long(trapezoid.lowerLeft_y);
+								float a = (uy - ly) / (ux - lx);
+								float b = uy - ux * a;
+								left = (underlineY - b) / a;
+							} else {
+								left = OS.Fix2Long(trapezoid.upperLeft_x);
+							}
+							if (trapezoid.upperRight_x != trapezoid.lowerRight_x) {
+								float ux = OS.Fix2Long(trapezoid.upperRight_x);
+								float uy = OS.Fix2Long(trapezoid.upperRight_y);
+								float lx = OS.Fix2Long(trapezoid.lowerRight_x);
+								float ly = OS.Fix2Long(trapezoid.lowerRight_y);
+								float a = (uy - ly) / (ux - lx);
+								float b = uy - ux * a;
+								right = (underlineY - b) / a;
+							} else {
+								right = OS.Fix2Long(trapezoid.upperRight_x);
+							}
 							switch (style.underlineStyle) {
 								case UNDERLINE_IME_TARGET_CONVERTED:
 								case UNDERLINE_IME_CONVERTED:
 									left += 1;
 									right -= 1;
 							}
-							OS.CGContextMoveToPoint(gc.handle, left, OS.Fix2Long(trapezoid.upperLeft_y));
-							OS.CGContextAddLineToPoint(gc.handle, right, OS.Fix2Long(trapezoid.upperRight_y));
+							if (style.underlineStyle == SWT.UNDERLINE_SQUIGGLE) {
+								int lineBottom = y + lineY + lineHeight[i];
+								int squigglyThickness = 1;
+								int squigglyHeight = 2 * squigglyThickness;
+								float squigglyY = Math.min(OS.Fix2Long(trapezoid.upperLeft_y) - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+								float[] points = computePolyline((int)left, (int)squigglyY, (int)right, (int)(squigglyY + squigglyHeight));
+								OS.CGContextBeginPath(gc.handle);
+								OS.CGContextAddLines(gc.handle, points, points.length / 2);
+							} else {
+								OS.CGContextMoveToPoint(gc.handle, left, OS.Fix2Long(trapezoid.upperLeft_y));
+								OS.CGContextAddLineToPoint(gc.handle, right, OS.Fix2Long(trapezoid.upperRight_y));
+							}
 						}
 						OS.free(trapezoidsPtr);
 						OS.CGContextSetStrokeColorSpace(gc.handle, device.colorspace);
