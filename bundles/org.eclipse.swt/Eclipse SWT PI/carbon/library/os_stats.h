@@ -84,6 +84,7 @@ typedef enum {
 	AXUIElementGetHIObject_FUNC,
 	AXUIElementGetIdentifier_FUNC,
 	AXValueCreate_FUNC,
+	AXValueGetValue_FUNC,
 	AcquireFirstMatchingEventInQueue_FUNC,
 	ActivateTSMDocument_FUNC,
 	ActiveNonFloatingWindow_FUNC,

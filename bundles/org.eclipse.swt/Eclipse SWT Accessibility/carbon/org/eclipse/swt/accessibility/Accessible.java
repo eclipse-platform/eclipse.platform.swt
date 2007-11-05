@@ -394,8 +394,6 @@ public class Accessible {
 			if (attributeName.equals(OS.kAXValueAttribute)) return getValueAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXEnabledAttribute)) return getEnabledAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXFocusedAttribute)) return getFocusedAttribute(nextHandler, theEvent, userData);
-			//if (attributeName.equals(OS.kAXFocusedUIElementAttribute)) return getFocusedAttribute(nextHandler, theEvent, userData);
-			//if (attributeName.equals(OS.kAXFocusedWindowAttribute)) return getFocusedAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXParentAttribute)) return getParentAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXChildrenAttribute)) return getChildrenAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXSelectedChildrenAttribute)) return getSelectedChildrenAttribute(nextHandler, theEvent, userData);
@@ -406,7 +404,7 @@ public class Accessible {
 			if (attributeName.equals(OS.kAXNumberOfCharactersAttribute)) return getNumberOfCharactersAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXSelectedTextAttribute)) return getSelectedTextAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXSelectedTextRangeAttribute)) return getSelectedTextRangeAttribute(nextHandler, theEvent, userData);
-			if (attributeName.equals(OS.kAXInsertionPointLineNumberAttribute)) return getInsertionPointLineNumberAttribute(nextHandler, theEvent, userData);
+			if (attributeName.equals(OS.kAXStringForRangeParameterizedAttribute)) return getStringForRangeAttribute(nextHandler, theEvent, userData);
 			return getAttribute(nextHandler, theEvent, userData);
 		}
 		return OS.eventNotHandledErr;
@@ -671,8 +669,16 @@ public class Accessible {
 			return OS.noErr;
 		}
 
-		/* Invalid childID at this point means the application did not implement getFocus. */
-		return OS.eventNotHandledErr;
+		/* Invalid childID at this point means the application did not implement getFocus, so return the native focus. */
+		boolean hasFocus = false;
+		int focusWindow = OS.GetUserFocusWindow ();
+		if (focusWindow != 0) {
+			int [] focusControl = new int [1];
+			OS.GetKeyboardFocus (focusWindow, focusControl);
+			if (focusControl [0] == control.handle) hasFocus = true;
+		}
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus});
+		return OS.noErr;
 	}
 	
 	int getParentAttribute (int nextHandler, int theEvent, int userData) {
@@ -871,17 +877,30 @@ public class Accessible {
 		return OS.eventNotHandledErr;
 	}
 	
-	int getInsertionPointLineNumberAttribute (int nextHandler, int theEvent, int userData) {
-		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.childID = getChildIDFromEvent(theEvent);
-		event.offset = -1;
-		for (int i = 0; i < accessibleTextListeners.size(); i++) {
-			AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
-			listener.getCaretOffset(event);
-		}
-		if (event.offset != -1) {
-			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {event.offset});
-			return OS.noErr;
+	int getStringForRangeAttribute (int nextHandler, int theEvent, int userData) {
+		int valueRef [] = new int [1];
+		int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeParameter, OS.typeCFTypeRef, null, 4, null, valueRef);
+		if (status == OS.noErr) {
+			CFRange range = new CFRange();
+			boolean ok = OS.AXValueGetValue(valueRef[0], OS.kAXValueCFRangeType, range);
+			if (ok) {
+				AccessibleControlEvent event = new AccessibleControlEvent(this);
+				event.childID = getChildIDFromEvent(theEvent);
+				event.result = null;
+				for (int i = 0; i < accessibleControlListeners.size(); i++) {
+					AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+					listener.getValue(event);
+				}
+				String appValue = event.result;
+				if (appValue != null) {
+					int stringRef = stringToStringRef (appValue.substring(range.location, range.location + range.length));
+					if (stringRef != 0) {
+						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef});
+						OS.CFRelease(stringRef);
+						return OS.noErr;
+					}
+				}
+			}
 		}
 		return OS.eventNotHandledErr;
 	}

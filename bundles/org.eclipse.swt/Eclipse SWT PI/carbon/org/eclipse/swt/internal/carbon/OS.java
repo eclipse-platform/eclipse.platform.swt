@@ -1948,6 +1948,7 @@ public static final native void AXUIElementGetIdentifier(int inUIElement, long[]
 public static final native int AXUIElementGetHIObject(int inUIElement);
 public static final native int AXUIElementGetDataBrowserItemInfo(int inElement, int inDataBrowser, int inDesiredInfoVersion, DataBrowserAccessibilityItemInfo outInfo);
 public static final native int AXValueCreate (int theType, CFRange range);
+public static final native boolean AXValueGetValue (int value, int theType, CFRange range);
 public static final native int HIObjectSetAccessibilityIgnored(int inObject, boolean inIgnored);
 public static final native int AXUIElementCopyAttributeValue (int element, int attribute, int [] value);
 

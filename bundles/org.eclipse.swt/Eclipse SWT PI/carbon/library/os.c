@@ -1003,6 +1003,22 @@ fail:
 }
 #endif
 
+#ifndef NO_AXValueGetValue
+JNIEXPORT jboolean JNICALL OS_NATIVE(AXValueGetValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	CFRange _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AXValueGetValue_FUNC);
+	if (arg2) if ((lparg2 = getCFRangeFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)AXValueGetValue((AXValueRef)arg0, (AXValueType)arg1, (CFRange *)lparg2);
+fail:
+	if (arg2 && lparg2) setCFRangeFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, AXValueGetValue_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AcquireFirstMatchingEventInQueue
 JNIEXPORT jint JNICALL OS_NATIVE(AcquireFirstMatchingEventInQueue)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)

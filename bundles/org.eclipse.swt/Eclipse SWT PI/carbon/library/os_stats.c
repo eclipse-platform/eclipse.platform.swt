@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 942;
-int OS_nativeFunctionCallCount[942];
+int OS_nativeFunctionCount = 943;
+int OS_nativeFunctionCallCount[943];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -76,6 +76,7 @@ char * OS_nativeFunctionNames[] = {
 	"AXUIElementGetHIObject",
 	"AXUIElementGetIdentifier",
 	"AXValueCreate",
+	"AXValueGetValue",
 	"AcquireFirstMatchingEventInQueue",
 	"ActivateTSMDocument",
 	"ActiveNonFloatingWindow",
