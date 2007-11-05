@@ -7,7 +7,7 @@ public NSBezierPath(int id) {
 }
 
 public void appendBezierPath(NSBezierPath path) {
-	OS.objc_msgSend(id, OS.sel_appendBezierPathWithRect_1, path != null ? path.id : 0);
+	OS.objc_msgSend(id, OS.sel_appendBezierPath_1, path != null ? path.id : 0);
 }
 
 public void appendBezierPathWithRect(NSRect rect) {
