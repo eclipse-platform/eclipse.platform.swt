@@ -48,8 +48,9 @@ import org.eclipse.swt.events.*;
  * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
- * it does not make sense to add <code>Control</code> children to it,
- * or set a layout on it.
+ * it does not normally make sense to add <code>Control</code> children to
+ * it, or set a layout on it, unless implementing something like a cell
+ * editor.
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
