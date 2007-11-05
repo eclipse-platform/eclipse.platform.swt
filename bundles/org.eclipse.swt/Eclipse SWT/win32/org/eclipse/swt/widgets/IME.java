@@ -308,7 +308,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 								style.underline = attr.lsStyle != OS.TF_LS_NONE;
 								switch (attr.lsStyle) {
 									case OS.TF_LS_SQUIGGLE:
-										style.underlineStyle = SWT.UNDERLINE_ERROR;
+										style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
 										break;
 									case OS.TF_LS_DASH:
 										style.underlineStyle = UNDERLINE_IME_DASH; 

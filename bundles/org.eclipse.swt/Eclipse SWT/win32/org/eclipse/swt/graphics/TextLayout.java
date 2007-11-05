@@ -921,6 +921,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int lineBaseline, 
 				Gdip.Color_delete(gdiColor);
 			}
 			switch (style.underlineStyle) {
+				case SWT.UNDERLINE_SQUIGGLE:
 				case SWT.UNDERLINE_ERROR: {
 					int squigglyThickness = 1;
 					int squigglyHeight = 2 * squigglyThickness;
@@ -991,6 +992,7 @@ void drawLines(boolean advance, int /*long*/ graphics, int x, int lineBaseline, 
 				colorRefUnderline = style.underlineColor.handle;
 			}
 			switch (style.underlineStyle) {
+				case SWT.UNDERLINE_SQUIGGLE:
 				case SWT.UNDERLINE_ERROR: {
 					int squigglyThickness = 1;
 					int squigglyHeight = 2 * squigglyThickness;

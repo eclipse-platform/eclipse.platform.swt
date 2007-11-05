@@ -71,12 +71,14 @@ public class TextStyle {
 	 * <code>underline</code> is false.
 	 * <p> 
 	 * This value should be one of <code>SWT.UNDERLINE_SINGLE</code>,
-	 * <code>SWT.UNDERLINE_DOUBLE</code>, or <code>SWT.UNDERLINE_ERROR</code>.
+	 * <code>SWT.UNDERLINE_DOUBLE</code>, <code>SWT.UNDERLINE_ERROR</code>,
+	 * or <code>SWT.UNDERLINE_SQUIGGLE</code>.
 	 * </p>
 	 * 
 	 * @see SWT#UNDERLINE_SINGLE
 	 * @see SWT#UNDERLINE_DOUBLE 
 	 * @see SWT#UNDERLINE_ERROR
+	 * @see SWT#UNDERLINE_SQUIGGLE
 	 * 
 	 * @since 3.4
 	 */	
