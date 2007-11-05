@@ -1115,10 +1115,7 @@ public void drawText (String string, int x, int y, int flags) {
 	int point = OS.gcnew_Point(x, y);
 	if (mnemonic != -1) {
 		int underline = OS.TextDecorations_Underline();
-		int decorations = OS.gcnew_TextDecorationCollection(1);
-		OS.TextDecorationCollection_Add(decorations, underline);
-		OS.FormattedText_SetTextDecorations(text, decorations, mnemonic, 1);
-		OS.GCHandle_Free(decorations);
+		OS.FormattedText_SetTextDecorations(text, underline, mnemonic, 1);
 		OS.GCHandle_Free(underline);
 	}
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
