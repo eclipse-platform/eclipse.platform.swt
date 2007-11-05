@@ -119,6 +119,9 @@ void createHandle () {
 		if ((style & SWT.CENTER) != 0) value = OS.HorizontalAlignment_Center;
 		if ((style & SWT.RIGHT) != 0) value = OS.HorizontalAlignment_Right;
 		OS.Control_HorizontalContentAlignment (handle, value);
+		int margin = OS.gcnew_Thickness (0, 0, 0, 0);
+		OS.Control_Padding (handle, margin);
+		OS.GCHandle_Free (margin);
 	}
 }
 
