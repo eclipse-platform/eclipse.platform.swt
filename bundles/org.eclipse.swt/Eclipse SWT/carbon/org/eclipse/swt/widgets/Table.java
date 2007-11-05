@@ -2393,7 +2393,9 @@ public void remove (int start, int end) {
 		removeAll ();
 	} else {
 		int length = end - start + 1;
-		for (int i=0; i<length; i++) remove (start);
+		int [] indices = new int [length];
+		for (int i=0; i<length; i++) indices [i] = i + start;
+		remove(indices);
 	}
 }
 
@@ -2423,13 +2425,24 @@ public void remove (int [] indices) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int last = -1;
-	for (int i=0; i<newIndices.length; i++) {
+	int [] id = new int [newIndices.length];
+	for (int i = 0; i < newIndices.length; i++) {
 		int index = newIndices [i];
-		if (index != last) {
-			remove (index);
-			last = index;
-		}
+		TableItem item = items [index];
+		if (item != null && !item.isDisposed ()) item.release (false);
+		if (index != itemCount - 1) fixSelection (index, false);
+		id [id.length-i-1] = itemCount;
+		System.arraycopy (items, index + 1, items, index, --itemCount - index);
+		items [itemCount] = null;
+	}
+	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
+	}
+	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (itemCount == 0) {
+		setTableEmpty ();
+	} else {
+		fixScrollBar ();
 	}
 }
 
@@ -2814,12 +2827,9 @@ public void setItemCount (int count) {
 			id [index-count] = index + 1;
 			index++;
 		}
-		OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0);
-		int [] newItemCount = new int [1];
-		if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, newItemCount) != OS.noErr) {
-			error (SWT.ERROR_CANNOT_GET_COUNT);
+		if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
-		if (count != newItemCount[0]) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	int length = Math.max (4, (count + 3) / 4 * 4);
 	TableItem [] newItems = new TableItem [length];
