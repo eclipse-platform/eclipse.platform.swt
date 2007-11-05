@@ -67,10 +67,26 @@ public class OS extends C {
 	public static final int NSImageInterpolationLow = 2;
 	public static final int NSImageInterpolationHigh = 3;
 	
+	public static final int NSCompositeClear           = 0;
+	public static final int NSCompositeCopy            = 1;
+	public static final int NSCompositeSourceOver      = 2;
+	public static final int NSCompositeSourceIn        = 3;
+	public static final int NSCompositeSourceOut       = 4;
+	public static final int NSCompositeSourceAtop      = 5;
+	public static final int NSCompositeDestinationOver = 6;
+	public static final int NSCompositeDestinationIn   = 7;
+	public static final int NSCompositeDestinationOut  = 8;
+	public static final int NSCompositeDestinationAtop = 9;
+	public static final int NSCompositeXOR             = 10;
+	public static final int NSCompositePlusDarker      = 11;
+	public static final int NSCompositeHighlight       = 12;
+	public static final int NSCompositePlusLighter     = 13;
+	
 	/** Classes */
 	public static final int class_NSObject = OS.objc_getClass("NSObject");
 	public static final int class_NSString = OS.objc_getClass("NSString");
 	public static final int class_NSToolbarView = OS.objc_getClass("NSToolbarView");
+	public static final int class_NSGradient = OS.objc_getClass("NSGradient");
 	public static final int class_NSView = OS.objc_getClass("NSView");
 	public static final int class_NSImage = OS.objc_getClass("NSImage");
 	public static final int class_NSBezierPath = OS.objc_getClass("NSBezierPath");
@@ -91,7 +107,7 @@ public class OS extends C {
 	public static final int class_NSGraphicsContext = OS.objc_getClass("NSGraphicsContext");
 	
 	/** Selectors */	
-	
+	public static final int sel_drawInRect_1fromRect_1operation_1fraction_1 = OS.sel_registerName("drawInRect:fromRect:operation:fraction:");
 	public static final int sel_addCursorRect_1cursor_1 = OS.sel_registerName("addCursorRect:cursor:");
 	public static final int sel_addSubview_1 = OS.sel_registerName("addSubview:");
 	public static final int sel_addRepresentation_1 = OS.sel_registerName("addRepresentation:");
@@ -120,6 +136,8 @@ public class OS extends C {
 	public static final int sel_curveToPoint_1controlPoint1_1controlPoint2_1 = OS.sel_registerName("curveToPoint:controlPoint1:controlPoint2:");
 	public static final int sel_depth = OS.sel_registerName("depth");
 	public static final int sel_doubleValue = OS.sel_registerName("doubleValue");
+	public static final int sel_drawAtPoint_1withAttributes_1 = OS.sel_registerName("drawAtPoint:withAttributes:");
+	public static final int sel_drawInRect_1angle_1 = OS.sel_registerName("drawInRect:angle:");
 	public static final int sel_familyName = OS.sel_registerName("familyName");
 	public static final int sel_fill = OS.sel_registerName("fill");
 	public static final int sel_fontName = OS.sel_registerName("fontName");
@@ -137,6 +155,7 @@ public class OS extends C {
 	public static final int sel_initWithImage_1hotSpot_1 = OS.sel_registerName("initWithImage:hotSpot:");
 	public static final int sel_initWithSize_1 = OS.sel_registerName("initWithSize:");
 	public static final int sel_initWithTransform_1 = OS.sel_registerName("initWithTransform:");
+	public static final int sel_initWithStartingColor_endingColor_1 = OS.sel_registerName("initWithStartingColor:endingColor:");
 	public static final int sel_invert = OS.sel_registerName("invert");
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
@@ -195,6 +214,7 @@ public class OS extends C {
 	public static final int sel_setMaxValue_1 = OS.sel_registerName("setMaxValue:");
 	public static final int sel_setOnMouseEntered_1 = OS.sel_registerName("setOnMouseEntered:");
 	public static final int sel_setState_1 = OS.sel_registerName("setState:");
+	public static final int sel_setShouldAntialias_1 = OS.sel_registerName("setShouldAntialias:");
 	public static final int sel_setTag_1 = OS.sel_registerName("setTag:");
 	public static final int sel_setTarget_1 = OS.sel_registerName("setTarget:");
 	public static final int sel_setTitle_1 = OS.sel_registerName("setTitle:");
@@ -202,6 +222,7 @@ public class OS extends C {
 	public static final int sel_setFrameTopLeftPoint_1 = OS.sel_registerName("setFrameTopLeftPoint:");
 	public static final int sel_sharedApplication = OS.sel_registerName("sharedApplication");
 	public static final int sel_size = OS.sel_registerName("size");
+	public static final int sel_sizeWithAttributes_1 = OS.sel_registerName("sizeWithAttributes:");
 	public static final int sel_startAnimation_1 = OS.sel_registerName("startAnimation:");
 	public static final int sel_state = OS.sel_registerName("state");
 	public static final int sel_stop_1 = OS.sel_registerName("stop:");
@@ -216,6 +237,7 @@ public class OS extends C {
 	public static final int sel_visibleFrame = OS.sel_registerName("visibleFrame");
 	public static final int sel_windowWillClose_1 = OS.sel_registerName("windowWillClose:");
 	public static final int sel_windowShouldClose_1 = OS.sel_registerName("windowShouldClose:");
+	
 	
 
 	public static final int sel_sendSelection = OS.sel_registerName("sendSelection");	
@@ -254,8 +276,10 @@ public static final native int objc_msgSend(int object, int selector, NSSize arg
 public static final native int objc_msgSend(int object, int selector, NSRect arg0);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1, int arg2, boolean arg3);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, float arg1, float arg2);
+public static final native int objc_msgSend(int object, int selector, NSRect arg0, float arg1);
 public static final native int objc_msgSend(int object, int selector, int arg0, NSRect arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1);
+public static final native int objc_msgSend(int object, int selector, NSRect arg0, NSRect arg1, int arg2, float arg3);
 public static final native int objc_msgSend(int object, int selector, char[] arg0);
 public static final native int objc_msgSend(int object, int selector, char[] arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, int arg1);
@@ -274,6 +298,29 @@ public static final native int sel_registerName(String selectorName);
 
 public static final native int NSBitsPerPixelFromDepth(int depth);
 public static final native int NSDeviceRGBColorSpace();
+
+public static final native int NSFontAttributeName();
+public static final native int NSParagraphStyleAttributeName();
+public static final native int NSForegroundColorAttributeName();
+public static final native int NSUnderlineStyleAttributeName();
+public static final native int NSSuperscriptAttributeName();
+public static final native int NSBackgroundColorAttributeName();
+public static final native int NSAttachmentAttributeName();
+public static final native int NSLigatureAttributeName();
+public static final native int NSBaselineOffsetAttributeName();
+public static final native int NSKernAttributeName();
+public static final native int NSLinkAttributeName();
+public static final native int NSStrokeWidthAttributeName();
+public static final native int NSStrokeColorAttributeName();
+public static final native int NSUnderlineColorAttributeName();
+public static final native int NSStrikethroughStyleAttributeName();
+public static final native int NSStrikethroughColorAttributeName();
+public static final native int NSShadowAttributeName();
+public static final native int NSObliquenessAttributeName();
+public static final native int NSExpansionAttributeName();
+public static final native int NSCursorAttributeName();
+public static final native int NSToolTipAttributeName();
+public static final native int NSMarkedClauseSegmentAttributeName();
 
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);

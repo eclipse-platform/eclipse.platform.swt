@@ -14,14 +14,36 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 49;
-int OS_nativeFunctionCallCount[49];
+int OS_nativeFunctionCount = 73;
+int OS_nativeFunctionCallCount[73];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",
 	"JNIGetObject",
+	"NSAttachmentAttributeName",
+	"NSBackgroundColorAttributeName",
+	"NSBaselineOffsetAttributeName",
 	"NSBitsPerPixelFromDepth",
+	"NSCursorAttributeName",
 	"NSDeviceRGBColorSpace",
+	"NSExpansionAttributeName",
+	"NSFontAttributeName",
+	"NSForegroundColorAttributeName",
+	"NSKernAttributeName",
+	"NSLigatureAttributeName",
+	"NSLinkAttributeName",
+	"NSMarkedClauseSegmentAttributeName",
+	"NSObliquenessAttributeName",
+	"NSParagraphStyleAttributeName",
+	"NSShadowAttributeName",
+	"NSStrikethroughColorAttributeName",
+	"NSStrikethroughStyleAttributeName",
+	"NSStrokeColorAttributeName",
+	"NSStrokeWidthAttributeName",
+	"NSSuperscriptAttributeName",
+	"NSToolTipAttributeName",
+	"NSUnderlineColorAttributeName",
+	"NSUnderlineStyleAttributeName",
 	"NewGlobalRef",
 	"SetFrontProcess",
 	"TransformProcessType",
@@ -47,9 +69,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2F",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2",
 	"objc_1msgSend__II_3C",
 	"objc_1msgSend__II_3CI",

@@ -10,6 +10,10 @@ public int get_class() {
 	return OS.class_NSString;
 }
 
+public void drawAtPoint(NSPoint pt, NSObject attributes) {
+	OS.objc_msgSend(id, OS.sel_drawAtPoint_1withAttributes_1, pt, attributes != null ? attributes.id : 0);
+}
+
 public void getCharacters(char[] chars) {
 	OS.objc_msgSend(id, OS.sel_getCharacters_1, chars);
 }

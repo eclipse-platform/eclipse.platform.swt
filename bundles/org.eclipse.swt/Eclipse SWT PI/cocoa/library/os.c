@@ -41,6 +41,42 @@ fail:
 }
 #endif
 
+#ifndef NO_NSAttachmentAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSAttachmentAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAttachmentAttributeName_FUNC);
+	rc = (jint)NSAttachmentAttributeName;
+	OS_NATIVE_EXIT(env, that, NSAttachmentAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSBackgroundColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSBackgroundColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSBackgroundColorAttributeName_FUNC);
+	rc = (jint)NSBackgroundColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSBackgroundColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSBaselineOffsetAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSBaselineOffsetAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSBaselineOffsetAttributeName_FUNC);
+	rc = (jint)NSBaselineOffsetAttributeName;
+	OS_NATIVE_EXIT(env, that, NSBaselineOffsetAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSBitsPerPixelFromDepth
 JNIEXPORT jint JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -53,6 +89,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 }
 #endif
 
+#ifndef NO_NSCursorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSCursorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSCursorAttributeName_FUNC);
+	rc = (jint)NSCursorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSCursorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSDeviceRGBColorSpace
 JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceRGBColorSpace)
 	(JNIEnv *env, jclass that)
@@ -61,6 +109,222 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceRGBColorSpace)
 	OS_NATIVE_ENTER(env, that, NSDeviceRGBColorSpace_FUNC);
 	rc = (jint)NSDeviceRGBColorSpace;
 	OS_NATIVE_EXIT(env, that, NSDeviceRGBColorSpace_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSExpansionAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSExpansionAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSExpansionAttributeName_FUNC);
+	rc = (jint)NSExpansionAttributeName;
+	OS_NATIVE_EXIT(env, that, NSExpansionAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSFontAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSFontAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSFontAttributeName_FUNC);
+	rc = (jint)NSFontAttributeName;
+	OS_NATIVE_EXIT(env, that, NSFontAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSForegroundColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSForegroundColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSForegroundColorAttributeName_FUNC);
+	rc = (jint)NSForegroundColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSForegroundColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSKernAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSKernAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSKernAttributeName_FUNC);
+	rc = (jint)NSKernAttributeName;
+	OS_NATIVE_EXIT(env, that, NSKernAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSLigatureAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSLigatureAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSLigatureAttributeName_FUNC);
+	rc = (jint)NSLigatureAttributeName;
+	OS_NATIVE_EXIT(env, that, NSLigatureAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSLinkAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSLinkAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSLinkAttributeName_FUNC);
+	rc = (jint)NSLinkAttributeName;
+	OS_NATIVE_EXIT(env, that, NSLinkAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSMarkedClauseSegmentAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSMarkedClauseSegmentAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSMarkedClauseSegmentAttributeName_FUNC);
+	rc = (jint)NSMarkedClauseSegmentAttributeName;
+	OS_NATIVE_EXIT(env, that, NSMarkedClauseSegmentAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSObliquenessAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSObliquenessAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSObliquenessAttributeName_FUNC);
+	rc = (jint)NSObliquenessAttributeName;
+	OS_NATIVE_EXIT(env, that, NSObliquenessAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSParagraphStyleAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSParagraphStyleAttributeName_FUNC);
+	rc = (jint)NSParagraphStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, NSParagraphStyleAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSShadowAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSShadowAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSShadowAttributeName_FUNC);
+	rc = (jint)NSShadowAttributeName;
+	OS_NATIVE_EXIT(env, that, NSShadowAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrikethroughColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrikethroughColorAttributeName_FUNC);
+	rc = (jint)NSStrikethroughColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrikethroughColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrikethroughStyleAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrikethroughStyleAttributeName_FUNC);
+	rc = (jint)NSStrikethroughStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrikethroughStyleAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrokeColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSStrokeColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrokeColorAttributeName_FUNC);
+	rc = (jint)NSStrokeColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrokeColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrokeWidthAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSStrokeWidthAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrokeWidthAttributeName_FUNC);
+	rc = (jint)NSStrokeWidthAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrokeWidthAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSSuperscriptAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSSuperscriptAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSSuperscriptAttributeName_FUNC);
+	rc = (jint)NSSuperscriptAttributeName;
+	OS_NATIVE_EXIT(env, that, NSSuperscriptAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSToolTipAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSToolTipAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSToolTipAttributeName_FUNC);
+	rc = (jint)NSToolTipAttributeName;
+	OS_NATIVE_EXIT(env, that, NSToolTipAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSUnderlineColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSUnderlineColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSUnderlineColorAttributeName_FUNC);
+	rc = (jint)NSUnderlineColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSUnderlineColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSUnderlineStyleAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSUnderlineStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSUnderlineStyleAttributeName_FUNC);
+	rc = (jint)NSUnderlineStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, NSUnderlineStyleAttributeName_FUNC);
 	return rc;
 }
 #endif
@@ -370,6 +634,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2F
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2F)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jfloat arg3)
+{
+	NSRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2F_FUNC);
+	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, *lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2F_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
@@ -398,6 +678,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_coco
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jfloat arg5)
+{
+	NSRect _arg2, *lparg2=NULL;
+	NSRect _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF_FUNC);
+	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, *lparg2, *lparg3, arg4, arg5);
+fail:
+	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
+	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF_FUNC);
 	return rc;
 }
 #endif

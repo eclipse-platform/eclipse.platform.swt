@@ -31,4 +31,8 @@ public void setImageInterpolation(int value) {
 	OS.objc_msgSend(id, OS.sel_setImageInterpolation_1, value);
 }
 
+public void setShouldAntialias(boolean flag) {
+	OS.objc_msgSend(id, OS.sel_setShouldAntialias_1, flag ? 1 : 0);
+}
+
 }

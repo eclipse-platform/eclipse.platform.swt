@@ -19,6 +19,10 @@ public NSImageRep bestRepresentationForDevice(NSObject deviceDescription) {
 	return id != 0 ? new NSImageRep(id) : null;
 }
 
+public void drawInRect(NSRect dstRect, NSRect srcRect, int operation, float delta) {
+	OS.objc_msgSend(id, OS.sel_drawInRect_1fromRect_1operation_1fraction_1, dstRect, srcRect, operation, delta);
+}
+
 public int get_class() {
 	return OS.class_NSImage;
 }
