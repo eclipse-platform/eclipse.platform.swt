@@ -189,6 +189,7 @@ void computeRuns () {
 				case SWT.UNDERLINE_DOUBLE:
 					underlineStyle = OS.PANGO_UNDERLINE_DOUBLE; 
 					break;
+				case SWT.UNDERLINE_SQUIGGLE:
 				case SWT.UNDERLINE_ERROR:
 					if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
 						underlineStyle = OS.PANGO_UNDERLINE_ERROR;
@@ -647,7 +648,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 		
 		boolean drawUnderline = false;
 		if (style.underline && style.underlineColor != null) drawUnderline = true;
-		if (style.underline && style.underlineStyle == SWT.UNDERLINE_ERROR && OS.GTK_VERSION < OS.VERSION(2, 4, 0)) drawUnderline = true;
+		if (style.underline && (style.underlineStyle == SWT.UNDERLINE_ERROR || style.underlineStyle == SWT.UNDERLINE_SQUIGGLE)&& OS.GTK_VERSION < OS.VERSION(2, 4, 0)) drawUnderline = true;
 		if (drawUnderline && !style.isAdherentUnderline(styles[i+1].style)) {
 			int start = styles[i].start;
 			for (int j = i; j > 0 && style.isAdherentUnderline(styles[j-1].style); j--) {
@@ -697,6 +698,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 					FontMetrics metrics = getLineMetrics(lineIndex);
 					int underlineY = rect.y + metrics.ascent - underlinePosition - style.rise;
 					switch (style.underlineStyle) {
+						case SWT.UNDERLINE_SQUIGGLE:
 						case SWT.UNDERLINE_ERROR: {
 							int squigglyThickness = underlineThickness;
 							int squigglyHeight = 2 * squigglyThickness;
