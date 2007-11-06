@@ -7,6 +7,30 @@ public class OS extends C {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
 
+	//TODO - don't hard code
+	public static final int VERSION = 0x1040;
+	public static final int PTR_SIZEOF = 4;
+
+/** JNI natives */
+public static final native int NewGlobalRef(Object object);
+public static final native void DeleteGlobalRef(int globalRef);
+public static final native Object JNIGetObject(int globalRef);
+
+public static final native int GetCurrentProcess(int[] psn);
+public static final native int SetFrontProcess(int[] psn);
+public static final native int TransformProcessType(int[] psn, int transformState);  
+	
+public static final native boolean class_addIvar(int cls, String name, int size, byte alignment, String types);
+public static final native boolean class_addMethod(int cls, int name, int imp, String types);
+public static final native int objc_allocateClassPair(int superclass, String name, int extraBytes);
+public static final native int objc_getClass(String className);
+public static final native int objc_lookUpClass(String className);
+public static final native void objc_registerClassPair(int cls);
+public static final native int object_getClassName(int obj);
+public static final native int object_getInstanceVariable(int obj, String name, int[] outValue);
+public static final native int object_setInstanceVariable(int obj, String name, int value);
+public static final native int sel_registerName(String selectorName);
+
 	/** Constants */
 	public static final int NSBackingStoreRetained     = 0;
 	public static final int NSBackingStoreNonretained  = 1;
@@ -250,22 +274,9 @@ public class OS extends C {
 	
 
 	public static final int sel_sendSelection = OS.sel_registerName("sendSelection");	
-	
 
-	//TODO - don't hard code
-	public static final int VERSION = 0x1040;
-	public static final int PTR_SIZEOF = 4;
 
-/** JNI natives */
-public static final native int NewGlobalRef(Object object);
-public static final native void DeleteGlobalRef(int globalRef);
-public static final native Object JNIGetObject(int globalRef);
-	
-public static final native boolean class_addIvar(int cls, String name, int size, byte alignment, String types);
-public static final native boolean class_addMethod(int cls, int name, int imp, String types);
-public static final native int objc_allocateClassPair(int superclass, String name, int extraBytes);
-public static final native int objc_getClass(String className);
-public static final native int objc_lookUpClass(String className);
+
 public static final native void objc_msgSend_stret(NSPoint result, int object, int selector);
 public static final native void objc_msgSend_stret(NSPoint result, int object, int selector, NSPoint arg0);
 public static final native void objc_msgSend_stret(float[] result, int object, int selector);
@@ -299,11 +310,6 @@ public static final native int objc_msgSend(int object, int selector, int arg0, 
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
 public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
-public static final native void objc_registerClassPair(int cls);
-public static final native int object_getClassName(int obj);
-public static final native int object_getInstanceVariable(int obj, String name, int[] outValue);
-public static final native int object_setInstanceVariable(int obj, String name, int value);
-public static final native int sel_registerName(String selectorName);
 
 public static final native int NSBitsPerPixelFromDepth(int depth);
 public static final native int NSDeviceRGBColorSpace();
@@ -331,9 +337,6 @@ public static final native int NSCursorAttributeName();
 public static final native int NSToolTipAttributeName();
 public static final native int NSMarkedClauseSegmentAttributeName();
 
-public static final native int GetCurrentProcess(int[] psn);
-public static final native int SetFrontProcess(int[] psn);
-public static final native int TransformProcessType(int[] psn, int transformState);  
 
 public static final int NSTableViewGridNone = 0;
 public static final int NSTableViewSolidVerticalGridLineMask = 1 << 0;

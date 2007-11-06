@@ -1,6 +1,6 @@
 package org.eclipse.swt.internal.cocoa;
 
-public class NSObject {
+public class NSObject extends id {
 
 public int id;
 
