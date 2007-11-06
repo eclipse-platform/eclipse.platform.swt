@@ -11,7 +11,7 @@ public NSGradient(int id) {
 }
 
 public NSGradient init(NSColor startingColor, NSColor endingColor) {
-	int id = OS.objc_msgSend(this.id, OS.sel_initWithStartingColor_endingColor_1, startingColor.id, endingColor.id);
+	int id = OS.objc_msgSend(this.id, OS.sel_initWithStartingColor_1endingColor_1, startingColor.id, endingColor.id);
 	return id != 0 ? this : null;
 }
 

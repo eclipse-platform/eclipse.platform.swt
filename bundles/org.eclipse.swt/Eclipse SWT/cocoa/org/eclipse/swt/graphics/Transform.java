@@ -173,8 +173,13 @@ public void getElements(float[] elements) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	float[] struct = handle.transformStruct();
-	System.arraycopy(struct, 0, elements, 0, struct.length);
+	NSAffineTransformStruct struct = handle.transformStruct();
+	elements[0] = struct.m11;
+	elements[1] = struct.m12;
+	elements[2] = struct.m21;
+	elements[3] = struct.m22;
+	elements[4] = struct.tX;
+	elements[5] = struct.tY;
 }
 
 /**
@@ -217,8 +222,8 @@ public boolean isDisposed() {
  */
 public boolean isIdentity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	float[] struct = handle.transformStruct();
-	return struct[0] == 1 && struct[1] == 0 && struct[2] == 0 && struct[3] == 1 && struct[4] == 0 && struct[5] == 0;
+	NSAffineTransformStruct struct = handle.transformStruct();
+	return struct.m11 == 1 && struct.m12 == 0 && struct.m21 == 0 && struct.m22 == 1 && struct.tX == 0 && struct.tY == 0;
 }
 
 /**
@@ -294,7 +299,14 @@ public void scale(float scaleX, float scaleY) {
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle.setTransformStruct(new float[]{m11, m12, m21, m22, dx, dy});
+	NSAffineTransformStruct struct = new NSAffineTransformStruct();
+	struct.m11 = m11;
+	struct.m12 = m12;
+	struct.m21 = m21;
+	struct.m22 = m22;
+	struct.tX = dx;
+	struct.tY = dy;
+	handle.setTransformStruct(struct);
 }
 
 /** 

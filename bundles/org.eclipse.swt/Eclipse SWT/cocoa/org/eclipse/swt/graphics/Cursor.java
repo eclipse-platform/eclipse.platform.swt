@@ -220,7 +220,7 @@ void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, in
 	size.width = width;
 	size.height =  height;
 	nsImage = nsImage.initWithSize(size);
-	nsImageRep = nsImageRep.initWithBitmapData(null, width, height,
+	nsImageRep = nsImageRep.initWithBitmapData(0, width, height,
 			8, 4, true, false, new NSString(OS.NSDeviceRGBColorSpace()),
 			OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
