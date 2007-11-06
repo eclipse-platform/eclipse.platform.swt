@@ -279,7 +279,7 @@ public void rotate(float angle) {
  */
 public void scale(float scaleX, float scaleY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle.scale(scaleX, scaleY);
+	handle.scaleXBy(scaleX, scaleY);
 }
 
 /**
@@ -350,7 +350,7 @@ public void transform(float[] pointArray) {
  */
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle.translate(offsetX, offsetY);
+	handle.translateXBy(offsetX, offsetY);
 }
 
 /**

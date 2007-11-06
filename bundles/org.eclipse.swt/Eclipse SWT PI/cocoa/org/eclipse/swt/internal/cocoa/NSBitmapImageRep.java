@@ -97,39 +97,39 @@ public int incrementalLoadFromData(NSData data, boolean complete) {
 	return OS.objc_msgSend(this.id, OS.sel_incrementalLoadFromData_1complete_1, data != null ? data.id : 0, complete);
 }
 
-public id initForIncrementalLoad() {
+public NSBitmapImageRep initForIncrementalLoad() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initForIncrementalLoad);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(int planes, int width, int height, int bps, int spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int bitmapFormat, int rBytes, int pBits) {
+public NSBitmapImageRep initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(int planes, int width, int height, int bps, int spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int bitmapFormat, int rBytes, int pBits) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBitmapDataPlanes_1pixelsWide_1pixelsHigh_1bitsPerSample_1samplesPerPixel_1hasAlpha_1isPlanar_1colorSpaceName_1bitmapFormat_1bytesPerRow_1bitsPerPixel_1, planes, width, height, bps, spp, alpha, isPlanar, colorSpaceName != null ? colorSpaceName.id : 0, bitmapFormat, rBytes, pBits);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_(int planes, int width, int height, int bps, int spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int rBytes, int pBits) {
+public NSBitmapImageRep initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_(int planes, int width, int height, int bps, int spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int rBytes, int pBits) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBitmapDataPlanes_1pixelsWide_1pixelsHigh_1bitsPerSample_1samplesPerPixel_1hasAlpha_1isPlanar_1colorSpaceName_1bytesPerRow_1bitsPerPixel_1, planes, width, height, bps, spp, alpha, isPlanar, colorSpaceName != null ? colorSpaceName.id : 0, rBytes, pBits);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCGImage(int cgImage) {
+public NSBitmapImageRep initWithCGImage(int cgImage) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCGImage_1, cgImage);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCIImage(CIImage ciImage) {
+public NSBitmapImageRep initWithCIImage(CIImage ciImage) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCIImage_1, ciImage != null ? ciImage.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithData(NSData data) {
+public NSBitmapImageRep initWithData(NSData data) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithFocusedViewRect(NSRect rect) {
+public NSBitmapImageRep initWithFocusedViewRect(NSRect rect) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFocusedViewRect_1, rect);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isPlanar() {

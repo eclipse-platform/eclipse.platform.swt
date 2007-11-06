@@ -394,14 +394,14 @@ public boolean ignoresMouseEvents() {
 	return OS.objc_msgSend(this.id, OS.sel_ignoresMouseEvents) != 0;
 }
 
-public id initWithContentRect_styleMask_backing_defer_(NSRect contentRect, int aStyle, int bufferingType, boolean flag) {
+public NSWindow initWithContentRect_styleMask_backing_defer_(NSRect contentRect, int aStyle, int bufferingType, boolean flag) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_1styleMask_1backing_1defer_1, contentRect, aStyle, bufferingType, flag);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentRect_styleMask_backing_defer_screen_(NSRect contentRect, int aStyle, int bufferingType, boolean flag, NSScreen screen) {
+public NSWindow initWithContentRect_styleMask_backing_defer_screen_(NSRect contentRect, int aStyle, int bufferingType, boolean flag, NSScreen screen) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_1styleMask_1backing_1defer_1screen_1, contentRect, aStyle, bufferingType, flag, screen != null ? screen.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSWindow initWithWindowRef(int windowRef) {

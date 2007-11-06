@@ -136,44 +136,44 @@ public static NSArray imageUnfilteredTypes() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public id initByReferencingFile(NSString fileName) {
+public NSImage initByReferencingFile(NSString fileName) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initByReferencingFile_1, fileName != null ? fileName.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initByReferencingURL(NSURL url) {
+public NSImage initByReferencingURL(NSURL url) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initByReferencingURL_1, url != null ? url.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile(NSString fileName) {
+public NSImage initWithContentsOfFile(NSString fileName) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1, fileName != null ? fileName.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL(NSURL url) {
+public NSImage initWithContentsOfURL(NSURL url) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1, url != null ? url.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithData(NSData data) {
+public NSImage initWithData(NSData data) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithIconRef(int iconRef) {
+public NSImage initWithIconRef(int iconRef) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithIconRef_1, iconRef);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithPasteboard(NSPasteboard pasteboard) {
+public NSImage initWithPasteboard(NSPasteboard pasteboard) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithPasteboard_1, pasteboard != null ? pasteboard.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithSize(NSSize aSize) {
+public NSImage initWithSize(NSSize aSize) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSize_1, aSize);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isCachedSeparately() {

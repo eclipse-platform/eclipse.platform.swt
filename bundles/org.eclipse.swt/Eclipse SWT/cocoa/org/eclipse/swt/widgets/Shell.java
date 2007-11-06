@@ -463,13 +463,13 @@ void createHandle () {
 //			if ((style & SWT.MAX) != 0) styleMask |= ;
 			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
 		}
-		window = window.initWithContentRect(rect, styleMask, OS.NSBackingStoreBuffered, true);
+		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, true);
 //		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 	
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget = (SWTView)widget.initWithFrame (new NSRect());
-	widget.setBackgroundColor(NSColor.colorWithDeviceRGBA(1, 0, 0, 1));
+	widget.setBackgroundColor(NSColor.colorWithDeviceRed(1, 0, 0, 1));
 	widget.setTag(jniRef);
 	window.setContentView (widget);
 	view = widget;

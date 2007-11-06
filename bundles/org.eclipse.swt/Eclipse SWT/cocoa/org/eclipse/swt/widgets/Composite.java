@@ -228,7 +228,7 @@ void createHandle () {
 	widget.initWithFrame (new NSRect());
 	widget.setTag(jniRef);
 	view = widget;
-	parent.view.addSubview(view);
+	parent.view.addSubview_(view);
 }
 
 void enableWidget (boolean enabled) {

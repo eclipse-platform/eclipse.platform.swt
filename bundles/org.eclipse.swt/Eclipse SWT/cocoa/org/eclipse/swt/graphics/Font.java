@@ -183,11 +183,11 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSString family = handle.familyName();
 	char[] buffer1 = new char[family.length()];
-	family.getCharacters(buffer1);
+	family.getCharacters_(buffer1);
 	String name = new String(buffer1);
 	NSString str = handle.fontName();
 	char[] buffer = new char[str.length()];
-	str.getCharacters(buffer);
+	str.getCharacters_(buffer);
 	String nsName = new String(buffer);
 	int style = SWT.NORMAL;
 	if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
@@ -241,20 +241,20 @@ void init(Device device, String name, float height, int style, String nsName) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	if (nsName != null) {
-		handle = NSFont.fontWithName(NSString.stringWith(nsName), height);
+		handle = NSFont.static_fontWithName_size_(NSString.stringWith(nsName), height);
 	} else {
 		nsName = name;
 		if ((style & SWT.BOLD) != 0) nsName += " Bold";
 		if ((style & SWT.ITALIC) != 0) nsName += " Italic";
-		handle = NSFont.fontWithName(NSString.stringWith(nsName), height);
+		handle = NSFont.static_fontWithName_size_(NSString.stringWith(nsName), height);
 		if (handle == null && (style & SWT.ITALIC) != 0) {
 			nsName = name;
 			if ((style & SWT.BOLD) != 0) nsName += " Bold";
-			handle = NSFont.fontWithName(NSString.stringWith(nsName), height);
+			handle = NSFont.static_fontWithName_size_(NSString.stringWith(nsName), height);
 		}
 		if (handle == null && (style & SWT.BOLD) != 0) {
 			nsName = name;
-			handle = NSFont.fontWithName(NSString.stringWith(nsName), height);
+			handle = NSFont.static_fontWithName_size_(NSString.stringWith(nsName), height);
 		}
 	}
 	if (handle == null) {

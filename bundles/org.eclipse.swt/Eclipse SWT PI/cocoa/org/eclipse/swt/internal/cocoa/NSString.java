@@ -151,7 +151,7 @@ public void getCString_maxLength_range_remainingRange_(int bytes, int maxLength,
 	OS.objc_msgSend(this.id, OS.sel_getCString_1maxLength_1range_1remainingRange_1, bytes, maxLength, aRange, leftoverRange);
 }
 
-public void getCharacters_(int buffer) {
+public void getCharacters_(char[] buffer) {
 	OS.objc_msgSend(this.id, OS.sel_getCharacters_1, buffer);
 }
 
@@ -575,6 +575,13 @@ public static id static_stringWithCString_length_(int bytes, int length) {
 public static id stringWithCharacters(int characters, int length) {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_1length_1, characters, length);
 	return result != 0 ? new id(result) : null;
+}
+
+public static NSString stringWith(String str) {
+	char[] chars = new char[str.length()];
+	str.getChars(0, chars.length, chars, 0);
+	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_1length_1, chars, chars.length);
+	return result != 0 ? new NSString(result) : null;
 }
 
 public static id static_stringWithContentsOfFile_(NSString path) {

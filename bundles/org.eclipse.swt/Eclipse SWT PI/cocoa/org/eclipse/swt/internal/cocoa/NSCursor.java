@@ -55,14 +55,14 @@ public NSImage image() {
 	return result != 0 ? new NSImage(result) : null;
 }
 
-public id initWithImage_foregroundColorHint_backgroundColorHint_hotSpot_(NSImage newImage, NSColor fg, NSColor bg, NSPoint hotSpot) {
+public NSCursor initWithImage_foregroundColorHint_backgroundColorHint_hotSpot_(NSImage newImage, NSColor fg, NSColor bg, NSPoint hotSpot) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithImage_1foregroundColorHint_1backgroundColorHint_1hotSpot_1, newImage != null ? newImage.id : 0, fg != null ? fg.id : 0, bg != null ? bg.id : 0, hotSpot);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithImage_hotSpot_(NSImage newImage, NSPoint aPoint) {
+public NSCursor initWithImage_hotSpot_(NSImage newImage, NSPoint aPoint) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithImage_1hotSpot_1, newImage != null ? newImage.id : 0, aPoint);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isSetOnMouseEntered() {
