@@ -20,6 +20,15 @@ public NSString fontName() {
 	return id != 0 ? new NSString(id) : null;
 }
 
+public float ascender() {
+	return (float)OS.objc_msgSend_fpret(id, OS.sel_ascender);
+}
+
+public float descender() {
+	return (float)OS.objc_msgSend_fpret(id, OS.sel_descender);
+}
+
+
 public static NSFont fontWithName(NSString fontName, float size) {
 	int id = OS.objc_msgSend(OS.class_NSFont, OS.sel_fontWithName_1size_1, fontName != null ? fontName.id : 0, size);
 	return id != 0 ? new NSFont(id) : null;

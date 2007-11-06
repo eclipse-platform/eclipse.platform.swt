@@ -1325,7 +1325,7 @@ public Color getSystemColor (int id) {
 //	float green = ((rgb.green >> 8) & 0xFF) / 255f;
 //	float blue = ((rgb.blue >> 8) & 0xFF) / 255f;
 //	return Color.carbon_new (this, new float[]{red, green, blue, 1});
-	return null;
+	return super.getSystemColor(id);
 }
 
 /**

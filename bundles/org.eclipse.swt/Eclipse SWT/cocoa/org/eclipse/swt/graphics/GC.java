@@ -592,6 +592,58 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
+NSAttributedString createString(String string, int flags) {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	float[] foreground = data.foreground;
+	NSColor color = NSColor.colorWithDeviceRGBA(foreground[0], foreground[1], foreground[2], data.alpha / 255f);
+	dict.setObject(color, OS.NSForegroundColorAttributeName());
+	dict.setObject(data.font.handle, OS.NSFontAttributeName());
+	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+		float[] background = data.background;
+		color = NSColor.colorWithDeviceRGBA(background[0], background[1], background[2], data.alpha / 255f);
+		dict.setObject(color, OS.NSBackgroundColorAttributeName());
+	}
+	int length = string.length();
+	char[] chars = new char[length];
+	string.getChars(0, length, chars, 0);
+//	int breakCount = 0;
+//	int[] breaks = null;
+//	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
+//		int i=0, j=0;
+//		while (i < chars.length) {
+//			char c = chars [j++] = chars [i++];
+//			switch (c) {
+//				case '&': {
+//					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
+//						if (i == chars.length) {continue;}
+//						if (chars [i] == '&') {i++; continue;}
+//						j--;
+//					}
+//					break;
+//				}
+//				case '\r':
+//				case '\n': {
+//					if ((flags & SWT.DRAW_DELIMITER) != 0) {
+//						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
+//						j--;
+//						if (breaks == null) {
+//							breaks = new int[4];
+//						} else if (breakCount == breaks.length) {
+//							int[] newBreaks = new int[breaks.length + 4];
+//							System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
+//							breaks = newBreaks;
+//						}
+//						breaks[breakCount++] = j;
+//					}
+//					break;
+//				}
+//			}
+//		}
+//		length = j;
+//	}
+	NSString str = NSString.stringWith(chars, length);
+	return ((NSAttributedString)new NSAttributedString().alloc()).init(str, dict);
+}
 
 /**
  * Disposes of the operating system resources associated with
@@ -652,9 +704,8 @@ public void dispose() {
  * </ul>
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -663,20 +714,20 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) return;
-	OS.CGContextBeginPath(handle);
-	OS.CGContextSaveGState(handle);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	OS.CGContextTranslateCTM(handle, x + xOffset + width / 2f, y + yOffset + height / 2f);
-	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-	if (arcAngle < 0) {
-		OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
-	} else {
-		OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
-	}
-	OS.CGContextRestoreGState(handle);
-	OS.CGContextStrokePath(handle);
-	flush();
+//	if (width == 0 || height == 0 || arcAngle == 0) return;
+//	OS.CGContextBeginPath(handle);
+//	OS.CGContextSaveGState(handle);
+//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+//	OS.CGContextTranslateCTM(handle, x + xOffset + width / 2f, y + yOffset + height / 2f);
+//	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+//	if (arcAngle < 0) {
+//		OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
+//	} else {
+//		OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+//	}
+//	OS.CGContextRestoreGState(handle);
+//	OS.CGContextStrokePath(handle);
+//	flush();
 }
 
 /** 
@@ -697,17 +748,16 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  * @see #drawRectangle(int, int, int, int)
  */
 public void drawFocus(int x, int y, int width, int height) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.updateClip) setCGClipping();
-	int[] metric = new int[1];
-	OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
-	CGRect rect = new CGRect ();
-	rect.x = x + metric[0];
-	rect.y = y + metric[0];
-	rect.width = width - metric[0] * 2;
-	rect.height = height - metric[0] * 2;
-	OS.HIThemeDrawFocusRect(rect, true, handle, OS.kHIThemeOrientationNormal);
-	flush();
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	int[] metric = new int[1];
+//	OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
+//	CGRect rect = new CGRect ();
+//	rect.x = x + metric[0];
+//	rect.y = y + metric[0];
+//	rect.width = width - metric[0] * 2;
+//	rect.height = height - metric[0] * 2;
+//	OS.HIThemeDrawFocusRect(rect, true, handle, OS.kHIThemeOrientationNormal);
+//	flush();
 }
 
 /**
@@ -730,7 +780,7 @@ public void drawFocus(int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
@@ -769,7 +819,7 @@ public void drawImage(Image image, int x, int y) {
  * </ul>
  */
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -780,10 +830,10 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	if (data.updateClip) setCGClipping();
-	int imageHandle = srcImage.handle;
- 	int imgWidth = OS.CGImageGetWidth(imageHandle);
- 	int imgHeight = OS.CGImageGetHeight(imageHandle);
+	NSImage imageHandle = srcImage.handle;
+	NSSize size = imageHandle.size();
+ 	int imgWidth = (int)size.width;
+ 	int imgHeight = (int)size.height;
  	if (simple) {
  		srcWidth = destWidth = imgWidth;
  		srcHeight = destHeight = imgHeight;
@@ -796,35 +846,23 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		}
  	}
  	if (srcImage.memGC != null) srcImage.createAlpha();
- 	OS.CGContextSaveGState(handle);
- 	OS.CGContextScaleCTM(handle, 1, -1);
- 	OS.CGContextTranslateCTM(handle, 0, -(destHeight + 2 * destY));
- 	CGRect rect = new CGRect();
- 	rect.x = destX;
- 	rect.y = destY;
- 	rect.width = destWidth;
-	rect.height = destHeight;
- 	if (simple) {
- 		OS.CGContextDrawImage(handle, rect, imageHandle);
- 	} else {
-		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
-		int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
-		int bpr = OS.CGImageGetBytesPerRow(imageHandle);
-		int colorspace = OS.CGImageGetColorSpace(imageHandle);
-		int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
-		int data = srcImage.data + (srcY * bpr) + srcX * 4;
-		int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
-		if (provider != 0) {
-			int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
-			OS.CGDataProviderRelease(provider);
-			if (subImage != 0) {
-		 		OS.CGContextDrawImage(handle, rect, subImage);
- 				OS.CGImageRelease(subImage);
-			}
-		}
- 	}
- 	OS.CGContextRestoreGState(handle);
- 	flush();
+ 	handle.saveGraphicsState();
+ 	NSAffineTransform transform = NSAffineTransform.transform();
+ 	transform.scale(1, -1);
+ 	transform.translate(0, -(destHeight + 2 * destY));
+ 	transform.concat();
+ 	NSRect srcRect = new NSRect();
+ 	srcRect.x = srcX;
+ 	srcRect.y = srcY;
+ 	srcRect.width = srcWidth;
+ 	srcRect.height = srcHeight;
+ 	NSRect destRect = new NSRect();
+ 	destRect.x = destX;
+ 	destRect.y = destY;
+ 	destRect.width = destWidth;
+ 	destRect.height = destHeight;
+ 	imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
+ 	handle.restoreGraphicsState();
 }
 
 /** 
@@ -930,6 +968,7 @@ public void drawPath(Path path) {
 	NSBezierPath drawPath = data.path;
 	drawPath.appendBezierPath(path.handle);
 	drawPath.stroke();
+	drawPath.removeAllPoints();
 }
 
 /** 
@@ -1267,73 +1306,52 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FONT | FOREGROUND_FILL);
-	if (data.updateClip) setCGClipping();
-	int length = string.length();
-	if (length == 0) return;
-	OS.CGContextSaveGState(handle);
-	OS.CGContextScaleCTM(handle, 1, -1);
-	boolean mode = true;
-	switch (data.textAntialias) {
-		case SWT.DEFAULT:
-			/* Printer is off by default */
-			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
-			break;
-		case SWT.OFF: mode = false; break;
-	}
-	OS.CGContextSetShouldAntialias(handle, mode);
-	length = setString(string, flags);
-	if ((flags & SWT.DRAW_DELIMITER) != 0) {
-		int layout = data.layout;
-		int[] breakCount = new int[1];
-		OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
-		int[] breaks = new int[breakCount[0] + 1];
-		OS.ATSUGetSoftLineBreaks(layout, 0, length, breakCount[0], breaks, breakCount);
-		breaks[breakCount[0]] = length;
-		for (int i=0, start=0; i<breaks.length; i++) {
-			int lineBreak = breaks[i];
-			drawText(x, y, start, lineBreak - start, flags);
-			y += data.fontAscent + data.fontDescent;
-			start = lineBreak;
-		}
-	} else {
-		drawText(x, y, 0, length, flags);
-	}
-	OS.CGContextRestoreGState(handle);
-	flush();
+	handle.saveGraphicsState();
+	NSAttributedString str = createString(string, flags);
+ 	NSAffineTransform transform = NSAffineTransform.transform();
+ 	transform.scale(1, -1);
+ 	transform.translate(0, -(str.size().height + 2 * y));
+ 	transform.concat();
+	NSPoint pt = new NSPoint();
+	pt.x = x;
+	pt.y = y;
+	str.drawAtPoint(pt);
+	str.release();
+	handle.restoreGraphicsState();
 }
-
-void drawText(int x, int y, int start, int length, int flags) {
-	int layout = data.layout;
-	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-		ATSTrapezoid trapezoid = new ATSTrapezoid();
-		OS.ATSUGetGlyphBounds(layout, 0, 0, start, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-		int width = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
-		int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
-		CGRect rect = new CGRect();
-		rect.x = x;
-		rect.y = -(y + height);
-		rect.width = width;
-		rect.height = height;
-		OS.CGContextSaveGState(handle);
-		Pattern pattern = data.backgroundPattern;
-		if (pattern != null) {
-			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-			OS.CGContextSetFillColorSpace(handle, colorspace);
-			OS.CGColorSpaceRelease(colorspace);
-			if (data.backPattern == 0) data.backPattern = pattern.createPattern(handle);
-			OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
-		} else {
-			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
-			OS.CGContextSetFillColor(handle, data.background);
-		}
-		OS.CGContextFillRect(handle, rect);
-		OS.CGContextRestoreGState(handle);
-	}
-	OS.ATSUDrawText(layout, start, length, OS.Long2Fix(x), OS.Long2Fix(-(y + data.fontAscent)));	
-}
+//
+//void drawText(int x, int y, int start, int length, int flags) {
+//	int layout = data.layout;
+//	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+//		ATSTrapezoid trapezoid = new ATSTrapezoid();
+//		OS.ATSUGetGlyphBounds(layout, 0, 0, start, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+//		int width = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
+//		int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
+//		CGRect rect = new CGRect();
+//		rect.x = x;
+//		rect.y = -(y + height);
+//		rect.width = width;
+//		rect.height = height;
+//		OS.CGContextSaveGState(handle);
+//		Pattern pattern = data.backgroundPattern;
+//		if (pattern != null) {
+//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+//			OS.CGContextSetFillColorSpace(handle, colorspace);
+//			OS.CGColorSpaceRelease(colorspace);
+//			if (data.backPattern == 0) data.backPattern = pattern.createPattern(handle);
+//			OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
+//		} else {
+//			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
+//			OS.CGContextSetFillColor(handle, data.background);
+//		}
+//		OS.CGContextFillRect(handle, rect);
+//		OS.CGContextRestoreGState(handle);
+//	}
+//	OS.ATSUDrawText(layout, start, length, OS.Long2Fix(x), OS.Long2Fix(-(y + data.fontAscent)));	
+//}
 
 /**
  * Compares the argument to the receiver, and returns true
@@ -1384,9 +1402,8 @@ public boolean equals(Object object) {
  * @see #drawArc
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);
-	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1396,20 +1413,20 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	OS.CGContextBeginPath(handle);
-    OS.CGContextSaveGState(handle);
-    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
-    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-    OS.CGContextMoveToPoint(handle, 0, 0);
-    if (arcAngle < 0) {
-    	OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
-    } else {
-        OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
-    }
-    OS.CGContextClosePath(handle);
-    OS.CGContextRestoreGState(handle);
-	OS.CGContextFillPath(handle);
-	flush();
+//	OS.CGContextBeginPath(handle);
+//    OS.CGContextSaveGState(handle);
+//    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+//    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+//    OS.CGContextMoveToPoint(handle, 0, 0);
+//    if (arcAngle < 0) {
+//    	OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
+//    } else {
+//        OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+//    }
+//    OS.CGContextClosePath(handle);
+//    OS.CGContextRestoreGState(handle);
+//	OS.CGContextFillPath(handle);
+//	flush();
 }
 
 /**
@@ -1433,10 +1450,8 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
-	
-	/* Rewrite this to use GdkPixbuf */
 
 	RGB backgroundRGB, foregroundRGB;
 	backgroundRGB = getBackground().getRGB();
@@ -1462,9 +1477,17 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		fillRectangle(x, y, width, height);
 		return;
 	}
-	ImageData.fillGradientRectangle(this, data.device,
-		x, y, width, height, vertical, fromRGB, toRGB,
-		8, 8, 8);
+
+	NSColor startingColor = NSColor.colorWithDeviceRGBA(foregroundRGB.red / 255f, foregroundRGB.green / 255f, foregroundRGB.blue / 255f, data.alpha / 255f);
+	NSColor endingColor = NSColor.colorWithDeviceRGBA(backgroundRGB.red / 255f, backgroundRGB.green / 255f, backgroundRGB.blue / 255f, data.alpha / 255f);
+	NSGradient gradient = ((NSGradient)new NSGradient().alloc()).init(startingColor, endingColor);
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	gradient.drawInRect(rect, vertical ? 90 : 0);
+	gradient.release();
 }
 
 /** 
@@ -1996,15 +2019,14 @@ public Font getFont() {
 public FontMetrics getFontMetrics() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FONT);
-	Font font = data.font;
-	ATSFontMetrics metrics = new ATSFontMetrics();
-	OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-	OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-	int ascent = (int)(0.5f + metrics.ascent * font.size);
-	int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);	
-	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
-	int averageCharWidth = stringExtent(s).x / s.length();
-	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, 0, ascent + descent);
+	NSFont font = data.font.handle;
+	System.out.println(font.ascender() + " " + font.descender());
+//	int ascent = (int)(0.5f + metrics.ascent * font.size);
+//	int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);	
+//	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+//	int averageCharWidth = stringExtent(s).x / s.length();
+//	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, 0, ascent + descent);
+	return null;
 }
 
 /** 
@@ -2445,7 +2467,8 @@ public void setAdvanced(boolean advanced) {
 public void setAlpha(int alpha) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
-	OS.CGContextSetAlpha(handle, data.alpha / 255f);
+	data.state &= ~(BACKGROUND | FOREGROUND | FOREGROUND_FILL);
+	
 }
 
 /**
@@ -2482,7 +2505,8 @@ public void setAntialias(int antialias) {
 	switch (antialias) {
 		case SWT.DEFAULT:
 			/* Printer is off by default */
-			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
+			mode = true;
+//			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
 			break;
 		case SWT.OFF: mode = false; break;
 		case SWT.ON: mode = true; break;
@@ -2490,7 +2514,7 @@ public void setAntialias(int antialias) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.antialias = antialias;
-	OS.CGContextSetShouldAntialias(handle, mode);
+	handle.setShouldAntialias(mode);
 }
 
 /**
@@ -3101,77 +3125,6 @@ public void setLineWidth(int lineWidth) {
 	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);	
 }
 
-int setString(String string, int flags) {
-	if (data.layout == 0) createLayout ();
-	if (string == data.string && (flags & ~SWT.DRAW_TRANSPARENT) == (data.drawFlags & ~SWT.DRAW_TRANSPARENT)) {
-		return data.stringLength;
-	}
-	int layout = data.layout;
-	int length = string.length();
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	int breakCount = 0;
-	int[] breaks = null;
-	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
-		int i=0, j=0;
-		while (i < chars.length) {
-			char c = chars [j++] = chars [i++];
-			switch (c) {
-				case '&': {
-					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
-						if (i == chars.length) {continue;}
-						if (chars [i] == '&') {i++; continue;}
-						j--;
-					}
-					break;
-				}
-				case '\r':
-				case '\n': {
-					if ((flags & SWT.DRAW_DELIMITER) != 0) {
-						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
-						j--;
-						if (breaks == null) {
-							breaks = new int[4];
-						} else if (breakCount == breaks.length) {
-							int[] newBreaks = new int[breaks.length + 4];
-							System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
-							breaks = newBreaks;
-						}
-						breaks[breakCount++] = j;
-					}
-					break;
-				}
-			}
-		}
-		length = j;
-	}
-	if ((flags & SWT.DRAW_TAB) != 0) {
-		if (data.tabs == 0) createTabs();
-		OS.ATSUSetTabArray(layout, data.tabs, TAB_COUNT);
-	} else {
-		OS.ATSUSetTabArray(layout, 0, 0);
-	}
-	int ptr = OS.NewPtr(length * 2);
-	OS.memmove(ptr, chars, length * 2);
-	OS.ATSUSetTextPointerLocation(layout, ptr, 0, length, length);
-	if ((flags & SWT.DRAW_DELIMITER) != 0 && breaks != null) {
-		for (int i=0; i<breakCount; i++) {
-			OS.ATSUSetSoftLineBreak(layout, breaks[i]);
-		}
-	}
-	Font font = data.font;
-	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
-	OS.ATSUSetRunStyle(layout, atsuiStyle, 0, length);
-	OS.ATSUSetTransientFontMatching(layout, true);
-	if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
-	data.stringPtr = ptr;
-	data.string = string;
-	data.stringLength = length;
-	data.stringWidth = data.stringHeight = -1;
-	data.drawFlags = flags;
-	return length;
-}
-
 /** 
  * If the argument is <code>true</code>, puts the receiver
  * in a drawing mode where the resulting color in the destination
@@ -3364,35 +3317,9 @@ public Point textExtent(String string, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FONT);
-	int length = setString(string, flags);
-	if (data.stringWidth != -1) return new Point(data.stringWidth, data.stringHeight);
-	int width = 0, height;
-	if (length == 0) {
-		height = data.fontAscent + data.fontDescent;
-	} else {
-		ATSTrapezoid trapezoid = new ATSTrapezoid();
-		if ((flags & SWT.DRAW_DELIMITER) != 0) {
-			height = 0;
-			int layout = data.layout;
-			int[] breakCount = new int[1];
-			OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
-			int[] breaks = new int[breakCount[0] + 1];
-			OS.ATSUGetSoftLineBreaks(layout, 0, length, breakCount[0], breaks, breakCount);
-			breaks[breakCount[0]] = length;
-			for (int i=0, start=0; i<breaks.length; i++) {
-				int lineBreak = breaks[i];
-				OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineBreak - start, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-				width = Math.max(width, OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x));
-				height += OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
-				start = lineBreak;
-			}
-		} else {
-			OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-			width = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
-			height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
-		}
-	}
-	return new Point(data.stringWidth = width, data.stringHeight = height);
+	NSAttributedString str = createString(string, flags);
+	NSSize size = str.size();
+	return new Point((int)size.width, (int)size.height);
 }
 
 /**

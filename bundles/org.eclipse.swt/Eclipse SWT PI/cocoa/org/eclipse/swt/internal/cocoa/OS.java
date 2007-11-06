@@ -105,9 +105,10 @@ public class OS extends C {
 	public static final int class_NSAutoreleasePool = OS.objc_getClass("NSAutoreleasePool");
 	public static final int class_NSProgressIndicator = OS.objc_getClass("NSProgressIndicator");
 	public static final int class_NSGraphicsContext = OS.objc_getClass("NSGraphicsContext");
+	public static final int class_NSMutableDictionary = OS.objc_getClass("NSMutableDictionary");
 	
-	/** Selectors */	
-	public static final int sel_drawInRect_1fromRect_1operation_1fraction_1 = OS.sel_registerName("drawInRect:fromRect:operation:fraction:");
+	/** Selectors */
+	
 	public static final int sel_addCursorRect_1cursor_1 = OS.sel_registerName("addCursorRect:cursor:");
 	public static final int sel_addSubview_1 = OS.sel_registerName("addSubview:");
 	public static final int sel_addRepresentation_1 = OS.sel_registerName("addRepresentation:");
@@ -118,6 +119,7 @@ public class OS extends C {
 	public static final int sel_appendBezierPathWithRect_1 = OS.sel_registerName("appendBezierPathWithRect:");
 	public static final int sel_appendBezierPathWithRoundedRect_1xRadius_1yRadius_1 = OS.sel_registerName("appendBezierPathWithRoundedRect:xRadius:yRadius:");
 	public static final int sel_arrowCursor = OS.sel_registerName("arrowCursor");
+	public static final int sel_ascender = OS.sel_registerName("ascender");
 	public static final int sel_bestRepresentationForDevice_1 = OS.sel_registerName("bestRepresentationForDevice:");
 	public static final int sel_bezierPath = OS.sel_registerName("bezierPath");
 	public static final int sel_bezierPathWithOvalInRect_1 = OS.sel_registerName("bezierPathWithOvalInRect:");
@@ -135,9 +137,14 @@ public class OS extends C {
 	public static final int sel_currentPoint = OS.sel_registerName("currentPoint");
 	public static final int sel_curveToPoint_1controlPoint1_1controlPoint2_1 = OS.sel_registerName("curveToPoint:controlPoint1:controlPoint2:");
 	public static final int sel_depth = OS.sel_registerName("depth");
+	public static final int sel_descender = OS.sel_registerName("descender");
 	public static final int sel_doubleValue = OS.sel_registerName("doubleValue");
 	public static final int sel_drawAtPoint_1withAttributes_1 = OS.sel_registerName("drawAtPoint:withAttributes:");
+	public static final int sel_drawAtPoint_1 = OS.sel_registerName("drawAtPoint:");
 	public static final int sel_drawInRect_1angle_1 = OS.sel_registerName("drawInRect:angle:");
+	public static final int sel_drawInRect_1fromRect_1operation_1fraction_1 = OS.sel_registerName("drawInRect:fromRect:operation:fraction:");
+	public static final int sel_dictionaryWithCapacity_1 = OS.sel_registerName("dictionaryWithCapacity:");
+	public static final int sel_elementCount = OS.sel_registerName("elementCount");
 	public static final int sel_familyName = OS.sel_registerName("familyName");
 	public static final int sel_fill = OS.sel_registerName("fill");
 	public static final int sel_fontName = OS.sel_registerName("fontName");
@@ -154,8 +161,9 @@ public class OS extends C {
 	public static final int sel_initWithContentRect_1styleMask_1backing_1defer_1 = OS.sel_registerName("initWithContentRect:styleMask:backing:defer:");
 	public static final int sel_initWithImage_1hotSpot_1 = OS.sel_registerName("initWithImage:hotSpot:");
 	public static final int sel_initWithSize_1 = OS.sel_registerName("initWithSize:");
-	public static final int sel_initWithTransform_1 = OS.sel_registerName("initWithTransform:");
 	public static final int sel_initWithStartingColor_endingColor_1 = OS.sel_registerName("initWithStartingColor:endingColor:");
+	public static final int sel_initWithString_1attributes_1 = OS.sel_registerName("initWithString:attributes:");
+	public static final int sel_initWithTransform_1 = OS.sel_registerName("initWithTransform:");
 	public static final int sel_invert = OS.sel_registerName("invert");
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
@@ -237,7 +245,7 @@ public class OS extends C {
 	public static final int sel_visibleFrame = OS.sel_registerName("visibleFrame");
 	public static final int sel_windowWillClose_1 = OS.sel_registerName("windowWillClose:");
 	public static final int sel_windowShouldClose_1 = OS.sel_registerName("windowShouldClose:");
-	
+	public static final int sel_setObject_1forKey_1 = OS.sel_registerName("setObject:forKey:");
 	
 
 	public static final int sel_sendSelection = OS.sel_registerName("sendSelection");	

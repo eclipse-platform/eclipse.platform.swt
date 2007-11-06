@@ -15,12 +15,12 @@ public static void setCurrentContext(NSGraphicsContext context) {
 	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_setCurrentContext_1, context != null ? context.id : 0);
 }
 
-public static void saveGraphicsState() {
-	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_saveGraphicsState);
+public void saveGraphicsState() {
+	OS.objc_msgSend(id, OS.sel_saveGraphicsState);
 }
 
-public static void restoreGraphicsState() {
-	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_restoreGraphicsState);
+public void restoreGraphicsState() {
+	OS.objc_msgSend(id, OS.sel_restoreGraphicsState);
 }
 
 public int imageInterpolation() {

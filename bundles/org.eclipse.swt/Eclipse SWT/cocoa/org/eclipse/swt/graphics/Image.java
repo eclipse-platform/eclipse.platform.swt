@@ -856,6 +856,12 @@ public int internal_new_GC (GCData data) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(new NSBitmapImageRep(handle.bestRepresentationForDevice(null).id));
+	NSGraphicsContext.setCurrentContext(context);
+	NSAffineTransform transform = NSAffineTransform.transform();
+	NSSize size = handle.size();
+	transform.translate(0, size.height);
+	transform.scale(1, -1);
+	transform.set();
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
