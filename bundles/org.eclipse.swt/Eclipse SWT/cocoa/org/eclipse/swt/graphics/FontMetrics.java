@@ -26,7 +26,7 @@ public final class FontMetrics {
 FontMetrics() {
 }
 
-public static FontMetrics carbon_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+public static FontMetrics cocoa_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.ascent = ascent;
 	fontMetrics.descent = descent;

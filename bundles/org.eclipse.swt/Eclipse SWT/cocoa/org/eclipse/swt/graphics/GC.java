@@ -2020,13 +2020,11 @@ public FontMetrics getFontMetrics() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FONT);
 	NSFont font = data.font.handle;
-	System.out.println(font.ascender() + " " + font.descender());
-//	int ascent = (int)(0.5f + metrics.ascent * font.size);
-//	int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);	
-//	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
-//	int averageCharWidth = stringExtent(s).x / s.length();
-//	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, 0, ascent + descent);
-	return null;
+	int ascent = (int)(0.5f + font.ascender());
+	int descent = (int)(0.5f + (-font.descender() + font.leading()));	
+	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+	int averageCharWidth = stringExtent(s).x / s.length();
+	return FontMetrics.cocoa_new(ascent, descent, averageCharWidth, 0, ascent + descent);
 }
 
 /** 

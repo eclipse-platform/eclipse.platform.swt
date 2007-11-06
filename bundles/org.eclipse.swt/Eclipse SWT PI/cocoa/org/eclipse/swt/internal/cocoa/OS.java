@@ -168,6 +168,7 @@ public class OS extends C {
 	public static final int sel_isFlipped = OS.sel_registerName("isFlipped");
 	public static final int sel_isVisible = OS.sel_registerName("isVisible");
 	public static final int sel_keyDown_1 = OS.sel_registerName("keyDown:");
+	public static final int sel_leading = OS.sel_registerName("leading");
 	public static final int sel_length = OS.sel_registerName("length");
 	public static final int sel_lineToPoint_1 = OS.sel_registerName("lineToPoint:");
 	public static final int sel_mainScreen = OS.sel_registerName("mainScreen");

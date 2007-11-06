@@ -28,6 +28,9 @@ public float descender() {
 	return (float)OS.objc_msgSend_fpret(id, OS.sel_descender);
 }
 
+public float leading() {
+	return (float)OS.objc_msgSend_fpret(id, OS.sel_leading);
+}
 
 public static NSFont fontWithName(NSString fontName, float size) {
 	int id = OS.objc_msgSend(OS.class_NSFont, OS.sel_fontWithName_1size_1, fontName != null ? fontName.id : 0, size);
