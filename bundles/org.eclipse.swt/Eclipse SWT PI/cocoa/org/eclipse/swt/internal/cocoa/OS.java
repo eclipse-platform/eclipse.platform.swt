@@ -43,6 +43,8 @@ public static final native int objc_msgSend(int id, int sel, char[] arg0, int le
 public static final native int objc_msgSend(int id, int sel, String arg0);
 
 
+public static final native int objc_msgSend_size(int object, int selector, NSSize arg0);
+
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");
 public static final int class_NSCIImageRep = objc_getClass("NSCIImageRep");

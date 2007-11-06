@@ -21,7 +21,7 @@ public void drawAtPoint(NSPoint pt) {
 
 public NSSize size() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, id, OS.sel_size);
+	OS.objc_msgSend_size(id, OS.sel_size, result);
 	return result;
 }
 }

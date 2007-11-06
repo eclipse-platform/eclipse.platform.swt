@@ -1,3 +1,47 @@
 * preferred size
 * are subviews automatically released?
 * do widgets draw outside of their bounds?
+* why does this GP in Intel?
+
+#ifndef NO_bogus
+JNIEXPORT void JNICALL OS_NATIVE(bogus)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, bogus_FUNC);
+
+	NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity: 4];
+	NSString * str = [NSString stringWithUTF8String: "FRED"];
+	NSAttributedString * fred = [[NSAttributedString alloc] initWithString: str attributes: dict];
+	
+	//NSSize size = [fred size];
+	//printf("%f %f\n", size.width, size.height);
+	
+	//NSSize size;
+	//objc_msgSend_stret(&size, (id)fred, (SEL)sel_registerName("size"));
+	
+	void * size = malloc (1024);
+	objc_msgSend_stret(size, (id)fred, (SEL)sel_registerName("size"));
+	
+	OS_NATIVE_EXIT(env, that, bogus_FUNC);
+}
+#endif
+
+
+public static final native int objc_msgSend_size(int object, int selector, NSSize arg0);
+
+#ifndef NO_objc_1msgSend_1size
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1size)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NSSize _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1size_FUNC);
+	if (arg2) if ((lparg2 = getNSSizeFields(env, arg2, &_arg2)) == NULL) goto fail;
+	//rc = (jint)objc_msgSend_size(arg0, arg1, lparg2);
+	*lparg2 = [(NSAttributedString *)arg0 size];
+fail:
+	if (arg2 && lparg2) setNSSizeFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1size_FUNC);
+	return rc;
+}
+#endif

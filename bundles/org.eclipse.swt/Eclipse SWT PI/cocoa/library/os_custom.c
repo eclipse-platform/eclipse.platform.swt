@@ -26,3 +26,21 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 	return rc;
 }
 #endif
+
+
+#ifndef NO_objc_1msgSend_1size
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1size)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NSSize _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1size_FUNC);
+	if (arg2) if ((lparg2 = getNSSizeFields(env, arg2, &_arg2)) == NULL) goto fail;
+	//rc = (jint)objc_msgSend_size(arg0, arg1, lparg2);
+	*lparg2 = [(NSAttributedString *)arg0 size];
+fail:
+	if (arg2 && lparg2) setNSSizeFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1size_FUNC);
+	return rc;
+}
+#endif
