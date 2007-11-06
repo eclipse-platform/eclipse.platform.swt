@@ -11,31 +11,31 @@ public NSEvent(int id) {
 }
 
 public int CGEvent() {
-	return 	OS.objc_msgSend(this.id, OS.sel_CGEvent);
+	return OS.objc_msgSend(this.id, OS.sel_CGEvent);
 }
 
 public int absoluteX() {
-	return 	OS.objc_msgSend(this.id, OS.sel_absoluteX);
+	return OS.objc_msgSend(this.id, OS.sel_absoluteX);
 }
 
 public int absoluteY() {
-	return 	OS.objc_msgSend(this.id, OS.sel_absoluteY);
+	return OS.objc_msgSend(this.id, OS.sel_absoluteY);
 }
 
 public int absoluteZ() {
-	return 	OS.objc_msgSend(this.id, OS.sel_absoluteZ);
+	return OS.objc_msgSend(this.id, OS.sel_absoluteZ);
 }
 
 public int buttonMask() {
-	return 	OS.objc_msgSend(this.id, OS.sel_buttonMask);
+	return OS.objc_msgSend(this.id, OS.sel_buttonMask);
 }
 
 public int buttonNumber() {
-	return 	OS.objc_msgSend(this.id, OS.sel_buttonNumber);
+	return OS.objc_msgSend(this.id, OS.sel_buttonNumber);
 }
 
 public int capabilityMask() {
-	return 	OS.objc_msgSend(this.id, OS.sel_capabilityMask);
+	return OS.objc_msgSend(this.id, OS.sel_capabilityMask);
 }
 
 public NSString characters() {
@@ -49,7 +49,7 @@ public NSString charactersIgnoringModifiers() {
 }
 
 public int clickCount() {
-	return 	OS.objc_msgSend(this.id, OS.sel_clickCount);
+	return OS.objc_msgSend(this.id, OS.sel_clickCount);
 }
 
 public NSGraphicsContext context() {
@@ -58,11 +58,11 @@ public NSGraphicsContext context() {
 }
 
 public int data1() {
-	return 	OS.objc_msgSend(this.id, OS.sel_data1);
+	return OS.objc_msgSend(this.id, OS.sel_data1);
 }
 
 public int data2() {
-	return 	OS.objc_msgSend(this.id, OS.sel_data2);
+	return OS.objc_msgSend(this.id, OS.sel_data2);
 }
 
 public float deltaX() {
@@ -78,7 +78,7 @@ public float deltaZ() {
 }
 
 public int deviceID() {
-	return 	OS.objc_msgSend(this.id, OS.sel_deviceID);
+	return OS.objc_msgSend(this.id, OS.sel_deviceID);
 }
 
 public static NSEvent enterExitEventWithType(int type, NSPoint location, int flags, double time, int wNum, NSGraphicsContext context, int eNum, int tNum, int data) {
@@ -87,11 +87,11 @@ public static NSEvent enterExitEventWithType(int type, NSPoint location, int fla
 }
 
 public int eventNumber() {
-	return 	OS.objc_msgSend(this.id, OS.sel_eventNumber);
+	return OS.objc_msgSend(this.id, OS.sel_eventNumber);
 }
 
 public int eventRef() {
-	return 	OS.objc_msgSend(this.id, OS.sel_eventRef);
+	return OS.objc_msgSend(this.id, OS.sel_eventRef);
 }
 
 public static NSEvent eventWithCGEvent(int cgEvent) {
@@ -105,15 +105,15 @@ public static NSEvent eventWithEventRef(int eventRef) {
 }
 
 public boolean isARepeat() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isARepeat) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isARepeat) != 0;
 }
 
 public boolean isEnteringProximity() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isEnteringProximity) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isEnteringProximity) != 0;
 }
 
 public static boolean isMouseCoalescingEnabled() {
-	return 	OS.objc_msgSend(OS.class_NSEvent, OS.sel_isMouseCoalescingEnabled) != 0;
+	return OS.objc_msgSend(OS.class_NSEvent, OS.sel_isMouseCoalescingEnabled) != 0;
 }
 
 public short keyCode() {
@@ -132,7 +132,7 @@ public NSPoint locationInWindow() {
 }
 
 public int modifierFlags() {
-	return 	OS.objc_msgSend(this.id, OS.sel_modifierFlags);
+	return OS.objc_msgSend(this.id, OS.sel_modifierFlags);
 }
 
 public static NSEvent mouseEventWithType(int type, NSPoint location, int flags, double time, int wNum, NSGraphicsContext context, int eNum, int cNum, float pressure) {
@@ -152,15 +152,15 @@ public static NSEvent otherEventWithType(int type, NSPoint location, int flags, 
 }
 
 public int pointingDeviceID() {
-	return 	OS.objc_msgSend(this.id, OS.sel_pointingDeviceID);
+	return OS.objc_msgSend(this.id, OS.sel_pointingDeviceID);
 }
 
 public int pointingDeviceSerialNumber() {
-	return 	OS.objc_msgSend(this.id, OS.sel_pointingDeviceSerialNumber);
+	return OS.objc_msgSend(this.id, OS.sel_pointingDeviceSerialNumber);
 }
 
 public int pointingDeviceType() {
-	return 	OS.objc_msgSend(this.id, OS.sel_pointingDeviceType);
+	return OS.objc_msgSend(this.id, OS.sel_pointingDeviceType);
 }
 
 public float pressure() {
@@ -188,11 +188,11 @@ public short subtype() {
 }
 
 public int systemTabletID() {
-	return 	OS.objc_msgSend(this.id, OS.sel_systemTabletID);
+	return OS.objc_msgSend(this.id, OS.sel_systemTabletID);
 }
 
 public int tabletID() {
-	return 	OS.objc_msgSend(this.id, OS.sel_tabletID);
+	return OS.objc_msgSend(this.id, OS.sel_tabletID);
 }
 
 public float tangentialPressure() {
@@ -209,25 +209,25 @@ public double timestamp() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_timestamp);
 }
 
-//public NSTrackingArea trackingArea() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_trackingArea);
-//	return result != 0 ? new NSTrackingArea(result) : null;
-//}
+public NSTrackingArea trackingArea() {
+	int result = OS.objc_msgSend(this.id, OS.sel_trackingArea);
+	return result != 0 ? new NSTrackingArea(result) : null;
+}
 
 public int trackingNumber() {
-	return 	OS.objc_msgSend(this.id, OS.sel_trackingNumber);
+	return OS.objc_msgSend(this.id, OS.sel_trackingNumber);
 }
 
 public int type() {
-	return 	OS.objc_msgSend(this.id, OS.sel_type);
+	return OS.objc_msgSend(this.id, OS.sel_type);
 }
 
 public long uniqueID() {
-	return 	OS.objc_msgSend(this.id, OS.sel_uniqueID);
+	return (long)OS.objc_msgSend(this.id, OS.sel_uniqueID);
 }
 
 public int userData() {
-	return 	OS.objc_msgSend(this.id, OS.sel_userData);
+	return OS.objc_msgSend(this.id, OS.sel_userData);
 }
 
 public id vendorDefined() {
@@ -236,11 +236,11 @@ public id vendorDefined() {
 }
 
 public int vendorID() {
-	return 	OS.objc_msgSend(this.id, OS.sel_vendorID);
+	return OS.objc_msgSend(this.id, OS.sel_vendorID);
 }
 
 public int vendorPointingDeviceType() {
-	return 	OS.objc_msgSend(this.id, OS.sel_vendorPointingDeviceType);
+	return OS.objc_msgSend(this.id, OS.sel_vendorPointingDeviceType);
 }
 
 public NSWindow window() {
@@ -249,7 +249,7 @@ public NSWindow window() {
 }
 
 public int windowNumber() {
-	return 	OS.objc_msgSend(this.id, OS.sel_windowNumber);
+	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }
 
 }

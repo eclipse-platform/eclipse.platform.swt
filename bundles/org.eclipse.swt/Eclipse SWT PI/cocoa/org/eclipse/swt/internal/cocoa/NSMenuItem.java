@@ -11,7 +11,7 @@ public NSMenuItem(int id) {
 }
 
 public int action() {
-	return 	OS.objc_msgSend(this.id, OS.sel_action);
+	return OS.objc_msgSend(this.id, OS.sel_action);
 }
 
 public NSAttributedString attributedTitle() {
@@ -20,7 +20,7 @@ public NSAttributedString attributedTitle() {
 }
 
 public boolean hasSubmenu() {
-	return 	OS.objc_msgSend(this.id, OS.sel_hasSubmenu) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_hasSubmenu) != 0;
 }
 
 public NSImage image() {
@@ -29,7 +29,7 @@ public NSImage image() {
 }
 
 public int indentationLevel() {
-	return 	OS.objc_msgSend(this.id, OS.sel_indentationLevel);
+	return OS.objc_msgSend(this.id, OS.sel_indentationLevel);
 }
 
 public id initWithTitle(NSString aString, int aSelector, NSString charCode) {
@@ -38,27 +38,27 @@ public id initWithTitle(NSString aString, int aSelector, NSString charCode) {
 }
 
 public boolean isAlternate() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isAlternate) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isAlternate) != 0;
 }
 
 public boolean isEnabled() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isEnabled) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isEnabled) != 0;
 }
 
 public boolean isHidden() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isHidden) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isHidden) != 0;
 }
 
 public boolean isHiddenOrHasHiddenAncestor() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isHiddenOrHasHiddenAncestor) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isHiddenOrHasHiddenAncestor) != 0;
 }
 
 public boolean isHighlighted() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isHighlighted) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isHighlighted) != 0;
 }
 
 public boolean isSeparatorItem() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isSeparatorItem) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isSeparatorItem) != 0;
 }
 
 public NSString keyEquivalent() {
@@ -67,7 +67,7 @@ public NSString keyEquivalent() {
 }
 
 public int keyEquivalentModifierMask() {
-	return 	OS.objc_msgSend(this.id, OS.sel_keyEquivalentModifierMask);
+	return OS.objc_msgSend(this.id, OS.sel_keyEquivalentModifierMask);
 }
 
 public NSMenu menu() {
@@ -86,7 +86,7 @@ public NSString mnemonic() {
 }
 
 public int mnemonicLocation() {
-	return 	OS.objc_msgSend(this.id, OS.sel_mnemonicLocation);
+	return OS.objc_msgSend(this.id, OS.sel_mnemonicLocation);
 }
 
 public NSImage offStateImage() {
@@ -206,7 +206,7 @@ public void setView(NSView view) {
 }
 
 public int state() {
-	return 	OS.objc_msgSend(this.id, OS.sel_state);
+	return OS.objc_msgSend(this.id, OS.sel_state);
 }
 
 public NSMenu submenu() {
@@ -215,7 +215,7 @@ public NSMenu submenu() {
 }
 
 public int tag() {
-	return 	OS.objc_msgSend(this.id, OS.sel_tag);
+	return OS.objc_msgSend(this.id, OS.sel_tag);
 }
 
 public id target() {
@@ -239,7 +239,7 @@ public NSString userKeyEquivalent() {
 }
 
 public static boolean usesUserKeyEquivalents() {
-	return 	OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_usesUserKeyEquivalents) != 0;
+	return OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_usesUserKeyEquivalents) != 0;
 }
 
 public NSView view() {

@@ -3,64 +3,75 @@ package org.eclipse.swt.internal.cocoa;
 public class NSAffineTransform extends NSObject {
 
 public NSAffineTransform() {
-	super(0);
+	super();
 }
 
 public NSAffineTransform(int id) {
 	super(id);
 }
 
-public NSAffineTransform initWithTransform(NSAffineTransform transform) {
-	int id = OS.objc_msgSend(this.id, OS.sel_initWithTransform_1, transform.id);
-	return id != 0 ? this : null;
+public void appendTransform(NSAffineTransform transform) {
+	OS.objc_msgSend(this.id, OS.sel_appendTransform_1, transform != null ? transform.id : 0);
 }
 
-public static NSAffineTransform transform() {
-	int id = OS.objc_msgSend(OS.class_NSAffineTransform, OS.sel_transform);
-	return id != 0 ? new NSAffineTransform(id) : null;
-}
-
-public void concat() {
-	OS.objc_msgSend(id, OS.sel_concat);
+public id initWithTransform(NSAffineTransform transform) {
+	int result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_1, transform != null ? transform.id : 0);
+	return result != 0 ? new id(result) : null;
 }
 
 public void invert() {
-	OS.objc_msgSend(id, OS.sel_invert);
+	OS.objc_msgSend(this.id, OS.sel_invert);
 }
 
 public void prependTransform(NSAffineTransform transform) {
-	OS.objc_msgSend(id, OS.sel_prependTransform_1, transform != null ? transform.id : 0);
+	OS.objc_msgSend(this.id, OS.sel_prependTransform_1, transform != null ? transform.id : 0);
 }
 
 public void rotateByDegrees(float angle) {
-	OS.objc_msgSend(id, OS.sel_rotateByDegrees_1, angle);
+	OS.objc_msgSend(this.id, OS.sel_rotateByDegrees_1, angle);
 }
 
-public void scale(float sx, float sy) {
-	OS.objc_msgSend(id, OS.sel_scaleXBy_1yBy_1, sx, sy);
+public void rotateByRadians(float angle) {
+	OS.objc_msgSend(this.id, OS.sel_rotateByRadians_1, angle);
 }
 
-public void setTransformStruct(NSAffineTransformStruct struct) {
-	OS.objc_msgSend(id, OS.sel_setTransformStruct_1, struct);
+public void scaleBy(float scale) {
+	OS.objc_msgSend(this.id, OS.sel_scaleBy_1, scale);
 }
 
-public void set() {
-	OS.objc_msgSend(id, OS.sel_set);
+public void scaleXBy(float scaleX, float scaleY) {
+	OS.objc_msgSend(this.id, OS.sel_scaleXBy_1yBy_1, scaleX, scaleY);
 }
 
-public NSPoint transformPoint(NSPoint point) {
-	OS.objc_msgSend_stret(point, id, OS.sel_transformPoint_1, point);
-	return point;
+public void setTransformStruct(NSAffineTransformStruct transformStruct) {
+	OS.objc_msgSend(this.id, OS.sel_setTransformStruct_1, transformStruct);
+}
+
+public static NSAffineTransform transform() {
+	int result = OS.objc_msgSend(OS.class_NSAffineTransform, OS.sel_transform);
+	return result != 0 ? new NSAffineTransform(result) : null;
+}
+
+public NSPoint transformPoint(NSPoint aPoint) {
+	NSPoint result = new NSPoint();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_transformPoint_1, aPoint);
+	return result;
+}
+
+public NSSize transformSize(NSSize aSize) {
+	NSSize result = new NSSize();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_transformSize_1, aSize);
+	return result;
 }
 
 public NSAffineTransformStruct transformStruct() {
 	NSAffineTransformStruct result = new NSAffineTransformStruct();
-	OS.objc_msgSend_stret(result, id, OS.sel_transformStruct);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_transformStruct);
 	return result;
 }
 
-public void translate(float dx, float dy) {
-	OS.objc_msgSend(id, OS.sel_translateXBy_1yBy_1, dx, dy);
+public void translateXBy(float deltaX, float deltaY) {
+	OS.objc_msgSend(this.id, OS.sel_translateXBy_1yBy_1, deltaX, deltaY);
 }
 
 }

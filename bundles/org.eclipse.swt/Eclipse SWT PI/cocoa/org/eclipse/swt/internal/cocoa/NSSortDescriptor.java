@@ -1,4 +1,5 @@
 package org.eclipse.swt.internal.cocoa;
+
 public class NSSortDescriptor extends NSObject {
 
 public NSSortDescriptor() {
@@ -10,19 +11,19 @@ public NSSortDescriptor(int id) {
 }
 
 public boolean ascending() {
-	return 	OS.objc_msgSend(this.id, OS.sel_ascending) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_ascending) != 0;
 }
 
 public int compareObject(id object1, id object2) {
-	return 	OS.objc_msgSend(this.id, OS.sel_compareObject_1toObject_1, object1 != null ? object1.id : 0, object2 != null ? object2.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_compareObject_1toObject_1, object1 != null ? object1.id : 0, object2 != null ? object2.id : 0);
 }
 
-public id initWithKey(NSString key, boolean ascending) {
+public id initWithKey_ascending_(NSString key, boolean ascending) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithKey_1ascending_1, key != null ? key.id : 0, ascending);
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithKey(NSString key, boolean ascending, int selector) {
+public id initWithKey_ascending_selector_(NSString key, boolean ascending, int selector) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithKey_1ascending_1selector_1, key != null ? key.id : 0, ascending, selector);
 	return result != 0 ? new id(result) : null;
 }
@@ -38,7 +39,7 @@ public id reversedSortDescriptor() {
 }
 
 public int selector() {
-	return 	OS.objc_msgSend(this.id, OS.sel_selector);
+	return OS.objc_msgSend(this.id, OS.sel_selector);
 }
 
 }

@@ -41,15 +41,15 @@ public id initWithIdentifier(id identifier) {
 }
 
 public boolean isEditable() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isEditable) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isEditable) != 0;
 }
 
 public boolean isHidden() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isHidden) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isHidden) != 0;
 }
 
 public boolean isResizable() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isResizable) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isResizable) != 0;
 }
 
 public float maxWidth() {
@@ -61,7 +61,7 @@ public float minWidth() {
 }
 
 public int resizingMask() {
-	return 	OS.objc_msgSend(this.id, OS.sel_resizingMask);
+	return OS.objc_msgSend(this.id, OS.sel_resizingMask);
 }
 
 public void setDataCell(NSCell cell) {

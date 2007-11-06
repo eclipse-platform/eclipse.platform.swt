@@ -25,7 +25,7 @@ public NSMenu attachedMenu() {
 }
 
 public boolean autoenablesItems() {
-	return 	OS.objc_msgSend(this.id, OS.sel_autoenablesItems) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_autoenablesItems) != 0;
 }
 
 public void cancelTracking() {
@@ -52,27 +52,27 @@ public NSMenuItem highlightedItem() {
 }
 
 public int indexOfItem(NSMenuItem index) {
-	return 	OS.objc_msgSend(this.id, OS.sel_indexOfItem_1, index != null ? index.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItem_1, index != null ? index.id : 0);
 }
 
 public int indexOfItemWithRepresentedObject(id object) {
-	return 	OS.objc_msgSend(this.id, OS.sel_indexOfItemWithRepresentedObject_1, object != null ? object.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithRepresentedObject_1, object != null ? object.id : 0);
 }
 
 public int indexOfItemWithSubmenu(NSMenu submenu) {
-	return 	OS.objc_msgSend(this.id, OS.sel_indexOfItemWithSubmenu_1, submenu != null ? submenu.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithSubmenu_1, submenu != null ? submenu.id : 0);
 }
 
 public int indexOfItemWithTag(int aTag) {
-	return 	OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTag_1, aTag);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTag_1, aTag);
 }
 
 public int indexOfItemWithTarget(id target, int actionSelector) {
-	return 	OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTarget_1andAction_1, target != null ? target.id : 0, actionSelector);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTarget_1andAction_1, target != null ? target.id : 0, actionSelector);
 }
 
 public int indexOfItemWithTitle(NSString aTitle) {
-	return 	OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTitle_1, aTitle != null ? aTitle.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTitle_1, aTitle != null ? aTitle.id : 0);
 }
 
 public id initWithTitle(NSString aTitle) {
@@ -90,11 +90,11 @@ public NSMenuItem insertItemWithTitle(NSString aString, int aSelector, NSString 
 }
 
 public boolean isAttached() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isAttached) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isAttached) != 0;
 }
 
 public boolean isTornOff() {
-	return 	OS.objc_msgSend(this.id, OS.sel_isTornOff) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_isTornOff) != 0;
 }
 
 public NSArray itemArray() {
@@ -132,11 +132,11 @@ public float menuBarHeight() {
 }
 
 public static boolean menuBarVisible() {
-	return 	OS.objc_msgSend(OS.class_NSMenu, OS.sel_menuBarVisible) != 0;
+	return OS.objc_msgSend(OS.class_NSMenu, OS.sel_menuBarVisible) != 0;
 }
 
 public boolean menuChangedMessagesEnabled() {
-	return 	OS.objc_msgSend(this.id, OS.sel_menuChangedMessagesEnabled) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_menuChangedMessagesEnabled) != 0;
 }
 
 public id menuRepresentation() {
@@ -145,11 +145,11 @@ public id menuRepresentation() {
 }
 
 public static int menuZone() {
-	return 	OS.objc_msgSend(OS.class_NSMenu, OS.sel_menuZone);
+	return OS.objc_msgSend(OS.class_NSMenu, OS.sel_menuZone);
 }
 
 public int numberOfItems() {
-	return 	OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
 public void performActionForItemAtIndex(int index) {
@@ -157,14 +157,14 @@ public void performActionForItemAtIndex(int index) {
 }
 
 public boolean performKeyEquivalent(NSEvent theEvent) {
-	return 	OS.objc_msgSend(this.id, OS.sel_performKeyEquivalent_1, theEvent != null ? theEvent.id : 0) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_performKeyEquivalent_1, theEvent != null ? theEvent.id : 0) != 0;
 }
 
-public static void popUpContextMenu(NSMenu menu, NSEvent event, NSView view) {
+public static void static_popUpContextMenu_withEvent_forView_(NSMenu menu, NSEvent event, NSView view) {
 	OS.objc_msgSend(OS.class_NSMenu, OS.sel_popUpContextMenu_1withEvent_1forView_1, menu != null ? menu.id : 0, event != null ? event.id : 0, view != null ? view.id : 0);
 }
 
-public static void popUpContextMenu(NSMenu menu, NSEvent event, NSView view, NSFont font) {
+public static void static_popUpContextMenu_withEvent_forView_withFont_(NSMenu menu, NSEvent event, NSView view, NSFont font) {
 	OS.objc_msgSend(OS.class_NSMenu, OS.sel_popUpContextMenu_1withEvent_1forView_1withFont_1, menu != null ? menu.id : 0, event != null ? event.id : 0, view != null ? view.id : 0, font != null ? font.id : 0);
 }
 
@@ -225,7 +225,7 @@ public void setTitle(NSString aString) {
 }
 
 public boolean showsStateColumn() {
-	return 	OS.objc_msgSend(this.id, OS.sel_showsStateColumn) != 0;
+	return OS.objc_msgSend(this.id, OS.sel_showsStateColumn) != 0;
 }
 
 public void sizeToFit() {
