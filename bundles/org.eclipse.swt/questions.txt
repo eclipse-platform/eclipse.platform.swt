@@ -1,2 +1,3 @@
 * preferred size
 * are subviews automatically released?
+* do widgets draw outside of their bounds?
