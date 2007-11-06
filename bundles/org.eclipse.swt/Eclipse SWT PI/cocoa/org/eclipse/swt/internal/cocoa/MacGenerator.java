@@ -10,15 +10,10 @@ import org.w3c.dom.*;
 
 public class MacGenerator {
 	String[] classes;
-	String xml;
-	NodeList list;
+	String xml[];
 	
-public MacGenerator(String xml) throws Exception {
-	this.xml = xml;
-	DOMParser parser = new DOMParser();
-	parser.parse(xml);
-	Document document = parser.getDocument();
-	list = document.getDocumentElement().getChildNodes();
+public MacGenerator(String[] xml) throws Exception {
+	this.xml = xml;	
 }
 	
 public void out(String str) {
@@ -29,43 +24,69 @@ public void outln() {
 	System.out.println();
 }
 
-public void generateConstants() {
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("constant".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			out("public static final native int ");
-			out(attributes.getNamedItem("name").getNodeValue());
-			out("();");
-			outln();
+public void generateConstants() throws Exception {
+	for (int j = 0; j < xml.length; j++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[j]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("constant".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				out("public static final native int ");
+				out(attributes.getNamedItem("name").getNodeValue());
+				out("();");
+				outln();
+			}
+		}		
+	}
+}
+
+public void generateConstantsMetaData() throws Exception {
+	for (int j = 0; j < xml.length; j++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[j]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("constant".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				out("OS_");
+				out(attributes.getNamedItem("name").getNodeValue());
+				out("=flags=const");
+				outln();
+			}
 		}
 	}
 }
 
-public void generateConstantsMetaData() {
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("constant".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			out("OS_");
-			out(attributes.getNamedItem("name").getNodeValue());
-			out("=flags=const");
-			outln();
-		}
-	}
-}
-
-public void generateEnums() {
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("enum".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			out("public static final int ");
-			out(attributes.getNamedItem("name").getNodeValue());
-			out(" = ");
-			out(attributes.getNamedItem("value").getNodeValue());
-			out(";");
-			outln();
+public void generateEnums() throws Exception {
+	for (int j = 0; j < xml.length; j++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[j]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("enum".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				Node value = attributes.getNamedItem("value");
+				if (value != null) {
+					out("public static final ");
+					if (value.getNodeValue().indexOf('.') != -1) {
+						out("double ");
+					} else {
+						out("int ");
+					}
+					out(attributes.getNamedItem("name").getNodeValue());
+					out(" = ");
+					out(value.getNodeValue());
+					out(";");
+					outln();
+				}
+			}
 		}
 	}
 }
@@ -104,160 +125,172 @@ boolean getGenerateClass(String className) {
 	return true;
 }
 
-public void generateClasses() {
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("class".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			String name = attributes.getNamedItem("name").getNodeValue();
-			if (getGenerateClass(name)) {
-				out("public class ");
-				out(name);
-				if (name.equals("NSObject")) {
-					out(" extends id {");
-				} else {
-					out(" extends NSObject {");
-				}
-				outln();
-				outln();
-				out("public ");
-				out(name);
-				out("() {");
-				outln();
-				out("}");
-				outln();
-				outln();
-				out("public ");
-				out(name);
-				out("(int id) {");
-				outln();
-				out("\tsuper(id);");
-				outln();
-				out("}");
-				outln();
-				outln();
-				NodeList methods = node.getChildNodes();
-				for (int j = 0; j < methods.getLength(); j++) {
-					Node method = methods.item(j);
-					if ("method".equals(method.getLocalName())) {
-						String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
-						out("public ");
-						boolean isStatic = method.getAttributes().getNamedItem("class_method") != null; 
-						if (isStatic) out("static ");
-						Node returnNode = getReturnNode(method.getChildNodes());
-						if (returnNode != null) {
-							out(getJavaType(returnNode));
-							out(" ");
-						} else {
-							out("void ");
-						}
-						String methodName = sel;
-						int index = methodName.indexOf(":");
-						if (index != -1) methodName = methodName.substring(0, index);
-						out(methodName);
-						out("(");
-						NodeList params = method.getChildNodes();
-						boolean first = true;
-						for (int k = 0; k < params.getLength(); k++) {
-							Node param = params.item(k);
-							if ("arg".equals(param.getLocalName())) {
-								NamedNodeMap paramAttributes = param.getAttributes();
-								if (!first) out(", ");
-								out(getJavaType(param));
-								first = false;
+public void generateClasses() throws Exception {
+	for (int x = 0; x < xml.length; x++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[x]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("class".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = attributes.getNamedItem("name").getNodeValue();
+				if (getGenerateClass(name)) {
+					out("public class ");
+					out(name);
+					if (name.equals("NSObject")) {
+						out(" extends id {");
+					} else {
+						out(" extends NSObject {");
+					}
+					outln();
+					outln();
+					out("public ");
+					out(name);
+					out("() {");
+					outln();
+					out("}");
+					outln();
+					outln();
+					out("public ");
+					out(name);
+					out("(int id) {");
+					outln();
+					out("\tsuper(id);");
+					outln();
+					out("}");
+					outln();
+					outln();
+					NodeList methods = node.getChildNodes();
+					for (int j = 0; j < methods.getLength(); j++) {
+						Node method = methods.item(j);
+						if ("method".equals(method.getLocalName())) {
+							String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
+							out("public ");
+							boolean isStatic = method.getAttributes().getNamedItem("class_method") != null; 
+							if (isStatic) out("static ");
+							Node returnNode = getReturnNode(method.getChildNodes());
+							if (returnNode != null) {
+								out(getJavaType(returnNode));
 								out(" ");
-								out(paramAttributes.getNamedItem("name").getNodeValue());
+							} else {
+								out("void ");
 							}
-						}
-						out(") {");
-						outln();
-						if (returnNode != null && isStruct(returnNode)) {
-							String type = getJavaType(returnNode);
-							out("\t");
-							out(type);
-							out(" result = new ");
-							out(type);
-							out("();");
-							outln();
-							out("\tOS.objc_msgSend_stret(result, ");
-						} else if (returnNode != null && isFloatingPoint(returnNode)) {
-							String type = getJavaType(returnNode);
-							out("\treturn ");
-							if (type.equals("float")) out("(float)");
-							out("OS.objc_msgSend_fpret(");
-						} else if (returnNode != null && isObject(returnNode)) {
-							out("\tint result = OS.objc_msgSend(");
-						} else {
-							if (returnNode != null) out("\treturn ");
-							out("OS.objc_msgSend(");
-						}
-						if (isStatic) {
-							out("OS.class_");
-							out(name);
-						} else {
-							out("this.id");
-						}
-						out(", OS.");
-						out(getSelConst(sel));
-						first = false;
-						for (int k = 0; k < params.getLength(); k++) {
-							Node param = params.item(k);
-							if ("arg".equals(param.getLocalName())) {
-								NamedNodeMap paramAttributes = param.getAttributes();
-								if (!first) out(", ");
-								first = false;
-								if (isObject(param)) {
-									String pName = paramAttributes.getNamedItem("name").getNodeValue();
-									out(pName);
-									out(" != null ? ");
-									out(pName);
-									out(".id : 0");
-								} else {
+							String methodName = sel;
+							int index = methodName.indexOf(":");
+							if (index != -1) methodName = methodName.substring(0, index);
+							out(methodName);
+							out("(");
+							NodeList params = method.getChildNodes();
+							boolean first = true;
+							for (int k = 0; k < params.getLength(); k++) {
+								Node param = params.item(k);
+								if ("arg".equals(param.getLocalName())) {
+									NamedNodeMap paramAttributes = param.getAttributes();
+									if (!first) out(", ");
+									out(getJavaType(param));
+									first = false;
+									out(" ");
 									out(paramAttributes.getNamedItem("name").getNodeValue());
 								}
 							}
-						}
-						out(")");
-						if (isBoolean(returnNode)) {
-							out(" != 0");
-						}
-						out(";");
-						outln();
-						if (returnNode != null && isObject(returnNode)) {
-							out("\treturn result == this.id ? this : (result != 0 ? new ");
-							out(getJavaType(returnNode));
-							out("(result) : null);");
+							out(") {");
 							outln();
-						} else if (returnNode != null && isStruct(returnNode)) {
-							out("\treturn result;");
+							if (returnNode != null && isStruct(returnNode)) {
+								String type = getJavaType(returnNode);
+								out("\t");
+								out(type);
+								out(" result = new ");
+								out(type);
+								out("();");
+								outln();
+								out("\tOS.objc_msgSend_stret(result, ");
+							} else if (returnNode != null && isFloatingPoint(returnNode)) {
+								String type = getJavaType(returnNode);
+								out("\treturn ");
+								if (type.equals("float")) out("(float)");
+								out("OS.objc_msgSend_fpret(");
+							} else if (returnNode != null && isObject(returnNode)) {
+								out("\tint result = OS.objc_msgSend(");
+							} else {
+								if (returnNode != null) out("\treturn ");
+								out("OS.objc_msgSend(");
+							}
+							if (isStatic) {
+								out("OS.class_");
+								out(name);
+							} else {
+								out("this.id");
+							}
+							out(", OS.");
+							out(getSelConst(sel));
+							first = false;
+							for (int k = 0; k < params.getLength(); k++) {
+								Node param = params.item(k);
+								if ("arg".equals(param.getLocalName())) {
+									NamedNodeMap paramAttributes = param.getAttributes();
+									if (!first) out(", ");
+									first = false;
+									if (isObject(param)) {
+										String pName = paramAttributes.getNamedItem("name").getNodeValue();
+										out(pName);
+										out(" != null ? ");
+										out(pName);
+										out(".id : 0");
+									} else {
+										out(paramAttributes.getNamedItem("name").getNodeValue());
+									}
+								}
+							}
+							out(")");
+							if (isBoolean(returnNode)) {
+								out(" != 0");
+							}
+							out(";");
 							outln();
-						}
-						out("}");
-						outln();
-						outln();
-					}					
-				}				
-				out("}");
-				outln();				
+							if (returnNode != null && isObject(returnNode)) {
+								out("\treturn result == this.id ? this : (result != 0 ? new ");
+								out(getJavaType(returnNode));
+								out("(result) : null);");
+								outln();
+							} else if (returnNode != null && isStruct(returnNode)) {
+								out("\treturn result;");
+								outln();
+							}
+							out("}");
+							outln();
+							outln();
+						}					
+					}				
+					out("}");
+					outln();				
+				}
 			}
 		}
 	}
 }
 
-public void generateSelectorsConst() {
+public void generateSelectorsConst() throws Exception {
 	HashSet set = new HashSet();
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("class".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			String name = attributes.getNamedItem("name").getNodeValue();
-			if (getGenerateClass(name)) {
-				NodeList methods = node.getChildNodes();
-				for (int j = 0; j < methods.getLength(); j++) {
-					Node method = methods.item(j);
-					if ("method".equals(method.getLocalName())) {
-						String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
-						set.add(sel);
+	for (int x = 0; x < xml.length; x++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[x]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("class".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = attributes.getNamedItem("name").getNodeValue();
+				if (getGenerateClass(name)) {
+					NodeList methods = node.getChildNodes();
+					for (int j = 0; j < methods.getLength(); j++) {
+						Node method = methods.item(j);
+						if ("method".equals(method.getLocalName())) {
+							String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
+							set.add(sel);
+						}
 					}
 				}
 			}
@@ -276,50 +309,56 @@ public void generateSelectorsConst() {
 	}
 }
 
-public void generateSends() {
+public void generateSends() throws Exception {
 	HashSet set = new HashSet();
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("class".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			String name = attributes.getNamedItem("name").getNodeValue();
-			if (getGenerateClass(name)) {
-				NodeList methods = node.getChildNodes();
-				for (int j = 0; j < methods.getLength(); j++) {
-					Node method = methods.item(j);
-					if ("method".equals(method.getLocalName())) {
-						Node returnNode = getReturnNode(method.getChildNodes());
-						StringBuffer buffer = new StringBuffer();
-						buffer.append("public static final native "); 
-						if (returnNode != null && isStruct(returnNode)) {
-							buffer.append("void objc_msgSend_stret(");
-							buffer.append(getJavaType(returnNode));
-							buffer.append(" result, ");
-						} else if (returnNode != null && isFloatingPoint(returnNode)) {
-							buffer.append("double objc_msgSend_fpret(");
-						} else {
-							buffer.append("int objc_msgSend(");
-						}
-						buffer.append("int id, int sel, ");
-						NodeList params = method.getChildNodes();
-						boolean first = true;
-						int count = 0;
-						for (int k = 0; k < params.getLength(); k++) {
-							Node param = params.item(k);
-							if ("arg".equals(param.getLocalName())) {
-								if (!first) buffer.append(", ");
-								if (isStruct(param)) {
-									buffer.append(getJavaType(param));
-								} else {
-									buffer.append(getType(param));
-								}
-								first = false;
-								buffer.append(" arg");
-								buffer.append(String.valueOf(count++));
+	for (int x = 0; x < xml.length; x++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[x]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("class".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = attributes.getNamedItem("name").getNodeValue();
+				if (getGenerateClass(name)) {
+					NodeList methods = node.getChildNodes();
+					for (int j = 0; j < methods.getLength(); j++) {
+						Node method = methods.item(j);
+						if ("method".equals(method.getLocalName())) {
+							Node returnNode = getReturnNode(method.getChildNodes());
+							StringBuffer buffer = new StringBuffer();
+							buffer.append("public static final native "); 
+							if (returnNode != null && isStruct(returnNode)) {
+								buffer.append("void objc_msgSend_stret(");
+								buffer.append(getJavaType(returnNode));
+								buffer.append(" result, ");
+							} else if (returnNode != null && isFloatingPoint(returnNode)) {
+								buffer.append("double objc_msgSend_fpret(");
+							} else {
+								buffer.append("int objc_msgSend(");
 							}
+							buffer.append("int id, int sel");
+							NodeList params = method.getChildNodes();
+							boolean first = false;
+							int count = 0;
+							for (int k = 0; k < params.getLength(); k++) {
+								Node param = params.item(k);
+								if ("arg".equals(param.getLocalName())) {
+									if (!first) buffer.append(", ");
+									if (isStruct(param)) {
+										buffer.append(getJavaType(param));
+									} else {
+										buffer.append(getType(param));
+									}
+									first = false;
+									buffer.append(" arg");
+									buffer.append(String.valueOf(count++));
+								}
+							}
+							buffer.append(");");
+							set.add(buffer.toString());
 						}
-						buffer.append(");");
-						set.add(buffer.toString());
 					}
 				}
 			}
@@ -331,46 +370,52 @@ public void generateSends() {
 	}
 }
 
-public void generateSendsMetaData() {
+public void generateSendsMetaData() throws Exception {
 	HashMap set = new HashMap();
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("class".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			String name = attributes.getNamedItem("name").getNodeValue();
-			if (getGenerateClass(name)) {
-				NodeList methods = node.getChildNodes();
-				for (int j = 0; j < methods.getLength(); j++) {
-					Node method = methods.item(j);
-					if ("method".equals(method.getLocalName())) {
-						Node returnNode = getReturnNode(method.getChildNodes());
-						StringBuffer buffer = new StringBuffer();
-						if (returnNode != null && isStruct(returnNode)) {
-							buffer.append("OS_objc_1msgSend_1stret__");
-							buffer.append("Lorg_eclipse_swt_internal_cocoa_");
-							buffer.append(getJavaType(returnNode));
-							buffer.append("_2");
-						} else if (returnNode != null && isFloatingPoint(returnNode)) {
-							buffer.append("OS_objc_1msgSend_1fpret__");
-						} else {
-							buffer.append("OS_objc_1msgSend__");
-						}
-						buffer.append("II");
-						NodeList params = method.getChildNodes();
-						for (int k = 0; k < params.getLength(); k++) {
-							Node param = params.item(k);
-							if ("arg".equals(param.getLocalName())) {
-								if (isStruct(param)) {
-									buffer.append("Lorg_eclipse_swt_internal_cocoa_");
-									buffer.append(getJavaType(param));
-									buffer.append("_2");
-								} else {
-									buffer.append(getJNIType(param));
+	for (int x = 0; x < xml.length; x++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[x]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("class".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = attributes.getNamedItem("name").getNodeValue();
+				if (getGenerateClass(name)) {
+					NodeList methods = node.getChildNodes();
+					for (int j = 0; j < methods.getLength(); j++) {
+						Node method = methods.item(j);
+						if ("method".equals(method.getLocalName())) {
+							Node returnNode = getReturnNode(method.getChildNodes());
+							StringBuffer buffer = new StringBuffer();
+							if (returnNode != null && isStruct(returnNode)) {
+								buffer.append("OS_objc_1msgSend_1stret__");
+								buffer.append("Lorg_eclipse_swt_internal_cocoa_");
+								buffer.append(getJavaType(returnNode));
+								buffer.append("_2");
+							} else if (returnNode != null && isFloatingPoint(returnNode)) {
+								buffer.append("OS_objc_1msgSend_1fpret__");
+							} else {
+								buffer.append("OS_objc_1msgSend__");
+							}
+							buffer.append("II");
+							NodeList params = method.getChildNodes();
+							for (int k = 0; k < params.getLength(); k++) {
+								Node param = params.item(k);
+								if ("arg".equals(param.getLocalName())) {
+									if (isStruct(param)) {
+										buffer.append("Lorg_eclipse_swt_internal_cocoa_");
+										buffer.append(getJavaType(param));
+										buffer.append("_2");
+									} else {
+										buffer.append(getJNIType(param));
+									}
 								}
 							}
+							String key = buffer.toString();
+							if (set.get(key) == null) set.put(key, method);
 						}
-						String key = buffer.toString();
-						if (set.get(key) == null) set.put(key, method);
 					}
 				}
 			}
@@ -379,17 +424,30 @@ public void generateSendsMetaData() {
 	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
 		String key = iterator.next().toString();
 		out(key);
-		out("=");
+		out("=flags=cast");
 		outln();
-		out(key);
-		out("_0=cast=(id)");
-		outln();
-		out(key);
-		out("_1=cast=(SEL)");
-		outln();
+		int count = 2;
+		if (key.indexOf("stret") != -1) {
+			count = 3;
+			out(key);
+			out("_0=");
+			outln();
+			out(key);
+			out("_1=cast=(id)");
+			outln();
+			out(key);
+			out("_2=cast=(SEL)");
+			outln();
+		} else {
+			out(key);
+			out("_0=cast=(id)");
+			outln();
+			out(key);
+			out("_1=cast=(SEL)");
+			outln();
+		}
 		Node method = (Node)set.get(key);
 		NodeList params = method.getChildNodes();
-		int count = 2;
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
 			if ("arg".equals(param.getLocalName())) {
@@ -413,15 +471,21 @@ String getSelConst(String sel) {
 	return "sel_" + sel.replaceAll(":", "_1");
 }
 
-public void generateClassesConst() {
+public void generateClassesConst() throws Exception {
 	HashSet set = new HashSet();
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("class".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			String name = attributes.getNamedItem("name").getNodeValue();
-			if (getGenerateClass(name)) {
-				set.add(name);
+	for (int x = 0; x < xml.length; x++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[x]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("class".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = attributes.getNamedItem("name").getNodeValue();
+				if (getGenerateClass(name)) {
+					set.add(name);
+				}
 			}
 		}
 	}
@@ -542,42 +606,48 @@ String getJavaType(Node node) {
 	return "BAD " + code;
 }
 
-public void generateFunctions() {
-	for (int i = 0; i < list.getLength(); i++) {
-		Node node = list.item(i);
-		if ("function".equals(node.getLocalName())) {
-			NamedNodeMap attributes = node.getAttributes();
-			String name = attributes.getNamedItem("name").getNodeValue();
-			out("public static final native ");
-			Node returnNode = getReturnNode(node.getChildNodes());
-			if (returnNode != null) {
-				out(getType(returnNode));
-				out(" ");
-			} else {
-				out("void ");
-			}
-			out(name);
-			out("(");
-			NodeList params = node.getChildNodes();
-			boolean first = true;
-			for (int j = 0; j < params.getLength(); j++) {
-				Node param = params.item(j);
-				if ("arg".equals(param.getLocalName())) {
-					NamedNodeMap paramAttributes = param.getAttributes();
-					if (!first) out(", ");
-					out(getType(param));
-					first = false;
+public void generateFunctions() throws Exception {
+	for (int x = 0; x < xml.length; x++) {
+		DOMParser parser = new DOMParser();
+		parser.parse(xml[x]);
+		Document document = parser.getDocument();
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("function".equals(node.getLocalName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = attributes.getNamedItem("name").getNodeValue();
+				out("public static final native ");
+				Node returnNode = getReturnNode(node.getChildNodes());
+				if (returnNode != null) {
+					out(getType(returnNode));
 					out(" ");
-					out(paramAttributes.getNamedItem("name").getNodeValue());
+				} else {
+					out("void ");
 				}
+				out(name);
+				out("(");
+				NodeList params = node.getChildNodes();
+				boolean first = true;
+				for (int j = 0; j < params.getLength(); j++) {
+					Node param = params.item(j);
+					if ("arg".equals(param.getLocalName())) {
+						NamedNodeMap paramAttributes = param.getAttributes();
+						if (!first) out(", ");
+						out(getType(param));
+						first = false;
+						out(" ");
+						out(paramAttributes.getNamedItem("name").getNodeValue());
+					}
+				}
+				out(");");
+				outln();
 			}
-			out(");");
-			outln();
 		}
 	}
 }
 
-public void generateOS() {
+public void generateOS() throws Exception {
 	out("/** Classes */");
 	outln();
 	generateClassesConst();
@@ -603,7 +673,7 @@ public void generateOS() {
 	generateSends();
 }
 
-public void generateMetadata() {
+public void generateMetadata() throws Exception {
 	generateConstantsMetaData();
 	generateSendsMetaData();
 }
@@ -613,10 +683,11 @@ public void setClasses(String[] classes) {
 }
 
 public static void main(String[] args) throws Exception {
-	MacGenerator gen = new MacGenerator(args[0]);
+	MacGenerator gen = new MacGenerator(args);
 //	gen.setClasses(new String[]{
 //		"NSView",
 //	});
-	gen.generateOS();
+//	gen.generateOS();
+	gen.generateMetadata();
 }
 }

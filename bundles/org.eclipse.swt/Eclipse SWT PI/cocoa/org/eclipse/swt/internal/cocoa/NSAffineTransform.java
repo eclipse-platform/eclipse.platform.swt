@@ -40,7 +40,7 @@ public void scale(float sx, float sy) {
 	OS.objc_msgSend(id, OS.sel_scaleXBy_1yBy_1, sx, sy);
 }
 
-public void setTransformStruct(float[] struct) {
+public void setTransformStruct(NSAffineTransformStruct struct) {
 	OS.objc_msgSend(id, OS.sel_setTransformStruct_1, struct);
 }
 
@@ -53,8 +53,8 @@ public NSPoint transformPoint(NSPoint point) {
 	return point;
 }
 
-public float[] transformStruct() {
-	float[] result = new float[6];
+public NSAffineTransformStruct transformStruct() {
+	NSAffineTransformStruct result = new NSAffineTransformStruct();
 	OS.objc_msgSend_stret(result, id, OS.sel_transformStruct);
 	return result;
 }
