@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -72,13 +72,6 @@ public Scale (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int actionProc (int theControl, int partCode) {
-	int result = super.actionProc (theControl, partCode);
-	if (result == OS.noErr) return result;
-	sendEvent (SWT.Selection);
-	return result;
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's value, by sending
@@ -117,31 +110,28 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		int [] outMetric = new int [1];
-		OS.GetThemeMetric (OS.kThemeMetricHSliderHeight, outMetric);
-		height = outMetric [0];
-		width = height * 10;
-	} else {
-		int [] outMetric = new int [1];
-		OS.GetThemeMetric (OS.kThemeMetricVSliderWidth, outMetric);
-		width = outMetric [0];
-		height = width * 10;
-	}
+//	if ((style & SWT.HORIZONTAL) != 0) {
+//		int [] outMetric = new int [1];
+//		OS.GetThemeMetric (OS.kThemeMetricHSliderHeight, outMetric);
+//		height = outMetric [0];
+//		width = height * 10;
+//	} else {
+//		int [] outMetric = new int [1];
+//		OS.GetThemeMetric (OS.kThemeMetricVSliderWidth, outMetric);
+//		width = outMetric [0];
+//		height = width * 10;
+//	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
-	int actionProc = display.actionProc;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	int value = (style & SWT.VERTICAL) != 0 ? 100 : 0;
-	OS.CreateSliderControl (window, null, value, 0, 100, OS.kControlSliderDoesNotPoint, (short)0, true, actionProc, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
+	NSSlider widget = (NSSlider)new NSSlider().alloc();
+	widget = (NSSlider)widget.initWithFrame(new NSRect());
+	view = widget;
+	parent.view.addSubview(widget);
+	widget.setMaxValue(100);
 }
 
 /**
@@ -173,7 +163,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget();
-    return OS.GetControl32BitMaximum (handle);
+	return (int)((NSSlider)view).maxValue();
 }
 
 /**
@@ -188,7 +178,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget();
-    return OS.GetControl32BitMinimum (handle);
+	return (int)((NSSlider)view).minValue();
 }
 
 /**
@@ -220,35 +210,13 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget();
-    int value = OS.GetControl32BitValue (handle);
-	if ((style & SWT.VERTICAL) != 0) {
-		int minimum = OS.GetControl32BitMinimum (handle);
-		int maximum = OS.GetControl32BitMaximum (handle);
-		value = maximum - value + minimum;
-	}
-	return value;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	/*
-	* Bug in the Macintosh.  For some reason, when the slider
-	* is not ghosted, if the slider has keyboard focus, the
-	* user will not be able to drag the thumb to the maximum value
-	* of the slider.  The fix is to clear the focus temporarily
-	* and restore it after the thumb tracking is complety.
-	*/
-	if (!hasFocus ()) return result;
-	display.ignoreFocus = true;
-	int window = OS.GetControlOwner (handle);
-	OS.ClearKeyboardFocus (window);
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (!isDisposed ()) {
-		OS.SetKeyboardFocus (window, handle, (short) focusPart ());
-	}
-	display.ignoreFocus = false;
-	return result;
+//	int value = OS.GetControl32BitValue (handle);
+//	if ((style & SWT.VERTICAL) != 0) {
+//		int minimum = OS.GetControl32BitMinimum (handle);
+//		int maximum = OS.GetControl32BitMaximum (handle);
+//		value = maximum - value + minimum;
+//	}
+    return (int)((NSSlider)view).doubleValue();
 }
 
 /**
@@ -311,10 +279,7 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int minimum = OS.GetControl32BitMinimum (handle);
-	if (value > minimum) {
-		OS.SetControl32BitMaximum (handle, value);
-	}
+	((NSSlider)view).setMaxValue(value);
 }
 
 /**
@@ -333,10 +298,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int maximum = OS.GetControl32BitMaximum (handle);
-	if (value < maximum) {
-		OS.SetControl32BitMinimum (handle, value);
-	}
+	((NSSlider)view).setMinValue(value);
 }
 
 /**
@@ -371,12 +333,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	if ((style & SWT.VERTICAL) != 0) {
-		int minimum = OS.GetControl32BitMinimum (handle);
-		int maximum = OS.GetControl32BitMaximum (handle);
-		value = Math.min (maximum, Math.max (minimum, maximum - value + minimum));
-	}
-	OS.SetControl32BitValue (handle, value);
+	((NSSlider)view).setDoubleValue(value);
 }
 
 }

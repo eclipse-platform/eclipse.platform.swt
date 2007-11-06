@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.cocoa.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -29,7 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public abstract class Scrollable extends Control {
- 	int scrolledHandle;
+ 	NSScrollView scrollView;
 	ScrollBar horizontalBar, verticalBar;
 	
 Scrollable () {
@@ -222,12 +224,6 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
-boolean isTrimHandle (int trimHandle) {
-	if (horizontalBar != null && horizontalBar.handle == trimHandle) return true;
-	if (verticalBar != null && verticalBar.handle == trimHandle) return true;
-	return trimHandle == scrolledHandle;
-}
-
 void register () {
 	super.register ();
 //	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
@@ -235,7 +231,8 @@ void register () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	scrolledHandle = 0;
+	if (scrollView != null) scrollView.release();
+	scrollView = null;
 }
 
 void releaseChildren (boolean destroy) {
@@ -304,7 +301,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
-	if (scrolledHandle == 0) return false;
+	if (scrollView == null) return false;
 	if ((state & CANVAS) == 0) return false;
 	if (visible) {
 		if ((bar.state & HIDDEN) == 0) return false;
@@ -325,4 +322,8 @@ void setZOrder () {
 //	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
+NSView topView () {
+	if (scrollView != null) return scrollView;
+	return super.topView ();
+}
 }

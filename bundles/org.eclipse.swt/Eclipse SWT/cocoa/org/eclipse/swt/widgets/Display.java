@@ -107,7 +107,7 @@ public class Display extends Device {
 
 	NSPoint cascade = new NSPoint();
 
-	Callback windowDelegateCallback2, windowDelegateCallback3;
+	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback5;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -1487,6 +1487,9 @@ void initClasses () {
 	windowDelegateCallback2 = new Callback(this, "windowDelegateProc", 2);
 	int proc2 = windowDelegateCallback2.getAddress();
 	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowDelegateCallback5 = new Callback(this, "windowDelegateProc", 5);
+	int proc5 = windowDelegateCallback5.getAddress();
+	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
@@ -1513,6 +1516,13 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTTableView";
+	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2601,7 +2611,7 @@ int windowDelegateProc(int delegate, int sel) {
 	return 0;
 }
 
-int windowDelegateProc(int delegate, int sel, int arg0) {	
+int windowDelegateProc(int delegate, int sel, int arg0) {
 	if (sel == OS.sel_setTag_1) {
 		OS.object_setInstanceVariable(delegate, "tag", arg0);
 		return 0;
@@ -2616,8 +2626,25 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {
 		widget.mouseDown(arg0);
-	}else if (sel == OS.sel_keyDown_1) {
+	} else if (sel == OS.sel_keyDown_1) {
 		widget.keyDown(arg0);
+	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
+		return widget.numberOfRowsInTableView(arg0);
+	}
+	return 0;
+}
+
+int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
+	if (sel == OS.sel_setTag_1) {
+		OS.object_setInstanceVariable(delegate, "tag", arg0);
+		return 0;
+	}
+	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
+	if (jniRef == 0 || jniRef == -1) return 0;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	if (widget == null) return 0;
+	if (sel == OS.sel_tableView_1objectValueForTableColumn_1row_1) {
+		return widget.tableViewobjectValueForTableColumnrow(arg0, arg1, arg2);
 	}
 	return 0;
 }

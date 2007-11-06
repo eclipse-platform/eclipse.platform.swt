@@ -11,8 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -97,76 +96,39 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
-	if ((style & SWT.SEPARATOR) != 0) {
-		if ((style & SWT.HORIZONTAL) != 0) {
-			width = DEFAULT_WIDTH;
-			height = 3;
-		} else {
-			width = 3;
-			height = DEFAULT_HEIGHT;
-		}
-	} else {
-		if (isImage && image != null) {
-			Rectangle r = image.getBounds ();
-			width = r.width;
-			height = r.height;
-		} else {			
-			int [] ptr = new int [1];
-			OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
-			Point size = textExtent (ptr [0], (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT ? wHint : 0);
-			if (ptr [0] != 0) OS.CFRelease (ptr [0]);
-			width = size.x;
-			height = size.y;			
-		}
-	}
+//	if ((style & SWT.SEPARATOR) != 0) {
+//		if ((style & SWT.HORIZONTAL) != 0) {
+//			width = DEFAULT_WIDTH;
+//			height = 3;
+//		} else {
+//			width = 3;
+//			height = DEFAULT_HEIGHT;
+//		}
+//	} else {
+//		if (isImage && image != null) {
+//			Rectangle r = image.getBounds ();
+//			width = r.width;
+//			height = r.height;
+//		} else {			
+//			int [] ptr = new int [1];
+//			OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
+//			Point size = textExtent (ptr [0], (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT ? wHint : 0);
+//			if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+//			width = size.x;
+//			height = size.y;			
+//		}
+//	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
 void createHandle () {
-	state |= GRAB | THEME_BACKGROUND;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	if ((style & SWT.SEPARATOR) != 0) {
-		OS.CreateSeparatorControl (window, null, outControl);
-	} else {
-		int just = OS.teFlushLeft;
-		if ((style & SWT.CENTER) != 0) just = OS.teCenter;
-		if ((style & SWT.RIGHT) != 0) just = OS.teFlushRight;
-		ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-		fontStyle.flags |= OS.kControlUseJustMask;
-		fontStyle.just = (short) just;
-		OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
-	}
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-}
-
-int defaultThemeFont () {
-	if (display.smallFonts) return OS.kThemeSmallSystemFont;
-	return OS.kThemePushButtonFont;
-}
-
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
-}
-
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
-	if (isImage && image != null) {
-		GCData data = new GCData ();
-		data.paintEvent = theEvent;
-		data.visibleRgn = visibleRgn;
-		GC gc = GC.carbon_new (this, data);
-		int x = 0;
-		Point size = getSize ();
-		Rectangle bounds = image.getBounds ();
-		if ((style & SWT.CENTER) != 0) x = (size.x - bounds.width) / 2;
-		if ((style & SWT.RIGHT) != 0) x = size.x - bounds.width;
-		gc.drawImage (image, x, 0);
-		gc.dispose ();
-	}
-	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
+	//TODO - alignment, separator
+	NSTextField widget = (NSTextField)new NSTextField().alloc();
+	widget = (NSTextField)widget.initWithFrame(new NSRect());
+	view = widget;
+	parent.view.addSubview(widget);
 }
 
 /**
@@ -189,11 +151,6 @@ public int getAlignment () {
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
-}
-
-public int getBorderWidth () {
-	checkWidget();
-	return (style & SWT.BORDER) != 0 ? 1 : 0;
 }
 
 /**
@@ -253,15 +210,7 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int just = OS.teFlushLeft;
-	if ((alignment & SWT.CENTER) != 0) just = OS.teCenter;
-	if ((alignment & SWT.RIGHT) != 0) just = OS.teFlushRight;
-	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
-	fontStyle.flags |= OS.kControlUseJustMask;
-	fontStyle.just = (short) just;
-	OS.SetControlFontStyle (handle, fontStyle);
-	redraw ();
+	//TODO - not implemented
 }
 
 /**
@@ -284,19 +233,19 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.image = image;
-	isImage = true;
-	if (image == null) {
-		setText (text);
-		return;
-	}
-	if (text.length () > 0) {
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		OS.SetControlData (handle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
-		OS.CFRelease (ptr);
-	}
-	redraw ();
+//	this.image = image;
+//	isImage = true;
+//	if (image == null) {
+//		setText (text);
+//		return;
+//	}
+//	if (text.length () > 0) {
+//		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
+//		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+//		OS.SetControlData (handle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
+//		OS.CFRelease (ptr);
+//	}
+//	redraw ();
 }
 
 /**
@@ -332,14 +281,8 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	isImage = false;
 	text = string;
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetControlData (handle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
-	OS.CFRelease (ptr);
-	redraw ();
+	//NSString str = NSString.stringWith(string);
+	//((NSTextField)view).setTitle(str);
 }
 
 }

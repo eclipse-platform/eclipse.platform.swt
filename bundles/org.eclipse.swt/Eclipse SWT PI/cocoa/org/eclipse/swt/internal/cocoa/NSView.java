@@ -30,6 +30,10 @@ public void addSubview(NSView view) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_1, view != null ? view.id : 0);
 }
 
+public void setAutoresizesSubviews(boolean flags) {
+	OS.objc_msgSend(this.id, OS.sel_setAutoresizesSubviews_1, flags ? 1: 0);
+}
+
 public void setFrame(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_setFrame_1, rect);
 }

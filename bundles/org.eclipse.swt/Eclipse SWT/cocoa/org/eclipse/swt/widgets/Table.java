@@ -11,16 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
-import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
-import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
-import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
-import org.eclipse.swt.internal.carbon.DataBrowserAccessibilityItemInfo;
-import org.eclipse.swt.internal.carbon.HMHelpContentRec;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -73,20 +64,21 @@ import org.eclipse.swt.graphics.*;
 public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
-	TableItem currentItem;
 	TableColumn sortColumn;
-	GC paintGC;
-	int sortDirection;
-	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight, lastIndexOf;
-	boolean  ignoreSelect, wasSelected, fixScrollWidth, drawBackground;
-	Rectangle imageBounds;
-	int showIndex, lastHittest, lastHittestColumn;
-	static final int CHECK_COLUMN_ID = 1024;
-	static final int COLUMN_ID = 1025;
-	static final int GRID_WIDTH = 1;
-	static final int ICON_AND_TEXT_GAP = 4;
-	static final int CELL_CONTENT_INSET = 12;
-	static final int BORDER_INSET = 1;
+	TableItem currentItem;
+	NSTableColumn firstColumn;
+	int columnCount, itemCount, lastIndexOf, sortDirection;
+//	GC paintGC;
+//	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight, lastIndexOf;
+//	boolean  ignoreSelect, wasSelected, fixScrollWidth, drawBackground;
+//	Rectangle imageBounds;
+//	int showIndex, lastHittest, lastHittestColumn;
+//	static final int CHECK_COLUMN_ID = 1024;
+//	static final int COLUMN_ID = 1025;
+//	static final int GRID_WIDTH = 1;
+//	static final int ICON_AND_TEXT_GAP = 4;
+//	static final int CELL_CONTENT_INSET = 12;
+//	static final int BORDER_INSET = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -160,47 +152,10 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-void _addListener (int eventType, Listener listener) {
-	super._addListener (eventType, listener);
-	for (int i = 0; i < items.length; i++) {
-		if (items [i] != null) items [i].width = -1;		
-	}
-}
-
 TableItem _getItem (int index) {
 	if ((style & SWT.VIRTUAL) == 0) return items [index];
 	if (items [index] != null) return items [index];
 	return items [index] = new TableItem (this, SWT.NULL, -1, false);
-}
-
-int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	GC currentGC = paintGC;
-	if (currentGC == null) {
-		GCData data = new GCData ();
-		data.paintEvent = theEvent;
-		data.visibleRgn = visibleRgn;
-		paintGC = GC.carbon_new (this, data);
-	} 
-	fixScrollWidth = false;
-	drawBackground = findBackgroundControl () != null;
-	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
-	if (itemCount == 0 && drawBackground) {
-		drawBackground = false;
-		Rectangle rect = getClientArea ();
-		int headerHeight = getHeaderHeight ();
-		rect.y += headerHeight;
-		rect.height -= headerHeight;
-		fillBackground (handle, paintGC.handle, rect);
-	}
-	if (fixScrollWidth) {
-		fixScrollWidth = false;
-		if (setScrollWidth (items, true)) redraw ();
-	}
-	if (currentGC == null) {
-		paintGC.dispose ();
-		paintGC = null;
-	}
-	return result;
 }
 
 boolean checkData (TableItem item, boolean redraw) {
@@ -216,50 +171,10 @@ boolean checkData (TableItem item, boolean redraw) {
 		currentItem = null;
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) {
-			if (!setScrollWidth (item)) item.redraw (OS.kDataBrowserNoItem);
+//			if (!setScrollWidth (item)) item.redraw (OS.kDataBrowserNoItem);
 		}
 	}
 	return true;
-}
-
-void checkItems (boolean setScrollWidth) {
-	int [] count = new int [1];
-	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, count) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_GET_COUNT);
-	}
-	if (itemCount != count [0]) {
-		/*
-		* Feature in the Mac. When AddDataBrowserItems() is used
-		* to add items, item notification callbacks are issued with
-		* the message kDataBrowserItemAdded.  When many items are
-		* added, this is slow.  The fix is to temporarily remove
-		* the item notification callback.
-		*/
-		DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-		OS.GetDataBrowserCallbacks (handle, callbacks);
-		callbacks.v1_itemNotificationCallback = 0;
-		callbacks.v1_itemCompareCallback = 0;
-		OS.SetDataBrowserCallbacks (handle, callbacks);
-		int delta = itemCount - count [0];
-		if (delta < 1024) {
-			int [] ids = new int [delta];
-			for (int i=0; i<ids.length; i++) {
-				ids [i] = count [0] + i + 1;
-			}
-			if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, ids.length, ids, OS.kDataBrowserItemNoProperty) != OS.noErr) {
-				error (SWT.ERROR_ITEM_NOT_ADDED);
-			}
-			OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-		} else {
-			if (OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty) != OS.noErr) {
-				error (SWT.ERROR_ITEM_NOT_ADDED);
-			}
-		}
-		callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-		callbacks.v1_itemCompareCallback = itemCompareProc ();
-		OS.SetDataBrowserCallbacks (handle, callbacks);
-	}
-	if (setScrollWidth) setScrollWidth (items, true);
 }
 
 static int checkStyle (int style) {
@@ -307,9 +222,9 @@ public void clear (int index) {
 		if (currentItem != item) item.clear ();
 		if (currentItem == null && drawCount == 0) {
 			int [] id = new int [] {index + 1};
-			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+//			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 		}
-		setScrollWidth (item);
+//		setScrollWidth (item);
 	}
 }
 
@@ -410,35 +325,35 @@ public void clearAll () {
 		if (item != null) item.clear ();
 	}
 	if (currentItem == null && drawCount == 0) {
-		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+//		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 	}
-	setScrollWidth (items, true);
+//	setScrollWidth (items, true);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0;
-	if (wHint == SWT.DEFAULT) {
-		if (columnCount != 0) {
-			for (int i=0; i<columnCount; i++) {
-				width += columns [i].getWidth ();
-			}
-		} else {
-			int columnWidth = 0;
-			GC gc = new GC (this);
-			for (int i=0; i<itemCount; i++) {
-				TableItem item = items [i];
-				if (item != null) {
-					columnWidth = Math.max (columnWidth, item.calculateWidth (0, gc));
-				}
-			}
-			gc.dispose ();
-			width += columnWidth + getInsetWidth ();
-		}
-		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
-	} else {
-		width = wHint;
-	}
+//	if (wHint == SWT.DEFAULT) {
+//		if (columnCount != 0) {
+//			for (int i=0; i<columnCount; i++) {
+//				width += columns [i].getWidth ();
+//			}
+//		} else {
+//			int columnWidth = 0;
+//			GC gc = new GC (this);
+//			for (int i=0; i<itemCount; i++) {
+//				TableItem item = items [i];
+//				if (item != null) {
+//					columnWidth = Math.max (columnWidth, item.calculateWidth (0, gc));
+//				}
+//			}
+//			gc.dispose ();
+//			width += columnWidth + getInsetWidth ();
+//		}
+//		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
+//	} else {
+//		width = wHint;
+//	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	int height = 0;
 	if (hHint == SWT.DEFAULT) {
@@ -453,126 +368,59 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int border = getBorder ();
-	Rect rect = new Rect ();
-	OS.GetDataBrowserScrollBarInset (handle, rect);
-	x -= rect.left + border;
-	y -= rect.top + border;
-	width += rect.left + rect.right + border + border;
-	height += rect.top + rect.bottom + border + border;
+//	int border = getBorder ();
+//	Rect rect = new Rect ();
+//	OS.GetDataBrowserScrollBarInset (handle, rect);
+//	x -= rect.left + border;
+//	y -= rect.top + border;
+//	width += rect.left + rect.right + border + border;
+//	height += rect.top + rect.bottom + border + border;
 	return new Rectangle (x, y, width, height);
 }
 
-boolean contains(int shellX, int shellY) {
-	CGPoint pt = new CGPoint ();
-	int [] contentView = new int [1];
-	OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
-	OS.HIViewConvertPoint (pt, handle, contentView [0]);
-	int x = shellX - (int) pt.x;
-	int y = shellY - (int) pt.y;
-	if (y < getHeaderHeight ()) return false;
-	return getClientArea ().contains (x, y);
-}
-
 void createHandle () {
-	column_id = COLUMN_ID;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
-	OS.SetAutomaticControlDragTrackingEnabledForWindow (window, true);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-	if (!drawFocusRing ()) {
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, new byte[] {0});
-	}
-	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet : OS.kDataBrowserCmdTogglesSelection;
-	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
-	short [] height = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
-	headerHeight = height [0];
-	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
-	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
-	if (OS.VERSION >= 0x1040) {
-		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricCellContentInset, false, 4);
-	}
-	int position = 0;
-	if ((style & SWT.CHECK) != 0) {
-		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
-		checkColumn.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
-		checkColumn.propertyDesc_propertyID = CHECK_COLUMN_ID;
-		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
-		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
-		int checkWidth = getCheckColumnWidth ();
-		checkColumn.headerBtnDesc_minimumWidth = (short) checkWidth;
-		checkColumn.headerBtnDesc_maximumWidth = (short) checkWidth;
-		checkColumn.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
-		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
-	}
-	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
-	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
-	column.propertyDesc_propertyID = column_id;
-	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
-	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags | OS.kDataBrowserListViewSortableColumn;
-	column.headerBtnDesc_maximumWidth = 0x7fff;
-	column.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
-	OS.AddDataBrowserListViewColumn (handle, column, position);
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) 0);
-
-	/*
-	* Feature in the Macintosh.  Scroll bars are not created until
-	* the data browser needs to draw them.  The fix is to force the scroll
-	* bars to be created by temporarily giving the widget a size, drawing
-	* it on a offscreen buffer to avoid flashes and then restoring it to
-	* size zero.
-	*/
-	if (OS.VERSION < 0x1040) {
-		OS.HIViewSetDrawingEnabled (handle, false);
-		int size = 50;
-		Rect rect = new Rect ();
-		rect.right = rect.bottom = (short) size;
-		OS.SetControlBounds (handle, rect);
-		int bpl = size * 4;
-		int [] gWorld = new int [1];
-		int data = OS.NewPtr (bpl * size);
-		OS.NewGWorldFromPtr (gWorld, OS.k32ARGBPixelFormat, rect, 0, 0, 0, data, bpl);
-		int [] curPort = new int [1];
-		int [] curGWorld = new int [1];
-		OS.GetGWorld (curPort, curGWorld);	
-		OS.SetGWorld (gWorld [0], curGWorld [0]);
-		OS.DrawControlInCurrentPort (handle);
-		OS.SetGWorld (curPort [0], curGWorld [0]);
-		OS.DisposeGWorld (gWorld [0]);
-		OS.DisposePtr (data);
-		rect.right = rect.bottom = (short) 0;
-		OS.SetControlBounds (handle, rect);
-		OS.HIViewSetDrawingEnabled (handle, true);
-	}
+	//TODO - SWT.CHECK
+	scrollView = (NSScrollView)new NSScrollView().alloc();
+	scrollView.initWithFrame(new NSRect ());
+	scrollView.setHasHorizontalScroller(true);
+	scrollView.setHasVerticalScroller(true);
+	
+	NSTableView widget = (NSTableView)new SWTTableView().alloc();
+	widget.initWithFrame(new NSRect());
+	//widget.setColumnAutoresizingStyle(OS.NSTableViewSequentialColumnAutoresizingStyle);
+	widget.setDataSource(widget);
+	widget.setDelegate(widget);
+	scrollView.setDocumentView(widget);
+	
+	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
+	firstColumn.initWithIdentifier(NSString.stringWith(""));
+	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
+	widget.addTableColumn (firstColumn);
+	
+	view = widget;
+	widget.setTag(jniRef);
+	parent.view.addSubview(scrollView);
 }
 
 void createItem (TableColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
-	column.id = column_id + idCount++;
-	int position = index + ((style & SWT.CHECK) != 0 ? 1 : 0);
-	if (columnCount != 0) {
-		DataBrowserListViewColumnDesc desc = new DataBrowserListViewColumnDesc ();
-		desc.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
-		desc.propertyDesc_propertyID = column.id;
-		desc.propertyDesc_propertyType = OS.kDataBrowserCustomType;
-		desc.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags | OS.kDataBrowserListViewSortableColumn;
-		desc.headerBtnDesc_maximumWidth = 0x7fff;
-		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
-		desc.headerBtnDesc_btnFontStyle_just = OS.teFlushLeft;
-		if ((style & SWT.CENTER) != 0) desc.headerBtnDesc_btnFontStyle_just = OS.teCenter;
-		if ((style & SWT.RIGHT) != 0) desc.headerBtnDesc_btnFontStyle_just = OS.teFlushRight;
-		desc.headerBtnDesc_btnFontStyle_flags |= OS.kControlUseJustMask;
-		OS.AddDataBrowserListViewColumn (handle, desc, position);
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column.id, (short)0);
-	} 
 	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columnCount + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
 	}
+	if (columnCount == 0) {
+		//TODO - clear attributes, alignment etc.
+		column.column = firstColumn;
+	} else {
+		//TODO - set attributes, alignment etc.
+		NSTableColumn nsColumn = (NSTableColumn)new NSTableColumn().alloc();
+		nsColumn.initWithIdentifier(NSString.stringWith(""));
+		column.column = nsColumn;
+		((NSTableView)view).addTableColumn (nsColumn);
+		((NSTableView)view).moveColumn (columnCount, index);
+	}
+	column.setWidth (0);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	if (columnCount > 1) {
@@ -620,24 +468,10 @@ void createItem (TableColumn column, int index) {
 			}
 		}
 	}
-	int [] lastPosition = new int [1];
-	for (int i=0; i<columnCount; i++) {
-		TableColumn c = columns [i];
-		OS.GetDataBrowserTableViewColumnPosition (handle, c.id, lastPosition);
-		c.lastPosition = lastPosition [0];
-	}
 }
 
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	boolean add = drawCount == 0 || index != itemCount;
-	if (add) {
-		int [] id = new int [] {itemCount + 1};
-		if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, OS.kDataBrowserItemNoProperty) != OS.noErr) {
-			error (SWT.ERROR_ITEM_NOT_ADDED);
-		}
-		if (index != itemCount) fixSelection (index, true);
-	}
 	if (itemCount == items.length) {
 		/* Grow the array faster when redraw is off */
 		int length = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
@@ -647,7 +481,8 @@ void createItem (TableItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	if (add) OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	//TODO - use noteNumberOfRowsChanged?
+	((NSTableView)view).reloadData();
 }
 
 ScrollBar createScrollBar (int style) {
@@ -658,8 +493,6 @@ void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];
 	columns = new TableColumn [4];
-	itemHeight = -1;
-	showIndex = -1;
 }
 
 Color defaultBackground () {
@@ -668,11 +501,6 @@ Color defaultBackground () {
 
 Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
-}
-
-int defaultThemeFont () {
-	if (display.smallFonts) return OS.kThemeSmallSystemFont;
-	return OS.kThemeViewsFont;
 }
 
 /**
@@ -752,27 +580,27 @@ public void deselect (int [] indices) {
 }
 
 void deselect (int [] ids, int count) {
-	ignoreSelect = true;
-	/*
-	* Bug in the Macintosh.  When the DataBroswer selection flags includes
-	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
-	* two items are selected when SetDataBrowserSelectedItems() is called
-	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
-	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
-	* restore kDataBrowserNeverEmptySelectionSet around each call to
-	* SetDataBrowserSelectedItems().
-	*/
-	int [] selectionFlags = null;
-	if ((style & SWT.SINGLE) != 0) {
-		selectionFlags = new int [1];
-		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
-		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
-	}
-	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsRemove);
-	if ((style & SWT.SINGLE) != 0) {
-		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
-	}
-	ignoreSelect = false;
+//	ignoreSelect = true;
+//	/*
+//	* Bug in the Macintosh.  When the DataBroswer selection flags includes
+//	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
+//	* two items are selected when SetDataBrowserSelectedItems() is called
+//	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
+//	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
+//	* restore kDataBrowserNeverEmptySelectionSet around each call to
+//	* SetDataBrowserSelectedItems().
+//	*/
+//	int [] selectionFlags = null;
+//	if ((style & SWT.SINGLE) != 0) {
+//		selectionFlags = new int [1];
+//		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+//		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+//	}
+//	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsRemove);
+//	if ((style & SWT.SINGLE) != 0) {
+//		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+//	}
+//	ignoreSelect = false;
 }
 
 /**
@@ -894,296 +722,6 @@ void destroyItem (TableItem item) {
 	}
 }
 
-int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
-	int index = id - 1;
-	if (!(0 <= index && index < itemCount)) return OS.noErr;
-	int columnIndex = 0;
-	if (columnCount > 0) {
-		for (columnIndex=0; columnIndex<columnCount; columnIndex++) {
-			if (columns [columnIndex].id == property) break;
-		}
-		if (columnIndex == columnCount) return OS.noErr;
-	}
-	Rect rect = new Rect ();
-	lastIndexOf = index;
-	TableItem item = _getItem (index);
-	if ((style & SWT.VIRTUAL) != 0) {
-		if (!item.cached) {
-			if (!checkData (item, false)) return OS.noErr;
-			if (setScrollWidth (item)) {
-				if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					int x = rect.left;
-					int y = rect.top;
-					int width = rect.right - rect.left;
-					int height = rect.bottom - rect.top;
-					redrawWidget (handle, x, y, width, height, false);
-				}
-				return OS.noErr;
-			}
-		}
-	}
-	OS.memmove (rect, theRect, Rect.sizeof);
-	int x = rect.left;
-	int y = rect.top;
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	GC gc = paintGC;
-	if (gc == null) {
-		GCData data = new GCData ();
-		int [] port = new int [1];
-		OS.GetPort (port);
-		data.port = port [0];
-		gc = GC.carbon_new (this, data);
-	}
-	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect);	
-	int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-	int itemX = rect.left + gridWidth;
-	int itemY = rect.top;
-	int itemWidth = rect.right - rect.left - gridWidth;
-	int itemHeight = rect.bottom - rect.top + 1;
-	if (drawBackground) {
-		drawBackground = false;
-		Region region = new Region (display);
-		Rectangle clientArea = getClientArea ();
-		int headerHeight = getHeaderHeight ();
-		clientArea.y += headerHeight;
-		clientArea.height -= headerHeight;
-		if (clientArea.height < 0) clientArea.height = 0;
-		region.add (clientArea);		
-		if ((style & SWT.CHECK) != 0 || gridWidth != 0) {
-			int rgn = OS.NewRgn();
-			if ((style & SWT.CHECK) != 0) {
-				if (OS.GetDataBrowserItemPartBounds (handle, id, Table.CHECK_COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					OS.SetRectRgn (rgn, (short)rect.left, (short)clientArea.y, (short)(rect.right + gridWidth), (short)(clientArea.y + clientArea.height));
-					OS.DiffRgn (region.handle, rgn, region.handle);
-				}
-			}
-			if (gridWidth != 0) {
-				if (columnCount == 0) {
-					if (OS.GetDataBrowserItemPartBounds (handle, id, Table.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-						OS.SetRectRgn (rgn, (short)rect.right, (short)clientArea.y, (short)(rect.right + gridWidth), (short)(clientArea.y + clientArea.height));
-						OS.DiffRgn (region.handle, rgn, region.handle);					
-					}
-				} else {
-					for (int i = 0; i < columnCount; i++) {
-						if (OS.GetDataBrowserItemPartBounds (handle, id, columns[i].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-							OS.SetRectRgn (rgn, (short)rect.right, (short)clientArea.y, (short)(rect.right + gridWidth), (short)(clientArea.y + clientArea.height));
-							OS.DiffRgn (region.handle, rgn, region.handle);
-						}
-					}
-				}
-			}
-			OS.DisposeRgn (rgn);
-		}
-		if (region != null) gc.setClipping (region);
-		fillBackground (handle, gc.handle, null);
-		if (region != null) {
-			gc.setClipping ((Rectangle)null);
-			region.dispose ();
-		}
-	}
-	OS.CGContextSaveGState (gc.handle);
-	int itemRgn = OS.NewRgn ();
-	OS.SetRectRgn (itemRgn, (short) itemX, (short) itemY, (short) (itemX + itemWidth), (short) (itemY + itemHeight));
-	int clip = OS.NewRgn ();
-	OS.GetClip (clip);
-	OS.SectRgn (clip, itemRgn, itemRgn);
-	OS.DisposeRgn (clip);
-	Region region = Region.carbon_new (display, itemRgn);
-	Font font = item.getFont (columnIndex);
-	Color background = item.getBackground (columnIndex);
-	Color foreground = item.getForeground (columnIndex);
-	Image image = item.getImage (columnIndex);
-	String text = item.getText (columnIndex);	
-	gc.setClipping (region);
-	gc.setFont (font);
-	Point extent = gc.stringExtent (text);
-	int contentWidth = extent.x;
-	Rectangle imageBounds = null;
-	int gap = 0;
-	if (image != null) {
-		gap = getGap ();
-		imageBounds = image.getBounds ();
-		contentWidth += this.imageBounds.width + gap;
-	}
-	int paintWidth = contentWidth;
-	if (hooks (SWT.MeasureItem)) {
-		Event event = new Event ();
-		event.item = item;
-		event.index = columnIndex;
-		event.gc = gc;
-		event.width = contentWidth;
-		event.height = itemHeight;
-		sendEvent (SWT.MeasureItem, event);
-		if (this.itemHeight < event.height) {
-			this.itemHeight = event.height;
-			OS.SetDataBrowserTableViewRowHeight (handle, (short) event.height);
-		}
-		if (setScrollWidth (item)) {
-			redrawWidget (handle, false);
-		}
-		contentWidth = event.width;
-		itemHeight = event.height;
-		gc.setClipping (region);
-		gc.setFont (font);
-	}
-	int drawState = SWT.FOREGROUND;
-	if (item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) drawState |= SWT.BACKGROUND;
-	if ((itemState & (OS.kDataBrowserItemIsSelected | OS.kDataBrowserItemIsDragTarget)) != 0) drawState |= SWT.SELECTED;
-	boolean wasSelected = (drawState & SWT.SELECTED) != 0;
-	if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
-		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
-	} else {
-		gc.setBackground (background);
-		gc.setForeground (foreground);
-	}
-	if (hooks (SWT.EraseItem)) {
-		Event event = new Event ();
-		event.item = item;
-		event.index = columnIndex;
-		event.gc = gc;
-		event.x = itemX;
-		event.y = itemY;
-		event.width = itemWidth;
-		event.height = itemHeight;
-		event.detail = drawState;
-		sendEvent (SWT.EraseItem, event);
-		drawState = event.doit ? event.detail : 0;
-		gc.setClipping (region);
-		gc.setFont (font);
-		if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
-			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
-		} else {
-			gc.setBackground (background);
-			if (!wasSelected) gc.setForeground (foreground);
-		}
-	}
-	if (columnCount != 0) {
-		TableColumn column = columns [columnIndex];
-		if ((column.style & SWT.CENTER) != 0) x += (width - contentWidth) / 2;
-		if ((column.style & SWT.RIGHT) != 0) x += width - contentWidth;
-	}
-	int stringX = x;
-	if (image != null) stringX += this.imageBounds.width + gap;
-	if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
-		if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
-			if ((style & SWT.FULL_SELECTION) != 0) {
-				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight - 1);
-				drawState &= ~SWT.BACKGROUND;
-			} else if (columnIndex == 0) {
-				gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
-				drawState &= ~SWT.BACKGROUND;
-			}
-		 } else {
-			 if ((drawState & SWT.BACKGROUND) != 0) gc.setBackground (background);
-		 }
-	}
-	if ((drawState & SWT.BACKGROUND) != 0) {
-		if (columnCount == 0) {
-			gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
-		} else {
-			gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
-		}
-	}
-	if ((drawState & SWT.FOREGROUND) != 0) {
-		if (image != null) {
-			int imageX = x, imageY = y + (height - this.imageBounds.height) / 2;
-			gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, imageX, imageY, this.imageBounds.width, this.imageBounds.height);
-		}
-		gc.drawString (text, stringX, y + (height - extent.y) / 2, true);
-	}
-	if (hooks (SWT.PaintItem)) {
-		Event event = new Event ();
-		event.item = item;
-		event.index = columnIndex;
-		event.gc = gc;
-		event.x = x;
-		event.y = y;
-		event.width = paintWidth;
-		event.height = itemHeight;
-		event.detail = drawState;
-		sendEvent (SWT.PaintItem, event);
-	}
-	OS.CGContextRestoreGState (gc.handle);
-	OS.DisposeRgn (itemRgn);
-	if (gc != paintGC) gc.dispose ();
-	return OS.noErr;
-}
-
-void fixScrollBar () {
-	/*
-	* Bug in the Macintosh. For some reason, the data browser does not update
-	* the vertical scrollbar when it is scrolled to the bottom and items are
-	* removed.  The fix is to check if the scrollbar value is bigger the
-	* maximum number of visible items and clamp it when needed.
-	*/
-	int [] top = new int [1], left = new int [1];
-	OS.GetDataBrowserScrollPosition (handle, top, left);
-	int maximum = Math.max (0, getItemHeight () * itemCount - getClientArea ().height);
-	if (top [0] > maximum) {
-		OS.SetDataBrowserScrollPosition (handle, maximum, left [0]);
-	}
-}
-
-void fixSelection (int index, boolean add) {
-	int [] selection = getSelectionIndices ();
-	if (selection.length == 0) return;
-	int newCount = 0;
-	boolean fix = false;
-	for (int i = 0; i < selection.length; i++) {
-		if (!add && selection [i] == index) {
-			fix = true;
-		} else {
-			int newIndex = newCount++;
-			selection [newIndex] = selection [i] + 1;
-			if (selection [newIndex] - 1 >= index) {
-				selection [newIndex] += add ? 1 : -1;
-				fix = true;
-			}
-		}
-	}
-	if (fix) select (selection, newCount, true);
-}
-
-int getBorder () {
-	int border = 0;
-	byte [] hasBorder = new byte [1];
-	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, hasBorder, null);
-	if (hasBorder [0] != 0) {
-		int [] outMetric = new int [1];
-		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-		border += outMetric [0] - BORDER_INSET;
-	}
-	return border;
-}
-
-int getCheckColumnWidth () {
-	int inset = 0;
-	if (OS.VERSION >= 0x1040) {
-		float [] metric = new float [1];
-		OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricCellContentInset, null, metric);
-		inset = (int) metric [0];
-	} else {
-		inset = CELL_CONTENT_INSET;
-	}
-	int [] checkWidth = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricCheckBoxWidth, checkWidth);
-	return checkWidth [0] + inset * 2;
-}
-
-public Rectangle getClientArea () {
-	checkWidget();
-	int border = getBorder ();
-	Rect rect = new Rect (), inset = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	OS.GetDataBrowserScrollBarInset (handle, inset);
-	int width = Math.max (0, rect.right - rect.left - inset.right - border - border);
-	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border);
-	return new Rectangle (inset.left + border, inset.top + border, width, height);
-}
-
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1270,7 +808,7 @@ public int [] getColumnOrder () {
 	int [] position = new int [1];
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
-		OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
+//		OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
 		if ((style & SWT.CHECK) != 0) position [0] -= 1;
 		order [position [0]] = i;
 	}
@@ -1311,15 +849,6 @@ public TableColumn [] getColumns () {
 	return result;
 }
 
-int getGap () {
-	if (OS.VERSION >= 0x1040) {
-		float [] metric = new float [1];
-		OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricIconAndTextGap, null, metric);
-		return (int) metric [0];
-	}
-	return ICON_AND_TEXT_GAP;
-}
-
 /**
  * Returns the width in pixels of a grid line.
  *
@@ -1350,7 +879,7 @@ public int getGridLineWidth () {
 public int getHeaderHeight () {
 	checkWidget ();
 	short [] height = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+//	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
 	return height [0];
 }
 
@@ -1374,17 +903,8 @@ public int getHeaderHeight () {
 public boolean getHeaderVisible () {
 	checkWidget ();
 	short [] height = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+//	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
 	return height [0] != 0;
-}
-
-int getInsetWidth () {
-	if (OS.VERSION >= 0x1040) {
-		float [] metric = new float [1];
-		OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricCellContentInset, null, metric);
-		return (int) metric [0] * 2;
-	}
-	return CELL_CONTENT_INSET * 2;
 }
 
 /**
@@ -1433,84 +953,84 @@ public TableItem getItem (int index) {
  */
 public TableItem getItem (Point point) {
 	checkWidget ();
-	checkItems (true);
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	Rect rect = new Rect ();
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.SetPt (pt, (short) point.x, (short) point.y);
-	if (0 < lastHittest && lastHittest <= itemCount && lastHittestColumn != 0) {
-		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-			if (rect.top <= pt.v && pt.v <= rect.bottom) {
-				if ((style & SWT.FULL_SELECTION) != 0) {
-					return _getItem (lastHittest - 1);
-				} else {
-					return OS.PtInRect (pt, rect) ? _getItem (lastHittest - 1) : null;
-				}
-			}
-		}
-			
-	}
-	int [] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition(handle, top, left);
-	short [] height = new short [1];
-	OS.GetDataBrowserTableViewRowHeight (handle, height);
-	short [] header = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, header);
-	int [] offsets = new int [] {0, 1, -1};
-	for (int i = 0; i < offsets.length; i++) {
-		int index = (top[0] - header [0] + point.y) / height [0] + offsets [i];
-		if (0 <= index && index < itemCount) {
-			if (columnCount == 0) {
-				if (OS.GetDataBrowserItemPartBounds (handle, index + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							return _getItem (index);
-						} else {
-							return OS.PtInRect (pt, rect) ? _getItem (index) : null;
-						}
-					}
-				}
-			} else {
-				for (int j = 0; j < columnCount; j++) {
-					if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-						if (rect.top <= pt.v && pt.v <= rect.bottom) {
-							if ((style & SWT.FULL_SELECTION) != 0) {
-								return _getItem (index);
-							} else {
-								return OS.PtInRect (pt, rect) ? _getItem (index) : null;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	//TODO - optimize
-	for (int i=0; i<itemCount; i++) {
-		if (columnCount == 0) {
-			if (OS.GetDataBrowserItemPartBounds (handle, i + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				if (rect.top <= pt.v && pt.v <= rect.bottom) {
-					if ((style & SWT.FULL_SELECTION) != 0) {
-						return _getItem (i);
-					} else {
-						return OS.PtInRect (pt, rect) ? _getItem (i) : null;
-					}
-				}
-			}
-		} else {
-			for (int j = 0; j < columnCount; j++) {
-				if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							return _getItem (i);
-						} else {
-							return OS.PtInRect (pt, rect) ? _getItem (i) : null;
-						}
-					}
-				}
-			}
-		}
-	}
+//	checkItems (true);
+//	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+//	Rect rect = new Rect ();
+//	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+//	OS.SetPt (pt, (short) point.x, (short) point.y);
+//	if (0 < lastHittest && lastHittest <= itemCount && lastHittestColumn != 0) {
+//		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//			if (rect.top <= pt.v && pt.v <= rect.bottom) {
+//				if ((style & SWT.FULL_SELECTION) != 0) {
+//					return _getItem (lastHittest - 1);
+//				} else {
+//					return OS.PtInRect (pt, rect) ? _getItem (lastHittest - 1) : null;
+//				}
+//			}
+//		}
+//			
+//	}
+//	int [] top = new int [1], left = new int [1];
+//    OS.GetDataBrowserScrollPosition(handle, top, left);
+//	short [] height = new short [1];
+//	OS.GetDataBrowserTableViewRowHeight (handle, height);
+//	short [] header = new short [1];
+//	OS.GetDataBrowserListViewHeaderBtnHeight (handle, header);
+//	int [] offsets = new int [] {0, 1, -1};
+//	for (int i = 0; i < offsets.length; i++) {
+//		int index = (top[0] - header [0] + point.y) / height [0] + offsets [i];
+//		if (0 <= index && index < itemCount) {
+//			if (columnCount == 0) {
+//				if (OS.GetDataBrowserItemPartBounds (handle, index + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//					if (rect.top <= pt.v && pt.v <= rect.bottom) {
+//						if ((style & SWT.FULL_SELECTION) != 0) {
+//							return _getItem (index);
+//						} else {
+//							return OS.PtInRect (pt, rect) ? _getItem (index) : null;
+//						}
+//					}
+//				}
+//			} else {
+//				for (int j = 0; j < columnCount; j++) {
+//					if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//						if (rect.top <= pt.v && pt.v <= rect.bottom) {
+//							if ((style & SWT.FULL_SELECTION) != 0) {
+//								return _getItem (index);
+//							} else {
+//								return OS.PtInRect (pt, rect) ? _getItem (index) : null;
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+//	//TODO - optimize
+//	for (int i=0; i<itemCount; i++) {
+//		if (columnCount == 0) {
+//			if (OS.GetDataBrowserItemPartBounds (handle, i + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//				if (rect.top <= pt.v && pt.v <= rect.bottom) {
+//					if ((style & SWT.FULL_SELECTION) != 0) {
+//						return _getItem (i);
+//					} else {
+//						return OS.PtInRect (pt, rect) ? _getItem (i) : null;
+//					}
+//				}
+//			}
+//		} else {
+//			for (int j = 0; j < columnCount; j++) {
+//				if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+//					if (rect.top <= pt.v && pt.v <= rect.bottom) {
+//						if ((style & SWT.FULL_SELECTION) != 0) {
+//							return _getItem (i);
+//						} else {
+//							return OS.PtInRect (pt, rect) ? _getItem (i) : null;
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 	return null;
 }
 
@@ -1543,9 +1063,9 @@ public int getItemCount () {
 public int getItemHeight () {
 	checkWidget ();
 	short [] height = new short [1];
-	if (OS.GetDataBrowserTableViewRowHeight (handle, height) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-	}
+//	if (OS.GetDataBrowserTableViewRowHeight (handle, height) != OS.noErr) {
+//		error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
+//	}
 	return height [0];
 }
 
@@ -1597,11 +1117,11 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
-	if (OS.VERSION >= 0x1040) {
-		int [] attrib = new int [1];
-		OS.DataBrowserGetAttributes (handle, attrib);
-		return (attrib [0] & (OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers)) != 0;
-	}
+//	if (OS.VERSION >= 0x1040) {
+//		int [] attrib = new int [1];
+//		OS.DataBrowserGetAttributes (handle, attrib);
+//		return (attrib [0] & (OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers)) != 0;
+//	}
 	return false;
 }
 
@@ -1623,24 +1143,25 @@ public boolean getLinesVisible () {
  */
 public TableItem [] getSelection () {
 	checkWidget ();
-	int ptr = OS.NewHandle (0);
-	if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	}
-	int count = OS.GetHandleSize (ptr) / 4;
-	TableItem [] result = new TableItem [count];
-	if (count > 0) {
-		OS.HLock (ptr);
-		int [] id = new int [1];
-		OS.memmove (id, ptr, 4);
-		int offset = id [0] + (count - 1) * 4;
-		for (int i=0; i<count; i++, offset -= 4) {
-			OS.memmove (id, offset, 4);
-			result [i] = _getItem (id [0] - 1);
-		}
-		OS.HUnlock (ptr);
-	}
-	return result;
+//	int ptr = OS.NewHandle (0);
+//	if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
+//		error (SWT.ERROR_CANNOT_GET_SELECTION);
+//	}
+//	int count = OS.GetHandleSize (ptr) / 4;
+//	TableItem [] result = new TableItem [count];
+//	if (count > 0) {
+//		OS.HLock (ptr);
+//		int [] id = new int [1];
+//		OS.memmove (id, ptr, 4);
+//		int offset = id [0] + (count - 1) * 4;
+//		for (int i=0; i<count; i++, offset -= 4) {
+//			OS.memmove (id, offset, 4);
+//			result [i] = _getItem (id [0] - 1);
+//		}
+//		OS.HUnlock (ptr);
+//	}
+//	return result;
+	return null;
 }
 
 /**
@@ -1656,9 +1177,9 @@ public TableItem [] getSelection () {
 public int getSelectionCount () {
 	checkWidget ();
 	int [] count = new int [1];
-	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, count) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_GET_COUNT);
-	}
+//	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, count) != OS.noErr) {
+//		error (SWT.ERROR_CANNOT_GET_COUNT);
+//	}
 	return count [0];
 }
 
@@ -1676,7 +1197,7 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	int [] first = new int [1], last = new int [1];
-	if (OS.GetDataBrowserSelectionAnchor (handle, first, last) != OS.noErr) return -1;
+//	if (OS.GetDataBrowserSelectionAnchor (handle, first, last) != OS.noErr) return -1;
     return first [0] - 1;
 }
 
@@ -1698,25 +1219,26 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-	int ptr = OS.NewHandle (0);
-	if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	}
-	int count = OS.GetHandleSize (ptr) / 4;
-	int [] result = new int [count];
-	if (count > 0) {
-		OS.HLock (ptr);
-		OS.memmove (result, ptr, 4);
-		OS.memmove (result, result [0], count * 4);
-		OS.HUnlock (ptr);
-		for (int start=0, end=count - 1; start<=end; start++, end--) {
-			int temp = result [start];
-			result [start] = result [end] - 1;
-			result [end] = temp - 1;
-		}
-	}
-	OS.DisposeHandle (ptr);
-	return result;
+//	int ptr = OS.NewHandle (0);
+//	if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
+//		error (SWT.ERROR_CANNOT_GET_SELECTION);
+//	}
+//	int count = OS.GetHandleSize (ptr) / 4;
+//	int [] result = new int [count];
+//	if (count > 0) {
+//		OS.HLock (ptr);
+//		OS.memmove (result, ptr, 4);
+//		OS.memmove (result, result [0], count * 4);
+//		OS.HUnlock (ptr);
+//		for (int start=0, end=count - 1; start<=end; start++, end--) {
+//			int temp = result [start];
+//			result [start] = result [end] - 1;
+//			result [end] = temp - 1;
+//		}
+//	}
+//	OS.DisposeHandle (ptr);
+//	return result;
+	return null;
 }
 
 /**
@@ -1776,157 +1298,10 @@ public int getSortDirection () {
 public int getTopIndex () {
 	checkWidget();
     int[] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition (handle, top, left);
+//   OS.GetDataBrowserScrollPosition (handle, top, left);
     return top [0] / getItemHeight ();
 }
 
-int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-	if (toolTipText == null) {
-	    switch (inRequest) {
-			case OS.kHMSupplyContent: {
-				if (!(toolTipText != null && toolTipText.length () != 0)) {
-					Rect rect = new Rect ();
-					int window = OS.GetControlOwner (handle);
-					OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-					short windowLeft = rect.left, windowTop = rect.top;
-					org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-					OS.memmove(pt, new int[] {inGlobalMouse}, 4);
-					pt.h -= windowLeft;
-					pt.v -= windowTop;
-					if (!contains (pt.h, pt.v)) break;
-					String toolTipText = null;
-					int tagSide = OS.kHMAbsoluteCenterAligned;
-					CGPoint inPt = new CGPoint ();
-					int [] contentView = new int [1];
-					OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
-					OS.HIViewConvertPoint (inPt, handle, contentView [0]);
-					pt.h -= (int) inPt.x;
-					pt.v -= (int) inPt.y;
-					windowLeft += (int) inPt.x;
-					windowTop += (int) inPt.y;
-					int x = pt.h;
-					int y = pt.v;
-					int headerHeight = getHeaderHeight ();
-					if (headerHeight != 0 && (0 <= y && y < headerHeight) ) {
-						int startX = 0;
-						for (int i = 0; i < columnCount; i++) {
-							TableColumn column = columns [i];
-							int width = column.lastWidth;
-							if (startX <= x && x < startX + width) {
-								toolTipText = column.toolTipText;
-								rect.left = (short) startX;
-								rect.right = (short) (rect.left + width);
-								rect.bottom = (short) (rect.top + headerHeight);
-								tagSide = OS.kHMOutsideBottomRightAligned;
-								break;
-							}
-							startX += width;
-						}
-					} else {
-						int columnIndex = 0;
-						TableItem item = null;
-						TableColumn column = null;
-						int rc = OS.noErr;
-						for (int i=getTopIndex (); i<itemCount && item == null && rc == OS.noErr; i++) {
-							if (columnCount == 0) {
-								if ((rc = OS.GetDataBrowserItemPartBounds (handle, i + 1, column_id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
-									if (OS.PtInRect (pt, rect)) {
-										item = _getItem (i);
-										break;
-									}
-								}
-							} else {
-								for (int j = 0; j < columnCount; j++) {
-									column = columns [j];
-									if ((rc = OS.GetDataBrowserItemPartBounds (handle, i + 1, column.id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
-										if (OS.PtInRect (pt, rect)) {
-											item = _getItem (i);
-											columnIndex = j;
-											break;
-										}
-									}
-								}
-							}
-						}
-						if (item != null) {
-							GC gc = new GC (this);
-							int inset = getInsetWidth ();
-							int width = item.calculateWidth (columnIndex, gc) + inset;
-							gc.dispose ();
-							short [] w = new short [1];
-							OS.GetDataBrowserTableViewNamedColumnWidth (handle, column == null ? column_id : column.id, w);
-							if (width > w [0]) {
-								toolTipText = item.getText (columnIndex);
-								Image image = item.getImage (columnIndex);
-								int imageWidth = image != null ? image.getBounds ().width + getGap () : 0;
-								int style = column == null ? SWT.LEFT : column.style;
-								if ((style & SWT.LEFT) != 0) {
-									rect.left += imageWidth;
-									rect.right = (short) (rect.left + width - imageWidth - inset);
-								}
-								if ((style & SWT.RIGHT) != 0) {
-									rect.left = (short) (rect.right - width + imageWidth + inset);
-								}
-								if ((style & SWT.CENTER) != 0) {
-									rect.left += imageWidth;
-								}
-							}
-						}
-					}
-					if (toolTipText != null && toolTipText.length () != 0) {
-						char [] buffer = new char [toolTipText.length ()];
-						toolTipText.getChars (0, buffer.length, buffer, 0);
-						int length = fixMnemonic (buffer);
-						if (display.helpString != 0) OS.CFRelease (display.helpString);
-						display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-						HMHelpContentRec helpContent = new HMHelpContentRec ();
-						OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
-						display.helpWidget = this;
-						helpContent.version = OS.kMacHelpVersion;
-						helpContent.tagSide = (short) tagSide;
-						helpContent.absHotRect_left = (short) (rect.left + windowLeft);
-						helpContent.absHotRect_top = (short) (rect.top + windowTop);
-						helpContent.absHotRect_right = (short) (rect.right + windowLeft);
-						helpContent.absHotRect_bottom = (short) (rect.bottom + windowTop);	
-						helpContent.content0_contentType = OS.kHMCFStringContent;
-						helpContent.content0_tagCFString = display.helpString;
-						helpContent.content1_contentType = OS.kHMCFStringContent;
-						helpContent.content1_tagCFString = display.helpString;
-						OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
-						OS.memmove (outContentProvided, new short[]{OS.kHMContentProvided}, 2);
-						return OS.noErr;
-					}
-				}
-				break;
-			}
-		}
-	}
-	return super.helpProc (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
-}
-
-int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
-	lastHittest = id;
-	lastHittestColumn = property;
-	return 1;
-}
-
-void hookEvents () {
-	super.hookEvents ();
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	callbacks.version = OS.kDataBrowserLatestCallbacks;
-	OS.InitDataBrowserCallbacks (callbacks);
-	callbacks.v1_itemDataCallback = display.itemDataProc;
-	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
-	custom.version = OS.kDataBrowserLatestCustomCallbacks;
-	OS.InitDataBrowserCustomCallbacks (custom);
-	custom.v1_drawItemCallback = display.drawItemProc;
-	custom.v1_hitTestCallback = display.hitTestProc;
-	custom.v1_trackingCallback = display.trackingProc;
-	OS.SetDataBrowserCustomCallbacks (handle, custom);
-}
 
 /**
  * Searches the receiver's list starting at the first column
@@ -2006,288 +1381,12 @@ public int indexOf (TableItem item) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	return OS.IsDataBrowserItemSelected (handle, index + 1);
+//	return OS.IsDataBrowserItemSelected (handle, index + 1);
+	return false;
 }
 
-int itemCompareProc () {
-	return sortDirection == SWT.DOWN && sortColumn != null ? display.itemCompareProc : 0;
-}
-
-int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	if (sortDirection == SWT.DOWN && sortColumn != null) {
-		return itemOne > itemTwo ? 1 : 0;
-	}
-	return itemOne < itemTwo ? 1 : 0;
-}
-
-int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
-	int row = id - 1;
-	if (!(0 <= row && row < items.length)) return OS.noErr;
-	switch (property) {
-		case CHECK_COLUMN_ID: {
-			TableItem item = _getItem (row);
-			if (!checkData (item, false)) return OS.noErr;
-			if (setValue != 0) {
-				item.checked = !item.checked;
-				if (item.checked && item.grayed) {
-					OS.SetDataBrowserItemDataButtonValue (itemData, (short) OS.kThemeButtonMixed);
-				} else {
-					int theData = item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff;
-					OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
-				}
-				Event event = new Event ();
-				event.item = item;
-				event.detail = SWT.CHECK;
-				postEvent (SWT.Selection, event);
-				/*
-				* Bug in the Macintosh. When the height of the row is smaller than the
-				* check box, the tail of the check mark draws outside of the item part
-				* bounds. This means it will not be redrawn when the item is unckeched.
-				* The fix is to redraw the area.
-				*/
-				if (!item.checked) item.redraw(Table.CHECK_COLUMN_ID);
-			} else {
-				int theData = OS.kThemeButtonOff;
-				if (item.checked) theData = item.grayed ? OS.kThemeButtonMixed : OS.kThemeButtonOn;
-				OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
-			}
-			break;
-		}
-	}
-	return OS.noErr;
-}
-
-int itemNotificationProc (int browser, int id, int message) {
-	if (message == OS.kDataBrowserUserStateChanged) {
-		boolean resized = false;
-		short [] width = new short [1];
-		int [] position = new int [1];
-		TableColumn [] columns = getColumns ();
-		for (int i = 0; i < columnCount; i++) {
-			TableColumn column = columns [i];
-			if (!column.isDisposed ()) {
-				OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, width);
-				if (width [0] != column.lastWidth) {
-					column.resized (width [0]);
-					resized = true;
-				}
-			}
-			if (!column.isDisposed ()) {
-				OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
-				if (position [0] != column.lastPosition) {
-					column.lastPosition = position [0];
-					column.sendEvent (SWT.Move);
-					resized = true;
-				}
-			}
-		}
-		int [] property = new int [1];
-		OS.GetDataBrowserSortProperty (handle, property);
-		if (property [0] != 0) {
-			if (!resized) {
-				for (int i = 0; i < columnCount; i++) {
-					TableColumn column = columns [i];
-					if (property [0] == column.id) {
-						column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
-						break;
-					}
-				}
-			}
-			OS.SetDataBrowserSortProperty (handle, 0);
-			if (sortColumn != null && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
-				OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-				int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-				OS.SetDataBrowserSortOrder (handle, (short) order);
-			}
-		}
-		return OS.noErr;
-	}
-	int index = id - 1;
-	if (!(0 <= index && index < items.length)) return OS.noErr;
-	switch (message) {
-		case OS.kDataBrowserItemSelected:
-		case OS.kDataBrowserItemDeselected: {
-			TableItem item = _getItem (index);
-			wasSelected = true;
-			if (ignoreSelect) break;
-			int [] first = new int [1], last = new int [1];
-			OS.GetDataBrowserSelectionAnchor (handle, first, last);
-			boolean selected = false;
-			if ((style & SWT.MULTI) != 0) {
-				int modifiers = OS.GetCurrentEventKeyModifiers ();
-				if ((modifiers & OS.shiftKey) != 0) {
-					if (message == OS.kDataBrowserItemSelected) {
-						selected = first [0] == id || last [0] == id;
-					} else {
-						selected = id == anchorFirst || id == anchorLast;
-					}
-				} else {
-					if ((modifiers & OS.cmdKey) != 0) {
-						selected = true;
-					} else {
-						selected = first [0] == last [0];
-					}
-				}
-			} else {
-				selected = message == OS.kDataBrowserItemSelected;
-			}
-			if (selected) {
-				anchorFirst = first [0];
-				anchorLast = last [0];
-				Event event = new Event ();
-				event.item = item;
-				postEvent (SWT.Selection, event);
-			}
-			break;
-		}	
-		case OS.kDataBrowserItemDoubleClicked: {
-			wasSelected = true;
-			if (display.clickCount == 2) {
-				Event event = new Event ();
-				event.item = _getItem (index);
-				postEvent (SWT.DefaultSelection, event);
-			}
-			break;
-		}
-	}
-	return OS.noErr;
-}
-
-int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] ref = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleObject, OS.typeCFTypeRef, null, 4, null, ref);
-	int axuielementref = ref [0];
-	DataBrowserAccessibilityItemInfo itemInfo = new DataBrowserAccessibilityItemInfo ();
-	int err = OS.AXUIElementGetDataBrowserItemInfo (axuielementref, handle, 0, itemInfo);
-	if (err == OS.noErr && itemInfo.v0_columnProperty != OS.kDataBrowserItemNoProperty && itemInfo.v0_item != OS.kDataBrowserNoItem && itemInfo.v0_propertyPart == OS.kDataBrowserPropertyEnclosingPart) {
-		int columnIndex = 0;
-		for (columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-			if (columns [columnIndex].id == itemInfo.v0_columnProperty) break;
-		}
-		if (columnIndex != columnCount || columnCount == 0) {
-			int index = itemInfo.v0_item - 1;
-			if (0 <= index && index < itemCount) {
-				TableItem tableItem = _getItem (index);
-				int [] stringRef = new int [1];
-				OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
-				int length = 0;
-				if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
-				char [] buffer = new char [length];
-				CFRange range = new CFRange ();
-				range.length = length;
-				OS.CFStringGetCharacters (stringRef [0], range, buffer);
-				String attributeName = new String(buffer);
-				if (attributeName.equals(OS.kAXChildrenAttribute)) {
-					int children = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
-					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFMutableArrayRef, 4, new int [] {children});
-					OS.CFRelease(children);
-					return OS.noErr;
-				}
-				String text = null;
-				if (attributeName.equals (OS.kAXRoleAttribute)) {
-					text = OS.kAXStaticTextRole;
-				}
-				if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-					buffer = new char [OS.kAXStaticTextRole.length ()];
-					OS.kAXStaticTextRole.getChars (0, buffer.length, buffer, 0);
-					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-					if (stringRef [0] != 0) {
-						int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
-						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-						OS.CFRelease(stringRef [0]);
-						OS.CFRelease(stringRef2);
-						return OS.noErr;
-					}
-				}
-				if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
-					text = tableItem.getText (columnIndex);
-				}
-				if (text != null) {
-					buffer = new char [text.length ()];
-					text.getChars (0, buffer.length, buffer, 0);
-					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-					if (stringRef [0] != 0) {
-						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-						OS.CFRelease(stringRef [0]);
-						return OS.noErr;
-					}
-				}
-			}
-		}
-	}
-	if (accessible != null) {
-		return super.kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
-	return code;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	wasSelected = false;
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (isDisposed ()) return OS.noErr;
-	if (!wasSelected) {
-		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
-			int index = lastHittest - 1;
-			if (0 <= index && index < itemCount) {
-				Event event = new Event ();
-				event.item = _getItem (index);
-				postEvent (SWT.Selection, event);
-			}
-		}
-	}
-	return result;
-}
-
-int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
-	OS.SetEventParameter (theEvent, OS.kEventParamClickActivation, OS.typeClickActivationResult, 4, new int [] {OS.kActivateAndHandleClick});
-	return OS.noErr;
-}
-
-int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	if (!isEnabledCursor ()) return OS.noErr;
-	if (isEnabledModal ()) {
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		if (!contains (pt.h, pt.v)) return OS.eventNotHandledErr;
-	}
-	return super.kEventControlSetCursor (nextHandler, theEvent, userData);
-}
-
-int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] keyboardEvent = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 76: /* KP Enter */
-		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
-			break;
-		}
-		/*
-		* Feature in the Macintosh.  For some reason, when the user hits an
-		* up or down arrow to traverse the items in a Data Browser, the item
-		* scrolls to the left such that the white space that is normally
-		* visible to the right of the every item is scrolled out of view.
-		* The fix is to save and restore the horizontal scroll position.
-		*/
-		case 125: /* Down */
-		case 126: /* Up*/
-			int [] top = new int [1], left = new int [1];
-			OS.GetDataBrowserScrollPosition (handle, top, left);
-			result = OS.CallNextEventHandler (nextHandler, theEvent);
-			OS.GetDataBrowserScrollPosition (handle, top, null);
-			OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
-
-			redrawBackgroundImage ();
-	}
-	return result;
+int numberOfRowsInTableView(int aTableView) {
+	return itemCount;
 }
 
 void releaseChildren (boolean destroy) {
@@ -2316,20 +1415,12 @@ void releaseWidget () {
 	super.releaseWidget ();
 	currentItem = null;
 	sortColumn = null;
-	paintGC = null;
-	imageBounds = null;
-	/*
-	 * Feature in the Mac. When RemoveDataBrowserItems() is used
-	 * to remove items, item notification callbacks are issued with
-	 * the message kDataBrowserItemRemoved  When many items are
-	 * removed, this is slow.  The fix is to temporarily remove
-	 * the item notification callback.
-	 */
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemNotificationCallback = 0;
-	callbacks.v1_itemCompareCallback = 0;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
+	if (columnCount == 0) {
+		if (firstColumn != null) firstColumn.release();
+	} else {
+		//TODO - release the other columns?
+	}
+	firstColumn = null;
 }
 
 /**
@@ -2348,23 +1439,23 @@ void releaseWidget () {
  */
 public void remove (int index) {
 	checkWidget();
-	checkItems (true);
-	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	TableItem item = items [index];
-	if (item != null) item.release (false);
-	if (index != itemCount - 1) fixSelection (index, false);
-	int [] id = new int [] {itemCount};
-	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
-	}
-	System.arraycopy (items, index + 1, items, index, --itemCount - index);
-	items [itemCount] = null;
-	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	if (itemCount == 0) {
-		setTableEmpty ();
-	} else {
-		fixScrollBar ();
-	}
+//	checkItems (true);
+//	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+//	TableItem item = items [index];
+//	if (item != null) item.release (false);
+//	if (index != itemCount - 1) fixSelection (index, false);
+//	int [] id = new int [] {itemCount};
+//	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
+//		error (SWT.ERROR_ITEM_NOT_REMOVED);
+//	}
+//	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+//	items [itemCount] = null;
+//	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+//	if (itemCount == 0) {
+//		setTableEmpty ();
+//	} else {
+//		fixScrollBar ();
+//	}
 }
 
 /**
@@ -2447,23 +1538,23 @@ public void removeAll () {
 		TableItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
-	/*
-	* Feature in the Mac. When RemoveDataBrowserItems() is used
-	* to remove items, item notification callbacks are issued with
-	* the message kDataBrowserItemRemoved  When many items are
-	* removed, this is slow.  The fix is to temporarily remove
-	* the item notification callback.
-	*/
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemNotificationCallback = 0;
-	callbacks.v1_itemCompareCallback = 0;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
-	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	setTableEmpty ();
+//	/*
+//	* Feature in the Mac. When RemoveDataBrowserItems() is used
+//	* to remove items, item notification callbacks are issued with
+//	* the message kDataBrowserItemRemoved  When many items are
+//	* removed, this is slow.  The fix is to temporarily remove
+//	* the item notification callback.
+//	*/
+//	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+//	OS.GetDataBrowserCallbacks (handle, callbacks);
+//	callbacks.v1_itemNotificationCallback = 0;
+//	callbacks.v1_itemCompareCallback = 0;
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
+//	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+//	callbacks.v1_itemCompareCallback = itemCompareProc ();
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	setTableEmpty ();
 }
 
 /**
@@ -2491,13 +1582,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void resetVisibleRegion (int control) {
-	super.resetVisibleRegion (control);
-	if (showIndex != -1) {
-		showIndex (showIndex);
-	}
-}
-
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains
@@ -2512,11 +1596,11 @@ void resetVisibleRegion (int control) {
  */
 public void select (int index) {
 	checkWidget();
-	checkItems (false);
-	if (0 <= index && index < itemCount) {
-		int [] ids = new int [] {index + 1};
-		select (ids, ids.length, false);
-	}
+//	checkItems (false);
+//	if (0 <= index && index < itemCount) {
+//		int [] ids = new int [] {index + 1};
+//		select (ids, ids.length, false);
+//	}
 }
 
 /**
@@ -2544,7 +1628,7 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget ();
-	checkItems (false);
+//	checkItems (false);
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	if (itemCount == 0 || start >= itemCount) return;
 	if (start == 0 && end == itemCount - 1) {
@@ -2584,7 +1668,7 @@ public void select (int start, int end) {
  */
 public void select (int [] indices) {
 	checkWidget ();
-	checkItems (false);
+//	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
@@ -2600,29 +1684,29 @@ public void select (int [] indices) {
 }
 
 void select (int [] ids, int count, boolean clear) {
-	ignoreSelect = true;
-	/*
-	* Bug in the Macintosh.  When the DataBroswer selection flags includes
-	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
-	* two items are selected when SetDataBrowserSelectedItems() is called
-	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
-	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
-	* restore kDataBrowserNeverEmptySelectionSet around each call to
-	* SetDataBrowserSelectedItems().
-	*/
-	int [] selectionFlags = null;
-	if ((style & SWT.SINGLE) != 0) {
-		selectionFlags = new int [1];
-		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
-		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
-	}
-	int operation = OS.kDataBrowserItemsAssign;
-	if ((style & SWT.MULTI) != 0 && !clear) operation = OS.kDataBrowserItemsAdd;
-	OS.SetDataBrowserSelectedItems (handle, count, ids, operation);
-	if ((style & SWT.SINGLE) != 0) {
-		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
-	}
-	ignoreSelect = false;
+//	ignoreSelect = true;
+//	/*
+//	* Bug in the Macintosh.  When the DataBroswer selection flags includes
+//	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
+//	* two items are selected when SetDataBrowserSelectedItems() is called
+//	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
+//	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
+//	* restore kDataBrowserNeverEmptySelectionSet around each call to
+//	* SetDataBrowserSelectedItems().
+//	*/
+//	int [] selectionFlags = null;
+//	if ((style & SWT.SINGLE) != 0) {
+//		selectionFlags = new int [1];
+//		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
+//		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
+//	}
+//	int operation = OS.kDataBrowserItemsAssign;
+//	if ((style & SWT.MULTI) != 0 && !clear) operation = OS.kDataBrowserItemsAdd;
+//	OS.SetDataBrowserSelectedItems (handle, count, ids, operation);
+//	if ((style & SWT.SINGLE) != 0) {
+//		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
+//	}
+//	ignoreSelect = false;
 }
 
 /**
@@ -2638,7 +1722,7 @@ void select (int [] ids, int count, boolean clear) {
  */
 public void selectAll () {
 	checkWidget ();
-	checkItems (false);
+//	checkItems (false);
 	if ((style & SWT.SINGLE) != 0) return;
 	select (null, 0, false);
 }
@@ -2651,18 +1735,6 @@ void setBackground (float [] color) {
 	* fix is to avoid calling SetControlFontStyle() which has no effect
 	* in a data browser anyways.
 	*/
-}
-
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	/*
-	* Ensure that the top item is visible when the tree is resized
-	* from a zero size to a size that can show the selection.
-	*/
-	int result = super.setBounds (x, y, width, height, move, resize, events);
-	if (showIndex != -1) {
-		showIndex (showIndex);
-	}
-	return result;
 }
 
 /**
@@ -2715,7 +1787,7 @@ public void setColumnOrder (int [] order) {
 			int index = oldOrder [i];
 			TableColumn column = columns [index];
 			oldX [index] =  x;
-			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
+//			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
 			x += width [0];
 		}
 		x = 0;
@@ -2724,10 +1796,10 @@ public void setColumnOrder (int [] order) {
 			int index = order [i];
 			TableColumn column = columns [index];
 			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
-			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
-			column.lastPosition = position;
+//			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
+//			column.lastPosition = position;
 			newX [index] =  x;
-			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
+//			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
 			x += width [0];
 		}
 		TableColumn[] newColumns = new TableColumn [columnCount];
@@ -2741,17 +1813,6 @@ public void setColumnOrder (int [] order) {
 			}
 		}
 	}
-}
-
-void setFontStyle (Font font) {
-	super.setFontStyle (font);
-	if (items == null) return;
-	for (int i = 0; i < items.length; i++) {
-		TableItem item = items [i];
-		if (item != null) item.width = -1;
-	}
-	setScrollWidth (items, true);
-	setItemHeight (null);
 }
 
 /**
@@ -2773,11 +1834,11 @@ void setFontStyle (Font font) {
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	short [] height = new short [1];
-	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
-	if ((height [0] != 0) != show) {
-		OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) (show ? headerHeight : 0));
-		invalidateVisibleRegion (handle);
-	}
+//	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+//	if ((height [0] != 0) != show) {
+//		OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) (show ? headerHeight : 0));
+//		invalidateVisibleRegion (handle);
+//	}
 }
 
 /**
@@ -2794,49 +1855,49 @@ public void setHeaderVisible (boolean show) {
  */
 public void setItemCount (int count) {
 	checkWidget ();
-	checkItems (true);
-	count = Math.max (0, count);
-	if (count == itemCount) return;
-	setRedraw (false);
-    int[] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition (handle, top, left);
-    DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemNotificationCallback = 0;
-	callbacks.v1_itemCompareCallback = 0;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	if (count < itemCount) {
-		int index = count;
-		int[] id = new int [itemCount - count];
-		while (index < itemCount) {
-			TableItem item = items [index];
-			if (item != null) item.release (false);
-			id [index-count] = index + 1;
-			index++;
-		}
-		OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0);
-		int [] newItemCount = new int [1];
-		if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, newItemCount) != OS.noErr) {
-			error (SWT.ERROR_CANNOT_GET_COUNT);
-		}
-		if (count != newItemCount[0]) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	}
-	int length = Math.max (4, (count + 3) / 4 * 4);
-	TableItem [] newItems = new TableItem [length];
-	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
-	items = newItems;
-	if ((style & SWT.VIRTUAL) == 0) {
-		for (int i=itemCount; i<count; i++) {
-			items [i] = new TableItem (this, SWT.NONE, i, false);
-		}
-	}
-	itemCount = count;
-	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
-	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	fixScrollBar ();
-	setRedraw (true);
+//	checkItems (true);
+//	count = Math.max (0, count);
+//	if (count == itemCount) return;
+//	setRedraw (false);
+//    int[] top = new int [1], left = new int [1];
+//    OS.GetDataBrowserScrollPosition (handle, top, left);
+//    DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+//	OS.GetDataBrowserCallbacks (handle, callbacks);
+//	callbacks.v1_itemNotificationCallback = 0;
+//	callbacks.v1_itemCompareCallback = 0;
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	if (count < itemCount) {
+//		int index = count;
+//		int[] id = new int [itemCount - count];
+//		while (index < itemCount) {
+//			TableItem item = items [index];
+//			if (item != null) item.release (false);
+//			id [index-count] = index + 1;
+//			index++;
+//		}
+//		OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0);
+//		int [] newItemCount = new int [1];
+//		if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, newItemCount) != OS.noErr) {
+//			error (SWT.ERROR_CANNOT_GET_COUNT);
+//		}
+//		if (count != newItemCount[0]) error (SWT.ERROR_ITEM_NOT_REMOVED);
+//	}
+//	int length = Math.max (4, (count + 3) / 4 * 4);
+//	TableItem [] newItems = new TableItem [length];
+//	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
+//	items = newItems;
+//	if ((style & SWT.VIRTUAL) == 0) {
+//		for (int i=itemCount; i<count; i++) {
+//			items [i] = new TableItem (this, SWT.NONE, i, false);
+//		}
+//	}
+//	itemCount = count;
+//	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
+//	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+//	callbacks.v1_itemCompareCallback = itemCompareProc ();
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	fixScrollBar ();
+//	setRedraw (true);
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
@@ -2845,19 +1906,7 @@ public void setItemCount (int count) {
 	if (itemHeight == -1) {
 		//TODO - reset item height, ensure other API's such as setFont don't do this
 	} else {
-		OS.SetDataBrowserTableViewRowHeight (handle, (short) itemHeight);
-	}
-}
-
-void setItemHeight (Image image) {
-	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
-	if (bounds == null) return;
-	imageBounds = bounds;
-	short [] height = new short [1];
-	if (OS.GetDataBrowserTableViewRowHeight (handle, height) == OS.noErr) {
-		if (height [0] < bounds.height) {
-			OS.SetDataBrowserTableViewRowHeight (handle, (short) bounds.height);
-		}
+//		OS.SetDataBrowserTableViewRowHeight (handle, (short) itemHeight);
 	}
 }
 
@@ -2879,72 +1928,26 @@ void setItemHeight (Image image) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-	if (OS.VERSION >= 0x1040) {
-		int attrib = OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers;
-		OS.DataBrowserChangeAttributes (handle, show ? attrib : 0, !show ? attrib : 0);
-		redraw ();
-	}
+//	if (OS.VERSION >= 0x1040) {
+//		int attrib = OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers;
+//		OS.DataBrowserChangeAttributes (handle, show ? attrib : 0, !show ? attrib : 0);
+//		redraw ();
+//	}
 }
 
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
-	if (redraw && drawCount == 0) {
-	 	/* Resize the item array to match the item count */
-		if (items.length > 4 && items.length - itemCount > 3) {
-			int length = Math.max (4, (itemCount + 3) / 4 * 4);
-			TableItem [] newItems = new TableItem [length];
-			System.arraycopy (items, 0, newItems, 0, itemCount);
-			items = newItems;
-		}		
-	 	checkItems (true);
-	}
-}
-
-boolean setScrollWidth (TableItem item) {
-	if (columnCount != 0) return false;
-	if (currentItem != null) {
-		if (currentItem != item) fixScrollWidth = true;
-		return false;
-	}
-	if (drawCount != 0) return false;
-	GC gc = new GC (this);
-	int newWidth = item.calculateWidth (0, gc);
-	gc.dispose ();
-	newWidth += getInsetWidth ();
-	short [] width = new short [1];
-	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-	if (width [0] < newWidth) {
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-		return true;
-	}
-	return false;
-}
-
-boolean setScrollWidth (TableItem [] items, boolean set) {
-	if (columnCount != 0) return false;
-	if (currentItem != null) {
-		fixScrollWidth = true;
-		return false;
-	}
-	if (drawCount != 0) return false;
-	GC gc = new GC (this);
-	int newWidth = 0;
-	for (int i = 0; i < items.length; i++) {
-		TableItem item = items [i];
-		if (item != null) {
-			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
-		}
-	}
-	gc.dispose ();
-	newWidth += getInsetWidth ();
-	if (!set) {
-		short [] width = new short [1];
-		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-		if (width [0] >= newWidth) return false;
-	}
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-	return true;
+//	if (redraw && drawCount == 0) {
+//	 	/* Resize the item array to match the item count */
+//		if (items.length > 4 && items.length - itemCount > 3) {
+//			int length = Math.max (4, (itemCount + 3) / 4 * 4);
+//			TableItem [] newItems = new TableItem [length];
+//			System.arraycopy (items, 0, newItems, 0, itemCount);
+//			items = newItems;
+//		}		
+//	 	checkItems (true);
+//	}
 }
 
 /**
@@ -2963,7 +1966,7 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
  */
 public void setSelection (int index) {
 	checkWidget();
-	checkItems (false);
+//	checkItems (false);
 	deselectAll ();
 	setSelection (index, false);
 }
@@ -3006,7 +2009,7 @@ void setSelection (int index, boolean notify) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	checkItems (false);
+//	checkItems (false);
 	deselectAll ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	if (itemCount == 0 || start >= itemCount) return;
@@ -3043,7 +2046,7 @@ public void setSelection (int start, int end) {
  */
 public void setSelection (int [] indices) {
 	checkWidget ();
-	checkItems (false);
+//	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = indices.length;
@@ -3114,7 +2117,7 @@ public void setSelection (TableItem  item) {
  */
 public void setSelection (TableItem [] items) {
 	checkWidget ();
-	checkItems (false);
+//	checkItems (false);
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = items.length;
@@ -3154,25 +2157,25 @@ public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	if (column == null) {
-		if (sortColumn != null  && !sortColumn.isDisposed ()  && sortDirection != SWT.NONE) {
-			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
-			sortColumn = null; 
-			OS.SetDataBrowserSortProperty (handle, 0);
-		}
-	}
-	sortColumn = column;
-	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
-		OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-		int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-		OS.SetDataBrowserSortOrder (handle, (short) order);
-	}
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+//	OS.GetDataBrowserCallbacks (handle, callbacks);
+//	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	if (column == null) {
+//		if (sortColumn != null  && !sortColumn.isDisposed ()  && sortDirection != SWT.NONE) {
+//			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
+//			sortColumn = null; 
+//			OS.SetDataBrowserSortProperty (handle, 0);
+//		}
+//	}
+//	sortColumn = column;
+//	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
+//		OS.SetDataBrowserSortProperty (handle, sortColumn.id);
+//		int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
+//		OS.SetDataBrowserSortOrder (handle, (short) order);
+//	}
+//	callbacks.v1_itemCompareCallback = itemCompareProc ();
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
 }
 
 /**
@@ -3193,38 +2196,38 @@ public void setSortDirection  (int direction) {
 	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	if (direction == sortDirection) return;
 	sortDirection = direction;
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	if (sortColumn != null && !sortColumn.isDisposed ()) {
-		if (sortDirection == SWT.NONE) {
-			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
-			TableColumn column = sortColumn;
-			sortColumn = null; 
-			OS.SetDataBrowserSortProperty (handle, 0);
-			sortColumn = column;
-		} else {
-			OS.SetDataBrowserSortProperty (handle, 0);
-			OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-			int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-			OS.SetDataBrowserSortOrder (handle, (short) order);
-		}
-	}
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+//	OS.GetDataBrowserCallbacks (handle, callbacks);
+//	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
+//	if (sortColumn != null && !sortColumn.isDisposed ()) {
+//		if (sortDirection == SWT.NONE) {
+//			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
+//			TableColumn column = sortColumn;
+//			sortColumn = null; 
+//			OS.SetDataBrowserSortProperty (handle, 0);
+//			sortColumn = column;
+//		} else {
+//			OS.SetDataBrowserSortProperty (handle, 0);
+//			OS.SetDataBrowserSortProperty (handle, sortColumn.id);
+//			int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
+//			OS.SetDataBrowserSortOrder (handle, (short) order);
+//		}
+//	}
+//	callbacks.v1_itemCompareCallback = itemCompareProc ();
+//	OS.SetDataBrowserCallbacks (handle, callbacks);
 }
 
 void setTableEmpty () {
-	itemHeight = -1;
-	OS.SetDataBrowserScrollPosition (handle, 0, 0);
-	itemCount = anchorFirst = anchorLast = 0;
-	items = new TableItem [4];
-	if (imageBounds != null) {
-		/* Reset the item height to the font height */
-		imageBounds = null;
-		setFontStyle (font);
-	}
+//	itemHeight = -1;
+//	OS.SetDataBrowserScrollPosition (handle, 0, 0);
+//	itemCount = anchorFirst = anchorLast = 0;
+//	items = new TableItem [4];
+//	if (imageBounds != null) {
+//		/* Reset the item height to the font height */
+//		imageBounds = null;
+//		setFontStyle (font);
+//	}
 }
 
 /**
@@ -3241,12 +2244,12 @@ void setTableEmpty () {
  */
 public void setTopIndex (int index) {
 	checkWidget();
-	checkItems (false);
-	int itemHeight = getItemHeight ();
-    int [] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition (handle, top, left);
-    top [0] = Math.max (0, Math.min (itemHeight * itemCount - getClientArea ().height, index * itemHeight));
-    OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
+//	checkItems (false);
+//	int itemHeight = getItemHeight ();
+//    int [] top = new int [1], left = new int [1];
+//    OS.GetDataBrowserScrollPosition (handle, top, left);
+//    top [0] = Math.max (0, Math.min (itemHeight * itemCount - getClientArea ().height, index * itemHeight));
+//    OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
 }
 
 /**
@@ -3275,74 +2278,74 @@ public void showColumn (TableColumn column) {
 	int index = indexOf (column);
 	if (columnCount <= 1 || !(0 <= index && index < columnCount)) return;
 	// Get width and horizontal position of column
-	short [] w = new short [1];
-	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, w);
-	int width = w [0];
-	int x = 0;
-	for (int i = 0; i < index; i++) {
-		w = new short [1];
-		OS.GetDataBrowserTableViewNamedColumnWidth (handle, columns[i].id, w);
-		x += w [0];
-	}
-	// Get current scroll position
-	int [] top = new int [1], left = new int [1];
-	OS.GetDataBrowserScrollPosition (handle, top, left);
-	// Scroll column into view
-	if (x < left[0]) {
-		OS.SetDataBrowserScrollPosition(handle, top [0], x);
-	} else {
-		Rectangle rect = getClientArea ();
-		int maxWidth = rect.width;
-		width = Math.min(width, maxWidth);
-		if (x + width > left [0] + maxWidth) {
-			left [0] = x + width - maxWidth;
-			OS.SetDataBrowserScrollPosition(handle, top [0], left [0]);
-		}
-	}
+//	short [] w = new short [1];
+//	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, w);
+//	int width = w [0];
+//	int x = 0;
+//	for (int i = 0; i < index; i++) {
+//		w = new short [1];
+//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, columns[i].id, w);
+//		x += w [0];
+//	}
+//	// Get current scroll position
+//	int [] top = new int [1], left = new int [1];
+//	OS.GetDataBrowserScrollPosition (handle, top, left);
+//	// Scroll column into view
+//	if (x < left[0]) {
+//		OS.SetDataBrowserScrollPosition(handle, top [0], x);
+//	} else {
+//		Rectangle rect = getClientArea ();
+//		int maxWidth = rect.width;
+//		width = Math.min(width, maxWidth);
+//		if (x + width > left [0] + maxWidth) {
+//			left [0] = x + width - maxWidth;
+//			OS.SetDataBrowserScrollPosition(handle, top [0], left [0]);
+//		}
+//	}
 }
 
 void showIndex (int index) {
-	if (0 <= index && index < itemCount) {
-		/*
-		* Bug in the Macintosh.  When there is not room to show a
-		* single item in the data browser, RevealDataBrowserItem()
-		* scrolls the item such that it is above the top of the data
-		* browser.  The fix is to remember the index and scroll when
-		* the data browser is resized.
-		* 
-		* Bug in the Macintosh.  When items are added to the data
-		* browser after is has been hidden, RevealDataBrowserItem()
-		* when called before the controls behind the data browser
-		* are repainted causes a redraw.  This redraw happens right
-		* away causing pixel corruption.  The fix is to remember the
-		* index and scroll when the data browser is shown.
-		*/
-		Rectangle rect = getClientArea ();
-		if (rect.height < getItemHeight () || !OS.IsControlVisible (handle)) {
-			showIndex = index;
-			return;
-		}
-		showIndex = -1;
-		TableItem item = _getItem (index);
-		Rectangle itemRect = item.getBounds (0);
-		if (!itemRect.isEmpty()) {
-			if (rect.contains (itemRect.x, itemRect.y)
-				&& rect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
-		}
-		int [] top = new int [1], left = new int [1];
-		OS.GetDataBrowserScrollPosition (handle, top, left);
-		OS.RevealDataBrowserItem (handle, index + 1, OS.kDataBrowserNoItem, (byte) OS.kDataBrowserRevealWithoutSelecting);
-
-		/*
-		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
-		* by RevealDataBrowserItem(), the scrollbars are not redrawn.  The fix is to
-		* force a redraw.
-		*/
-		int [] newTop = new int [1], newLeft = new int [1];
-		OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
-		if (horizontalBar != null && newLeft [0] != left [0]) horizontalBar.redraw ();
-		if (verticalBar != null && newTop [0] != top [0]) verticalBar.redraw ();
-	}
+//	if (0 <= index && index < itemCount) {
+//		/*
+//		* Bug in the Macintosh.  When there is not room to show a
+//		* single item in the data browser, RevealDataBrowserItem()
+//		* scrolls the item such that it is above the top of the data
+//		* browser.  The fix is to remember the index and scroll when
+//		* the data browser is resized.
+//		* 
+//		* Bug in the Macintosh.  When items are added to the data
+//		* browser after is has been hidden, RevealDataBrowserItem()
+//		* when called before the controls behind the data browser
+//		* are repainted causes a redraw.  This redraw happens right
+//		* away causing pixel corruption.  The fix is to remember the
+//		* index and scroll when the data browser is shown.
+//		*/
+//		Rectangle rect = getClientArea ();
+//		if (rect.height < getItemHeight () || !OS.IsControlVisible (handle)) {
+//			showIndex = index;
+//			return;
+//		}
+//		showIndex = -1;
+//		TableItem item = _getItem (index);
+//		Rectangle itemRect = item.getBounds (0);
+//		if (!itemRect.isEmpty()) {
+//			if (rect.contains (itemRect.x, itemRect.y)
+//				&& rect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
+//		}
+//		int [] top = new int [1], left = new int [1];
+//		OS.GetDataBrowserScrollPosition (handle, top, left);
+//		OS.RevealDataBrowserItem (handle, index + 1, OS.kDataBrowserNoItem, (byte) OS.kDataBrowserRevealWithoutSelecting);
+//
+//		/*
+//		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
+//		* by RevealDataBrowserItem(), the scrollbars are not redrawn.  The fix is to
+//		* force a redraw.
+//		*/
+//		int [] newTop = new int [1], newLeft = new int [1];
+//		OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
+//		if (horizontalBar != null && newLeft [0] != left [0]) horizontalBar.redraw ();
+//		if (verticalBar != null && newTop [0] != top [0]) verticalBar.redraw ();
+//	}
 }
 
 /**
@@ -3365,7 +2368,6 @@ void showIndex (int index) {
  */
 public void showItem (TableItem item) {
 	checkWidget ();
-	checkItems (false);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int index = indexOf (item);
@@ -3386,13 +2388,18 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget();
-	checkItems (false);
 	int index = getSelectionIndex ();
 	if (index >= 0) showIndex (index);
 }
 
-int trackingProc (int browser, int id, int property, int theRect, int startPt, int modifiers) {
-	return 1;
+int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+	TableItem item = items [rowIndex];
+	for (int i=0; i<columnCount; i++) {
+		if (columns [i].column.id == aTableColumn) {
+			return NSString.stringWith(item.getText(i)).id;
+		}
+	}
+	return NSString.stringWith(item.text).id;
 }
 
 }

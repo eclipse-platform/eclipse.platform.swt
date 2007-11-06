@@ -334,4 +334,45 @@ public static final native int NSMarkedClauseSegmentAttributeName();
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int TransformProcessType(int[] psn, int transformState);  
+
+public static final int NSTableViewGridNone = 0;
+public static final int NSTableViewSolidVerticalGridLineMask = 1 << 0;
+public static final int NSTableViewSolidHorizontalGridLineMask = 1 << 1;
+
+public static final int NSTableViewNoColumnAutoresizing = 0;
+public static final int NSTableViewUniformColumnAutoresizingStyle = 1;
+public static final int NSTableViewSequentialColumnAutoresizingStyle = 2;
+public static final int NSTableViewReverseSequentialColumnAutoresizingStyle = 3;
+public static final int NSTableViewLastColumnOnlyAutoresizingStyle = 4;
+public static final int NSTableViewFirstColumnOnlyAutoresizingStyle = 5;
+
+public static final int NSTableColumnNoResizing = 0;
+public static final int NSTableColumnAutoresizingMask = ( 1 << 0 );
+public static final int NSTableColumnUserResizingMask = ( 1 << 1 );
+	
+public static final int class_NSTableView = OS.objc_getClass("NSTableView");
+public static final int class_NSTableColumn = OS.objc_getClass("NSTableColumn");
+public static final int class_NSTableHeaderView = OS.objc_getClass("NSTableHeaderView");
+public static final int class_NSSlider = OS.objc_getClass("NSSlider");
+public static final int class_NSTextField = OS.objc_getClass("NSTextField");
+
+public static final int sel_setDataSource_1 = OS.sel_registerName("setDataSource:");
+public static final int sel_numberOfRowsInTableView_1 = OS.sel_registerName("numberOfRowsInTableView:");
+public static final int sel_reloadData = OS.sel_registerName("reloadData");
+public static final int sel_addTableColumn_1 = OS.sel_registerName("addTableColumn:");
+public static final int sel_initWithIdentifier_1 = OS.sel_registerName("initWithIdentifier:");
+public static final int sel_setWidth_1 = OS.sel_registerName("setWidth:");
+public static final int sel_setGridStyleMask_1 = OS.sel_registerName("setGridStyleMask:");
+public static final int sel_setHeaderView_1 = OS.sel_registerName("setHeaderView:");
+public static final int sel_tableView_1objectValueForTableColumn_1row_1 = OS.sel_registerName("tableView:objectValueForTableColumn:row:");
+public static final int sel_setHasHorizontalScroller_1 = OS.sel_registerName("setHasHorizontalScroller:");
+public static final int sel_setHasVerticalScroller_1 = OS.sel_registerName("setHasVerticalScroller:");
+public static final int sel_setAutoresizesSubviews_1 = OS.sel_registerName("setAutoresizesSubviews:");
+public static final int sel_setDocumentView_1 = OS.sel_registerName("setDocumentView:");
+public static final int sel_setColumnAutoresizingStyle_1 = OS.sel_registerName("setColumnAutoresizingStyle:");
+public static final int sel_setResizingMask_1 = OS.sel_registerName("setResizingMask:");
+public static final int sel_tile = OS.sel_registerName("tile");
+public static final int sel_moveColumn_1toColumn_1 = OS.sel_registerName("moveColumn:toColumn:");
+
+
 }

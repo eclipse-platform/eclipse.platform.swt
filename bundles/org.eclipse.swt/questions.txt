@@ -1,1 +1,2 @@
-* preffered size
+* preferred size
+* are subviews automatically released?

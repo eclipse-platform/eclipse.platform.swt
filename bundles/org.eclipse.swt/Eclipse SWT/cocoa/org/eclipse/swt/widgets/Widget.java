@@ -548,6 +548,10 @@ void keyDown(int event) {
 void mouseDown(int event) {
 }
 
+int numberOfRowsInTableView(int aTableView) {
+	return 0;
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -1066,6 +1070,11 @@ boolean setKeyState (Event event, int type, int theEvent) {
 //	return setInputState (event, type, chord [0], modifiers [0]);
 	return false;
 }
+
+int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+	return 0;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
