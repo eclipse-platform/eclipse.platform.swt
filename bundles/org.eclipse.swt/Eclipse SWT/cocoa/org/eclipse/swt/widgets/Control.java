@@ -901,7 +901,7 @@ public int getBorderWidth () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	NSRect rect = view.frame();
+	NSRect rect = topView().frame();
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
@@ -1026,7 +1026,7 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget();
-	NSRect rect = view.frame();
+	NSRect rect = topView().frame();
 	return new Point((int)rect.x, (int)rect.y);
 }
 
@@ -1171,7 +1171,7 @@ public Shell getShell () {
  */
 public Point getSize () {
 	checkWidget();
-	NSRect rect = view.frame();
+	NSRect rect = topView().frame();
 	return new Point((int)rect.width, (int)rect.height);
 }
 
@@ -2247,17 +2247,17 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		rect.y = y;
 		rect.width = width;
 		rect.height = height;
-		view.setFrame (rect);
+		topView().setFrame (rect);
 	} else if (move) {
 		NSPoint point = new NSPoint();
 		point.x = x;
 		point.y = y;
-		view.setFrameOrigin(point);
+		topView().setFrameOrigin(point);
 	} else if (resize) {
 		NSSize size = new NSSize();
 		size.width = width;
 		size.height = height;
-		view.setFrameSize(size);
+		topView().setFrameSize(size);
 	}
 	return 0;
 }
@@ -2793,7 +2793,7 @@ public void setVisible (boolean visible) {
 			fixFocus = isFocusAncestor (control);
 //		}
 	}
-	view.setHidden(!visible);
+	topView().setHidden(!visible);
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -2922,6 +2922,10 @@ public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplay (point.x, point.y);
+}
+
+NSView topView () {
+	return view;
 }
 
 boolean translateTraversal (int key, int theEvent, boolean [] consume) {
