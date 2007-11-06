@@ -1,6 +1,9 @@
 package org.eclipse.swt.internal.cocoa;
 
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,17 +14,24 @@ import org.w3c.dom.*;
 public class MacGenerator {
 	String[] classes;
 	String xml[];
+	String outputDir;
+	
+	PrintStream out;
 	
 public MacGenerator(String[] xml) throws Exception {
 	this.xml = xml;	
 }
 	
 public void out(String str) {
-	System.out.print(str);
+	PrintStream out = this.out;
+	if (out == null) out = System.out;
+	out.print(str);
 }
 
 public void outln() {
-	System.out.println();
+	PrintStream out = this.out;
+	if (out == null) out = System.out;
+	out.println();
 }
 
 public void generateConstants() throws Exception {
@@ -125,6 +135,27 @@ boolean getGenerateClass(String className) {
 	return true;
 }
 
+public boolean isUnique(Node method, NodeList methods) {
+	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
+	int index = methodName.indexOf(":");
+	if (index != -1) methodName = methodName.substring(0, index);
+	for (int j = 0; j < methods.getLength(); j++) {
+		Node other = methods.item(j);
+		NamedNodeMap attributes = other.getAttributes();
+		Node otherSel = null;
+		if (attributes != null) otherSel = attributes.getNamedItem("selector");
+		if (other != method && otherSel != null) {
+			String otherName = otherSel.getNodeValue();
+			index = otherName.indexOf(":");
+			if (index != -1) otherName = otherName.substring(0, index);
+			if (methodName.equals(otherName)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 public void generateClasses() throws Exception {
 	for (int x = 0; x < xml.length; x++) {
 		DOMParser parser = new DOMParser();
@@ -137,6 +168,13 @@ public void generateClasses() throws Exception {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
+					if (outputDir != null) {
+						FileOutputStream  is = new FileOutputStream(outputDir + "/" + name + ".java");
+						out = new PrintStream(new BufferedOutputStream(is));
+					}
+					out("package org.eclipse.swt.internal.cocoa;");
+					outln();
+					outln();
 					out("public class ");
 					out(name);
 					if (name.equals("NSObject")) {
@@ -149,6 +187,8 @@ public void generateClasses() throws Exception {
 					out("public ");
 					out(name);
 					out("() {");
+					outln();
+					out("\tsuper();");
 					outln();
 					out("}");
 					outln();
@@ -171,6 +211,7 @@ public void generateClasses() throws Exception {
 							boolean isStatic = method.getAttributes().getNamedItem("class_method") != null; 
 							if (isStatic) out("static ");
 							Node returnNode = getReturnNode(method.getChildNodes());
+							if (getType(returnNode).equals("void")) returnNode = null;
 							if (returnNode != null) {
 								out(getJavaType(returnNode));
 								out(" ");
@@ -178,8 +219,13 @@ public void generateClasses() throws Exception {
 								out("void ");
 							}
 							String methodName = sel;
-							int index = methodName.indexOf(":");
-							if (index != -1) methodName = methodName.substring(0, index);
+							if (isUnique(method, methods)) {
+								int index = methodName.indexOf(":");
+								if (index != -1) methodName = methodName.substring(0, index);
+							} else {
+								methodName = methodName.replaceAll(":", "_");
+								if (isStatic) methodName = "static_" + methodName;
+							}
 							out(methodName);
 							out("(");
 							NodeList params = method.getChildNodes();
@@ -192,7 +238,9 @@ public void generateClasses() throws Exception {
 									out(getJavaType(param));
 									first = false;
 									out(" ");
-									out(paramAttributes.getNamedItem("name").getNodeValue());
+									String paramName = paramAttributes.getNamedItem("name").getNodeValue();
+									if (paramName.equals("boolean")) paramName = "b";
+									out(paramName);
 								}
 							}
 							out(") {");
@@ -214,7 +262,17 @@ public void generateClasses() throws Exception {
 							} else if (returnNode != null && isObject(returnNode)) {
 								out("\tint result = OS.objc_msgSend(");
 							} else {
-								if (returnNode != null) out("\treturn ");
+								if (returnNode != null) {
+									out("\treturn ");
+									String type = getJavaType(returnNode);
+									if (!(type.equals("int") || type.equals("boolean"))) {
+										out("(");
+										out(type);
+										out(")");
+									}
+								} else {
+									out("\t");
+								}
 								out("OS.objc_msgSend(");
 							}
 							if (isStatic) {
@@ -232,27 +290,34 @@ public void generateClasses() throws Exception {
 									NamedNodeMap paramAttributes = param.getAttributes();
 									if (!first) out(", ");
 									first = false;
+									String paramName = paramAttributes.getNamedItem("name").getNodeValue();
+									if (paramName.equals("boolean")) paramName = "b";
 									if (isObject(param)) {
-										String pName = paramAttributes.getNamedItem("name").getNodeValue();
-										out(pName);
+										out(paramName);
 										out(" != null ? ");
-										out(pName);
+										out(paramName);
 										out(".id : 0");
 									} else {
-										out(paramAttributes.getNamedItem("name").getNodeValue());
+										out(paramName);
 									}
 								}
 							}
 							out(")");
-							if (isBoolean(returnNode)) {
+							if (returnNode != null && isBoolean(returnNode)) {
 								out(" != 0");
 							}
 							out(";");
 							outln();
 							if (returnNode != null && isObject(returnNode)) {
-								out("\treturn result == this.id ? this : (result != 0 ? new ");
-								out(getJavaType(returnNode));
-								out("(result) : null);");
+								if (!isStatic && getJavaType(returnNode).equals(name)) {
+									out("\treturn result == this.id ? this : (result != 0 ? new ");
+									out(getJavaType(returnNode));
+									out("(result) : null);");
+								} else {
+									out("\treturn result != 0 ? new ");
+									out(getJavaType(returnNode));
+									out("(result) : null;");
+								}
 								outln();
 							} else if (returnNode != null && isStruct(returnNode)) {
 								out("\treturn result;");
@@ -264,7 +329,11 @@ public void generateClasses() throws Exception {
 						}					
 					}				
 					out("}");
-					outln();				
+					outln();
+					if (outputDir != null) {
+						out.close();
+						out = null;
+					}
 				}
 			}
 		}
@@ -593,6 +662,8 @@ String getJavaType(Node node) {
 		String type = attributes.getNamedItem("declared_type").getNodeValue();
 		int index = type.indexOf('*');
 		if (index != -1) type = type.substring(0, index);
+		index = type.indexOf('<');
+		if (index != -1) type = type.substring(0, index);
 		return type;
 	}
 	if (code.equals("#")) return "int";
@@ -682,12 +753,18 @@ public void setClasses(String[] classes) {
 	this.classes = classes;
 }
 
+public void setOutputDir(String dir) {
+	this.outputDir = dir;
+}
+
 public static void main(String[] args) throws Exception {
 	MacGenerator gen = new MacGenerator(args);
 //	gen.setClasses(new String[]{
-//		"NSView",
+//		"NSURL",
 //	});
+	gen.setOutputDir("/Users/adclabs/Desktop/workspace/org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa");
 //	gen.generateOS();
-	gen.generateMetadata();
+//	gen.generateMetadata();
+	gen.generateClasses();
 }
 }
