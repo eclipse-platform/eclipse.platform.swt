@@ -729,11 +729,33 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		if (methodData.getFlag(FLAG_GCOBJECT)) {
 			output("TO_HANDLE(");				
 		}
+		if (methodData.getFlag(Flags.FLAG_CAST)) {
+			output("((");
+			output(getTypeSignature2(returnType));
+			output(" (*)(");
+			for (int i = 0; i < paramTypes.length; i++) {
+				if (i != 0) output(", ");
+				Class paramType = paramTypes[i];
+				ParameterData paramData = getMetaData().getMetaData(method, i);
+				String cast = paramData.getCast();
+				if (cast != null && cast.length() != 0) {
+					if (cast.startsWith("(")) cast = cast.substring(1);
+					if (cast.endsWith(")")) cast = cast.substring(0, cast.length() - 1);
+					output(cast);
+				} else {
+					output(getTypeSignature4(paramType, paramData.getFlag(FLAG_STRUCT)));
+				}
+			}
+			output("))");
+		}
 		String accessor = methodData.getAccessor();
 		if (accessor.length() != 0) {
 			output(accessor);
 		} else {
 			output(name);
+		}
+		if (methodData.getFlag(Flags.FLAG_CAST)) {
+			output(")");
 		}
 	}
 	if ((methodData.getFlag(FLAG_SETTER) && paramTypes.length == 3) || (methodData.getFlag(FLAG_GETTER) && paramTypes.length == 2)) {

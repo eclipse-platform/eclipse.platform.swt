@@ -25,6 +25,7 @@ public interface Flags {
 	public static final String FLAG_NEW = "new";
 	public static final String FLAG_DELETE ="delete";
 	public static final String FLAG_CONST = "const";
+	public static final String FLAG_CAST = "cast";
 	public static final String FLAG_DYNAMIC = "dynamic";
 	public static final String FLAG_JNI = "jni";
 	public static final String FLAG_ADDRESS = "address";
