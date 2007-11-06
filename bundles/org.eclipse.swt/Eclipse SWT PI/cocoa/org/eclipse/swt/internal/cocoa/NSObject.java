@@ -4,6 +4,9 @@ public class NSObject extends id {
 
 public int id;
 
+public NSObject() {
+}
+
 public NSObject(int id) {
 	this.id = id;
 }
