@@ -13,14 +13,13 @@ JNIEXPORT void JNICALL OS_NATIVE(bogus)
 	NSString * str = [NSString stringWithUTF8String: "FRED"];
 	NSAttributedString * fred = [[NSAttributedString alloc] initWithString: str attributes: dict];
 	
+	// WORKS
 	//NSSize size = [fred size];
 	//printf("%f %f\n", size.width, size.height);
 	
+	// GPS's
 	//NSSize size;
 	//objc_msgSend_stret(&size, (id)fred, (SEL)sel_registerName("size"));
-	
-	void * size = malloc (1024);
-	objc_msgSend_stret(size, (id)fred, (SEL)sel_registerName("size"));
 	
 	OS_NATIVE_EXIT(env, that, bogus_FUNC);
 }
