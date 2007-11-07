@@ -445,7 +445,7 @@ public void fileManager_willProcessPath_(NSFileManager fm, NSString path) {
 	OS.objc_msgSend(this.id, OS.sel_fileManager_1willProcessPath_1, fm != null ? fm.id : 0, path != null ? path.id : 0);
 }
 
-public void finalize() {
+public void finalizeXX() {
 	OS.objc_msgSend(this.id, OS.sel_finalize);
 }
 
