@@ -178,6 +178,7 @@ void createHandle () {
 	SWTTabView widget = (SWTTabView)new SWTTabView().alloc();
 	widget.initWithFrame (new NSRect());
 	widget.setTag(jniRef);
+	widget.setDelegate(widget);
 	view = widget;
 	parent.view.addSubview_(view);
 }
@@ -219,6 +220,10 @@ void destroyItem (TabItem item) {
 	}
 	itemCount = count;
 	((NSTabView)view).removeTabViewItem(item.nsItem);
+}
+
+void didSelectTabViewItem(int tabView, int tabViewItem) {
+	System.out.println("selection");
 }
 
 public Rectangle getClientArea () {
@@ -451,6 +456,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 //		}
 	}
 	return result;
+}
+
+void setFont (NSFont font) {
+	((NSTabView)view).setFont(font);
 }
 
 /**

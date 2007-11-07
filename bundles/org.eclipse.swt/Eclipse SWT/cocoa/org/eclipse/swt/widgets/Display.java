@@ -107,7 +107,7 @@ public class Display extends Device {
 
 	NSPoint cascade = new NSPoint();
 
-	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback5;
+	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -1492,6 +1492,9 @@ void initClasses () {
 	windowDelegateCallback2 = new Callback(this, "windowDelegateProc", 2);
 	int proc2 = windowDelegateCallback2.getAddress();
 	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowDelegateCallback4 = new Callback(this, "windowDelegateProc", 4);
+	int proc4 = windowDelegateCallback4.getAddress();
+	if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowDelegateCallback5 = new Callback(this, "windowDelegateProc", 5);
 	int proc5 = windowDelegateCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1535,7 +1538,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-//	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_tabView_1didSelectTabViewItem_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
 }
@@ -2122,7 +2125,9 @@ void releaseDisplay () {
 
 	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
-	windowDelegateCallback2 = windowDelegateCallback3 = null;
+	if (windowDelegateCallback3 != null) windowDelegateCallback4.dispose ();
+	if (windowDelegateCallback3 != null) windowDelegateCallback5.dispose ();
+	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = windowDelegateCallback5 = null;
 }
 
 /**
@@ -2647,6 +2652,19 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 	}
 	return 0;
 }
+
+
+int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
+	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
+	if (jniRef == 0 || jniRef == -1) return 0;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	if (widget == null) return 0;
+	if (sel == OS.sel_tabView_1didSelectTabViewItem_1) {
+		widget.didSelectTabViewItem(arg0, arg1);
+	}
+	return 0;
+}
+
 
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	if (sel == OS.sel_setTag_1) {
