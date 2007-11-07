@@ -35,9 +35,9 @@ public void calcSize() {
 	OS.objc_msgSend(this.id, OS.sel_calcSize);
 }
 
-public id cell() {
+public int cell() {
 	int result = OS.objc_msgSend(this.id, OS.sel_cell);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? result : 0;
 }
 
 public static int cellClass() {

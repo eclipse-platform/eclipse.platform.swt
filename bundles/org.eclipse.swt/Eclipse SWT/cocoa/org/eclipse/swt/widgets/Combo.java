@@ -1328,7 +1328,7 @@ void setText (String string, boolean notify) {
 			if (notify) sendEvent (SWT.Modify);
 		}
 	} else {
-		new NSCell(((NSComboBox)view).cell().id).setTitle(NSString.stringWith(string));
+		new NSCell(((NSComboBox)view).cell()).setTitle(NSString.stringWith(string));
 		if (notify) sendEvent (SWT.Modify);
 	}
 }
