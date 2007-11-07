@@ -44,3 +44,5 @@ fail:
 	return rc;
 }
 #endif
+
+2007-11-07 10:08:34.232 java[3935:80f] This application is trying to draw a very large combo box, 30 points tall.  Vertically resizable combo boxes are not supported, but it happens that 10.4 and previous drew something that looked kind of sort of okay.  The art in 10.5 does not break up in a way that supports that drawing.  To avoid breaking existing apps, NSComboBox in 10.5 will use the 10.4 art for large combo boxes, but it won't exactly match the rest of the system.  This application should be revised to stop using large combo boxes.  This warning will appear once per app launch.
