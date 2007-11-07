@@ -328,6 +328,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
+	
+	if ((style & SWT.BORDER) == 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		bits &= ~(OS.WS_EX_CLIENTEDGE | OS.WS_EX_STATICEDGE);
+		OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	}
 }
 
 int defaultBackground () {
