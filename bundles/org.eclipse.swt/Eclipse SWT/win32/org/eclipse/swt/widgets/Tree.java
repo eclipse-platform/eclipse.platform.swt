@@ -749,17 +749,16 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 					if (image != null) {
 						Rectangle bounds = image.getBounds ();
 						if (size == null) size = getImageSize ();
-						//int y = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
-						int y = rect.top;
 						if (!ignoreDrawForeground) {
-							//TODO - share GC, clip the drawing for index == 0
+							//int y1 = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
+							int y1 = rect.top;
+							int x1 = Math.max (rect.left, rect.left - inset + 1);
 							GCData data = new GCData();
 							data.device = display;
 							GC gc = GC.win32_new (hDC, data);
-							//if (index == 0) { //must clear
-								//gc.setClipping (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-							//}
-							gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left - inset + 1, y, size.x, size.y);
+							gc.setClipping (x1, rect.top, rect.right - x1, rect.bottom - rect.top);
+							gc.drawImage (image, 0, 0, bounds.width, bounds.height, x1, y1, size.x, size.y);
+							OS.SelectClipRgn (hDC, 0);
 							gc.dispose ();
 						}
 						OS.SetRect (rect, rect.left + size.x + offset, rect.top, rect.right - inset, rect.bottom);
