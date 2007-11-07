@@ -296,7 +296,8 @@ public void setUsesEPSOnResolutionMismatch(boolean flag) {
 
 public NSSize size() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_size);
+//	OS.objc_msgSend_stret(result, this.id, OS.sel_size);
+	OS.objc_msgSend_size(this.id, OS.sel_size, result);
 	return result;
 }
 
