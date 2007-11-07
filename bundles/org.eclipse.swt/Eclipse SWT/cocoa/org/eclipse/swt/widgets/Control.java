@@ -587,6 +587,13 @@ Color defaultBackground () {
 }
 
 Font defaultFont () {
+	//TODO - Controls only, does this leak?
+	if (view instanceof NSControl) {
+		NSFont nsFont = ((NSControl)view).font ();
+		if (nsFont != null) {
+			return Font.cocoa_new (display, nsFont);
+		}
+	}
 	return null;
 }
 
@@ -1242,6 +1249,32 @@ void hookEvents () {
  */
 public int internal_new_GC (GCData data) {
 	checkWidget();
+	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= style & (mask | SWT.MIRRORED);
+		}
+		data.device = display;
+//		data.thread = display.thread;
+		data.foreground = getForegroundColor ().handle;
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		data.background = control.getBackgroundColor ().handle;
+		data.font = font != null ? font : defaultFont ();
+//		data.visibleRgn = visibleRgn;
+//		data.control = handle;
+//		data.portRect = portRect;
+//		data.controlRect = rect;
+//		data.insetRect = getInset ();
+		
+		//TODO - wrong not clipped etc
+		//data.path = NSBezierPath.bezierPath();
+		Shell shell = getShell();
+		return NSGraphicsContext.graphicsContextWithWindow(shell.window).id;
+	}
+	//BAD
+	return 0;
+	
 //	int window = OS.GetControlOwner (handle);
 //	int port = data != null ? data.port : 0;
 //	if (port == 0) port = OS.GetWindowPort (window);
@@ -1318,7 +1351,7 @@ public int internal_new_GC (GCData data) {
 //		}
 //	}
 //	return context;
-	return 0;
+//	return 0;
 }
 
 /**	 
@@ -1335,7 +1368,11 @@ public int internal_new_GC (GCData data) {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
-	checkWidget ();
+	checkWidget ();	
+	if (data != null) {
+		//new NSGraphicsContext (context).release ();
+	}
+	
 //	if (data != null) {
 //		if (data.paintEvent == 0) {
 //			if (data.visibleRgn != 0) {

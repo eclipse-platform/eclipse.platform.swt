@@ -907,6 +907,10 @@ public boolean getHeaderVisible () {
 	return height [0] != 0;
 }
 
+int getInsetWidth () {
+	return 0;
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1554,7 +1558,7 @@ public void removeAll () {
 //	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 //	callbacks.v1_itemCompareCallback = itemCompareProc ();
 //	OS.SetDataBrowserCallbacks (handle, callbacks);
-//	setTableEmpty ();
+	setTableEmpty ();
 }
 
 /**
@@ -1948,6 +1952,59 @@ public void setRedraw (boolean redraw) {
 //		}		
 //	 	checkItems (true);
 //	}
+}
+
+boolean setScrollWidth (TableItem item) {
+	if (columnCount != 0) return false;
+	if (currentItem != null) {
+//		if (currentItem != item) fixScrollWidth = true;
+		return false;
+	}
+	if (drawCount != 0) return false;
+	GC gc = new GC (this);
+	int newWidth = item.calculateWidth (0, gc);
+	gc.dispose ();
+	newWidth += getInsetWidth ();
+//	short [] width = new short [1];
+//	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+//	if (width [0] < newWidth) {
+//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+//		return true;
+//	}
+	if (firstColumn.width() < newWidth) {
+		firstColumn.setWidth (newWidth);
+	}
+	return false;
+}
+
+boolean setScrollWidth (TableItem [] items, boolean set) {
+	if (columnCount != 0) return false;
+	if (currentItem != null) {
+//		fixScrollWidth = true;
+		return false;
+	}
+	if (drawCount != 0) return false;
+	GC gc = new GC (this);
+	int newWidth = 0;
+	for (int i = 0; i < items.length; i++) {
+		TableItem item = items [i];
+		if (item != null) {
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
+		}
+	}
+	gc.dispose ();
+	newWidth += getInsetWidth ();
+//	if (!set) {
+//		short [] width = new short [1];
+//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+//		if (width [0] >= newWidth) return false;
+//	}
+//	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+	if (!set) {
+		if (firstColumn.width() > newWidth) return false;
+	}
+	firstColumn.setWidth (newWidth);
+	return true;
 }
 
 /**

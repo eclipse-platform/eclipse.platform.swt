@@ -38,6 +38,7 @@ public class TableItem extends Item {
 	Color[] cellForeground, cellBackground;
 	Font font;
 	Font[] cellFont;
+	int width = -1;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -120,6 +121,34 @@ static Table checkNull (Table control) {
 	return control;
 }
 
+int calculateWidth (int index, GC gc) {
+	if (index == 0 && width != -1) return width;
+	int width = 0;
+	Image image = getImage (index);
+	String text = getText (index);
+	gc.setFont (getFont (index));
+//	if (image != null) width += image.getBounds ().width + parent.getGap ();
+	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+//	if (parent.hooks (SWT.MeasureItem)) {
+//		Event event = new Event ();
+//		event.item = this;
+//		event.index = index;
+//		event.gc = gc;
+//		short [] height = new short [1];
+//		OS.GetDataBrowserTableViewRowHeight (parent.handle, height);
+//		event.width = width;
+//		event.height = height[0];
+//		parent.sendEvent (SWT.MeasureItem, event);
+//		if (parent.itemHeight < event.height) {
+//			parent.itemHeight = event.height;
+//			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
+//		}
+//		width = event.width;
+//	}
+	if (index == 0) this.width = width;
+	return width;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -134,6 +163,7 @@ void clear () {
 	cellForeground = cellBackground = null;
 	font = null;
 	cellFont = null;
+	width = -1;
 }
 
 void destroyWidget () {
@@ -977,7 +1007,7 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == 0) {
 		if (string.equals (text)) return;
-//		width = -1;
+		width = -1;
 		super.setText (string);
 	}
 	int count = Math.max (1, parent.columnCount);
@@ -987,8 +1017,8 @@ public void setText (int index, String string) {
 		strings [index] = string;
 	}
 	cached = true;
-//	if (index == 0) parent.setScrollWidth (this);
-	redraw ();
+	if (index == 0) parent.setScrollWidth (this);
+//	redraw (OS.kDataBrowserNoItem);
 }
 
 public void setText (String string) {
