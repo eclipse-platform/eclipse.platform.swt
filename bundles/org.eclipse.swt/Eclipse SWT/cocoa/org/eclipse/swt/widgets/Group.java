@@ -13,9 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class provide an etched border
@@ -94,50 +92,48 @@ protected void checkSubclass () {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	CGRect oldBounds = new CGRect (), bounds = oldBounds;
-	OS.HIViewGetFrame (handle, oldBounds);
-	int MIN_SIZE = 100;
-	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-		OS.HIViewSetDrawingEnabled (handle, false);
-		bounds = new CGRect ();
-		bounds.width = bounds.height = 100;
-		OS.HIViewSetFrame (handle, bounds);
-	}
-	int rgnHandle = OS.NewRgn ();
-	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
-	Rect client = new Rect ();
-	OS.GetRegionBounds (rgnHandle, client);
-	OS.DisposeRgn (rgnHandle);
-	width += (int) bounds.width - (client.right - client.left);
-	height += (int) bounds.height - (client.bottom - client.top);
-	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-		OS.HIViewSetFrame (handle, oldBounds);
-		OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
-	}
-	return new Rectangle (-client.left, -client.top, width, height);
+//	CGRect oldBounds = new CGRect (), bounds = oldBounds;
+//	OS.HIViewGetFrame (handle, oldBounds);
+//	int MIN_SIZE = 100;
+//	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+//		OS.HIViewSetDrawingEnabled (handle, false);
+//		bounds = new CGRect ();
+//		bounds.width = bounds.height = 100;
+//		OS.HIViewSetFrame (handle, bounds);
+//	}
+//	int rgnHandle = OS.NewRgn ();
+//	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+//	Rect client = new Rect ();
+//	OS.GetRegionBounds (rgnHandle, client);
+//	OS.DisposeRgn (rgnHandle);
+//	width += (int) bounds.width - (client.right - client.left);
+//	height += (int) bounds.height - (client.bottom - client.top);
+//	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+//		OS.HIViewSetFrame (handle, oldBounds);
+//		OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
+//	}
+//	return new Rectangle (-client.left, -client.top, width, height);
+	return null;
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateGroupBoxControl (window, null, 0, true, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-}
-
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
+	NSBox widget = (NSBox)new NSBox().alloc();
+	widget.initWithFrame(new NSRect());
+	widget.setTitle(NSString.stringWith(""));
+//	widget.setTag(jniRef);
+	view = widget;	
+	parent.view.addSubview_(widget);
 }
 
 public Rectangle getClientArea () {
 	checkWidget();
-	int rgnHandle = OS.NewRgn ();
-	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
-	Rect client = new Rect ();
-	OS.GetRegionBounds (rgnHandle, client);
-	OS.DisposeRgn (rgnHandle);
-	return new Rectangle (client.left, client.top, client.right - client.left, client.bottom - client.top);
+//	int rgnHandle = OS.NewRgn ();
+//	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+//	Rect client = new Rect ();
+//	OS.GetRegionBounds (rgnHandle, client);
+//	OS.DisposeRgn (rgnHandle);
+//	return new Rectangle (client.left, client.top, client.right - client.left, client.bottom - client.top);
+	return null;
 }
 
 String getNameText () {
@@ -159,10 +155,6 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	return text;
-}
-
-float getThemeAlpha () {
-	return 0.25f * parent.getThemeAlpha ();
 }
 
 /**
@@ -196,10 +188,7 @@ public void setText (String string) {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetControlTitleWithCFString (handle, ptr);
-	OS.CFRelease (ptr);
+	((NSBox)view).setTitle(NSString.stringWithCharacters(buffer, length));
 }
 
 }

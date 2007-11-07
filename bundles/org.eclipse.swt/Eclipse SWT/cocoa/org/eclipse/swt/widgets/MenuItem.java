@@ -579,7 +579,6 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	int index = parent.indexOf (this);
 	((NSMenuItem)nsItem).setEnabled(enabled);
 }
 

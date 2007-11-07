@@ -18,19 +18,9 @@ public int countForObject(id object) {
 	return OS.objc_msgSend(this.id, OS.sel_countForObject_1, object != null ? object.id : 0);
 }
 
-public id initWithArray(NSArray array) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithArray_1, array != null ? array.id : 0);
-	return result != 0 ? new id(result) : null;
-}
-
-public id initWithCapacity(int numItems) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_1, numItems);
-	return result != 0 ? new id(result) : null;
-}
-
-public id initWithSet(NSSet set) {
+public NSCountedSet initWithSet(NSSet set) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSet_1, set != null ? set.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSEnumerator objectEnumerator() {

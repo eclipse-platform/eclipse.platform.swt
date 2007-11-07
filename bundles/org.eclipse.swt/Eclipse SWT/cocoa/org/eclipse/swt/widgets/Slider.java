@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -147,44 +147,10 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-int actionProc (int theControl, int partCode) {
-	int result = super.actionProc (theControl, partCode);
-	if (result == OS.noErr) return result;
-	Event event = new Event ();
-	int value = OS.GetControl32BitValue (handle);
-    switch (partCode) {
-	    case OS.kControlUpButtonPart:
-			value -= increment;
-	        event.detail = SWT.ARROW_UP;
-	        break;
-	    case OS.kControlPageUpPart:
-			value -= pageIncrement;
-	        event.detail = SWT.PAGE_UP;
-	        break;
-	    case OS.kControlPageDownPart:
-			value += pageIncrement;
-	        event.detail = SWT.PAGE_DOWN;
-	        break;
-	    case OS.kControlDownButtonPart:
-			value += increment;
-	        event.detail = SWT.ARROW_DOWN;
-	        break;
-	    case OS.kControlIndicatorPart:
-	    		dragging = true;
-			event.detail = SWT.DRAG;
-	        break;
-		default:
-			return result;
-	}
-	OS.SetControl32BitValue (handle, value);
-	sendEvent (SWT.Selection, event);
-	return result;
-}
-
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+//	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		height = outMetric [0];
@@ -199,16 +165,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	int actionProc = display.actionProc;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateScrollBarControl (window, null, 0, 0, 90, 10, true, actionProc, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-}
-
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
+	NSScroller widget = (NSScroller)new NSScroller().alloc();
+	widget.initWithFrame(new NSRect());
+//	widget.setTarget(widget);
+//	widget.setAction(OS.sel_sendSelection);
+	widget.setTag(jniRef);
+	view = widget;	
+	parent.view.addSubview_(widget);
 }
 
 /**
@@ -306,19 +269,6 @@ public int getSelection () {
 public int getThumb () {
 	checkWidget();
     return OS.GetControlViewSize (handle);
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int status = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (status == OS.noErr) return status;
-	dragging = false;
-	status = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (dragging) {
-		Event event = new Event ();
-		sendEvent (SWT.Selection, event);
-	}
-	dragging = false;
-	return status;
 }
 
 /**

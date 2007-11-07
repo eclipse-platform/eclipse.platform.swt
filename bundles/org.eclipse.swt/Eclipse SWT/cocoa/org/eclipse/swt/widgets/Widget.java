@@ -342,9 +342,6 @@ void drawBackground (int control, int context) {
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 }
 
-void didSelectTabViewItem(int tabView, int tabViewItem) {
-}
-
 void error (int code) {
 	SWT.error(code);
 }
@@ -1093,6 +1090,8 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
+void willSelectTabViewItem(int tabView, int tabViewItem) {
+}
 
 boolean windowShouldClose(int window) {
 	return false;

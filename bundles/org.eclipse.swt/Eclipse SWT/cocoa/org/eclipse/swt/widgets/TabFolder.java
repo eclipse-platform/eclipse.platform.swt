@@ -179,6 +179,9 @@ void createHandle () {
 	widget.initWithFrame (new NSRect());
 	widget.setTag(jniRef);
 	widget.setDelegate(widget);
+	if ((style & SWT.BOTTOM) != 0) {
+		widget.setTabViewType(OS.NSBottomTabsBezelBorder);
+	}
 	view = widget;
 	parent.view.addSubview_(view);
 }
@@ -195,8 +198,8 @@ void createItem (TabItem item, int index) {
 	items [index] = item;
 	itemCount++;
 	NSTabViewItem nsItem = (NSTabViewItem)new NSTabViewItem().alloc().init();
-	((NSTabView)view).insertTabViewItem(nsItem, index);
 	item.nsItem = nsItem;
+	((NSTabView)view).insertTabViewItem(nsItem, index);
 }
 
 void createWidget () {
@@ -222,22 +225,14 @@ void destroyItem (TabItem item) {
 	((NSTabView)view).removeTabViewItem(item.nsItem);
 }
 
-void didSelectTabViewItem(int tabView, int tabViewItem) {
-	System.out.println("selection");
-}
-
 public Rectangle getClientArea () {
 	checkWidget ();
-//	Rect client = new Rect ();
-//	if (OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null) != OS.noErr) {
-//		return new Rectangle(0, 0, 0, 0);
-//	}
-//	int x = Math.max (0, client.left);
-//	int y = Math.max (0, client.top);
-//	int width = Math.max (0, client.right - client.left);
-//	int height = Math.max (0, client.bottom - client.top);
-//	return new Rectangle (x, y, width, height);
-	return null;
+	NSRect rect = ((NSTabView)view).contentRect();
+	int x = Math.max (0, (int)rect.x);
+	int y = Math.max (0, (int)rect.y);
+	int width = Math.max (0, (int)rect.width);
+	int height = Math.max (0, (int)rect.height);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -446,14 +441,14 @@ public void removeSelectionListener (SelectionListener listener) {
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds(x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) {
-//		int index = OS.GetControl32BitValue (handle) - 1;
-//		if (index != -1) {
-//			TabItem item = items [index];
-//			Control control = item.control;
-//			if (control != null && !control.isDisposed ()) {
-//				control.setBounds (getClientArea ());
-//			}
-//		}
+		int index = getSelectionIndex ();
+		if (index != -1) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
 	}
 	return result;
 }
@@ -553,8 +548,7 @@ void setSelection (int index, boolean notify, boolean force) {
 		if (item != null) {
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
-//				control.setBounds (getClientArea ());
-				control.setBounds (20, 30, 200, 200);
+				control.setBounds (getClientArea ());
 				control.setVisible (true);
 			}
 			if (notify) {
@@ -579,4 +573,32 @@ boolean traversePage (boolean next) {
 	setSelection (index, true, false);
 	return index == getSelectionIndex ();
 }
+
+void willSelectTabViewItem(int tabView, int tabViewItem) {
+	if (tabViewItem == 0) return;
+	for (int i = 0; i < itemCount; i++) {
+		TabItem item = items [i];
+		if (item.nsItem.id == tabViewItem) {
+			int currentIndex = getSelectionIndex ();
+			if (currentIndex != -1) {
+				TabItem selected = items [currentIndex];
+				if (selected != null) {
+					Control control = selected.control;
+					if (control != null && !control.isDisposed ()) {
+						control.setVisible (false);
+					}
+				}
+			}
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+				control.setVisible (true);
+			}
+			Event event = new Event ();
+			event.item = item;
+			sendEvent (SWT.Selection, event);
+		}
+	}
+}
+
 }

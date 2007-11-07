@@ -14,11 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are controls that allow the user
@@ -56,10 +52,8 @@ import org.eclipse.swt.internal.carbon.Rect;
  * @see List
  */
 public class Combo extends Composite {
-	int menuHandle;
-	int textLimit = LIMIT;
-	String lastText = "";
-	ControlEditTextSelectionRec selection;
+//	int menuHandle;
+//	int textLimit = LIMIT;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -285,26 +279,6 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-int callFocusEventHandler (int nextHandler, int theEvent) {
-	short [] part = new short [1];
-	if ((style & SWT.READ_ONLY) == 0) {
-		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		if (part [0] == OS.kControlFocusNoPart) {
-			selection = new ControlEditTextSelectionRec ();
-			OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
-		}
-	}
-	int result = super.callFocusEventHandler (nextHandler, theEvent);
-	if ((style & SWT.READ_ONLY) == 0) {
-		if (part [0] != OS.kControlFocusNoPart && selection != null) {
-			OS.SetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
-			selection = null;
-		}
-	}
-	return result;
-}
-
-
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -465,39 +439,17 @@ public void copy () {
 
 void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) {
-		int [] outControl = new int [1];
-		int window = OS.GetControlOwner (parent.handle);
-		/*
-		* From ControlDefinitions.h:
-		*
-		* Passing in a menu ID of -12345 causes the popup not to try and get the menu from a
-		* resource. Instead, you can build the menu and later stuff the MenuRef field in
-		* the popup data information.                                                                         
-		*/
-		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, false, (short)0, (short)0, 0, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		int[] menuRef= new int [1];
-		OS.CreateNewMenu ((short) 0, 0, menuRef);
-		if (menuRef [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		menuHandle = menuRef[0];
-		OS.SetControlPopupMenuHandle (handle, menuHandle);
-		OS.SetControl32BitMaximum (handle, 0x7FFF);
+		NSPopUpButton widget = (NSPopUpButton)new NSPopUpButton().alloc();
+		widget.initWithFrame(new NSRect(), false);
+		widget.setTag(jniRef);
+		view = widget;
+		parent.view.addSubview_(widget);
 	} else {
-		int [] outControl = new int [1];
-		CGRect rect = new CGRect ();
-		int inAttributes = OS.kHIComboBoxAutoSizeListAttribute;
-		/*
-		* The following code is intentionally commented.
-		* Auto completion does not allow the user to change
-		* case of the text in a combo box.
-		*/
-//		inAttributes |= OS.kHIComboBoxAutoCompletionAttribute;
-		OS.HIComboBoxCreate(rect, 0, null, 0, inAttributes, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kTXNDrawCaretWhenInactiveTag, 4, new byte [ ]{0});
-		OS.HIViewSetVisible (handle, true);
+		NSComboBox widget = (NSComboBox)new NSComboBox().alloc();
+		widget.initWithFrame(new NSRect());
+		widget.setTag(jniRef);
+		view = widget;
+		parent.view.addSubview_(widget);
 	}
 }
 
@@ -891,18 +843,6 @@ public int getVisibleItemCount () {
 		return buffer [0];
 	}
 }
-
-void hookEvents () {
-	super.hookEvents ();
-	if ((style & SWT.READ_ONLY) != 0) {
-		int commandProc = display.commandProc;
-		int [] mask = new int [] {
-			OS.kEventClassCommand, OS.kEventProcessCommand,
-		};
-		int menuTarget = OS.GetMenuEventTarget (menuHandle);
-		OS.InstallEventHandler (menuTarget, commandProc, mask.length / 2, mask, handle, null);		
-	}
-}
 	
 /**
  * Searches the receiver's list starting at the first item
@@ -972,138 +912,6 @@ int getCharCount () {
 	int length = OS.CFStringGetLength (ptr [0]);
 	OS.CFRelease (ptr [0]);
 	return length;
-}
-
-Rect getInset () {
-	return display.comboInset;
-}
-
-int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
-	if ((style & SWT.READ_ONLY) == 0) {
-		int [] stringRef = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
-		int length = 0;
-		if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
-		char [] buffer = new char [length];
-		CFRange range = new CFRange ();
-		range.length = length;
-		OS.CFStringGetCharacters (stringRef [0], range, buffer);
-		String attributeName = new String(buffer);
-		if (attributeName.equals (OS.kAXValueAttribute)) {
-			String text = getText ();
-			buffer = new char [text.length ()];
-			text.getChars (0, buffer.length, buffer, 0);
-			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (stringRef [0] != 0) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
-			}
-		}
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlActivate (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  When a combo box gets
-	* kEventControlActivate, it starts the caret blinking.
-	* Because there is no clipping on the Macintosh, the
-	* caret may blink through a widget that is obscured.
-	* The fix is to avoid running the default handler.
-	*/
-	return OS.noErr;
-}
-
-int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventProcessCommand (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the modify
-	* event.  If this happens, end the processing of the
-	* Windows message by returning zero as the result of
-	* the window proc.
-	* 
-	* Note: this should be a send event, but selection is updated
-	* right way.
-	*/
-	postEvent (SWT.Modify);
-	if (isDisposed ()) return OS.eventNotHandledErr;
-	postEvent (SWT.Selection);
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
-	/*
-	* Feature in the Macintosh. The combo box widget consumes the
-	* kEventRawKeyDown event when the up and down arrow keys are
-	* pressed, causing kEventTextInputUnicodeForKeyEvent not
-	* to be sent.  The fix is to handle these keys in kEventRawKeyDown.
-	* 
-	* NOTE:  This was fixed in OS X 10.4.
-	*/
-	if (OS.VERSION < 0x1040) {
-		int [] keyCode = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-		switch (keyCode [0]) {
-			case 126: /* Up arrow */
-			case 125: /* Down arrow */
-				if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-				break;
-		}
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) {
-		if ((style & SWT.READ_ONLY) == 0) {
-			short [] part = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-			if (part [0] != OS.kControlFocusNoPart) display.focusCombo = this;
-		}
-	}
-	return result;
-}
-
-int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] keyboardEvent = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int [] modifiers = new int [1];
-		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-		if (modifiers [0] == OS.cmdKey) {
-			switch (keyCode [0]) {
-				case 7: /* X */
-					cut ();
-					return OS.noErr;
-				case 9: /* V */
-					paste ();
-					return OS.noErr;
-			}
-		}
-	}
-	switch (keyCode [0]) {
-		case 76: /* KP Enter */
-		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
-			break;
-		}
-	}
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	lastText = getText ();
-	return result;
 }
 
 /**
@@ -1639,14 +1447,7 @@ void setText (String string, boolean notify) {
 			if (notify) sendEvent (SWT.Modify);
 		}
 	} else {
-		char [] buffer = new char [Math.min(string.length (), textLimit)];
-		string.getChars (0, buffer.length, buffer, 0);
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		lastText = string;
-		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-		OS.CFRelease (ptr);
-		selection = null;
+		new NSCell(((NSComboBox)view).cell().id).setTitle(NSString.stringWith(string));
 		if (notify) sendEvent (SWT.Modify);
 	}
 }

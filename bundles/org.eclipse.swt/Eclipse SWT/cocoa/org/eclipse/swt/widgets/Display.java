@@ -1533,12 +1533,12 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.objc_registerClassPair(cls);
 	
-	
 	className = "SWTTabView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tabView_1didSelectTabViewItem_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_tabView_1willSelectTabViewItem_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
 }
@@ -2659,8 +2659,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 	if (jniRef == 0 || jniRef == -1) return 0;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tabView_1didSelectTabViewItem_1) {
-		widget.didSelectTabViewItem(arg0, arg1);
+	if (sel == OS.sel_tabView_1willSelectTabViewItem_1) {
+		widget.willSelectTabViewItem(arg0, arg1);
 	}
 	return 0;
 }

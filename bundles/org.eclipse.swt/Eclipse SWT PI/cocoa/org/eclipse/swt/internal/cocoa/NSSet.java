@@ -47,29 +47,29 @@ public NSSet filteredSetUsingPredicate(NSPredicate predicate) {
 	return result == this.id ? this : (result != 0 ? new NSSet(result) : null);
 }
 
-public id initWithArray(NSArray array) {
+public NSSet initWithArray(NSArray array) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithArray_1, array != null ? array.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithObjects_(id initWithObjects) {
+public NSSet initWithObjects_(id initWithObjects) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithObjects_1, initWithObjects != null ? initWithObjects.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithObjects_count_(int objects, int cnt) {
+public NSSet initWithObjects_count_(int objects, int cnt) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithObjects_1count_1, objects, cnt);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithSet_(NSSet set) {
+public NSSet initWithSet_(NSSet set) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSet_1, set != null ? set.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithSet_copyItems_(NSSet set, boolean flag) {
+public NSSet initWithSet_copyItems_(NSSet set, boolean flag) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSet_1copyItems_1, set != null ? set.id : 0, flag);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean intersectsSet(NSSet otherSet) {
