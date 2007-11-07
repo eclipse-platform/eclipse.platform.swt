@@ -41,9 +41,9 @@ public void encodeRootObject(id rootObject) {
 	OS.objc_msgSend(this.id, OS.sel_encodeRootObject_1, rootObject != null ? rootObject.id : 0);
 }
 
-public id initForWritingWithMutableData(NSMutableData mdata) {
+public NSArchiver initForWritingWithMutableData(NSMutableData mdata) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initForWritingWithMutableData_1, mdata != null ? mdata.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void replaceObject(id object, id newObject) {

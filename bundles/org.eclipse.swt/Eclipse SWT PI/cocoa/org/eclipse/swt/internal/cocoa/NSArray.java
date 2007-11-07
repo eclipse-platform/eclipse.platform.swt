@@ -125,34 +125,34 @@ public int indexOfObjectIdenticalTo_inRange_(id anObject, NSRange range) {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfObjectIdenticalTo_1inRange_1, anObject != null ? anObject.id : 0, range);
 }
 
-public id initWithArray_(NSArray array) {
+public NSArray initWithArray_(NSArray array) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithArray_1, array != null ? array.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithArray_copyItems_(NSArray array, boolean flag) {
+public NSArray initWithArray_copyItems_(NSArray array, boolean flag) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithArray_1copyItems_1, array != null ? array.id : 0, flag);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile(NSString path) {
+public NSArray initWithContentsOfFile(NSString path) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL(NSURL url) {
+public NSArray initWithContentsOfURL(NSURL url) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1, url != null ? url.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithObjects_(id initWithObjects) {
+public NSArray initWithObjects_(id initWithObjects) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithObjects_1, initWithObjects != null ? initWithObjects.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithObjects_count_(int objects, int cnt) {
+public NSArray initWithObjects_count_(int objects, int cnt) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithObjects_1count_1, objects, cnt);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isEqualToArray(NSArray otherArray) {

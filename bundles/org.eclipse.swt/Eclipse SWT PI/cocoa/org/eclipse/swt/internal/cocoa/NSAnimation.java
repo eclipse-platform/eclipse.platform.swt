@@ -51,9 +51,9 @@ public float frameRate() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_frameRate);
 }
 
-public id initWithDuration(double duration, int animationCurve) {
+public NSAnimation initWithDuration(double duration, int animationCurve) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithDuration_1animationCurve_1, duration, animationCurve);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isAnimating() {

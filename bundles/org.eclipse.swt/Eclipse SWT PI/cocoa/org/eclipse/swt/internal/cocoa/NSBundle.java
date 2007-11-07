@@ -74,9 +74,9 @@ public NSDictionary infoDictionary() {
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
-public id initWithPath(NSString path) {
+public NSBundle initWithPath(NSString path) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithPath_1, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isLoaded() {

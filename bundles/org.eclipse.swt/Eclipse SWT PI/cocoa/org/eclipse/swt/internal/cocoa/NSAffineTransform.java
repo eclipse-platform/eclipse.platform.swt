@@ -14,9 +14,9 @@ public void appendTransform(NSAffineTransform transform) {
 	OS.objc_msgSend(this.id, OS.sel_appendTransform_1, transform != null ? transform.id : 0);
 }
 
-public id initWithTransform(NSAffineTransform transform) {
+public NSAffineTransform initWithTransform(NSAffineTransform transform) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_1, transform != null ? transform.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void invert() {

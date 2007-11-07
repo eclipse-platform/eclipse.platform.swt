@@ -35,19 +35,19 @@ public NSDictionary attributesAtIndex_longestEffectiveRange_inRange_(int locatio
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
-public id initWithAttributedString(NSAttributedString attrStr) {
+public NSAttributedString initWithAttributedString(NSAttributedString attrStr) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithAttributedString_1, attrStr != null ? attrStr.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithString_(NSString str) {
+public NSAttributedString initWithString_(NSString str) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1, str != null ? str.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithString_attributes_(NSString str, NSDictionary attrs) {
+public NSAttributedString initWithString_attributes_(NSString str, NSDictionary attrs) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1attributes_1, str != null ? str.id : 0, attrs != null ? attrs.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isEqualToAttributedString(NSAttributedString other) {

@@ -24,14 +24,14 @@ public NSAppleEventDescriptor executeAppleEvent(NSAppleEventDescriptor event, in
 	return result != 0 ? new NSAppleEventDescriptor(result) : null;
 }
 
-public id initWithContentsOfURL(NSURL url, int errorInfo) {
+public NSAppleScript initWithContentsOfURL(NSURL url, int errorInfo) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1error_1, url != null ? url.id : 0, errorInfo);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithSource(NSString source) {
+public NSAppleScript initWithSource(NSString source) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSource_1, source != null ? source.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isCompiled() {

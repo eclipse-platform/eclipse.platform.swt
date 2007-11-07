@@ -99,34 +99,34 @@ public int eventID() {
 	return OS.objc_msgSend(this.id, OS.sel_eventID);
 }
 
-public id initListDescriptor() {
+public NSAppleEventDescriptor initListDescriptor() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initListDescriptor);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initRecordDescriptor() {
+public NSAppleEventDescriptor initRecordDescriptor() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initRecordDescriptor);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithAEDescNoCopy(int aeDesc) {
+public NSAppleEventDescriptor initWithAEDescNoCopy(int aeDesc) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithAEDescNoCopy_1, aeDesc);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithDescriptorType_bytes_length_(int descriptorType, int bytes, int byteCount) {
+public NSAppleEventDescriptor initWithDescriptorType_bytes_length_(int descriptorType, int bytes, int byteCount) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithDescriptorType_1bytes_1length_1, descriptorType, bytes, byteCount);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithDescriptorType_data_(int descriptorType, NSData data) {
+public NSAppleEventDescriptor initWithDescriptorType_data_(int descriptorType, NSData data) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithDescriptorType_1data_1, descriptorType, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithEventClass(int eventClass, int eventID, NSAppleEventDescriptor targetDescriptor, short returnID, int transactionID) {
+public NSAppleEventDescriptor initWithEventClass(int eventClass, int eventID, NSAppleEventDescriptor targetDescriptor, short returnID, int transactionID) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithEventClass_1eventID_1targetDescriptor_1returnID_1transactionID_1, eventClass, eventID, targetDescriptor != null ? targetDescriptor.id : 0, returnID, transactionID);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertDescriptor(NSAppleEventDescriptor descriptor, int index) {

@@ -10,14 +10,14 @@ public NSCachedImageRep(int id) {
 	super(id);
 }
 
-public id initWithSize(NSSize size, int depth, boolean flag, boolean alpha) {
+public NSCachedImageRep initWithSize(NSSize size, int depth, boolean flag, boolean alpha) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSize_1depth_1separate_1alpha_1, size, depth, flag, alpha);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithWindow(NSWindow win, NSRect rect) {
+public NSCachedImageRep initWithWindow(NSWindow win, NSRect rect) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithWindow_1rect_1, win != null ? win.id : 0, rect);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSRect rect() {
