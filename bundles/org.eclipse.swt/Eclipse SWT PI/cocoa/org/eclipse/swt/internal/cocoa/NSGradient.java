@@ -43,24 +43,24 @@ public void getColor(int color, int location, int index) {
 	OS.objc_msgSend(this.id, OS.sel_getColor_1location_1atIndex_1, color, location, index);
 }
 
-public id initWithColors_(NSArray colorArray) {
+public NSGradient initWithColors_(NSArray colorArray) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithColors_1, colorArray != null ? colorArray.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithColors_atLocations_colorSpace_(NSArray colorArray, int locations, NSColorSpace colorSpace) {
+public NSGradient initWithColors_atLocations_colorSpace_(NSArray colorArray, int locations, NSColorSpace colorSpace) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithColors_1atLocations_1colorSpace_1, colorArray != null ? colorArray.id : 0, locations, colorSpace != null ? colorSpace.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithColorsAndLocations(NSColor initWithColorsAndLocations) {
+public NSGradient initWithColorsAndLocations(NSColor initWithColorsAndLocations) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithColorsAndLocations_1, initWithColorsAndLocations != null ? initWithColorsAndLocations.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithStartingColor(NSColor startingColor, NSColor endingColor) {
+public NSGradient initWithStartingColor(NSColor startingColor, NSColor endingColor) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithStartingColor_1endingColor_1, startingColor != null ? startingColor.id : 0, endingColor != null ? endingColor.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSColor interpolatedColorAtLocation(float location) {

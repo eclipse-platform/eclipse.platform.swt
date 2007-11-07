@@ -399,7 +399,7 @@ void createHandle () {
 	
 	view = widget;
 	widget.setTag(jniRef);
-	parent.view.addSubview(scrollView);
+	parent.view.addSubview_(scrollView);
 }
 
 void createItem (TableColumn column, int index) {

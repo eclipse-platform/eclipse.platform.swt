@@ -44,6 +44,10 @@ public void setObject(id anObject, id aKey) {
 	OS.objc_msgSend(this.id, OS.sel_setObject_1forKey_1, anObject != null ? anObject.id : 0, aKey != null ? aKey.id : 0);
 }
 
+public void setObject(id anObject, int aKey) {
+	OS.objc_msgSend(this.id, OS.sel_setObject_1forKey_1, anObject != null ? anObject.id : 0, aKey != null ? aKey.id : 0);
+}
+
 public void setValue(id value, NSString key) {
 	OS.objc_msgSend(this.id, OS.sel_setValue_1forKey_1, value != null ? value.id : 0, key != null ? key.id : 0);
 }

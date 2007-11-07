@@ -27,6 +27,10 @@ public void set() {
 	OS.objc_msgSend(this.id, OS.sel_set);
 }
 
+public void concat() {
+	OS.objc_msgSend(this.id, OS.sel_concat);
+}
+
 public void prependTransform(NSAffineTransform transform) {
 	OS.objc_msgSend(this.id, OS.sel_prependTransform_1, transform != null ? transform.id : 0);
 }

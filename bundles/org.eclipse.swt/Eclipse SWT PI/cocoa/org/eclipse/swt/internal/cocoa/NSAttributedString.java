@@ -70,5 +70,8 @@ public NSSize size() {
 	return result;
 }
 
+public void drawAtPoint(NSPoint pt) {
+	OS.objc_msgSend(id, OS.sel_drawAtPoint_, pt);
+}
 
 }

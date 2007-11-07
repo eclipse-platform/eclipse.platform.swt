@@ -12,8 +12,9 @@ public class OS extends C {
 	public static final int PTR_SIZEOF = 4;
 	public static final int noErr = 0;
 	public static final int kProcessTransformToForegroundApplication = 1;
-	
+
 	public static final int sel_sendSelection = sel_registerName("sendSelection");
+	public static final int sel_drawAtPoint_ = sel_registerName("drawAtPoint:");
 	
 	public static final native int NSDeviceRGBColorSpace();
 

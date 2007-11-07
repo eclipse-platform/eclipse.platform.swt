@@ -457,9 +457,9 @@ public int smallestEncoding() {
 	return OS.objc_msgSend(this.id, OS.sel_smallestEncoding);
 }
 
-public static id string() {
+public static NSString string() {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_string);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString stringByAbbreviatingWithTildeInPath() {
@@ -554,22 +554,22 @@ public NSString stringByTrimmingCharactersInSet(NSCharacterSet set) {
 
 public static id static_stringWithCString_(int bytes) {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCString_1, bytes);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSString(result) : null;
 }
 
 public static id static_stringWithCString_encoding_(int cString, int enc) {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCString_1encoding_1, cString, enc);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSString(result) : null;
 }
 
-public static id static_stringWithCString_length_(int bytes, int length) {
+public static NSString static_stringWithCString_length_(int bytes, int length) {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCString_1length_1, bytes, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSString(result) : null;
 }
 
-public static id stringWithCharacters(int characters, int length) {
+public static NSString stringWithCharacters(char[] characters, int length) {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_1length_1, characters, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSString(result) : null;
 }
 
 public static NSString stringWith(String str) {
