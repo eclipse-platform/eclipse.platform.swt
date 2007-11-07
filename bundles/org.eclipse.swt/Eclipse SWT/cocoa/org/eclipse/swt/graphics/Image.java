@@ -720,7 +720,7 @@ void init(Device device, int width, int height) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapData(0, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(0, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
 	rep.release();
@@ -831,7 +831,7 @@ void init(Device device, ImageData image) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapData(0, width, height, 8, 4, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(0, width, height, 8, 4, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
 	rep.release();
@@ -859,8 +859,8 @@ public int internal_new_GC (GCData data) {
 	NSGraphicsContext.setCurrentContext(context);
 	NSAffineTransform transform = NSAffineTransform.transform();
 	NSSize size = handle.size();
-	transform.translate(0, size.height);
-	transform.scale(1, -1);
+	transform.translateXBy(0, size.height);
+	transform.scaleXBy(1, -1);
 	transform.set();
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;

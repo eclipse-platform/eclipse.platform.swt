@@ -15,11 +15,6 @@ public NSData address() {
 	return result != 0 ? new NSData(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public id initRemoteWithProtocolFamily(int family, int type, int protocol, NSData address) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initRemoteWithProtocolFamily_1socketType_1protocol_1address_1, family, type, protocol, address != null ? address.id : 0);
 	return result != 0 ? new id(result) : null;

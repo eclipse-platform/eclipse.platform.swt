@@ -101,11 +101,6 @@ public boolean hasThousandSeparators() {
 	return OS.objc_msgSend(this.id, OS.sel_hasThousandSeparators) != 0;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public NSString internationalCurrencySymbol() {
 	int result = OS.objc_msgSend(this.id, OS.sel_internationalCurrencySymbol);
 	return result != 0 ? new NSString(result) : null;

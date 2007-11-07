@@ -128,11 +128,6 @@ public boolean hasUndoManager() {
 	return OS.objc_msgSend(this.id, OS.sel_hasUndoManager) != 0;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public id initForURL(NSURL absoluteDocumentURL, NSURL absoluteDocumentContentsURL, NSString typeName, int outError) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initForURL_1withContentsOfURL_1ofType_1error_1, absoluteDocumentURL != null ? absoluteDocumentURL.id : 0, absoluteDocumentContentsURL != null ? absoluteDocumentContentsURL.id : 0, typeName != null ? typeName.id : 0, outError);
 	return result != 0 ? new id(result) : null;

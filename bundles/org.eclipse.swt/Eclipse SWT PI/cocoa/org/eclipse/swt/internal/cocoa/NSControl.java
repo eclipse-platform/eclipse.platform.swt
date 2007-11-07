@@ -79,11 +79,6 @@ public boolean ignoresMultiClick() {
 	return OS.objc_msgSend(this.id, OS.sel_ignoresMultiClick) != 0;
 }
 
-public id initWithFrame(NSRect frameRect) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_1, frameRect);
-	return result != 0 ? new id(result) : null;
-}
-
 public int intValue() {
 	return OS.objc_msgSend(this.id, OS.sel_intValue);
 }

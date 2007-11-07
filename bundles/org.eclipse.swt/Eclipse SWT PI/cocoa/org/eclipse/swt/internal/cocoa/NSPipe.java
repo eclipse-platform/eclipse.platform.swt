@@ -20,11 +20,6 @@ public NSFileHandle fileHandleForWriting() {
 	return result != 0 ? new NSFileHandle(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public static id pipe() {
 	int result = OS.objc_msgSend(OS.class_NSPipe, OS.sel_pipe);
 	return result != 0 ? new id(result) : null;

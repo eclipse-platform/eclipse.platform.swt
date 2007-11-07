@@ -37,11 +37,6 @@ public int indexOfResult(id result) {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfResult_1, result != null ? result.id : 0);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public boolean isGathering() {
 	return OS.objc_msgSend(this.id, OS.sel_isGathering) != 0;
 }

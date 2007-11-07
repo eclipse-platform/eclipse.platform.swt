@@ -245,11 +245,6 @@ public float hyphenationFactor() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_hyphenationFactor);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public void insertGlyph(int glyph, int glyphIndex, int charIndex) {
 	OS.objc_msgSend(this.id, OS.sel_insertGlyph_1atGlyphIndex_1characterIndex_1, glyph, glyphIndex, charIndex);
 }

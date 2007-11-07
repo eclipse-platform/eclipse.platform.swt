@@ -32,11 +32,6 @@ public static void exit() {
 	OS.objc_msgSend(OS.class_NSThread, OS.sel_exit);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public id initWithTarget(id target, int selector, id argument) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTarget_1selector_1object_1, target != null ? target.id : 0, selector, argument != null ? argument.id : 0);
 	return result != 0 ? new id(result) : null;

@@ -58,11 +58,6 @@ public id initAsTearOff() {
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithFrame(NSRect frame) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_1, frame);
-	return result != 0 ? new id(result) : null;
-}
-
 public NSRect innerRect() {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_innerRect);

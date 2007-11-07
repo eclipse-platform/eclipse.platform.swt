@@ -29,11 +29,6 @@ public NSString displayedCommandsTitle() {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public boolean listensInForegroundOnly() {
 	return OS.objc_msgSend(this.id, OS.sel_listensInForegroundOnly) != 0;
 }

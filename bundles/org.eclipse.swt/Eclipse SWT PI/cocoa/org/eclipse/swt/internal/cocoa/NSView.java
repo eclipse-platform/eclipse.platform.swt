@@ -362,9 +362,9 @@ public boolean inLiveResize() {
 	return OS.objc_msgSend(this.id, OS.sel_inLiveResize) != 0;
 }
 
-public id initWithFrame(NSRect frameRect) {
+public NSView initWithFrame(NSRect frameRect) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_1, frameRect);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isDescendantOf(NSView aView) {

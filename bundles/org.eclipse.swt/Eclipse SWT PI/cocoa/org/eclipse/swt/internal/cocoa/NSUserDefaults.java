@@ -46,11 +46,6 @@ public float floatForKey(NSString defaultName) {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_floatForKey_1, defaultName != null ? defaultName.id : 0);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public id initWithUser(NSString username) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithUser_1, username != null ? username.id : 0);
 	return result != 0 ? new id(result) : null;

@@ -479,9 +479,9 @@ public NSArray indicesOfObjectsByEvaluatingObjectSpecifier(NSScriptObjectSpecifi
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public id init() {
+public NSObject init() {
 	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public id initWithCoder(NSCoder aDecoder) {

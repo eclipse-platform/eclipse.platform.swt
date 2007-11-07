@@ -25,11 +25,6 @@ public NSDictionary environment() {
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public void interrupt() {
 	OS.objc_msgSend(this.id, OS.sel_interrupt);
 }

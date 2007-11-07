@@ -15,11 +15,6 @@ public id delegate() {
 	return result != 0 ? new id(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public void removeFromRunLoop(NSRunLoop aRunLoop, NSString mode) {
 	OS.objc_msgSend(this.id, OS.sel_removeFromRunLoop_1forMode_1, aRunLoop != null ? aRunLoop.id : 0, mode != null ? mode.id : 0);
 }

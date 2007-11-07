@@ -69,11 +69,6 @@ public static id indexSetWithIndexesInRange(NSRange range) {
 	return result != 0 ? new id(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public id initWithIndex(int value) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithIndex_1, value);
 	return result != 0 ? new id(result) : null;

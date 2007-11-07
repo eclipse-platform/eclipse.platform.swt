@@ -10,11 +10,6 @@ public NSShadow(int id) {
 	super(id);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public void set() {
 	OS.objc_msgSend(this.id, OS.sel_set);
 }

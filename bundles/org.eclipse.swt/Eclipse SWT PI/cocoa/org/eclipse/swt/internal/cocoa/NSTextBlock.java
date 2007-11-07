@@ -38,11 +38,6 @@ public void drawBackgroundWithFrame(NSRect frameRect, NSView controlView, NSRang
 	OS.objc_msgSend(this.id, OS.sel_drawBackgroundWithFrame_1inView_1characterRange_1layoutManager_1, frameRect, controlView != null ? controlView.id : 0, charRange, layoutManager != null ? layoutManager.id : 0);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public NSRect rectForLayoutAtPoint(NSPoint startingPoint, NSRect rect, NSTextContainer textContainer, NSRange charRange) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectForLayoutAtPoint_1inRect_1textContainer_1characterRange_1, startingPoint, rect, textContainer != null ? textContainer.id : 0, charRange);

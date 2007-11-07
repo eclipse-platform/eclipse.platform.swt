@@ -23,11 +23,6 @@ public NSArray dependencies() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public boolean isCancelled() {
 	return OS.objc_msgSend(this.id, OS.sel_isCancelled) != 0;
 }

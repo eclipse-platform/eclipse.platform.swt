@@ -183,11 +183,6 @@ public int hash() {
 	return OS.objc_msgSend(this.id, OS.sel_hash);
 }
 
-public id init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
-	return result != 0 ? new id(result) : null;
-}
-
 public id initWithBytes(int bytes, int len, int encoding) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBytes_1length_1encoding_1, bytes, len, encoding);
 	return result != 0 ? new id(result) : null;
