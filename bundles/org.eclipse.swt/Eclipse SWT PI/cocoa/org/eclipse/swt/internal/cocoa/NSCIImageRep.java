@@ -20,9 +20,9 @@ public static id imageRepWithCIImage(CIImage image) {
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithCIImage(CIImage image) {
+public NSCIImageRep initWithCIImage(CIImage image) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCIImage_1, image != null ? image.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 }

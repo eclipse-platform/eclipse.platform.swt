@@ -24,14 +24,14 @@ public id identifier() {
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithIdentifier(id identifier) {
+public NSTabViewItem initWithIdentifier(id identifier) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_1, identifier != null ? identifier.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initialFirstResponder() {
+public NSTabViewItem initialFirstResponder() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initialFirstResponder);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSString label() {

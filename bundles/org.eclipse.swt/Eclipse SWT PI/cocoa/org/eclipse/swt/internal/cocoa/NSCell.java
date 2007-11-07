@@ -191,14 +191,14 @@ public boolean importsGraphics() {
 	return OS.objc_msgSend(this.id, OS.sel_importsGraphics) != 0;
 }
 
-public id initImageCell(NSImage image) {
+public NSCell initImageCell(NSImage image) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initImageCell_1, image != null ? image.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initTextCell(NSString aString) {
+public NSCell initTextCell(NSString aString) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initTextCell_1, aString != null ? aString.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int intValue() {

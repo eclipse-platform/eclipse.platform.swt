@@ -19,9 +19,9 @@ public static id dictionaryWithCapacity(int numItems) {
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithCapacity(int numItems) {
+public NSMutableDictionary initWithCapacity(int numItems) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_1, numItems);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void removeAllObjects() {

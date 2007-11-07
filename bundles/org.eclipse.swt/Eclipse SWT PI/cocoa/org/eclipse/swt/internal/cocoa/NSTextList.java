@@ -10,9 +10,9 @@ public NSTextList(int id) {
 	super(id);
 }
 
-public id initWithMarkerFormat(NSString format, int mask) {
+public NSTextList initWithMarkerFormat(NSString format, int mask) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithMarkerFormat_1options_1, format != null ? format.id : 0, mask);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int listOptions() {

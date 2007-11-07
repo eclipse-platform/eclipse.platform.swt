@@ -19,9 +19,9 @@ public int drawSelector() {
 	return OS.objc_msgSend(this.id, OS.sel_drawSelector);
 }
 
-public id initWithDrawSelector(int aMethod, id anObject) {
+public NSCustomImageRep initWithDrawSelector(int aMethod, id anObject) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithDrawSelector_1delegate_1, aMethod, anObject != null ? anObject.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 }

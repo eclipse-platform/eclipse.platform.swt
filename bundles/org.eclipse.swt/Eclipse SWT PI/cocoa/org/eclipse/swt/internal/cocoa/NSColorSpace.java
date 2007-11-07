@@ -62,19 +62,19 @@ public static NSColorSpace genericRGBColorSpace() {
 	return result != 0 ? new NSColorSpace(result) : null;
 }
 
-public id initWithCGColorSpace(int cgColorSpace) {
+public NSColorSpace initWithCGColorSpace(int cgColorSpace) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCGColorSpace_1, cgColorSpace);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithColorSyncProfile(int prof) {
+public NSColorSpace initWithColorSyncProfile(int prof) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithColorSyncProfile_1, prof);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithICCProfileData(NSData iccData) {
+public NSColorSpace initWithICCProfileData(NSData iccData) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithICCProfileData_1, iccData != null ? iccData.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSString localizedName() {

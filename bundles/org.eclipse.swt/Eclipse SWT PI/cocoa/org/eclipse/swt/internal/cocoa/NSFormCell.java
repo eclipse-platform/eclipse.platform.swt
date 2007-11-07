@@ -15,11 +15,6 @@ public NSAttributedString attributedTitle() {
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 
-public id initTextCell(NSString aString) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initTextCell_1, aString != null ? aString.id : 0);
-	return result != 0 ? new id(result) : null;
-}
-
 public boolean isOpaque() {
 	return OS.objc_msgSend(this.id, OS.sel_isOpaque) != 0;
 }

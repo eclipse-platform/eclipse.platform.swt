@@ -15,14 +15,14 @@ public NSData data() {
 	return result != 0 ? new NSData(result) : null;
 }
 
-public id initWithResponse_data_(NSURLResponse response, NSData data) {
+public NSCachedURLResponse initWithResponse_data_(NSURLResponse response, NSData data) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithResponse_1data_1, response != null ? response.id : 0, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithResponse_data_userInfo_storagePolicy_(NSURLResponse response, NSData data, NSDictionary userInfo, int storagePolicy) {
+public NSCachedURLResponse initWithResponse_data_userInfo_storagePolicy_(NSURLResponse response, NSData data, NSDictionary userInfo, int storagePolicy) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithResponse_1data_1userInfo_1storagePolicy_1, response != null ? response.id : 0, data != null ? data.id : 0, userInfo != null ? userInfo.id : 0, storagePolicy);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSURLResponse response() {

@@ -30,14 +30,14 @@ public NSColor colorWithKey(NSString key) {
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public id initWithName_(NSString name) {
+public NSColorList initWithName_(NSString name) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithName_1, name != null ? name.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithName_fromFile_(NSString name, NSString path) {
+public NSColorList initWithName_fromFile_(NSString name, NSString path) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithName_1fromFile_1, name != null ? name.id : 0, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertColor(NSColor color, NSString key, int loc) {

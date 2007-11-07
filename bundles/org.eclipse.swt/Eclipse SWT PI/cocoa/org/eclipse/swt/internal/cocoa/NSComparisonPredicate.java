@@ -18,14 +18,14 @@ public int customSelector() {
 	return OS.objc_msgSend(this.id, OS.sel_customSelector);
 }
 
-public id initWithLeftExpression_rightExpression_customSelector_(NSExpression lhs, NSExpression rhs, int selector) {
+public NSComparisonPredicate initWithLeftExpression_rightExpression_customSelector_(NSExpression lhs, NSExpression rhs, int selector) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithLeftExpression_1rightExpression_1customSelector_1, lhs != null ? lhs.id : 0, rhs != null ? rhs.id : 0, selector);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithLeftExpression_rightExpression_modifier_type_options_(NSExpression lhs, NSExpression rhs, int modifier, int type, int options) {
+public NSComparisonPredicate initWithLeftExpression_rightExpression_modifier_type_options_(NSExpression lhs, NSExpression rhs, int modifier, int type, int options) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithLeftExpression_1rightExpression_1modifier_1type_1options_1, lhs != null ? lhs.id : 0, rhs != null ? rhs.id : 0, modifier, type, options);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSExpression leftExpression() {

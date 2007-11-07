@@ -14,14 +14,14 @@ public int alignment() {
 	return OS.objc_msgSend(this.id, OS.sel_alignment);
 }
 
-public id initWithTextAlignment(int alignment, float loc, NSDictionary options) {
+public NSTextTab initWithTextAlignment(int alignment, float loc, NSDictionary options) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTextAlignment_1location_1options_1, alignment, loc, options != null ? options.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithType(int type, float loc) {
+public NSTextTab initWithType(int type, float loc) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithType_1location_1, type, loc);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public float location() {

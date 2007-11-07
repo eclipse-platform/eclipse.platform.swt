@@ -80,19 +80,19 @@ public int hourOfDay() {
 	return OS.objc_msgSend(this.id, OS.sel_hourOfDay);
 }
 
-public id initWithString_(NSString description) {
+public NSCalendarDate initWithString_(NSString description) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1, description != null ? description.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithString_calendarFormat_(NSString description, NSString format) {
+public NSCalendarDate initWithString_calendarFormat_(NSString description, NSString format) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1calendarFormat_1, description != null ? description.id : 0, format != null ? format.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithString_calendarFormat_locale_(NSString description, NSString format, id locale) {
+public NSCalendarDate initWithString_calendarFormat_locale_(NSString description, NSString format, id locale) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1calendarFormat_1locale_1, description != null ? description.id : 0, format != null ? format.id : 0, locale != null ? locale.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public id initWithYear(int year, int month, int day, int hour, int minute, int second, NSTimeZone aTimeZone) {

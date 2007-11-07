@@ -28,9 +28,9 @@ public void detachColorList(NSColorList colorList) {
 	OS.objc_msgSend(this.id, OS.sel_detachColorList_1, colorList != null ? colorList.id : 0);
 }
 
-public id initWithPickerMask(int mask, NSColorPanel owningColorPanel) {
+public NSColorPicker initWithPickerMask(int mask, NSColorPanel owningColorPanel) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithPickerMask_1colorPanel_1, mask, owningColorPanel != null ? owningColorPanel.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertNewButtonImage(NSImage newButtonImage, NSButtonCell buttonCell) {

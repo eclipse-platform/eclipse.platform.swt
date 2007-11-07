@@ -183,109 +183,109 @@ public int hash() {
 	return OS.objc_msgSend(this.id, OS.sel_hash);
 }
 
-public id initWithBytes(int bytes, int len, int encoding) {
+public NSString initWithBytes(int bytes, int len, int encoding) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBytes_1length_1encoding_1, bytes, len, encoding);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithBytesNoCopy(int bytes, int len, int encoding, boolean freeBuffer) {
+public NSString initWithBytesNoCopy(int bytes, int len, int encoding, boolean freeBuffer) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBytesNoCopy_1length_1encoding_1freeWhenDone_1, bytes, len, encoding, freeBuffer);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCString_(int bytes) {
+public NSString initWithCString_(int bytes) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCString_1, bytes);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCString_encoding_(int nullTerminatedCString, int encoding) {
+public NSString initWithCString_encoding_(int nullTerminatedCString, int encoding) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCString_1encoding_1, nullTerminatedCString, encoding);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCString_length_(int bytes, int length) {
+public NSString initWithCString_length_(int bytes, int length) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCString_1length_1, bytes, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCStringNoCopy(int bytes, int length, boolean freeBuffer) {
+public NSString initWithCStringNoCopy(int bytes, int length, boolean freeBuffer) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCStringNoCopy_1length_1freeWhenDone_1, bytes, length, freeBuffer);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCharacters(int characters, int length) {
+public NSString initWithCharacters(int characters, int length) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCharacters_1length_1, characters, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithCharactersNoCopy(int characters, int length, boolean freeBuffer) {
+public NSString initWithCharactersNoCopy(int characters, int length, boolean freeBuffer) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCharactersNoCopy_1length_1freeWhenDone_1, characters, length, freeBuffer);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile_(NSString path) {
+public NSString initWithContentsOfFile_(NSString path) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile_encoding_error_(NSString path, int enc, int error) {
+public NSString initWithContentsOfFile_encoding_error_(NSString path, int enc, int error) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1encoding_1error_1, path != null ? path.id : 0, enc, error);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile_usedEncoding_error_(NSString path, int enc, int error) {
+public NSString initWithContentsOfFile_usedEncoding_error_(NSString path, int enc, int error) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1usedEncoding_1error_1, path != null ? path.id : 0, enc, error);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_(NSURL url) {
+public NSString initWithContentsOfURL_(NSURL url) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1, url != null ? url.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_encoding_error_(NSURL url, int enc, int error) {
+public NSString initWithContentsOfURL_encoding_error_(NSURL url, int enc, int error) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1encoding_1error_1, url != null ? url.id : 0, enc, error);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_usedEncoding_error_(NSURL url, int enc, int error) {
+public NSString initWithContentsOfURL_usedEncoding_error_(NSURL url, int enc, int error) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1usedEncoding_1error_1, url != null ? url.id : 0, enc, error);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithData(NSData data, int encoding) {
+public NSString initWithData(NSData data, int encoding) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1encoding_1, data != null ? data.id : 0, encoding);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithFormat_(NSString initWithFormat) {
+public NSString initWithFormat_(NSString initWithFormat) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_1, initWithFormat != null ? initWithFormat.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithFormat_arguments_(NSString format, int argList) {
+public NSString initWithFormat_arguments_(NSString format, int argList) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_1arguments_1, format != null ? format.id : 0, argList);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithFormat_locale_(NSString format, id locale) {
+public NSString initWithFormat_locale_(NSString format, id locale) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_1locale_1, format != null ? format.id : 0, locale != null ? locale.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithFormat_locale_arguments_(NSString format, id locale, int argList) {
+public NSString initWithFormat_locale_arguments_(NSString format, id locale, int argList) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_1locale_1arguments_1, format != null ? format.id : 0, locale != null ? locale.id : 0, argList);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithString(NSString aString) {
+public NSString initWithString(NSString aString) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1, aString != null ? aString.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithUTF8String(int nullTerminatedCString) {
+public NSString initWithUTF8String(int nullTerminatedCString) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithUTF8String_1, nullTerminatedCString);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int intValue() {

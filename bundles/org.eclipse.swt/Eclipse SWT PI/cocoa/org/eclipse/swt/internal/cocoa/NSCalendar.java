@@ -49,9 +49,9 @@ public int firstWeekday() {
 	return OS.objc_msgSend(this.id, OS.sel_firstWeekday);
 }
 
-public id initWithCalendarIdentifier(NSString ident) {
+public NSCalendar initWithCalendarIdentifier(NSString ident) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCalendarIdentifier_1, ident != null ? ident.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSLocale locale() {

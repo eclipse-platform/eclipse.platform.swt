@@ -2326,7 +2326,7 @@ public void setCursor (Cursor cursor) {
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
 	//TODO null
-	view.addCursor(view.frame(), cursor.handle);
+	view.addCursorRect(view.frame(), cursor.handle);
 }
 
 void setDefaultFont () {
