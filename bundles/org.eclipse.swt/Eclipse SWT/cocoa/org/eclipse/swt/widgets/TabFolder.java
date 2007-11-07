@@ -194,7 +194,7 @@ void createItem (TabItem item, int index) {
 	items [index] = item;
 	itemCount++;
 	NSTabViewItem nsItem = (NSTabViewItem)new NSTabViewItem().alloc().init();
-	((NSTabView)view).addTabViewItem(nsItem);
+	((NSTabView)view).insertTabViewItem(nsItem, index);
 	item.nsItem = nsItem;
 }
 

@@ -13,9 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.ControlTabInfoRecV1;
-import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -34,8 +32,7 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
-	
-	static final int EXTRA_WIDTH = 25;
+	NSTabViewItem nsItem;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -111,15 +108,6 @@ public TabItem (TabFolder parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
-int calculateWidth (GC gc) {
-	int width = 0;
-	Image image = getImage ();
-	String text = getText ();
-	if (image != null) width = image.getBounds ().width + 2;
-	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
-	return width + EXTRA_WIDTH;
-}
-
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -179,6 +167,8 @@ public String getToolTipText () {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (nsItem != null) nsItem.release();
+	nsItem = null;
 	parent = null;
 }
 
@@ -227,7 +217,8 @@ public void setControl (Control control) {
 		return;
 	}
 	if (newControl != null) {
-		newControl.setBounds (parent.getClientArea ());
+//		newControl.setBounds (parent.getClientArea ());
+		nsItem.setView(control.topView ());
 		newControl.setVisible (true);
 	}
 	if (oldControl != null) oldControl.setVisible (false);
@@ -238,15 +229,6 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	if (image == null) {
-		inContent.contentType = (short)OS.kControlContentTextOnly;
-	} else {
-		inContent.contentType = (short)OS.kControlContentCGImageRef;
-		inContent.iconRef = image.handle;
-	}
-	OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
-	parent.redraw ();
 }
 
 /**
@@ -281,17 +263,7 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);	
-	ControlTabInfoRecV1 tab = new ControlTabInfoRecV1 ();
-	tab.version= (short) OS.kControlTabInfoVersionOne;
-	tab.iconSuiteID = 0;
-	tab.name = ptr;
-	OS.SetControlData (parent.handle, index+1, OS.kControlTabInfoTag, ControlTabInfoRecV1.sizeof, tab);
-	OS.CFRelease (ptr);
+	nsItem.setLabel(NSString.stringWith(string));
 }
 
 /**
