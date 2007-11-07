@@ -96,20 +96,6 @@ int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/
 	* they reach the parent embedder.  These event have already been received.
 	*/
 	if (pointer == STOP_PROPOGATE) return 1;
-
-	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
-	switch (event.type) {
-		case OS.GDK_KEY_PRESS:
-		case OS.GDK_KEY_RELEASE: {
-			/* 
-			* Forward the event to the parent embedder before Mozilla receives it, 
-			* as Mozilla may or may not consume it.
-			*/
-			OS.gtk_widget_event (browser.handle, gdkEvent);
-			break;
-		}
-	}
 	return 0;
 }
 

@@ -41,6 +41,9 @@ public class XPCOM extends C {
 	public static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEOUT = "mouseout"; //$NON-NLS-1$
+	public static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
+	public static final String DOMEVENT_KEYDOWN = "keydown"; //$NON-NLS-1$
+	public static final String DOMEVENT_KEYPRESS = "keypress"; //$NON-NLS-1$
 	
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
@@ -252,4 +255,5 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0,
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int arg1, int arg2, int /*long*/ arg3, boolean[] arg4, int /*long*/[] arg5);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int arg3, char[] arg4, byte[] arg5, int /*long*/ arg6, int /*long*/ arg7, int arg8, int /*long*/ arg9, boolean arg10, int /*long*/[] arg11, int /*long*/[] arg12);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, byte[] arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1, boolean arg2, int /*long*/ arg3, boolean arg4, boolean arg5, boolean arg6, boolean arg7, int arg8, int arg9);
 }
