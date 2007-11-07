@@ -8291,6 +8291,58 @@ JNIEXPORT void JNICALL OS_NATIVE(Rect_1Y__ID)
 }
 #endif
 
+#ifndef NO_Rectangle_1Height
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1Height)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1Height)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Rectangle_1Height_FUNC);
+	rc = (jint)((System::Drawing::Rectangle^)TO_OBJECT(arg0))->Height;
+	OS_NATIVE_EXIT(env, that, Rectangle_1Height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Rectangle_1Width
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1Width)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1Width)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Rectangle_1Width_FUNC);
+	rc = (jint)((System::Drawing::Rectangle^)TO_OBJECT(arg0))->Width;
+	OS_NATIVE_EXIT(env, that, Rectangle_1Width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Rectangle_1X
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1X)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1X)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Rectangle_1X_FUNC);
+	rc = (jint)((System::Drawing::Rectangle^)TO_OBJECT(arg0))->X;
+	OS_NATIVE_EXIT(env, that, Rectangle_1X_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Rectangle_1Y
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1Y)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Rectangle_1Y)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Rectangle_1Y_FUNC);
+	rc = (jint)((System::Drawing::Rectangle^)TO_OBJECT(arg0))->Y;
+	OS_NATIVE_EXIT(env, that, Rectangle_1Y_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_RegistryKey_1GetSubKeyNames
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(RegistryKey_1GetSubKeyNames)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(RegistryKey_1GetSubKeyNames)
@@ -8530,6 +8582,58 @@ JNIEXPORT void JNICALL OS_NATIVE(Run_1Text)
 	OS_NATIVE_ENTER(env, that, Run_1Text_FUNC);
 	((Run^)TO_OBJECT(arg0))->Text = ((String^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, Run_1Text_FUNC);
+}
+#endif
+
+#ifndef NO_Screen_1AllScreens
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Screen_1AllScreens)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Screen_1AllScreens)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Screen_1AllScreens_FUNC);
+	rc = (jint)TO_HANDLE(System::Windows::Forms::Screen::AllScreens);
+	OS_NATIVE_EXIT(env, that, Screen_1AllScreens_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Screen_1Bounds
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Screen_1Bounds)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Screen_1Bounds)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Screen_1Bounds_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::Screen^)TO_OBJECT(arg0))->Bounds);
+	OS_NATIVE_EXIT(env, that, Screen_1Bounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Screen_1PrimaryScreen
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Screen_1PrimaryScreen)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Screen_1PrimaryScreen)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Screen_1PrimaryScreen_FUNC);
+	rc = (jint)TO_HANDLE(System::Windows::Forms::Screen::PrimaryScreen);
+	OS_NATIVE_EXIT(env, that, Screen_1PrimaryScreen_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Screen_1WorkingArea
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Screen_1WorkingArea)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Screen_1WorkingArea)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Screen_1WorkingArea_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::Screen^)TO_OBJECT(arg0))->WorkingArea);
+	OS_NATIVE_EXIT(env, that, Screen_1WorkingArea_FUNC);
+	return rc;
 }
 #endif
 

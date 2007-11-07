@@ -902,11 +902,6 @@ public Shell getActiveShell () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	if (true/*OS.GetSystemMetrics (OS.SM_CMONITORS) < 2*/) {
-		int width = (int) OS.SystemParameters_PrimaryScreenWidth ();
-		int height = (int) OS.SystemParameters_PrimaryScreenHeight ();
-		return new Rectangle (0, 0, width, height);
-	}
 	int x = (int) OS.SystemParameters_VirtualScreenLeft ();
 	int y = (int) OS.SystemParameters_VirtualScreenTop ();
 	int width = (int) OS.SystemParameters_VirtualScreenWidth ();
@@ -1342,8 +1337,30 @@ Shell getModalShell () {
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
-	//TODO
-	return new Monitor [] { getPrimaryMonitor() };
+	int screens = OS.Screen_AllScreens ();
+	if (screens == 0) error (SWT.ERROR_NO_HANDLES);
+	int screenCount = OS.ICollection_Count (screens);
+	Monitor [] monitors = new Monitor [screenCount];
+	for (int i=0; i<screenCount; i++) {
+		int screen = OS.IList_default (screens, i);
+		int bounds = OS.Screen_Bounds (screen);
+		int workingArea = OS.Screen_WorkingArea (screen);
+		Monitor monitor = new Monitor ();
+		monitor.x = OS.Rectangle_X (bounds); 
+		monitor.y = OS.Rectangle_Y (bounds);
+		monitor.width = OS.Rectangle_Width (bounds);
+		monitor.height = OS.Rectangle_Height (bounds); 
+		monitor.clientX = OS.Rectangle_X (workingArea);
+		monitor.clientY = OS.Rectangle_Y (workingArea);
+		monitor.clientWidth = OS.Rectangle_Width (workingArea);
+		monitor.clientHeight = OS.Rectangle_Height (workingArea);
+		monitors [i] = monitor;
+		OS.GCHandle_Free (workingArea);
+		OS.GCHandle_Free (bounds);
+		OS.GCHandle_Free (screen);
+	}
+	OS.GCHandle_Free (screens);
+	return monitors;
 }
 
 /**
@@ -1355,15 +1372,22 @@ public Monitor [] getMonitors () {
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
+	int screen = OS.Screen_PrimaryScreen ();
+	if (screen == 0) error (SWT.ERROR_NO_HANDLES);
+	int bounds = OS.Screen_Bounds (screen);
+	int workingArea = OS.Screen_WorkingArea (screen);
 	Monitor monitor = new Monitor ();
-	monitor.x = 0; 
-	monitor.y = 0;
-	monitor.width = (int) OS.SystemParameters_PrimaryScreenWidth ();
-	monitor.height = (int) OS.SystemParameters_PrimaryScreenHeight (); 
-	monitor.clientX = (int) OS.SystemParameters_VirtualScreenLeft ();
-	monitor.clientY = (int) OS.SystemParameters_VirtualScreenTop ();
-	monitor.clientWidth = (int) OS.SystemParameters_VirtualScreenWidth ();
-	monitor.clientHeight = (int) OS.SystemParameters_VirtualScreenHeight ();
+	monitor.x = OS.Rectangle_X (bounds); 
+	monitor.y = OS.Rectangle_Y (bounds);
+	monitor.width = OS.Rectangle_Width (bounds);
+	monitor.height = OS.Rectangle_Height (bounds); 
+	monitor.clientX = OS.Rectangle_X (workingArea);
+	monitor.clientY = OS.Rectangle_Y (workingArea);
+	monitor.clientWidth = OS.Rectangle_Width (workingArea);
+	monitor.clientHeight = OS.Rectangle_Height (workingArea);
+	OS.GCHandle_Free (workingArea);
+	OS.GCHandle_Free (bounds);
+	OS.GCHandle_Free (screen);
 	return monitor;		
 }
 

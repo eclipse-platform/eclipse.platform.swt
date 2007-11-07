@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1275;
-int OS_nativeFunctionCallCount[1275];
+int OS_nativeFunctionCount = 1283;
+int OS_nativeFunctionCallCount[1283];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -702,6 +702,10 @@ char * OS_nativeFunctionNames[] = {
 	"Rect_1X__ID",
 	"Rect_1Y__I",
 	"Rect_1Y__ID",
+	"Rectangle_1Height",
+	"Rectangle_1Width",
+	"Rectangle_1X",
+	"Rectangle_1Y",
 	"RegistryKey_1GetSubKeyNames",
 	"RegistryKey_1GetValue",
 	"RegistryKey_1OpenSubKey",
@@ -727,6 +731,10 @@ char * OS_nativeFunctionNames[] = {
 	"SWTDockPanel_1JNIRefProperty",
 	"SWTDockPanel_1typeid",
 	"SWTTextRunProperties_1ForegroundBrush",
+	"Screen_1AllScreens",
+	"Screen_1Bounds",
+	"Screen_1PrimaryScreen",
+	"Screen_1WorkingArea",
 	"ScrollBar_1Orientation__I",
 	"ScrollBar_1Orientation__II",
 	"ScrollBar_1Scroll",
