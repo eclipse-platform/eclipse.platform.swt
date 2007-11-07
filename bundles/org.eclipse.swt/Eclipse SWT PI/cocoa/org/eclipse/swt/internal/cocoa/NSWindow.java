@@ -562,7 +562,7 @@ public NSString miniwindowTitle() {
 
 public NSPoint mouseLocationOutsideOfEventStream() {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_mouseLocationOutsideOfEventStream);
+	OS.objc_msgSend_mouseLocationOutsideOfEventStream(this.id, OS.sel_mouseLocationOutsideOfEventStream, result);
 	return result;
 }
 

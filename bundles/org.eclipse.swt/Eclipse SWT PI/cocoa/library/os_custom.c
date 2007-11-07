@@ -27,7 +27,6 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 }
 #endif
 
-
 #ifndef NO_objc_1msgSend_1size
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1size)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -41,6 +40,23 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1size)
 fail:
 	if (arg2 && lparg2) setNSSizeFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1size_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1mouseLocationOutsideOfEventStream
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1mouseLocationOutsideOfEventStream)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NSPoint _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1mouseLocationOutsideOfEventStream_FUNC);
+	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	//rc = (jint)objc_msgSend_mouseLocationOutsideOfEventStream(arg0, arg1, lparg2);
+	*lparg2 = [(NSWindow *)arg0 mouseLocationOutsideOfEventStream];
+fail:
+	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1mouseLocationOutsideOfEventStream_FUNC);
 	return rc;
 }
 #endif
