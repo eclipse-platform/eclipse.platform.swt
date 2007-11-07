@@ -463,7 +463,7 @@ void createHandle () {
 //			if ((style & SWT.MAX) != 0) styleMask |= ;
 			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
 		}
-		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, true);
+		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, false);
 //		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 	

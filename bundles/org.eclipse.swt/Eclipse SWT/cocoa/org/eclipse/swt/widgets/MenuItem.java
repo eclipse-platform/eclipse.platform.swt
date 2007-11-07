@@ -11,10 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.cocoa.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -33,6 +34,7 @@ import org.eclipse.swt.internal.carbon.*;
  * </p>
  */
 public class MenuItem extends Item {
+	NSMenuItem nsItem;
 	Menu parent, menu;
 	int accelerator;
 //	int x, y, width, height;
@@ -211,22 +213,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
-int createEmptyMenu () {
-	/*
-	* Bug in the Macintosh.  When a menu bar item does not have
-	* an associated pull down menu, the Macintosh segment faults.
-	* The fix is to temporarily attach an empty menu. 
-	*/
-	if ((parent.style & SWT.BAR) != 0) {
-		int outMenuRef [] = new int [1];
-		if (OS.CreateNewMenu ((short) 0, 0, outMenuRef) != OS.noErr) {
-			error (SWT.ERROR_NO_HANDLES);
-		}
-		return outMenuRef [0];
-	}
-	return 0;
-}
-
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -250,31 +236,6 @@ void destroyWidget () {
 public int getAccelerator () {
 	checkWidget ();
 	return accelerator;
-}
-
-/*public*/ Rectangle getBounds () {
-	checkWidget ();
-	if ((parent.style & SWT.BAR) != 0) {
-		int index = parent.indexOf (this);
-		if (index == -1) return new Rectangle (0 ,0, 0, 0);
-		Menu menu = display.getMenuBar ();
-		if (parent != menu) return new Rectangle (0 ,0, 0, 0);
-		int outMenuRef [] = new int [1];
-		if (OS.GetMenuItemHierarchicalMenu (menu.handle, (short)(index + 1), outMenuRef) != OS.noErr) {
-			return new Rectangle (0 ,0, 0, 0);
-		}
-		Rect rect = new Rect ();
-		//TODO - get the bounds of the menu item from the menu title
-//		if (... code needed to do this ... != OS.noErr) {
-//			return new Rectangle (0 ,0, 0, 0);
-//		}
-		int width = rect.right - rect.left;
-		int height = rect.bottom - rect.top;
-		return new Rectangle (rect.left, rect.top, width, height);
-	}
-	return new Rectangle (0 ,0, 0, 0);
-//	return new Rectangle (x, y, width, height);
-
 }
 
 /**
@@ -353,35 +314,31 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	int index = parent.indexOf (this);
-	if (index == -1) return false;
-	short [] outMark = new short [1];
-	OS.GetItemMark (parent.handle, (short) (index + 1), outMark);
-	return outMark [0] != 0;
+    return ((NSMenuItem)nsItem).state() == OS.NSOnState;
 }
 
-int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
-	//TEMPORARY CODE
-	if (!isEnabled ()) return OS.noErr;
-
-	if ((style & SWT.CHECK) != 0) {
-		setSelection (!getSelection ());
-	} else {
-		if ((style & SWT.RADIO) != 0) {
-			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
-				setSelection (!getSelection ());
-			} else {
-				selectRadio ();
-			}
-		}
-	}
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	Event event = new Event ();
-	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
-	postEvent (SWT.Selection, event);
-	return OS.noErr;
-}
+//int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+//	//TEMPORARY CODE
+//	if (!isEnabled ()) return OS.noErr;
+//
+//	if ((style & SWT.CHECK) != 0) {
+//		setSelection (!getSelection ());
+//	} else {
+//		if ((style & SWT.RADIO) != 0) {
+//			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
+//				setSelection (!getSelection ());
+//			} else {
+//				selectRadio ();
+//			}
+//		}
+//	}
+//	int [] modifiers = new int [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//	Event event = new Event ();
+//	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
+//	postEvent (SWT.Selection, event);
+//	return OS.noErr;
+//}
 
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -402,41 +359,41 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int keyGlyph (int key) {
-	switch (key) {
-		case SWT.BS: return OS.kMenuDeleteLeftGlyph;
-		case SWT.CR: return OS.kMenuReturnGlyph;
-		case SWT.DEL: return OS.kMenuDeleteRightGlyph;
-		case SWT.ESC: return OS.kMenuEscapeGlyph;
-		case SWT.LF: return OS.kMenuReturnGlyph;
-		case SWT.TAB: return OS.kMenuTabRightGlyph;
-		case ' ': return OS.kMenuBlankGlyph;
-//		case ' ': return OS.kMenuSpaceGlyph;
-		case SWT.ALT: return OS.kMenuOptionGlyph;
-		case SWT.SHIFT: return OS.kMenuShiftGlyph;
-		case SWT.CONTROL: return OS.kMenuControlISOGlyph;
-		case SWT.COMMAND: return OS.kMenuCommandGlyph;
-		case SWT.ARROW_UP: return OS.kMenuUpArrowGlyph;
-		case SWT.ARROW_DOWN: return OS.kMenuDownArrowGlyph;
-		case SWT.ARROW_LEFT: return OS.kMenuLeftArrowGlyph;
-		case SWT.ARROW_RIGHT: return OS.kMenuRightArrowGlyph;
-		case SWT.PAGE_UP: return OS.kMenuPageUpGlyph;
-		case SWT.PAGE_DOWN: return OS.kMenuPageDownGlyph;
-		case SWT.F1: return OS.kMenuF1Glyph;
-		case SWT.F2: return OS.kMenuF2Glyph;
-		case SWT.F3: return OS.kMenuF3Glyph;
-		case SWT.F4: return OS.kMenuF4Glyph;
-		case SWT.F5: return OS.kMenuF5Glyph;
-		case SWT.F6: return OS.kMenuF6Glyph;
-		case SWT.F7: return OS.kMenuF7Glyph;
-		case SWT.F8: return OS.kMenuF8Glyph;
-		case SWT.F9: return OS.kMenuF9Glyph;
-		case SWT.F10: return OS.kMenuF10Glyph;
-		case SWT.F11: return OS.kMenuF11Glyph;
-		case SWT.F12: return OS.kMenuF12Glyph;
-	}
-	return OS.kMenuNullGlyph;
-}
+//int keyGlyph (int key) {
+//	switch (key) {
+//		case SWT.BS: return OS.kMenuDeleteLeftGlyph;
+//		case SWT.CR: return OS.kMenuReturnGlyph;
+//		case SWT.DEL: return OS.kMenuDeleteRightGlyph;
+//		case SWT.ESC: return OS.kMenuEscapeGlyph;
+//		case SWT.LF: return OS.kMenuReturnGlyph;
+//		case SWT.TAB: return OS.kMenuTabRightGlyph;
+//		case ' ': return OS.kMenuBlankGlyph;
+////		case ' ': return OS.kMenuSpaceGlyph;
+//		case SWT.ALT: return OS.kMenuOptionGlyph;
+//		case SWT.SHIFT: return OS.kMenuShiftGlyph;
+//		case SWT.CONTROL: return OS.kMenuControlISOGlyph;
+//		case SWT.COMMAND: return OS.kMenuCommandGlyph;
+//		case SWT.ARROW_UP: return OS.kMenuUpArrowGlyph;
+//		case SWT.ARROW_DOWN: return OS.kMenuDownArrowGlyph;
+//		case SWT.ARROW_LEFT: return OS.kMenuLeftArrowGlyph;
+//		case SWT.ARROW_RIGHT: return OS.kMenuRightArrowGlyph;
+//		case SWT.PAGE_UP: return OS.kMenuPageUpGlyph;
+//		case SWT.PAGE_DOWN: return OS.kMenuPageDownGlyph;
+//		case SWT.F1: return OS.kMenuF1Glyph;
+//		case SWT.F2: return OS.kMenuF2Glyph;
+//		case SWT.F3: return OS.kMenuF3Glyph;
+//		case SWT.F4: return OS.kMenuF4Glyph;
+//		case SWT.F5: return OS.kMenuF5Glyph;
+//		case SWT.F6: return OS.kMenuF6Glyph;
+//		case SWT.F7: return OS.kMenuF7Glyph;
+//		case SWT.F8: return OS.kMenuF8Glyph;
+//		case SWT.F9: return OS.kMenuF9Glyph;
+//		case SWT.F10: return OS.kMenuF10Glyph;
+//		case SWT.F11: return OS.kMenuF11Glyph;
+//		case SWT.F12: return OS.kMenuF12Glyph;
+//	}
+//	return OS.kMenuNullGlyph;
+//}
 
 void releaseHandle () {
 	super.releaseHandle ();
@@ -530,29 +487,6 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-/*public*/ void select () {
-	checkWidget ();
-	Menu menu = parent, menuParent;
-	while (menu.cascade != null && (menuParent = menu.cascade.parent) != null) {
-		if ((menuParent.style & SWT.BAR) != 0) break;
-		menu = menuParent;
-	}
-	if (menu == null) return;
-	OS.HiliteMenu (OS.GetMenuID (menu.handle));
-	int[] event = new int[1];
-	OS.CreateEvent (0, OS.kEventClassCommand, OS.kEventProcessCommand, 0.0, 0, event);
-	if (event [0] != 0) {
-		int parentHandle = parent.handle;
-		HICommand command = new HICommand ();
-		command.attributes = OS.kHICommandFromMenu;
-		command.menu_menuRef = parentHandle;
-		command.menu_menuItemIndex = (short) (parent.indexOf (this) + 1);
-		OS.SetEventParameter (event [0], OS.kEventParamDirectObject, OS.typeHICommand, HICommand.sizeof, command);
-		OS.SendEventToEventTarget (event [0], OS.GetApplicationEventTarget ());
-		OS.ReleaseEvent (event [0]);
-	}
-}
-
 void selectRadio () {
 	int index = 0;
 	MenuItem [] items = parent.getItems ();
@@ -582,34 +516,52 @@ void selectRadio () {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
 	this.accelerator = accelerator;
-	boolean inSetVirtualKey = false;
-	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
-	if (accelerator != 0) {
-		inKey = accelerator & SWT.KEY_MASK;
-		inGlyph = keyGlyph (inKey);
-		int virtualKey = Display.untranslateKey (inKey);
-		if (inKey == ' ') virtualKey = 49;
-		if (virtualKey != 0) {
-			inSetVirtualKey = true;
-			inKey = virtualKey;
-		} else {
-			inKey = Character.toUpperCase ((char)inKey);
-		}
-		inModifiers = (byte) OS.kMenuNoCommandModifier;
-		if ((accelerator & SWT.SHIFT) != 0) inModifiers |= OS.kMenuShiftModifier;
-		if ((accelerator & SWT.CONTROL) != 0) inModifiers |= OS.kMenuControlModifier;
-		if ((accelerator & SWT.COMMAND) != 0) inModifiers &= ~OS.kMenuNoCommandModifier;
-		if ((accelerator & SWT.ALT) != 0) inModifiers |= OS.kMenuOptionModifier;
+	int key = accelerator & SWT.KEY_MASK;
+	int virtualKey = Display.untranslateKey (key);
+	NSString string =  null;
+	if (virtualKey != 0) {
+		string = NSString.stringWith ((char)virtualKey + "");
+	} else {
+		string = NSString.stringWith ((char)key + "").lowercaseString();
 	}
-	short menuIndex = (short) (index + 1);
-	OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
-	OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
-	OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
-	if (update) updateText (menuIndex);
+	nsItem.setKeyEquivalent (string);
+	int mask = 0;
+	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.NSShiftKeyMask;
+	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.NSControlKeyMask;
+//	if ((accelerator & SWT.COMMAND) != 0) mask &= ~OS.kMenuNoCommandModifier;
+	if ((accelerator & SWT.COMMAND) != 0) mask |= OS.NSCommandKeyMask;
+	if ((accelerator & SWT.ALT) != 0) mask |= OS.NSAlternateKeyMask;
+	nsItem.setKeyEquivalentModifierMask (mask);
+	
+//	int index = parent.indexOf (this);
+//	if (index == -1) return;
+//	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
+//	this.accelerator = accelerator;
+//	boolean inSetVirtualKey = false;
+//	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
+//	if (accelerator != 0) {
+//		inKey = accelerator & SWT.KEY_MASK;
+//		inGlyph = keyGlyph (inKey);
+//		int virtualKey = Display.untranslateKey (inKey);
+//		if (inKey == ' ') virtualKey = 49;
+//		if (virtualKey != 0) {
+//			inSetVirtualKey = true;
+//			inKey = virtualKey;
+//		} else {
+//			inKey = Character.toUpperCase ((char)inKey);
+//		}
+//		inModifiers = (byte) OS.kMenuNoCommandModifier;
+//		if ((accelerator & SWT.SHIFT) != 0) inModifiers |= OS.kMenuShiftModifier;
+//		if ((accelerator & SWT.CONTROL) != 0) inModifiers |= OS.kMenuControlModifier;
+//		if ((accelerator & SWT.COMMAND) != 0) inModifiers &= ~OS.kMenuNoCommandModifier;
+//		if ((accelerator & SWT.ALT) != 0) inModifiers |= OS.kMenuOptionModifier;
+//	}
+//	short menuIndex = (short) (index + 1);
+//	OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
+//	OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
+//	OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
+//	if (update) updateText (menuIndex);
 }
 
 /**
@@ -628,19 +580,7 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int outMenuRef [] = new int [1];
-	short menuIndex = (short) (index + 1);
-	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
-	if (enabled) {
-		state &= ~DISABLED;
-		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
-		OS.EnableMenuItem (parent.handle, menuIndex);
-	} else {
-		state |= DISABLED;
-		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
-		OS.DisableMenuItem (parent.handle, menuIndex);
-	}
+	((NSMenuItem)nsItem).setEnabled(enabled);
 }
 
 /**
@@ -660,12 +600,8 @@ public void setEnabled (boolean enabled) {
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
 	super.setImage (image);
-	int imageHandle = image != null ? image.handle : 0;
-	byte type = image != null ? (byte)OS.kMenuCGImageRefType : (byte)OS.kMenuNoIcon;
-	OS.SetMenuItemIconHandle (parent.handle, (short) (index + 1), type, imageHandle);
+	((NSMenuItem)nsItem).setImage(image != null? image.handle : null);
 }
 
 /**
@@ -717,29 +653,8 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 	
 	/* Update the menu in the OS */
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int menuHandle = 0;
-	if (menu == null) {
-		menuHandle = createEmptyMenu ();
-	} else {
-		menu.cascade = this;
-		menuHandle = menu.handle;
-	}
-	short menuIndex = (short) (index + 1);
-	if (menuHandle != 0) {
-		int [] outString = new int [1];
-		if (OS.CopyMenuItemTextAsCFString (parent.handle, menuIndex, outString) != OS.noErr) {
-			error (SWT.ERROR_CANNOT_SET_MENU);
-		}
-		OS.SetMenuTitleWithCFString (menuHandle, outString [0]);
-		OS.CFRelease (outString [0]);
-	}
-	if (oldMenu != null) OS.RetainMenu (oldMenu.handle);
-	if (OS.SetMenuItemHierarchicalMenu (parent.handle, menuIndex, menuHandle) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_SET_MENU);
-	}
-	if (menuHandle != 0) OS.ReleaseMenu (menuHandle);
+	((NSMenuItem)nsItem).setSubmenu(menu.nsMenu);
+
 }
 
 boolean setRadioSelection (boolean value) {
@@ -767,10 +682,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int inMark = selected ? ((style & SWT.RADIO) != 0) ? OS.diamondMark : OS.checkMark : 0;
-	OS.SetItemMark (parent.handle, (short) (index + 1), (short) inMark);
+	((NSMenuItem)nsItem).setState(selected ? OS.NSOnState : OS.NSOffState);
 }
 
 /**
@@ -818,36 +730,9 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	updateText ((short) (index + 1));
+	NSString str = NSString.stringWith(string);
+	((NSMenuItem)nsItem).setTitle(str);
 }
 
-void updateText (short menuIndex) {
-	if ((style & SWT.SEPARATOR) != 0) return;
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int i=0, j=0;
-	while (i < buffer.length) {
-		if (buffer [i] == '\t') break;
-		if ((buffer [j++] = buffer [i++]) == '&') {
-			if (i == buffer.length) {continue;}
-			if (buffer [i] == '&') {i++; continue;}
-			j--;
-		}
-	}
-	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
-	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetMenuItemTextWithCFString (parent.handle, menuIndex, str);
-	int [] outHierMenu = new int [1];
-	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outHierMenu);
-	if (outHierMenu [0] != 0) OS.SetMenuTitleWithCFString (outHierMenu [0], str);
-	/*
-	* Feature in the Macintosh.  Setting text that starts with "-" makes the
-	* menu item a separator.  The fix is to clear the separator attribute. 
-	*/
-	if (text.startsWith ("-")) {
-		OS.ChangeMenuItemAttributes (parent.handle, menuIndex, 0, OS.kMenuItemAttrSeparator);
-	}
-	OS.CFRelease (str);
-}
 }
 

@@ -17,7 +17,7 @@ JNIEXPORT void JNICALL OS_NATIVE(bogus)
 	//NSSize size = [fred size];
 	//printf("%f %f\n", size.width, size.height);
 	
-	// GPS's
+	// GP's
 	//NSSize size;
 	//objc_msgSend_stret(&size, (id)fred, (SEL)sel_registerName("size"));
 	
