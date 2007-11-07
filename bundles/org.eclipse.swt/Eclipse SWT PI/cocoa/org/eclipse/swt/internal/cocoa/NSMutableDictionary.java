@@ -14,9 +14,9 @@ public void addEntriesFromDictionary(NSDictionary otherDictionary) {
 	OS.objc_msgSend(this.id, OS.sel_addEntriesFromDictionary_1, otherDictionary != null ? otherDictionary.id : 0);
 }
 
-public static id dictionaryWithCapacity(int numItems) {
+public static NSMutableDictionary dictionaryWithCapacity(int numItems) {
 	int result = OS.objc_msgSend(OS.class_NSMutableDictionary, OS.sel_dictionaryWithCapacity_1, numItems);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
 public NSMutableDictionary initWithCapacity(int numItems) {
