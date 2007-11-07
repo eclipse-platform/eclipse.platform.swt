@@ -14,19 +14,19 @@ public boolean hasSpaceAvailable() {
 	return OS.objc_msgSend(this.id, OS.sel_hasSpaceAvailable) != 0;
 }
 
-public id initToBuffer(int buffer, int capacity) {
+public NSOutputStream initToBuffer(int buffer, int capacity) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initToBuffer_1capacity_1, buffer, capacity);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initToFileAtPath(NSString path, boolean shouldAppend) {
+public NSOutputStream initToFileAtPath(NSString path, boolean shouldAppend) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initToFileAtPath_1append_1, path != null ? path.id : 0, shouldAppend);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initToMemory() {
+public NSOutputStream initToMemory() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initToMemory);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public static id outputStreamToBuffer(int buffer, int capacity) {

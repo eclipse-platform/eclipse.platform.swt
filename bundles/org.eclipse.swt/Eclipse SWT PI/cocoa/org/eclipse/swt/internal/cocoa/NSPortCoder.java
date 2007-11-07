@@ -28,9 +28,9 @@ public void encodePortObject(NSPort aport) {
 	OS.objc_msgSend(this.id, OS.sel_encodePortObject_1, aport != null ? aport.id : 0);
 }
 
-public id initWithReceivePort(NSPort rcvPort, NSPort sndPort, NSArray comps) {
+public NSPortCoder initWithReceivePort(NSPort rcvPort, NSPort sndPort, NSArray comps) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithReceivePort_1sendPort_1components_1, rcvPort != null ? rcvPort.id : 0, sndPort != null ? sndPort.id : 0, comps != null ? comps.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isBycopy() {

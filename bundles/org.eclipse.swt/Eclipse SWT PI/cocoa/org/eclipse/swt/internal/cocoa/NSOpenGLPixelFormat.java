@@ -23,14 +23,14 @@ public void getValues(int vals, int attrib, int screen) {
 	OS.objc_msgSend(this.id, OS.sel_getValues_1forAttribute_1forVirtualScreen_1, vals, attrib, screen);
 }
 
-public id initWithAttributes(int attribs) {
+public NSOpenGLPixelFormat initWithAttributes(int attribs) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithAttributes_1, attribs);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithData(NSData attribs) {
+public NSOpenGLPixelFormat initWithData(NSData attribs) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1, attribs != null ? attribs.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int numberOfVirtualScreens() {

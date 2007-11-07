@@ -81,49 +81,49 @@ public void getBytes_range_(int buffer, NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_getBytes_1range_1, buffer, range);
 }
 
-public id initWithBytes(int bytes, int length) {
+public NSData initWithBytes(int bytes, int length) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBytes_1length_1, bytes, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithBytesNoCopy_length_(int bytes, int length) {
+public NSData initWithBytesNoCopy_length_(int bytes, int length) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBytesNoCopy_1length_1, bytes, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithBytesNoCopy_length_freeWhenDone_(int bytes, int length, boolean b) {
+public NSData initWithBytesNoCopy_length_freeWhenDone_(int bytes, int length, boolean b) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithBytesNoCopy_1length_1freeWhenDone_1, bytes, length, b);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile_(NSString path) {
+public NSData initWithContentsOfFile_(NSString path) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile_options_error_(NSString path, int readOptionsMask, int errorPtr) {
+public NSData initWithContentsOfFile_options_error_(NSString path, int readOptionsMask, int errorPtr) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1options_1error_1, path != null ? path.id : 0, readOptionsMask, errorPtr);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfMappedFile(NSString path) {
+public NSData initWithContentsOfMappedFile(NSString path) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfMappedFile_1, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_(NSURL url) {
+public NSData initWithContentsOfURL_(NSURL url) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1, url != null ? url.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_options_error_(NSURL url, int readOptionsMask, int errorPtr) {
+public NSData initWithContentsOfURL_options_error_(NSURL url, int readOptionsMask, int errorPtr) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1options_1error_1, url != null ? url.id : 0, readOptionsMask, errorPtr);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithData(NSData data) {
+public NSData initWithData(NSData data) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1, data != null ? data.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isEqualToData(NSData other) {

@@ -30,9 +30,9 @@ public static id imageRepWithData(NSData pdfData) {
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithData(NSData pdfData) {
+public NSPDFImageRep initWithData(NSData pdfData) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1, pdfData != null ? pdfData.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int pageCount() {

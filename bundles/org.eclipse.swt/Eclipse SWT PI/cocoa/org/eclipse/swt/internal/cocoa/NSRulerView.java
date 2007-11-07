@@ -36,9 +36,9 @@ public void drawMarkersInRect(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_drawMarkersInRect_1, rect);
 }
 
-public id initWithScrollView(NSScrollView scrollView, int orientation) {
+public NSRulerView initWithScrollView(NSScrollView scrollView, int orientation) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithScrollView_1orientation_1, scrollView != null ? scrollView.id : 0, orientation);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void invalidateHashMarks() {

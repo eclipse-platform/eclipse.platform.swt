@@ -75,9 +75,9 @@ public int indexOfItemWithTitle(NSString aTitle) {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTitle_1, aTitle != null ? aTitle.id : 0);
 }
 
-public id initWithTitle(NSString aTitle) {
+public NSMenu initWithTitle(NSString aTitle) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_1, aTitle != null ? aTitle.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertItem(NSMenuItem newItem, int index) {

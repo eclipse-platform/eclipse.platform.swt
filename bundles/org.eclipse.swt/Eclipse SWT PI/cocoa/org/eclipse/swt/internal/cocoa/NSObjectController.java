@@ -58,9 +58,9 @@ public NSPredicate fetchPredicate() {
 //	return OS.objc_msgSend(this.id, OS.sel_fetchWithRequest_1merge_1error_1, fetchRequest != null ? fetchRequest.id : 0, merge, error) != 0;
 //}
 
-public id initWithContent(id content) {
+public NSObjectController initWithContent(id content) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContent_1, content != null ? content.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isEditable() {

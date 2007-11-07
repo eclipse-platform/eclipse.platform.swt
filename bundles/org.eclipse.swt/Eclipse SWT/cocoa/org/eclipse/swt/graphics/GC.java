@@ -1478,15 +1478,15 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		return;
 	}
 
-	NSColor startingColor = NSColor.colorWithDeviceRGBA(foregroundRGB.red / 255f, foregroundRGB.green / 255f, foregroundRGB.blue / 255f, data.alpha / 255f);
-	NSColor endingColor = NSColor.colorWithDeviceRGBA(backgroundRGB.red / 255f, backgroundRGB.green / 255f, backgroundRGB.blue / 255f, data.alpha / 255f);
-	NSGradient gradient = ((NSGradient)new NSGradient().alloc()).init(startingColor, endingColor);
+	NSColor startingColor = NSColor.colorWithDeviceRed(foregroundRGB.red / 255f, foregroundRGB.green / 255f, foregroundRGB.blue / 255f, data.alpha / 255f);
+	NSColor endingColor = NSColor.colorWithDeviceRed(backgroundRGB.red / 255f, backgroundRGB.green / 255f, backgroundRGB.blue / 255f, data.alpha / 255f);
+	NSGradient gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(startingColor, endingColor);
 	NSRect rect = new NSRect();
 	rect.x = x;
 	rect.y = y;
 	rect.width = width;
 	rect.height = height;
-	gradient.drawInRect(rect, vertical ? 90 : 0);
+	gradient.drawInRect_angle_(rect, vertical ? 90 : 0);
 	gradient.release();
 }
 
@@ -1856,58 +1856,59 @@ public int getCharWidth(char ch) {
 public Rectangle getClipping() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/* Calculate visible bounds in device space*/
-	Rect rect = null;
-	int x = 0, y = 0, width = 0, height = 0;
-	if (data.control != 0) {
-		if (rect == null) rect = new Rect();
-		OS.GetControlBounds(data.control, rect);
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
-	} else {
-		if (data.image != null) {
-			int image = data.image.handle;
-			width = OS.CGImageGetWidth(image);
-			height = OS.CGImageGetHeight(image);
-		} else if (data.portRect != null) {
-			width = data.portRect.right - data.portRect.left;
-			height = data.portRect.bottom - data.portRect.top;
-		}
-	}
-	/* Intersect visible bounds with clipping in device space and then convert the user space */
-	int clipRgn = data.clipRgn;
-	int visibleRgn = data.visibleRgn;
-	if (clipRgn != 0 || visibleRgn != 0 || data.inverseTransform != null) {
-		int rgn = OS.NewRgn();
-		OS.SetRectRgn(rgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-		if (visibleRgn != 0) {
-			OS.SectRgn(rgn, visibleRgn, rgn);			
-		}
-		/* Intersect visible bounds with clipping */
-		if (clipRgn != 0) {
-			/* Convert clipping to device space if needed */
-			if (data.clippingTransform != null) {
-				clipRgn = convertRgn(clipRgn, data.clippingTransform);
-				OS.SectRgn(rgn, clipRgn, rgn);
-				OS.DisposeRgn(clipRgn);
-			} else {
-				OS.SectRgn(rgn, clipRgn, rgn);
-			}
-		}
-		/* Convert to user space */
-		if (data.inverseTransform != null) {
-			clipRgn = convertRgn(rgn, data.inverseTransform);
-			OS.DisposeRgn(rgn);
-			rgn = clipRgn;
-		}
-		if (rect == null) rect = new Rect();
-		OS.GetRegionBounds(rgn, rect);
-		OS.DisposeRgn(rgn);
-		x = rect.left;
-		y = rect.top;
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
-	}
-	return new Rectangle(x, y, width, height);
+//	Rect rect = null;
+//	int x = 0, y = 0, width = 0, height = 0;
+//	if (data.control != 0) {
+//		if (rect == null) rect = new Rect();
+//		OS.GetControlBounds(data.control, rect);
+//		width = rect.right - rect.left;
+//		height = rect.bottom - rect.top;
+//	} else {
+//		if (data.image != null) {
+//			int image = data.image.handle;
+//			width = OS.CGImageGetWidth(image);
+//			height = OS.CGImageGetHeight(image);
+//		} else if (data.portRect != null) {
+//			width = data.portRect.right - data.portRect.left;
+//			height = data.portRect.bottom - data.portRect.top;
+//		}
+//	}
+//	/* Intersect visible bounds with clipping in device space and then convert the user space */
+//	int clipRgn = data.clipRgn;
+//	int visibleRgn = data.visibleRgn;
+//	if (clipRgn != 0 || visibleRgn != 0 || data.inverseTransform != null) {
+//		int rgn = OS.NewRgn();
+//		OS.SetRectRgn(rgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
+//		if (visibleRgn != 0) {
+//			OS.SectRgn(rgn, visibleRgn, rgn);			
+//		}
+//		/* Intersect visible bounds with clipping */
+//		if (clipRgn != 0) {
+//			/* Convert clipping to device space if needed */
+//			if (data.clippingTransform != null) {
+//				clipRgn = convertRgn(clipRgn, data.clippingTransform);
+//				OS.SectRgn(rgn, clipRgn, rgn);
+//				OS.DisposeRgn(clipRgn);
+//			} else {
+//				OS.SectRgn(rgn, clipRgn, rgn);
+//			}
+//		}
+//		/* Convert to user space */
+//		if (data.inverseTransform != null) {
+//			clipRgn = convertRgn(rgn, data.inverseTransform);
+//			OS.DisposeRgn(rgn);
+//			rgn = clipRgn;
+//		}
+//		if (rect == null) rect = new Rect();
+//		OS.GetRegionBounds(rgn, rect);
+//		OS.DisposeRgn(rgn);
+//		x = rect.left;
+//		y = rect.top;
+//		width = rect.right - rect.left;
+//		height = rect.bottom - rect.top;
+//	}
+//	return new Rectangle(x, y, width, height);
+	return null;
 }
 
 /** 
@@ -1928,49 +1929,49 @@ public void getClipping(Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Rect bounds = null;
-	int clipping = region.handle;
-	if (data.clipRgn == 0) {
-		int width = 0, height = 0;
-		if (data.control != 0) {
-			if (bounds == null) bounds = new Rect();
-			OS.GetControlBounds(data.control, bounds);
-			width = bounds.right - bounds.left;
-			height = bounds.bottom - bounds.top;
-		} else {
-			if (data.image != null) {
-				int image = data.image.handle;
-				width = OS.CGImageGetWidth(image);
-				height = OS.CGImageGetHeight(image);
-			} else if (data.portRect != null) {
-				width = data.portRect.right - data.portRect.left;
-				height = data.portRect.bottom - data.portRect.top;
-			}
-		}
-		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
-	} else {
-		/* Convert clipping to device space if needed */
-		if (data.clippingTransform != null) {
-			int rgn = convertRgn(data.clipRgn, data.clippingTransform);
-			OS.CopyRgn(rgn, clipping);
-			OS.DisposeRgn(rgn);
-		} else {
-			OS.CopyRgn(data.clipRgn, clipping);
-		}
-	}
-	if (data.paintEvent != 0 && data.visibleRgn != 0) {
-		if (bounds == null) bounds = new Rect();
-		OS.GetControlBounds(data.control, bounds);
-		if (data.paintEvent == 0) OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
-		OS.SectRgn(data.visibleRgn, clipping, clipping);
-		if (data.paintEvent == 0) OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
-	}
-	/* Convert to user space */
-	if (data.inverseTransform != null) {
-		int rgn = convertRgn(clipping, data.inverseTransform);
-		OS.CopyRgn(rgn, clipping);
-		OS.DisposeRgn(rgn);
-	}
+//	Rect bounds = null;
+//	int clipping = region.handle;
+//	if (data.clipRgn == 0) {
+//		int width = 0, height = 0;
+//		if (data.control != 0) {
+//			if (bounds == null) bounds = new Rect();
+//			OS.GetControlBounds(data.control, bounds);
+//			width = bounds.right - bounds.left;
+//			height = bounds.bottom - bounds.top;
+//		} else {
+//			if (data.image != null) {
+//				int image = data.image.handle;
+//				width = OS.CGImageGetWidth(image);
+//				height = OS.CGImageGetHeight(image);
+//			} else if (data.portRect != null) {
+//				width = data.portRect.right - data.portRect.left;
+//				height = data.portRect.bottom - data.portRect.top;
+//			}
+//		}
+//		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
+//	} else {
+//		/* Convert clipping to device space if needed */
+//		if (data.clippingTransform != null) {
+//			int rgn = convertRgn(data.clipRgn, data.clippingTransform);
+//			OS.CopyRgn(rgn, clipping);
+//			OS.DisposeRgn(rgn);
+//		} else {
+//			OS.CopyRgn(data.clipRgn, clipping);
+//		}
+//	}
+//	if (data.paintEvent != 0 && data.visibleRgn != 0) {
+//		if (bounds == null) bounds = new Rect();
+//		OS.GetControlBounds(data.control, bounds);
+//		if (data.paintEvent == 0) OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
+//		OS.SectRgn(data.visibleRgn, clipping, clipping);
+//		if (data.paintEvent == 0) OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
+//	}
+//	/* Convert to user space */
+//	if (data.inverseTransform != null) {
+//		int rgn = convertRgn(clipping, data.inverseTransform);
+//		OS.CopyRgn(rgn, clipping);
+//		OS.DisposeRgn(rgn);
+//	}
 }
 
 /** 
@@ -2291,8 +2292,8 @@ public void getTransform (Transform transform) {
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAffineTransform cmt = data.transform;
 	if (cmt != null) {
-		float[] m = cmt.transformStruct();
-		transform.setElements(m[0], m[1], m[2], m[3], m[4], m[5]);
+		NSAffineTransformStruct struct = cmt.transformStruct();
+		transform.handle.setTransformStruct(struct);
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
@@ -2572,22 +2573,22 @@ public void setBackgroundPattern(Pattern pattern) {
 }
 
 void setClipping(int clipRgn) {
-	if (clipRgn == 0) {
-		if (data.clipRgn != 0) {
-			OS.DisposeRgn(data.clipRgn);
-			data.clipRgn = 0;
-		}
-		data.clippingTransform = null;
-	} else {
-		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
-		OS.CopyRgn(clipRgn, data.clipRgn);
-		if (data.transform != null) {
-			if (data.clippingTransform == null) data.clippingTransform = new float[6];
-			System.arraycopy(data.transform, 0, data.clippingTransform, 0, data.transform.length);
-		}
-	}
-	data.updateClip = true;
-	setCGClipping();
+//	if (clipRgn == 0) {
+//		if (data.clipRgn != 0) {
+//			OS.DisposeRgn(data.clipRgn);
+//			data.clipRgn = 0;
+//		}
+//		data.clippingTransform = null;
+//	} else {
+//		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
+//		OS.CopyRgn(clipRgn, data.clipRgn);
+//		if (data.transform != null) {
+//			if (data.clippingTransform == null) data.clippingTransform = new float[6];
+//			System.arraycopy(data.transform, 0, data.clippingTransform, 0, data.transform.length);
+//		}
+//	}
+//	data.updateClip = true;
+//	setCGClipping();
 }
 
 /**
@@ -2614,10 +2615,10 @@ public void setClipping(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	int clipRgn = OS.NewRgn();
-	OS.SetRectRgn(clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	setClipping(clipRgn);
-	OS.DisposeRgn(clipRgn);
+//	int clipRgn = OS.NewRgn();
+//	OS.SetRectRgn(clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
+//	setClipping(clipRgn);
+//	OS.DisposeRgn(clipRgn);
 }
 
 /**
@@ -2651,8 +2652,8 @@ public void setClipping(Path path) {
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setClipping(0);
 	if (path != null) {
-		OS.CGContextAddPath(handle, path.handle);
-		OS.CGContextEOClip(handle);
+//		OS.CGContextAddPath(handle, path.handle);
+//		OS.CGContextEOClip(handle);
 	}
 }
 

@@ -32,9 +32,9 @@ public int indentationLevel() {
 	return OS.objc_msgSend(this.id, OS.sel_indentationLevel);
 }
 
-public id initWithTitle(NSString aString, int aSelector, NSString charCode) {
+public NSMenuItem initWithTitle(NSString aString, int aSelector, NSString charCode) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_1action_1keyEquivalent_1, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isAlternate() {

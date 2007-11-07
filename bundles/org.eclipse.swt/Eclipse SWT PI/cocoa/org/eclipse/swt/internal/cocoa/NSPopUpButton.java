@@ -46,9 +46,9 @@ public int indexOfSelectedItem() {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
-public id initWithFrame(NSRect buttonFrame, boolean flag) {
+public NSPopUpButton initWithFrame(NSRect buttonFrame, boolean flag) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_1pullsDown_1, buttonFrame, flag);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertItemWithTitle(NSString title, int index) {

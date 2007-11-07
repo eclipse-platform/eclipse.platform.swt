@@ -32,14 +32,14 @@ public void increaseLengthBy(int extraLength) {
 	OS.objc_msgSend(this.id, OS.sel_increaseLengthBy_1, extraLength);
 }
 
-public id initWithCapacity(int capacity) {
+public NSMutableData initWithCapacity(int capacity) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_1, capacity);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithLength(int length) {
+public NSMutableData initWithLength(int length) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithLength_1, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int mutableBytes() {

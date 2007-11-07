@@ -47,9 +47,9 @@ public void getValues(int vals, int param) {
 	OS.objc_msgSend(this.id, OS.sel_getValues_1forParameter_1, vals, param);
 }
 
-public id initWithFormat(NSOpenGLPixelFormat format, NSOpenGLContext share) {
+public NSOpenGLContext initWithFormat(NSOpenGLPixelFormat format, NSOpenGLContext share) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_1shareContext_1, format != null ? format.id : 0, share != null ? share.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void makeCurrentContext() {

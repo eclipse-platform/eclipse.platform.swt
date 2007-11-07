@@ -53,9 +53,9 @@ public int indexOfItemAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfItemAtPoint_1, point);
 }
 
-public id initAsTearOff() {
+public NSMenuView initAsTearOff() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initAsTearOff);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSRect innerRect() {

@@ -14,9 +14,9 @@ public void evaluate() {
 	OS.objc_msgSend(this.id, OS.sel_evaluate);
 }
 
-public id initWithPosition(int position, NSScriptObjectSpecifier specifier) {
+public NSPositionalSpecifier initWithPosition(int position, NSScriptObjectSpecifier specifier) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithPosition_1objectSpecifier_1, position, specifier != null ? specifier.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public id insertionContainer() {

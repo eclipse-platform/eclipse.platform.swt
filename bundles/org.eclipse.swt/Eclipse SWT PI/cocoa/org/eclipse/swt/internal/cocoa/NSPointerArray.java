@@ -27,9 +27,9 @@ public int count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
-public id initWithOptions(int options) {
+public NSPointerArray initWithOptions(int options) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithOptions_1, options);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public id initWithPointerFunctions(NSPointerFunctions functions) {

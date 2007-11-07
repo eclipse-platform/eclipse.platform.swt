@@ -128,29 +128,29 @@ public boolean hasUndoManager() {
 	return OS.objc_msgSend(this.id, OS.sel_hasUndoManager) != 0;
 }
 
-public id initForURL(NSURL absoluteDocumentURL, NSURL absoluteDocumentContentsURL, NSString typeName, int outError) {
+public NSDocument initForURL(NSURL absoluteDocumentURL, NSURL absoluteDocumentContentsURL, NSString typeName, int outError) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initForURL_1withContentsOfURL_1ofType_1error_1, absoluteDocumentURL != null ? absoluteDocumentURL.id : 0, absoluteDocumentContentsURL != null ? absoluteDocumentContentsURL.id : 0, typeName != null ? typeName.id : 0, outError);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfFile(NSString absolutePath, NSString typeName) {
+public NSDocument initWithContentsOfFile(NSString absolutePath, NSString typeName) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_1ofType_1, absolutePath != null ? absolutePath.id : 0, typeName != null ? typeName.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_ofType_(NSURL absoluteURL, NSString typeName) {
+public NSDocument initWithContentsOfURL_ofType_(NSURL absoluteURL, NSString typeName) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1ofType_1, absoluteURL != null ? absoluteURL.id : 0, typeName != null ? typeName.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithContentsOfURL_ofType_error_(NSURL absoluteURL, NSString typeName, int outError) {
+public NSDocument initWithContentsOfURL_ofType_error_(NSURL absoluteURL, NSString typeName, int outError) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfURL_1ofType_1error_1, absoluteURL != null ? absoluteURL.id : 0, typeName != null ? typeName.id : 0, outError);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithType(NSString typeName, int outError) {
+public NSDocument initWithType(NSString typeName, int outError) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithType_1error_1, typeName != null ? typeName.id : 0, outError);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isDocumentEdited() {

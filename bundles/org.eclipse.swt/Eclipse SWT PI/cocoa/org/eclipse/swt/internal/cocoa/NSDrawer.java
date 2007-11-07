@@ -38,9 +38,9 @@ public int edge() {
 	return OS.objc_msgSend(this.id, OS.sel_edge);
 }
 
-public id initWithContentSize(NSSize contentSize, int edge) {
+public NSDrawer initWithContentSize(NSSize contentSize, int edge) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentSize_1preferredEdge_1, contentSize, edge);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public float leadingOffset() {

@@ -26,9 +26,9 @@ public static id imageRepWithData(NSData pictData) {
 	return result != 0 ? new id(result) : null;
 }
 
-public id initWithData(NSData pictData) {
+public NSPICTImageRep initWithData(NSData pictData) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_1, pictData != null ? pictData.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 }

@@ -108,20 +108,20 @@ public Path (Device device) {
  */
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	float[] cmt = new float[6];
-	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
-	if (arcAngle < 0) {
-		float angle = -(startAngle + arcAngle) * (float)Compatibility.PI / 180;
-		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
-		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -startAngle * (float)Compatibility.PI / 180, true);
-	} else {
-		float angle = -startAngle * (float)Compatibility.PI / 180;
-		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
-		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
-	}
-	moved = true;
-	closed = false;
-	if (Math.abs(arcAngle) >= 360) close();
+//	float[] cmt = new float[6];
+//	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
+//	if (arcAngle < 0) {
+//		float angle = -(startAngle + arcAngle) * (float)Compatibility.PI / 180;
+//		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
+//		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -startAngle * (float)Compatibility.PI / 180, true);
+//	} else {
+//		float angle = -startAngle * (float)Compatibility.PI / 180;
+//		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
+//		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+//	}
+//	moved = true;
+//	closed = false;
+//	if (Math.abs(arcAngle) >= 360) close();
 }
 
 /**
@@ -187,76 +187,76 @@ public void addString(String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int length = string.length();
-	if (length == 0) return;
-	moved = false;
-	closed = true;
-	
-	Callback newPathCallback = new Callback(this, "newPathProc", 1);
-	int newPathProc = newPathCallback.getAddress();
-	if (newPathProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	Callback lineCallback = new Callback(this, "lineProc", 3);
-	int lineProc = lineCallback.getAddress();
-	if (lineProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	Callback curveCallback = new Callback(this, "curveProc", 4);
-	int curveProc = curveCallback.getAddress();
-	if (curveProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	Callback closePathCallback = new Callback(this, "closePathProc", 1);
-	int closePathProc = closePathCallback.getAddress();
-	if (closePathProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-
-	int style = font.atsuiStyle;
-	if (style == 0) style = font.createStyle();
-	if (style == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int[] buffer = new int[1];
-	OS.ATSUCreateTextLayout(buffer);
-	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int layout = buffer[0];
-	char[] chars = new char[length];
-	string.getChars(0, length, chars, 0);
-	int textPtr = OS.NewPtr(length * 2);
-	if (textPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memmove(textPtr, chars, length * 2);
-	OS.ATSUSetTextPointerLocation(layout, textPtr, 0, length, length);
-	OS.ATSUSetRunStyle(layout, style, 0, length);
-	OS.ATSUSetTransientFontMatching(layout, true);
-	int[] ascent = new int[1], descent = new int[1];
-	OS.ATSUGetUnjustifiedBounds(layout, 0, length, null, null, ascent, descent);
-	y += OS.Fix2X(ascent[0]);
-	
-	int[] layoutRecords = new int[1], numRecords = new int[1], deltaYs = new int[1], numDeltaYs = new int[1];
-	OS.ATSUDirectGetLayoutDataArrayPtrFromTextLayout (layout, 0, OS.kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, layoutRecords, numRecords); 
-	OS.ATSUDirectGetLayoutDataArrayPtrFromTextLayout (layout, 0, OS.kATSUDirectDataBaselineDeltaFixedArray, deltaYs, numDeltaYs); 
-	int[] deltaY = new int[1], status = new int[1];
-	ATSLayoutRecord record = new ATSLayoutRecord();
-	for (int i = 0; i < numRecords[0]; i++) {
-		OS.memmove(record, layoutRecords[0] + (i * ATSLayoutRecord.sizeof), ATSLayoutRecord.sizeof);
-		originX = x + (float)OS.Fix2X(record.realPos);
-		if (deltaYs[0] == 0) {
-			originY = y;
-		} else {
-			OS.memmove(deltaY, deltaYs[0] + (i * 4), 4);
-			originY = y - (float)OS.Fix2X(deltaY[0]);
-		}
-		first = true; 
-		if (record.glyphID != OS.kATSDeletedGlyphcode) {
-			OS.ATSUGlyphGetQuadraticPaths (style, record.glyphID, newPathProc, lineProc, curveProc, closePathProc, 0, status);
-		}
-	}
-	OS.CGPathCloseSubpath(handle); 
-	if (deltaYs[0] != 0) {
-		OS.ATSUDirectReleaseLayoutDataArrayPtr(0, OS.kATSUDirectDataBaselineDeltaFixedArray, deltaYs[0]);
-	}
-	OS.ATSUDirectReleaseLayoutDataArrayPtr(0, OS.kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, layoutRecords[0]);
-
-	if (style != font.atsuiStyle) OS.ATSUDisposeStyle(style);
-	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
-	if (textPtr != 0) OS.DisposePtr(textPtr);
-	
-	newPathCallback.dispose();
-	lineCallback.dispose();
-	curveCallback.dispose();
-	closePathCallback.dispose();
+//	int length = string.length();
+//	if (length == 0) return;
+//	moved = false;
+//	closed = true;
+//	
+//	Callback newPathCallback = new Callback(this, "newPathProc", 1);
+//	int newPathProc = newPathCallback.getAddress();
+//	if (newPathProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//	Callback lineCallback = new Callback(this, "lineProc", 3);
+//	int lineProc = lineCallback.getAddress();
+//	if (lineProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//	Callback curveCallback = new Callback(this, "curveProc", 4);
+//	int curveProc = curveCallback.getAddress();
+//	if (curveProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//	Callback closePathCallback = new Callback(this, "closePathProc", 1);
+//	int closePathProc = closePathCallback.getAddress();
+//	if (closePathProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//
+//	int style = font.atsuiStyle;
+//	if (style == 0) style = font.createStyle();
+//	if (style == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	int[] buffer = new int[1];
+//	OS.ATSUCreateTextLayout(buffer);
+//	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	int layout = buffer[0];
+//	char[] chars = new char[length];
+//	string.getChars(0, length, chars, 0);
+//	int textPtr = OS.NewPtr(length * 2);
+//	if (textPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	OS.memmove(textPtr, chars, length * 2);
+//	OS.ATSUSetTextPointerLocation(layout, textPtr, 0, length, length);
+//	OS.ATSUSetRunStyle(layout, style, 0, length);
+//	OS.ATSUSetTransientFontMatching(layout, true);
+//	int[] ascent = new int[1], descent = new int[1];
+//	OS.ATSUGetUnjustifiedBounds(layout, 0, length, null, null, ascent, descent);
+//	y += OS.Fix2X(ascent[0]);
+//	
+//	int[] layoutRecords = new int[1], numRecords = new int[1], deltaYs = new int[1], numDeltaYs = new int[1];
+//	OS.ATSUDirectGetLayoutDataArrayPtrFromTextLayout (layout, 0, OS.kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, layoutRecords, numRecords); 
+//	OS.ATSUDirectGetLayoutDataArrayPtrFromTextLayout (layout, 0, OS.kATSUDirectDataBaselineDeltaFixedArray, deltaYs, numDeltaYs); 
+//	int[] deltaY = new int[1], status = new int[1];
+//	ATSLayoutRecord record = new ATSLayoutRecord();
+//	for (int i = 0; i < numRecords[0]; i++) {
+//		OS.memmove(record, layoutRecords[0] + (i * ATSLayoutRecord.sizeof), ATSLayoutRecord.sizeof);
+//		originX = x + (float)OS.Fix2X(record.realPos);
+//		if (deltaYs[0] == 0) {
+//			originY = y;
+//		} else {
+//			OS.memmove(deltaY, deltaYs[0] + (i * 4), 4);
+//			originY = y - (float)OS.Fix2X(deltaY[0]);
+//		}
+//		first = true; 
+//		if (record.glyphID != OS.kATSDeletedGlyphcode) {
+//			OS.ATSUGlyphGetQuadraticPaths (style, record.glyphID, newPathProc, lineProc, curveProc, closePathProc, 0, status);
+//		}
+//	}
+//	OS.CGPathCloseSubpath(handle); 
+//	if (deltaYs[0] != 0) {
+//		OS.ATSUDirectReleaseLayoutDataArrayPtr(0, OS.kATSUDirectDataBaselineDeltaFixedArray, deltaYs[0]);
+//	}
+//	OS.ATSUDirectReleaseLayoutDataArrayPtr(0, OS.kATSUDirectDataLayoutRecordATSLayoutRecordCurrent, layoutRecords[0]);
+//
+//	if (style != font.atsuiStyle) OS.ATSUDisposeStyle(style);
+//	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
+//	if (textPtr != 0) OS.DisposePtr(textPtr);
+//	
+//	newPathCallback.dispose();
+//	lineCallback.dispose();
+//	curveCallback.dispose();
+//	closePathCallback.dispose();
 }
 
 /**
@@ -301,47 +301,48 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
-	//TODO - see windows
-	int pixel = OS.NewPtr(4);
-	if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int[] buffer = new int[]{0xFFFFFFFF};
-	OS.memmove(pixel, buffer, 4);
-	int context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
-	if (context == 0) {
-		OS.DisposePtr(pixel);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	GCData data = gc.data;
-	int capStyle = 0;
-	switch (data.lineCap) {
-		case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
-		case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
-		case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
-	}
-	OS.CGContextSetLineCap(context, capStyle);
-	int joinStyle = 0;
-	switch (data.lineJoin) {
-		case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
-		case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
-		case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
-	}
-	OS.CGContextSetLineJoin(context, joinStyle);
-	OS.CGContextSetLineWidth(context, data.lineWidth);
-	OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
-	OS.CGContextAddPath(context, handle);
-	if (outline) {
-		OS.CGContextStrokePath(context);
-	} else {
-		if (data.fillRule == SWT.FILL_WINDING) {
-			OS.CGContextFillPath(context);
-		} else {
-			OS.CGContextEOFillPath(context);
-		}
-	}
-	OS.CGContextRelease(context);
-	OS.memmove(buffer, pixel, 4);
-	OS.DisposePtr(pixel);	
-	return buffer[0] != 0xFFFFFFFF;
+//	//TODO - see windows
+//	int pixel = OS.NewPtr(4);
+//	if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	int[] buffer = new int[]{0xFFFFFFFF};
+//	OS.memmove(pixel, buffer, 4);
+//	int context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
+//	if (context == 0) {
+//		OS.DisposePtr(pixel);
+//		SWT.error(SWT.ERROR_NO_HANDLES);
+//	}
+//	GCData data = gc.data;
+//	int capStyle = 0;
+//	switch (data.lineCap) {
+//		case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
+//		case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
+//		case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
+//	}
+//	OS.CGContextSetLineCap(context, capStyle);
+//	int joinStyle = 0;
+//	switch (data.lineJoin) {
+//		case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
+//		case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
+//		case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
+//	}
+//	OS.CGContextSetLineJoin(context, joinStyle);
+//	OS.CGContextSetLineWidth(context, data.lineWidth);
+//	OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
+//	OS.CGContextAddPath(context, handle);
+//	if (outline) {
+//		OS.CGContextStrokePath(context);
+//	} else {
+//		if (data.fillRule == SWT.FILL_WINDING) {
+//			OS.CGContextFillPath(context);
+//		} else {
+//			OS.CGContextEOFillPath(context);
+//		}
+//	}
+//	OS.CGContextRelease(context);
+//	OS.memmove(buffer, pixel, 4);
+//	OS.DisposePtr(pixel);	
+//	return buffer[0] != 0xFFFFFFFF;
+	return false;
 }
 
 /**
@@ -450,23 +451,24 @@ public PathData getPathData() {
 	Callback callback = new Callback(this, "applierFunc", 2);
 	int proc = callback.getAddress();
 	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	count = typeCount = 0;
-	element = new CGPathElement();
-	OS.CGPathApply(handle, 0, proc);
-	types = new byte[typeCount];
-	points = new float[count];
-	point = new float[6];
-	count = typeCount = 0;
-	OS.CGPathApply(handle, 0, proc);
-	callback.dispose();
-	PathData result = new PathData();
-	result.types = types;
-	result.points = points;
-	element = null;
-	types = null;
-	points = null;
-	point = null;
-	return result;
+//	count = typeCount = 0;
+//	element = new CGPathElement();
+//	OS.CGPathApply(handle, 0, proc);
+//	types = new byte[typeCount];
+//	points = new float[count];
+//	point = new float[6];
+//	count = typeCount = 0;
+//	OS.CGPathApply(handle, 0, proc);
+//	callback.dispose();
+//	PathData result = new PathData();
+//	result.types = types;
+//	result.points = points;
+//	element = null;
+//	types = null;
+//	points = null;
+//	point = null;
+//	return result;
+	return null;
 }
 
 /**

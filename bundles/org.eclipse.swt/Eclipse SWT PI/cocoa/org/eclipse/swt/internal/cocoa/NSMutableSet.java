@@ -22,9 +22,9 @@ public void filterUsingPredicate(NSPredicate predicate) {
 	OS.objc_msgSend(this.id, OS.sel_filterUsingPredicate_1, predicate != null ? predicate.id : 0);
 }
 
-public id initWithCapacity(int numItems) {
+public NSMutableSet initWithCapacity(int numItems) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_1, numItems);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void intersectSet(NSSet otherSet) {

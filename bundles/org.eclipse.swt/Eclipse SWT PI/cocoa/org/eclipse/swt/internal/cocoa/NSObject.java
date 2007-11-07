@@ -484,9 +484,9 @@ public NSObject init() {
 	return result != 0 ? this : null;
 }
 
-public id initWithCoder(NSCoder aDecoder) {
+public NSObject initWithCoder(NSCoder aDecoder) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCoder_1, aDecoder != null ? aDecoder.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public static void initialize() {

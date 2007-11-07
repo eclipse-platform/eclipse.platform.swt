@@ -19,9 +19,9 @@ public NSCharacterSet charactersToBeSkipped() {
 	return result != 0 ? new NSCharacterSet(result) : null;
 }
 
-public id initWithString(NSString string) {
+public NSScanner initWithString(NSString string) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1, string != null ? string.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isAtEnd() {

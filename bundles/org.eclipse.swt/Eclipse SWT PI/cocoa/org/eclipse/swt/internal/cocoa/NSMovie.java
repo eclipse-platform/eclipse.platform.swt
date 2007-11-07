@@ -23,19 +23,19 @@ public static boolean canInitWithPasteboard(NSPasteboard pasteboard) {
 	return OS.objc_msgSend(OS.class_NSMovie, OS.sel_canInitWithPasteboard_1, pasteboard != null ? pasteboard.id : 0) != 0;
 }
 
-public id initWithMovie(int movie) {
+public NSMovie initWithMovie(int movie) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithMovie_1, movie);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithPasteboard(NSPasteboard pasteboard) {
+public NSMovie initWithPasteboard(NSPasteboard pasteboard) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithPasteboard_1, pasteboard != null ? pasteboard.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithURL(NSURL url, boolean byRef) {
+public NSMovie initWithURL(NSURL url, boolean byRef) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithURL_1byReference_1, url != null ? url.id : 0, byRef);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public static NSArray movieUnfilteredFileTypes() {

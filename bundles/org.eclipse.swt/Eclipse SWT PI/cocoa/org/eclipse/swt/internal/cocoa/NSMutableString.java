@@ -22,9 +22,9 @@ public void deleteCharactersInRange(NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_deleteCharactersInRange_1, range);
 }
 
-public id initWithCapacity(int capacity) {
+public NSMutableString initWithCapacity(int capacity) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_1, capacity);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertString(NSString aString, int loc) {

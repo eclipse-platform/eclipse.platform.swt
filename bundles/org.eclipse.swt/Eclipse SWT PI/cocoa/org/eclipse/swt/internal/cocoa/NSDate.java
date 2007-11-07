@@ -89,24 +89,24 @@ public NSDate earlierDate(NSDate anotherDate) {
 	return result == this.id ? this : (result != 0 ? new NSDate(result) : null);
 }
 
-public id initWithString(NSString description) {
+public NSDate initWithString(NSString description) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithString_1, description != null ? description.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithTimeInterval(double secsToBeAdded, NSDate anotherDate) {
+public NSDate initWithTimeInterval(double secsToBeAdded, NSDate anotherDate) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTimeInterval_1sinceDate_1, secsToBeAdded, anotherDate != null ? anotherDate.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithTimeIntervalSinceNow(double secsToBeAddedToNow) {
+public NSDate initWithTimeIntervalSinceNow(double secsToBeAddedToNow) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTimeIntervalSinceNow_1, secsToBeAddedToNow);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
-public id initWithTimeIntervalSinceReferenceDate(double secsToBeAdded) {
+public NSDate initWithTimeIntervalSinceReferenceDate(double secsToBeAdded) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTimeIntervalSinceReferenceDate_1, secsToBeAdded);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public boolean isEqualToDate(NSDate otherDate) {

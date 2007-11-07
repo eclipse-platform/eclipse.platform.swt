@@ -62,9 +62,9 @@ public int indexOfSelectedItem() {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
-public id initTextCell(NSString stringValue, boolean pullDown) {
+public NSPopUpButtonCell initTextCell(NSString stringValue, boolean pullDown) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initTextCell_1pullsDown_1, stringValue != null ? stringValue.id : 0, pullDown);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public void insertItemWithTitle(NSString title, int index) {

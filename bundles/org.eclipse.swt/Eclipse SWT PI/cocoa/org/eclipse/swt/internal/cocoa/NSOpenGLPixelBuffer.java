@@ -10,9 +10,9 @@ public NSOpenGLPixelBuffer(int id) {
 	super(id);
 }
 
-public id initWithTextureTarget(int target, int format, int maxLevel, int pixelsWide, int pixelsHigh) {
+public NSOpenGLPixelBuffer initWithTextureTarget(int target, int format, int maxLevel, int pixelsWide, int pixelsHigh) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTextureTarget_1textureInternalFormat_1textureMaxMipMapLevel_1pixelsWide_1pixelsHigh_1, target, format, maxLevel, pixelsWide, pixelsHigh);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int pixelsHigh() {

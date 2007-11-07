@@ -19,9 +19,9 @@ public static NSOpenGLPixelFormat defaultPixelFormat() {
 	return result != 0 ? new NSOpenGLPixelFormat(result) : null;
 }
 
-public id initWithFrame(NSRect frameRect, NSOpenGLPixelFormat format) {
+public NSOpenGLView initWithFrame(NSRect frameRect, NSOpenGLPixelFormat format) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_1pixelFormat_1, frameRect, format != null ? format.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public NSOpenGLContext openGLContext() {

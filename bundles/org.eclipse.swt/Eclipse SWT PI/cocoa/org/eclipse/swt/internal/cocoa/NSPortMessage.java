@@ -15,9 +15,9 @@ public NSArray components() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public id initWithSendPort(NSPort sendPort, NSPort replyPort, NSArray components) {
+public NSPortMessage initWithSendPort(NSPort sendPort, NSPort replyPort, NSArray components) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithSendPort_1receivePort_1components_1, sendPort != null ? sendPort.id : 0, replyPort != null ? replyPort.id : 0, components != null ? components.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public int msgid() {

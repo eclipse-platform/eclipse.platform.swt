@@ -10,9 +10,9 @@ public NSPointerFunctions(int id) {
 	super(id);
 }
 
-public id initWithOptions(int options) {
+public NSPointerFunctions initWithOptions(int options) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithOptions_1, options);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? this : null;
 }
 
 public static id pointerFunctionsWithOptions(int options) {
