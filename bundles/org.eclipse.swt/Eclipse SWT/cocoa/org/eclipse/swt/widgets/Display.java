@@ -1531,6 +1531,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
+	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTabView";
@@ -2664,6 +2665,8 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		return widget.numberOfRowsInTableView(arg0);
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_1) {
 		widget.comboBoxSelectionDidChange(arg0);
+	} else if (sel == OS.sel_tableViewSelectionDidChange_1) {
+		widget.tableViewSelectionDidChange(arg0);
 	}
 	return 0;
 }

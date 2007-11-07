@@ -1074,6 +1074,9 @@ boolean setKeyState (Event event, int type, int theEvent) {
 	return false;
 }
 
+void tableViewSelectionDidChange (int aNotification) {
+}
+
 int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
 	return 0;
 }

@@ -33,7 +33,7 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	NSTableColumn column;
+	NSTableColumn nsColumn;
 	boolean resizable;
 	String toolTipText;
 
@@ -342,13 +342,13 @@ public void pack () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (column != null) column.release();
+	if (nsColumn != null) nsColumn.release();
 	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	column = null;
+	nsColumn = null;
 	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}
@@ -535,7 +535,7 @@ public void setToolTipText (String string) {
 public void setWidth (int width) {
 	checkWidget ();
 	if (width < 0) return;
-	column.setWidth (width);
+	nsColumn.setWidth (width);
 }
 
 }
