@@ -280,6 +280,9 @@ protected void checkWidget () {
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
+void comboBoxSelectionDidChange(int notification) {
+}
+
 void createHandle () {
 }
 

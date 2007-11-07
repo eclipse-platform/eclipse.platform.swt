@@ -1541,6 +1541,19 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
+	
+	className = "SWTPopUpButton";
+	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTComboBox";
+	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
@@ -2649,6 +2662,8 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.keyDown(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
 		return widget.numberOfRowsInTableView(arg0);
+	} else if (sel == OS.sel_comboBoxSelectionDidChange_1) {
+		widget.comboBoxSelectionDidChange(arg0);
 	}
 	return 0;
 }

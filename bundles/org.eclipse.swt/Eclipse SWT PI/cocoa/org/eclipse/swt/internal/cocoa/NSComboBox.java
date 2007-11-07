@@ -61,9 +61,9 @@ public float itemHeight() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_itemHeight);
 }
 
-public id itemObjectValueAtIndex(int index) {
+public int itemObjectValueAtIndex(int index) {
 	int result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_1, index);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? result : 0;
 }
 
 public void noteNumberOfItemsChanged() {
