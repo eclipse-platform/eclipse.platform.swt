@@ -34,7 +34,7 @@ public int firstIndex() {
 	return OS.objc_msgSend(this.id, OS.sel_firstIndex);
 }
 
-public int getIndexes(int indexBuffer, int bufferSize, int range) {
+public int getIndexes(int [] indexBuffer, int bufferSize, int range) {
 	return OS.objc_msgSend(this.id, OS.sel_getIndexes_1maxCount_1inIndexRange_1, indexBuffer, bufferSize, range);
 }
 

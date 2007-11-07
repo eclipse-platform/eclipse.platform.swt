@@ -208,6 +208,7 @@ typedef enum {
 	objc_1msgSend__IIZZ_FUNC,
 	objc_1msgSend__II_3C_FUNC,
 	objc_1msgSend__II_3CI_FUNC,
+	objc_1msgSend__II_3III_FUNC,
 	objc_1msgSend_1fpret__II_FUNC,
 	objc_1msgSend_1fpret__IID_FUNC,
 	objc_1msgSend_1fpret__IIF_FUNC,

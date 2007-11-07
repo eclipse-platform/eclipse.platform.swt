@@ -2794,6 +2794,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__II_3III
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3III_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jint *, jint, jint))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3, arg4);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3III_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1fpret__II
 JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

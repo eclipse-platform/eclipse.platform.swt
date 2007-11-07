@@ -9681,6 +9681,7 @@ public static final native int NSBitsPerPixelFromDepth(int depth);
 //public static final native int NXReadNSObjectFromCoder(int decoder);
 
 /** Sends */
+public static final native int objc_msgSend(int id, int sel, int [] arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int id, int sel, NSPoint arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int id, int sel, NSRect arg0, NSRange arg1, NSRect arg2);
 public static final native int objc_msgSend(int id, int sel, double arg0, int arg1);
