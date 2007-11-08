@@ -104,8 +104,10 @@ public static Frame new_Frame(final Composite parent) {
 		} else {
 			clazz = Class.forName(className);
 		}
+	} catch (ClassNotFoundException cne) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne);		
 	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e, " [need SWT compatibility pack from Apple]");		
+		SWT.error (SWT.ERROR_UNSPECIFIED , e, " [Error while starting AWT]");		
 	}
 
 	Object value = null;
