@@ -28,7 +28,7 @@ case $OS in
 		case $MODEL in		
 		*) 
 			if [ "${JAVA_HOME}" = "" ]; then
-				JAVA_HOME=/bluebird/teamswt/swt-builddir/aixj9
+				echo "Please set JAVA_HOME to point at a JRE."
 			fi
 			if [ "${MOTIF_HOME}" = "" ]; then
 				MOTIF_HOME=/usr
@@ -43,20 +43,30 @@ case $OS in
 		;;
 	"Linux")
 		case $MODEL in
-		*) 
+		*)
 			if [ "${JAVA_HOME}" = "" ]; then
-				JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
+				echo "Please set JAVA_HOME to point at a JRE."
 			fi
 			if [ "${MOTIF_HOME}" = "" ]; then
-				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
+				echo "Please set MOTIF_HOME to point at a Motif dev path."
 			fi
-			if [ "${MOZILLA_SDK}" = "" ]; then
-				MOZILLA_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
-				MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
-				MOZILLA_LIBS="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
-				XULRUNNER_SDK=/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk
-				XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
-				XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
+			if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
+				if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
+					MOZILLA_INCLUDES=`pkg-config --cflags mozilla-xpcom`
+					MOZILLA_LIBS=`pkg-config --libs mozilla-xpcom`
+					export MOZILLA_INCLUDES
+					export MOZILLA_LIBS
+					MAKE_MOZILLA=make_mozilla
+				elif [ x`pkg-config --exists firefox-xpcom && echo YES` = "xYES" ]; then
+					MOZILLA_INCLUDES=`pkg-config --cflags firefox-xpcom`
+					MOZILLA_LIBS=`pkg-config --libs firefox-xpcom`
+					export MOZILLA_INCLUDES
+					export MOZILLA_LIBS
+					MAKE_MOZILLA=make_mozilla
+				else
+					echo "Mozilla/XPCOM or Firefox/XPCOM libraries not found:"
+					echo "    *** Mozilla embedding support will not be compiled."
+				fi
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
@@ -86,7 +96,7 @@ case $OS in
 		case $MODEL in
 			"ia64")
 				if [ "${JAVA_HOME}" = "" ]; then
-					JAVA_HOME=/opt/jdk14101
+					echo "Please set JAVA_HOME to point at a JRE."
 				fi
 				if [ "${MOTIF_HOME}" = "" ]; then
 					MOTIF_HOME=/usr
@@ -100,7 +110,7 @@ case $OS in
 				;;
 			*)
 				if [ "${JAVA_HOME}" = "" ]; then
-					JAVA_HOME=/opt/jdk14101
+					echo "Please set JAVA_HOME to point at a JRE."
 				fi
 				if [ "${MOTIF_HOME}" = "" ]; then
 					MOTIF_HOME=/usr
