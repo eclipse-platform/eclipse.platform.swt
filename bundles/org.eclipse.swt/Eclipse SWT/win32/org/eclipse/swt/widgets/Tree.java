@@ -4039,7 +4039,7 @@ public void setLinesVisible (boolean show) {
 int /*long*/ scrolledHandle () {
 	if (hwndHeader == 0) return handle;
 	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	return count == 0 ? handle : hwndParent;
+	return count == 0 && scrollWidth == 0 ? handle : hwndParent;
 }
 
 void select (int /*long*/ hItem, TVITEM tvItem) {
