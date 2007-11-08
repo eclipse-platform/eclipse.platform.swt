@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.GregorianCalendar;
+
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -543,8 +545,10 @@ public int getMonth () {
 	return systime.wMonth - 1;
 }
 
-String getNameText () {
-	return "DateTime";
+String getNameText() {
+	GregorianCalendar calendar = new GregorianCalendar(getYear(),
+				getMonth(), getDay(), getHours(), getMinutes(), getSeconds());
+	return calendar.getTime().toString();
 }
 
 /**

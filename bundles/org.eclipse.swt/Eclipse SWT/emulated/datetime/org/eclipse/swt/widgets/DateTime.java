@@ -508,6 +508,10 @@ public int getMonth() {
 	return calendar.get(Calendar.MONTH);
 }
 
+String getNameText() {
+	return calendar.getTime().toString();
+}
+
 /**
  * Returns the receiver's seconds.
  * <p>
