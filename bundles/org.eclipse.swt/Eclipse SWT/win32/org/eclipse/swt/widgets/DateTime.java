@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import java.util.GregorianCalendar;
+import java.util.*;
 
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -546,9 +546,10 @@ public int getMonth () {
 }
 
 String getNameText() {
-	GregorianCalendar calendar = new GregorianCalendar(getYear(),
-				getMonth(), getDay(), getHours(), getMinutes(), getSeconds());
-	return calendar.getTime().toString();
+	Calendar cal = Calendar.getInstance();
+	cal.set(getYear(), getMonth(), getDay(), 
+			getHours(), getMinutes(), getSeconds());
+	return cal.getTime().toString();
 }
 
 /**
