@@ -216,6 +216,12 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 			if (length > 0) {
 				buffer = new TCHAR (codePage, length / TCHAR.sizeof);
 				OS.ImmGetCompositionString (hIMC, OS.GCS_RESULTSTR, buffer, length);
+				if (startOffset == -1) {
+					Event event = new Event ();
+					event.detail = SWT.COMPOSITION_SELECTION;
+					sendEvent (SWT.ImeComposition, event);
+					startOffset = event.start;
+				}
 				Event event = new Event ();
 				event.detail = SWT.COMPOSITION_CHANGED;
 				event.start = startOffset;
