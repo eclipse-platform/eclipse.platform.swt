@@ -535,11 +535,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
-	width += border * 2;
-	height += border * 2;
+//	if (wHint != SWT.DEFAULT) width = wHint;
+//	if (hHint != SWT.DEFAULT) height = hHint;
+//	int border = getBorderWidth ();
+//	width += border * 2;
+//	height += border * 2;
+//	return new Point (width, height);
+	if (topView() instanceof NSControl) {
+		NSRect oldRect = topView().frame();
+		((NSControl)topView()).sizeToFit();
+		NSRect newRect = topView().frame();
+		topView().setFrame (oldRect);
+		return new Point ((int)newRect.width, (int)newRect.height);
+	}
 	return new Point (width, height);
 }
 
