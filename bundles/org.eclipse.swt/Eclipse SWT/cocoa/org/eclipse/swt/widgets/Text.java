@@ -281,7 +281,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		NSTextField widget = (NSTextField)view;
 		NSRect oldRect = widget.frame();
 		widget.sizeToFit();
-		NSRect newRect = topView().frame();
+		NSRect newRect = widget.frame();
 		widget.setFrame (oldRect);
 		width = (int)newRect.width;
 		height = (int)newRect.height;
@@ -289,7 +289,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		NSTextView widget = (NSTextView)view;
 		NSRect oldRect = widget.frame();
 		widget.sizeToFit();
-		NSRect newRect = topView().frame();
+		NSRect newRect = widget.frame();
 		widget.setFrame (oldRect);
 		width = (int)newRect.width;
 		height = (int)newRect.height;

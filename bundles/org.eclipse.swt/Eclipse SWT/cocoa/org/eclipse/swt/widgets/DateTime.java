@@ -126,19 +126,13 @@ public void addSelectionListener (SelectionListener listener) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
-//	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-//		if ((style & SWT.CALENDAR) != 0) {
-//			Point cellSize = getCellSize(null);
-//			Point buttonSize = monthDown.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
-//			width = cellSize.x * 7;
-//			height = cellSize.y * 7 + Math.max(cellSize.y, buttonSize.y);
-//		} else {
-//			Rect rect = new Rect ();
-//			OS.GetBestControlRect (handle, rect, null);
-//			width = rect.right - rect.left;
-//			height = rect.bottom - rect.top;
-//		}
-//	}
+	NSControl widget = (NSControl)view;
+	NSRect oldRect = widget.frame();
+	widget.sizeToFit();
+	NSRect newRect = widget.frame();
+	widget.setFrame (oldRect);
+	width = (int)newRect.width;
+	height = (int)newRect.height;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;

@@ -688,7 +688,8 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 //		OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
 		sendEvent (SWT.Modify);
 	}
-	if (notify) postEvent (SWT.Selection);
+	//TODO post
+	if (notify) sendEvent (SWT.Selection);
 }
 
 /**

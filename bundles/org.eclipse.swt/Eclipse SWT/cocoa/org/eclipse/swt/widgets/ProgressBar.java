@@ -76,13 +76,18 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Point size = super.computeSize(wHint, hHint, changed);
+	NSProgressIndicator widget = (NSProgressIndicator)view;
+	NSRect oldRect = widget.frame();
+	widget.sizeToFit();
+	NSRect newRect = widget.frame();
+	widget.setFrame (oldRect);
+	int size = (int)newRect.height;
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		height = size.x;
+		height = size;
 		width = height * 10;
 	} else {
-		width = size.y;
+		width = size;
 		height = width * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -91,10 +96,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	NSProgressIndicator widget = (NSProgressIndicator)new NSProgressIndicator().alloc();
-	widget = (NSProgressIndicator)widget.initWithFrame(new NSRect());
+	SWTProgressIndicator widget = (SWTProgressIndicator)new SWTProgressIndicator().alloc();
+	widget.initWithFrame(new NSRect());
+	widget.setUsesThreadedAnimation(false);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
 	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
+	widget.setTag(jniRef);
 	view = widget;
 	parent.contentView().addSubview_(widget);
 }
