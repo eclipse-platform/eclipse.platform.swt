@@ -714,6 +714,10 @@ int getMininumHeight () {
 	return getTextHeight ();
 }
 
+String getNameText () {
+	return getText ();
+}
+
 /**
  * Returns the orientation of the receiver.
  *

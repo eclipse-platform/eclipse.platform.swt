@@ -876,6 +876,10 @@ public String [] getItems () {
 	return result;
 }
 
+String getNameText () {
+	return getText ();
+}
+
 /**
  * Returns the orientation of the receiver.
  *
