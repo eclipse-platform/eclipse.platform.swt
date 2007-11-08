@@ -830,7 +830,7 @@ public int getAlpha () {
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		byte [] pbAlpha = new byte [1];
 		if (OS.GetLayeredWindowAttributes (handle, null, pbAlpha, null)) {
-			return pbAlpha [0];
+			return pbAlpha [0] & 0xFF;
 		}
 	}
 	return 0xFF;
@@ -2134,8 +2134,10 @@ LRESULT WM_MOUSEACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	
+	int code = callWindowProc (handle, OS.WM_MOUSEACTIVATE, wParam, lParam);
+	//System.out.println(code);
 	setActiveControl (control);
-	return null;
+	return new LRESULT (code);
 }
 
 LRESULT WM_MOVE (int /*long*/ wParam, int /*long*/ lParam) {
