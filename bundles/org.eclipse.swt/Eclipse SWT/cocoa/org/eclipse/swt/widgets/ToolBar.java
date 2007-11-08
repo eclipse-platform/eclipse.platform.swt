@@ -43,7 +43,6 @@ public class ToolBar extends Composite {
 	int itemCount;
 	ToolItem [] items;
 
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

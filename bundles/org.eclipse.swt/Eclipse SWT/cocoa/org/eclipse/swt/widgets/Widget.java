@@ -551,6 +551,12 @@ void keyDown(int event) {
 void mouseDown(int event) {
 }
 
+void rightMouseDown(int event) {
+}
+
+void mouseUp(int event) {
+}
+
 int numberOfRowsInTableView(int aTableView) {
 	return 0;
 }

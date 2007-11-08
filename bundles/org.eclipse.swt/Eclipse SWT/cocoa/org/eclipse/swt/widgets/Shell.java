@@ -484,13 +484,6 @@ void createWidget () {
 	resizeBounds ();
 }
 
-void deregister () {
-	super.deregister ();
-//	int [] theRoot = new int [1];
-//	OS.GetRootControl (shellHandle, theRoot);
-//	display.removeWidget (theRoot [0]);
-}
-
 void destroyWidget () {
 	Display display = this.display;
 	NSWindow window = this.window;
@@ -770,13 +763,6 @@ public void open () {
 //	if (active) {
 //		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 //	}
-}
-
-void register () {
-	super.register ();
-//	int [] theRoot = new int [1];
-//	OS.GetRootControl (shellHandle, theRoot);
-//	display.addWidget (theRoot [0], this);
 }
 
 void releaseChildren (boolean destroy) {

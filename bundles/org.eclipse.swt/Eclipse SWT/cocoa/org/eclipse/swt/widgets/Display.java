@@ -1558,6 +1558,20 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
+	
+	className = "SWTDatePicker";
+	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
+
+	className = "SWTImageView";
+	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
@@ -2662,6 +2676,10 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {
 		widget.mouseDown(arg0);
+	} else if (sel == OS.sel_rightMouseDown_1) {
+		widget.rightMouseDown(arg0);
+	} else if (sel == OS.sel_mouseUp_1) {
+		widget.mouseUp(arg0);
 	} else if (sel == OS.sel_keyDown_1) {
 		widget.keyDown(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {

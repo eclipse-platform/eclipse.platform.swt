@@ -19,9 +19,9 @@ public int compare(NSDate other) {
 	return OS.objc_msgSend(this.id, OS.sel_compare_1, other != null ? other.id : 0);
 }
 
-public static id date() {
+public static NSDate date() {
 	int result = OS.objc_msgSend(OS.class_NSDate, OS.sel_date);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSDate(result) : null;
 }
 
 public NSCalendarDate dateWithCalendarFormat(NSString format, NSTimeZone aTimeZone) {

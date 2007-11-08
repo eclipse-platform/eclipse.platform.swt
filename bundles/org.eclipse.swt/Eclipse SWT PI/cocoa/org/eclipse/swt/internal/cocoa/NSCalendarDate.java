@@ -10,9 +10,9 @@ public NSCalendarDate(int id) {
 	super(id);
 }
 
-public static id calendarDate() {
+public static NSCalendarDate calendarDate() {
 	int result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_calendarDate);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
 public NSString calendarFormat() {
@@ -35,9 +35,9 @@ public static id static_dateWithString_calendarFormat_locale_(NSString descripti
 	return result != 0 ? new id(result) : null;
 }
 
-public static id dateWithYear(int year, int month, int day, int hour, int minute, int second, NSTimeZone aTimeZone) {
+public static NSCalendarDate dateWithYear(int year, int month, int day, int hour, int minute, int second, NSTimeZone aTimeZone) {
 	int result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_dateWithYear_1month_1day_1hour_1minute_1second_1timeZone_1, year, month, day, hour, minute, second, aTimeZone != null ? aTimeZone.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
 public int dayOfCommonEra() {

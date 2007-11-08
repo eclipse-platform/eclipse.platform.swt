@@ -157,11 +157,6 @@ void createWidget () {
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
 
-void deregister () {
-	super.deregister ();
-//	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
-}
-
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
@@ -224,10 +219,6 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
-void register () {
-	super.register ();
-//	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
-}
 
 void releaseHandle () {
 	super.releaseHandle ();

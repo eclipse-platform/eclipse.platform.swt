@@ -601,17 +601,10 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_WIDGET_FOREGROUND);
 }
 
-void deregister () {
-	super.deregister ();
-	//display.removeWidget (handle);
-}
-
 void destroyWidget () {
-//	int theControl = topHandle ();
+	NSView view = topView ();
+	view.removeFromSuperview ();
 	releaseHandle ();
-//	if (theControl != 0) {
-//		OS.DisposeControl (theControl);
-//	}
 }
 
 /**
@@ -1724,10 +1717,6 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 //	redrawWidget (handle, x, y, width, height, all);
 }
 
-void register () {
-	super.register ();
-//	display.addWidget (handle, this);
-}
 void releaseHandle () {
 	super.releaseHandle ();
 	if (view != null) view.release();
@@ -2278,25 +2267,41 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = 0;
+	NSRect rect = view.frame();
 	if (move && resize) {
-		NSRect rect = new NSRect();
-		rect.x = x;
-		rect.y = y;
-		rect.width = width;
-		rect.height = height;
-		topView().setFrame (rect);
+		if (rect.x != x || rect.y != y) result |= MOVED;
+		if (rect.width != width || rect.height != height) result |= RESIZED;
+		if (result != 0) {
+			rect.x = x;
+			rect.y = y;
+			rect.width = width;
+			rect.height = height;
+			topView().setFrame (rect);
+		}
 	} else if (move) {
-		NSPoint point = new NSPoint();
-		point.x = x;
-		point.y = y;
-		topView().setFrameOrigin(point);
+		if (rect.x != x || rect.y != y) {
+			result |= MOVED;
+			NSPoint point = new NSPoint();
+			point.x = x;
+			point.y = y;
+			topView().setFrameOrigin(point);
+		}
 	} else if (resize) {
-		NSSize size = new NSSize();
-		size.width = width;
-		size.height = height;
-		topView().setFrameSize(size);
+		if (rect.width != width || rect.height != height) {
+			NSSize size = new NSSize();
+			size.width = width;
+			size.height = height;
+			topView().setFrameSize(size);
+		}
 	}
-	return 0;
+	if ((result & MOVED) != 0) {
+		sendEvent(SWT.Move);
+	}
+	if ((result & RESIZED) != 0) {
+		sendEvent(SWT.Resize);
+	}
+	return result;
 }
 
 /**

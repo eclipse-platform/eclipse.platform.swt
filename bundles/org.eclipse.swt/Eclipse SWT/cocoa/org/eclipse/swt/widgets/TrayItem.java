@@ -14,8 +14,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -39,7 +37,8 @@ public class TrayItem extends Item {
 	ToolTip toolTip;
 	String toolTipText;
 	boolean visible = true, highlight;
-	int handle, nsImage, view, jniRef;
+	NSStatusItem item;
+	NSImageView view;
 	
 	static final float BORDER = 8f;
 	
@@ -145,18 +144,18 @@ protected void checkSubclass () {
 }
 
 void createWidget () {
-	int statusBar = Cocoa.objc_msgSend (Cocoa.C_NSStatusBar, Cocoa.S_systemStatusBar);
-	handle = Cocoa.objc_msgSend (statusBar, Cocoa.S_statusItemWithLength, 0f);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	Cocoa.objc_msgSend (handle, Cocoa.S_retain);
-	Cocoa.objc_msgSend (handle, Cocoa.S_setHighlightMode, 1);	
-	jniRef = OS.NewGlobalRef (this);
-	if (jniRef == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	NSStatusBar statusBar = NSStatusBar.systemStatusBar();
+	item = statusBar.statusItemWithLength(0);
+	if (item == null) error (SWT.ERROR_NO_HANDLES);
+	item.retain();
+	item.setHighlightMode(true);	
 	NSRect rect = new NSRect();
-	view = Cocoa.objc_msgSend (Cocoa.C_NSStatusItemImageView, Cocoa.S_alloc);
-	if (view == 0) error (SWT.ERROR_NO_HANDLES);
-	view = Cocoa.objc_msgSend (view, Cocoa.S_initWithProc_frame_user_data, display.trayItemProc, rect, jniRef);
-	Cocoa.objc_msgSend (handle, Cocoa.S_setView, view);
+	view = (NSImageView)new SWTImageView().alloc();
+	if (view == null) error (SWT.ERROR_NO_HANDLES);
+	view.initWithFrame(rect);
+	item.setView(view);
+	createJNIRef();
+	view.setTag(jniRef);
 }
 
 void destroyWidget () {
@@ -165,9 +164,14 @@ void destroyWidget () {
 }
 
 Point getLocation () {
-	NSPoint point = new NSPoint ();
-	Cocoa.objc_msgSend (view, Cocoa.S_getLocation, point);
-	return new Point ((int)point.x, (int)point.y);
+	NSRect rect = view.frame();
+	NSRect windowRect = view.window().frame();
+	NSPoint pt = new NSPoint();
+	pt.x = rect.width / 2;
+	pt.y = rect.height;
+	pt = view.convertPoint_fromView_(pt, null);
+	pt.x += windowRect.x;
+	return new Point ((int)pt.x, (int)pt.y);
 }
 
 /**
@@ -240,17 +244,16 @@ public boolean getVisible () {
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
-	handle = 0;
+	if (item != null) item.release();
+	item = null;
+	if (view != null) view.release();
+	view = null;
 }
 
 void releaseWidget () {
-	int statusBar = Cocoa.objc_msgSend (Cocoa.C_NSStatusBar, Cocoa.S_systemStatusBar);
-	Cocoa.objc_msgSend (statusBar, Cocoa.S_removeStatusItem, handle);
-	Cocoa.objc_msgSend (nsImage, Cocoa.S_release, handle);
-	if (nsImage != 0) Cocoa.objc_msgSend (nsImage, Cocoa.S_release);
-	if (view != 0) Cocoa.objc_msgSend (view, Cocoa.S_release);
-	if (jniRef != 0) OS.DeleteGlobalRef (jniRef);
-	handle = nsImage = view = jniRef = 0;
+	super.releaseWidget ();
+	NSStatusBar statusBar = NSStatusBar.systemStatusBar();
+	statusBar.removeStatusItem(item);
 }
 
 /**
@@ -322,26 +325,9 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
-	if (nsImage != 0) Cocoa.objc_msgSend (nsImage, Cocoa.S_release, nsImage);
-	nsImage = 0;
-	if (image != null) {
-		CGRect rect = new CGRect ();
-		rect.width = OS.CGImageGetWidth (image.handle);
-		rect.height = OS.CGImageGetHeight (image.handle);
-		NSSize size = new NSSize ();
-		size.width = rect.width;
-		size.height =  rect.height;
-		nsImage = Cocoa.objc_msgSend (Cocoa.C_NSImage, Cocoa.S_alloc);
-		nsImage = Cocoa.objc_msgSend (nsImage, Cocoa.S_initWithSize, size);
-	    Cocoa.objc_msgSend (nsImage, Cocoa.S_lockFocus);
-		int imageContext = Cocoa.objc_msgSend (Cocoa.C_NSGraphicsContext, Cocoa.S_currentContext);
-		imageContext = Cocoa.objc_msgSend (imageContext, Cocoa.S_graphicsPort);
-		OS.CGContextDrawImage (imageContext, rect, image.handle);
-	    Cocoa.objc_msgSend (nsImage, Cocoa.S_unlockFocus);
-	}
-	Cocoa.objc_msgSend (view, Cocoa.S_setImage, nsImage);
-	float width = image != null && visible ? OS.CGImageGetWidth (image.handle) + BORDER : 0;
-	Cocoa.objc_msgSend (handle, Cocoa.S_setLength, width);
+	view.setImage(image != null ? image.handle : null);
+	float width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	item.setLength(width);
 }
 
 /**
@@ -383,14 +369,9 @@ public void setToolTipText (String string) {
 }
 
 void _setToolTipText (String string) {
-	int ptr = 0;
-	if (string != null) {
-		char[] chars = new char [string.length ()];
-		string.getChars(0, chars.length, chars, 0);
-		ptr = OS.CFStringCreateWithCharacters (0, chars, chars.length);
-	}
-	Cocoa.objc_msgSend (view, Cocoa.S_setToolTip, ptr);
-	if (ptr != 0) OS.CFRelease (ptr);
+	NSString str = null;
+	if (string != null) str = NSString.stringWith(string);
+	view.setToolTip(str);
 }
 
 /**
@@ -412,8 +393,8 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	float width = image != null && visible ? OS.CGImageGetWidth (image.handle) + BORDER : 0;
-	Cocoa.objc_msgSend (handle, Cocoa.S_setLength, width);
+	float width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	item.setLength(width);
 	if (!visible) sendEvent (SWT.Hide);
 }
 
@@ -421,40 +402,37 @@ void showMenu () {
 	_setToolTipText (null);
 	sendEvent (SWT.MenuDetect);
 	if (isDisposed ()) return;
-	display.runPopups ();
+//	display.runPopups ();
 	if (isDisposed ()) return;
 	_setToolTipText (toolTipText);
 }
 
-int trayItemProc (int target, int userData, int selector, int arg0) {
-	switch (selector) {
-		case 0: {
-			int mask = Cocoa.objc_msgSend (arg0, Cocoa.S_modifierFlags) & Cocoa.NSDeviceIndependentModifierFlagsMask;
-			if (mask == Cocoa.NSControlKeyMask) {
-				showMenu ();
-			} else {
-				highlight = true;
-				Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
-				int clickCount = Cocoa.objc_msgSend (arg0, Cocoa.S_clickCount);
-				postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
-			}
-			break;
-		}
-		case 1: {
-			highlight = false;
-			Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
-			break;
-		}
-		case 2: {
-			showMenu ();
-			break;
-		}
-		case 3: {
-			NSRect rect = new NSRect ();
-			Cocoa.memcpy (rect, arg0, NSRect.sizeof);
-			Cocoa.objc_msgSend (handle, Cocoa.S_drawStatusBarBackgroundInRect_withHighlight, rect, highlight ? 1 : 0);
-		}
+void mouseDown(int event) {
+	NSEvent nsEvent = new NSEvent(event);
+	int mask = nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask;
+	if (mask == OS.NSControlKeyMask) {
+		showMenu();
+	} else {
+		highlight = true;
+		view.setNeedsDisplay(true);
+		int clickCount = nsEvent.clickCount();
+		//TODO post
+		sendEvent(clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 	}
-	return 0;
+}
+
+void mouseUp(int event) {
+	highlight = false;
+	view.setNeedsDisplay(true);
+}
+
+void rightMouseDown(int event) {
+	showMenu();
+}
+
+void drawRect(int rectPtr) {
+	NSRect rect = new NSRect();
+//	OS.memmove(rect, rectPtr, NSRect.sizeof);
+	item.drawStatusBarBackgroundInRect(rect, highlight);
 }
 }
