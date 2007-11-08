@@ -1504,6 +1504,7 @@ void initClasses () {
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_windowDidResize_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
@@ -2690,6 +2691,10 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.tableViewSelectionDidChange(arg0);
 	} else if (sel == OS.sel_drawRect_1) {
 		widget.drawRect(arg0);
+	} else if (sel == OS.sel_windowDidResize_1) {
+		widget.windowDidResize(arg0);
+	} else if (sel == OS.sel_windowDidMove_1) {
+		widget.windowDidMove(arg0);
 	}
 	return 0;
 }

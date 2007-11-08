@@ -1208,6 +1208,14 @@ void updateSystemUIMode () {
 //	}
 }
 
+void windowDidMove(int notification) {
+	sendEvent(SWT.Move);
+}
+
+void windowDidResize(int notification) {
+	sendEvent(SWT.Resize);
+}
+
 boolean windowShouldClose(int window) {
 	closeWidget ();
 	return false;

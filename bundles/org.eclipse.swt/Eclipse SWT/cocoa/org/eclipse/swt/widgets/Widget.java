@@ -1101,6 +1101,12 @@ public String toString () {
 void willSelectTabViewItem(int tabView, int tabViewItem) {
 }
 
+void windowDidMove(int notification) {
+}
+
+void windowDidResize(int notification) {
+}
+
 boolean windowShouldClose(int window) {
 	return false;
 }
