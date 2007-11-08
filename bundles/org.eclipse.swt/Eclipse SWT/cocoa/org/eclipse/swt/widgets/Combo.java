@@ -324,56 +324,17 @@ void comboBoxSelectionDidChange(int notification) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-//	int width = 0, height = 0;
-//	int [] ptr = new int [1];
-//	if ((style & SWT.READ_ONLY) != 0) {
-//		int index = OS.GetControlValue (handle) - 1;
-//		OS.CopyMenuItemTextAsCFString (menuHandle, (short)(index+1), ptr);
-//	} else {
-//		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
-//	}
-//	Point size = textExtent (ptr [0], 0);
-//	if (ptr [0] != 0) OS.CFRelease (ptr [0]);
-//	width = Math.max (width, size.x);
-//	height = Math.max (height, size.y);
-//	int count;
-//	if ((style & SWT.READ_ONLY) != 0) {
-//		count = OS.CountMenuItems (menuHandle);
-//	} else {
-//		count = OS.HIComboBoxGetItemCount (handle);
-//	}
-//	for (int i=0; i<count; i++) {
-//		int result;
-//		if ((style & SWT.READ_ONLY) != 0) {
-//			result = OS.CopyMenuItemTextAsCFString(menuHandle, (short)(i+1), ptr);
-//		} else {
-//			result = OS.HIComboBoxCopyTextItemAtIndex (handle, i, ptr);
-//		}
-//		if (result == OS.noErr) {
-//			size = textExtent (ptr [0], 0);
-//			width = Math.max (width, size.x);
-//			OS.CFRelease (ptr [0]);
-//		}
-//	}
-//	int [] metric = new int [1];
-//	if ((style & SWT.READ_ONLY) != 0) {
-//		OS.GetThemeMetric (OS.kThemeMetricDisclosureButtonWidth, metric);
-//		width += metric [0];
-//		//TODO
-//		width += 13;
-//	} else {
-//		OS.GetThemeMetric (OS.kThemeMetricComboBoxLargeDisclosureWidth, metric);
-//		width += metric [0];
-//	}
-//	OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
-//	width += metric [0] * 2;
-//	height += metric [0] * 2;
-//	Rect inset = getInset ();
-//	width += inset.left + inset.right;
-//	height += inset.top + inset.bottom;
-//	if (wHint != SWT.DEFAULT) width = wHint;
-//	if (hHint != SWT.DEFAULT) height = hHint;
-	return super.computeSize(wHint, hHint, changed);
+	int width = 0, height = 0;
+	NSControl widget = (NSControl)view;
+	NSRect oldRect = widget.frame();
+	widget.sizeToFit();
+	NSRect newRect = topView().frame();
+	widget.setFrame (oldRect);
+	width = (int)newRect.width;
+	height = (int)newRect.height;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point (width, height);
 }
 
 /**

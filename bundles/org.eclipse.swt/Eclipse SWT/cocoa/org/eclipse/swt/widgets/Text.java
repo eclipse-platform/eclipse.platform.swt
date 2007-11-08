@@ -379,6 +379,7 @@ void createHandle () {
 		view = widget;
 		parent.contentView().addSubview_(widget);
 	} else {
+		style &= ~SWT.HORIZONTAL;
 		SWTView scrollWidget = (SWTView)new SWTView().alloc();
 		scrollWidget.initWithFrame(new NSRect());
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
