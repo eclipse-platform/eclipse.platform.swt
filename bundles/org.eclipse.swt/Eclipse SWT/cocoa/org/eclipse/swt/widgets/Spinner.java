@@ -415,6 +415,14 @@ public void paste () {
 //	setText (text, selection [0], selection [1], true);
 }
 
+void releaseHandle () {
+	super.releaseHandle();
+	if (buttonView != null) buttonView.release();
+	buttonView = null;
+	if (textView != null) textView.release();
+	textView = null;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.

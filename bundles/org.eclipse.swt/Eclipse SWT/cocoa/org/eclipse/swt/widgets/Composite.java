@@ -232,16 +232,6 @@ void createHandle () {
 	parent.view.addSubview_(view);
 }
 
-void enableWidget (boolean enabled) {
-	//NOT DONE - take into account current scroll bar state
-	if ((state & CANVAS) != 0) {
-		if (horizontalBar != null) horizontalBar.enableWidget (enabled);
-		if (verticalBar != null) verticalBar.enableWidget (enabled);
-		return;
-	}
-	super.enableWidget (enabled);
-}
-
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }

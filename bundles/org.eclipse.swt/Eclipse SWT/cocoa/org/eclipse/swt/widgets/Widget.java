@@ -294,7 +294,6 @@ void createJNIRef () {
 void createWidget () {
 	createJNIRef ();
 	createHandle ();
-	hookEvents ();
 }
 
 void destroyWidget () {
@@ -483,9 +482,6 @@ String getNameText () {
 public int getStyle () {
 	checkWidget();
 	return style;
-}
-
-void hookEvents () {
 }
 
 boolean hooks (int eventType) {
