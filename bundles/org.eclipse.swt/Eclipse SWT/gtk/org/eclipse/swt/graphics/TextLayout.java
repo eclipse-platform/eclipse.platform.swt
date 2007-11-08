@@ -451,10 +451,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 			if ((data.style & SWT.MIRRORED) != 0) {
 				Cairo.cairo_save(cairo);
-				int[] width = new int[1], height = new int[1];
-				OS.pango_layout_get_size(layout, width, height);
-				Cairo.cairo_scale(cairo, -1f,  1);
-				Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+				Cairo.cairo_scale(cairo, -1,  1);
+				Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 			}
 			Cairo.cairo_move_to(cairo, x, y);
 			OS.pango_cairo_show_layout(cairo, layout);
@@ -480,10 +478,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				int /*long*/ ptr = OS.pango_layout_get_text(layout);
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_save(cairo);
-					int[] width = new int[1], height = new int[1];
-					OS.pango_layout_get_size(layout, width, height);
-					Cairo.cairo_scale(cairo, -1f,  1);
-					Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+					Cairo.cairo_scale(cairo, -1,  1);
+					Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 				}
 				drawWithCairo(gc, x, y, 0, OS.strlen(ptr), fullSelection, selectionForeground.handle, selectionBackground.handle);
 				if ((data.style & SWT.MIRRORED) != 0) {
@@ -503,10 +499,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_save(cairo);
-					int[] width = new int[1], height = new int[1];
-					OS.pango_layout_get_size(layout, width, height);
-					Cairo.cairo_scale(cairo, -1f,  1);
-					Cairo.cairo_translate(cairo, -2 * x - OS.PANGO_PIXELS(width[0]), 0);
+					Cairo.cairo_scale(cairo, -1,  1);
+					Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 				}
 				drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground.handle, selectionBackground.handle);
 				if ((data.style & SWT.MIRRORED) != 0) {
@@ -842,11 +836,12 @@ void freeRuns() {
 public int getAlignment() {
 	checkLayout();
 	int align = OS.pango_layout_get_alignment(layout);
+	boolean rtl = OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL;
 	switch (align) {
-		case OS.PANGO_ALIGN_CENTER: return SWT.CENTER;
-		case OS.PANGO_ALIGN_RIGHT: return SWT.RIGHT;
+		case OS.PANGO_ALIGN_LEFT: return rtl ? SWT.RIGHT : SWT.LEFT;
+		case OS.PANGO_ALIGN_RIGHT: return rtl ? SWT.LEFT : SWT.RIGHT;
 	}
-	return SWT.LEFT;
+	return SWT.CENTER;
 }
 
 /**
@@ -1676,11 +1671,16 @@ public void setAlignment (int alignment) {
 	alignment &= mask;
 	if (alignment == 0) return;
 	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT; 
-	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT; 
-	int align = OS.PANGO_ALIGN_LEFT;
+	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT;
+	boolean rtl = OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL;
+	int align = OS.PANGO_ALIGN_CENTER;
 	switch (alignment) {
-		case SWT.CENTER: align = OS.PANGO_ALIGN_CENTER; break;
-		case SWT.RIGHT: align = OS.PANGO_ALIGN_RIGHT; break;
+		case SWT.LEFT: 
+			align = rtl ? OS.PANGO_ALIGN_RIGHT : OS.PANGO_ALIGN_LEFT; 
+			break;
+		case SWT.RIGHT: 
+			align = rtl ? OS.PANGO_ALIGN_LEFT : OS.PANGO_ALIGN_RIGHT; 
+			break;
 	}
 	OS.pango_layout_set_alignment(layout, align);
 }
@@ -1762,7 +1762,6 @@ public void setFont (Font font) {
 	OS.pango_layout_set_font_description(layout, font != null ? font.handle : 0);
 }
 
-
 /**
  * Sets the indent of the receiver. This indent it applied of the first line of 
  * each paragraph.  
@@ -1818,6 +1817,11 @@ public void setOrientation(int orientation) {
 	if (OS.pango_context_get_base_dir(context) == baseDir) return;
 	OS.pango_context_set_base_dir(context, baseDir);
 	OS.pango_layout_context_changed(layout);
+	int align = OS.pango_layout_get_alignment(layout);
+	if (align != OS.PANGO_ALIGN_CENTER) {
+		align = align == OS.PANGO_ALIGN_LEFT ? OS.PANGO_ALIGN_RIGHT : OS.PANGO_ALIGN_LEFT;
+		OS.pango_layout_set_alignment(layout, align);
+	}
 }
 
 /**
@@ -2060,7 +2064,13 @@ public void setWidth (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	freeRuns();
-	OS.pango_layout_set_width(layout, width == -1 ? -1 : width * OS.PANGO_SCALE);
+	if (width == -1) {
+		OS.pango_layout_set_width(layout, -1);
+		boolean rtl = OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL;
+		OS.pango_layout_set_alignment(layout, rtl ? OS.PANGO_ALIGN_RIGHT : OS.PANGO_ALIGN_LEFT);
+	} else {
+		OS.pango_layout_set_width(layout, width * OS.PANGO_SCALE);
+	}
 }
 
 static final boolean isLam(int ch) {
@@ -2139,6 +2149,14 @@ int validateOffset(int offset, int step) {
 		}
 	} while (0 <= i && i < invalidOffsets.length);
 	return offset;
+}
+
+int width () {
+	int wrapWidth = OS.pango_layout_get_width(layout);
+	if (wrapWidth != -1) return OS.PANGO_PIXELS(wrapWidth); 
+	int[] w = new int[1], h = new int[1];
+	OS.pango_layout_get_size(layout, w, h);
+	return OS.PANGO_PIXELS(w[0] + OS.pango_layout_get_indent(layout));
 }
 
 } 
