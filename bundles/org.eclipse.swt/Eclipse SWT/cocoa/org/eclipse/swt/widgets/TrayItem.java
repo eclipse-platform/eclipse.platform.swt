@@ -245,8 +245,11 @@ void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 	if (item != null) item.release();
+	if (view != null) {
+		view.setTag(-1);
+		view.release();
+	}
 	item = null;
-	if (view != null) view.release();
 	view = null;
 }
 

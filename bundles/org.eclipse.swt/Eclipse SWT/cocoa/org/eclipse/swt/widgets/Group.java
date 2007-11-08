@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p>
  */
 public class Group extends Composite {
-	NSView contentView;
+	SWTView contentView;
 	String text = "";
 	
 /**
@@ -147,6 +147,15 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	return text;
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (contentView != null) {
+		contentView.setTag(-1);
+		contentView.release();
+	}
+	contentView = null;
 }
 
 /**

@@ -1700,6 +1700,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
 	if (view != null) view.release();
 	view = null;
 	parent = null;
@@ -2249,7 +2250,8 @@ public void setBounds (int x, int y, int width, int height) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = 0;
-	NSRect rect = view.frame();
+	NSView topView = topView();
+	NSRect rect = topView.frame();
 	if (move && resize) {
 		if (rect.x != x || rect.y != y) result |= MOVED;
 		if (rect.width != width || rect.height != height) result |= RESIZED;
@@ -2258,7 +2260,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			rect.y = y;
 			rect.width = width;
 			rect.height = height;
-			topView().setFrame (rect);
+			topView.setFrame (rect);
 		}
 	} else if (move) {
 		if (rect.x != x || rect.y != y) {
@@ -2266,7 +2268,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			NSPoint point = new NSPoint();
 			point.x = x;
 			point.y = y;
-			topView().setFrameOrigin(point);
+			topView.setFrameOrigin(point);
 		}
 	} else if (resize) {
 		if (rect.width != width || rect.height != height) {
@@ -2274,7 +2276,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			NSSize size = new NSSize();
 			size.width = width;
 			size.height = height;
-			topView().setFrameSize(size);
+			topView.setFrameSize(size);
 		}
 	}
 	if ((result & MOVED) != 0) {

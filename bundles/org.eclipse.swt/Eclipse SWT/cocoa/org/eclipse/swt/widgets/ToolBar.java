@@ -137,10 +137,12 @@ void createItem (ToolItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
+	item.createJNIRef ();
 	if ((item.style & SWT.SEPARATOR) != 0) {
-		NSBox widget = (NSBox)new NSBox().alloc();
+		SWTBox widget = (SWTBox)new SWTBox().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setBoxType(OS.NSBoxSeparator);
+		widget.setTag(item.jniRef);
 		item.view = widget;
 	} else {
 		NSButton widget = (NSButton)new SWTButton().alloc();
@@ -148,7 +150,6 @@ void createItem (ToolItem item, int index) {
 		widget.setBordered((style & SWT.FLAT) == 0);
 		widget.setAction(OS.sel_sendSelection);
 		widget.setTarget(widget);
-		item.createJNIRef ();
 		widget.setTag(item.jniRef);
 		if ((style & SWT.RIGHT) != 0) {
 			widget.setImagePosition(OS.NSImageLeft);
@@ -179,6 +180,9 @@ void destroyItem (ToolItem item) {
 	if (index == itemCount) return;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
+	NSView nsItem = item.view;
+	nsItem.removeFromSuperview();
+	item.view = null;
 	relayout ();
 }
 

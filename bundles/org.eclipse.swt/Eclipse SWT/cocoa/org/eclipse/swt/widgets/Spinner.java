@@ -417,9 +417,15 @@ public void paste () {
 
 void releaseHandle () {
 	super.releaseHandle();
-	if (buttonView != null) buttonView.release();
+	if (buttonView != null) {
+		buttonView.setTag(-1);
+		buttonView.release();
+	}
+	if (textView != null) {
+		textView.setTag(-1);
+		textView.release();
+	}
 	buttonView = null;
-	if (textView != null) textView.release();
 	textView = null;
 }
 

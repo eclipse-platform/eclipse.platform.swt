@@ -472,31 +472,12 @@ public void deselectAll () {
 	}
 }
 
-void destroyWidget () {
-	/*
-	* Bug in the Macintosh.  Carbon segments fault if the combo box has
-	* keyboard focus and it is disposed or its parent is disposed because
-	* there is an outstanding timer that runs after the widget is dispoed.
-	* The fix is to remove the combo box from its parent and dispose it when
-	* the display is idle.
-	* 
-	* NOTE: The problem does not happen when the window is disposed.
-	*/
-	if ((getShell ().state & DISPOSE_SENT) != 0) {
-		super.destroyWidget ();
-	} else {
-		releaseHandle ();
-	}
-}
-
 int getCharCount() {
 	NSString str;
 	if ((style & SWT.READ_ONLY) != 0) {
 		str = ((NSPopUpButton)view).titleOfSelectedItem();
 	} else {
-		str = null;
-//		int [] actualSize = new int [1];
-//		result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+		str = new NSCell(((NSComboBox)view).cell()).title();
 	}
 	return str.length();
 }
@@ -692,9 +673,7 @@ String getText (int start, int end) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		str = ((NSPopUpButton)view).titleOfSelectedItem();
 	} else {
-		str = null;
-//		int [] actualSize = new int [1];
-//		result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+		str = new NSCell(((NSComboBox)view).cell()).title();
 	}
 	if (str == null) return "";
 	int length = str.length();

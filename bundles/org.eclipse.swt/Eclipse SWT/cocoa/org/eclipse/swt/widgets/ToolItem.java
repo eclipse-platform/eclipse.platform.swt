@@ -381,6 +381,11 @@ void releaseParent () {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (view != null) {
+		OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
+		view.release();
+	}
+	view = null;
 	parent = null;
 }
 

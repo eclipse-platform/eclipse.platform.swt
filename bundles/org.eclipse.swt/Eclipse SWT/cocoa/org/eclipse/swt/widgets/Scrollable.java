@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public abstract class Scrollable extends Control {
- 	NSScrollView scrollView;
+ 	SWTView scrollView;
 	ScrollBar horizontalBar, verticalBar;
 	
 Scrollable () {
@@ -220,7 +220,10 @@ boolean hooksKeys () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (scrollView != null) scrollView.release();
+	if (scrollView != null)  {
+		scrollView.setTag(-1);
+		scrollView.release();
+	}
 	scrollView = null;
 }
 

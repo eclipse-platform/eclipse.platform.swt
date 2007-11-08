@@ -96,7 +96,7 @@ Control [] _getChildren () {
 	for (int i=0; i<count; i++){
 		int tag = new NSView(views.objectAtIndex(i)).tag();
 		if (tag != 0 && tag != -1) {
-			Widget widget = (Widget)OS.JNIGetObject(tag);
+			Object widget = OS.JNIGetObject(tag);
 			if (widget != null && widget != this) {
 				if (widget instanceof Control) {
 					children [j++] = (Control) widget;

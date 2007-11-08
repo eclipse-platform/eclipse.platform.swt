@@ -381,7 +381,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle () {
 	//TODO - SWT.CHECK
-	scrollView = (NSScrollView)new NSScrollView().alloc();
+	scrollView = (SWTView)new SWTView().alloc();
 	scrollView.initWithFrame(new NSRect ());
 	scrollView.setHasHorizontalScroller(true);
 	scrollView.setHasVerticalScroller(true);
