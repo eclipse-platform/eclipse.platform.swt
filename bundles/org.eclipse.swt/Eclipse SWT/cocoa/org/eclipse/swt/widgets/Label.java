@@ -42,6 +42,8 @@ public class Label extends Control {
 	String text = "";
 	Image image;
 	boolean isImage;
+	NSTextField textView;
+	NSImageView imageView;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -96,37 +98,62 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
-//	if ((style & SWT.SEPARATOR) != 0) {
-//		if ((style & SWT.HORIZONTAL) != 0) {
-//			width = DEFAULT_WIDTH;
-//			height = 3;
-//		} else {
-//			width = 3;
-//			height = DEFAULT_HEIGHT;
-//		}
-//	} else {
-//		if (isImage && image != null) {
-//			Rectangle r = image.getBounds ();
-//			width = r.width;
-//			height = r.height;
-//		} else {			
-//			int [] ptr = new int [1];
-//			OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
-//			Point size = textExtent (ptr [0], (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT ? wHint : 0);
-//			if (ptr [0] != 0) OS.CFRelease (ptr [0]);
-//			width = size.x;
-//			height = size.y;			
-//		}
-//	}
+	if ((style & SWT.SEPARATOR) != 0) {
+		if ((style & SWT.HORIZONTAL) != 0) {
+			width = DEFAULT_WIDTH;
+			height = 3;
+		} else {
+			width = 3;
+			height = DEFAULT_HEIGHT;
+		}
+	} else {
+		if (image != null && isImage) {
+			Rectangle bounds = image.getBounds();
+			width = bounds.width;
+			height = bounds.height;
+		} else {
+			NSRect oldRect = textView.frame();
+			textView.sizeToFit();
+			NSRect newRect = textView.frame();
+			textView.setFrame (oldRect);
+			width = (int)newRect.width;
+			height = (int)newRect.height;
+		}
+	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
 void createHandle () {
-	//TODO - alignment, separator
-	NSTextField widget = (NSTextField)new NSTextField().alloc();
-	widget = (NSTextField)widget.initWithFrame(new NSRect());
+	SWTBox widget = (SWTBox)new SWTBox().alloc();
+	widget.initWithFrame(new NSRect());
+	widget.setTag(jniRef);
+	widget.setTitle(NSString.stringWith(""));
+	if ((style & SWT.SEPARATOR) != 0) {
+		widget.setBoxType(OS.NSBoxSeparator);
+	} else {
+		widget.setBorderType(OS.NSNoBorder);
+
+		NSImageView imageWidget = (NSImageView)new SWTImageView().alloc();
+		imageWidget.initWithFrame(new NSRect());
+		imageWidget.setTag(jniRef);
+		
+		NSTextField textWidget = (NSTextField)new NSTextField().alloc();
+		textWidget.initWithFrame(new NSRect());
+		textWidget.setBordered(false);
+		textWidget.setEditable(false);
+		textWidget.setDrawsBackground(false);
+		textWidget.setTag(jniRef);
+		
+	
+		widget.addSubview_(imageWidget);
+		widget.addSubview_(textWidget);
+		widget.setContentView(textWidget);
+		
+		imageView = imageWidget;
+		textView = textWidget;
+	}
 	view = widget;
 	parent.contentView().addSubview_(widget);
 }
@@ -213,6 +240,18 @@ public void setAlignment (int alignment) {
 	//TODO - not implemented
 }
 
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(x, y, width, height, move, resize);
+	if ((result & RESIZED) != 0) {
+		if (imageView != null || textView != null) {
+			NSRect rect = view.bounds();
+			imageView.setFrame(rect);
+			textView.setFrame(rect);
+		}
+	}
+	return result;
+}
+
 /**
  * Sets the receiver's image to the argument, which may be
  * null indicating that no image should be displayed.
@@ -233,19 +272,10 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	this.image = image;
-//	isImage = true;
-//	if (image == null) {
-//		setText (text);
-//		return;
-//	}
-//	if (text.length () > 0) {
-//		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
-//		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-//		OS.SetControlData (handle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
-//		OS.CFRelease (ptr);
-//	}
-//	redraw ();
+	this.image = image;
+	isImage = true;
+	imageView.setImage(image != null ? image.handle : null);
+	((NSBox)view).setContentView(imageView);
 }
 
 /**
@@ -281,8 +311,11 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	isImage = false;
 	text = string;
-	//NSString str = NSString.stringWith(string);
-	//((NSTextField)view).setTitle(str);
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int length = fixMnemonic (buffer);
+	new NSCell(textView.cell()).setTitle(NSString.stringWithCharacters(buffer, length));
+	((NSBox)view).setContentView(textView);
 }
 
 }
