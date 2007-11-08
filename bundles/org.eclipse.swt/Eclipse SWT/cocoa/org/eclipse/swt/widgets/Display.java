@@ -1562,6 +1562,11 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls); 
+
+	className = "SWTSlider";
+	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);

@@ -109,29 +109,32 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	NSSlider widget = (NSSlider)view;
+	NSRect oldRect = widget.frame();
+	widget.sizeToFit();
+	NSRect newRect = widget.frame();
+	widget.setFrame (oldRect);
+	int size = (int)newRect.width;
 	int width = 0, height = 0;
-//	if ((style & SWT.HORIZONTAL) != 0) {
-//		int [] outMetric = new int [1];
-//		OS.GetThemeMetric (OS.kThemeMetricHSliderHeight, outMetric);
-//		height = outMetric [0];
-//		width = height * 10;
-//	} else {
-//		int [] outMetric = new int [1];
-//		OS.GetThemeMetric (OS.kThemeMetricVSliderWidth, outMetric);
-//		width = outMetric [0];
-//		height = width * 10;
-//	}
+	if ((style & SWT.HORIZONTAL) != 0) {		
+		height = size;
+		width = height * 10;
+	} else {
+		width = size;
+		height = width * 10;
+	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
 void createHandle () {
-	NSSlider widget = (NSSlider)new NSSlider().alloc();
+	NSSlider widget = (NSSlider)new SWTSlider().alloc();
 	widget = (NSSlider)widget.initWithFrame(new NSRect());
+	widget.setMaxValue(100);
+	widget.setTag(jniRef);
 	view = widget;
 	parent.contentView().addSubview_(widget);
-	widget.setMaxValue(100);
 }
 
 /**

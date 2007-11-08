@@ -385,6 +385,7 @@ void createHandle () {
 	scrollView.initWithFrame(new NSRect ());
 	scrollView.setHasHorizontalScroller(true);
 	scrollView.setHasVerticalScroller(true);
+	scrollView.setTag(jniRef);
 	
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.initWithFrame(new NSRect());
