@@ -46,6 +46,7 @@ public static final native int objc_msgSend(int id, int sel, String arg0);
 
 public static final native int objc_msgSend_size(int object, int selector, NSSize arg0);
 public static final native int objc_msgSend_mouseLocationOutsideOfEventStream(int object, int selector, NSPoint arg0);
+public static final native int objc_msgSend_selectedRange(int object, int selector, NSRange arg0);
 
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");

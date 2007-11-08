@@ -60,3 +60,21 @@ fail:
 	return rc;
 }
 #endif
+
+
+#ifndef NO_objc_1msgSend_1selectedRange
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1selectedRange)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NSRange _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1selectedRange_FUNC);
+	if (arg2) if ((lparg2 = getNSRangeFields(env, arg2, &_arg2)) == NULL) goto fail;
+	//rc = (jint)objc_msgSend_selectedRange(arg0, arg1, lparg2);
+	*lparg2 = [(NSText *)arg0 selectedRange];
+fail:
+	if (arg2 && lparg2) setNSRangeFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1selectedRange_FUNC);
+	return rc;
+}
+#endif
