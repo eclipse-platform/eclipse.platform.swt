@@ -1097,6 +1097,9 @@ public Rectangle getLineBounds(int lineIndex) {
 	if (ascent != -1 && descent != -1) {
 		height = Math.max (height, ascent + descent);
 	}
+	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
+		x = width() - x - width;
+	}
 	return new Rectangle(x, y, width, height);
 }
 
@@ -1248,7 +1251,11 @@ public Point getLocation(int offset, boolean trailing) {
 	OS.pango_layout_index_to_pos(layout, byteOffset, pos);
 	int x = trailing ? pos.x + pos.width : pos.x;
 	int y = pos.y;
-	return new Point(OS.PANGO_PIXELS(x), OS.PANGO_PIXELS(y));
+	x = OS.PANGO_PIXELS(x);
+	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
+		x = width() - x;
+	}
+	return new Point(x, OS.PANGO_PIXELS(y));
 }
 
 /**
@@ -1372,6 +1379,9 @@ public int getOffset(int x, int y, int[] trailing) {
 	checkLayout();
 	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
+		x = width() - x;
+	}
 	
 	/*
 	* Feature in GTK.  pango_layout_xy_to_index() returns the 
