@@ -186,10 +186,8 @@ Point computeSize () {
 			height = Math.max (height, control.getMininumHeight ());
 		}
 	} else {
-//		((NSButton)view).calcSize ();
 		((NSButton)view).sizeToFit ();
 		NSRect rect = view.frame();
-//		NSSize rect = new NSCell(((NSButton)view).cell()).cellSize();
 		width = (int)rect.width;
 		height = (int)rect.height;
 		view.setNeedsDisplay(true);
@@ -441,7 +439,6 @@ void sendSelection () {
 }
 
 void setBounds (int x, int y, int width, int height) {
-	System.out.println(this + "  "+ new Rectangle(x, y, width, height));
 	NSRect rect = new NSRect();
 	rect.x = x;
 	rect.y = y;

@@ -735,7 +735,6 @@ void init(Device device, ImageData image) {
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 			((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-
 	
 	/* Create the image */
 	int dataSize = width * height * 4;
@@ -831,7 +830,8 @@ void init(Device device, ImageData image) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(0, width, height, 8, 4, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(
+			0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
 	rep.release();

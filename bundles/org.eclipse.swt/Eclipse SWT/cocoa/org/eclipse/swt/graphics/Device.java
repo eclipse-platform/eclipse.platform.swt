@@ -451,6 +451,8 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 	
 	/* Initialize the system font slot */
+	NSFont font = NSFont.systemFontOfSize(NSFont.systemFontSize());
+	systemFont = Font.cocoa_new(this, font);
 }
 
 /**	 
