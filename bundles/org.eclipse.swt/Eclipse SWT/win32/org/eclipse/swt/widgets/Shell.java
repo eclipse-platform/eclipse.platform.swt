@@ -2134,8 +2134,7 @@ LRESULT WM_MOUSEACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	
-	int code = callWindowProc (handle, OS.WM_MOUSEACTIVATE, wParam, lParam);
-	//System.out.println(code);
+	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEACTIVATE, wParam, lParam);
 	setActiveControl (control);
 	return new LRESULT (code);
 }
