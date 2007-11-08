@@ -953,6 +953,9 @@ public Rectangle getBounds(int start, int end) {
 	
 	OS.gdk_region_get_clipbox(clipRegion, rect);
 	OS.gdk_region_destroy(clipRegion);
+	if (OS.pango_context_get_base_dir(context) == OS.PANGO_DIRECTION_RTL) {
+		rect.x = width() - rect.x - rect.width;
+	}
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
