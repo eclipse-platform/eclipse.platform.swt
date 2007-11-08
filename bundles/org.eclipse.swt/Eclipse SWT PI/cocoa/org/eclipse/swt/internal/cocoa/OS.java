@@ -43,10 +43,10 @@ public static final native int objc_msgSend(int id, int sel, char[] arg0);
 public static final native int objc_msgSend(int id, int sel, char[] arg0, int length);
 public static final native int objc_msgSend(int id, int sel, String arg0);
 
-
-public static final native int objc_msgSend_size(int object, int selector, NSSize arg0);
-public static final native int objc_msgSend_mouseLocationOutsideOfEventStream(int object, int selector, NSPoint arg0);
-public static final native int objc_msgSend_selectedRange(int object, int selector, NSRange arg0);
+public static final native int objc_msgSend_struct(NSSize arg0, int object, int selector);
+public static final native int objc_msgSend_struct(NSPoint arg0, int object, int selector);
+public static final native int objc_msgSend_struct(NSPoint arg0, int object, int selector, NSPoint arg1);
+public static final native int objc_msgSend_struct(NSRange arg0, int object, int selector);
 
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");

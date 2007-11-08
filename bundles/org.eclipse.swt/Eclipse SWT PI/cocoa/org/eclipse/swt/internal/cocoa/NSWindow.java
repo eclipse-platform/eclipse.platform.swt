@@ -104,7 +104,7 @@ public boolean canStoreColor() {
 
 public NSPoint cascadeTopLeftFromPoint(NSPoint topLeftPoint) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_cascadeTopLeftFromPoint_1, topLeftPoint);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_cascadeTopLeftFromPoint_1, topLeftPoint);
 	return result;
 }
 
@@ -562,7 +562,7 @@ public NSString miniwindowTitle() {
 
 public NSPoint mouseLocationOutsideOfEventStream() {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_mouseLocationOutsideOfEventStream(this.id, OS.sel_mouseLocationOutsideOfEventStream, result);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_mouseLocationOutsideOfEventStream);
 	return result;
 }
 

@@ -66,7 +66,7 @@ public NSString string() {
 
 public NSSize size() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_size(this.id, OS.sel_size, result);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_size);
 	return result;
 }
 

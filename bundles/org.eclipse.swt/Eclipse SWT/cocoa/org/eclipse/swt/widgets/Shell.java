@@ -463,7 +463,7 @@ void createHandle () {
 			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
 		}
 		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, false);
-//		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
+		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 	
 	SWTView widget = (SWTView)new SWTView().alloc();
@@ -889,12 +889,32 @@ public void setAlpha (int alpha) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 //	if (fullScreen) setFullScreen (false);
-//	if (move) {
-//		NSPoint point = new NSPoint();
-//		point.x = x;
-//		point.x = y;
-//		window.setFrameTopLeft(point);
-//	}
+	if (move && resize) {
+		NSRect rect = new NSRect ();
+		rect.x = x;
+		//TODO - get the screen for the point
+		int screenHeight = (int) window.screen().frame().height;
+		rect.y = screenHeight - y;
+		rect.width = width;
+		rect.height = height;
+		window.setFrame_display_(rect, false);
+	} else {
+		if (move) {
+			NSPoint point = new NSPoint();
+			point.x = x;
+			//TODO - get the screen for the point
+			int screenHeight = (int) window.screen().frame().height;
+			point.y = screenHeight - y;
+			window.setFrameTopLeftPoint (point);
+		} else {
+			if (resize) {
+				NSRect rect = window.frame();
+				rect.width = width;
+				rect.height = height;
+				window.setFrame_display_(rect, false);
+			}
+		}
+	}
 	return 0;
 }
 
@@ -1204,10 +1224,12 @@ void updateSystemUIMode () {
 }
 
 void windowDidMove(int notification) {
+	moved = true;
 	sendEvent(SWT.Move);
 }
 
 void windowDidResize(int notification) {
+	resized = true;
 	sendEvent (SWT.Resize);
 	if (isDisposed ()) return;
 	if (layout != null) {

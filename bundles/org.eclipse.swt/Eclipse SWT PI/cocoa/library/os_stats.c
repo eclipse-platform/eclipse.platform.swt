@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 267;
-int OS_nativeFunctionCallCount[267];
+int OS_nativeFunctionCount = 268;
+int OS_nativeFunctionCallCount[268];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",
@@ -215,9 +215,6 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1fpret__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
 	"objc_1msgSend_1fpret__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSend_1fpret__IILorg_eclipse_swt_internal_cocoa_NSSize_2",
-	"objc_1msgSend_1mouseLocationOutsideOfEventStream",
-	"objc_1msgSend_1selectedRange",
-	"objc_1msgSend_1size",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSDecimal_2II",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
@@ -279,6 +276,10 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIZ",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",
 	"objc_1registerClassPair",
 	"object_1getClassName",
 	"object_1getInstanceVariable",

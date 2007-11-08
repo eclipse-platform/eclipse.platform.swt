@@ -169,7 +169,7 @@ public void selectAll(id sender) {
 
 public NSRange selectedRange() {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_selectedRange(this.id, OS.sel_selectedRange, result);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_selectedRange);
 	return result;
 }
 
