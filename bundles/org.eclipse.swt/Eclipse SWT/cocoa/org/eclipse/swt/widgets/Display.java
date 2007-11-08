@@ -1514,8 +1514,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTButton";
