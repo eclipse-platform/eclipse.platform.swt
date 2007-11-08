@@ -1433,6 +1433,8 @@ public Image getSystemImage (int id) {
 //			return warningImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
 //		}
 //	}
+	
+	//[[NSWorkspace sharedWorkspace] iconForFileType:NSFileTypeForHFSTypeCode(code)];
 	return null;
 //	return Image.cocoa_new (this, SWT.ICON, NSImage.imageNamed (NSString.stringWith("NSImageNameGoRightTemplate")));
 }

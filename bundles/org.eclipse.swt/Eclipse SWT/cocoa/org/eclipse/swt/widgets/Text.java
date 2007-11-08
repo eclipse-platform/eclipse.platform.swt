@@ -409,39 +409,40 @@ void createHandle () {
 	} else {
 		NSScrollView scrollWidget = (NSScrollView)new NSScrollView().alloc();
 		scrollWidget.initWithFrame(new NSRect());
-//		scrollWidget.setHasHorizontalScroller(true);
-		scrollWidget.setHasVerticalRuler(true);
-		
-//		NSTextStorage textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
-//		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
-//		textStorage.addLayoutManager(layoutManager);
-//		layoutManager.release();
-//		
-//		NSTextContainer container = (NSTextContainer)new NSTextContainer().alloc();
-//		container.initWithContainerSize(new NSSize());
-//		layoutManager.addTextContainer(container);
-//		container.release();
+		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
+		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
+		scrollWidget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 		
 		NSTextView widget = (NSTextView)new NSTextView().alloc();
-//		widget.initWithFrame_textContainer_(new NSRect(), container);
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
-		widget.setBackgroundColor(NSColor.colorWithDeviceRed(1, 1, 0, 1));
-		widget.setDrawsBackground(true);
 		
+		NSSize size = new NSSize ();
+		size.width = size.height = Float.MAX_VALUE;
+		widget.setMaxSize (size);
+		widget.setVerticallyResizable ((style & SWT.VERTICAL) != 0);
+		widget.setHorizontallyResizable ((style & SWT.HORIZONTAL) != 0);
+		int mask = 0;
+		if ((style & SWT.VERTICAL) != 0) mask |= OS.NSViewWidthSizable;
+		if ((style & SWT.HORIZONTAL) != 0) mask |= OS.NSViewHeightSizable;
+		widget.setAutoresizingMask (mask);
 		
+		widget.textContainer().setContainerSize (size);
+		if ((style & SWT.VERTICAL) != 0 && (style & SWT.HORIZONTAL) == 0) {
+			widget.textContainer().setWidthTracksTextView (true);
+		}
+		if ((style & SWT.VERTICAL) != 0 && (style & SWT.HORIZONTAL) != 0) {
+			widget.textContainer().setWidthTracksTextView (false);
+		}
 		
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 //		widget.setTag(jniRef);
-		view = widget;
-//		scrollView = scrollWidget;
-//
-//		scrollView.setDocumentView(widget);
-//		parent.view.addSubview_(scrollView);
 		
-
-		parent.view.addSubview_(view);
+		view = widget;
+		scrollView = scrollWidget;
+		scrollView.setDocumentView(widget);
+		parent.view.addSubview_(scrollView);
 	}
 	
 //	int [] outControl = new int [1];
@@ -911,19 +912,13 @@ public int getPosition (Point point) {
  */
 public Point getSelection () {
 	checkWidget();
-	if (txnObject == 0) {
-		ControlEditTextSelectionRec selection;
-		if (this.selection != null) {
-			selection = this.selection;
-		} else {
-			selection = new ControlEditTextSelectionRec ();
-			OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
-		}
-		return new Point (selection.selStart, selection.selEnd);
+	if ((style & SWT.SINGLE) != 0) {
+//		new NSTextFieldCell(((NSTextField)view).cell()).title().
+		return -1;
 	} else {
-		int [] oStartOffset = new int [1], oEndOffset = new int [1];
-		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-		return new Point (oStartOffset [0], oEndOffset [0]);
+		NSTextView widget = (NSTextView)view;
+		NSRange range = widget.selectedRange();
+		return range.length;
 	}
 }
 
@@ -939,13 +934,13 @@ public Point getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	if (txnObject == 0) {
-		Point selection = getSelection ();
-		return selection.y - selection.x;
+	if ((style & SWT.SINGLE) != 0) {
+//		new NSTextFieldCell(((NSTextField)view).cell()).title().
+		return -1;
 	} else {
-		int [] oStartOffset = new int [1], oEndOffset = new int [1];
-		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-		return oEndOffset [0] - oStartOffset [0];
+		NSTextView widget = (NSTextView)view;
+		NSRange range = widget.selectedRange();
+		return range.length;
 	}
 }
 
@@ -1148,43 +1143,16 @@ public void insert (String string) {
 		string = verifyText (string, selection.x, selection.y, null);
 		if (string == null) return;
 	}
-	if (txnObject == 0) {
-		insertEditText (string);
+	if ((style & SWT.SINGLE) != 0) {
+//		new NSTextFieldCell(((NSTextField)view).cell()).title().
 	} else {
-		setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, string);
-		OS.TXNShowSelection (txnObject, false);
+		//
+		NSString str = NSString.stringWith(string);
+		NSTextView widget = (NSTextView)view;
+		NSRange range = widget.selectedRange();
+		widget.textStorage().replaceCharactersInRange_withString_(range, str);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
-}
-
-void insertEditText (String string) {
-	int length = string.length ();
-	Point selection = getSelection ();
-	if (hasFocus () && hiddenText == null) {
-		if (textLimit != LIMIT) {
-			int charCount = getCharCount();
-			if (charCount - (selection.y - selection.x) + length > textLimit) {
-				length = textLimit - charCount + (selection.y - selection.x);
-			}
-		}
-		char [] buffer = new char [length];
-		string.getChars (0, buffer.length, buffer, 0);
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextInsertCFStringRefTag, 4, new int[] {ptr});
-		OS.CFRelease (ptr);
-	} else {
-		String oldText = getText ();
-		if (textLimit != LIMIT) {
-			int charCount = oldText.length ();
-			if (charCount - (selection.y - selection.x) + length > textLimit) {
-				string = string.substring(0, textLimit - charCount + (selection.y - selection.x));
-			}
-		}
-		String newText = oldText.substring (0, selection.x) + string + oldText.substring (selection.y);
-		setEditText (newText);
-		setSelection (selection.x + string.length ());
-	}
 }
 
 /**
@@ -1202,40 +1170,40 @@ void insertEditText (String string) {
 public void paste () {
 	checkWidget();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	boolean paste = true;
-	String oldText = null;
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		oldText = getClipboardText ();
-		if (oldText != null) {
-			Point selection = getSelection ();
-			String newText = verifyText (oldText, selection.x, selection.y, null);
-			if (newText == null) return;
-			if (!newText.equals (oldText)) {
-				if (txnObject == 0) {
-					insertEditText (newText);
-				} else {
-					setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
-					OS.TXNShowSelection (txnObject, false);
-				}
-				paste = false;
-			}
-		}
-	}
-	if (paste) {
-		if (txnObject == 0) {
-			if (oldText == null) oldText = getClipboardText ();
-			insertEditText (oldText);
-		} else {
-			if (textLimit != LIMIT) {
-				if (oldText == null) oldText = getClipboardText ();
-				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, oldText);
-				OS.TXNShowSelection (txnObject, false);
-			} else {
-				OS.TXNPaste (txnObject);
-			}
-		}
-	}
-	sendEvent (SWT.Modify);
+//	boolean paste = true;
+//	String oldText = null;
+//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+//		oldText = getClipboardText ();
+//		if (oldText != null) {
+//			Point selection = getSelection ();
+//			String newText = verifyText (oldText, selection.x, selection.y, null);
+//			if (newText == null) return;
+//			if (!newText.equals (oldText)) {
+//				if (txnObject == 0) {
+//					insertEditText (newText);
+//				} else {
+//					setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
+//					OS.TXNShowSelection (txnObject, false);
+//				}
+//				paste = false;
+//			}
+//		}
+//	}
+//	if (paste) {
+//		if (txnObject == 0) {
+//			if (oldText == null) oldText = getClipboardText ();
+//			insertEditText (oldText);
+//		} else {
+//			if (textLimit != LIMIT) {
+//				if (oldText == null) oldText = getClipboardText ();
+//				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, oldText);
+//				OS.TXNShowSelection (txnObject, false);
+//			} else {
+//				OS.TXNPaste (txnObject);
+//			}
+//		}
+//	}
+//	sendEvent (SWT.Modify);
 }
 
 void releaseWidget () {
@@ -1373,17 +1341,17 @@ boolean sendKeyEvent (int type, Event event) {
 	}
 	boolean result = newText == oldText;
 	if (newText != oldText || hiddenText != null) {
-		if (txnObject == 0) {
-			String text = new String (getEditText (0, -1));
-			String leftText = text.substring (0, start);
-			String rightText = text.substring (end, text.length ());
-			setEditText (leftText + newText + rightText);
-			start += newText.length ();
-			setSelection (new Point (start, start));
-			result = false;
-		} else {
-			setTXNText (start, end, newText);
-		}
+//		if (txnObject == 0) {
+//			String text = new String (getEditText (0, -1));
+//			String leftText = text.substring (0, start);
+//			String rightText = text.substring (end, text.length ());
+//			setEditText (leftText + newText + rightText);
+//			start += newText.length ();
+//			setSelection (new Point (start, start));
+//			result = false;
+//		} else {
+//			setTXNText (start, end, newText);
+//		}
 	}
 	/*
 	* Post the modify event so that the character will be inserted
@@ -1442,17 +1410,17 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 public void setEchoChar (char echo) {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return;
-	if (txnObject == 0) {
-		if ((style & SWT.PASSWORD) == 0) {
-			Point selection = getSelection ();
-			String text = getText ();
-			echoCharacter = echo;
-			setEditText (text);
-			setSelection (selection);
-		}
-	} else {
-		OS.TXNEchoMode (txnObject, echo, OS.kTextEncodingMacUnicode, echo != '\0');
-	}
+//	if (txnObject == 0) {
+//		if ((style & SWT.PASSWORD) == 0) {
+//			Point selection = getSelection ();
+//			String text = getText ();
+//			echoCharacter = echo;
+//			setEditText (text);
+//			setSelection (selection);
+//		}
+//	} else {
+//		OS.TXNEchoMode (txnObject, echo, OS.kTextEncodingMacUnicode, echo != '\0');
+//	}
 	echoCharacter = echo;
 }
 
@@ -1603,7 +1571,11 @@ public void setSelection (int start, int end) {
 //			this.selection = selection;
 //		}
 	} else {
-//		((NSTextView)view).
+		//TODO - range test
+		NSRange range = new NSRange ();
+		range.location = start;
+		range.length = end - start + 1;
+		((NSTextView)view).setSelectedRange (range);
 	}
 }
 
@@ -1661,14 +1633,14 @@ public void setSelection (Point selection) {
 public void setTabs (int tabs) {
 	checkWidget();
 	if (this.tabs == tabs) return;
-	if (txnObject == 0) return;
-	this.tabs = tabs;
-	TXNTab tab = new TXNTab ();
-	tab.value = (short) (textExtent (new char[]{' '}, 0).x * tabs);
-	int [] tags = new int [] {OS.kTXNTabSettingsTag};
-	int [] datas = new int [1];
-	OS.memmove (datas, tab, TXNTab.sizeof);
-	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
+//	if (txnObject == 0) return;
+//	this.tabs = tabs;
+//	TXNTab tab = new TXNTab ();
+//	tab.value = (short) (textExtent (new char[]{' '}, 0).x * tabs);
+//	int [] tags = new int [] {OS.kTXNTabSettingsTag};
+//	int [] datas = new int [1];
+//	OS.memmove (datas, tab, TXNTab.sizeof);
+//	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 }
 
 /**
@@ -1700,24 +1672,6 @@ public void setText (String string) {
 		((NSTextView)view).setString(str);
 	}
 	sendEvent (SWT.Modify);
-}
-
-void setEditText (String string) {
-	char [] buffer;
-	if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
-		hiddenText = string;
-		buffer = new char [Math.min(hiddenText.length (), textLimit)];
-		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
-	} else {
-		hiddenText = null;
-		buffer = new char [Math.min(string.length (), textLimit)];
-		string.getChars (0, buffer.length, buffer, 0);
-	}
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-	OS.CFRelease (ptr);
-	if (selection != null) selection = null;
 }
 
 /**
