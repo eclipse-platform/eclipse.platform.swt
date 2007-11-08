@@ -142,83 +142,61 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-int actionProc (int theControl, int partCode) {
-	int result = super.actionProc (theControl, partCode);
-	if (result == OS.noErr) return result;
-	Event event = new Event ();
-	int inc = 0;
-	switch (partCode) {
-	    case OS.kControlUpButtonPart:
-			inc -= increment;
-	        event.detail = SWT.ARROW_UP;
-	        break;
-	    case OS.kControlPageUpPart:
-			inc -= pageIncrement;
-	        event.detail = SWT.PAGE_UP;
-	        break;
-	    case OS.kControlPageDownPart:
-			inc += pageIncrement;
-	        event.detail = SWT.PAGE_DOWN;
-	        break;
-	    case OS.kControlDownButtonPart:
-			inc += increment;
-	        event.detail = SWT.ARROW_DOWN;
-	        break;
-	    case OS.kControlIndicatorPart:
-	    	dragging = true;
-			event.detail = SWT.DRAG;
-	        break;
-		default:
-			return result;
-	}
-	if (oldActionProc != 0) {
-		OS.Call (oldActionProc, theControl, partCode);
-		parent.redrawBackgroundImage ();
-	} else {
-		int value = OS.GetControl32BitValue (handle) + inc;	    
-		OS.SetControl32BitValue (handle, value);
-	}
-	sendEvent (SWT.Selection, event);
-	return result;
-}
+//int actionProc (int theControl, int partCode) {
+//	int result = super.actionProc (theControl, partCode);
+//	if (result == OS.noErr) return result;
+//	Event event = new Event ();
+//	int inc = 0;
+//	switch (partCode) {
+//	    case OS.kControlUpButtonPart:
+//			inc -= increment;
+//	        event.detail = SWT.ARROW_UP;
+//	        break;
+//	    case OS.kControlPageUpPart:
+//			inc -= pageIncrement;
+//	        event.detail = SWT.PAGE_UP;
+//	        break;
+//	    case OS.kControlPageDownPart:
+//			inc += pageIncrement;
+//	        event.detail = SWT.PAGE_DOWN;
+//	        break;
+//	    case OS.kControlDownButtonPart:
+//			inc += increment;
+//	        event.detail = SWT.ARROW_DOWN;
+//	        break;
+//	    case OS.kControlIndicatorPart:
+//	    	dragging = true;
+//			event.detail = SWT.DRAG;
+//	        break;
+//		default:
+//			return result;
+//	}
+//	if (oldActionProc != 0) {
+//		OS.Call (oldActionProc, theControl, partCode);
+//		parent.redrawBackgroundImage ();
+//	} else {
+//		int value = OS.GetControl32BitValue (handle) + inc;	    
+//		OS.SetControl32BitValue (handle, value);
+//	}
+//	sendEvent (SWT.Selection, event);
+//	return result;
+//}
 
 void destroyWidget () {
-	int theControl = handle;
-	releaseHandle ();
-	if (theControl != 0) {
-		OS.DisposeControl (theControl);
-	}
-}
-
-void enableWidget (boolean enabled) {
-	if (enabled) {
-		OS.EnableControl (handle);
-	} else {
-		OS.DisableControl (handle);
-	}
+//	int theControl = handle;
+//	releaseHandle ();
+//	if (theControl != 0) {
+//		OS.DisposeControl (theControl);
+//	}
 }
 
 void createHandle () {
-	int actionProc = display.actionProc;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.scrolledHandle);
-	OS.CreateScrollBarControl (window, null, 0, 0, 90, 10, true, actionProc, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-}
-
-void createWidget () {
-	super.createWidget ();
-	setZOrder ();
-}
-
-void deregister () {
-	super.deregister ();
-	display.removeWidget (handle);
-}
-
-int getDrawCount (int control) {
-	return parent.getDrawCount (control);
+//	int actionProc = display.actionProc;
+//	int [] outControl = new int [1];
+//	int window = OS.GetControlOwner (parent.scrolledHandle);
+//	OS.CreateScrollBarControl (window, null, 0, 0, 90, 10, true, actionProc, outControl);
+//	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+//	handle = outControl [0];
 }
 
 /**
@@ -395,53 +373,6 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
-int getVisibleRegion (int control, boolean clipChildren) {
-	if (visibleRgn == 0) {
-		visibleRgn = OS.NewRgn ();
-		calculateVisibleRegion (control, visibleRgn, clipChildren);
-	}
-	int result = OS.NewRgn ();
-	OS.CopyRgn (visibleRgn, result);
-	return result;
-}
-
-void hookEvents () {
-	super.hookEvents ();
-	int controlProc = display.controlProc;
-	int [] mask = new int [] {
-		OS.kEventClassControl, OS.kEventControlTrack,
-	};
-	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
-	if ((parent.state & CANVAS) == 0) {
-		oldActionProc = OS.GetControlAction (handle);
-		OS.SetControlAction (handle, display.actionProc);
-	}
-}
-
-
-void invalidateVisibleRegion (int control) {
-	resetVisibleRegion (control);
-	parent.resetVisibleRegion (control);
-}
-
-void invalWindowRgn (int window, int rgn) {
-	parent.invalWindowRgn (window, rgn);
-}
-
-boolean isDrawing (int control) {
-	/*
-	* Feature in the Macintosh.  The scroll bars in a DataBrowser are
-	* always invisible according to IsControlVisible(), despite the fact
-	* that they are drawn.  The fix is to check our visibility flag
-	* instead of calling IsControlVisible().
-	* 
-	* Note: During resize IsControlVisible() returns true allowing the
-	* clipping to be properly calculated.
-	*/
-	return isVisible () && getDrawCount (control) == 0;
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -462,10 +393,6 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-boolean isTrimHandle (int trimHandle) {
-	return handle == trimHandle;
-}
-
 /**
  * Returns <code>true</code> if the receiver is visible and all
  * of the receiver's ancestors are visible and <code>false</code>
@@ -483,36 +410,6 @@ boolean isTrimHandle (int trimHandle) {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible () && parent.isVisible ();
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int status = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (status == OS.noErr) return status;
-	dragging = false;
-	status = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (dragging) {
-		Event event = new Event ();
-		sendEvent (SWT.Selection, event);
-	}
-	dragging = false;
-	return status;
-}
-
-int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-    int oldSelection = getSelection ();
-    int result = OS.CallNextEventHandler (nextHandler, theEvent);
-    int newSelection = getSelection ();
-    if (oldSelection != newSelection) {
-    	Event event = new Event ();
-		event.detail = newSelection < oldSelection ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-        sendEvent (SWT.Selection, event);
-        parent.redrawBackgroundImage ();
-    }
-    return result;
-}
-
-void redraw () {
-	redrawWidget (handle, false);
 }
 
 /**
@@ -540,11 +437,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
-void register () {
-	super.register ();
-	display.addWidget (handle, this);
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
@@ -559,16 +451,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
-	visibleRgn = 0;
 	parent = null;
-}
-
-void resetVisibleRegion (int control) {
-	if (visibleRgn != 0) {
-		OS.DisposeRgn (visibleRgn);
-		visibleRgn = 0;
-	}
 }
 
 /**
@@ -786,10 +669,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget();
 	parent.setScrollBarVisible (this, visible);
-}
-
-void setZOrder () {
-	OS.HIViewAddSubview (parent.scrolledHandle, handle);
 }
 
 }

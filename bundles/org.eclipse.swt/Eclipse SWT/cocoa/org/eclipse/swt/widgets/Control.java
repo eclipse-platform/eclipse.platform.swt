@@ -594,7 +594,7 @@ Font defaultFont () {
 			return Font.cocoa_new (display, nsFont);
 		}
 	}
-	return null;
+	return display.getSystemFont ();
 }
 
 Color defaultForeground () {
