@@ -11,8 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -124,9 +123,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= GRAB | THEME_BACKGROUND;
-	super.createHandle (parent.handle);
-	OS.HIObjectSetAccessibilityIgnored (handle, false);
+	SWTView widget = (SWTView)new SWTView().alloc();
+	widget.initWithFrame(new NSRect());
+	widget.setDrawsBackground(false);
+	widget.setTag(jniRef);
+	view = widget;
+	parent.view.addSubview_(widget);
 }
 
 void createItem (ToolItem item, int index) {
@@ -136,7 +138,28 @@ void createItem (ToolItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	item.createWidget ();
+	if ((item.style & SWT.SEPARATOR) != 0) {
+		NSBox widget = (NSBox)new NSBox().alloc();
+		widget.initWithFrame(new NSRect());
+		widget.setBoxType(OS.NSBoxSeparator);
+		item.view = widget;
+	} else {
+		NSButton widget = (NSButton)new SWTButton().alloc();
+		widget.initWithFrame(new NSRect());
+		widget.setBordered((style & SWT.FLAT) == 0);
+		widget.setAction(OS.sel_sendSelection);
+		widget.setTarget(widget);
+		item.createJNIRef ();
+		widget.setTag(item.jniRef);
+		if ((style & SWT.RIGHT) != 0) {
+			widget.setImagePosition(OS.NSImageLeft);
+		} else {
+			widget.setImagePosition(OS.NSImageAbove);		
+		}
+		widget.setTitle(NSString.stringWith(""));
+		item.view = widget;
+	}
+	view.addSubview_(item.view);
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	relayout ();
@@ -146,11 +169,6 @@ void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
 	itemCount = 0;
-}
-
-int defaultThemeFont () {
-	if (display.smallFonts) return OS.kThemeToolbarFont;
-	return OS.kThemeSystemFont;
 }
 
 void destroyItem (ToolItem item) {
@@ -165,12 +183,10 @@ void destroyItem (ToolItem item) {
 	relayout ();
 }
 
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
-}
-
-void enableWidget (boolean enabled) {
-	/* Do nothing - A tool bar does not disable items when it is disabled */
+public Rectangle getClientArea () {
+	checkWidget();
+	NSRect rect = view.bounds();
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -306,53 +322,6 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
-void invalidateChildrenVisibleRegion (int control) {
-	super.invalidateChildrenVisibleRegion (control);
-	for (int i=0; i<itemCount; i++) {
-		ToolItem item = items [i];
-		item.resetVisibleRegion (control);
-	}
-}
-
-int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] stringRef = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
-	int length = 0;
-	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
-	char [] buffer = new char [length];
-	CFRange range = new CFRange ();
-	range.length = length;
-	OS.CFStringGetCharacters (stringRef [0], range, buffer);
-	String attributeName = new String(buffer);
-	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-		String roleText = OS.kAXToolbarRole;
-		buffer = new char [roleText.length ()];
-		roleText.getChars (0, buffer.length, buffer, 0);
-		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (attributeName.equals (OS.kAXRoleAttribute)) {
-			if (stringRef [0] != 0) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
-			}
-		}
-		if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-			if (stringRef [0] != 0) {
-				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-				OS.CFRelease(stringRef [0]);
-				OS.CFRelease(stringRef2);
-				return OS.noErr;
-			}
-		}
-	}
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
-	return code;
-}
-
 int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = 2;
 	int marginWidth = 0, marginHeight = 0;
@@ -386,9 +355,6 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		x += xSpacing + size.x;
 		maxX = Math.max (maxX, x);
 	}
-	
-	//TODO - tempporary code
-	if (resize) invalidateVisibleRegion (handle);
 	
 	return new int [] {rows, maxX, y + itemHeight};
 }
@@ -427,9 +393,6 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		maxY = Math.max (maxY, y);
 	}
 	
-	//TODO - tempporary code
-	if (resize) invalidateVisibleRegion (handle);
-	
 	return new int [] {cols, x + itemWidth, maxY};
 }
 
@@ -442,7 +405,7 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 }
 
 void relayout () {
-	if (drawCount > 0) return;
+	if (drawCount != 0) return;
 	Rectangle rect = getClientArea ();
 	layout (rect.width, rect.height, true);
 }
@@ -469,41 +432,10 @@ void removeControl (Control control) {
 	}
 }
 
-void setBackground (float [] color) {
-	super.setBackground (color);
-	if (items == null) return;
-	for (int i=0; i<itemCount; i++) {
-		ToolItem item = items [i];
-		item.setBackground (color);
-	}
-	redrawWidget (handle, true);
-}
-
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds (x, y, width, height, move, resize, events);
-	if ((result & RESIZED) != 0) 	relayout ();
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds (x, y, width, height, move, resize);
+	if ((result & RESIZED) != 0) relayout ();
 	return result;
-}
-
-void setFontStyle (Font font) {
-	super.setFontStyle (font);
-	if (items == null) return;
-	for (int i=0; i<itemCount; i++) {
-		ToolItem item = items [i];
-		item.setFontStyle (font);
-	}
-	redrawWidget (handle, true);
-	relayout ();
-}
-
-void setForeground (float [] color) {
-	super.setForeground (color);
-	if (items == null) return;
-	for (int i=0; i<itemCount; i++) {
-		ToolItem item = items [i];
-		item.setForeground (color);
-	}
-	redrawWidget (handle, true);
 }
 
 public void setRedraw (boolean redraw) {

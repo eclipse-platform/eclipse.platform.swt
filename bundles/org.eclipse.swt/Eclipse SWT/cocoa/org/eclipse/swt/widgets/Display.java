@@ -1523,6 +1523,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_drawRect_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
@@ -2667,6 +2668,8 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.comboBoxSelectionDidChange(arg0);
 	} else if (sel == OS.sel_tableViewSelectionDidChange_1) {
 		widget.tableViewSelectionDidChange(arg0);
+	} else if (sel == OS.sel_drawRect_1) {
+		widget.drawRect(arg0);
 	}
 	return 0;
 }

@@ -294,11 +294,7 @@ void createJNIRef () {
 void createWidget () {
 	createJNIRef ();
 	createHandle ();
-	register ();
 	hookEvents ();
-}
-
-void deregister () {
 }
 
 void destroyWidget () {
@@ -340,6 +336,10 @@ public void dispose () {
 
 void drawBackground (int control, int context) {
 	/* Do nothing */
+}
+
+void drawRect(int rect) {
+	
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
@@ -588,9 +588,6 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
-void register () {
-}
-
 void release (boolean destroy) {
 	if ((state & DISPOSE_SENT) == 0) {
 		state |= DISPOSE_SENT;
@@ -627,7 +624,6 @@ void releaseParent () {
 }
 
 void releaseWidget () {
-	deregister ();
 	eventTable = null;
 	data = null;
 }
