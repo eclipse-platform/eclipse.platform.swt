@@ -709,10 +709,6 @@ boolean hasBorder () {
 	return false;
 }
 
-void hookEvents () {
-	super.hookEvents ();	
-}
-
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();

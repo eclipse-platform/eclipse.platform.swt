@@ -1573,6 +1573,12 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
+
+	className = "SWTStepper";
+	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
@@ -2076,7 +2082,8 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	application.run ();	
+	application.run ();
+//	application.nextEventMatchingMask(mask, expiration, mode, deqFlag)
 	return true;
 }
 

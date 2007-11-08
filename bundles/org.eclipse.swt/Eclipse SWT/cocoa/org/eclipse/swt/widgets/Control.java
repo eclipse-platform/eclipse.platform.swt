@@ -1200,12 +1200,6 @@ boolean hasFocus () {
 	return this == display.getFocusControl ();
 }
 
-
-void hookEvents () {
-	super.hookEvents ();
-	
-}
-
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>

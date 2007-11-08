@@ -214,10 +214,6 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
-void hookEvents () {
-	super.hookEvents ();
-}
-
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
