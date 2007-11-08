@@ -207,7 +207,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsHeight, metric);
 //	trim.height = Math.max (trim.height, metric [0]);
 //	return new Point (trim.width, trim.height);
-	return null;
+	return new Point(60, 26);
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -219,7 +219,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 //	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsWidth, outMetric);
 //	width += outMetric [0] + GAP;
 //	return new Rectangle (x, y, width, height);
-	return null;
+	return super.computeTrim(x, y, width, height);
 }
 
 /**
@@ -270,7 +270,7 @@ void createHandle () {
 	buttonView = buttonWidget;
 	textView = textWidget;
 	view = widget;	
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 	setSelection (0, false, true, false);
 }
 

@@ -2270,6 +2270,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	} else if (resize) {
 		if (rect.width != width || rect.height != height) {
+			result |= RESIZED;
 			NSSize size = new NSSize();
 			size.width = width;
 			size.height = height;

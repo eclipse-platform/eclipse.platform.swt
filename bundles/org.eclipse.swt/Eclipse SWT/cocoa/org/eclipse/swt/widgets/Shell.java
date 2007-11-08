@@ -1208,7 +1208,12 @@ void windowDidMove(int notification) {
 }
 
 void windowDidResize(int notification) {
-	sendEvent(SWT.Resize);
+	sendEvent (SWT.Resize);
+	if (isDisposed ()) return;
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false);
+	}
 }
 
 boolean windowShouldClose(int window) {

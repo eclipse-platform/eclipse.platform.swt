@@ -128,7 +128,7 @@ void createHandle () {
 	NSTextField widget = (NSTextField)new NSTextField().alloc();
 	widget = (NSTextField)widget.initWithFrame(new NSRect());
 	view = widget;
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 }
 
 /**

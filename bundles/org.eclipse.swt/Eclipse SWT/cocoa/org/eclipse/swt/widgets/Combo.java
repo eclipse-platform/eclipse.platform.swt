@@ -373,8 +373,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //	height += inset.top + inset.bottom;
 //	if (wHint != SWT.DEFAULT) width = wHint;
 //	if (hHint != SWT.DEFAULT) height = hHint;
-//	return new Point (width, height);
-	return null;
+	return super.computeSize(wHint, hHint, changed);
 }
 
 /**
@@ -413,7 +412,7 @@ void createHandle () {
 		widget.setTag(jniRef);
 		widget.setDelegate(widget);
 		view = widget;
-		parent.view.addSubview_(widget);
+		parent.contentView().addSubview_(widget);
 	}
 }
 

@@ -89,29 +89,25 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-//	short [] buffer = new short [1];
-//	OS.CountSubControls (handle, buffer);
-//	int count = buffer [0];
-//	Control [] children = new Control [count];
-//	int i = 0, j = 0;
-//	int child = OS.HIViewGetFirstSubview (handle);
-//	while (i < count) {
-//		if (child != 0) {
-//			Widget widget = display.getWidget (child);
-//			if (widget != null && widget != this) {
-//				if (widget instanceof Control) {
-//					children [j++] = (Control) widget;
-//				}
-//			}
-//		}
-//		child = OS.HIViewGetNextView (child);
-//		i++;
-//	}
-//	if (j == count) return children;
-//	Control [] newChildren = new Control [j];
-//	System.arraycopy (children, 0, newChildren, 0, j);
-//	return newChildren;
-	return new Control[0];
+	NSArray views = contentView().subviews();
+	int count = views.count();
+	Control [] children = new Control [count];
+	int j = 0;
+	for (int i=0; i<count; i++){
+		int tag = new NSView(views.objectAtIndex(i)).tag();
+		if (tag != 0 && tag != -1) {
+			Widget widget = (Widget)OS.JNIGetObject(tag);
+			if (widget != null && widget != this) {
+				if (widget instanceof Control) {
+					children [j++] = (Control) widget;
+				}
+			}
+		}
+	}
+	if (j == count) return children;
+	Control [] newChildren = new Control [j];
+	System.arraycopy (children, 0, newChildren, 0, j);
+	return newChildren;
 }
 
 Control [] _getTabList () {
@@ -222,6 +218,10 @@ Control [] computeTabList () {
 	return result;
 }
 
+NSView contentView () {
+	return view;
+}
+
 void createHandle () {
 	state |= CANVAS | GRAB;
 	SWTView widget = (SWTView)new SWTView().alloc();
@@ -229,7 +229,7 @@ void createHandle () {
 	widget.setDrawsBackground(false);
 	widget.setTag(jniRef);
 	view = widget;
-	parent.view.addSubview_(view);
+	parent.contentView().addSubview_(view);
 }
 
 Composite findDeferredControl () {

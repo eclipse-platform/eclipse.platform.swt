@@ -76,20 +76,18 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-//	int [] outMetric = new int [1];
-//	OS.GetThemeMetric (OS.kThemeMetricNormalProgressBarThickness, outMetric);
-//	int width = 0, height = 0;
-//	if ((style & SWT.HORIZONTAL) != 0) {
-//		height = outMetric [0];
-//		width = height * 10;
-//	} else {
-//		width = outMetric [0];
-//		height = width * 10;
-//	}
-//	if (wHint != SWT.DEFAULT) width = wHint;
-//	if (hHint != SWT.DEFAULT) height = hHint;
-//	return new Point (width, height);
-	return null;
+	Point size = super.computeSize(wHint, hHint, changed);
+	int width = 0, height = 0;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		height = size.x;
+		width = height * 10;
+	} else {
+		width = size.y;
+		height = width * 10;
+	}
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point (width, height);
 }
 
 void createHandle () {
@@ -98,7 +96,7 @@ void createHandle () {
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
 	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
 	view = widget;
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 }
 
 /**

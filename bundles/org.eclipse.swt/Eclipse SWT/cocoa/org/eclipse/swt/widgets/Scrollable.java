@@ -109,8 +109,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 //	y -= inset.top;
 //	width += inset.left + inset.right;
 //	height += inset.top + inset.bottom;
-//	return new Rectangle (x, y, width, height);
-	return null;
+	return new Rectangle (x, y, width, height);
 }
 
 ScrollBar createScrollBar (int style) {
@@ -276,18 +275,6 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 //		}
 //	}
 	return false;
-}
-
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds(x, y, width, height, move, resize);
-//	if ((result & MOVED) != 0) {
-//		if (events) sendEvent (SWT.Move);
-//	}
-//	if ((result & RESIZED) != 0) {
-//		resizeClientArea ();
-//		if (events) sendEvent (SWT.Resize);
-//	}
-	return result;
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {

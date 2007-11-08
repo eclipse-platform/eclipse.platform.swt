@@ -276,59 +276,32 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-//	int width = 0, height = 0;
-//	if (txnObject == 0) {
-//		if ((style & SWT.RIGHT) != 0) {
-//			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
-//		}
-//		Rect rect = new Rect ();
-//		OS.GetBestControlRect (handle, rect, null);
-//		if ((style & SWT.RIGHT) != 0) {
-//			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {0});
-//		}
-//		width = rect.right - rect.left;
-//		height = rect.bottom - rect.top;
-//		if ((style & SWT.SEARCH) != 0) {
-//			int [] ptr1 = new int [1];
-//			OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr1, null);
-//			Point size1 = textExtent (ptr1 [0], 0);
-//			if (ptr1 [0] != 0) OS.CFRelease (ptr1 [0]);
-//			width = size1.x;
-//			//This code is intentionally commented
-////			int [] ptr2 = new int [1];
-////			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
-////			Point size2 = textExtent (ptr2 [0], 0);
-////			width = Math.max (width, size2.x);
-////			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
-//		}
-//	} else {
-//		int [] oDataHandle = new int [1];
-//		OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
-//		if (oDataHandle [0] != 0) {
-//			int length = OS.GetHandleSize (oDataHandle [0]), str = 0;
-//			if (length != 0) {
-//				int [] ptr = new int [1];
-//				OS.HLock (oDataHandle [0]);
-//				OS.memmove (ptr, oDataHandle [0], 4);
-//				str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);					
-//				OS.HUnlock (oDataHandle[0]);
-//			}
-//			OS.DisposeHandle (oDataHandle[0]);
-//			Point size = textExtent (str, wHint != SWT.DEFAULT && (style & SWT.WRAP) != 0 ? wHint : 0);
-//			if (str != 0) OS.CFRelease(str);
-//			width = size.x;
-//			height = size.y;
-//		}
-//	}
-//	if (width <= 0) width = DEFAULT_WIDTH;
-//	if (height <= 0) height = DEFAULT_HEIGHT;
-//	if (wHint != SWT.DEFAULT) width = wHint;
-//	if (hHint != SWT.DEFAULT) height = hHint;
-//	Rectangle trim = computeTrim (0, 0, width, height);
-//	width = trim.width;
-//	height = trim.height;
-//	return new Point (width, height);
-	return null;
+	int width = 0, height = 0;
+	if ((style & SWT.SINGLE) != 0) {
+		NSTextField widget = (NSTextField)view;
+		NSRect oldRect = widget.frame();
+		widget.sizeToFit();
+		NSRect newRect = topView().frame();
+		widget.setFrame (oldRect);
+		width = (int)newRect.width;
+		height = (int)newRect.height;
+	} else {
+		NSTextView widget = (NSTextView)view;
+		NSRect oldRect = widget.frame();
+		widget.sizeToFit();
+		NSRect newRect = topView().frame();
+		widget.setFrame (oldRect);
+		width = (int)newRect.width;
+		height = (int)newRect.height;
+	}
+	if (width <= 0) width = DEFAULT_WIDTH;
+	if (height <= 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	Rectangle trim = computeTrim (0, 0, width, height);
+	width = trim.width;
+	height = trim.height;
+	return new Point (width, height);
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -365,8 +338,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 //		}
 //		width += left [0] + right [0];
 //	}
-//	return new Rectangle (x, y, width, height);
-	return null;
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -405,15 +377,16 @@ void createHandle () {
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
 		view = widget;
-		parent.view.addSubview_(widget);
+		parent.contentView().addSubview_(widget);
 	} else {
-		NSScrollView scrollWidget = (NSScrollView)new NSScrollView().alloc();
+		SWTView scrollWidget = (SWTView)new SWTView().alloc();
 		scrollWidget.initWithFrame(new NSRect());
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
 		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
 		scrollWidget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+		scrollWidget.setTag(jniRef);
 		
-		NSTextView widget = (NSTextView)new NSTextView().alloc();
+		SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		
@@ -437,12 +410,12 @@ void createHandle () {
 		
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
-//		widget.setTag(jniRef);
+		widget.setTag(jniRef);
 		
 		view = widget;
 		scrollView = scrollWidget;
 		scrollView.setDocumentView(widget);
-		parent.view.addSubview_(scrollView);
+		parent.contentView().addSubview_(scrollView);
 	}
 	
 //	int [] outControl = new int [1];

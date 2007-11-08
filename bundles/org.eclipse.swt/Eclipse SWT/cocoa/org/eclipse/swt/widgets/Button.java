@@ -155,7 +155,7 @@ void createHandle () {
 	widget.setAction(OS.sel_sendSelection);
 	widget.setTag(jniRef);
 	view = widget;	
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 }
 
 /**
@@ -306,7 +306,12 @@ void selectRadio () {
 
 void sendSelection () {
 	//TODO post
-	sendEvent(SWT.Selection);
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
+	sendEvent (SWT.Selection);
 }
 
 
@@ -438,9 +443,10 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
-	NSString str = NSString.stringWith(string);
-	((NSButton)view).setTitle(str);
-//	str.release();
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int length = fixMnemonic (buffer);
+	((NSButton)view).setTitle(NSString.stringWithCharacters(buffer, length));
 }
 
 int traversalCode (int key, int theEvent) {

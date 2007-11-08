@@ -127,7 +127,7 @@ void createHandle () {
 	widget.setDrawsBackground(false);
 	widget.setTag(jniRef);
 	view = widget;
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 }
 
 void createItem (ToolItem item, int index) {

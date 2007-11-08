@@ -130,7 +130,7 @@ void createHandle () {
 	NSSlider widget = (NSSlider)new NSSlider().alloc();
 	widget = (NSSlider)widget.initWithFrame(new NSRect());
 	view = widget;
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 	widget.setMaxValue(100);
 }
 

@@ -36,6 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p>
  */
 public class Group extends Composite {
+	NSView contentView;
 	String text = "";
 	
 /**
@@ -92,48 +93,40 @@ protected void checkSubclass () {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-//	CGRect oldBounds = new CGRect (), bounds = oldBounds;
-//	OS.HIViewGetFrame (handle, oldBounds);
-//	int MIN_SIZE = 100;
-//	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-//		OS.HIViewSetDrawingEnabled (handle, false);
-//		bounds = new CGRect ();
-//		bounds.width = bounds.height = 100;
-//		OS.HIViewSetFrame (handle, bounds);
-//	}
-//	int rgnHandle = OS.NewRgn ();
-//	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
-//	Rect client = new Rect ();
-//	OS.GetRegionBounds (rgnHandle, client);
-//	OS.DisposeRgn (rgnHandle);
-//	width += (int) bounds.width - (client.right - client.left);
-//	height += (int) bounds.height - (client.bottom - client.top);
-//	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-//		OS.HIViewSetFrame (handle, oldBounds);
-//		OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
-//	}
-//	return new Rectangle (-client.left, -client.top, width, height);
-	return null;
+	NSBox widget = (NSBox)view;
+//	NSSize margins = widget.contentViewMargins();
+//	NSRect titleRect = widget.titleRect();
+	NSRect frame = contentView.frame();
+	x -= frame.x;
+	y -= frame.y;
+	width += frame.x * 2;
+	height += frame.y * 2;
+	return super.computeTrim(x, y, width, height);
+}
+
+NSView contentView () {
+	return contentView;
 }
 
 void createHandle () {
-	NSBox widget = (NSBox)new NSBox().alloc();
+	SWTBox widget = (SWTBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setTitle(NSString.stringWith(""));
-//	widget.setTag(jniRef);
+	widget.setTag(jniRef);
+	SWTView contentWidget = (SWTView)new SWTView().alloc();
+	contentWidget.initWithFrame(new NSRect());
+	contentWidget.setTag(jniRef);
+	contentWidget.setDrawsBackground(false);
+	widget.setContentView(contentWidget);
+	contentView = contentWidget;
 	view = widget;	
-	parent.view.addSubview_(widget);
+	parent.contentView().addSubview_(widget);
 }
 
 public Rectangle getClientArea () {
 	checkWidget();
-//	int rgnHandle = OS.NewRgn ();
-//	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
-//	Rect client = new Rect ();
-//	OS.GetRegionBounds (rgnHandle, client);
-//	OS.DisposeRgn (rgnHandle);
-//	return new Rectangle (client.left, client.top, client.right - client.left, client.bottom - client.top);
-	return null;
+	NSRect rect = contentView.bounds();
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 String getNameText () {

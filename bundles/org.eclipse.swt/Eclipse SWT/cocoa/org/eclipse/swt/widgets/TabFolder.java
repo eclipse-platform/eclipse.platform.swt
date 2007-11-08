@@ -127,8 +127,8 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-//	Point size = super.computeSize (wHint, hHint, changed);
-//	if (wHint == SWT.DEFAULT && items.length > 0) {
+	Point size = super.computeSize (wHint, hHint, changed);
+	if (wHint == SWT.DEFAULT && items.length > 0) {
 //		int width = 0;
 //		GC gc = new GC (this);
 //		for (int i = 0; i < items.length; i++) {
@@ -139,9 +139,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //		gc.dispose ();
 //		Rectangle trim = computeTrim (0, 0, width, 0);
 //		size.x = Math.max (trim.width, size.x);
-//	}
-//	return size;
-	return null;
+	}
+	return size;
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -171,7 +170,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 //	width += inset.left + inset.right;
 //	height += inset.top + inset.bottom;
 //	return new Rectangle (-client.left, -client.top, width, height);
-	return null;
+	return super.computeTrim(x, y, width, height);
 }
 
 void createHandle () {
@@ -183,7 +182,7 @@ void createHandle () {
 		widget.setTabViewType(OS.NSBottomTabsBezelBorder);
 	}
 	view = widget;
-	parent.view.addSubview_(view);
+	parent.contentView().addSubview_(view);
 }
 
 void createItem (TabItem item, int index) {

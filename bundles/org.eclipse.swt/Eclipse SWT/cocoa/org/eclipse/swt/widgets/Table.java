@@ -403,7 +403,7 @@ void createHandle () {
 	
 	view = widget;
 	widget.setTag(jniRef);
-	parent.view.addSubview_(scrollView);
+	parent.contentView().addSubview_(scrollView);
 }
 
 void createItem (TableColumn column, int index) {
