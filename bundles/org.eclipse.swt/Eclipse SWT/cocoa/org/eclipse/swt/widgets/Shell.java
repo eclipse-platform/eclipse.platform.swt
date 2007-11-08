@@ -469,7 +469,7 @@ void createHandle () {
 	
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget = (SWTView)widget.initWithFrame (new NSRect());
-	widget.setBackgroundColor(NSColor.colorWithDeviceRed(1, 0, 0, 1));
+	widget.setDrawsBackground(false);
 	widget.setTag(jniRef);
 	window.setContentView (widget);
 	view = widget;

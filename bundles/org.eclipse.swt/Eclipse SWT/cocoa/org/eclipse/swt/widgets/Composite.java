@@ -226,6 +226,7 @@ void createHandle () {
 	state |= CANVAS | GRAB;
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame (new NSRect());
+	widget.setDrawsBackground(false);
 	widget.setTag(jniRef);
 	view = widget;
 	parent.view.addSubview_(view);
