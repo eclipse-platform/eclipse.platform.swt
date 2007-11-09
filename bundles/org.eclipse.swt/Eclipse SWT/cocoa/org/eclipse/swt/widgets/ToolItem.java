@@ -45,6 +45,7 @@ public class ToolItem extends Item {
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 6;
+	static final int INSET = 3;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -186,8 +187,8 @@ Point computeSize () {
 	} else {
 		((NSButton)view).sizeToFit ();
 		NSRect rect = view.frame();
-		width = (int)rect.width;
-		height = (int)rect.height;
+		width = (int)rect.width + INSET;
+		height = (int)rect.height + INSET;
 		view.setNeedsDisplay(true);
 	}
 	return new Point (width, height);

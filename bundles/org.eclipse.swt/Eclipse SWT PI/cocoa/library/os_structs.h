@@ -143,3 +143,15 @@ void setNSSwappedFloatFields(JNIEnv *env, jobject lpObject, NSSwappedFloat *lpSt
 #define NSSwappedFloat_sizeof() 0
 #endif
 
+#ifndef NO_objc_super
+void cacheobjc_superFields(JNIEnv *env, jobject lpObject);
+struct objc_super *getobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStruct);
+void setobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStruct);
+#define objc_super_sizeof() sizeof(objc_super)
+#else
+#define cacheobjc_superFields(a,b)
+#define getobjc_superFields(a,b,c) NULL
+#define setobjc_superFields(a,b,c)
+#define objc_super_sizeof() 0
+#endif
+

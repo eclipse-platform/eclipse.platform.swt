@@ -337,8 +337,10 @@ void drawBackground (int control, int context) {
 	/* Do nothing */
 }
 
-void drawRect(int rect) {
-	
+void preDrawRect(NSRect rect) {
+}
+
+void drawRect(NSRect rect) {
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {

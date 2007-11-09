@@ -1532,6 +1532,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
@@ -1607,6 +1608,7 @@ void initClasses () {
 	className = "SWTImageView";
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
 	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
@@ -2754,6 +2756,15 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_1) {
 		widget.windowWillClose(arg0);
+	} else if (sel == OS.sel_drawRect_1) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		objc_super super_struct = new objc_super();
+		super_struct.receiver = delegate;
+		super_struct.cls = OS.objc_msgSend(delegate, OS.sel_superclass);
+		widget.preDrawRect(rect);
+		OS.objc_msgSendSuper(super_struct, OS.sel_drawRect_1, rect);
+		widget.drawRect(rect);
 	} else if (sel == OS.sel_windowShouldClose_1) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {
@@ -2770,8 +2781,6 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.comboBoxSelectionDidChange(arg0);
 	} else if (sel == OS.sel_tableViewSelectionDidChange_1) {
 		widget.tableViewSelectionDidChange(arg0);
-	} else if (sel == OS.sel_drawRect_1) {
-		widget.drawRect(arg0);
 	} else if (sel == OS.sel_windowDidResize_1) {
 		widget.windowDidResize(arg0);
 	} else if (sel == OS.sel_windowDidMove_1) {

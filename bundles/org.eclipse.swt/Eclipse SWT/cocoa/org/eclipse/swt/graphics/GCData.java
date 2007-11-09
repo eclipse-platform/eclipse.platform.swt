@@ -49,6 +49,7 @@ public final class GCData {
 
 	public Image image;
 	
+	public NSRect paintRect;
 	NSBezierPath path;
 	NSAffineTransform transform, inverseTransform;
 }

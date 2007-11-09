@@ -726,6 +726,24 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
+void drawRect(NSRect rect) {
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
+
+	/* Send paint event */
+	GCData data = new GCData ();
+	data.paintRect = rect;
+	GC gc = GC.carbon_new (this, data);
+	Event event = new Event ();
+	event.gc = gc;
+	event.x = (int)rect.x;
+	event.y = (int)rect.y;
+	event.width = (int)rect.width;
+	event.height = (int)rect.height;
+	sendEvent (SWT.Paint, event);
+	event.gc = null;
+	gc.dispose ();
+}
+
 void enableWidget (boolean enabled) {
 //	int topHandle = stopHandle ();
 //	if (enabled) {
@@ -1223,109 +1241,25 @@ boolean hasFocus () {
  */
 public int internal_new_GC (GCData data) {
 	checkWidget();
+	int context = 0;
+	if (data != null && data.paintRect != null) {
+		context = NSGraphicsContext.currentContext().id;
+	} else {
+		context = NSGraphicsContext.graphicsContextWithWindow(view.window()).id;
+	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
 		data.device = display;
-//		data.thread = display.thread;
 		data.foreground = getForegroundColor ().handle;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		data.background = control.getBackgroundColor ().handle;
-		data.font = font != null ? font : defaultFont ();
-//		data.visibleRgn = visibleRgn;
-//		data.control = handle;
-//		data.portRect = portRect;
-//		data.controlRect = rect;
-//		data.insetRect = getInset ();
-		
-		//TODO - wrong not clipped etc
-		//data.path = NSBezierPath.bezierPath();
-		Shell shell = getShell();
-		return NSGraphicsContext.graphicsContextWithWindow(shell.window).id;
+		data.font = font != null ? font : defaultFont ();		
 	}
-	//BAD
-	return 0;
-	
-//	int window = OS.GetControlOwner (handle);
-//	int port = data != null ? data.port : 0;
-//	if (port == 0) port = OS.GetWindowPort (window);
-//	int context;
-//	int [] buffer = new int [1];
-//	boolean isPaint = data != null && data.paintEvent != 0; 
-//	if (isPaint) {
-//		OS.GetEventParameter (data.paintEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
-//	} else {
-//		OS.CreateCGContextForPort (port, buffer);
-//	}
-//	context = buffer [0];
-//	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-//	int visibleRgn = 0;
-//	if (data != null && data.paintEvent != 0) {
-//		visibleRgn = data.visibleRgn;
-//	} else {
-//		if (getDrawCount (handle) > 0) {
-//			visibleRgn = OS.NewRgn ();
-//		} else {
-//			visibleRgn = getVisibleRegion (handle, true);
-//		}
-//	}
-//	Rect rect = new Rect ();
-//	Rect portRect = new Rect ();
-//	OS.GetControlBounds (handle, rect);
-//	OS.GetPortBounds (port, portRect);
-//	if (isPaint) {
-//		rect.right += rect.left;
-//		rect.bottom += rect.top;
-//		rect.left = rect.top = 0;
-//	} else {
-//		int [] contentView = new int [1];
-//		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
-//		CGPoint pt = new CGPoint ();
-//		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
-//		rect.left += (int) pt.x;
-//		rect.top += (int) pt.y;
-//		rect.right += (int) pt.x;
-//		rect.bottom += (int) pt.y;
-//		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
-//		int portHeight = portRect.bottom - portRect.top;
-//		OS.CGContextScaleCTM (context, 1, -1);
-//		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-//	}
-//	if (data != null) {
-//		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-//		if ((data.style & mask) == 0) {
-//			data.style |= style & (mask | SWT.MIRRORED);
-//		}
-//		data.device = display;
-//		data.thread = display.thread;
-//		data.foreground = getForegroundColor ().handle;
-//		Control control = findBackgroundControl ();
-//		if (control == null) control = this;
-//		data.background = control.getBackgroundColor ().handle;
-//		data.font = font != null ? font : defaultFont ();
-//		data.visibleRgn = visibleRgn;
-//		data.control = handle;
-//		data.portRect = portRect;
-//		data.controlRect = rect;
-//		data.insetRect = getInset ();
-//	
-//		if (data.paintEvent == 0) {
-//			if (gcs == null) gcs = new GCData [4];
-//			int index = 0;
-//			while (index < gcs.length && gcs [index] != null) index++;
-//			if (index == gcs.length) {
-//				GCData [] newGCs = new GCData [gcs.length + 4];
-//				System.arraycopy (gcs, 0, newGCs, 0, gcs.length);
-//				gcs = newGCs;
-//			}
-//			gcs [index] = data;
-//		}
-//	}
-//	return context;
-//	return 0;
+	return context;
 }
 
 /**	 
@@ -1343,37 +1277,6 @@ public int internal_new_GC (GCData data) {
  */
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();	
-	if (data != null) {
-		//new NSGraphicsContext (context).release ();
-	}
-	
-//	if (data != null) {
-//		if (data.paintEvent == 0) {
-//			if (data.visibleRgn != 0) {
-//				OS.DisposeRgn (data.visibleRgn);
-//				data.visibleRgn = 0;
-//			}
-//			
-//			int index = 0;
-//			while (index < gcs.length && gcs [index] != data) index++;
-//			if (index < gcs.length) {
-//				gcs [index] = null;
-//				index = 0;
-//				while (index < gcs.length && gcs [index] == null) index++;
-//				if (index == gcs.length) gcs = null;
-//			}
-//		} else {
-//			return;
-//		}
-//	}
-//	
-//	/*
-//	* This code is intentionally commented. Use CGContextSynchronize
-//	* instead of CGContextFlush to improve performance.
-//	*/
-////	OS.CGContextFlush (context);
-//	OS.CGContextSynchronize (context);
-//	OS.CGContextRelease (context);
 }
 
 /**
