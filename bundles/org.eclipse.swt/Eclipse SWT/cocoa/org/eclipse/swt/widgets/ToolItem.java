@@ -45,8 +45,6 @@ public class ToolItem extends Item {
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 6;
-	static final int ARROW_WIDTH = 9;
-	static final int INSET = 3;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -651,6 +649,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+	view.setToolTip(NSString.stringWith(string));
 }
 
 void setVisible (boolean visible) {

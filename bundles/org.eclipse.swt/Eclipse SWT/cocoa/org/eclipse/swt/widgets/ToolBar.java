@@ -147,7 +147,8 @@ void createItem (ToolItem item, int index) {
 	} else {
 		NSButton widget = (NSButton)new SWTButton().alloc();
 		widget.initWithFrame(new NSRect());
-		widget.setBordered((style & SWT.FLAT) == 0);
+//		widget.setBordered((style & SWT.FLAT) == 0);
+		widget.setBordered(false);
 		widget.setAction(OS.sel_sendSelection);
 		widget.setTarget(widget);
 		widget.setTag(item.jniRef);
