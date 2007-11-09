@@ -23,6 +23,15 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet62 {
 
+static String stateMask (int stateMask) {
+	String string = "";
+	if ((stateMask & SWT.CTRL) != 0) string += " CTRL";
+	if ((stateMask & SWT.ALT) != 0) string += " ALT";
+	if ((stateMask & SWT.SHIFT) != 0) string += " SHIFT";
+	if ((stateMask & SWT.COMMAND) != 0) string += " COMMAND";
+	return string;
+}
+
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
@@ -35,7 +44,7 @@ public static void main (String [] args) {
 				case SWT.MouseUp: string = "UP"; break;
 			}
 			string +=": button: " + e.button + ", ";
-			string += "stateMask=0x" + Integer.toHexString (e.stateMask);
+			string += "stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask (e.stateMask) + ", x=" + e.x + ", y=" + e.y;
 			if ((e.stateMask & SWT.BUTTON1) != 0) string += " BUTTON1";
 			if ((e.stateMask & SWT.BUTTON2) != 0) string += " BUTTON2";
 			if ((e.stateMask & SWT.BUTTON3) != 0) string += " BUTTON3";
