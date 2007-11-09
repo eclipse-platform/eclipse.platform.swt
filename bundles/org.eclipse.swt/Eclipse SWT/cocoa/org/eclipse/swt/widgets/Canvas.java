@@ -42,6 +42,17 @@ Canvas () {
 	/* Do nothing */
 }
 
+boolean becomeFirstResponder () {
+	if (caret != null) caret.setFocus ();
+	return super.becomeFirstResponder();
+}
+
+boolean resignFirstResponder () {
+	if (caret != null) caret.killFocus ();
+	return super.resignFirstResponder();
+}
+
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

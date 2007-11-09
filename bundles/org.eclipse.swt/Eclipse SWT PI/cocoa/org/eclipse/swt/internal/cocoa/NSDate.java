@@ -49,9 +49,9 @@ public static id dateWithTimeIntervalSince1970(double secs) {
 	return result != 0 ? new id(result) : null;
 }
 
-public static id dateWithTimeIntervalSinceNow(double secs) {
+public static NSDate dateWithTimeIntervalSinceNow(double secs) {
 	int result = OS.objc_msgSend(OS.class_NSDate, OS.sel_dateWithTimeIntervalSinceNow_1, secs);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSDate(result) : null;
 }
 
 public static id dateWithTimeIntervalSinceReferenceDate(double secs) {

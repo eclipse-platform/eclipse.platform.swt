@@ -128,6 +128,14 @@ boolean acceptsFirstResponder () {
 	return false;
 }
 
+boolean becomeFirstResponder () {
+	return true;
+}
+
+boolean resignFirstResponder () {
+	return true;
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when an event of the given type occurs. When the

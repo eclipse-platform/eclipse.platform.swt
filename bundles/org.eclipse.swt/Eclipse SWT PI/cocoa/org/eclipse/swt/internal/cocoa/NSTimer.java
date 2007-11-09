@@ -37,8 +37,8 @@ public static NSTimer static_scheduledTimerWithTimeInterval_invocation_repeats_(
 	return result != 0 ? new NSTimer(result) : null;
 }
 
-public static NSTimer static_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(double ti, id aTarget, int aSelector, id userInfo, boolean yesOrNo) {
-	int result = OS.objc_msgSend(OS.class_NSTimer, OS.sel_scheduledTimerWithTimeInterval_1target_1selector_1userInfo_1repeats_1, ti, aTarget != null ? aTarget.id : 0, aSelector, userInfo != null ? userInfo.id : 0, yesOrNo);
+public static NSTimer static_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(double ti, id aTarget, int aSelector, int userInfo, boolean yesOrNo) {
+	int result = OS.objc_msgSend(OS.class_NSTimer, OS.sel_scheduledTimerWithTimeInterval_1target_1selector_1userInfo_1repeats_1, ti, aTarget != null ? aTarget.id : 0, aSelector, userInfo, yesOrNo);
 	return result != 0 ? new NSTimer(result) : null;
 }
 
@@ -60,9 +60,8 @@ public static NSTimer static_timerWithTimeInterval_target_selector_userInfo_repe
 	return result != 0 ? new NSTimer(result) : null;
 }
 
-public id userInfo() {
-	int result = OS.objc_msgSend(this.id, OS.sel_userInfo);
-	return result != 0 ? new id(result) : null;
+public int userInfo() {
+	return OS.objc_msgSend(this.id, OS.sel_userInfo);
 }
 
 }

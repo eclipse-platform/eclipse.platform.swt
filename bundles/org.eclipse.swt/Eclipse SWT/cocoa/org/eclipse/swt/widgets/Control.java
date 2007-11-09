@@ -108,6 +108,24 @@ boolean acceptsFirstResponder () {
 	return OS.objc_msgSendSuper(super_struct, OS.sel_acceptsFirstResponder) != 0;
 }
 
+boolean becomeFirstResponder () {
+//TODO - query focusControl() in SWT.FocusIn/Out is the control
+	sendEvent (SWT.FocusIn);
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = view.id;
+	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, OS.sel_becomeFirstResponder) != 0;
+}
+
+boolean resignFirstResponder () {
+//TODO - query focusControl() in SWT.FocusIn/Out is the control
+	sendEvent (SWT.FocusOut);
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = view.id;
+	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, OS.sel_resignFirstResponder) != 0;
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -1524,15 +1542,23 @@ boolean sendKeyEvent (Event event) {
 	return event.doit;
 }
 
+//TODO - missing modifier keys (see flagsChanged:)
 void sendKeyEvent (NSEvent nsEvent, int type) {
 	int count = 0;
 	NSString keys = nsEvent.characters();
-	NSString keyCodes = nsEvent.charactersIgnoringModifiers();
+	//TODO - check lowercase doesn't mangle char codes
+	NSString keyCodes = nsEvent.charactersIgnoringModifiers().lowercaseString();
 	char [] chars = new char [keys.length()];
 	for (int i=0; i<keys.length(); i++) {
 		Event event = new Event ();
-		event.character = (char) keys.characterAtIndex (i);
-		event.keyCode = keyCodes.characterAtIndex (i);
+		int keyCode = Display.translateKey (keys.characterAtIndex (i) & 0xFFFF);
+		if (keyCode != 0) {
+			event.keyCode = keyCode;
+		} else {
+			event.character = (char) keys.characterAtIndex (i);
+			//TODO - get unshifted vaules for Shift+1
+			event.keyCode = keyCodes.characterAtIndex (i);
+		}
 		setInputState (event, nsEvent, type);
 		if (sendKeyEvent (type, event)) {
 			chars [count++] = chars [i];

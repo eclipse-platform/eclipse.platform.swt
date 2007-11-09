@@ -16,6 +16,7 @@ public class OS extends C {
 	public static final int sel_sendSelection = sel_registerName("sendSelection");
 	public static final int sel_sendDoubleSelection = sel_registerName("sendDoubleSelection");
 	public static final int sel_drawAtPoint_ = sel_registerName("drawAtPoint:");
+	public static final int sel_timerProc_1 = sel_registerName("timerProc:");
 	
 	public static final native int NSDeviceRGBColorSpace();
 

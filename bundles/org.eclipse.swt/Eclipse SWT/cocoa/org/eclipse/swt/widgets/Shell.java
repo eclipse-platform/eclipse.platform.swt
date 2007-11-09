@@ -554,10 +554,8 @@ public int getAlpha () {
 
 public Rectangle getBounds () {
 	checkWidget();
-//	Rect rect = new Rect ();
-//	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-//	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-	return null;
+	NSRect frame = window.frame ();
+	return new Rectangle ((int)frame.x, (int) frame.y, (int) frame.width, (int) frame.height);
 }
 
 int getDrawCount (int control) {

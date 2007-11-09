@@ -139,6 +139,7 @@ public class Display extends Device {
 
 		/* Non-Numeric Keypad Keys */
 		{OS.NSUpArrowFunctionKey, SWT.ARROW_UP},
+		{OS.NSDownArrowFunctionKey, SWT.ARROW_DOWN},
 //		{125, SWT.ARROW_DOWN},
 //		{123, SWT.ARROW_LEFT},
 //		{124, SWT.ARROW_RIGHT},
@@ -217,6 +218,11 @@ public class Display extends Device {
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
 			
+	/* Timer */
+	Runnable timerList [];
+	NSTimer nsTimers [];
+	SWTWindowDelegate timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	
 	/* Display Data */
 	Object data;
 	String [] keys;
@@ -839,9 +845,8 @@ public static Display getCurrent () {
 }
 
 int getCaretBlinkTime () {
-//	checkDevice ();
-//	return OS.GetCaretTime () * 1000 / 60;
-	return 0;
+	checkDevice ();
+	return 560;
 }
 
 /**
@@ -892,7 +897,9 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
-	return null;
+	//TODO - bug?  this returns zero all the time
+	NSPoint location = NSEvent.mouseLocation();
+	return new Point ((int) location.x, (int) location.y);
 }
 
 /**
@@ -1516,6 +1523,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_timerProc_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTPanelDelegate";
@@ -1543,6 +1551,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTScrollView";
@@ -2241,6 +2251,21 @@ void releaseDisplay () {
 	if (warningImage != null) warningImage.dispose ();
 	errorImage = infoImage = warningImage = null;
 	
+	//TODO - stop caret
+	currentCaret = null;
+	
+	/* Release Timers */
+	if (nsTimers != null) {
+		for (int i=0; i<nsTimers.length; i++) {
+			//TODO - check -1 as sentinal
+			if (nsTimers [i] != null /*&& timerIds [i] != -1*/) {
+				nsTimers [i].invalidate();
+				nsTimers [i].release();
+			}
+		}
+	}
+	nsTimers = null;
+	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
 		if (cursors [i] != null) cursors [i].dispose ();
@@ -2395,17 +2420,28 @@ public static void setAppName (String name) {
 	APP_NAME = name;
 }
 
+//TODO - use custom timer instead of timerExec
+Runnable caretTimer = new Runnable () {
+	public void run () {
+		if (currentCaret != null) {
+			if (currentCaret == null || currentCaret.isDisposed()) return;
+			if (currentCaret.blinkCaret ()) {
+				int blinkRate = currentCaret.blinkRate;
+				if (blinkRate != 0) timerExec (blinkRate, this);
+			} else {
+				currentCaret = null;
+			}
+		}
+		
+	}
+};
 void setCurrentCaret (Caret caret) {
 //	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
 //	caretID = 0;
 	currentCaret = caret;
 	if (currentCaret != null) {
-//		int blinkRate = currentCaret.blinkRate;
-//		int [] timerId = new int [1];
-//		double time = blinkRate / 1000.0;
-//		int eventLoop = OS.GetCurrentEventLoop ();
-//		OS.InstallEventLoopTimer (eventLoop, time, time, caretProc, 0, timerId);
-//		caretID = timerId [0];
+		int blinkRate = currentCaret.blinkRate;
+		timerExec (blinkRate, caretTimer);
 	}
 }
 
@@ -2664,46 +2700,65 @@ public void syncExec (Runnable runnable) {
  */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
-//	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
-//	if (timerList == null) timerList = new Runnable [4];
-//	if (timerIds == null) timerIds = new int [4];
-//	int index = 0;
-//	while (index < timerList.length) {
-//		if (timerList [index] == runnable) break;
-//		index++;
-//	}
-//	if (index != timerList.length) {
-//		int timerId = timerIds [index];
-//		if (milliseconds < 0) {
-//			OS.RemoveEventLoopTimer (timerId);
-//			timerList [index] = null;
-//			timerIds [index] = 0;
+	//TODO - remove a timer, reschedule a timer not tested
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (timerList == null) timerList = new Runnable [4];
+	if (nsTimers == null) nsTimers = new NSTimer [4];
+	int index = 0;
+	while (index < timerList.length) {
+		if (timerList [index] == runnable) break;
+		index++;
+	}
+	if (index != timerList.length) {
+		NSTimer timer = nsTimers [index];
+		if (milliseconds < 0) {
+			timer.invalidate();
+			timerList [index] = null;
+			nsTimers [index] = null;
+		} else {
+			timer.setFireDate(NSDate.dateWithTimeIntervalSinceNow (milliseconds / 1000.0));
+		}
+		return;
+	} 
+	if (milliseconds < 0) return;
+	index = 0;
+	while (index < timerList.length) {
+		if (timerList [index] == null) break;
+		index++;
+	}
+	if (index == timerList.length) {
+		Runnable [] newTimerList = new Runnable [timerList.length + 4];
+		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
+		timerList = newTimerList;
+		NSTimer [] newTimerIds = new NSTimer [nsTimers.length + 4];
+		System.arraycopy (nsTimers, 0, newTimerIds, 0, nsTimers.length);
+		nsTimers = newTimerIds;
+	}
+	NSTimer timer = NSTimer.static_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_1, 0, false);
+	timer.retain();
+	if (timer != null) {
+		nsTimers [index] = timer;
+		timerList [index] = runnable;
+	}
+}
+
+int timerProc (int id) {
+	NSTimer timer = new NSTimer (id);
+	int index = timer.userInfo();
+	if (timerList == null) return 0;
+	if (0 <= index && index < timerList.length) {
+//		if (allowTimers) {
+			Runnable runnable = timerList [index];
+			timerList [index] = null;
+			nsTimers [index] = null;
+			if (runnable != null) runnable.run ();
 //		} else {
-//			OS.SetEventLoopTimerNextFireTime (timerId, milliseconds / 1000.0);
+//			timerIds [index] = -1;
+//			wakeThread ();
 //		}
-//		return;
-//	} 
-//	if (milliseconds < 0) return;
-//	index = 0;
-//	while (index < timerList.length) {
-//		if (timerList [index] == null) break;
-//		index++;
-//	}
-//	if (index == timerList.length) {
-//		Runnable [] newTimerList = new Runnable [timerList.length + 4];
-//		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
-//		timerList = newTimerList;
-//		int [] newTimerIds = new int [timerIds.length + 4];
-//		System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
-//		timerIds = newTimerIds;
-//	}
-//	int [] timerId = new int [1];
-//	int eventLoop = OS.GetCurrentEventLoop ();
-//	OS.InstallEventLoopTimer (eventLoop, milliseconds / 1000.0, 0.0, timerProc, index, timerId);
-//	if (timerId [0] != 0) {
-//		timerIds [index] = timerId [0];
-//		timerList [index] = runnable;
-//	}
+	}
+	timer.release();
+	return 0;
 }
 
 /**
@@ -2795,10 +2850,19 @@ int windowDelegateProc(int delegate, int sel) {
 	if (sel == OS.sel_acceptsFirstResponder) {
 		return widget.acceptsFirstResponder() ? 1 : 0;
 	}
+	if (sel == OS.sel_becomeFirstResponder) {
+		return widget.becomeFirstResponder() ? 1 : 0;
+	}
+	if (sel == OS.sel_resignFirstResponder) {
+		return widget.resignFirstResponder() ? 1 : 0;
+	}
 	return 0;
 }
 
 int windowDelegateProc(int delegate, int sel, int arg0) {
+	if (sel == OS.sel_timerProc_1) {
+		return timerProc (arg0);
+	}
 	if (sel == OS.sel_setTag_1) {
 		OS.object_setInstanceVariable(delegate, "tag", arg0);
 		return 0;
