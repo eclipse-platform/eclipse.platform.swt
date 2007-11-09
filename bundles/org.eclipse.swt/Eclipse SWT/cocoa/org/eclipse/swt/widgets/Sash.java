@@ -117,10 +117,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-int callFocusEventHandler (int nextHandler, int theEvent) {
-	return OS.noErr;
-}
-
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -135,110 +131,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= GRAB | THEME_BACKGROUND;
-	int features = OS.kControlSupportsFocus;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateUserPaneControl (window, null, features, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-}
-
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
-}
-
-int kEventControlClick (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlClick (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (!isEnabled ()) return OS.noErr;
-	return result;
-}
-
-int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
-	return OS.noErr;
-}
-
-int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	display.setCursor (sizeCursor.handle);
-	return OS.noErr;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) {
-		Point location = getLocation();
-		lastX = location.x;
-		lastY = location.y;
-	}
-	return result;
-}
-
-int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] keyboardEvent = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 126: /* Up arrow */
-		case 123: /* Left arrow */
-		case 125: /* Down arrow */
-		case 124: /* Right arrow */ {
-			int xChange = 0, yChange = 0;
-			int stepSize = PAGE_INCREMENT;
-			int [] modifiers = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-			if ((modifiers [0] & OS.controlKey) != 0) stepSize = INCREMENT;
-			if ((style & SWT.VERTICAL) != 0) {
-				if (keyCode [0] == 126 || keyCode [0] == 125) break;
-				xChange = keyCode [0] == 123 ? -stepSize : stepSize;
-			} else {
-				if (keyCode [0] == 123 || keyCode [0] == 124) break;
-				yChange = keyCode [0] == 126 ? -stepSize : stepSize;
-			}
-			
-			Rectangle bounds = getBounds ();
-			int width = bounds.width, height = bounds.height;
-			Rectangle parentBounds = parent.getBounds ();
-			int parentWidth = parentBounds.width;
-			int parentHeight = parentBounds.height;
-			int newX = lastX, newY = lastY;
-			if ((style & SWT.VERTICAL) != 0) {
-				newX = Math.min (Math.max (0, lastX + xChange), parentWidth - width);
-			} else {
-				newY = Math.min (Math.max (0, lastY + yChange), parentHeight - height);
-			}
-			if (newX == lastX && newY == lastY) return result;
-			Event event = new Event ();
-			event.x = newX;
-			event.y = newY;
-			event.width = width;
-			event.height = height;
-			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) break;
-			if (event.doit) {
-				setBounds (event.x, event.y, width, height);
-				if (isDisposed ()) break;
-				lastX = event.x;
-				lastY = event.y;
-				if (isDisposed ()) return result;
-				int cursorX = event.x, cursorY = event.y;
-				if ((style & SWT.VERTICAL) != 0) {
-					cursorY += height / 2;
-				} else {
-					cursorX += width / 2;
-				}
-				display.setCursorLocation (parent.toDisplay (cursorX, cursorY));
-			}
-			break;
-		}
-	}
-
-	return result;
+	SWTView widget = (SWTView)new SWTView().alloc();
+	widget.initWithFrame (new NSRect());
+	widget.setDrawsBackground(false);
+	widget.setTag(jniRef);
+	view = widget;
+	parent.contentView().addSubview_(view);
 }
 
 void releaseWidget () {
@@ -270,76 +168,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
-}
-
-boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
-	boolean result = super.sendMouseEvent (type, button, count, detail, send, chord, x, y, modifiers);
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	int controlX = rect.left;
-	int controlY = rect.top;
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	OS.GetControlBounds (parent.handle, rect);
-	int parentWidth = rect.right - rect.left;
-	int parentHeight = rect.bottom - rect.top;
-	switch (type) {
-		case SWT.MouseDown:
-			if (button != 1 || count != 1) break;
-			startX = x;
-			startY = y;
-			Event event = new Event ();
-			event.x = controlX;
-			event.y = controlY;
-			event.width = width;
-			event.height = height;
-			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) return result;
-			if (event.doit) {
-				lastX = event.x;
-				lastY = event.y;
-				dragging = true;
-				setBounds (event.x, event.y, width, height);
-			}
-			break;
-		case SWT.MouseUp:
-			if (!dragging) break;
-			dragging = false;
-			event = new Event ();
-			event.x = lastX;
-			event.y = lastY;
-			event.width = width;
-			event.height = height;
-			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) return result;
-			if (event.doit) {
-				setBounds (event.x, event.y, width, height);
-			}
-			break;
-		case SWT.MouseMove:
-			if (!dragging) break;
-			int newX = lastX, newY = lastY;
-			if ((style & SWT.VERTICAL) != 0) {
-				newX = Math.min (Math.max (0, x + controlX - startX), parentWidth - width);
-			} else {
-				newY = Math.min (Math.max (0, y + controlY - startY), parentHeight - height);
-			}
-			if (newX == lastX && newY == lastY) return result;
-			event = new Event ();
-			event.x = newX;
-			event.y = newY;
-			event.width = width;
-			event.height = height;
-			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) return result;
-			if (event.doit) {
-				lastX = event.x;
-				lastY = event.y;
-				setBounds (event.x, event.y, width, height);
-			}
-			break;
-	}
-	return result;
 }
 
 int traversalCode (int key, int theEvent) {

@@ -67,7 +67,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Slider extends Control {
 	boolean dragging;
-	int minimum, maximum = 100, thumb = 10;
+	int minimum, maximum, thumb;
 	int increment = 1;
 	int pageIncrement = 10;
 
@@ -165,14 +165,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	NSScroller widget = (NSScroller)new SWTScroller().alloc();
-	widget.initWithFrame(new NSRect());
-	widget.setFloatValue(0.5f, 0.1f);
+	NSRect rect = new NSRect();
+	if ((style & SWT.HORIZONTAL) != 0) {
+		rect.width = 1;
+	} else {
+		rect.height = 1;
+	}
+	widget.initWithFrame(rect);
 	widget.setEnabled(true);
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
 	widget.setTag(jniRef);
-	view = widget;	
+	view = widget;
 	parent.contentView().addSubview_(widget);
+	updateBar(0, minimum, maximum, thumb);
+}
+
+void createWidget () {
+	maximum = 100;
+	thumb = 10;
+	super.createWidget();
 }
 
 /**
@@ -300,22 +312,30 @@ public void removeSelectionListener(SelectionListener listener) {
 void sendSelection () {
 	Event event = new Event();
 	int hitPart = ((NSScroller)view).hitPart();
-	 switch (hitPart) {
+	int value = getSelection ();
+	switch (hitPart) {
 	    case OS.NSScrollerDecrementLine:
 	        event.detail = SWT.ARROW_UP;
+	        value -= increment;
 	        break;
 	    case OS.NSScrollerDecrementPage:
+	        value -= pageIncrement;
 	        event.detail = SWT.PAGE_UP;
 	        break;
 	    case OS.NSScrollerIncrementLine:
+	        value += increment;
 	        event.detail = SWT.PAGE_DOWN;
 	        break;
 	    case OS.NSScrollerIncrementPage:
+	        value += pageIncrement;
 	        event.detail = SWT.ARROW_DOWN;
 	        break;
 	    case OS.NSScrollerKnob:
 			event.detail = SWT.DRAG;
 	        break;
+	}
+	if (event.detail != SWT.DRAG) {
+		setSelection(value);
 	}
 	sendEvent(SWT.Selection, event);
 }
@@ -449,6 +469,7 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	value = Math.min (value, maximum - minimum);
+	this.thumb = value;
 	updateBar(getSelection(), minimum, maximum, value);
 }
 

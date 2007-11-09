@@ -129,7 +129,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	NSSlider widget = (NSSlider)new SWTSlider().alloc();
-	widget = (NSSlider)widget.initWithFrame(new NSRect());
+	NSRect rect = new NSRect();
+	if ((style & SWT.HORIZONTAL) != 0) {
+		rect.width = 1;
+	} else {
+		rect.height = 1;
+	}
+	widget.initWithFrame(rect);
 	widget.setMaxValue(100);
 	widget.setTag(jniRef);
 	view = widget;

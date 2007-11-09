@@ -1633,6 +1633,12 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
+	className = "SWTScroller";
+	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
+
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
