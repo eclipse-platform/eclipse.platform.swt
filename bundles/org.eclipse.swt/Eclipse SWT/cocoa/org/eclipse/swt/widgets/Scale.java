@@ -114,17 +114,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	widget.sizeToFit();
 	NSRect newRect = widget.frame();
 	widget.setFrame (oldRect);
-	int size = (int)newRect.width;
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {		
-		height = size;
+		height = (int)newRect.width;
 		width = height * 10;
 	} else {
-		width = size;
+		width = (int)newRect.width;
 		height = width * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
+	System.out.println(width + " " + height);
 	return new Point (width, height);
 }
 
