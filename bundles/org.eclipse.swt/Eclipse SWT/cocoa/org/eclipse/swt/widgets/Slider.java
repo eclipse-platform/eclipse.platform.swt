@@ -298,7 +298,26 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 void sendSelection () {
-	sendEvent(SWT.Selection);
+	Event event = new Event();
+	int hitPart = ((NSScroller)view).hitPart();
+	 switch (hitPart) {
+	    case OS.NSScrollerDecrementLine:
+	        event.detail = SWT.ARROW_UP;
+	        break;
+	    case OS.NSScrollerDecrementPage:
+	        event.detail = SWT.PAGE_UP;
+	        break;
+	    case OS.NSScrollerIncrementLine:
+	        event.detail = SWT.PAGE_DOWN;
+	        break;
+	    case OS.NSScrollerIncrementPage:
+	        event.detail = SWT.ARROW_DOWN;
+	        break;
+	    case OS.NSScrollerKnob:
+			event.detail = SWT.DRAG;
+	        break;
+	}
+	sendEvent(SWT.Selection, event);
 }
 
 /**
