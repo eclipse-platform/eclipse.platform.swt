@@ -203,7 +203,7 @@ public static GC carbon_new(int context, GCData data) {
 }
 
 void checkGC (int mask) {
-	NSGraphicsContext.setCurrentContext(handle);
+//	NSGraphicsContext.setCurrentContext(handle);
 	int state = data.state;
 	if ((state & mask) == mask) return;
 	state = (state ^ mask) & mask;	

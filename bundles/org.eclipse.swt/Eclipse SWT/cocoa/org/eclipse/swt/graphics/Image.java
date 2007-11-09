@@ -855,8 +855,11 @@ public int internal_new_GC (GCData data) {
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(new NSBitmapImageRep(handle.bestRepresentationForDevice(null).id));
-	NSGraphicsContext.setCurrentContext(context);
+	
+	handle.lockFocus();	
+//	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(new NSBitmapImageRep(handle.bestRepresentationForDevice(null).id));
+//	NSGraphicsContext.setCurrentContext(context);
+	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	NSAffineTransform transform = NSAffineTransform.transform();
 	NSSize size = handle.size();
 	transform.translateXBy(0, size.height);
@@ -890,7 +893,7 @@ public int internal_new_GC (GCData data) {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
-//	new NSGraphicsContext(context).release();
+	handle.unlockFocus();
 }
 
 /**

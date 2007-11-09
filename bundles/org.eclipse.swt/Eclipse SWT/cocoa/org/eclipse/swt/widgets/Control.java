@@ -1700,8 +1700,10 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
-	if (view != null) view.release();
+	if (view != null) {
+		OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
+		view.release();
+	}
 	view = null;
 	parent = null;
 }
