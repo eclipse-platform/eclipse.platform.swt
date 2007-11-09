@@ -267,7 +267,9 @@ int findRowPresenter (int current, int rowPresenterType) {
 
 int findPart (int column, String partName) {
 	if (rowHandle == 0) return 0; //not Loaded yet.
+	updateLayout (rowHandle);
 	int contentPresenter = OS.VisualTreeHelper_GetChild (rowHandle, column);
+	if (contentPresenter == 0) return 0;
 	int columns = OS.GridView_Columns (parent.gridViewHandle);
 	int columnHandle = OS.GridViewColumnCollection_default (columns, column);
 	int cellTemplate = OS.GridViewColumn_CellTemplate (columnHandle);

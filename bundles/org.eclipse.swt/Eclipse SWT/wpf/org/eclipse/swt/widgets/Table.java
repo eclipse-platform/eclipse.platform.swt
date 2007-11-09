@@ -1461,6 +1461,7 @@ public boolean isSelected (int index) {
 }
 
 void OnRender (int source, int dc) {
+	if (isDisposed ()) return;
 	int type =  OS.ListViewItem_typeid();
 	int itemHandle = findPartByType (source, type);
 	OS.GCHandle_Free (type);

@@ -333,6 +333,7 @@ public int getWidth () {
 }
 
 void HandleLoaded (int sender, int e) {
+	if (isDisposed ()) return;
 	updateImage ();
 	updateText ();	
 }
