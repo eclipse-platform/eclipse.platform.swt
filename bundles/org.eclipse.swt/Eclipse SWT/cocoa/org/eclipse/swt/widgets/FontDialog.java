@@ -219,6 +219,11 @@ public FontData open () {
 	panel.setDelegate(null);
 	delegate.release();
 	OS.DeleteGlobalRef(jniRef);
+	NSFont font = NSFontManager.sharedFontManager().selectedFont();
+	if (font != null) {
+		//TODO - this does work
+		fontData = Font.cocoa_new(display, font).getFontData()[0];
+	}
 	return fontData;
 }
 
