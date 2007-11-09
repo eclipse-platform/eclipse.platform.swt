@@ -73,6 +73,7 @@ public Path (Device device) {
 	this.device = device;
 	handle = NSBezierPath.bezierPath();
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
+	handle.retain();
 	handle.moveToPoint(new NSPoint());
 	if (device.tracking) device.new_Object(this);
 }

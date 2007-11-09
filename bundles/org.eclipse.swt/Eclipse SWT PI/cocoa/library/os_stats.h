@@ -212,6 +212,7 @@ typedef enum {
 	objc_1msgSend__II_3C_FUNC,
 	objc_1msgSend__II_3CI_FUNC,
 	objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+	objc_1msgSend__II_3FIF_FUNC,
 	objc_1msgSend__II_3III_FUNC,
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC,
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,

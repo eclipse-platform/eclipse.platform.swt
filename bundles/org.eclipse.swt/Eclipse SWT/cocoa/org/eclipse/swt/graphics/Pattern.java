@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent patterns to use while drawing. Patterns
@@ -29,13 +29,12 @@ import org.eclipse.swt.internal.carbon.*;
  * @since 3.1
  */
 public class Pattern extends Resource {
-	int jniRef;
+	NSColor color;
+	NSGradient gradient;
+	NSPoint pt1, pt2;
 	Image image;
 	float[] color1, color2;
 	int alpha1, alpha2;
-	float x1, y1, x2, y2;
-	int shading;
-	CGRect drawRect;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
@@ -69,9 +68,8 @@ public Pattern(Device device, Image image) {
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	this.image = image;
-	device.createPatternCallbacks();
-	jniRef = OS.NewGlobalRef(this);
-	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	color = NSColor.colorWithPatternImage(image.handle);
+	color.retain();
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -154,68 +152,20 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
-	this.x1 = x1;
-	this.y1 = y1;
-	this.x2 = x2;
-	this.y2 = y2;
+	pt1 = new NSPoint();
+	pt2 = new NSPoint();
+	pt1.x = x1;
+	pt1.y = y1;
+	pt2.x = x2;
+	pt2.y = y2;
 	this.color1 = color1.handle;
 	this.color2 = color2.handle;
 	this.alpha1 = alpha1;
 	this.alpha2 = alpha2;
-	device.createPatternCallbacks();
-	jniRef = OS.NewGlobalRef(this);
-	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	CGPoint start = new CGPoint();
-	start.x = x1;
-	start.y = y1;
-	CGPoint end = new CGPoint();
-	end.x = x2;
-	end.y = y2;
-	CGFunctionCallbacks fCallbacks = new CGFunctionCallbacks();
-	fCallbacks.evaluate = device.axialShadingProc;
-	int function = OS.CGFunctionCreate(jniRef, 1, new float[]{0, 1}, 4, new float[]{0, 1, 0, 1, 0, 1, 0, 1}, fCallbacks);
-	if (function == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	shading = OS.CGShadingCreateAxial(device.colorspace, start, end, function, true, true);	
-	OS.CGFunctionRelease(function);
-	if (shading == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	NSColor start = NSColor.colorWithDeviceRed(color1.handle[0], color1.handle[1], color1.handle[2], alpha1 / 255f);
+	NSColor end = NSColor.colorWithDeviceRed(color2.handle[0], color2.handle[1], color2.handle[2], alpha2 / 255f);
+	gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(start, end);
 	if (device.tracking) device.new_Object(this);
-}
-
-int axialShadingProc (int ref, int in, int out) {
-	float[] buffer = new float[4];
-	OS.memmove(buffer, in, 4);
-	float factor2 = buffer[0], factor1 = 1 - factor2;
-	float[] c1 = color1;
-	float[] c2 = color2;
-	float a1 = ((alpha1 & 0xFF) / (float)0xFF);
-	float a2 = ((alpha2 & 0xFF) / (float)0xFF);
-	buffer[0] = (c2[0] * factor2) + (c1[0] * factor1);
-	buffer[1] = (c2[1] * factor2) + (c1[1] * factor1);
-	buffer[2] = (c2[2] * factor2) + (c1[2] * factor1);
-	buffer[3] = (a2 * factor2) + (a1 * factor1);
-	OS.memmove(out, buffer, buffer.length * 4);
-	return 0;
-}
-
-int createPattern(int context) {
-	float[] transform = new float[6];
-	OS.CGContextGetCTM(context, transform);
-	CGRect rect = new CGRect();
-	if (image != null) {
-		int imageHandle = image.handle;
-		rect.width = OS.CGImageGetWidth(imageHandle);
-		rect.height = OS.CGImageGetHeight(imageHandle);
-	} else {
-		rect.x = x1 - 0.5f;
-		rect.y = y1 - 0.5f;
-		rect.width = x2 - x1 + 1;
-		rect.height = y2 - y1 + 1;
-	}
-	CGPatternCallbacks callbacks = new CGPatternCallbacks();
-	callbacks.drawPattern = device.drawPatternProc;
-	int pattern = OS.CGPatternCreate(jniRef, rect, transform, rect.width, rect.height, OS.kCGPatternTilingNoDistortion, 0, callbacks);
-	if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	return pattern;
 }
 
 /**
@@ -224,57 +174,16 @@ int createPattern(int context) {
  * they allocate.
  */
 public void dispose() {
-	if (jniRef == 0) return;
+	if (device == null) return;
 	if (device.isDisposed()) return;
-	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
-	if (shading != 0) OS.CGShadingRelease(shading);
-	jniRef = shading = 0;
+	if (color != null) color.release();
+	color = null;
+	if (gradient != null) gradient.release();
+	gradient = null;
 	image = null;
 	color1 = color2 = null;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
-}
-
-int drawPatternProc (int ref, int context) {
-	if (image != null) {
-		if (image.isDisposed()) return 0;
-		int imageHandle = image.handle;
-		int imageWidth = OS.CGImageGetWidth(imageHandle);
-		int imageHeight = OS.CGImageGetHeight(imageHandle);
-		CGRect rect = new CGRect();
-		rect.width = imageWidth;
-		rect.height = imageHeight;
-		OS.CGContextScaleCTM(context, 1, -1);
-	 	if (drawRect != null && (drawRect.x % imageWidth) + drawRect.width < imageWidth && (drawRect.y % imageHeight) + drawRect.height < imageHeight) {
-	 		rect.x = drawRect.x % imageWidth;
-	 		rect.y = drawRect.y % imageHeight;
-	 		rect.width = drawRect.width;
-	 		rect.height = drawRect.height;
-	 		if (OS.VERSION >= 0x1040) {
-	 			imageHandle = OS.CGImageCreateWithImageInRect(imageHandle, rect);
-	 		} else {
-		 		int srcX = (int)drawRect.x, srcY = (int)drawRect.y;
-		 		int srcWidth = (int)drawRect.width, srcHeight = (int)drawRect.height;
-		 		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
-				int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
-				int bpr = OS.CGImageGetBytesPerRow(imageHandle);
-				int colorspace = OS.CGImageGetColorSpace(imageHandle);
-				int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
-				int data = image.data + (srcY * bpr) + srcX * 4;
-				int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
-				if (provider != 0) {
-					imageHandle = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
-					OS.CGDataProviderRelease(provider);
-				}
-			}
-	 	}
-	 	OS.CGContextTranslateCTM(context, 0, -(rect.height + 2 * rect.y));
-	 	OS.CGContextDrawImage(context, rect, imageHandle);
-	 	if (imageHandle != 0 && imageHandle != image.handle) OS.CGImageRelease(imageHandle);
-	} else {
-		OS.CGContextDrawShading(context, shading);
-	}
-	return 0;
 }
 
 /**
@@ -288,7 +197,7 @@ int drawPatternProc (int ref, int context) {
  * @return <code>true</code> when the Pattern is disposed, and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return jniRef == 0;
+	return device == null;
 }
 
 /**
@@ -299,7 +208,7 @@ public boolean isDisposed() {
  */
 public String toString() {
 	if (isDisposed()) return "Pattern {*DISPOSED*}";
-	return "Pattern {" + jniRef + "}";
+	return "Pattern {" + (color != null ? color.id : gradient.id) + "}";
 }
 	
 }

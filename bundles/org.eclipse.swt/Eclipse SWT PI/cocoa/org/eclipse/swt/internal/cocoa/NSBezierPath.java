@@ -270,7 +270,7 @@ public void setLineCapStyle(int lineCapStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setLineCapStyle_1, lineCapStyle);
 }
 
-public void setLineDash(int pattern, int count, float phase) {
+public void setLineDash(float[] pattern, int count, float phase) {
 	OS.objc_msgSend(this.id, OS.sel_setLineDash_1count_1phase_1, pattern, count, phase);
 }
 

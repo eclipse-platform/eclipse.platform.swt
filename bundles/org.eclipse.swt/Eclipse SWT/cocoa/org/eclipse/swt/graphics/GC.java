@@ -209,117 +209,109 @@ void checkGC (int mask) {
 	state = (state ^ mask) & mask;	
 	data.state |= mask;
 	
-//	if ((state & FOREGROUND) != 0) {
-//		Pattern pattern = data.foregroundPattern;
-//		if (pattern != null) {
-//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-//			OS.CGContextSetStrokeColorSpace(handle, colorspace);
-//			OS.CGColorSpaceRelease(colorspace);
-//			if (data.forePattern == 0) data.forePattern = pattern.createPattern(handle);
-//			OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
-//		} else {
-//			OS.CGContextSetStrokeColorSpace(handle, data.device.colorspace);
-//			OS.CGContextSetStrokeColor(handle, data.foreground);
-//		}
-//	}
-//	if ((state & FOREGROUND_FILL) != 0) {
-//		Pattern pattern = data.foregroundPattern;
-//		if (pattern != null) {
-//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-//			OS.CGContextSetFillColorSpace(handle, colorspace);
-//			OS.CGColorSpaceRelease(colorspace);
-//			if (data.forePattern == 0) data.forePattern = pattern.createPattern(handle);
-//			OS.CGContextSetFillPattern(handle, data.forePattern, data.foreground);
-//		} else {
-//			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
-//			OS.CGContextSetFillColor(handle, data.foreground);
-//		}
-//		data.state &= ~BACKGROUND;
-//	}
-//	if ((state & BACKGROUND) != 0) {
-//		Pattern pattern = data.backgroundPattern;
-//		if (pattern != null) {
-//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-//			OS.CGContextSetFillColorSpace(handle, colorspace);
-//			OS.CGColorSpaceRelease(colorspace);
-//			if (data.backPattern == 0) data.backPattern = pattern.createPattern(handle);
-//			OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
-//		} else {
-//			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
-//			OS.CGContextSetFillColor(handle, data.background);
-//		}
-//		data.state &= ~FOREGROUND_FILL;
-//	}
-//	if ((state & FONT) != 0) {
-//		setCGFont();
-//	}
-//	if ((state & LINE_WIDTH) != 0) {
-//		OS.CGContextSetLineWidth(handle, data.lineWidth == 0 ?  1 : data.lineWidth);
-//		switch (data.lineStyle) {
-//			case SWT.LINE_DOT:
-//			case SWT.LINE_DASH:
-//			case SWT.LINE_DASHDOT:
-//			case SWT.LINE_DASHDOTDOT:
-//				state |= LINE_STYLE;
-//		}
-//	}
-//	if ((state & LINE_STYLE) != 0) {
-//		float[] dashes = null;
-//		float width = data.lineWidth;
-//		switch (data.lineStyle) {
-//			case SWT.LINE_SOLID: break;
-//			case SWT.LINE_DASH: dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO; break;
-//			case SWT.LINE_DOT: dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO; break;
-//			case SWT.LINE_DASHDOT: dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO; break;
-//			case SWT.LINE_DASHDOTDOT: dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO; break;
-//			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
-//		}
-//		if (dashes != null) {
-//			float[] lengths = new float[dashes.length];
-//			for (int i = 0; i < lengths.length; i++) {
-//				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
-//			}
-//			OS.CGContextSetLineDash(handle, data.lineDashesOffset, lengths, lengths.length);
-//		} else {
-//			OS.CGContextSetLineDash(handle, 0, null, 0);
-//		}
-//	}
-//	if ((state & LINE_MITERLIMIT) != 0) {
-//		OS.CGContextSetMiterLimit(handle, data.lineMiterLimit);
-//	}
-//	if ((state & LINE_JOIN) != 0) {
-//		int joinStyle = 0;
-//		switch (data.lineJoin) {
-//			case SWT.JOIN_MITER: joinStyle = OS.kCGLineJoinMiter; break;
-//			case SWT.JOIN_ROUND: joinStyle = OS.kCGLineJoinRound; break;
-//			case SWT.JOIN_BEVEL: joinStyle = OS.kCGLineJoinBevel; break;
-//		}
-//		OS.CGContextSetLineJoin(handle, joinStyle);
-//	}
-//	if ((state & LINE_CAP) != 0) {
-//		int capStyle = 0;
-//		switch (data.lineCap) {
-//			case SWT.CAP_ROUND: capStyle = OS.kCGLineCapRound; break;
-//			case SWT.CAP_FLAT: capStyle = OS.kCGLineCapButt; break;
-//			case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
-//		}
-//		OS.CGContextSetLineCap(handle, capStyle);
-//	}
-//	if ((state & DRAW_OFFSET) != 0) {
-//		data.drawXOffset = data.drawYOffset = 0;
-//		float scaling = data.transform != null ? data.transform[0] : 1;
-//		if (scaling < 0) scaling = -scaling;
-//		float strokeWidth = data.lineWidth * scaling;
-//		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-//			data.drawXOffset = 0.5f / scaling;
-//		}
-//		scaling = data.transform != null ? data.transform[3] : 1;
-//		if (scaling < 0) scaling = -scaling;
-//		strokeWidth = data.lineWidth * scaling;
-//		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-//			data.drawYOffset = 0.5f / scaling;
-//		}
-//	}
+	if ((state & FOREGROUND) != 0) {
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) {
+			if (pattern.color != null) pattern.color.setStroke();
+		} else {
+			float[] color = data.foreground;
+			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setStroke();
+		}
+	}
+	if ((state & FOREGROUND_FILL) != 0) {
+		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) {
+			if (pattern.color != null) pattern.color.setFill();
+		} else {
+			float[] color = data.foreground;
+			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
+		}
+		data.state &= ~BACKGROUND;
+	}
+	if ((state & BACKGROUND) != 0) {
+		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) {
+			if (pattern.color != null) pattern.color.setFill();
+		} else {
+			float[] color = data.background;
+			NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();
+		}
+		data.state &= ~FOREGROUND_FILL;
+	}
+	NSBezierPath path = data.path;
+	if ((state & LINE_WIDTH) != 0) {
+		path.setLineWidth(data.lineWidth == 0 ?  1 : data.lineWidth);
+		switch (data.lineStyle) {
+			case SWT.LINE_DOT:
+			case SWT.LINE_DASH:
+			case SWT.LINE_DASHDOT:
+			case SWT.LINE_DASHDOTDOT:
+				state |= LINE_STYLE;
+		}
+	}
+	if ((state & LINE_STYLE) != 0) {
+		float[] dashes = null;
+		float width = data.lineWidth;
+		switch (data.lineStyle) {
+			case SWT.LINE_SOLID: break;
+			case SWT.LINE_DASH: dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO; break;
+			case SWT.LINE_DOT: dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO; break;
+			case SWT.LINE_DASHDOT: dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO; break;
+			case SWT.LINE_DASHDOTDOT: dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO; break;
+			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
+		}
+		if (dashes != null) {
+			float[] lengths = new float[dashes.length];
+			for (int i = 0; i < lengths.length; i++) {
+				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
+			}
+			path.setLineDash(lengths, lengths.length, data.lineDashesOffset);
+		} else {
+			path.setLineDash(null, 0, 0);
+		}
+	}
+	if ((state & LINE_MITERLIMIT) != 0) {
+		path.setMiterLimit(data.lineMiterLimit);
+	}
+	if ((state & LINE_JOIN) != 0) {
+		int joinStyle = 0;
+		switch (data.lineJoin) {
+			case SWT.JOIN_MITER: joinStyle = OS.NSMiterLineJoinStyle; break;
+			case SWT.JOIN_ROUND: joinStyle = OS.NSRoundLineJoinStyle; break;
+			case SWT.JOIN_BEVEL: joinStyle = OS.NSBevelLineJoinStyle; break;
+		}
+		path.setLineJoinStyle(joinStyle);
+	}
+	if ((state & LINE_CAP) != 0) {
+		int capStyle = 0;
+		switch (data.lineCap) {
+			case SWT.CAP_ROUND: capStyle = OS.NSRoundLineCapStyle; break;
+			case SWT.CAP_FLAT: capStyle = OS.NSButtLineCapStyle; break;
+			case SWT.CAP_SQUARE: capStyle = OS.NSSquareLineCapStyle; break;
+		}
+		path.setLineCapStyle(capStyle);
+	}
+	if ((state & DRAW_OFFSET) != 0) {
+		data.drawXOffset = data.drawYOffset = 0;
+		float sx = 1, sy = 1;
+		if (data.transform != null) {
+			NSAffineTransformStruct struct = data.transform.transformStruct();
+			sx = struct.m11;
+			sy = struct.m22;
+		}
+		float scaling = sx;
+		if (scaling < 0) scaling = -scaling;
+		float strokeWidth = data.lineWidth * scaling;
+		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+			data.drawXOffset = 0.5f / scaling;
+		}
+		scaling = sy;
+		if (scaling < 0) scaling = -scaling;
+		strokeWidth = data.lineWidth * scaling;
+		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+			data.drawYOffset = 0.5f / scaling;
+		}
+	}
 }
 /**
  * Copies a rectangular area of the receiver at the specified
@@ -886,11 +878,11 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 	checkGC(DRAW);
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
-	pt.x = x1;
-	pt.y = y1;
+	pt.x = x1 + data.drawXOffset;
+	pt.y = y1 + data.drawYOffset;
 	path.moveToPoint(pt);
-	pt.x = x2;
-	pt.y = y2;
+	pt.x = x2 + data.drawXOffset;
+	pt.y = y2 + data.drawYOffset;
 	path.lineToPoint(pt);
 	path.stroke();
 	path.removeAllPoints();
@@ -930,8 +922,8 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	NSBezierPath path = data.path;
 	NSRect rect = new NSRect();
-	rect.x = x;
-	rect.y = y;
+	rect.x = x + data.drawXOffset;
+	rect.y = y + data.drawXOffset;
 	rect.width = width;
 	rect.height = height;
 	path.appendBezierPathWithOvalInRect(rect);
@@ -967,11 +959,15 @@ public void drawPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	checkGC(DRAW);
-	//float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	handle.saveGraphicsState();
+	NSAffineTransform transform = NSAffineTransform.transform();
+	transform.translateXBy(data.drawXOffset, data.drawYOffset);
+	transform.set();
 	NSBezierPath drawPath = data.path;
 	drawPath.appendBezierPath(path.handle);
 	drawPath.stroke();
 	drawPath.removeAllPoints();
+	handle.restoreGraphicsState();
 }
 
 /** 
@@ -1027,16 +1023,16 @@ public void drawPolygon(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
 	if (pointArray.length < 4) return;
-//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
-	pt.x = pointArray[0];
-	pt.y = pointArray[1];
+	pt.x = pointArray[0] + xOffset;
+	pt.y = pointArray[1] + yOffset;
 	path.moveToPoint(pt);
 	int end = pointArray.length / 2 * 2;
 	for (int i = 2; i < end; i+=2) {
-		pt.x = pointArray[i];
-		pt.y = pointArray[i+1];
+		pt.x = pointArray[i] + xOffset;
+		pt.y = pointArray[i+1] + yOffset;
 		path.lineToPoint(pt);
 	}
 	path.closePath();
@@ -1066,16 +1062,16 @@ public void drawPolyline(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
 	if (pointArray.length < 4) return;
-//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
-	pt.x = pointArray[0];
-	pt.y = pointArray[1];
+	pt.x = pointArray[0] + xOffset;
+	pt.y = pointArray[1] + yOffset;
 	path.moveToPoint(pt);
 	int end = pointArray.length / 2 * 2;
 	for (int i = 2; i < end; i+=2) {
-		pt.x = pointArray[i];
-		pt.y = pointArray[i+1];
+		pt.x = pointArray[i] + xOffset;
+		pt.y = pointArray[i+1] + yOffset;
 		path.lineToPoint(pt);
 	}
 	path.stroke();
@@ -1108,9 +1104,8 @@ public void drawRectangle(int x, int y, int width, int height) {
 		height = -height;
 	}
 	NSRect rect = new NSRect();
-//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-	rect.x = x;// + xOffset;
-	rect.y = y;// + yOffset;
+	rect.x = x + data.drawXOffset;
+	rect.y = y + data.drawYOffset;
 	rect.width = width;
 	rect.height = height;
 	NSBezierPath path = data.path;
@@ -1171,8 +1166,8 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	}
 	NSBezierPath path = data.path;
 	NSRect rect = new NSRect();
-	rect.x = x;
-	rect.y = y;
+	rect.x = x + data.drawXOffset;
+	rect.y = y + data.drawYOffset;
 	rect.width = width;
 	rect.height = height;
 	path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
@@ -1531,8 +1526,20 @@ public void fillOval(int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	path.appendBezierPathWithOvalInRect(rect);
-	path.fill();
+	Pattern pattern = data.backgroundPattern;
+	if (pattern != null && pattern.gradient != null) {
+		fillPattern(path, pattern);
+	} else {
+		path.fill();
+	}
 	path.removeAllPoints();
+}
+
+void fillPattern(NSBezierPath path, Pattern pattern) {
+	handle.saveGraphicsState();
+	path.addClip();
+	pattern.gradient.drawFromPoint(pattern.pt1, pattern.pt2, OS.NSGradientDrawsAfterEndingLocation | OS.NSGradientDrawsBeforeStartingLocation);
+	handle.restoreGraphicsState();
 }
 
 /** 
@@ -1565,7 +1572,12 @@ public void fillPath(Path path) {
 	checkGC(FILL);
 	NSBezierPath drawPath = data.path;
 	drawPath.appendBezierPath(path.handle);
-	drawPath.fill();
+	Pattern pattern = data.backgroundPattern;
+	if (pattern != null && pattern.gradient != null) {
+		fillPattern(drawPath, pattern);
+	} else {
+		drawPath.fill();
+	}
 }
 
 /** 
@@ -1604,7 +1616,12 @@ public void fillPolygon(int[] pointArray) {
 		path.lineToPoint(pt);
 	}
 	path.closePath();
-	path.fill();
+	Pattern pattern = data.backgroundPattern;
+	if (pattern != null && pattern.gradient != null) {
+		fillPattern(path, pattern);
+	} else {
+		path.fill();
+	}
 	path.removeAllPoints();
 }
 
@@ -1641,7 +1658,12 @@ public void fillRectangle(int x, int y, int width, int height) {
 	rect.height = height;
 	NSBezierPath path = data.path;
 	path.appendBezierPathWithRect(rect);
-	path.stroke();
+	Pattern pattern = data.backgroundPattern;
+	if (pattern != null && pattern.gradient != null) {
+		fillPattern(path, pattern);
+	} else {
+		path.fill();
+	}
 	path.removeAllPoints();
 
 }
@@ -1698,7 +1720,12 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	rect.width = width;
 	rect.height = height;
 	path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
-	path.fill();
+	Pattern pattern = data.backgroundPattern;
+	if (pattern != null && pattern.gradient != null) {
+		fillPattern(path, pattern);
+	} else {
+		path.fill();
+	}
 	path.removeAllPoints();
 }
 
@@ -2733,6 +2760,7 @@ public void setFillRule(int rule) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.fillRule = rule;
+	data.path.setWindingRule(rule == SWT.FILL_WINDING ? OS.NSNonZeroWindingRule : OS.NSEvenOddWindingRule);
 }
 
 /** 

@@ -41,8 +41,9 @@ public static final native int sel_registerName(String selectorName);
 
 
 public static final native int objc_msgSend(int id, int sel, char[] arg0);
-public static final native int objc_msgSend(int id, int sel, char[] arg0, int length);
-public static final native int objc_msgSend(int id, int sel, char[] arg0, NSRange range);
+public static final native int objc_msgSend(int id, int sel, char[] arg0, int arg1);
+public static final native int objc_msgSend(int id, int sel, float[] arg0, int arg1, float arg2);
+public static final native int objc_msgSend(int id, int sel, char[] arg0, NSRange arg1);
 public static final native int objc_msgSend(int id, int sel, String arg0);
 
 public static final native int objc_msgSend_struct(NSSize arg0, int object, int selector);

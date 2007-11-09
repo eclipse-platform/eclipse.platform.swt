@@ -2841,6 +2841,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__II_3FIF
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3FIF)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloatArray arg2, jint arg3, jfloat arg4)
+{
+	jfloat *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3FIF_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jfloat *, jint, jfloat))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3, arg4);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3FIF_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__II_3III
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3III)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4)
