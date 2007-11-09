@@ -253,7 +253,7 @@ public void copy () {
 void createHandle () {
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame(new NSRect());
-	widget.setDrawsBackground(false);
+//	widget.setDrawsBackground(false);
 	widget.setTag(jniRef);
 	NSStepper buttonWidget = (NSStepper)new SWTStepper().alloc();
 	buttonWidget.initWithFrame(new NSRect());

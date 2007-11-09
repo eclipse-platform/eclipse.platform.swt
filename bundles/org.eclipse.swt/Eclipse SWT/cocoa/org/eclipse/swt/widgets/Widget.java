@@ -124,6 +124,10 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+boolean acceptsFirstResponder () {
+	return false;
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when an event of the given type occurs. When the
@@ -544,6 +548,9 @@ boolean isValidThread () {
 }
 
 void keyDown(int event) {
+}
+
+void keyUp(int event) {
 }
 
 void mouseDragged(int event) {

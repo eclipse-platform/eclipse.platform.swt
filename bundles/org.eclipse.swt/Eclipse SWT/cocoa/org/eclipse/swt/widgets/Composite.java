@@ -128,6 +128,14 @@ Control [] _getTabList () {
 	return tabList;
 }
 
+boolean acceptsFirstResponder () {
+	if ((state & CANVAS) != 0) {
+		return ((style & SWT.NO_FOCUS) == 0);
+	}
+	return acceptsFirstResponder ();
+}
+
+
 /**
  * Clears any data that has been cached by a Layout for all widgets that 
  * are in the parent hierarchy of the changed control up to and including the 
@@ -224,13 +232,20 @@ NSView contentView () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
-	SWTView widget = (SWTView)new SWTView().alloc();
-	widget.initWithFrame (new NSRect());
-	widget.setDrawsBackground(false);
-	if ((style & SWT.H_SCROLL) != 0) widget.setHasHorizontalScroller(true);
-	if ((style & SWT.V_SCROLL) != 0) widget.setHasVerticalScroller(true);
-	widget.setTag(jniRef);
-	view = widget;
+	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
+		SWTScrollView widget = (SWTScrollView)new SWTScrollView().alloc();
+		widget.initWithFrame (new NSRect());
+		widget.setDrawsBackground(false);
+		if ((style & SWT.H_SCROLL) != 0) widget.setHasHorizontalScroller(true);
+		if ((style & SWT.V_SCROLL) != 0) widget.setHasVerticalScroller(true);
+		widget.setTag(jniRef);
+		view = widget;
+	} else {
+		SWTView widget = (SWTView)new SWTView().alloc();
+		widget.initWithFrame (new NSRect());
+		widget.setTag(jniRef);
+		view = widget;
+	}
 	parent.contentView().addSubview_(view);
 }
 

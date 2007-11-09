@@ -101,6 +101,13 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
+boolean acceptsFirstResponder () {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = view.id;
+	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, OS.sel_acceptsFirstResponder) != 0;
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -1510,6 +1517,41 @@ void mouseDragged(int theEvent) {
 void mouseUp(int theEvent) {
 	NSEvent nsEvent = new NSEvent (theEvent);
 	sendMouseEvent (nsEvent, SWT.MouseUp, 1);
+}
+
+boolean sendKeyEvent (Event event) {
+	sendEvent (event);
+	return event.doit;
+}
+
+void sendKeyEvent (NSEvent nsEvent, int type) {
+	int count = 0;
+	NSString keys = nsEvent.characters();
+	NSString keyCodes = nsEvent.charactersIgnoringModifiers();
+	char [] chars = new char [keys.length()];
+	for (int i=0; i<keys.length(); i++) {
+		Event event = new Event ();
+		event.character = (char) keys.characterAtIndex (i);
+		event.keyCode = keyCodes.characterAtIndex (i);
+		setInputState (event, nsEvent, type);
+		if (sendKeyEvent (type, event)) {
+			chars [count++] = chars [i];
+		}
+	}
+//	if (count == 0) return false;
+	if (count != keys.length () - 1) {
+//		OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
+	}
+}
+
+void keyDown(int theEvent) {
+	NSEvent nsEvent = new NSEvent (theEvent);
+	sendKeyEvent (nsEvent, SWT.KeyDown);
+}
+
+void keyUp(int theEvent) {
+	NSEvent nsEvent = new NSEvent (theEvent);
+	sendKeyEvent (nsEvent, SWT.KeyUp);
 }
 
 void markLayout (boolean changed, boolean all) {

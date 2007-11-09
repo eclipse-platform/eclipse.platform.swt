@@ -2873,6 +2873,22 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	struct objc_super _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC);
+	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL))objc_msgSendSuper)((id)lparg0, (SEL)arg1);
+fail:
+	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)

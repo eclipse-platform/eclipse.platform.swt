@@ -1,13 +1,12 @@
 package org.eclipse.swt.internal.cocoa;
 
+public class SWTScrollView extends NSScrollView {
 
-public class SWTView extends NSView {
-
-public SWTView() {
+public SWTScrollView() {
 	super(0);
 }
 	
-public SWTView(int id) {
+public SWTScrollView(int id) {
 	super(id);
 }
 

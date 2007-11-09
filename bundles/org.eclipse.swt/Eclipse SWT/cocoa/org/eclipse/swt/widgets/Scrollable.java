@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public abstract class Scrollable extends Control {
- 	SWTView scrollView;
+ 	SWTScrollView scrollView;
 	ScrollBar horizontalBar, verticalBar;
 	
 Scrollable () {

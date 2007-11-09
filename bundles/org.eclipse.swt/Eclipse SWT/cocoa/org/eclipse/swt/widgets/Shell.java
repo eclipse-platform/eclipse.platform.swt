@@ -466,13 +466,22 @@ void createHandle () {
 		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 	
-	SWTView widget = (SWTView)new SWTView().alloc();
-	widget = (SWTView)widget.initWithFrame (new NSRect());
-	widget.setDrawsBackground(false);
-	widget.setTag(jniRef);
-	window.setContentView (widget);
-	view = widget;
+	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
+		SWTScrollView widget = (SWTScrollView)new SWTScrollView().alloc();
+		widget.initWithFrame (new NSRect());
+		widget.setDrawsBackground(false);
+		if ((style & SWT.H_SCROLL) != 0) widget.setHasHorizontalScroller(true);
+		if ((style & SWT.V_SCROLL) != 0) widget.setHasVerticalScroller(true);
+		widget.setTag(jniRef);
+		view = widget;
+	} else {
+		SWTView widget = (SWTView)new SWTView().alloc();
+		widget.initWithFrame (new NSRect());
+		widget.setTag(jniRef);
+		view = widget;
+	}
 	
+	window.setContentView (view);
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	windowDelegate.setTag(jniRef);
 	window.setDelegate(windowDelegate);
@@ -585,10 +594,8 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget();
-//	Rect rect = new Rect ();
-//	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-//	return new Point (rect.left, rect.top);
-	return null;
+	NSRect frame = window.frame ();
+	return new Point ((int) frame.x, (int) frame.y);
 }
 
 public boolean getMaximized () {
@@ -698,10 +705,8 @@ public Shell [] getShells () {
 
 public Point getSize () {
 	checkWidget();
-//	Rect rect = new Rect ();
-//	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-//	return new Point (rect.right - rect.left, rect.bottom - rect.top);
-	return null;
+	NSRect frame = window.frame ();
+	return new Point ((int) frame.width, (int) frame.height);
 }
 
 boolean hasBorder () {
@@ -754,9 +759,9 @@ void resizeBounds () {
 public void open () {
 	checkWidget();
 	setWindowVisible (true, true);
-//	if (isDisposed ()) return;
+	if (isDisposed ()) return;
 //	if (active) {
-//		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 //	}
 }
 
