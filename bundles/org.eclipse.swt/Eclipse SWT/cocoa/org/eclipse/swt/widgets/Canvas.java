@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -103,6 +104,39 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 //	} else {
 //		gc.fillRectangle (x, y, width, height);
 //	}
+}
+
+void drawRect(NSRect rect) {
+	super.drawRect(rect);
+	if (caret == null) return;
+	if (caret.isShowing) {
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		
+		Image image = caret.image;
+		if (image != null) {
+			NSRect fromRect = new NSRect ();
+			NSSize size = image.handle.size();
+			fromRect.width = size.width;
+			fromRect.height = size.height;
+			NSPoint point = new NSPoint();
+			point.x = caret.x;
+			point.y = caret.y;
+		 	image.handle.drawAtPoint(point, rect, OS.NSCompositeXOR, 1);
+		} else {
+			context.saveGraphicsState();
+			context.setCompositingOperation(OS.NSCompositeXOR);
+			NSRect drawRect = new NSRect();
+			drawRect.x = caret.x;
+			drawRect.y = caret.y;
+			drawRect.width = caret.width != 0 ? caret.width : Caret.DEFAULT_WIDTH;
+			drawRect.height = caret.height;
+			context.setShouldAntialias(false);
+			NSColor color = NSColor.colorWithDeviceRed(1, 1, 1, 1);
+			color.set();
+			NSBezierPath.fillRect(drawRect);
+			context.restoreGraphicsState();
+		}
+	}
 }
 
 /**

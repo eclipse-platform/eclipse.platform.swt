@@ -102,6 +102,8 @@ public class Display extends Device {
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
 	
+	Caret currentCaret;
+	
 	NSApplication application;
 	NSAutoreleasePool pool;
 
@@ -2379,6 +2381,20 @@ void sendEvent (int eventType, Event event) {
  */
 public static void setAppName (String name) {
 	APP_NAME = name;
+}
+
+void setCurrentCaret (Caret caret) {
+//	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
+//	caretID = 0;
+	currentCaret = caret;
+	if (currentCaret != null) {
+//		int blinkRate = currentCaret.blinkRate;
+//		int [] timerId = new int [1];
+//		double time = blinkRate / 1000.0;
+//		int eventLoop = OS.GetCurrentEventLoop ();
+//		OS.InstallEventLoopTimer (eventLoop, time, time, caretProc, 0, timerId);
+//		caretID = timerId [0];
+	}
 }
 
 /**
