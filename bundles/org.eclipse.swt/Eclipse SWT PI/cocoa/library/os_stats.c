@@ -14,17 +14,23 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 277;
-int OS_nativeFunctionCallCount[277];
+int OS_nativeFunctionCount = 285;
+int OS_nativeFunctionCallCount[285];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",
 	"JNIGetObject",
 	"NSBackgroundColorAttributeName",
+	"NSBaselineOffsetAttributeName",
 	"NSBitsPerPixelFromDepth",
 	"NSDeviceRGBColorSpace",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
+	"NSParagraphStyleAttributeName",
+	"NSStrikethroughColorAttributeName",
+	"NSStrikethroughStyleAttributeName",
+	"NSUnderlineColorAttributeName",
+	"NSUnderlineStyleAttributeName",
 	"NewGlobalRef",
 	"SetFrontProcess",
 	"TransformProcessType",
@@ -288,6 +294,8 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",
 	"objc_1registerClassPair",
 	"object_1getClassName",

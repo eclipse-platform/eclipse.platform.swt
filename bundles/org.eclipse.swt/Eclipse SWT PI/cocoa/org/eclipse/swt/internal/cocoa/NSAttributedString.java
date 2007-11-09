@@ -74,4 +74,14 @@ public void drawAtPoint(NSPoint pt) {
 	OS.objc_msgSend(id, OS.sel_drawAtPoint_, pt);
 }
 
+public int nextWordFromIndex(int index, boolean forward) {
+	return OS.objc_msgSend(id, OS.sel_nextWordFromIndex_1forward_1, index, forward);
+}
+
+public NSRange doubleClickAtIndex(int index) {
+	NSRange result = new NSRange();
+	OS.objc_msgSend_struct(result, id, OS.sel_doubleClickAtIndex_1, index);
+	return result;
+}
+
 }

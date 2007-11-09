@@ -106,6 +106,30 @@ fail:
 }
 #endif
 
+
+#ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III
+static SEL doubleClickAtIndex;
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
+{
+	NSRange _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III_FUNC);
+	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	
+	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, arg3);
+	if (doubleClickAtIndex == 0) doubleClickAtIndex = sel_registerName("doubleClickAtIndex:");
+	if ((SEL)arg2 == doubleClickAtIndex) {
+		*lparg0 = [(NSAttributedString *)arg1 doubleClickAtIndex: arg3];
+	}
+		
+fail:
+	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II
 static SEL size;
 static SEL minimumSize;
@@ -157,6 +181,30 @@ fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2
+static SEL lineRangeForRange;
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3)
+{
+	NSRange _arg0, *lparg0=NULL;
+	NSRange _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
+	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, lparg3);
+	if (lineRangeForRange == 0) lineRangeForRange = sel_registerName("lineRangeForRange:");
+	if ((SEL)arg2 == lineRangeForRange) {
+		*lparg0 = [(NSString *)arg1 lineRangeForRange: *lparg3];
+	}
+fail:
+	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
+	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 	return rc;
 }
 #endif

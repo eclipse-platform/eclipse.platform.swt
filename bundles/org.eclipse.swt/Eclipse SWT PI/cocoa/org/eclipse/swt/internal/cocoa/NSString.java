@@ -319,7 +319,7 @@ public int lengthOfBytesUsingEncoding(int enc) {
 
 public NSRange lineRangeForRange(NSRange range) {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_lineRangeForRange_1, range);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_lineRangeForRange_1, range);
 	return result;
 }
 

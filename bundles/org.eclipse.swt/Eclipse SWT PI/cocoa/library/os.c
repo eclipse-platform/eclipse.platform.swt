@@ -53,6 +53,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSBackgroundColorAttributeName)
 }
 #endif
 
+#ifndef NO_NSBaselineOffsetAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSBaselineOffsetAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSBaselineOffsetAttributeName_FUNC);
+	rc = (jint)NSBaselineOffsetAttributeName;
+	OS_NATIVE_EXIT(env, that, NSBaselineOffsetAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSBitsPerPixelFromDepth
 JNIEXPORT jint JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -97,6 +109,66 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSForegroundColorAttributeName)
 	OS_NATIVE_ENTER(env, that, NSForegroundColorAttributeName_FUNC);
 	rc = (jint)NSForegroundColorAttributeName;
 	OS_NATIVE_EXIT(env, that, NSForegroundColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSParagraphStyleAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSParagraphStyleAttributeName_FUNC);
+	rc = (jint)NSParagraphStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, NSParagraphStyleAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrikethroughColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrikethroughColorAttributeName_FUNC);
+	rc = (jint)NSStrikethroughColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrikethroughColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSStrikethroughStyleAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStrikethroughStyleAttributeName_FUNC);
+	rc = (jint)NSStrikethroughStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, NSStrikethroughStyleAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSUnderlineColorAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSUnderlineColorAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSUnderlineColorAttributeName_FUNC);
+	rc = (jint)NSUnderlineColorAttributeName;
+	OS_NATIVE_EXIT(env, that, NSUnderlineColorAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSUnderlineStyleAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSUnderlineStyleAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSUnderlineStyleAttributeName_FUNC);
+	rc = (jint)NSUnderlineStyleAttributeName;
+	OS_NATIVE_EXIT(env, that, NSUnderlineStyleAttributeName_FUNC);
 	return rc;
 }
 #endif
