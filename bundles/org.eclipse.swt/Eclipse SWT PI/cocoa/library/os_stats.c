@@ -284,6 +284,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIZ",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
+	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
 	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",
 	"objc_1registerClassPair",

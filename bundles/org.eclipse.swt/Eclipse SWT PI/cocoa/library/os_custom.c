@@ -27,8 +27,8 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 }
 #endif
 
-static SEL cascadeTopLeftFromPoint = NULL;
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2
+static SEL cascadeTopLeftFromPoint;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3)
 {
@@ -53,8 +53,9 @@ fail:
 }
 #endif
 
-static SEL mouseLocationOutsideOfEventStream;
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II
+static SEL mouseLocationOutsideOfEventStream;
+static SEL locationInWindow;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -68,6 +69,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (mouseLocationOutsideOfEventStream == 0) mouseLocationOutsideOfEventStream = sel_registerName("mouseLocationOutsideOfEventStream");
 	if ((SEL)arg2 == mouseLocationOutsideOfEventStream) {
 		*lparg0 = [(NSWindow *)arg1 mouseLocationOutsideOfEventStream];
+	} else {
+		if (locationInWindow == 0) locationInWindow = sel_registerName("locationInWindow");
+		if ((SEL)arg2 == locationInWindow) {
+			*lparg0 = [(NSEvent *)arg1 locationInWindow];
+		}
 	}
 	
 fail:
@@ -77,8 +83,8 @@ fail:
 }
 #endif
 
-static SEL selectedRange;
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II
+static SEL selectedRange;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -129,6 +135,31 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I
+static SEL convertPointfromView;
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+{
+	NSPoint _arg0, *lparg0=NULL;
+	NSPoint _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC);
+	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	
+	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4);
+	if (convertPointfromView == 0) convertPointfromView = sel_registerName("convertPoint:fromView:");
+	if ((SEL)arg2 == convertPointfromView) {
+		*lparg0 = [(NSView *)arg1 convertPoint: _arg3 fromView: (NSView *)arg4];
+	}
+	
+fail:
+	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC);
+	return rc;
+}
+#endif
 
 #ifndef NO_drawRect_1CALLBACK
 static SWT_PTR drawRect_1CALLBACK;
