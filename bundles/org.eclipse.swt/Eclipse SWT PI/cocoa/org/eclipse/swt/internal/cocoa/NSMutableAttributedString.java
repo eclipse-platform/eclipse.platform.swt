@@ -10,8 +10,8 @@ public NSMutableAttributedString(int id) {
 	super(id);
 }
 
-public void addAttribute(NSString name, id value, NSRange range) {
-	OS.objc_msgSend(this.id, OS.sel_addAttribute_1value_1range_1, name != null ? name.id : 0, value != null ? value.id : 0, range);
+public void addAttribute(int name, id value, NSRange range) {
+	OS.objc_msgSend(this.id, OS.sel_addAttribute_1value_1range_1, name, value != null ? value.id : 0, range);
 }
 
 public void addAttributes(NSDictionary attrs, NSRange range) {
