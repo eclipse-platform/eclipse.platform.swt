@@ -49,6 +49,12 @@ public static final native int objc_msgSend_struct(NSPoint arg0, int object, int
 public static final native int objc_msgSend_struct(NSPoint arg0, int object, int selector, NSPoint arg1);
 public static final native int objc_msgSend_struct(NSRange arg0, int object, int selector);
 
+public static final native int drawRect_CALLBACK(int func);
+
+public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect rect);
+public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
+public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
+
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");
 public static final int class_NSCIImageRep = objc_getClass("NSCIImageRep");

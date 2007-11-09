@@ -180,6 +180,34 @@ fail:
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	NSRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
+	if (arg1) if ((lparg1 = getNSRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setNSRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NSRect _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
+	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memmove((void *)lparg0, (void *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
+}
+#endif
+
 #ifndef NO_objc_1allocateClassPair
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1allocateClassPair)
 	(JNIEnv *env, jclass that, jint arg0, jstring arg1, jint arg2)
@@ -2806,6 +2834,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3III)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3III_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSendSuper
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jobject arg2)
+{
+	struct objc_super _arg0, *lparg0=NULL;
+	NSRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper_FUNC);
+	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, NSRect))objc_msgSendSuper)((id)lparg0, (SEL)arg1, *lparg2);
+fail:
+	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
+	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_FUNC);
 	return rc;
 }
 #endif
