@@ -1406,6 +1406,29 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
+int menuForEvent (int nsEvent) {
+	//TODO = get coordinates
+	System.out.println("HELLO");
+	int x = 0;
+	int y = 0;
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect, event);
+	if (!event.doit) return 0;
+	Menu menu = getMenu ();
+	if (menu != null && !menu.isDisposed ()) {
+		if (x != event.x || y != event.y) {
+			menu.setLocation (event.x, event.y);
+		}
+		return menu.nsMenu.id;
+	}
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = view.id;
+	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, OS.sel_menuForEvent_1, nsEvent);
+}
+
 Decorations menuShell () {
 	return parent.menuShell ();
 }
@@ -2509,6 +2532,8 @@ public void setMenu (Menu menu) {
 		}
 	}
 	this.menu = menu;
+	NSMenu nsMenu = menu != null ? menu.nsMenu : null;
+	((NSView)view).setMenu(nsMenu);
 }
 
 /**

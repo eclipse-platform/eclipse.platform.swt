@@ -555,6 +555,10 @@ void rightMouseDown(int event) {
 void mouseUp(int event) {
 }
 
+int menuForEvent (int event) {
+	return 0;
+}
+
 int numberOfRowsInTableView(int aTableView) {
 	return 0;
 }

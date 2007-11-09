@@ -2838,21 +2838,37 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSendSuper
-JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper)
+#ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	struct objc_super _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC);
+	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jint))objc_msgSendSuper)((id)lparg0, (SEL)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jobject arg2)
 {
 	struct objc_super _arg0, *lparg0=NULL;
 	NSRect _arg2, *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper_FUNC);
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)((jint (*)(id, SEL, NSRect))objc_msgSendSuper)((id)lparg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_FUNC);
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	return rc;
 }
 #endif

@@ -51,7 +51,8 @@ public static final native int objc_msgSend_struct(NSRange arg0, int object, int
 
 public static final native int drawRect_CALLBACK(int func);
 
-public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect rect);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0);
 public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
 public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
 

@@ -1524,6 +1524,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_changeFont_1, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTView";
@@ -1535,6 +1536,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTButton";
@@ -1544,6 +1546,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_drawRect_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTableView";
@@ -1554,6 +1557,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTabView";
@@ -1563,6 +1567,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tabView_1willSelectTabViewItem_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTBox";
@@ -1571,6 +1576,7 @@ void initClasses () {
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTProgressIndicator";
@@ -1579,17 +1585,20 @@ void initClasses () {
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTComboBox";
@@ -1597,12 +1606,14 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
@@ -1612,12 +1623,14 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTStepper";
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTextView";
@@ -1627,6 +1640,7 @@ void initClasses () {
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2785,6 +2799,8 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.windowDidResize(arg0);
 	} else if (sel == OS.sel_windowDidMove_1) {
 		widget.windowDidMove(arg0);
+	} else if (sel == OS.sel_menuForEvent_1) {
+		return widget.menuForEvent(arg0);
 	}
 	return 0;
 }
