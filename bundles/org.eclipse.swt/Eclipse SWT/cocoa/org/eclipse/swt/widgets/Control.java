@@ -2766,11 +2766,7 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-//	if (display.helpWidget == this) {
-//		display.helpWidget = null;
-//		OS.HMInstallControlContentCallback (handle, 0);
-//		OS.HMInstallControlContentCallback (handle, display.helpProc);
-//	}
+	view.setToolTip(NSString.stringWith(string));
 }
 
 /**

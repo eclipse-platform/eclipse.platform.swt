@@ -152,11 +152,7 @@ void createItem (ToolItem item, int index) {
 		widget.setAction(OS.sel_sendSelection);
 		widget.setTarget(widget);
 		widget.setTag(item.jniRef);
-		if ((style & SWT.RIGHT) != 0) {
-			widget.setImagePosition(OS.NSImageLeft);
-		} else {
-			widget.setImagePosition(OS.NSImageAbove);		
-		}
+		widget.setImagePosition(OS.NSImageOverlaps);
 		widget.setTitle(NSString.stringWith(""));
 		item.view = widget;
 	}
