@@ -62,6 +62,7 @@ public static final native int objc_msgSendSuper(objc_super superId, int sel, NS
 public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0);
 public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
 public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (NSRange dest, int /*long*/ src, int /*long*/ size);
 
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");

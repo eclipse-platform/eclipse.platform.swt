@@ -14,6 +14,8 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
+import sun.font.TextSource;
+
 /**
  * <code>TextLayout</code> is a graphic object that represents
  * styled text.
@@ -31,7 +33,9 @@ import org.eclipse.swt.*;
  */
 public final class TextLayout extends Resource {
 	
-	NSTextStorage string;
+	NSTextStorage textStorage;
+	NSLayoutManager layoutManager;
+	NSTextContainer textContainer;
 	Font font;
 	String text;
 	StyleItem[] styles;
@@ -91,16 +95,26 @@ void checkLayout() {
 }
 
 void computeRuns() {
-	if (string != null) return;
+	if (textStorage != null) return;
 	NSString str = NSString.stringWith(text);
-	string = ((NSTextStorage)new NSTextStorage().alloc());
-	string.initWithString_attributes_(str, null);
+	textStorage = ((NSTextStorage)new NSTextStorage().alloc());
+	textStorage.initWithString_attributes_(str, null);
 	
-	string.beginEditing();
+	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
+	textStorage.addLayoutManager(layoutManager);
+	
+	textContainer = (NSTextContainer)new NSTextContainer().alloc();
+	NSSize size = new NSSize();
+	size.width = Float.MAX_VALUE;
+	size.height = Float.MAX_VALUE;
+	textContainer.initWithContainerSize(size);
+	layoutManager.addTextContainer(textContainer);
+	
+	textStorage.beginEditing();
 	Font defaultFont = font != null ? font : device.systemFont;
 	NSRange range = new NSRange();
 	range.length = str.length();
-	string.addAttribute(OS.NSFontAttributeName(), defaultFont.handle, range);
+	textStorage.addAttribute(OS.NSFontAttributeName(), defaultFont.handle, range);
 	
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	int align = OS.NSLeftTextAlignment;
@@ -122,7 +136,7 @@ void computeRuns() {
 	
 	//TODO tabs ascend descent wrap
 	
-	string.addAttribute(OS.NSParagraphStyleAttributeName(), paragraph, range);
+	textStorage.addAttribute(OS.NSParagraphStyleAttributeName(), paragraph, range);
 	paragraph.release();
 	
 	int textLength = str.length();
@@ -134,24 +148,24 @@ void computeRuns() {
 		range.length = translateOffset(styles[i + 1].start) - range.location;
 		Font font = style.font;
 		if (font != null) {
-			string.addAttribute(OS.NSFontAttributeName(), font.handle, range);
+			textStorage.addAttribute(OS.NSFontAttributeName(), font.handle, range);
 		}
 		Color foreground = style.foreground;
 		if (foreground != null) {
 			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-			string.addAttribute(OS.NSForegroundColorAttributeName(), color, range);
+			textStorage.addAttribute(OS.NSForegroundColorAttributeName(), color, range);
 		}
 		Color background = style.background;
 		if (background != null) {
 			NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
-			string.addAttribute(OS.NSBackgroundColorAttributeName(), color, range);
+			textStorage.addAttribute(OS.NSBackgroundColorAttributeName(), color, range);
 		}
 		if (style.strikeout) {
-			string.addAttribute(OS.NSStrikethroughStyleAttributeName(), NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
+			textStorage.addAttribute(OS.NSStrikethroughStyleAttributeName(), NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
 			Color strikeColor = style.strikeoutColor;
 			if (strikeColor != null) {
 				NSColor color = NSColor.colorWithDeviceRed(strikeColor.handle[0], strikeColor.handle[1], strikeColor.handle[2], 1);
-				string.addAttribute(OS.NSStrikethroughColorAttributeName(), color, range);
+				textStorage.addAttribute(OS.NSStrikethroughColorAttributeName(), color, range);
 			}
 		}
 		if (style.underline) {
@@ -166,22 +180,24 @@ void computeRuns() {
 					break;
 			}
 			if (underlineStyle != 0) {
-				string.addAttribute(OS.NSUnderlineStyleAttributeName(), NSNumber.numberWithInt(underlineStyle), range);
+				textStorage.addAttribute(OS.NSUnderlineStyleAttributeName(), NSNumber.numberWithInt(underlineStyle), range);
 				Color underlineColor = style.underlineColor;
 				if (underlineColor != null) {
 					NSColor color = NSColor.colorWithDeviceRed(underlineColor.handle[0], underlineColor.handle[1], underlineColor.handle[2], 1);
-					string.addAttribute(OS.NSUnderlineColorAttributeName(), color, range);
+					textStorage.addAttribute(OS.NSUnderlineColorAttributeName(), color, range);
 				}
 			}
 		}
 		if (style.rise != 0) {
-			string.addAttribute(OS.NSBaselineOffsetAttributeName(), NSNumber.numberWithInt(style.rise), range);
+			textStorage.addAttribute(OS.NSBaselineOffsetAttributeName(), NSNumber.numberWithInt(style.rise), range);
 		}
 		if (style.metrics != null) {
 			//TODO
 		}
 	}
-	string.endEditing();
+	textStorage.endEditing();
+	
+	textContainer.setContainerSize(textStorage.size());
 }
 
 /**
@@ -276,13 +292,23 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	NSPoint pt = new NSPoint();
 	pt.x = x;
 	pt.y = y;
-	string.drawAtPoint(pt);
+	textStorage.drawAtPoint(pt);
 }
 
 void freeRuns() {
-	if (string == null) return;
-	string.release();
-	string = null;
+	if (textStorage == null) return;
+	if (textStorage != null) {
+		textStorage.release();
+	}
+	if (layoutManager != null) {
+		layoutManager.release();
+	}
+	if (textContainer != null) {
+		textContainer.release();
+	}
+	textStorage = null;
+	layoutManager = null;
+	textContainer = null;
 }
 
 /** 
@@ -332,7 +358,7 @@ public int getAscent () {
 public Rectangle getBounds() {
 	checkLayout();
 	computeRuns();
-	NSSize size = string.size();
+	NSSize size = textStorage.size();
 	return new Rectangle(0, 0, (int)size.width, (int)size.height);
 }
 
@@ -462,17 +488,24 @@ public int getLevel(int offset) {
 public int[] getLineOffsets() {
 	checkLayout ();
 	computeRuns();
-
-//	int numberOfLines, index, stringLength = string.length();
-//	NSRange range = new NSRange();
-//	for (index = 0, numberOfLines = 0; index < stringLength; numberOfLines++) {
-//		range.location = index;
-//		range = string.lineRangeForRange(range);
-//		index = range.location + range.length;
-////	    index = NSMaxRange([string lineRangeForRange:NSMakeRange(index, 0)]);
-//	}
-	
-	return new int[]{0, string.length()};
+	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
+	int rangePtr = OS.malloc(NSRange.sizeof);
+	NSRange lineRange = new NSRange();
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    index = lineRange.location + lineRange.length;
+	}
+	int[] offsets = new int[numberOfLines + 1];
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    offsets[numberOfLines] = lineRange.location;
+	    index = lineRange.location + lineRange.length;
+	}	
+	OS.free(rangePtr);
+	offsets[numberOfLines] = textStorage.length();
+	return offsets;
 }
 
 /**
@@ -494,12 +527,17 @@ public int getLineIndex(int offset) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	offset = translateOffset(offset);
-	for (int i=0; i<breaks.length-1; i++) {
-		int lineBreak = breaks[i];
-		if (lineBreak > offset) return i;
+	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
+	int rangePtr = OS.malloc(NSRange.sizeof);
+	NSRange lineRange = new NSRange();
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    if (offset < lineRange.location) break; 
+	    index = lineRange.location + lineRange.length;
 	}
-	return breaks.length - 1;
+	OS.free(rangePtr);
+	return numberOfLines;
 }
 
 /**
@@ -518,16 +556,25 @@ public int getLineIndex(int offset) {
 public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
 	computeRuns();
-	int lineCount = breaks.length;
-	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int lineY = 0;
-	for (int i=0; i<lineIndex; i++) {
-		lineY += lineHeight[i];
+	NSRect rect = null;
+	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
+	int rangePtr = OS.malloc(NSRange.sizeof);
+	NSRange lineRange = new NSRange();
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+	    NSRect r = layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    if (lineIndex == numberOfLines) {
+	    	rect = r;
+	    	break; 
+	    }
+	    index = lineRange.location + lineRange.length;
 	}
-	int lineX = this.lineX[lineIndex];
-	int lineWidth = this.lineWidth[lineIndex];
-	int lineHeight = this.lineHeight[lineIndex] - spacing;
-	return new Rectangle(lineX, lineY, lineWidth, lineHeight);
+	OS.free(rangePtr);
+	if (rect == null) SWT.error(SWT.ERROR_INVALID_RANGE);
+	//TODO - wrong width
+//	NSSize size = textStorage.size();
+//	rect.width = size.width;
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -542,8 +589,17 @@ public Rectangle getLineBounds(int lineIndex) {
  */
 public int getLineCount() {
 	checkLayout ();
-	computeRuns();
-	return string.paragraphs().count();
+	computeRuns();	
+	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
+	int rangePtr = OS.malloc(NSRange.sizeof);
+	NSRange lineRange = new NSRange();
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    index = lineRange.location + lineRange.length;
+	}
+	OS.free(rangePtr);
+	return numberOfLines;
 }
 
 /**
@@ -562,26 +618,25 @@ public int getLineCount() {
 public FontMetrics getLineMetrics (int lineIndex) {
 	checkLayout ();
 	computeRuns();
-	int lineCount = breaks.length;
+	int lineCount = getLineCount();
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int length = text.length();
 	if (length == 0) {
 		Font font = this.font != null ? this.font : device.systemFont;
-		ATSFontMetrics metrics = new ATSFontMetrics();
-		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
-		int ascent = (int)(0.5f + metrics.ascent * font.size);
-		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
+		NSFont nsFont = font.handle;
+		int ascent = (int)(0.5f + nsFont.ascender());
+		int descent = (int)(0.5f + (-nsFont.descender() + nsFont.leading()));	
 		ascent = Math.max(ascent, this.ascent);
 		descent = Math.max(descent, this.descent);
-		return FontMetrics.carbon_new(ascent, descent, 0, 0, ascent + descent);
+		return FontMetrics.cocoa_new(ascent, descent, 0, 0, ascent + descent);
 	}
-	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
-	int lineLength = breaks[lineIndex] - start;
-	int[] ascent = new int[1], descent = new int[1];
-	OS.ATSUGetUnjustifiedBounds(layout, start, lineLength, null, null, ascent, descent);
-	int height = OS.Fix2Long(ascent[0]) + OS.Fix2Long(descent[0]);
-	return FontMetrics.carbon_new(OS.Fix2Long(ascent[0]), OS.Fix2Long(descent[0]), 0, 0, height);
+//	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
+//	int lineLength = breaks[lineIndex] - start;
+//	int[] ascent = new int[1], descent = new int[1];
+//	OS.ATSUGetUnjustifiedBounds(layout, start, lineLength, null, null, ascent, descent);
+//	int height = OS.Fix2Long(ascent[0]) + OS.Fix2Long(descent[0]);
+//	return FontMetrics.carbon_new(OS.Fix2Long(ascent[0]), OS.Fix2Long(descent[0]), 0, 0, height);
+	return null;
 }
 
 /**
@@ -607,23 +662,26 @@ public Point getLocation(int offset, boolean trailing) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return new Point(0, 0);
 	offset = translateOffset(offset);
-	for (int i = 0; i < hardBreaks.length; i++) {
-		if (offset == hardBreaks[i]) {
-			trailing = true;
-			if (offset > 0) offset--;
-			break;
-		}
-	}
-	int lineY = 0;
-	for (int i=0; i<breaks.length-1; i++) {
-		int lineBreak = breaks[i];
-		if (lineBreak > offset) break;
-		lineY += lineHeight[i];
-	}
-	if (trailing) offset++;
-	ATSUCaret caret = new ATSUCaret();
-	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
-	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
+	System.out.println("la=" + textStorage.layoutManagers().count());
+	System.out.println(new NSLayoutManager(textStorage.layoutManagers().objectAtIndex(0)).textContainers().count());
+//	for (int i = 0; i < hardBreaks.length; i++) {
+//		if (offset == hardBreaks[i]) {
+//			trailing = true;
+//			if (offset > 0) offset--;
+//			break;
+//		}
+//	}
+//	int lineY = 0;
+//	for (int i=0; i<breaks.length-1; i++) {
+//		int lineBreak = breaks[i];
+//		if (lineBreak > offset) break;
+//		lineY += lineHeight[i];
+//	}
+//	if (trailing) offset++;
+//	ATSUCaret caret = new ATSUCaret();
+//	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
+//	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
+	return null;
 }
 
 /**
@@ -667,14 +725,14 @@ int _getOffset (int offset, int movement, boolean forward) {
 			return untranslateOffset(offset);
 		}
 		case SWT.MOVEMENT_WORD: {
-			return untranslateOffset(string.nextWordFromIndex(offset, forward));
+			return untranslateOffset(textStorage.nextWordFromIndex(offset, forward));
 		}
 		case SWT.MOVEMENT_WORD_END: {
-			NSRange range = string.doubleClickAtIndex(offset);
+			NSRange range = textStorage.doubleClickAtIndex(offset);
 			return untranslateOffset(range.location + range.length);
 		}
 		case SWT.MOVEMENT_WORD_START: {
-			NSRange range = string.doubleClickAtIndex(offset);
+			NSRange range = textStorage.doubleClickAtIndex(offset);
 			return untranslateOffset(range.location);
 		}
 		default:
@@ -742,26 +800,8 @@ public int getOffset(int x, int y, int[] trailing) {
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
 	if (length == 0) return 0;
-	int lineY = 0, start = 0, lineIndex;
-	for (lineIndex=0; lineIndex<breaks.length-1; lineIndex++) {
-		int lineBreak = breaks[lineIndex];
-		int height = lineHeight[lineIndex];
-		if (lineY + height > y) break;
-		lineY += height;
-		start = lineBreak;
-	}
-	int[] offset = new int[]{start};
-	boolean[] leading = new boolean[1];
-	OS.ATSUPositionToOffset(layout, OS.Long2Fix(x), OS.Long2Fix(y - lineY), offset, leading, null);
-	if (trailing != null) trailing[0] = (leading[0] ? 0 : 1);
-	if (!leading[0]) offset[0]--;
-	for (int i = 0; i < hardBreaks.length; i++) {
-		if (offset[0] == hardBreaks[i]) {
-			offset[0]++;
-			break;
-		}
-	}
-	return Math.min(untranslateOffset(offset[0]), length - 1);
+	int offset = 0;
+	return Math.min(untranslateOffset(offset), length - 1);
 }
 
 /**
