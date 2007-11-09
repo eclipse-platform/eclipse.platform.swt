@@ -124,7 +124,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	System.out.println(width + " " + height);
 	return new Point (width, height);
 }
 
