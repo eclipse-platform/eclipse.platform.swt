@@ -1729,10 +1729,12 @@ public boolean print (GC gc) {
  */
 public void redraw () {
 	checkWidget();
+	view.setNeedsDisplay(true);
 }
 
 void redraw (boolean children) {
 //	checkWidget();
+	
 }
 
 /**
@@ -1767,7 +1769,12 @@ void redraw (boolean children) {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-//	redrawWidget (handle, x, y, width, height, all);
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	view.setNeedsDisplayInRect(rect);
 }
 
 void releaseHandle () {

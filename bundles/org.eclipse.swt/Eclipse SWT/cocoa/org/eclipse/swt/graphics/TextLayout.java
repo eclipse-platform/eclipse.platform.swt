@@ -561,7 +561,7 @@ public Rectangle getLineBounds(int lineIndex) {
 	int rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    NSRect r = layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
+	    NSRect r = layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, false);
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    if (lineIndex == numberOfLines) {
 	    	rect = r;
@@ -621,7 +621,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int lineCount = getLineCount();
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int length = text.length();
-	if (length == 0) {
+	if (true || length == 0) {
 		Font font = this.font != null ? this.font : device.systemFont;
 		NSFont nsFont = font.handle;
 		int ascent = (int)(0.5f + nsFont.ascender());
@@ -681,7 +681,7 @@ public Point getLocation(int offset, boolean trailing) {
 //	ATSUCaret caret = new ATSUCaret();
 //	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
 //	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
-	return null;
+	return new Point(0, 0);
 }
 
 /**
