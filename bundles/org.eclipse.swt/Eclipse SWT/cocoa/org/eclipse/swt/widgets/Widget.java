@@ -1075,6 +1075,10 @@ boolean setKeyState (Event event, int type, int theEvent) {
 void tableViewSelectionDidChange (int aNotification) {
 }
 
+boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+	return true;
+}
+
 int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
 	return 0;
 }

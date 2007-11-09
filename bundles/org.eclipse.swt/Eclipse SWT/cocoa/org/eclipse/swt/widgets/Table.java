@@ -2285,6 +2285,10 @@ void tableViewSelectionDidChange (int aNotification) {
 	sendEvent (SWT.Selection);
 }
 
+boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+	return false;
+}
+
 int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
 	TableItem item = items [rowIndex];
 	for (int i=0; i<columnCount; i++) {

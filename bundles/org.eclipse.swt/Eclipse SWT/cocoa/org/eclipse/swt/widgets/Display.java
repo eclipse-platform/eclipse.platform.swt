@@ -1535,6 +1535,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
@@ -2760,6 +2761,9 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_1objectValueForTableColumn_1row_1) {
 		return widget.tableViewobjectValueForTableColumnrow(arg0, arg1, arg2);
+	}
+	if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
+		return widget.tableViewshouldEditTableColumnrow(arg0, arg1, arg2) ? 1 : 0;
 	}
 	return 0;
 }
