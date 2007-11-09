@@ -729,8 +729,10 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	NSString str = NSString.stringWith(string);
-	((NSMenuItem)nsItem).setTitle(str);
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int length = fixMnemonic (buffer);
+	((NSMenuItem)nsItem).setTitle(NSString.stringWithCharacters(buffer, length));
 }
 
 }
