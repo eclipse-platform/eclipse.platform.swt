@@ -546,6 +546,9 @@ boolean isValidThread () {
 void keyDown(int event) {
 }
 
+void mouseDragged(int event) {
+}
+
 void mouseDown(int event) {
 }
 

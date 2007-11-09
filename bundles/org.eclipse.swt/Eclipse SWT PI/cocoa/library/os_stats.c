@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 274;
-int OS_nativeFunctionCallCount[274];
+int OS_nativeFunctionCount = 275;
+int OS_nativeFunctionCallCount[275];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",

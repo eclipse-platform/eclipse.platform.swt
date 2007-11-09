@@ -1534,7 +1534,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
-//	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
@@ -2791,8 +2793,10 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 		widget.mouseDown(arg0);
 	} else if (sel == OS.sel_rightMouseDown_1) {
 		widget.rightMouseDown(arg0);
+	} else if (sel == OS.sel_mouseDragged_1) {
+		widget.mouseDragged(arg0);
 	} else if (sel == OS.sel_mouseUp_1) {
-		widget.mouseUp(arg0);
+			widget.mouseUp(arg0);
 	} else if (sel == OS.sel_keyDown_1) {
 		widget.keyDown(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
