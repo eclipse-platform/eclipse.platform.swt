@@ -113,12 +113,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 ScrollBar createScrollBar (int style) {
-	if (scrollView == null) return null;
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
 	bar.style = style;
 	bar.display = display;
-	NSScrollView widget = (NSScrollView)scrollView;
+	NSScrollView widget = (NSScrollView)(scrollView != null ? scrollView : view);
 	if ((style & SWT.H_SCROLL) != 0) {
 		bar.view = widget.horizontalScroller();
 	} else {
