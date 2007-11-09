@@ -264,14 +264,8 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget();
-	if (txnObject == 0) {
-		Point selection = getSelection ();
-		setSelection (selection.x);
-	} else {
-		int [] oStartOffset = new int [1], oEndOffset = new int [1];
-		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-		OS.TXNSetSelection (txnObject, oStartOffset [0], oStartOffset [0]);
-	}
+	Point selection = getSelection ();
+	setSelection (selection.x);	
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -641,6 +635,8 @@ public Point getCaretLocation () {
 		return new Point (0, 0);
 	}
 //	NSText
+	NSRange range = ((NSTextView)view).selectedRange();
+	System.out.println(range.location + " " + range.length);
 	return null;
 }
 
@@ -659,12 +655,13 @@ public Point getCaretLocation () {
  */
 public int getCaretPosition () {
 	checkWidget();
-	if (txnObject == 0) {
-		return getSelection ().x;
+	if ((style & SWT.SINGLE) != 0) {
+		//TODO
+		return 0;
+	} else {
+		NSRange range = ((NSTextView)view).selectedRange();
+		return range.location;
 	}
-	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	return oStartOffset [0];
 }
 
 /**
@@ -679,15 +676,12 @@ public int getCaretPosition () {
  */
 public int getCharCount () {
 	checkWidget ();
-	if (txnObject == 0) {
-		int [] ptr = new int [1];
-		int result = OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, null);
-		if (result != OS.noErr) return 0;
-		int length = OS.CFStringGetLength (ptr [0]);
-		OS.CFRelease (ptr[0]);
-		return length;
+	if ((style & SWT.SINGLE) != 0) {
+		return new NSCell(((NSControl)view).cell()).title().length();
+	} else {
+		//TODO
+		return 0;
 	}
-	return OS.TXNDataSize (txnObject) / 2;
 }
 
 /**
@@ -884,11 +878,11 @@ public Point getSelection () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
 //		new NSTextFieldCell(((NSTextField)view).cell()).title().
-		return -1;
+		return new Point(0, 0);
 	} else {
 		NSTextView widget = (NSTextView)view;
 		NSRange range = widget.selectedRange();
-		return range.length;
+		return new Point(range.location, range.location + range.length);
 	}
 }
 
@@ -926,12 +920,16 @@ public int getSelectionCount () {
  */
 public String getSelectionText () {
 	checkWidget();
-	if (txnObject == 0) {
-		Point selection = getSelection ();
-		if (selection.x == selection.y) return "";
-		return new String (getEditText (selection.x, selection.y - 1));
+	if ((style & SWT.SINGLE) != 0) {
+		//TODO
+		return "";
 	} else {
-		return getTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
+		NSTextView widget = (NSTextView)view;
+		NSRange range = widget.selectedRange();
+		NSString str = widget.textStorage().string();
+		char[] buffer = new char[range.length];
+		str.getCharacters_range_(buffer, range);
+		return new String(buffer);
 	}
 }
 

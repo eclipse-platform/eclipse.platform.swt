@@ -155,7 +155,7 @@ public void getCharacters_(char[] buffer) {
 	OS.objc_msgSend(this.id, OS.sel_getCharacters_1, buffer);
 }
 
-public void getCharacters_range_(int buffer, NSRange aRange) {
+public void getCharacters_range_(char[] buffer, NSRange aRange) {
 	OS.objc_msgSend(this.id, OS.sel_getCharacters_1range_1, buffer, aRange);
 }
 

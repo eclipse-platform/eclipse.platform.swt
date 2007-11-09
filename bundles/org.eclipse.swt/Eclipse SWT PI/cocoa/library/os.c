@@ -2822,6 +2822,25 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jobject arg3)
+{
+	jchar *lparg2=NULL;
+	NSRange _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jchar *, NSRange))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, *lparg3);
+fail:
+	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__II_3III
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3III)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4)
