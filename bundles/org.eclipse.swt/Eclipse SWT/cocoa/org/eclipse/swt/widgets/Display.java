@@ -108,6 +108,7 @@ public class Display extends Device {
 	NSPoint cascade = new NSPoint();
 
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
+	Callback dialogCallback3;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -1488,6 +1489,10 @@ protected void init () {
 }
 
 void initClasses () {
+	dialogCallback3 = new Callback(this, "dialogProc", 3);
+	int dialogProc3 = dialogCallback3.getAddress();
+	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	windowDelegateCallback3 = new Callback(this, "windowDelegateProc", 3);
 	int proc3 = windowDelegateCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1507,6 +1512,16 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowDidResize_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTPanelDelegate";
+	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_windowWillClose_1, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_changeColor_1, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_changeFont_1, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
@@ -2198,6 +2213,7 @@ void releaseDisplay () {
 	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback4.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback5.dispose ();
+	if (dialogCallback3 != null) dialogCallback3.dispose ();
 	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = windowDelegateCallback5 = null;
 }
 
@@ -2679,6 +2695,28 @@ public void wake () {
 }
 
 void wakeThread () {
+}
+
+int dialogProc(int id, int sel, int arg0) {
+	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
+	if (jniRef == 0 || jniRef == -1) return 0;
+	if (sel == OS.sel_changeColor_1) {
+		ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef);
+		if (dialog == null) return 0;
+		dialog.changeColor(arg0);
+	} else if (sel == OS.sel_changeFont_1) {
+		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef);
+		if (dialog == null) return 0;
+		dialog.changeFont(arg0);
+	} else if (sel == OS.sel_windowWillClose_1) {
+		Object object = OS.JNIGetObject(jniRef);
+		if (object instanceof FontDialog) {
+			((FontDialog)object).windowWillClose(arg0);
+		} else if (object instanceof ColorDialog) {
+			((ColorDialog)object).windowWillClose(arg0);
+		}
+	}
+	return 0;
 }
 
 int windowDelegateProc(int delegate, int sel) {

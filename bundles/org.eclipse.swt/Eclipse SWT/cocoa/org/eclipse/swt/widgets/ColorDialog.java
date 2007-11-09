@@ -86,6 +86,10 @@ public ColorDialog(Shell parent, int style) {
 	checkSubclass ();
 }
 
+void changeColor(int sender) {
+	//TODO
+}
+
 /**
  * Returns the currently selected color in the receiver.
  *
@@ -116,9 +120,21 @@ public RGB open() {
 		NSColor color = NSColor.colorWithDeviceRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
 		panel.setColor(color);
 	}
+	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
+	int jniRef = OS.NewGlobalRef(this);
+	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	delegate.setTag(jniRef);
+	panel.setDelegate(delegate);
 	rgb = null;
 	panel.orderFront(null);
-//	NSApplication.sharedApplication().runModalForWindow_(panel);
+	NSApplication.sharedApplication().runModalForWindow_(panel);
+	panel.setDelegate(null);
+	delegate.release();
+	OS.DeleteGlobalRef(jniRef);
+	NSColor color = panel.color();
+	if (color != null) {
+		rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
+	}
 	return rgb;
 }
 
@@ -132,5 +148,9 @@ public RGB open() {
  */
 public void setRGB(RGB rgb) {
 	this.rgb = rgb;
+}
+
+void windowWillClose(int sender) {
+	NSApplication.sharedApplication().stop(null);
 }
 }

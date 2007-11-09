@@ -81,6 +81,9 @@ public FontDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
+void changeFont(int arg0) {
+}
+
 /**
  * Returns a FontData object describing the font that was
  * selected in the dialog, or null if none is available.
@@ -205,9 +208,17 @@ public FontData open () {
 		NSFontManager.sharedFontManager().setSelectedFont(font.handle, false);
 		font.dispose();
 	}
+	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
+	int jniRef = OS.NewGlobalRef(this);
+	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	delegate.setTag(jniRef);
+	panel.setDelegate(delegate);
 	fontData = null;
 	panel.orderFront(null);
-//	NSApplication.sharedApplication().runModalForWindow_(panel);
+	NSApplication.sharedApplication().runModalForWindow_(panel);
+	panel.setDelegate(null);
+	delegate.release();
+	OS.DeleteGlobalRef(jniRef);
 	return fontData;
 }
 
@@ -256,6 +267,10 @@ public void setFontList (FontData [] fontData) {
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;
+}
+
+void windowWillClose(int sender) {
+	NSApplication.sharedApplication().stop(null);
 }
 
 }
