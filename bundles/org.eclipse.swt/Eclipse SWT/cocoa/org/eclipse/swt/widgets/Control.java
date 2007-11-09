@@ -2252,9 +2252,6 @@ public void setBounds (int x, int y, int width, int height) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = 0;
-	if (this instanceof ProgressBar) {
-		System.out.println();
-	}
 	NSView topView = topView();
 	NSRect rect = topView.frame();
 	if (move && resize) {

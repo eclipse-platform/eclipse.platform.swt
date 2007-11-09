@@ -217,7 +217,7 @@ public void setControl (Control control) {
 		return;
 	}
 	if (newControl != null) {
-		nsItem.setView(control.topView ());
+//		nsItem.setView(control.topView ());
 		newControl.setBounds (parent.getClientArea ());
 		newControl.setVisible (true);
 	}
