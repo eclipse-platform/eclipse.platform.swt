@@ -494,10 +494,6 @@ void createItem (TableItem item, int index) {
 	((NSTableView)view).reloadData();
 }
 
-ScrollBar createScrollBar (int style) {
-	return createStandardBar (style);
-}
-
 void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];

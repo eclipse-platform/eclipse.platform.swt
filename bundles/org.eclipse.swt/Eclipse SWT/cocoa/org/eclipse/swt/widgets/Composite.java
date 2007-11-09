@@ -227,6 +227,8 @@ void createHandle () {
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame (new NSRect());
 	widget.setDrawsBackground(false);
+	if ((style & SWT.H_SCROLL) != 0) widget.setHasHorizontalScroller(true);
+	if ((style & SWT.V_SCROLL) != 0) widget.setHasVerticalScroller(true);
 	widget.setTag(jniRef);
 	view = widget;
 	parent.contentView().addSubview_(view);

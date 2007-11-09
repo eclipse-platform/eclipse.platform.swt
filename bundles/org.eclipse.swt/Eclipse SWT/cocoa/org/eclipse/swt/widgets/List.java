@@ -294,10 +294,6 @@ void createWidget () {
 	items = new String [4];
 }
 
-ScrollBar createScrollBar (int style) {
-	return createStandardBar (style);
-}
-
 Color defaultBackground () {
 	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
 }

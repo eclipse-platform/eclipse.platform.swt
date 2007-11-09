@@ -753,10 +753,6 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	}
 }
 
-ScrollBar createScrollBar (int style) {
-	return createStandardBar (style);
-}
-
 void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];

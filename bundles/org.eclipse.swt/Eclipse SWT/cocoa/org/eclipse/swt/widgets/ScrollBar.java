@@ -81,21 +81,13 @@ import org.eclipse.swt.graphics.*;
  * @see Scrollable#getVerticalBar
  */
 public class ScrollBar extends Widget {
-	int handle;
-	int visibleRgn, oldActionProc;
+	NSScroller view;
 	Scrollable parent;
-	boolean dragging;
 	int increment = 1;
 	int pageIncrement = 10;
 
 ScrollBar () {
 	/* Do nothing */
-}
-
-ScrollBar (Scrollable parent, int style) {
-	super (parent, checkStyle (style));
-	this.parent = parent;
-	createWidget ();
 }
 
 /**
@@ -181,23 +173,6 @@ static int checkStyle (int style) {
 //	sendEvent (SWT.Selection, event);
 //	return result;
 //}
-
-void destroyWidget () {
-//	int theControl = handle;
-//	releaseHandle ();
-//	if (theControl != 0) {
-//		OS.DisposeControl (theControl);
-//	}
-}
-
-void createHandle () {
-//	int actionProc = display.actionProc;
-//	int [] outControl = new int [1];
-//	int window = OS.GetControlOwner (parent.scrolledHandle);
-//	OS.CreateScrollBarControl (window, null, 0, 0, 90, 10, true, actionProc, outControl);
-//	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//	handle = outControl [0];
-}
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
@@ -444,7 +419,7 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	handle = 0;
+	view = null;
 }
 
 void releaseParent () {

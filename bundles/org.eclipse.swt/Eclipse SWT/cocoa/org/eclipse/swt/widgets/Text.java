@@ -511,10 +511,6 @@ void createHandle () {
 //	}
 }
 
-ScrollBar createScrollBar (int style) {
-	return createStandardBar (style);
-}
-
 void createWidget () {
 	super.createWidget ();
 	doubleClick = true;
