@@ -2461,7 +2461,7 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	setFont (font != null ? font.handle : null);
+	setFont (font != null ? font.handle : defaultFont().handle);
 }
 
 void setFont (NSFont font) {

@@ -20,9 +20,9 @@ public id dataCellForRow(int row) {
 	return result != 0 ? new id(result) : null;
 }
 
-public id headerCell() {
+public NSTableHeaderCell headerCell() {
 	int result = OS.objc_msgSend(this.id, OS.sel_headerCell);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSTableHeaderCell(result) : null;
 }
 
 public NSString headerToolTip() {

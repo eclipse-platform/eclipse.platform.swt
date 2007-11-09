@@ -303,10 +303,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-//	short [] width = new short [1];
-//	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-//	return Math.max (0, width [0]);
-	return 0;
+	return (int)nsColumn.width();
 }
 
 /**
@@ -322,22 +319,18 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget ();
-//	GC gc = new GC (parent);
-//	int width = gc.stringExtent (text).x;
-//	if (iconRef != 0 || (image != null && OS.VERSION >= 0x1040)) {
-//		/* Note that the image is stretched to the header height */
-//		width += parent.headerHeight;
-//		if (text.length () != 0) width += parent.getGap ();
-//	}
-//	int index = parent.indexOf (this);
-//	for (int i=0; i<parent.itemCount; i++) {
-//		TableItem item = parent.items [i];
-//		if (item != null && item.cached) {
-//			width = Math.max (width, item.calculateWidth (index, gc));
-//		}
-//	}
-//	gc.dispose ();
-//	setWidth (width + parent.getInsetWidth ());
+	GC gc = new GC (parent);
+	int width = gc.stringExtent (text).x;
+	//TODO header extra
+	int index = parent.indexOf (this);
+	for (int i=0; i<parent.itemCount; i++) {
+		TableItem item = parent.items [i];
+		if (item != null && item.cached) {
+			width = Math.max (width, item.calculateWidth (index, gc));
+		}
+	}
+	gc.dispose ();
+	setWidth (width + parent.getInsetWidth ());
 }
 
 void releaseHandle () {
@@ -502,6 +495,10 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int length = fixMnemonic (buffer);
+	nsColumn.headerCell().setTitle(NSString.stringWithCharacters(buffer, length));
 }
 
 /**

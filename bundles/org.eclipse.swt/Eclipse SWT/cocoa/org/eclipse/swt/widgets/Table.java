@@ -414,18 +414,20 @@ void createItem (TableColumn column, int index) {
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
 	}
+	NSTableColumn nsColumn;
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
-		column.nsColumn = firstColumn;
+		nsColumn = firstColumn;
 	} else {
 		//TODO - set attributes, alignment etc.
-		NSTableColumn nsColumn = (NSTableColumn)new NSTableColumn().alloc();
+		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
 		nsColumn.initWithIdentifier(NSString.stringWith(""));
-		column.nsColumn = nsColumn;
 		((NSTableView)view).addTableColumn (nsColumn);
 		((NSTableView)view).moveColumn (columnCount, index);
 	}
-	column.setWidth (0);
+	column.nsColumn = nsColumn;
+	nsColumn.headerCell().setTitle(NSString.stringWith(""));
+	nsColumn.setWidth(0);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	if (columnCount > 1) {
