@@ -790,6 +790,9 @@ boolean sendKeyEvent (int type, Event event) {
 	return event.doit;
 }
 
+void sendDoubleSelection() {
+}
+
 void sendSelection () {
 }
 

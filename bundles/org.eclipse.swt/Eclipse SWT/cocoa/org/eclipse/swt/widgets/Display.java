@@ -1532,6 +1532,7 @@ void initClasses () {
 	
 	className = "SWTTableView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
+	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
@@ -2695,6 +2696,10 @@ int windowDelegateProc(int delegate, int sel) {
 	}
 	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
+		return 0;
+	}
+	if (sel == OS.sel_sendDoubleSelection) {
+		widget.sendDoubleSelection();
 		return 0;
 	}
 	return 0;

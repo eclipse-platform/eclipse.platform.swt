@@ -392,6 +392,8 @@ void createHandle () {
 	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
+
+	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	scrollView.setDocumentView(widget);
 	
 	headerView = widget.headerView();
@@ -2281,7 +2283,13 @@ public void showSelection () {
 	if (index >= 0) showIndex (index);
 }
 
+void sendDoubleSelection() {
+	//TODO - post
+	sendEvent (SWT.DefaultSelection);
+	
+}
 void tableViewSelectionDidChange (int aNotification) {
+	//TODO - post
 	sendEvent (SWT.Selection);
 }
 
