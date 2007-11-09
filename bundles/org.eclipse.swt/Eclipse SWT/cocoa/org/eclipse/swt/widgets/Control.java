@@ -1433,7 +1433,6 @@ public boolean isVisible () {
 
 int menuForEvent (int nsEvent) {
 	//TODO = get coordinates
-	System.out.println("HELLO");
 	int x = 0;
 	int y = 0;
 	Event event = new Event ();
