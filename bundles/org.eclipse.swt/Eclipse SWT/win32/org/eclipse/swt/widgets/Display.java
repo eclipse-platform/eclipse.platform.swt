@@ -213,6 +213,7 @@ public class Display extends Device {
 	RECT clickRect;
 	int clickCount, lastTime, lastButton;
 	int /*long*/ lastClickHwnd;
+	int scrollRemainder;
 	int lastKey, lastAscii, lastMouse;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
