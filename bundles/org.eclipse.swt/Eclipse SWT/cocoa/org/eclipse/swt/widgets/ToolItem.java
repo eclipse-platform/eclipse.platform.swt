@@ -634,7 +634,7 @@ public void setText (String string) {
 	((NSButton)view).setTitle(str);
 	parent.relayout ();
 	if (text.length() != 0 && image != null) {
-		if ((style & SWT.RIGHT) != 0) {
+		if ((parent.style & SWT.RIGHT) != 0) {
 			((NSButton)view).setImagePosition(OS.NSImageLeft);
 		} else {
 			((NSButton)view).setImagePosition(OS.NSImageAbove);		
@@ -704,7 +704,7 @@ void updateImage (boolean layout) {
 	}
 	((NSButton)view).setImage(image != null ? image.handle : null);
 	if (text.length() != 0 && image != null) {
-		if ((style & SWT.RIGHT) != 0) {
+		if ((parent.style & SWT.RIGHT) != 0) {
 			((NSButton)view).setImagePosition(OS.NSImageLeft);
 		} else {
 			((NSButton)view).setImagePosition(OS.NSImageAbove);		
