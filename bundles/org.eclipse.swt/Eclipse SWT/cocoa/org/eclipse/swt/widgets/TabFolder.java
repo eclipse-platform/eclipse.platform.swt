@@ -129,16 +129,9 @@ protected void checkSubclass () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed);
 	if (wHint == SWT.DEFAULT && items.length > 0) {
-//		int width = 0;
-//		GC gc = new GC (this);
-//		for (int i = 0; i < items.length; i++) {
-//			if (items [i] != null) {
-//				width += items [i].calculateWidth (gc);
-//			}
-//		}
-//		gc.dispose ();
-//		Rectangle trim = computeTrim (0, 0, width, 0);
-//		size.x = Math.max (trim.width, size.x);
+		NSSize mimSize = ((NSTabView)view).minimumSize();
+		Rectangle trim = computeTrim (0, 0, (int)mimSize.width, 0);
+		size.x = Math.max (trim.width, size.x);
 	}
 	return size;
 }

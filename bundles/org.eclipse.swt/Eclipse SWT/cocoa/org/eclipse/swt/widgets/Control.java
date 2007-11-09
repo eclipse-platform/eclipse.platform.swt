@@ -2366,7 +2366,9 @@ public void setFont (Font font) {
 
 void setFont (NSFont font) {
 	//TODO - bad cast
-	((NSControl)view).setFont(font);
+	if (view instanceof NSControl) {
+		((NSControl)view).setFont(font);
+	}
 }
 
 /**

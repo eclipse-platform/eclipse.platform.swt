@@ -248,9 +248,10 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget();
-	int maximum = OS.GetControl32BitMaximum (handle) & 0x7FFFFFFF;
-	int viewSize = OS.GetControlViewSize (handle);
-    return maximum + viewSize;
+//	int maximum = OS.GetControl32BitMaximum (handle) & 0x7FFFFFFF;
+//	int viewSize = OS.GetControlViewSize (handle);
+//    return maximum + viewSize;
+	return 0;
 }
 
 /**
@@ -265,7 +266,8 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget();
-    return OS.GetControl32BitMinimum (handle) & 0x7FFFFFFF;
+//    return OS.GetControl32BitMinimum (handle) & 0x7FFFFFFF;
+	return 0;
 }
 
 /**
@@ -312,7 +314,8 @@ public Scrollable getParent () {
  */
 public int getSelection () {
 	checkWidget();
-    return OS.GetControl32BitValue (handle) & 0x7FFFFFFF;
+//    return OS.GetControl32BitValue (handle) & 0x7FFFFFFF;
+	return 0;
 }
 
 /**
@@ -330,7 +333,8 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-	return getControlSize (handle);
+//	return getControlSize (handle);
+	return new Point(0, 0);
 }
 
 /**
@@ -348,7 +352,8 @@ public Point getSize () {
  */
 public int getThumb () {
 	checkWidget();
-    return OS.GetControlViewSize (handle);
+//    return OS.GetControlViewSize (handle);
+	return 0;
 }
 
 /**
@@ -488,15 +493,15 @@ public void setIncrement (int value) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	if (enabled) {
-		if ((state & DISABLED) == 0) return;
-		state &= ~DISABLED;
-		OS.EnableControl (handle);
-	} else {
-		if ((state & DISABLED) != 0) return;
-		state |= DISABLED;
-		OS.DisableControl (handle);
-	}
+//	if (enabled) {
+//		if ((state & DISABLED) == 0) return;
+//		state &= ~DISABLED;
+//		OS.EnableControl (handle);
+//	} else {
+//		if ((state & DISABLED) != 0) return;
+//		state |= DISABLED;
+//		OS.DisableControl (handle);
+//	}
 }
 
 /**
@@ -515,14 +520,14 @@ public void setEnabled (boolean enabled) {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int minimum = OS.GetControl32BitMinimum (handle);
-	if (value <= minimum) return;
-	int viewSize = OS.GetControlViewSize (handle);
-	if (value - minimum < viewSize) {
-		viewSize = value - minimum;
-		OS.SetControlViewSize (handle, viewSize);
-	}
-	OS.SetControl32BitMaximum (handle, value - viewSize);
+//	int minimum = OS.GetControl32BitMinimum (handle);
+//	if (value <= minimum) return;
+//	int viewSize = OS.GetControlViewSize (handle);
+//	if (value - minimum < viewSize) {
+//		viewSize = value - minimum;
+//		OS.SetControlViewSize (handle, viewSize);
+//	}
+//	OS.SetControl32BitMaximum (handle, value - viewSize);
 }
 
 /**
@@ -541,15 +546,15 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int viewSize = OS.GetControlViewSize (handle);
-	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
-	if (value >= maximum) return;
-	if (maximum - value < viewSize) {
-		viewSize = maximum - value;
-		OS.SetControl32BitMaximum (handle, maximum - viewSize);
-		OS.SetControlViewSize (handle, viewSize);
-	}
-	OS.SetControl32BitMinimum (handle, value);
+//	int viewSize = OS.GetControlViewSize (handle);
+//	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
+//	if (value >= maximum) return;
+//	if (maximum - value < viewSize) {
+//		viewSize = maximum - value;
+//		OS.SetControl32BitMaximum (handle, maximum - viewSize);
+//		OS.SetControlViewSize (handle, viewSize);
+//	}
+//	OS.SetControl32BitMinimum (handle, value);
 }
 
 /**
@@ -585,7 +590,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	OS.SetControl32BitValue (handle, value);
+//	OS.SetControl32BitValue (handle, value);
 }
 
 /**
@@ -605,12 +610,12 @@ public void setSelection (int value) {
 public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
-	int minimum = OS.GetControl32BitMinimum (handle);
-	int viewSize = OS.GetControlViewSize (handle);
-	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
-	value = Math.min (value, maximum - minimum);
-	OS.SetControl32BitMaximum (handle, maximum - value);
-    OS.SetControlViewSize (handle, value);
+//	int minimum = OS.GetControl32BitMinimum (handle);
+//	int viewSize = OS.GetControlViewSize (handle);
+//	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
+//	value = Math.min (value, maximum - minimum);
+//	OS.SetControl32BitMaximum (handle, maximum - value);
+//    OS.SetControlViewSize (handle, value);
 }
 
 /**
@@ -642,10 +647,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	thumb = Math.min (thumb, maximum - minimum);
-	OS.SetControl32BitMinimum (handle, minimum);
-	OS.SetControl32BitMaximum (handle, maximum - thumb);
-	OS.SetControlViewSize (handle, thumb);
-	OS.SetControl32BitValue (handle, selection);
+//	OS.SetControl32BitMinimum (handle, minimum);
+//	OS.SetControl32BitMaximum (handle, maximum - thumb);
+//	OS.SetControlViewSize (handle, thumb);
+//	OS.SetControl32BitValue (handle, selection);
 	this.increment = increment;
 	this.pageIncrement = pageIncrement;
 }

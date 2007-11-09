@@ -845,11 +845,13 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		}
  	}
  	if (srcImage.memGC != null) srcImage.createAlpha();
- 	handle.saveGraphicsState();
- 	NSAffineTransform transform = NSAffineTransform.transform();
- 	transform.scaleXBy(1, -1);
- 	transform.translateXBy(0, -(destHeight + 2 * destY));
- 	transform.concat();
+	if (data.paintRect == null) {
+	 	handle.saveGraphicsState();
+	 	NSAffineTransform transform = NSAffineTransform.transform();
+	 	transform.scaleXBy(1, -1);
+	 	transform.translateXBy(0, -(destHeight + 2 * destY));
+	 	transform.concat();
+	}
  	NSRect srcRect = new NSRect();
  	srcRect.x = srcX;
  	srcRect.y = srcY;
@@ -861,7 +863,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	destRect.width = destWidth;
  	destRect.height = destHeight;
  	imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
- 	handle.restoreGraphicsState();
+	if (data.paintRect == null) {
+		handle.restoreGraphicsState();
+	}
 }
 
 /** 
@@ -1308,18 +1312,22 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FONT | FOREGROUND_FILL);
-	handle.saveGraphicsState();
 	NSAttributedString str = createString(string, flags);
- 	NSAffineTransform transform = NSAffineTransform.transform();
- 	transform.scaleXBy(1, -1);
- 	transform.translateXBy(0, -(str.size().height + 2 * y));
- 	transform.concat();
+	if (data.paintRect == null) {
+		handle.saveGraphicsState();
+	 	NSAffineTransform transform = NSAffineTransform.transform();
+	 	transform.scaleXBy(1, -1);
+	 	transform.translateXBy(0, -(str.size().height + 2 * y));
+	 	transform.concat();
+	}
 	NSPoint pt = new NSPoint();
 	pt.x = x;
 	pt.y = y;
 	str.drawAtPoint(pt);
 	str.release();
-	handle.restoreGraphicsState();
+	if (data.paintRect == null) {
+		handle.restoreGraphicsState();
+	}
 }
 //
 //void drawText(int x, int y, int start, int length, int flags) {

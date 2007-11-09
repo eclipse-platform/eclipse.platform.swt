@@ -100,8 +100,9 @@ fail:
 }
 #endif
 
-static SEL size;
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II
+static SEL size;
+static SEL minimumSize;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -114,6 +115,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (size == 0) size = sel_registerName("size");
 	if ((SEL)arg2 == size) {
 		*lparg0 = [(NSAttributedString *)arg1 size];
+	} else {
+		if (minimumSize == 0) minimumSize = sel_registerName("minimumSize");
+		if ((SEL)arg2 == minimumSize) {
+			*lparg0 = [(NSTabView *)arg1 minimumSize];
+		}
 	}
 	
 fail:
