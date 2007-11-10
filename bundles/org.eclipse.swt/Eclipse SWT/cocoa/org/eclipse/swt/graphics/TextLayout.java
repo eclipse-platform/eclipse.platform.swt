@@ -10,11 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
-
-import sun.font.TextSource;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
