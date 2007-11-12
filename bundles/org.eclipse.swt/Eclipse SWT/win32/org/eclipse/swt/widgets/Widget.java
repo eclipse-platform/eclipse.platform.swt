@@ -1992,10 +1992,8 @@ LRESULT wmMouseWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPara
 		detail = SWT.SCROLL_LINE;
 		delta *= linesToScroll [0];
 	}
-	// check if the delta and the remainder have the same direction (sign)
-	if ((delta ^ display.scrollRemainder) >= 0) {
-		delta += display.scrollRemainder;
-	}
+	/* Check if the delta and the remainder have the same direction (sign) */
+	if ((delta ^ display.scrollRemainder) >= 0) delta += display.scrollRemainder;
 	display.scrollRemainder = delta % OS.WHEEL_DELTA; 
 
 	if (!hooks (SWT.MouseWheel) && !filters (SWT.MouseWheel)) return null;

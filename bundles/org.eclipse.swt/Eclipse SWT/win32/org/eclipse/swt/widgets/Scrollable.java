@@ -285,10 +285,8 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
   				delta *= linesToScroll [0];
   			}
   		}
-  		// check if the delta and the remainder have the same direction (sign)
-  		if ((delta ^ scrollRemainder) >= 0) {
-  			delta += scrollRemainder;
-  		}
+  		/* Check if the delta and the remainder have the same direction (sign) */
+  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
 		int count = Math.abs (delta) / OS.WHEEL_DELTA;
 		for (int i=0; i<count; i++) {
 			OS.SendMessage (handle, msg, code, 0);
