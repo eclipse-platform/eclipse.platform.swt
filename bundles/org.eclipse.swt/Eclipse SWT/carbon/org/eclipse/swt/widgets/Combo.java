@@ -606,11 +606,13 @@ void destroyWidget () {
 	* 
 	* NOTE: The problem does not happen when the window is disposed.
 	*/
-	if ((getShell ().state & DISPOSE_SENT) != 0) {
-		super.destroyWidget ();
-	} else {
-		releaseHandle ();
+	Display display = this.display;
+	boolean delay = display.delayDispose;
+	if ((getShell ().state & DISPOSE_SENT) == 0) {
+		display.delayDispose = true;
 	}
+	super.destroyWidget ();
+	display.delayDispose = delay;
 }
 
 /**
@@ -1147,22 +1149,6 @@ public void paste () {
 	start += newText.length ();
 	setSelection (new Point (start, start));
 	sendEvent (SWT.Modify);
-}
-
-void releaseHandle () {
-	/*
-	* Bug in the Macintosh.  Carbon segments fault if the combo box has
-	* keyboard focus and it is disposed or its parent is disposed because
-	* there is an outstanding timer that runs after the widget is dispoed.
-	* The fix is to remove the combo box from its parent and dispose it when
-	* the display is idle.
-	* 
-	* NOTE: The problem does not happen when the window is disposed.
-	*/
-	if ((getShell ().state & DISPOSE_SENT) == 0) {
-		display.addToDisposeWindow (handle);
-	}
-	super.releaseHandle ();
 }
 
 void releaseWidget () {

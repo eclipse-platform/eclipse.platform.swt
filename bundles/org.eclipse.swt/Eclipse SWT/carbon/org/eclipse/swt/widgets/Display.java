@@ -144,7 +144,7 @@ public class Display extends Device {
 	int focusEvent;
 	Control focusControl;
 	Combo focusCombo;
-	boolean ignoreFocus;
+	boolean ignoreFocus, delayDispose;
 
 	/* Menus */
 	Menu menuBar;
