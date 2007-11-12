@@ -233,7 +233,7 @@ public void drawSwatchInRect(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_drawSwatchInRect_1, rect);
 }
 
-public void getComponents(int components) {
+public void getComponents(float[] components) {
 	OS.objc_msgSend(this.id, OS.sel_getComponents_1, components);
 }
 

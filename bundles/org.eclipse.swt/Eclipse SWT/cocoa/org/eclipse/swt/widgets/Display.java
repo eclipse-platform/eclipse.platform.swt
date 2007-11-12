@@ -1324,35 +1324,36 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-//	RGBColor rgb = new RGBColor ();
-//	switch (id) {
-//		case SWT.COLOR_INFO_FOREGROUND: return super.getSystemColor (SWT.COLOR_BLACK);
-//		case SWT.COLOR_INFO_BACKGROUND: return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
-//		case SWT.COLOR_TITLE_FOREGROUND: OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleActive, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_TITLE_BACKGROUND: OS.GetThemeBrushAsColor((short)-5/*undocumented darker highlight color*/, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb) ; break;
-//		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleInactive, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_WIDGET_DARK_SHADOW: return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f, 1});
-//		case SWT.COLOR_WIDGET_NORMAL_SHADOW: return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f, 1});
-//		case SWT.COLOR_WIDGET_LIGHT_SHADOW: return Color.carbon_new (this, new float [] {0x99 / 255f, 0x99 / 255f, 0x99 / 255f, 1});
-//		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f, 1});
-//		case SWT.COLOR_WIDGET_BACKGROUND: OS.GetThemeBrushAsColor((short)OS.kThemeBrushButtonFaceActive, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_WIDGET_FOREGROUND: OS.GetThemeTextColor((short)OS.kThemeTextColorPushButtonActive, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_WIDGET_BORDER: return super.getSystemColor (SWT.COLOR_BLACK);
-//		case SWT.COLOR_LIST_FOREGROUND: OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_LIST_BACKGROUND: OS.GetThemeBrushAsColor((short)OS.kThemeBrushListViewBackground, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_LIST_SELECTION_TEXT: OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
-//		case SWT.COLOR_LIST_SELECTION: OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb); break;
-//		default:
-//			return super.getSystemColor (id);	
-//	}
-//	float red = ((rgb.red >> 8) & 0xFF) / 255f;
-//	float green = ((rgb.green >> 8) & 0xFF) / 255f;
-//	float blue = ((rgb.blue >> 8) & 0xFF) / 255f;
-//	return Color.carbon_new (this, new float[]{red, green, blue, 1});
-	return super.getSystemColor(id);
+	NSColor color = null;
+	switch (id) {
+		case SWT.COLOR_INFO_FOREGROUND: return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_INFO_BACKGROUND: return Color.cocoa_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
+		case SWT.COLOR_TITLE_FOREGROUND: color = NSColor.windowFrameTextColor(); break;
+		case SWT.COLOR_TITLE_BACKGROUND: color = NSColor.windowFrameColor(); break;
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: color = NSColor.secondarySelectedControlColor(); break;
+		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND: color = NSColor.disabledControlTextColor();  break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: color = NSColor.secondarySelectedControlColor(); break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: color = NSColor.secondarySelectedControlColor(); break;
+		case SWT.COLOR_WIDGET_DARK_SHADOW: color = NSColor.controlDarkShadowColor(); break;
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW: color = NSColor.controlShadowColor(); break;
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: color = NSColor.controlHighlightColor(); break;
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: color = NSColor.controlLightHighlightColor(); break;
+		case SWT.COLOR_WIDGET_BACKGROUND: color = NSColor.lightGrayColor(); break;
+		case SWT.COLOR_WIDGET_FOREGROUND: color = NSColor.controlTextColor(); break;
+		case SWT.COLOR_WIDGET_BORDER: return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_LIST_FOREGROUND: color = NSColor.textColor(); break;
+		case SWT.COLOR_LIST_BACKGROUND: color = NSColor.textBackgroundColor(); break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
+		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
+		default:
+			return super.getSystemColor (id);	
+	}
+	if (color == null) return super.getSystemColor(id);
+	color = color.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace());
+	if (color == null) return super.getSystemColor(id);
+	float[] components = new float[color.numberOfComponents()];
+	color.getComponents(components);	
+	return Color.cocoa_new (this, new float[]{components[0], components[1], components[2], components[3]});
 }
 
 /**
