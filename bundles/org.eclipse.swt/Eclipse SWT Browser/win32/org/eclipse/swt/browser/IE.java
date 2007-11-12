@@ -25,13 +25,16 @@ class IE extends WebBrowser {
 	OleListener mouseListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, navigate, delaySetText, ignoreDispose, silenceInternalNavigate;
+	boolean back, forward, navigate, delaySetText, ignoreDispose;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int info;
 	int globalDispatch;
 	String html;
+
+	static boolean silenceInternalNavigate;
+	static String progId = "Shell.Explorer";	//$NON-NLS-1$
 
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
@@ -97,83 +100,82 @@ class IE extends WebBrowser {
 			public void run() {
 				OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);			}
 		};
+
+		/*
+		* Registry entry HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Version indicates
+		* which version of IE is installed.  Check this value in order to determine version-specific
+		* features that can be enabled.
+		*/
+		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
+		int /*long*/ [] phkResult = new int /*long*/ [1];
+		if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
+			int [] lpcbData = new int [1];
+			TCHAR buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
+			int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
+			if (result == 0) {
+				TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+				result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, lpData, lpcbData);
+				if (result == 0) {
+					String versionString = lpData.toString (0, lpData.strlen ());
+					int index = versionString.indexOf ("."); //$NON-NLS-1$
+					if (index != -1) {
+						String majorString = versionString.substring (0, index);
+						int major = 0;
+						try {
+							major = Integer.valueOf (majorString).intValue ();
+						} catch (NumberFormatException e) {
+							/* just continue, version-specific features will not be enabled */
+						}
+						if (major >= 7) {
+							silenceInternalNavigate = true;
+						}
+					}
+				}
+			}
+			OS.RegCloseKey (phkResult [0]);
+		}
+
+		/*
+		* Registry entry HKEY_CLASSES_ROOT\Shell.Explorer\CLSID indicates which version of
+		* Shell.Explorer to use by default.  We usually want to use this value because it
+		* typically points at the newest one that is available.  However it is possible for
+		* this registry entry to be changed by another application to point at some other
+		* Shell.Explorer version.
+		*
+		* The Browser depends on the Shell.Explorer version being at least Shell.Explorer.2.
+		* If it is detected in the registry to be Shell.Explorer.1 then change the progId that
+		* will be embedded to explicitly specify Shell.Explorer.2.
+		*/
+		key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
+		phkResult = new int /*long*/ [1];
+		if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
+			int [] lpcbData = new int [1];
+			int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
+			if (result == 0) {
+				TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+				result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
+				if (result == 0) {
+					String clsid = lpData.toString (0, lpData.strlen ());
+					if (clsid.equals (CLSID_SHELLEXPLORER1)) {
+						/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
+						key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
+						int /*long*/ [] phkResult2 = new int /*long*/ [1];
+						if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
+							/* specify that Shell.Explorer.2 is to be used */
+							OS.RegCloseKey (phkResult2 [0]);
+							progId = "Shell.Explorer.2";	//$NON-NLS-1$
+						}
+					}
+				}
+			}
+			OS.RegCloseKey (phkResult [0]);
+		}
 	}
 
 public void create(Composite parent, int style) {
 	info = IE.DOCHOSTUIFLAG_THEME;
 	if ((style & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
 	frame = new OleFrame(browser, SWT.NONE);
-
- 	/*
-	* Registry entry HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Version indicates
-	* which version of IE is installed.  Check this value in order to determine version-specific
-	* features that can be enabled.
-	*/
-	TCHAR key = new TCHAR (0, "Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
-	int /*long*/ [] phkResult = new int /*long*/ [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
-		int [] lpcbData = new int [1];
-		TCHAR buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
-		int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
-		if (result == 0) {
-			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-			result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, lpData, lpcbData);
-			if (result == 0) {
-				String versionString = lpData.toString (0, lpData.strlen ());
-				int index = versionString.indexOf ("."); //$NON-NLS-1$
-				if (index != -1) {
-					String majorString = versionString.substring (0, index);
-					int major = 0;
-					try {
-						major = Integer.valueOf (majorString).intValue ();
-					} catch (NumberFormatException e) {
-						/* just continue, version-specific features will not be enabled */
-					}
-					if (major >= 7) {
-						silenceInternalNavigate = true;
-					}
-				}
-			}
-		}
-		OS.RegCloseKey (phkResult [0]);
-	}
-
-	/*
-	* Registry entry HKEY_CLASSES_ROOT\Shell.Explorer\CLSID indicates which version of
-	* Shell.Explorer to use by default.  We usually want to use this value because it
-	* typically points at the newest one that is available.  However it is possible for
-	* this registry entry to be changed by another application to point at some other
-	* Shell.Explorer version.
-	*
-	* The Browser depends on the Shell.Explorer version being at least Shell.Explorer.2.
-	* If it is detected in the registry to be Shell.Explorer.1 then change the progId that
-	* will be embedded to explicitly specify Shell.Explorer.2.
-	*/
-	String progId = "Shell.Explorer";	//$NON-NLS-1$
-	key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
-	phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
-		int [] lpcbData = new int [1];
-		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
-		if (result == 0) {
-			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-			result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-			if (result == 0) {
-				String clsid = lpData.toString (0, lpData.strlen ());
-				if (clsid.equals (CLSID_SHELLEXPLORER1)) {
-					/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
-					key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
-					int [] phkResult2 = new int [1];
-					if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
-						/* specify that Shell.Explorer.2 is to be used */
-						OS.RegCloseKey (phkResult2 [0]);
-						progId = "Shell.Explorer.2";	//$NON-NLS-1$
-					}
-				}
-			}
-		}
-		OS.RegCloseKey (phkResult [0]);
-	}
 
 	try {
 		site = new WebSite(frame, SWT.NONE, progId); //$NON-NLS-1$
