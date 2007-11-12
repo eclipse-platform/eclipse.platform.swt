@@ -1687,9 +1687,7 @@ LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				if (string != null) {
 					Shell shell = getShell ();
 					string = Display.withCrLf (string);
-					int length = string.length ();
-					char [] chars = new char [length + 1];
-					string.getChars (0, length, chars, 0);
+					char [] chars = fixMnemonic (string);
 					
 					/*
 					* Ensure that the orientation of the tool tip matches

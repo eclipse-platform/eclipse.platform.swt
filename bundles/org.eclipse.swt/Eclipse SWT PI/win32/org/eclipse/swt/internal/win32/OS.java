@@ -1716,6 +1716,7 @@ public class OS extends C {
 	public static final int TTN_SHOW = TTN_FIRST - 1;
 	public static final int TTS_ALWAYSTIP = 0x1;
 	public static final int TTS_BALLOON = 0x40;
+	public static final int TTS_NOPREFIX = 0x02;
 	public static final int TV_FIRST = 0x1100;
 	public static final int TVE_COLLAPSE = 0x1;
 	public static final int TVE_COLLAPSERESET = 0x8000;

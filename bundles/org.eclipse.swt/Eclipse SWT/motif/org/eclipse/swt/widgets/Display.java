@@ -3409,8 +3409,12 @@ void setToolTipText (int handle, String toolTipText) {
 }
 void showToolTip (int handle, String toolTipText) {
 	int shellHandle = 0;
+	if (toolTipText == null) toolTipText = "";
+	char [] text = new char [toolTipText.length ()];
+	toolTipText.getChars (0, text.length, text, 0);
+	Widget.fixMnemonic (text);
 	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	if (toolTipHandle != 0) {
 		shellHandle = OS.XtParent (toolTipHandle);
 		int shellParent = OS.XtParent (shellHandle);

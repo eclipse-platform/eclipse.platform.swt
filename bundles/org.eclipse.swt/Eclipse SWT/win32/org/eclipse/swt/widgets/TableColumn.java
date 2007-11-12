@@ -785,7 +785,7 @@ public void setText (String string) {
 	* with spaces.
 	*/
 	int /*long*/ hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string, true), true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);

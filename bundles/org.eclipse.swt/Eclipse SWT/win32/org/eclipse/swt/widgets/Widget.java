@@ -450,13 +450,18 @@ Widget findItem (int /*long*/ id) {
 }
 
 char [] fixMnemonic (String string) {
-	char [] buffer = new char [string.length ()];
+	return fixMnemonic (string, false);
+}
+
+char [] fixMnemonic (String string, boolean spaces) {
+	char [] buffer = new char [string.length () + 1];
 	string.getChars (0, string.length (), buffer, 0);
 	int i = 0, j = 0;
 	while (i < buffer.length) {
 		if (buffer [i] == '&') {
 			if (i + 1 < buffer.length && buffer [i + 1] == '&') {
-				buffer [j++] = ' ';
+				if (spaces) buffer [j] = ' ';
+				j++;
 				i++;
 			}
 			i++;

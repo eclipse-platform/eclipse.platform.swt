@@ -1842,7 +1842,8 @@ void releaseWidget () {
 void setToolTipText (int /*long*/ widget, String string) {
 	byte [] buffer = null;
 	if (string != null && string.length () > 0) {
-		buffer = Converter.wcsToMbcs (null, string, true);
+		char [] chars = fixMnemonic (string, false);
+		buffer = Converter.wcsToMbcs (null, chars, true);
 	}
 	if (tooltipsHandle == 0) {
 		tooltipsHandle = OS.gtk_tooltips_new ();

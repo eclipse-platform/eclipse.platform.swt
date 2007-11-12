@@ -361,7 +361,7 @@ void error (int code) {
 boolean filters (int eventType) {
 	return display.filters (eventType);
 }
-char fixMnemonic (char [] buffer) {
+static char fixMnemonic (char [] buffer) {
 	int i=0, j=0;
 	char mnemonic=0;
 	while (i < buffer.length) {

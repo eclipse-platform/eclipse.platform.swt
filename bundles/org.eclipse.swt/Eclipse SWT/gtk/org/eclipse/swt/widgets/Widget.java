@@ -820,6 +820,10 @@ int /*long*/ fixedSizeAllocateProc(int /*long*/ widget, int /*long*/ allocationP
 }
 
 char [] fixMnemonic (String string) {
+	return fixMnemonic (string, true);
+}
+
+char [] fixMnemonic (String string, boolean replace) {
 	int length = string.length ();
 	char [] text = new char [length];
 	string.getChars (0, length, text, 0);
@@ -831,11 +835,15 @@ char [] fixMnemonic (String string) {
 				if (i + 1 < length && text [i + 1] == '&') {
 					i++; 
 				} else {
-					text [i] = '_';
+					if (replace) {
+						text [i] = '_';
+					} else {
+						i++;
+					}
 				}
 				break;
 			case '_':
-				result [j++] = '_';
+				if (replace) result [j++] = '_';
 				break;
 		}
 		result [j++] = text [i++];
