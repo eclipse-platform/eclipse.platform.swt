@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -334,7 +335,31 @@ public Point getDPI () {
  */
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-	return null;
+	if (!scalable) return new FontData[0];
+	NSArray fonts = NSFontManager.sharedFontManager().availableFonts();
+	int count = 0;
+	FontData[] fds = new FontData[fonts.count()];
+	for (int i = 0; i < fds.length; i++) {
+		NSString str = new NSString(fonts.objectAtIndex(i));
+		char[] buffer = new char[str.length()];
+		str.getCharacters_(buffer);
+		String nsName = new String(buffer);
+		String name = nsName;
+		int index = nsName.indexOf('-');
+		if (index != -1) name = name.substring(0, index);
+		int style = SWT.NORMAL;
+		if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
+		if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
+		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+			FontData data = new FontData(name, 0, style);
+			data.nsName = nsName;
+			fds[count++] = data;
+		}
+	}
+	if (count == fds.length) return fds;
+	FontData[] result = new FontData[count];
+	System.arraycopy(fds, 0, result, 0, count);
+	return result;
 }
 
 /**
