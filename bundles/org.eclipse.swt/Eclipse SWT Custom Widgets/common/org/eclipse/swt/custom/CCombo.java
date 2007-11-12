@@ -131,7 +131,7 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.Verify};
+	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.Verify};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
 	int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
@@ -1481,6 +1481,14 @@ void textEvent (Event event) {
 			handleFocus (SWT.FocusIn);
 			break;
 		}
+		case SWT.DefaultSelection: {
+			dropDown (false);
+			Event e = new Event ();
+			e.time = event.time;
+			e.stateMask = event.stateMask;
+			notifyListeners (SWT.DefaultSelection, e);
+			break;
+		}
 		case SWT.KeyDown: {
 			Event keyEvent = new Event ();
 			keyEvent.time = event.time;
@@ -1491,16 +1499,6 @@ void textEvent (Event event) {
 			if (isDisposed ()) break;
 			event.doit = keyEvent.doit;
 			if (!event.doit) break;
-			
-			if (event.character == SWT.CR) {
-				dropDown (false);
-				Event selectionEvent = new Event ();
-				selectionEvent.time = event.time;
-				selectionEvent.stateMask = event.stateMask;
-				notifyListeners (SWT.DefaultSelection, selectionEvent);
-				if (isDisposed ()) break;
-			}
-			
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
 				event.doit = false;
 				if ((event.stateMask & SWT.ALT) != 0) {
@@ -1570,7 +1568,8 @@ void textEvent (Event event) {
 		}
 		case SWT.Traverse: {		
 			switch (event.detail) {
-				case SWT.TRAVERSE_RETURN:
+				//NOT SURE
+//				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
 				case SWT.TRAVERSE_ARROW_NEXT:
 					// The enter causes default selection and
