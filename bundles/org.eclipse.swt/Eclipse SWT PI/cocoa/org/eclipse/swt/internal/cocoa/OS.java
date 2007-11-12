@@ -8681,7 +8681,7 @@ public static final native int NSBaselineOffsetAttributeName();
 //public static final native int NSDeviceIsPrinter();
 //public static final native int NSDeviceIsScreen();
 //public static final native int NSDeviceRGBColorSpace();
-//public static final native int NSDeviceResolution();
+public static final native int NSDeviceResolution();
 //public static final native int NSDeviceSize();
 //public static final native int NSDeviceWhiteColorSpace();
 //public static final native int NSDirectoryFileType();

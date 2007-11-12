@@ -89,6 +89,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceRGBColorSpace)
 }
 #endif
 
+#ifndef NO_NSDeviceResolution
+JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceResolution)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSDeviceResolution_FUNC);
+	rc = (jint)NSDeviceResolution;
+	OS_NATIVE_EXIT(env, that, NSDeviceResolution_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSFontAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSFontAttributeName)
 	(JNIEnv *env, jclass that)

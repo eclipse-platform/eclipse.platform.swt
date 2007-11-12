@@ -317,7 +317,10 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	return null;
+	NSDictionary dictionary = NSScreen.mainScreen().deviceDescription();
+	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
+	NSSize size = value.sizeValue();
+	return new Point((int)size.width, (int)size.height);
 }
 
 /**

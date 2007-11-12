@@ -32,6 +32,7 @@ typedef enum {
 	NSBaselineOffsetAttributeName_FUNC,
 	NSBitsPerPixelFromDepth_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
+	NSDeviceResolution_FUNC,
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
 	NSLinkAttributeName_FUNC,
