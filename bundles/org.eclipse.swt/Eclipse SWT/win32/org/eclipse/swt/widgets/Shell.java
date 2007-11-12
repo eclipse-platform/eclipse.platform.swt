@@ -1411,12 +1411,13 @@ public void setFullScreen (boolean fullScreen) {
 		}
 	}
 	if (fullScreen) wasMaximized = getMaximized ();
+	boolean visible = isVisible ();
 	OS.SetWindowLong (handle, OS.GWL_STYLE, styleFlags);
 	if (wasMaximized) {
 		OS.ShowWindow (handle, OS.SW_HIDE);
 		stateFlags = OS.SW_SHOWMAXIMIZED;
 	}
-	if (isVisible ()) OS.ShowWindow (handle, stateFlags);
+	if (visible) OS.ShowWindow (handle, stateFlags);
 	OS.UpdateWindow (handle);
 	this.fullScreen = fullScreen;
 }
