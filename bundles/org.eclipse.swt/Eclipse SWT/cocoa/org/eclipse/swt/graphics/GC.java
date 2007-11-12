@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
@@ -705,20 +706,22 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-//	if (width == 0 || height == 0 || arcAngle == 0) return;
-//	OS.CGContextBeginPath(handle);
-//	OS.CGContextSaveGState(handle);
-//	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
-//	OS.CGContextTranslateCTM(handle, x + xOffset + width / 2f, y + yOffset + height / 2f);
-//	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-//	if (arcAngle < 0) {
-//		OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
-//	} else {
-//		OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
-//	}
-//	OS.CGContextRestoreGState(handle);
-//	OS.CGContextStrokePath(handle);
-//	flush();
+	if (width == 0 || height == 0 || arcAngle == 0) return;
+	handle.saveGraphicsState();
+	NSAffineTransform transform = NSAffineTransform.transform();
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
+	transform.scaleXBy(width / 2f, height / 2f);
+	NSBezierPath path = data.path;
+	if (arcAngle < 0) {
+		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(new NSPoint(), 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180);
+	} else {
+		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(new NSPoint(), 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+	}
+	path.transformUsingAffineTransform(transform);
+	path.stroke();
+	path.removeAllPoints();
+	handle.restoreGraphicsState();
 }
 
 /** 
@@ -1324,36 +1327,6 @@ public void drawText (String string, int x, int y, int flags) {
 		handle.restoreGraphicsState();
 	}
 }
-//
-//void drawText(int x, int y, int start, int length, int flags) {
-//	int layout = data.layout;
-//	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-//		ATSTrapezoid trapezoid = new ATSTrapezoid();
-//		OS.ATSUGetGlyphBounds(layout, 0, 0, start, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-//		int width = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
-//		int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
-//		CGRect rect = new CGRect();
-//		rect.x = x;
-//		rect.y = -(y + height);
-//		rect.width = width;
-//		rect.height = height;
-//		OS.CGContextSaveGState(handle);
-//		Pattern pattern = data.backgroundPattern;
-//		if (pattern != null) {
-//			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-//			OS.CGContextSetFillColorSpace(handle, colorspace);
-//			OS.CGColorSpaceRelease(colorspace);
-//			if (data.backPattern == 0) data.backPattern = pattern.createPattern(handle);
-//			OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
-//		} else {
-//			OS.CGContextSetFillColorSpace(handle, data.device.colorspace);
-//			OS.CGContextSetFillColor(handle, data.background);
-//		}
-//		OS.CGContextFillRect(handle, rect);
-//		OS.CGContextRestoreGState(handle);
-//	}
-//	OS.ATSUDrawText(layout, start, length, OS.Long2Fix(x), OS.Long2Fix(-(y + data.fontAscent)));	
-//}
 
 /**
  * Compares the argument to the receiver, and returns true
@@ -1415,20 +1388,24 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-//	OS.CGContextBeginPath(handle);
-//    OS.CGContextSaveGState(handle);
-//    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
-//    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-//    OS.CGContextMoveToPoint(handle, 0, 0);
-//    if (arcAngle < 0) {
-//    	OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
-//    } else {
-//        OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
-//    }
-//    OS.CGContextClosePath(handle);
-//    OS.CGContextRestoreGState(handle);
-//	OS.CGContextFillPath(handle);
-//	flush();
+	handle.saveGraphicsState();
+	NSAffineTransform transform = NSAffineTransform.transform();
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
+	transform.scaleXBy(width / 2f, height / 2f);
+	NSBezierPath path = data.path;
+	NSPoint center = new NSPoint();
+	path.moveToPoint(center);
+	if (arcAngle < 0) {
+		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(center, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180);
+	} else {
+		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(center, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+	}
+	path.closePath();
+	path.transformUsingAffineTransform(transform);
+	path.stroke();
+	path.removeAllPoints();
+	handle.restoreGraphicsState();
 }
 
 /**
