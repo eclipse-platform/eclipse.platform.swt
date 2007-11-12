@@ -10,9 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -37,17 +35,11 @@ import org.eclipse.swt.graphics.*;
  */
 public class Link extends Control {
 	String text;
-	TextLayout layout;
-	Color linkColor, disabledColor;
 	Point [] offsets;
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
-	int focusIndex;
 	
-	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
-	static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -111,8 +103,14 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-int callFocusEventHandler (int nextHandler, int theEvent) {
-	return OS.noErr;
+boolean clickOnLink(int textView, int link, int charIndex) {
+	NSString str = new NSString (link);
+	char [] buffer = new char [str.length ()];
+	str.getCharacters_ (buffer);
+	Event event = new Event ();
+	event.text = new String (buffer);
+	sendEvent (SWT.Selection, event);
+	return true;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -120,20 +118,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width, height;
-	int layoutWidth = layout.getWidth ();
-	//TEMPORARY CODE
-	if (wHint == 0) {
-		layout.setWidth (1);
-		Rectangle rect = layout.getBounds ();
-		width = 0;
-		height = rect.height;
-	} else {
-		layout.setWidth (wHint);
-		Rectangle rect = layout.getBounds ();
-		width = rect.width;
-		height = rect.height;
-	}
-	layout.setWidth (layoutWidth);		
+	NSTextView widget = (NSTextView)view;
+	NSRect oldRect = widget.frame();
+	widget.sizeToFit();
+	NSRect newRect = widget.frame();
+	widget.setFrame (oldRect);
+	width = (int)newRect.width;
+	height = (int)newRect.height;		
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
@@ -143,110 +134,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= GRAB | THEME_BACKGROUND;
-	int features = OS.kControlSupportsFocus;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateUserPaneControl (window, null, features, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-	layout = new TextLayout (display);
-	linkColor = new Color (display, LINK_FOREGROUND);
-	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
-	offsets = new Point [0];
-	ids = new String [0];
-	mnemonics = new int [0]; 
-	selection = new Point (-1, -1);
-	focusIndex = -1;
+	SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
+	widget.initWithFrame(new NSRect());
+	widget.setEditable(false);
+	widget.setDrawsBackground(false);
+	widget.setDelegate(widget);
+	widget.setTag(jniRef);
+	view = widget;
+	parent.contentView().addSubview_(widget);
 }
 
 void createWidget () {
 	super.createWidget ();
-	layout.setFont (getFont ());
 	text = "";
-	//TODO accessibility
-}
-
-void drawBackground (int control, int context) {
-	fillBackground (control, context, null);
-	if (!hasFocus () || !drawFocusRing () || focusIndex == -1) return;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-	outMetric[0]--;
-	Rect r = new Rect ();
-	Rectangle [] rects = getRectangles (focusIndex);
-	for (int i = 0; i < rects.length; i++) {
-		Rectangle rect = rects [i];
-		r.left = (short) (rect.x + outMetric[0]);
-		r.top = (short) (rect.y + outMetric[0]);
-		r.right = (short) (r.left + rect.width - (outMetric[0] * 2));
-		r.bottom = (short) (r.top + rect.height - (outMetric[0] * 2));
-		OS.DrawThemeFocusRect (r, true);
-	}
-}
-
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
-	GCData data = new GCData ();
-	data.paintEvent = theEvent;
-	data.visibleRgn = visibleRgn;
-	GC gc = GC.carbon_new (this, data);
-	int selStart = selection.x;
-	int selEnd = selection.y;
-	if (selStart > selEnd) {
-		selStart = selection.y;
-		selEnd = selection.x;
-	}
-	// temporary code to disable text selection
-	selStart = selEnd = -1;
-	if ((state & DISABLED) != 0) gc.setForeground (disabledColor);
-	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
-	gc.dispose ();
-	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
-}
-
-void enableWidget (boolean enabled) {
-	super.enableWidget (enabled);
-	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
-	linkStyle.underline = true;
-	for (int i = 0; i < offsets.length; i++) {
-		Point point = offsets [i];
-		layout.setStyle (linkStyle, point.x, point.y);
-	}
-	redraw ();
 }
 
 String getNameText () {
 	return getText ();
 }
 
-Rectangle [] getRectangles (int linkIndex) {
-	int lineCount = layout.getLineCount ();
-	Rectangle [] rects = new Rectangle [lineCount];
-	int [] lineOffsets = layout.getLineOffsets ();
-	Point point = offsets [linkIndex];
-	int lineStart = 1;
-	while (point.x > lineOffsets [lineStart]) lineStart++;
-	int lineEnd = 1;
-	while (point.y > lineOffsets [lineEnd]) lineEnd++;
-	int index = 0;
-	if (lineStart == lineEnd) {
-		rects [index++] = layout.getBounds (point.x, point.y);		
-	} else {
-		rects [index++] = layout.getBounds (point.x, lineOffsets [lineStart]-1);
-		rects [index++] = layout.getBounds (lineOffsets [lineEnd-1], point.y);
-		if (lineEnd - lineStart > 1) {
-			for (int i = lineStart; i < lineEnd - 1; i++) {
-				rects [index++] = layout.getLineBounds (i);
-			}
-		}
-	}
-	if (rects.length != index) {
-		Rectangle [] tmp = new Rectangle [index];
-		System.arraycopy (rects, 0, tmp, 0, index);
-		rects = tmp;
-	}	
-	return rects;
-}
 
 /**
  * Returns the receiver's text, which will be an empty
@@ -264,83 +170,8 @@ public String getText () {
 	return text;
 }
 
-int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
-	return OS.noErr;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) redraw ();
-	return result;
-}
-
-int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseMoved (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	CGPoint pt = new CGPoint ();
-	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-	OS.HIViewConvertPoint (pt, 0, handle);
-	int x = (int) pt.x;
-	int y = (int) pt.y;
-	for (int j = 0; j < offsets.length; j++) {
-		Rectangle [] rects = getRectangles (j);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rectangle = rects [i];
-			if (rectangle.contains (x, y)) {
-				setCursor (display.getSystemCursor (SWT.CURSOR_HAND));
-				return result;
-			}
-		}
-	}
-	setCursor (null);
-	return result;
-}
-
-int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (focusIndex == -1) return result;
-	int [] keyboardEvent = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 36: /* Return */
-		case 49: /* Space */
-		case 76: /* Enter */
-			Event event = new Event ();
-			event.text = ids [focusIndex];
-			sendEvent (SWT.Selection, event);
-			break;
-		case 48: /* Tab */
-			int [] modifiers = new int [1];
-			OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-			boolean next = (modifiers [0] & OS.shiftKey) == 0;
-			if (next) {
-				if (focusIndex < offsets.length - 1) {
-					focusIndex++;
-					redraw ();
-				}
-			} else {
-				if (focusIndex > 0) {
-					focusIndex--;
-					redraw ();
-				} 
-			}
-			break;
-			
-	}
-	return result;
-}
-
 void releaseWidget () {
 	super.releaseWidget ();
-	if (layout != null) layout.dispose ();
-	layout = null;
-	if (linkColor != null) linkColor.dispose ();
-	linkColor = null;
-	if (disabledColor != null) disabledColor.dispose ();
-	disabledColor = null;
 	offsets = null;
 	ids = null;
 	mnemonics = null;
@@ -521,88 +352,6 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
-boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
-	boolean result = super.sendMouseEvent (type, button, count, detail, send, chord, x, y, modifiers);
-	switch (type) {
-		case SWT.MouseDown:
-			if (button == 1 && count == 1) {
-				int offset = layout.getOffset (x, y, null);
-				int oldSelectionX = selection.x;
-				int oldSelectionY = selection.y;
-				selection.x = offset;
-				selection.y = -1;
-				if (oldSelectionX != -1 && oldSelectionY != -1) {
-					if (oldSelectionX > oldSelectionY) {
-						int temp = oldSelectionX;
-						oldSelectionX = oldSelectionY;
-						oldSelectionY = temp;
-					}
-					Rectangle rectangle = layout.getBounds (oldSelectionX, oldSelectionY);
-					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-				}		
-				for (int j = 0; j < offsets.length; j++) {
-					Rectangle [] rects = getRectangles (j);
-					for (int i = 0; i < rects.length; i++) {
-						Rectangle rectangle = rects [i];
-						if (rectangle.contains (x, y)) {
-							focusIndex = j;
-							redraw ();
-							setFocus ();
-							return result;
-						}
-					}
-				}
-			}
-			break;
-		case SWT.MouseMove:
-			if ((chord & 0x01) != 0) {
-				int oldSelection = selection.y;
-				selection.y = layout.getOffset (x, y, null);
-				if (selection.y != oldSelection) {
-					int newSelection = selection.y;
-					if (oldSelection > newSelection) {
-						int temp = oldSelection;
-						oldSelection = newSelection;
-						newSelection = temp;
-					}
-					Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
-					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-				}
-			}
-			break;
-		case SWT.MouseUp:
-			if (focusIndex == -1) break;
-			if (button == 1) {
-				Rectangle [] rects = getRectangles (focusIndex);
-				for (int i = 0; i < rects.length; i++) {
-					Rectangle rectangle = rects [i];
-					if (rectangle.contains (x, y)) {
-						Event event = new Event ();
-						event.text = ids [focusIndex];
-						notifyListeners (SWT.Selection, event);
-						return result;
-					}
-				}
-			}
-			break;
-	}
-	
-	return result;
-}
-
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds(x, y, width, height, move, resize, events);
-	if ((result & RESIZED) != 0) {
-		layout.setWidth (width > 0 ? width : -1);
-	}
-	return result;
-}
-
-void setFontStyle (Font font) {
-	super.setFontStyle (font);
-	layout.setFont (getFont ());
-}
-
 /**
  * Sets the receiver's text.
  * <p>
@@ -631,46 +380,32 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals (text)) return;
 	text = string;
-	layout.setText (parse (string));
-	focusIndex = offsets.length > 0 ? 0 : -1 ;
-	selection.x = selection.y = -1;
-	boolean enabled = (state & DISABLED) == 0;
-	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
-	linkStyle.underline = true;
+	NSTextView widget = (NSTextView)view;
+	widget.setString(NSString.stringWith(parse(string)));
+	NSTextStorage textStorage = widget.textStorage();
+	NSRange range = new NSRange();
 	for (int i = 0; i < offsets.length; i++) {
-		Point point = offsets [i];
-		layout.setStyle (linkStyle, point.x, point.y);
+		range.location = offsets[i].x;
+		range.length = offsets[i].y - offsets[i].x + 1;
+		textStorage.addAttribute(OS.NSLinkAttributeName(), NSString.stringWith(ids[i]), range);
 	}
-	/*
-	* This code is intentionally commented. Mnemonics are 
-	* not drawn on the Macintosh.
-	*/
-//	TextStyle mnemonicStyle = new TextStyle (null, null, null);
-//	mnemonicStyle.underline = true;
-//	for (int i = 0; i < mnemonics.length; i++) {
-//		int mnemonic  = mnemonics [i];
-//		if (mnemonic != -1) {
-//			layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
-//		}
-//	}
-	redraw ();    
 }
 
-int traversalCode (int key, int theEvent) {
-	if (offsets.length == 0) return 0;
-	int bits = super.traversalCode (key, theEvent);
-	if (key == 48 /* Tab */ && theEvent != 0) {
-		int [] modifiers = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-		boolean next = (modifiers [0] & OS.shiftKey) == 0;
-		if (next && focusIndex < offsets.length - 1) {
-			return bits & ~ SWT.TRAVERSE_TAB_NEXT;
-		}
-		if (!next && focusIndex > 0) {
-			return bits & ~ SWT.TRAVERSE_TAB_PREVIOUS;
-		}
-	}
-	return bits;
-}
+//int traversalCode (int key, int theEvent) {
+//	if (offsets.length == 0) return 0;
+//	int bits = super.traversalCode (key, theEvent);
+//	if (key == 48 /* Tab */ && theEvent != 0) {
+//		int [] modifiers = new int [1];
+//		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+//		boolean next = (modifiers [0] & OS.shiftKey) == 0;
+//		if (next && focusIndex < offsets.length - 1) {
+//			return bits & ~ SWT.TRAVERSE_TAB_NEXT;
+//		}
+//		if (!next && focusIndex > 0) {
+//			return bits & ~ SWT.TRAVERSE_TAB_PREVIOUS;
+//		}
+//	}
+//	return bits;
+//}
 
 }

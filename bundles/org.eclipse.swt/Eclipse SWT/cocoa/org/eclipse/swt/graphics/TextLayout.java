@@ -78,7 +78,7 @@ public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;	
-	ascent = descent = -1;
+	wrapWidth = ascent = descent = -1;
 	alignment = SWT.LEFT;
 	orientation = SWT.LEFT_TO_RIGHT;
 	text = "";
@@ -95,16 +95,14 @@ void computeRuns() {
 	if (textStorage != null) return;
 	NSString str = NSString.stringWith(text);
 	textStorage = ((NSTextStorage)new NSTextStorage().alloc());
-	textStorage.initWithString_attributes_(str, null);
-	
+	textStorage.initWithString_(str);
 	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
-	textStorage.addLayoutManager(layoutManager);
-	
 	textContainer = (NSTextContainer)new NSTextContainer().alloc();
 	NSSize size = new NSSize();
-	size.width = Float.MAX_VALUE;
+	size.width = wrapWidth != -1 ? wrapWidth : Float.MAX_VALUE;
 	size.height = Float.MAX_VALUE;
 	textContainer.initWithContainerSize(size);
+	textStorage.addLayoutManager(layoutManager);
 	layoutManager.addTextContainer(textContainer);
 	
 	textStorage.beginEditing();
@@ -129,7 +127,6 @@ void computeRuns() {
 	paragraph.setAlignment(align);
 	paragraph.setLineSpacing(spacing);
 	paragraph.setFirstLineHeadIndent(indent);
-//	paragraph.setHeadIndent(indent);
 	
 	//TODO tabs ascend descent wrap
 	
@@ -194,7 +191,9 @@ void computeRuns() {
 	}
 	textStorage.endEditing();
 	
-	textContainer.setContainerSize(textStorage.size());
+	textContainer.setLineFragmentPadding(0);
+	
+	layoutManager.glyphRangeForTextContainer(textContainer);
 }
 
 /**
@@ -286,10 +285,22 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSPoint pt = new NSPoint();
-	pt.x = x;
-	pt.y = y;
-	textStorage.drawAtPoint(pt);
+//	NSPoint pt = new NSPoint();
+//	pt.x = x;
+//	pt.y = y;
+//	NSColor selectionColor = NSColor.colorWithDeviceRed(1, 0, 0, 1);
+//	selectionColor.set();
+//	NSRange range = new NSRange();
+//	range.length = layoutManager.numberOfGlyphs();
+//	layoutManager.drawBackgroundForGlyphRange(range, pt);
+//	textStorage.drawAtPoint(pt);
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	NSSize size = textContainer.containerSize();
+	rect.width = size.width;
+	rect.height = size.height;
+	textStorage.drawInRect(rect);
 }
 
 void freeRuns() {
@@ -558,7 +569,7 @@ public Rectangle getLineBounds(int lineIndex) {
 	int rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    NSRect r = layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, false);
+	    NSRect r = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, false);
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    if (lineIndex == numberOfLines) {
 	    	rect = r;
@@ -568,9 +579,6 @@ public Rectangle getLineBounds(int lineIndex) {
 	}
 	OS.free(rangePtr);
 	if (rect == null) SWT.error(SWT.ERROR_INVALID_RANGE);
-	//TODO - wrong width
-//	NSSize size = textStorage.size();
-//	rect.width = size.width;
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
@@ -618,7 +626,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int lineCount = getLineCount();
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int length = text.length();
-	if (true || length == 0) {
+	if (length == 0) {
 		Font font = this.font != null ? this.font : device.systemFont;
 		NSFont nsFont = font.handle;
 		int ascent = (int)(0.5f + nsFont.ascender());
@@ -627,13 +635,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		descent = Math.max(descent, this.descent);
 		return FontMetrics.cocoa_new(ascent, descent, 0, 0, ascent + descent);
 	}
-//	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
-//	int lineLength = breaks[lineIndex] - start;
-//	int[] ascent = new int[1], descent = new int[1];
-//	OS.ATSUGetUnjustifiedBounds(layout, start, lineLength, null, null, ascent, descent);
-//	int height = OS.Fix2Long(ascent[0]) + OS.Fix2Long(descent[0]);
-//	return FontMetrics.carbon_new(OS.Fix2Long(ascent[0]), OS.Fix2Long(descent[0]), 0, 0, height);
-	return null;
+	Rectangle rect = getLineBounds(lineIndex);
+	int baseline = (int)layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, getLineOffsets()[lineIndex]);
+	return FontMetrics.cocoa_new(rect.height - baseline, baseline, 0, 0, rect.height);
 }
 
 /**
@@ -659,26 +663,11 @@ public Point getLocation(int offset, boolean trailing) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return new Point(0, 0);
 	offset = translateOffset(offset);
-	System.out.println("la=" + textStorage.layoutManagers().count());
-	System.out.println(new NSLayoutManager(textStorage.layoutManagers().objectAtIndex(0)).textContainers().count());
-//	for (int i = 0; i < hardBreaks.length; i++) {
-//		if (offset == hardBreaks[i]) {
-//			trailing = true;
-//			if (offset > 0) offset--;
-//			break;
-//		}
-//	}
-//	int lineY = 0;
-//	for (int i=0; i<breaks.length-1; i++) {
-//		int lineBreak = breaks[i];
-//		if (lineBreak > offset) break;
-//		lineY += lineHeight[i];
-//	}
-//	if (trailing) offset++;
-//	ATSUCaret caret = new ATSUCaret();
-//	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
-//	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
-	return new Point(0, 0);
+	int glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
+	NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_(glyphIndex, 0);
+	NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
+	//TODO trailing
+	return new Point((int)point.x, (int)rect.y);
 }
 
 /**
@@ -797,7 +786,13 @@ public int getOffset(int x, int y, int[] trailing) {
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
 	if (length == 0) return 0;
-	int offset = 0;
+	NSPoint pt = new NSPoint();
+	pt.x = x;
+	pt.y = y;
+	//TODO trailing
+	//float[] partialFration = new float[1];
+	int glyphIndex = layoutManager.glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_(pt, textContainer, 0);
+	int offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
 	return Math.min(untranslateOffset(offset), length - 1);
 }
 

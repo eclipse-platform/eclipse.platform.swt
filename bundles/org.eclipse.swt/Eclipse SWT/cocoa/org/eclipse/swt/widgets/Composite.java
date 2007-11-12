@@ -232,21 +232,30 @@ NSView contentView () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
-	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
-		SWTScrollView widget = (SWTScrollView)new SWTScrollView().alloc();
-		widget.initWithFrame (new NSRect());
-		widget.setDrawsBackground(false);
-		if ((style & SWT.H_SCROLL) != 0) widget.setHasHorizontalScroller(true);
-		if ((style & SWT.V_SCROLL) != 0) widget.setHasVerticalScroller(true);
-		widget.setTag(jniRef);
-		view = widget;
-	} else {
-		SWTView widget = (SWTView)new SWTView().alloc();
-		widget.initWithFrame (new NSRect());
-		widget.setTag(jniRef);
-		view = widget;
+	if ((style & (SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
+		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+		scrollWidget.initWithFrame (new NSRect());
+		scrollWidget.setDrawsBackground(false);
+		if ((style & SWT.H_SCROLL) != 0) scrollWidget.setHasHorizontalScroller(true);
+		if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
+		scrollWidget.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
+		scrollWidget.setTag(jniRef);
+		scrollView = scrollWidget;
 	}
-	parent.contentView().addSubview_(view);
+	SWTView widget = (SWTView)new SWTView().alloc();
+	NSRect rect = new NSRect();
+	rect.width = rect.height = 100000;
+	widget.initWithFrame (rect);
+//	widget.setFocusRingType(OS.NSFocusRingTypeExterior);
+	widget.setTag(jniRef);
+	view = widget;
+	if (scrollView != null) {
+//		view.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+		scrollView.setDocumentView(view);
+		parent.contentView().addSubview_(scrollView);
+	} else {
+		parent.contentView().addSubview_(view);
+	}
 }
 
 Composite findDeferredControl () {

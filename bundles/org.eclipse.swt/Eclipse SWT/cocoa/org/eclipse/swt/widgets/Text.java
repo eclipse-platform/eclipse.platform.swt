@@ -229,7 +229,12 @@ public void append (String string) {
 	if ((style & SWT.SINGLE) != 0) {
 //		new NSTextFieldCell(((NSTextField)view).cell()).title().
 	} else {
-		((NSTextView)view).textStorage().mutableString().appendString(str);
+		NSTextView widget = (NSTextView)view;
+		NSMutableString mutableString = widget.textStorage().mutableString();
+		mutableString.appendString(str);
+		NSRange range = new NSRange();
+		range.location = mutableString.length();
+		widget.scrollRangeToVisible(range);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
@@ -1687,16 +1692,11 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	int[] event = new int[1];
-	OS.CreateEvent (0, OS.kEventClassScrollable, OS.kEventScrollableScrollTo, 0.0, 0, event);
-	if (event [0] != 0) {
-		int lineHeight = getLineHeight ();
-		CGPoint pt = new CGPoint ();
-		pt.y = lineHeight * Math.min(getLineCount (), index);
-		OS.SetEventParameter (event[0], OS.kEventParamOrigin, OS.typeHIPoint, CGPoint.sizeof, pt);
-		OS.SendEventToEventTarget (event[0], OS.GetControlEventTarget (handle));
-		OS.ReleaseEvent (event[0]);
-	}
+	//TODO no working
+	NSTextView widget = (NSTextView)view;
+	NSRange range = new NSRange();
+	NSRect rect = widget.firstRectForCharacterRange(range);
+	view.scrollRectToVisible(rect);
 }
 
 /**
@@ -1714,10 +1714,11 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-	if (txnObject == 0) {
+	if ((style & SWT.SINGLE) != 0)  {
 		setSelection (getSelection());
 	} else {
-		OS.TXNShowSelection (txnObject, false);
+		NSTextView widget = (NSTextView)view;
+		widget.scrollRangeToVisible(widget.selectedRange());
 	}
 }
 

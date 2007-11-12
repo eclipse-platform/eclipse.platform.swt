@@ -232,15 +232,24 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 //	if (!isDrawing (handle)) return;
-//	boolean isFocus = caret != null && caret.isFocusCaret ();
-//	if (isFocus) caret.killFocus ();
-//	Rectangle clientRect = getClientArea ();
-//	Rectangle sourceRect = new Rectangle (x, y, width, height);
-//	if (sourceRect.intersects (clientRect)) {
-//		update (all);
-//	}
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	Rectangle clientRect = getClientArea ();
+	Rectangle sourceRect = new Rectangle (x, y, width, height);
+	if (sourceRect.intersects (clientRect)) {
+		update (all);
+	}
+	NSRect damage = new NSRect();
+	damage.x = x;
+	damage.y = y;
+	damage.width = width;
+	damage.height = height;
+	view.setNeedsDisplayInRect(damage);
+	damage.x = destX;
+	damage.y = destY;
+	view.setNeedsDisplayInRect(damage);
 //	Control control = findBackgroundControl ();
-//	if (control != null && control.backgroundImage != null) {
+//	if ((control != null && control.backgroundImage != null)) {
 //		redrawWidget (handle, x, y, width, height, false);
 //		redrawWidget (handle, destX, destY, width, height, false);
 //	} else {
@@ -259,7 +268,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 			}
 		}
 	}
-//	if (isFocus) caret.setFocus ();
+	if (isFocus) caret.setFocus ();
 }
 
 /**

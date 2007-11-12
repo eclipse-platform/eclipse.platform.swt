@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 286;
-int OS_nativeFunctionCallCount[286];
+int OS_nativeFunctionCount = 287;
+int OS_nativeFunctionCallCount[287];
 char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"GetCurrentProcess",
@@ -26,6 +26,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSDeviceRGBColorSpace",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
+	"NSLinkAttributeName",
 	"NSParagraphStyleAttributeName",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",

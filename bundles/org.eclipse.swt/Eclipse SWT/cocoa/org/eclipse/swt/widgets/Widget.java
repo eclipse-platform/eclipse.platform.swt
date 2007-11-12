@@ -292,6 +292,10 @@ protected void checkWidget () {
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
+boolean clickOnLink(int textView, int link, int charIndex) {
+	return true;
+}
+
 void comboBoxSelectionDidChange(int notification) {
 }
 
@@ -817,7 +821,13 @@ boolean sendKeyEvent (int type, Event event) {
 void sendDoubleSelection() {
 }
 
+void sendHorizontalSelection () {
+}
+
 void sendSelection () {
+}
+
+void sendVerticalSelection () {
 }
 
 /**

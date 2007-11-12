@@ -34,6 +34,7 @@ typedef enum {
 	NSDeviceRGBColorSpace_FUNC,
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
+	NSLinkAttributeName_FUNC,
 	NSParagraphStyleAttributeName_FUNC,
 	NSStrikethroughColorAttributeName_FUNC,
 	NSStrikethroughStyleAttributeName_FUNC,

@@ -113,6 +113,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSForegroundColorAttributeName)
 }
 #endif
 
+#ifndef NO_NSLinkAttributeName
+JNIEXPORT jint JNICALL OS_NATIVE(NSLinkAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSLinkAttributeName_FUNC);
+	rc = (jint)NSLinkAttributeName;
+	OS_NATIVE_EXIT(env, that, NSLinkAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSParagraphStyleAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 	(JNIEnv *env, jclass that)

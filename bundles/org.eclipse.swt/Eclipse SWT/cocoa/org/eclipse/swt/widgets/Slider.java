@@ -380,6 +380,7 @@ public void setMaximum (int value) {
 		thumb = value - minimum;
 	}
 	int selection = Math.max(minimum, Math.min (getSelection (), value - thumb));
+	this.maximum = value;
 	updateBar(selection, minimum, value, thumb);
 }
 
@@ -404,6 +405,7 @@ public void setMinimum (int value) {
 		thumb = maximum - value;
 	}
 	int selection = Math.min(maximum - thumb, Math.max (getSelection (), value));
+	this.minimum = value;
 	updateBar(selection, value, maximum, thumb);
 }
 
@@ -504,6 +506,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	thumb = Math.min (thumb, maximum - minimum);
 	this.increment = increment;
 	this.pageIncrement = pageIncrement;
+	updateBar(selection, minimum, maximum, thumb);
 }
 
 }

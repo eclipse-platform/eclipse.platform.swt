@@ -140,13 +140,12 @@ public class Display extends Device {
 		/* Non-Numeric Keypad Keys */
 		{OS.NSUpArrowFunctionKey, SWT.ARROW_UP},
 		{OS.NSDownArrowFunctionKey, SWT.ARROW_DOWN},
-//		{125, SWT.ARROW_DOWN},
-//		{123, SWT.ARROW_LEFT},
-//		{124, SWT.ARROW_RIGHT},
-//		{116, SWT.PAGE_UP},
-//		{121, SWT.PAGE_DOWN},
-//		{115, SWT.HOME},
-//		{119, SWT.END},
+		{OS.NSLeftArrowFunctionKey, SWT.ARROW_LEFT},
+		{OS.NSRightArrowFunctionKey, SWT.ARROW_RIGHT},
+		{OS.NSPageUpFunctionKey, SWT.PAGE_UP},
+		{OS.NSPageDownFunctionKey, SWT.PAGE_DOWN},
+		{OS.NSHomeFunctionKey, SWT.HOME},
+		{OS.NSEndFunctionKey, SWT.END},
 		
 //		{??,	SWT.INSERT},
 
@@ -1051,6 +1050,20 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
+	NSWindow window = application.keyWindow();
+	if (window != null) {
+		NSResponder view = window.firstResponder();
+		if (view != null && view.respondsToSelector(OS.sel_tag)) {
+			int tag = OS.objc_msgSend(view.id, OS.sel_tag);
+			if (tag != -1) {
+				Object object = OS.JNIGetObject(tag);
+				if (object instanceof Control) {
+					//TODO go up hierarchy
+					return (Control)object;
+				}
+			}
+		}
+	}
 	return null;
 }
 
@@ -1561,8 +1574,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
+//	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTButton";
@@ -1673,6 +1687,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_1clickedOnLink_1atIndex_1, proc5, "@:@@i");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2847,6 +2862,14 @@ int windowDelegateProc(int delegate, int sel) {
 		widget.sendDoubleSelection();
 		return 0;
 	}
+	if (sel == OS.sel_sendVerticalSelection) {
+		widget.sendVerticalSelection();
+		return 0;
+	}
+	if (sel == OS.sel_sendHorizontalSelection) {
+		widget.sendHorizontalSelection();
+		return 0;
+	}
 	if (sel == OS.sel_acceptsFirstResponder) {
 		return widget.acceptsFirstResponder() ? 1 : 0;
 	}
@@ -2939,6 +2962,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	}
 	if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
 		return widget.tableViewshouldEditTableColumnrow(arg0, arg1, arg2) ? 1 : 0;
+	} else  if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
+		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;
 	}
 	return 0;
 }

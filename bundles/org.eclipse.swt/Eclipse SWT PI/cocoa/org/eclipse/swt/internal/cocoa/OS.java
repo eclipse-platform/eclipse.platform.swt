@@ -15,6 +15,8 @@ public class OS extends C {
 
 	public static final int sel_sendSelection = sel_registerName("sendSelection");
 	public static final int sel_sendDoubleSelection = sel_registerName("sendDoubleSelection");
+	public static final int sel_sendVerticalSelection = sel_registerName("sendVerticalSelection");
+	public static final int sel_sendHorizontalSelection = sel_registerName("sendHorizontalSelection");
 	public static final int sel_drawAtPoint_ = sel_registerName("drawAtPoint:");
 	public static final int sel_timerProc_1 = sel_registerName("timerProc:");
 	
@@ -8841,7 +8843,7 @@ public static final native int NSForegroundColorAttributeName();
 //public static final native int NSLeftMarginDocumentAttribute();
 //public static final native int NSLigatureAttributeName();
 //public static final native int NSLightGray();
-//public static final native int NSLinkAttributeName();
+public static final native int NSLinkAttributeName();
 //public static final native int NSLocalizedKeyDictionaryBinding();
 //public static final native int NSMacSimpleTextDocumentType();
 //public static final native int NSManagedObjectContextBinding();

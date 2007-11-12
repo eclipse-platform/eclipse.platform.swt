@@ -83,8 +83,11 @@ import org.eclipse.swt.graphics.*;
 public class ScrollBar extends Widget {
 	NSScroller view;
 	Scrollable parent;
+	int minimum, maximum, thumb;
 	int increment = 1;
 	int pageIncrement = 10;
+	id target;
+	int actionSelector;;
 
 ScrollBar () {
 	/* Do nothing */
@@ -134,45 +137,11 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-//int actionProc (int theControl, int partCode) {
-//	int result = super.actionProc (theControl, partCode);
-//	if (result == OS.noErr) return result;
-//	Event event = new Event ();
-//	int inc = 0;
-//	switch (partCode) {
-//	    case OS.kControlUpButtonPart:
-//			inc -= increment;
-//	        event.detail = SWT.ARROW_UP;
-//	        break;
-//	    case OS.kControlPageUpPart:
-//			inc -= pageIncrement;
-//	        event.detail = SWT.PAGE_UP;
-//	        break;
-//	    case OS.kControlPageDownPart:
-//			inc += pageIncrement;
-//	        event.detail = SWT.PAGE_DOWN;
-//	        break;
-//	    case OS.kControlDownButtonPart:
-//			inc += increment;
-//	        event.detail = SWT.ARROW_DOWN;
-//	        break;
-//	    case OS.kControlIndicatorPart:
-//	    	dragging = true;
-//			event.detail = SWT.DRAG;
-//	        break;
-//		default:
-//			return result;
-//	}
-//	if (oldActionProc != 0) {
-//		OS.Call (oldActionProc, theControl, partCode);
-//		parent.redrawBackgroundImage ();
-//	} else {
-//		int value = OS.GetControl32BitValue (handle) + inc;	    
-//		OS.SetControl32BitValue (handle, value);
-//	}
-//	sendEvent (SWT.Selection, event);
-//	return result;
-//}
+void createWidget () {
+	maximum = 100;
+	thumb = 10;
+	super.createWidget();
+}
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
@@ -223,10 +192,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget();
-//	int maximum = OS.GetControl32BitMaximum (handle) & 0x7FFFFFFF;
-//	int viewSize = OS.GetControlViewSize (handle);
-//    return maximum + viewSize;
-	return 0;
+	return maximum;
 }
 
 /**
@@ -241,8 +207,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget();
-//    return OS.GetControl32BitMinimum (handle) & 0x7FFFFFFF;
-	return 0;
+	return minimum;
 }
 
 /**
@@ -289,8 +254,9 @@ public Scrollable getParent () {
  */
 public int getSelection () {
 	checkWidget();
-//    return OS.GetControl32BitValue (handle) & 0x7FFFFFFF;
-	return 0;
+	NSScroller widget = (NSScroller)view;
+	float value = widget.floatValue();
+    return (int)((maximum - thumb - minimum) * value + minimum);
 }
 
 /**
@@ -327,8 +293,7 @@ public Point getSize () {
  */
 public int getThumb () {
 	checkWidget();
-//    return OS.GetControlViewSize (handle);
-	return 0;
+	return thumb;
 }
 
 /**
@@ -434,6 +399,44 @@ void releaseWidget () {
 	parent = null;
 }
 
+void sendSelection () {
+	int value = 0;
+	if (target != null) {
+		view.sendAction(actionSelector, target);
+	} else {
+		value = getSelection ();
+	}
+	Event event = new Event();
+	int hitPart = ((NSScroller)view).hitPart();
+	switch (hitPart) {
+	    case OS.NSScrollerDecrementLine:
+	        value -= increment;
+	        event.detail = SWT.ARROW_UP;
+	        break;
+	    case OS.NSScrollerDecrementPage:
+	        value -= pageIncrement;
+	        event.detail = SWT.PAGE_UP;
+	        break;
+	    case OS.NSScrollerIncrementLine:
+	        value += increment;
+	        event.detail = SWT.PAGE_DOWN;
+	        break;
+	    case OS.NSScrollerIncrementPage:
+	        value += pageIncrement;
+	        event.detail = SWT.ARROW_DOWN;
+	        break;
+	    case OS.NSScrollerKnob:
+			event.detail = SWT.DRAG;
+	        break;
+	}
+	if (target == null) {
+		if (event.detail != SWT.DRAG) {
+			setSelection(value);
+		}
+	}
+	sendEvent(SWT.Selection, event);
+}
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -495,14 +498,13 @@ public void setEnabled (boolean enabled) {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-//	int minimum = OS.GetControl32BitMinimum (handle);
-//	if (value <= minimum) return;
-//	int viewSize = OS.GetControlViewSize (handle);
-//	if (value - minimum < viewSize) {
-//		viewSize = value - minimum;
-//		OS.SetControlViewSize (handle, viewSize);
-//	}
-//	OS.SetControl32BitMaximum (handle, value - viewSize);
+	if (value <= minimum) return;
+	if (value - minimum < thumb) {
+		thumb = value - minimum;
+	}
+	int selection = Math.max(minimum, Math.min (getSelection (), value - thumb));
+	this.maximum = value;
+	updateBar(selection, minimum, value, thumb);
 }
 
 /**
@@ -521,15 +523,13 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-//	int viewSize = OS.GetControlViewSize (handle);
-//	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
-//	if (value >= maximum) return;
-//	if (maximum - value < viewSize) {
-//		viewSize = maximum - value;
-//		OS.SetControl32BitMaximum (handle, maximum - viewSize);
-//		OS.SetControlViewSize (handle, viewSize);
-//	}
-//	OS.SetControl32BitMinimum (handle, value);
+	if (value >= maximum) return;
+	if (maximum - value < thumb) {
+		thumb = maximum - value;
+	}
+	int selection = Math.min(maximum - thumb, Math.max (getSelection (), value));
+	this.minimum = value;
+	updateBar(selection, value, maximum, thumb);
 }
 
 /**
@@ -565,7 +565,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-//	OS.SetControl32BitValue (handle, value);
+	updateBar(value, minimum, maximum, thumb);
 }
 
 /**
@@ -585,12 +585,9 @@ public void setSelection (int value) {
 public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
-//	int minimum = OS.GetControl32BitMinimum (handle);
-//	int viewSize = OS.GetControlViewSize (handle);
-//	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
-//	value = Math.min (value, maximum - minimum);
-//	OS.SetControl32BitMaximum (handle, maximum - value);
-//    OS.SetControlViewSize (handle, value);
+	value = Math.min (value, maximum - minimum);
+	this.thumb = value;
+	updateBar(getSelection(), minimum, maximum, value);
 }
 
 /**
@@ -622,12 +619,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	thumb = Math.min (thumb, maximum - minimum);
-//	OS.SetControl32BitMinimum (handle, minimum);
-//	OS.SetControl32BitMaximum (handle, maximum - thumb);
-//	OS.SetControlViewSize (handle, thumb);
-//	OS.SetControl32BitValue (handle, selection);
 	this.increment = increment;
 	this.pageIncrement = pageIncrement;
+	updateBar(selection, minimum, maximum, thumb);
 }
 
 /**
@@ -648,7 +642,18 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
+	//TODO visibility
 	parent.setScrollBarVisible (this, visible);
+}
+
+void updateBar(int selection, int minimum, int maximum, int thumb) {
+	NSScroller widget = (NSScroller)view;
+	selection = Math.max(minimum, Math.min(maximum - thumb, selection));
+	int range = maximum - thumb - minimum;
+	float fraction = range < 0 ? 1 : (float)(selection - minimum) / range;
+	float knob = minimum == maximum ? 1 : (float)(thumb - minimum) / maximum - minimum;
+	widget.setFloatValue(fraction, knob);
+	widget.setEnabled(range > 0); 
 }
 
 }

@@ -113,16 +113,29 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 ScrollBar createScrollBar (int style) {
+	if (scrollView == null) return null;
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
 	bar.style = style;
 	bar.display = display;
-	NSScrollView widget = (NSScrollView)(scrollView != null ? scrollView : view);
+	NSScroller scroller;
+	int actionSelector;
 	if ((style & SWT.H_SCROLL) != 0) {
-		bar.view = widget.horizontalScroller();
+		scroller = scrollView.horizontalScroller();
+		actionSelector = OS.sel_sendHorizontalSelection;
 	} else {
-		bar.view = widget.verticalScroller();
+		scroller = scrollView.verticalScroller();
+		actionSelector = OS.sel_sendVerticalSelection;
 	}
+	bar.view = scroller;
+	bar.createJNIRef();
+	scroller.setTag(bar.jniRef);
+	if ((state & CANVAS) == 0) {
+		bar.target = scroller.target();
+		bar.actionSelector = scroller.action();
+	}
+	scroller.setTarget(scrollView);
+	scroller.setAction(actionSelector);
 	return bar;
 }
 
@@ -242,6 +255,10 @@ void resizeClientArea () {
 //	}
 }
 
+void sendHorizontalSelection () {
+	horizontalBar.sendSelection ();
+}
+
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 //	if ((state & CANVAS) != 0) {
 //		ScrollBar bar = wheelAxis == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;
@@ -254,6 +271,10 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 //		}
 //	}
 	return false;
+}
+
+void sendVerticalSelection () {
+	verticalBar.sendSelection ();
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {

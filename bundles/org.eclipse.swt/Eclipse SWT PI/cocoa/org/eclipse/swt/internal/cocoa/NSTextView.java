@@ -125,6 +125,12 @@ public boolean drawsBackground() {
 	return OS.objc_msgSend(this.id, OS.sel_drawsBackground) != 0;
 }
 
+public NSRect firstRectForCharacterRange(NSRange range) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, id, OS.sel_firstRectForCharacterRange_1, range);
+	return result;
+}
+
 public boolean importsGraphics() {
 	return OS.objc_msgSend(this.id, OS.sel_importsGraphics) != 0;
 }
