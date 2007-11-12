@@ -654,10 +654,15 @@ void deregister () {
 }
 
 void destroyWidget () {
+	Display display = this.display;
 	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {
-		OS.DisposeControl (theControl);
+		if (display.delayDispose) {
+			display.addToDisposeWindow (theControl);
+		} else {
+			OS.DisposeControl (theControl);
+		}
 	}
 }
 
@@ -1922,11 +1927,14 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 				OS.GetKeyboardFocus (window, focusControl);
 				short [] part = new short [1];
 				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+				Display display = this.display;
+				display.delayDispose = true;
 				if (part [0] == OS.kControlFocusNoPart) {
 					if (focusControl [0] == focusHandle) sendFocusEvent (SWT.FocusOut, false);
 				} else {
 					if (focusControl [0] != focusHandle) sendFocusEvent (SWT.FocusIn, false);
 				}
+				display.delayDispose = false;
 			}
 			// widget could be disposed at this point
 			if (isDisposed ()) return OS.noErr;
