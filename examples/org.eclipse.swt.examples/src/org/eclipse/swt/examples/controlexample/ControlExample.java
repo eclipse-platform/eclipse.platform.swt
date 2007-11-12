@@ -71,27 +71,27 @@ public class ControlExample {
 			new ButtonTab (this),
 			new CanvasTab (this),
 			new ComboTab (this),
-//			new CoolBarTab (this),
+			new CoolBarTab (this),
 			new DateTimeTab (this),
 			new DialogTab (this),
-//			new ExpandBarTab (this),
+			new ExpandBarTab (this),
 			new GroupTab (this),
 			new LabelTab (this),
-//			new LinkTab (this),
-//			new ListTab (this),
+			new LinkTab (this),
+			new ListTab (this),
 			new MenuTab (this),
 			new ProgressBarTab (this),
-//			new SashTab (this),
+			new SashTab (this),
 			new ScaleTab (this),
 			shellTab = new ShellTab(this),
-//			new SliderTab (this),
+			new SliderTab (this),
 			new SpinnerTab (this),
 			new TabFolderTab (this),
 			new TableTab (this),
 			new TextTab (this),
 			new ToolBarTab (this),
-//			new ToolTipTab (this),
-//			new TreeTab (this),
+			new ToolTipTab (this),
+			new TreeTab (this),
 		};
 	}
 
@@ -203,7 +203,7 @@ public class ControlExample {
 		shell.setLayout(new FillLayout());
 		ControlExample instance = new ControlExample(shell);
 		shell.setText(getResourceString("window.title"));
-		//setShellSize(instance, shell);
+		setShellSize(instance, shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
