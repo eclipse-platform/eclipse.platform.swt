@@ -11,21 +11,13 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.CFRunLoopSourceContext;
-import org.eclipse.swt.internal.carbon.EventRecord;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGPoint;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.GDevice;
-import org.eclipse.swt.internal.carbon.HICommand;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.RGBColor;
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -2318,7 +2310,12 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
 		Widget widget = getWidget (theControl [0]);
-		if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
+		if (widget != null) {
+			MenuTrackingData outData = new MenuTrackingData ();
+			if (OS.GetMenuTrackingData (0, outData) != OS.noErr) {
+				return widget.keyboardProc (nextHandler, theEvent, userData);
+			}
+		}
 	}
 	return OS.eventNotHandledErr;
 }
@@ -3803,15 +3800,18 @@ int textInputProc (int nextHandler, int theEvent, int userData) {
 		OS.GetKeyboardFocus (theWindow, theControl);
 		Widget widget = getWidget (theControl [0]);
 		if (widget != null) {
-			/* Stop the default event handler from activating the default button */
-			OS.GetWindowDefaultButton (theWindow, theControl);
-			OS.SetWindowDefaultButton (theWindow, 0);
-			int result = widget.textInputProc (nextHandler, theEvent, userData);
-			if (result == OS.eventNotHandledErr) {
-				result = OS.CallNextEventHandler (nextHandler, theEvent);
+			MenuTrackingData outData = new MenuTrackingData ();
+			if (OS.GetMenuTrackingData (0, outData) != OS.noErr) {
+				/* Stop the default event handler from activating the default button */
+				OS.GetWindowDefaultButton (theWindow, theControl);
+				OS.SetWindowDefaultButton (theWindow, 0);
+				int result = widget.textInputProc (nextHandler, theEvent, userData);
+				if (result == OS.eventNotHandledErr) {
+					result = OS.CallNextEventHandler (nextHandler, theEvent);
+				}
+				OS.SetWindowDefaultButton (theWindow, theControl [0]);
+				return result;
 			}
-			OS.SetWindowDefaultButton (theWindow, theControl [0]);
-			return result;
 		}
 	}
 	return OS.eventNotHandledErr;
