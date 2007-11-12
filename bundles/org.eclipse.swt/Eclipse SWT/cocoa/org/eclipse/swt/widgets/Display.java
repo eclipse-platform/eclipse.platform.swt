@@ -804,16 +804,19 @@ public static Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-//	if (activeShell != null && !activeShell.isDisposed ()) {
-//		return activeShell;
-//	}
-//	for (int i=0; i<widgetTable.length; i++) {
-//		Widget widget = widgetTable [i];
-//		if (widget != null && widget instanceof Shell) {
-//			Shell shell = (Shell) widget;
-//			if (OS.IsWindowActive (shell.shellHandle)) return shell;
-//		}
-//	}
+	NSWindow window = application.keyWindow();
+	if (window != null) {
+		NSView view = window.contentView();
+		if (view != null && view.respondsToSelector(OS.sel_tag)) {
+			int tag = OS.objc_msgSend(view.id, OS.sel_tag);
+			if (tag != -1) {
+				Object object = OS.JNIGetObject(tag);
+				if (object instanceof Shell) {
+					return (Shell)object;
+				}
+			}
+		}
+	}
 	return null;
 }
 

@@ -171,9 +171,9 @@ public NSSize contentResizeIncrements() {
 	return result;
 }
 
-public id contentView() {
+public NSView contentView() {
 	int result = OS.objc_msgSend(this.id, OS.sel_contentView);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSView(result) : null;
 }
 
 public NSPoint convertBaseToScreen(NSPoint aPoint) {
