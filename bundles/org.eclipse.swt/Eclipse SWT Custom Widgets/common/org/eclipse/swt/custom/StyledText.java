@@ -6807,6 +6807,7 @@ public void setCaretOffset(int offset) {
 			}
 			caretOffset = offset;
 		}
+		caretAlignment = PREVIOUS_OFFSET_TRAILING;
 		// clear the selection if the caret is moved.
 		// don't notify listeners about the selection change.
 		clearSelection(false);
@@ -7658,6 +7659,7 @@ void setSelection(int start, int length, boolean sendEvent) {
 			selectionAnchor = selection.x = start;
 			caretOffset = selection.y = end;
 		}
+		caretAlignment = PREVIOUS_OFFSET_TRAILING;
 		internalRedrawRange(selection.x, selection.y - selection.x);
 	}
 }
