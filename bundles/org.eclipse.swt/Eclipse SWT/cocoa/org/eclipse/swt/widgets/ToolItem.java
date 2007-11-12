@@ -194,6 +194,24 @@ Point computeSize () {
 	return new Point (width, height);
 }
 
+void drawRect(NSRect rect) {
+	super.drawRect(rect);
+	if (getSelection ()) {
+		NSRect bounds = view.bounds();
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		context.saveGraphicsState();
+		NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
+		NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
+		NSBezierPath.fillRect(bounds);
+		bounds.x += 0.5f;
+		bounds.y += 0.5f;
+		bounds.width -= 1;
+		bounds.height -= 1;
+		NSBezierPath.strokeRect(bounds);
+		context.restoreGraphicsState();
+	}
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -596,9 +614,8 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-//	this.selection = selected;
-//	view.setNeedsDisplay(true);
-//	view.setState(selected ? OS.NSOnState : OS.NSOffState);
+	this.selection = selected;
+	view.setNeedsDisplay(true);
 }
 
 /**

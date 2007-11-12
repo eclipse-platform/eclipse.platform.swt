@@ -1532,6 +1532,8 @@ void initClasses () {
 	windowDelegateCallback5 = new Callback(this, "windowDelegateProc", 5);
 	int proc5 = windowDelegateCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	int drawRectProc = OS.drawRect_CALLBACK(proc3);
 
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
@@ -1561,7 +1563,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
+	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
@@ -1589,7 +1591,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-//	OS.class_addMethod(cls, OS.sel_drawRect_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
