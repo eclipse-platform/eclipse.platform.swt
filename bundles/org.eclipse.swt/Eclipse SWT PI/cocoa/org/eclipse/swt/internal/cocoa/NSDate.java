@@ -74,14 +74,14 @@ public NSString descriptionWithLocale(id locale) {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public static id distantFuture() {
+public static NSDate distantFuture() {
 	int result = OS.objc_msgSend(OS.class_NSDate, OS.sel_distantFuture);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSDate(result) : null;
 }
 
-public static id distantPast() {
+public static NSDate distantPast() {
 	int result = OS.objc_msgSend(OS.class_NSDate, OS.sel_distantPast);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSDate(result) : null;
 }
 
 public NSDate earlierDate(NSDate anotherDate) {

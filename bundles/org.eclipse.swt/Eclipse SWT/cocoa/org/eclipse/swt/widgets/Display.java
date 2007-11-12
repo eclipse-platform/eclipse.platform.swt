@@ -101,6 +101,7 @@ public class Display extends Device {
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
+	boolean allowTimers, runAsyncMessages;
 	
 	Caret currentCaret;
 	
@@ -2196,9 +2197,18 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	application.run ();
-//	application.nextEventMatchingMask(mask, expiration, mode, deqFlag)
-	return true;
+	boolean events = false;
+	events |= runTimers ();
+	NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+	if (event != null) {
+		events = true;
+		application.sendEvent(event);
+	}
+	if (events) {
+		runDeferredEvents ();
+		return true;
+	}
+	return runAsyncMessages (false);
 }
 
 static void register (Display display) {
@@ -2412,6 +2422,22 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+
+boolean runTimers () {
+	if (timerList == null) return false;
+	boolean result = false;
+	for (int i=0; i<timerList.length; i++) {
+		if (nsTimers [i] == null && timerList [i] != null) {
+			Runnable runnable = timerList [i];
+			timerList [i] = null;
+			if (runnable != null) {
+				result = true;
+				runnable.run ();
+			}
+		}
+	}
+	return result;
 }
 
 void sendEvent (int eventType, Event event) {
@@ -2654,7 +2680,10 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	return false;
+	allowTimers = runAsyncMessages = false;
+	NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+	allowTimers = runAsyncMessages = true;
+	return true;
 }
 
 int sourceProc (int info) {
@@ -2766,15 +2795,15 @@ int timerProc (int id) {
 	int index = timer.userInfo();
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
-//		if (allowTimers) {
+		if (allowTimers) {
 			Runnable runnable = timerList [index];
 			timerList [index] = null;
 			nsTimers [index] = null;
 			if (runnable != null) runnable.run ();
-//		} else {
-//			timerIds [index] = -1;
-//			wakeThread ();
-//		}
+		} else {
+			nsTimers [index] = null;
+			wakeThread ();
+		}
 	}
 	timer.release();
 	return 0;
@@ -2821,6 +2850,8 @@ public void wake () {
 }
 
 void wakeThread () {
+	NSObject object = new NSObject().alloc().init();
+	object.performSelectorOnMainThread_withObject_waitUntilDone_(OS.sel_release, null, false);
 }
 
 int dialogProc(int id, int sel, int arg0) {

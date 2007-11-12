@@ -497,9 +497,6 @@ void destroyWidget () {
 	NSWindow window = this.window;
 	if (window != null) window.close();
 	releaseHandle ();
-	
-	//TODO remove this when readAndDispatch works
-	display.application.stop(null);
 }
 
 Control findBackgroundControl () {

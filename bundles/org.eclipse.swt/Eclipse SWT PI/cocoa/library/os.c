@@ -77,6 +77,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 }
 #endif
 
+#ifndef NO_NSDefaultRunLoopMode
+JNIEXPORT jint JNICALL OS_NATIVE(NSDefaultRunLoopMode)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSDefaultRunLoopMode_FUNC);
+	rc = (jint)NSDefaultRunLoopMode;
+	OS_NATIVE_EXIT(env, that, NSDefaultRunLoopMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSDeviceRGBColorSpace
 JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceRGBColorSpace)
 	(JNIEnv *env, jclass that)
