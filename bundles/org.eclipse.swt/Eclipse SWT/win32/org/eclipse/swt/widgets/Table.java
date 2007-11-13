@@ -85,6 +85,7 @@ public class Table extends Composite {
 	static final int HEADER_EXTRA = 3;
 	static final int VISTA_EXTRA = 2;
 	static final int EXPLORER_EXTRA = 2;
+	static final int SCROLL_LIMIT = 32;
 	static final boolean EXPLORER_THEME = true;
 	static final int /*long*/ TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -5547,12 +5548,12 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	}
 	
 	/*
-	* When there are many columns in a table, scrolling performance
-	* can be improved by temporarily unsubclassing the window proc
-	* so that internal messages are dispatched directly to the table.
-	* If the application expects to see a paint event or has a child
-	* whose font, foreground or background color might be needed,
-	* the window proc cannot be unsubclassed
+	* Feature in Windows.  When there are many columns in a table,
+	* scrolling performance can be improved by unsubclassing the
+	* window proc so that internal messages are dispatched directly
+	* to the table.  If the application expects to see a paint event
+	* or has a child whose font, foreground or background color might
+	* be needed, the window proc cannot be unsubclassed
 	* 
 	* NOTE: The header tooltip can subclass the header proc so the
 	* current proc must be restored or header tooltips stop working.
@@ -5564,7 +5565,28 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 		oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
 	}
+	
+	/*
+	* Feature in Windows.  For some reason, when the table window
+	* proc processes WM_HSCROLL or WM_VSCROLL when there are many
+	* columns in the table, scrolling is slow and the table does
+	* not keep up with the position of the scroll bar.  The fix
+	* is to turn off redraw, scroll, turn redraw back on and redraw
+	* the entire table.  Strangly, redrawing the entire table is
+	* faster.
+	*/
+	boolean fixScroll = false;
+	if (OS.COMCTL32_MAJOR >= 6 && columnCount > SCROLL_LIMIT) {
+		fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+	}
+	if (fixScroll) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
+	if (fixScroll) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
+
 	if (fixSubclass) {
 		OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldTableProc);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, oldHeaderProc);
@@ -5612,7 +5634,28 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 		oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
 	}
+
+	/*
+	* Feature in Windows.  For some reason, when the table window
+	* proc processes WM_HSCROLL or WM_VSCROLL when there are many
+	* columns in the table, scrolling is slow and the table does
+	* not keep up with the position of the scroll bar.  The fix
+	* is to turn off redraw, scroll, turn redraw back on and redraw
+	* the entire table.  Strangly, redrawing the entire table is
+	* faster.
+	*/
+	boolean fixScroll = false;
+	if (OS.COMCTL32_MAJOR >= 6 && columnCount > SCROLL_LIMIT) {
+		fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+	}
+	if (fixScroll) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
+	if (fixScroll) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
+	
 	if (fixSubclass) {
 		OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldTableProc);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, oldHeaderProc);
