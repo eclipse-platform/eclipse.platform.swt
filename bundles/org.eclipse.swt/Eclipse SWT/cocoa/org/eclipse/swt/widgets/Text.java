@@ -759,9 +759,7 @@ public boolean getEditable () {
 public int getLineCount () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	int [] oLineTotal = new int [1];
-	OS.TXNGetLineCount (txnObject, oLineTotal);
-	return oLineTotal [0];
+	return ((NSTextView)view).textStorage().paragraphs().count();
 }
 
 /**
@@ -793,12 +791,8 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget();
-	if (txnObject == 0) {
-		return textExtent (new char[]{' '}, 0).y;
-	} 
-	int [] oLineWidth = new int [1], oLineHeight = new int [1];
-	OS.TXNGetLineMetrics (txnObject, 0, oLineWidth, oLineHeight);
-	return OS.Fix2Long (oLineHeight [0]);
+	//TODO
+	return 16;
 }
 
 /**
@@ -845,14 +839,8 @@ public String getMessage () {
 
 int getPosition (int x, int y) {
 //	checkWidget ();
-	if (txnObject == 0) return -1;
-	int [] oOffset = new int [1];
-	Rect oViewRect = new Rect ();
-	OS.TXNGetViewRect (txnObject, oViewRect);
-	CGPoint iPoint = new CGPoint ();
-	iPoint.x = x + oViewRect.left;
-	iPoint.y = y + oViewRect.top;
-	return OS.TXNHIPointToOffset (txnObject, iPoint, oOffset) == OS.noErr ? oOffset [0] : -1;
+	//TODO 
+	return 0;
 }
 
 public int getPosition (Point point) {
@@ -1085,11 +1073,8 @@ public int getTopIndex () {
 public int getTopPixel () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 0;
-	CGRect rect = new CGRect ();
-	OS.TXNGetHIRect (txnObject, OS.kTXNDestinationRectKey, rect);
-	int destY = (int) rect.y;
-	OS.TXNGetHIRect (txnObject, OS.kTXNTextRectKey, rect);
-	return destY - (int) rect.y;
+	//TODO
+	return 0;
 }
 
 /**

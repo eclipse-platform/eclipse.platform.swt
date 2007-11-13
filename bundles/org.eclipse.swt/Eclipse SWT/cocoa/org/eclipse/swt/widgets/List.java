@@ -215,7 +215,8 @@ void createHandle () {
 	scrollView = (SWTScrollView)new SWTScrollView().alloc();
 	scrollView.initWithFrame(new NSRect ());
 	if ((style & SWT.H_SCROLL) != 0) scrollView.setHasHorizontalScroller(true);
-	if ((style & SWT.V_SCROLL) != 0)scrollView.setHasVerticalScroller(true);
+	if ((style & SWT.V_SCROLL) != 0) scrollView.setHasVerticalScroller(true);
+	scrollView.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
 	scrollView.setTag(jniRef);
 	
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
@@ -945,6 +946,10 @@ public void selectAll () {
 	widget.setDelegate(null);
 	widget.selectAll(null);
 	widget.setDelegate(widget);
+}
+
+void sendDoubleSelection() {
+	postEvent (SWT.DefaultSelection);	
 }
 
 /**
