@@ -839,7 +839,7 @@ void HandleClosing (int sender, int e) {
 	if (!checkEvent (e)) return;
 	closing = true;
 	boolean doit = false;
-	if (isEnabled () && isActive ()) {
+	if (isEnabled ()) {
 		Event event = new Event ();
 		sendEvent (SWT.Close, event);
 		doit = event.doit || isDisposed ();
