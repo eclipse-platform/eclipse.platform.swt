@@ -1278,6 +1278,7 @@ public int internal_new_GC (GCData data) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
 		data.device = display;
+		data.view = view;
 		data.foreground = getForegroundColor ().handle;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;

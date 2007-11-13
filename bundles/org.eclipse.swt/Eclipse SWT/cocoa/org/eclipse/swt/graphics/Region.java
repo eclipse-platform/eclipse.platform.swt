@@ -11,7 +11,8 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
 /**
@@ -99,11 +100,15 @@ Region(Device device, int handle) {
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pointArray.length < 2) return;
+	add(pointArray, pointArray.length);
+}
+	
+void add(int[] pointArray, int count) {
+	if (count <= 2) return;
 	int polyRgn = OS.NewRgn();
 	OS.OpenRgn();
 	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i = 1; i < pointArray.length / 2; i++) {
+	for (int i = 1; i < count / 2; i++) {
 		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
 	}
 	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
@@ -155,8 +160,7 @@ public void add(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn = OS.NewRgn();
-	Rect r = new Rect();
-	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+	short[] r = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
 	OS.RectRgn(rectRgn, r);
 	OS.UnionRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);
@@ -199,8 +203,7 @@ public void add(Region region) {
  */
 public boolean contains(int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	org.eclipse.swt.internal.carbon.Point point = new org.eclipse.swt.internal.carbon.Point();
-	OS.SetPt(point, (short)x, (short)y);
+	short[] point = new short[]{(short)x, (short)y};
 	return OS.PtInRgn(point, handle);
 }
 
@@ -223,6 +226,53 @@ public boolean contains(Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return contains(pt.x, pt.y);
 }
+
+NSAffineTransform transform;
+void convertRgn(NSAffineTransform transform) {
+	int newRgn = OS.NewRgn();
+	Callback callback = new Callback(this, "convertRgn", 4);
+	int proc = callback.getAddress();
+	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	this.transform = transform;
+	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, proc, newRgn);
+	this.transform = null;
+	callback.dispose();
+	OS.CopyRgn(newRgn, handle);
+	OS.DisposeRgn(newRgn);
+}
+
+int convertRgn(int message, int rgn, int r, int newRgn) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		short[] rect = new short[4];
+		OS.memmove(rect, r, rect.length * 2);
+		NSPoint point = new NSPoint(); 
+		int polyRgn = OS.NewRgn();
+		OS.OpenRgn();
+		point.x = rect[1];
+		point.y = rect[0];
+		point = transform.transformPoint(point);
+		short startX, startY;
+		OS.MoveTo(startX = (short)point.x, startY = (short)point.y);
+		point.x = rect[3];
+		point.y = rect[0];
+		point = transform.transformPoint(point);
+		OS.LineTo((short)Math.round(point.x), (short)point.y);
+		point.x = rect[3];
+		point.y = rect[2];
+		point = transform.transformPoint(point);
+		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
+		point.x = rect[1];
+		point.y = rect[2];
+		point = transform.transformPoint(point);
+		OS.LineTo((short)point.x, (short)Math.round(point.y));
+		OS.LineTo(startX, startY);
+		OS.CloseRgn(polyRgn);
+		OS.UnionRgn(newRgn, polyRgn, newRgn);
+		OS.DisposeRgn(polyRgn);
+	}
+	return 0;
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the region. Applications must dispose of all regions which
@@ -267,11 +317,39 @@ public boolean equals(Object object) {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rect bounds = new Rect();
+	short[] bounds = new short[4];
 	OS.GetRegionBounds(handle, bounds);
-	int width = bounds.right - bounds.left;
-	int height = bounds.bottom - bounds.top;
-	return new Rectangle(bounds.left, bounds.top, width, height);
+	int width = bounds[3] - bounds[1];
+	int height = bounds[2] - bounds[0];
+	return new Rectangle(bounds[1], bounds[0], width, height);
+}
+
+NSBezierPath getPath() {
+	Callback callback = new Callback(this, "regionToRects", 4);
+	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	NSBezierPath path = NSBezierPath.bezierPath();
+	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
+	return path;
+}
+
+NSPoint pt = new NSPoint();
+short[] rect = new short[4];
+int regionToRects(int message, int rgn, int r, int path) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		OS.memmove(rect, r, rect.length * 2);
+		pt.x = rect[1];
+		pt.y = rect[0];
+		OS.objc_msgSend(path, OS.sel_moveToPoint_1, pt);
+		pt.x = rect[3];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		pt.x = rect[3];
+		pt.y = rect[2];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		pt.x = rect[1];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_closePath);
+	}
+	return 0;
 }
 
 public static Region carbon_new(Device device, int handle) {
@@ -336,8 +414,7 @@ public void intersect(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn = OS.NewRgn();
-	Rect r = new Rect();
-	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+	short[] r = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
 	OS.RectRgn(rectRgn, r);
 	OS.SectRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);
@@ -386,8 +463,7 @@ public void intersect(Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rect rect = new Rect();
-	OS.SetRect(rect, (short)x, (short)y, (short)(x + width),(short)(y + height));
+	short[] rect = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
 	return OS.RectInRgn(rect, handle);
 }
 
@@ -518,8 +594,7 @@ public void subtract(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn = OS.NewRgn();
-	Rect r = new Rect();
-	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
+	short[] r = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
 	OS.RectRgn(rectRgn, r);
 	OS.DiffRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);

@@ -214,6 +214,7 @@ void checkGC (int mask) {
 		if (data.clipPath != null) data.clipPath.addClip();
 		if (data.transform != null) data.transform.concat();
 		mask &= ~(TRANSFORM | CLIPPING);
+		data.state |= TRANSFORM | CLIPPING;
 		data.state &= ~(BACKGROUND | FOREGROUND);
 	}
 

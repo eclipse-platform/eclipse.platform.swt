@@ -33,8 +33,6 @@ public final class GCData {
 	public Pattern backgroundPattern;
 	public Font font;
 	public int alpha = 0xFF;
-	public float[] clippingTransform;
-	public int clipRgn;
 	public float lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;
@@ -53,4 +51,7 @@ public final class GCData {
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;
+	public NSBezierPath clipPath;
+	public NSView view;
+	public NSSize size;
 }
