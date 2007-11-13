@@ -158,24 +158,24 @@ int fontProc (int nextHandler, int theEvent, int userData) {
 						) {
 							int count = OS.CFDataGetLength (tags [0]) / 4;
 							int tagPtr = OS.CFDataGetBytePtr (tags[0]);
-                            int sizePtr = OS.CFDataGetBytePtr (sizes [0]);
-                            int [] tag = new int [1];
-                            int [] size = new int [1];
-                            int valueOffset = 0;
-                            for (int i = 0 ; i < count ; i++) {
-                            	OS.memmove (tag, tagPtr + (i * 4), 4);
-                            	OS.memmove (size, sizePtr + (i * 4), 4);
-                                if (tag [0] == OS.kATSUColorTag && size[0] == RGBColor.sizeof) {
-                                    int valuePtr = OS.CFDataGetBytePtr (values [0]);
-                                	OS.memmove (color, valuePtr + valueOffset, RGBColor.sizeof);
-                                	int red = (color.red >> 8) & 0xFF;
-                    				int green = (color.green >> 8) & 0xFF;
-                    				int blue =	(color.blue >> 8) & 0xFF;
-                    				rgb = new RGB (red, green, blue);
-                                    break ;
-                                }
-                                valueOffset = size[0];
-                            }
+							int sizePtr = OS.CFDataGetBytePtr (sizes [0]);
+							int [] tag = new int [1];
+							int [] size = new int [1];
+							int valueOffset = 0;
+							for (int i = 0 ; i < count ; i++) {
+								OS.memmove (tag, tagPtr + (i * 4), 4);
+								OS.memmove (size, sizePtr + (i * 4), 4);
+								if (tag [0] == OS.kATSUColorTag && size[0] == RGBColor.sizeof) {
+									int valuePtr = OS.CFDataGetBytePtr (values [0]);
+									OS.memmove (color, valuePtr + valueOffset, RGBColor.sizeof);
+									int red = (color.red >> 8) & 0xFF;
+									int green = (color.green >> 8) & 0xFF;
+									int blue =	(color.blue >> 8) & 0xFF;
+									rgb = new RGB (red, green, blue);
+									break ;
+								}
+								valueOffset = size[0];
+							}
 						}
 					}
 				}
