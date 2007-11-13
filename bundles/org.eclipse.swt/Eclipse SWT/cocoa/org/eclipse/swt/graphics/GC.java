@@ -763,6 +763,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	checkGC(CLIPPING | TRANSFORM);
 //	int[] metric = new int[1];
 //	OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
 //	CGRect rect = new CGRect ();
@@ -844,6 +845,7 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+	checkGC(CLIPPING | TRANSFORM);
 	NSImage imageHandle = srcImage.handle;
 	NSSize size = imageHandle.size();
  	int imgWidth = (int)size.width;
@@ -1329,7 +1331,7 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	checkGC(FONT | FOREGROUND_FILL);
+	checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
 	NSAttributedString str = createString(string, flags);
 	if (data.paintRect == null) {
 		handle.saveGraphicsState();
