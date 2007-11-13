@@ -31,6 +31,7 @@ public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int TransformProcessType(int[] psn, int transformState);
 public static final native void NSIntersectionRect (NSRect result, NSRect aRect, NSRect bRect);
+public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosition);
 
 /** QuickDraw calls */
 public static final native int NewRgn();

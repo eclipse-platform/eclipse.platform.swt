@@ -1910,7 +1910,7 @@ public Rectangle getClipping() {
 			NSRect clip = data.clipPath.bounds();
 			OS.NSIntersectionRect(rect, rect, clip);
 		}
-		if (data.inverseTransform != null) {
+		if (data.inverseTransform != null && rect.width > 0 && rect.height > 0) {
 			NSPoint pt = new NSPoint();
 			pt.x = rect.x;
 			pt.y = rect.y;
@@ -1924,9 +1924,6 @@ public Rectangle getClipping() {
 			rect.width = size.width;
 			rect.height = size.height;
 		}
-	}
-	if (rect.width <= 0 || rect.height <= 0) {
-		rect.x = rect.y = rect.width = rect.height = 0;
 	}
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }

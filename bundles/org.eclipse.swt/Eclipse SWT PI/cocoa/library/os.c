@@ -15,6 +15,22 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#ifndef NO_CGWarpMouseCursorPosition
+JNIEXPORT jint JNICALL OS_NATIVE(CGWarpMouseCursorPosition)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	CGPoint _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGWarpMouseCursorPosition_FUNC);
+	if (arg0) if ((lparg0 = getCGPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)CGWarpMouseCursorPosition(*lparg0);
+fail:
+	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, CGWarpMouseCursorPosition_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CloseRgn
 JNIEXPORT void JNICALL OS_NATIVE(CloseRgn)
 	(JNIEnv *env, jclass that, jint arg0)

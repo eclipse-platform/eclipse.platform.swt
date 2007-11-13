@@ -14,9 +14,10 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 309;
-int OS_nativeFunctionCallCount[309];
+int OS_nativeFunctionCount = 310;
+int OS_nativeFunctionCallCount[310];
 char * OS_nativeFunctionNames[] = {
+	"CGWarpMouseCursorPosition",
 	"CloseRgn",
 	"CopyRgn",
 	"DeleteGlobalRef",

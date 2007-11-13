@@ -2503,9 +2503,9 @@ void setCurrentCaret (Caret caret) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-//	CGPoint pt = new CGPoint ();
-//	pt.x = x;  pt.y = y;
-//	OS.CGWarpMouseCursorPosition (pt);
+	CGPoint pt = new CGPoint ();
+	pt.x = x;  pt.y = y;
+	OS.CGWarpMouseCursorPosition (pt);
 }
 
 /**

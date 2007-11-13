@@ -25,6 +25,7 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	CGWarpMouseCursorPosition_FUNC,
 	CloseRgn_FUNC,
 	CopyRgn_FUNC,
 	DeleteGlobalRef_FUNC,
