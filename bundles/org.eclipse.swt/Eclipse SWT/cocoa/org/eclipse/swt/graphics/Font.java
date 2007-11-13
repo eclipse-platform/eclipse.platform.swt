@@ -258,9 +258,9 @@ void init(Device device, String name, float height, int style, String nsName) {
 		}
 	}
 	if (handle == null) {
-		Font systemFont = device.systemFont;
-		this.handle = systemFont.handle;
+		handle = device.systemFont.handle;
 	}
+	handle.retain();
 }
 
 /**

@@ -15,6 +15,58 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#ifndef NO_CloseRgn
+JNIEXPORT void JNICALL OS_NATIVE(CloseRgn)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CloseRgn_FUNC);
+/*
+	CloseRgn(arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CloseRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CloseRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CloseRgn_FUNC);
+}
+#endif
+
+#ifndef NO_CopyRgn
+JNIEXPORT void JNICALL OS_NATIVE(CopyRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CopyRgn_FUNC);
+/*
+	CopyRgn(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CopyRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CopyRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CopyRgn_FUNC);
+}
+#endif
+
 #ifndef NO_DeleteGlobalRef
 JNIEXPORT void JNICALL OS_NATIVE(DeleteGlobalRef)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -22,6 +74,87 @@ JNIEXPORT void JNICALL OS_NATIVE(DeleteGlobalRef)
 	OS_NATIVE_ENTER(env, that, DeleteGlobalRef_FUNC);
 	(*env)->DeleteGlobalRef(env, (jobject)arg0);
 	OS_NATIVE_EXIT(env, that, DeleteGlobalRef_FUNC);
+}
+#endif
+
+#ifndef NO_DiffRgn
+JNIEXPORT void JNICALL OS_NATIVE(DiffRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, DiffRgn_FUNC);
+/*
+	DiffRgn(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DiffRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DiffRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, DiffRgn_FUNC);
+}
+#endif
+
+#ifndef NO_DisposeRgn
+JNIEXPORT void JNICALL OS_NATIVE(DisposeRgn)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, DisposeRgn_FUNC);
+/*
+	DisposeRgn(arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DisposeRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DisposeRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, DisposeRgn_FUNC);
+}
+#endif
+
+#ifndef NO_EmptyRgn
+JNIEXPORT jboolean JNICALL OS_NATIVE(EmptyRgn)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, EmptyRgn_FUNC);
+/*
+	rc = (jboolean)EmptyRgn(arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jboolean (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(EmptyRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("EmptyRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, EmptyRgn_FUNC);
+	return rc;
 }
 #endif
 
@@ -38,6 +171,88 @@ fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, GetCurrentProcess_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_GetRegionBounds
+JNIEXPORT void JNICALL OS_NATIVE(GetRegionBounds)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, GetRegionBounds_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	GetRegionBounds(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jshort *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(GetRegionBounds_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("GetRegionBounds"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetRegionBounds_FUNC);
+}
+#endif
+
+#ifndef NO_LineTo
+JNIEXPORT void JNICALL OS_NATIVE(LineTo)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
+{
+	OS_NATIVE_ENTER(env, that, LineTo_FUNC);
+/*
+	LineTo(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jshort, jshort);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(LineTo_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("LineTo"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, LineTo_FUNC);
+}
+#endif
+
+#ifndef NO_MoveTo
+JNIEXPORT void JNICALL OS_NATIVE(MoveTo)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
+{
+	OS_NATIVE_ENTER(env, that, MoveTo_FUNC);
+/*
+	MoveTo(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jshort, jshort);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(MoveTo_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("MoveTo"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, MoveTo_FUNC);
 }
 #endif
 
@@ -221,6 +436,238 @@ JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
 }
 #endif
 
+#ifndef NO_NewRgn
+JNIEXPORT jint JNICALL OS_NATIVE(NewRgn)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NewRgn_FUNC);
+/*
+	rc = (jint)NewRgn();
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(NewRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("NewRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NewRgn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OffsetRgn
+JNIEXPORT void JNICALL OS_NATIVE(OffsetRgn)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	OS_NATIVE_ENTER(env, that, OffsetRgn_FUNC);
+/*
+	OffsetRgn(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jshort, jshort);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(OffsetRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("OffsetRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, OffsetRgn_FUNC);
+}
+#endif
+
+#ifndef NO_OpenRgn
+JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, OpenRgn_FUNC);
+/*
+	OpenRgn();
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)();
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(OpenRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("OpenRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, OpenRgn_FUNC);
+}
+#endif
+
+#ifndef NO_PtInRgn
+JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
+	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1)
+{
+	jshort *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, PtInRgn_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)PtInRgn(lparg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jboolean (*FPTR)(jshort *, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(PtInRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("PtInRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(lparg0, arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, PtInRgn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_QDRegionToRects
+JNIEXPORT jint JNICALL OS_NATIVE(QDRegionToRects)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, QDRegionToRects_FUNC);
+/*
+	rc = (jint)QDRegionToRects(arg0, arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(QDRegionToRects_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("QDRegionToRects"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, QDRegionToRects_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RectInRgn
+JNIEXPORT jboolean JNICALL OS_NATIVE(RectInRgn)
+	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1)
+{
+	jshort *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, RectInRgn_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)RectInRgn(lparg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jboolean (*FPTR)(jshort *, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(RectInRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("RectInRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(lparg0, arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, RectInRgn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RectRgn
+JNIEXPORT void JNICALL OS_NATIVE(RectRgn)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, RectRgn_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	RectRgn(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jshort *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(RectRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("RectRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RectRgn_FUNC);
+}
+#endif
+
+#ifndef NO_SectRgn
+JNIEXPORT void JNICALL OS_NATIVE(SectRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, SectRgn_FUNC);
+/*
+	SectRgn(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(SectRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("SectRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, SectRgn_FUNC);
+}
+#endif
+
 #ifndef NO_SetFrontProcess
 JNIEXPORT jint JNICALL OS_NATIVE(SetFrontProcess)
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -250,6 +697,32 @@ fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, TransformProcessType_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_UnionRgn
+JNIEXPORT void JNICALL OS_NATIVE(UnionRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, UnionRgn_FUNC);
+/*
+	UnionRgn(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jint, jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(UnionRgn_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("UnionRgn"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, UnionRgn_FUNC);
 }
 #endif
 
@@ -299,6 +772,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_NSRec
 fail:
 	if (arg1 && lparg1) setNSRectFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NSPoint _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC);
+	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memmove((void *)lparg0, (void *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC);
 }
 #endif
 

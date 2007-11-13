@@ -71,8 +71,10 @@ public final class GC extends Resource {
 	final static int LINE_MITERLIMIT = 1 << 7;
 	final static int FOREGROUND_FILL = 1 << 8;
 	final static int DRAW_OFFSET = 1 << 9;
-	final static int DRAW = FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT | DRAW_OFFSET;
-	final static int FILL = BACKGROUND;
+	final static int CLIPPING = 1 << 10;
+	final static int TRANSFORM = 1 << 11;
+	final static int DRAW = CLIPPING | TRANSFORM | FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT | DRAW_OFFSET;
+	final static int FILL = CLIPPING | TRANSFORM | BACKGROUND;
 
 	static final float[] LINE_DOT = new float[]{1, 1};
 	static final float[] LINE_DASH = new float[]{3, 1};
@@ -205,6 +207,16 @@ public static GC carbon_new(int context, GCData data) {
 
 void checkGC (int mask) {
 //	NSGraphicsContext.setCurrentContext(handle);
+
+	if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0) {
+		handle.restoreGraphicsState();
+		handle.saveGraphicsState();
+		if (data.clipPath != null) data.clipPath.addClip();
+		if (data.transform != null) data.transform.concat();
+		mask &= ~(TRANSFORM | CLIPPING);
+		data.state &= ~(BACKGROUND | FOREGROUND);
+	}
+
 	int state = data.state;
 	if ((state & mask) == mask) return;
 	state = (state ^ mask) & mask;	
@@ -314,6 +326,7 @@ void checkGC (int mask) {
 		}
 	}
 }
+
 /**
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
@@ -654,8 +667,14 @@ public void dispose() {
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = null;
-//		image.createAlpha();
+		image.createAlpha();
 	}
+	handle.restoreGraphicsState();
+	if (data.clipPath != null) data.clipPath.release();
+	if (data.transform != null) data.transform.release();
+	if (data.inverseTransform != null) data.inverseTransform.release();
+	data.path = data.clipPath = null;
+	data.transform = data.inverseTransform = null;
 	
 	/* Dispose the GC */
 	if (drawable != null) drawable.internal_dispose_GC(handle.id, data);
@@ -1866,60 +1885,44 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* Calculate visible bounds in device space*/
-//	Rect rect = null;
-//	int x = 0, y = 0, width = 0, height = 0;
-//	if (data.control != 0) {
-//		if (rect == null) rect = new Rect();
-//		OS.GetControlBounds(data.control, rect);
-//		width = rect.right - rect.left;
-//		height = rect.bottom - rect.top;
-//	} else {
-//		if (data.image != null) {
-//			int image = data.image.handle;
-//			width = OS.CGImageGetWidth(image);
-//			height = OS.CGImageGetHeight(image);
-//		} else if (data.portRect != null) {
-//			width = data.portRect.right - data.portRect.left;
-//			height = data.portRect.bottom - data.portRect.top;
-//		}
-//	}
-//	/* Intersect visible bounds with clipping in device space and then convert the user space */
-//	int clipRgn = data.clipRgn;
-//	int visibleRgn = data.visibleRgn;
-//	if (clipRgn != 0 || visibleRgn != 0 || data.inverseTransform != null) {
-//		int rgn = OS.NewRgn();
-//		OS.SetRectRgn(rgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-//		if (visibleRgn != 0) {
-//			OS.SectRgn(rgn, visibleRgn, rgn);			
-//		}
-//		/* Intersect visible bounds with clipping */
-//		if (clipRgn != 0) {
-//			/* Convert clipping to device space if needed */
-//			if (data.clippingTransform != null) {
-//				clipRgn = convertRgn(clipRgn, data.clippingTransform);
-//				OS.SectRgn(rgn, clipRgn, rgn);
-//				OS.DisposeRgn(clipRgn);
-//			} else {
-//				OS.SectRgn(rgn, clipRgn, rgn);
-//			}
-//		}
-//		/* Convert to user space */
-//		if (data.inverseTransform != null) {
-//			clipRgn = convertRgn(rgn, data.inverseTransform);
-//			OS.DisposeRgn(rgn);
-//			rgn = clipRgn;
-//		}
-//		if (rect == null) rect = new Rect();
-//		OS.GetRegionBounds(rgn, rect);
-//		OS.DisposeRgn(rgn);
-//		x = rect.left;
-//		y = rect.top;
-//		width = rect.right - rect.left;
-//		height = rect.bottom - rect.top;
-//	}
-//	return new Rectangle(x, y, width, height);
-	return null;
+	NSRect rect = null;
+	if (data.view != null) {
+		rect = data.view.bounds();
+	} else {
+		rect = new NSRect();
+		if (data.image != null) {
+			NSSize size = data.image.handle.size();
+			rect.width = size.width;
+			rect.height = size.height;
+		} else if (data.size != null) {
+			rect.width = data.size.width;
+			rect.height = data.size.height;
+		}
+	}
+	if (data.paintRect != null || data.clipPath != null || data.inverseTransform != null) {
+		if (data.paintRect != null) {
+			OS.NSIntersectionRect(rect, rect, data.paintRect);
+		}
+		if (data.clipPath != null) {
+			NSRect clip = data.clipPath.bounds();
+			OS.NSIntersectionRect(rect, rect, clip);
+		}
+		if (data.inverseTransform != null) {
+			NSPoint pt = new NSPoint();
+			pt.x = rect.x;
+			pt.y = rect.y;
+			NSSize size = new NSSize();
+			size.width = rect.width;
+			size.height = rect.height;
+			pt = data.inverseTransform.transformPoint(pt);
+			size =  data.inverseTransform.transformSize(size);
+			rect.x = pt.x;
+			rect.y = pt.y;
+			rect.width = size.width;
+			rect.height = size.height;
+		}
+	}
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /** 
@@ -1940,49 +1943,64 @@ public void getClipping(Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//	Rect bounds = null;
-//	int clipping = region.handle;
-//	if (data.clipRgn == 0) {
-//		int width = 0, height = 0;
-//		if (data.control != 0) {
-//			if (bounds == null) bounds = new Rect();
-//			OS.GetControlBounds(data.control, bounds);
-//			width = bounds.right - bounds.left;
-//			height = bounds.bottom - bounds.top;
-//		} else {
-//			if (data.image != null) {
-//				int image = data.image.handle;
-//				width = OS.CGImageGetWidth(image);
-//				height = OS.CGImageGetHeight(image);
-//			} else if (data.portRect != null) {
-//				width = data.portRect.right - data.portRect.left;
-//				height = data.portRect.bottom - data.portRect.top;
-//			}
-//		}
-//		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
-//	} else {
-//		/* Convert clipping to device space if needed */
-//		if (data.clippingTransform != null) {
-//			int rgn = convertRgn(data.clipRgn, data.clippingTransform);
-//			OS.CopyRgn(rgn, clipping);
-//			OS.DisposeRgn(rgn);
-//		} else {
-//			OS.CopyRgn(data.clipRgn, clipping);
-//		}
-//	}
-//	if (data.paintEvent != 0 && data.visibleRgn != 0) {
-//		if (bounds == null) bounds = new Rect();
-//		OS.GetControlBounds(data.control, bounds);
-//		if (data.paintEvent == 0) OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
-//		OS.SectRgn(data.visibleRgn, clipping, clipping);
-//		if (data.paintEvent == 0) OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
-//	}
-//	/* Convert to user space */
-//	if (data.inverseTransform != null) {
-//		int rgn = convertRgn(clipping, data.inverseTransform);
-//		OS.CopyRgn(rgn, clipping);
-//		OS.DisposeRgn(rgn);
-//	}
+	region.subtract(region);
+	NSRect rect = null;
+	if (data.view != null) {
+		rect = data.view.bounds();
+	} else {
+		rect = new NSRect();
+		if (data.image != null) {
+			NSSize size = data.image.handle.size();
+			rect.width = size.width;
+			rect.height = size.height;
+		} else if (data.size != null) {
+			rect.width = data.size.width;
+			rect.height = data.size.height;
+		}
+	}
+	region.add((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	NSRect paintRect = data.paintRect;
+	if (paintRect != null) {
+		region.add((int)paintRect.x, (int)paintRect.y, (int)paintRect.width, (int)paintRect.height);
+	}
+	if (data.clipPath != null) {
+		NSBezierPath clip = data.clipPath.bezierPathByFlatteningPath();
+		int count = clip.elementCount();
+		int pointCount = 0;
+		Region clipRgn = new Region(device);
+		int[] pointArray = new int[count * 2];
+		int points = OS.malloc(NSPoint.sizeof);
+		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		NSPoint pt = new NSPoint();
+		for (int i = 0; i < count; i++) {
+			int element = clip.elementAtIndex_associatedPoints_(i, points);
+			switch (element) {
+				case OS.NSMoveToBezierPathElement:
+					if (pointCount != 0) clipRgn.add(pointArray, pointCount);
+					pointCount = 0;
+					OS.memmove(pt, points, NSPoint.sizeof);
+					pointArray[pointCount++] = (int)pt.x;
+					pointArray[pointCount++] = (int)pt.y;
+					break;
+				case OS.NSLineToBezierPathElement:
+					OS.memmove(pt, points, NSPoint.sizeof);
+					pointArray[pointCount++] = (int)pt.x;
+					pointArray[pointCount++] = (int)pt.y;
+					break;
+				case OS.NSClosePathBezierPathElement:
+					if (pointCount != 0) clipRgn.add(pointArray, pointCount);
+					pointCount = 0;
+					break;
+			}
+		}
+		if (pointCount != 0) clipRgn.add(pointArray, pointCount);
+		OS.free(points);
+		region.intersect(clipRgn);
+		clipRgn.dispose();
+	}
+	if (data.inverseTransform != null) {
+		region.convertRgn(data.inverseTransform);
+	}
 }
 
 /** 
@@ -2358,7 +2376,9 @@ void init(Drawable drawable, GCData data, int context) {
 	this.drawable = drawable;
 	this.data = data;
 	handle = new NSGraphicsContext(context);
+	handle.saveGraphicsState();
 	data.path = NSBezierPath.bezierPath();
+	data.path.retain();
 }
 
 /**
@@ -2377,7 +2397,7 @@ void init(Drawable drawable, GCData data, int context) {
  */
 public boolean isClipped() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return data.clipRgn != 0;
+	return data.clipPath != null;
 }
 
 /**
@@ -2447,7 +2467,7 @@ public void setAdvanced(boolean advanced) {
 		setAlpha(0xFF);
 		setAntialias(SWT.DEFAULT);
 		setBackgroundPattern(null);
-		setClipping(0);
+		setClipping((Rectangle)null);
 		setForegroundPattern(null);
 		setInterpolation(SWT.DEFAULT);
 		setTextAntialias(SWT.DEFAULT);
@@ -2515,8 +2535,8 @@ public void setAntialias(int antialias) {
 	switch (antialias) {
 		case SWT.DEFAULT:
 			/* Printer is off by default */
-			mode = true;
 //			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
+			mode = true;
 			break;
 		case SWT.OFF: mode = false; break;
 		case SWT.ON: mode = true; break;
@@ -2583,25 +2603,6 @@ public void setBackgroundPattern(Pattern pattern) {
 	data.state &= ~BACKGROUND;
 }
 
-void setClipping(int clipRgn) {
-//	if (clipRgn == 0) {
-//		if (data.clipRgn != 0) {
-//			OS.DisposeRgn(data.clipRgn);
-//			data.clipRgn = 0;
-//		}
-//		data.clippingTransform = null;
-//	} else {
-//		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
-//		OS.CopyRgn(clipRgn, data.clipRgn);
-//		if (data.transform != null) {
-//			if (data.clippingTransform == null) data.clippingTransform = new float[6];
-//			System.arraycopy(data.transform, 0, data.clippingTransform, 0, data.transform.length);
-//		}
-//	}
-//	data.updateClip = true;
-//	setCGClipping();
-}
-
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -2626,10 +2627,14 @@ public void setClipping(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-//	int clipRgn = OS.NewRgn();
-//	OS.SetRectRgn(clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-//	setClipping(clipRgn);
-//	OS.DisposeRgn(clipRgn);
+	NSRect rect = new NSRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	NSBezierPath path = NSBezierPath.bezierPathWithRect(rect);
+	path.retain();
+	setClipping(path);
 }
 
 /**
@@ -2661,11 +2666,7 @@ public void setClipping(int x, int y, int width, int height) {
 public void setClipping(Path path) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setClipping(0);
-	if (path != null) {
-//		OS.CGContextAddPath(handle, path.handle);
-//		OS.CGContextEOClip(handle);
-	}
+	setClipping(new NSBezierPath(path.handle.copy().id));
 }
 
 /**
@@ -2684,7 +2685,7 @@ public void setClipping(Path path) {
 public void setClipping(Rectangle rect) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
-		setClipping(0);
+		setClipping((NSBezierPath)null);
 	} else {
 		setClipping(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -2709,7 +2710,21 @@ public void setClipping(Rectangle rect) {
 public void setClipping(Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setClipping(region != null ? region.handle : 0);
+	setClipping(region != null ? region.getPath() : null);
+}
+
+void setClipping(NSBezierPath path) {
+	if (data.clipPath != null) {
+		data.clipPath.release();
+		data.clipPath = null;
+	}
+	if (path != null) {
+		data.clipPath = path;
+		if (data.transform != null) {
+			data.clipPath.transformUsingAffineTransform(data.transform);
+		}
+	}
+	data.state &= ~CLIPPING;
 }
 
 /** 
@@ -3232,10 +3247,7 @@ public void setTextAntialias(int antialias) {
 public void setTransform(Transform transform) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSGraphicsContext.setCurrentContext(handle);
-	if (data.inverseTransform != null) data.inverseTransform.concat();
 	if (transform != null) {
-		transform.handle.concat();
 		if (data.transform != null) data.transform.release();
 		if (data.inverseTransform != null) data.inverseTransform.release();
 		data.transform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
@@ -3244,7 +3256,7 @@ public void setTransform(Transform transform) {
 	} else {
 		data.transform = data.inverseTransform = null;
 	}
-	data.state &= ~DRAW_OFFSET;
+	data.state &= ~(TRANSFORM | DRAW_OFFSET);
 }
 
 /**

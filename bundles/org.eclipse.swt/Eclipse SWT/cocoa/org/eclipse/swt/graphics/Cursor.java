@@ -130,6 +130,7 @@ public Cursor(Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	handle.retain();
 	handle.setOnMouseEntered(true);
 }
 

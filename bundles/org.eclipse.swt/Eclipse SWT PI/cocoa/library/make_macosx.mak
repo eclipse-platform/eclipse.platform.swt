@@ -28,7 +28,7 @@ ARCHS = -arch i386 -arch ppc
 CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA \
 	-I /System/Library/Frameworks/JavaVM.framework/Headers \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers
-LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa 
+LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa -framework Carbon
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o os_custom.o
 

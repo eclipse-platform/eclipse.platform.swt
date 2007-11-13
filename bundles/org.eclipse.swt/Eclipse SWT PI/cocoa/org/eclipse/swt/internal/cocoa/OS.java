@@ -29,7 +29,34 @@ public static final native Object JNIGetObject(int globalRef);
 
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);
-public static final native int TransformProcessType(int[] psn, int transformState);  
+public static final native int TransformProcessType(int[] psn, int transformState);
+public static final native void NSIntersectionRect (NSRect result, NSRect aRect, NSRect bRect);
+
+/** QuickDraw calls */
+public static final native int NewRgn();
+public static final native void RectRgn(int rgnHandle, short[] rect);
+public static final native void OpenRgn();
+public static final native void OffsetRgn(int rgnHandle, short dh, short dv);
+public static final native void MoveTo(short h, short v);
+public static final native void LineTo(short h, short v);
+public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
+public static final native void CloseRgn(int dstRgn);
+public static final native void DisposeRgn(int rgnHandle);
+public static final native boolean PtInRgn(short[] pt, int rgnHandle);
+public static final native void GetRegionBounds(int rgnHandle, short[] bounds);
+public static final native void SectRgn(int srcRgnA, int srcRgnB, int dstRgn);
+public static final native boolean EmptyRgn(int rgnHandle);
+public static final native void DiffRgn(int srcRgnA, int srcRgnB, int dstRgn);
+public static final native boolean RectInRgn(short[] rect, int rgnHandle);
+public static final native int QDRegionToRects(int rgn, int dir, int proc, int userData);
+public static final native void CopyRgn(int srcRgnHandle, int dstRgnHandle);
+public static final int kQDParseRegionFromTop = (1 << 0);
+public static final int kQDParseRegionFromBottom = (1 << 1);
+public static final int kQDParseRegionFromLeft = (1 << 2);
+public static final int kQDParseRegionFromRight = (1 << 3);
+public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
+public static final int kQDRegionToRectsMsgParse = 2;
+	
 	
 public static final native boolean class_addIvar(int cls, String name, int size, byte alignment, String types);
 public static final native boolean class_addMethod(int cls, int name, int imp, String types);
@@ -65,6 +92,7 @@ public static final native int objc_msgSendSuper(objc_super superId, int sel, NS
 public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0);
 public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
 public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (NSPoint dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove (NSRange dest, int /*long*/ src, int /*long*/ size);
 
 /** Classes */

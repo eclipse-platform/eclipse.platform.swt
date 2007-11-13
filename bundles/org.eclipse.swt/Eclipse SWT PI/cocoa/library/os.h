@@ -17,7 +17,7 @@
 #include <Cocoa/Cocoa.h>
 #import <objc/objc-runtime.h>
 
-//#include "os_custom.h"
+#include "os_custom.h"
 
 #ifndef __i386__
 #define objc_msgSend_fpret objc_msgSend

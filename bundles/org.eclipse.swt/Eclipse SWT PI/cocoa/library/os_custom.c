@@ -27,6 +27,26 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 }
 #endif
 
+#ifndef NO_NSIntersectionRect
+JNIEXPORT void JNICALL OS_NATIVE(NSIntersectionRect)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
+{
+	NSRect _arg0, *lparg0=NULL;
+	NSRect _arg1, *lparg1=NULL;
+	NSRect _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, NSIntersectionRect_FUNC);
+	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getNSRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	*lparg0 = NSIntersectionRect(*lparg1, *lparg2);
+fail:
+	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setNSRectFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, NSIntersectionRect_FUNC);
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2
 static SEL cascadeTopLeftFromPoint;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2)

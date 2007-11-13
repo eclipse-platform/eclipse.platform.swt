@@ -14,12 +14,20 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 290;
-int OS_nativeFunctionCallCount[290];
+int OS_nativeFunctionCount = 309;
+int OS_nativeFunctionCallCount[309];
 char * OS_nativeFunctionNames[] = {
+	"CloseRgn",
+	"CopyRgn",
 	"DeleteGlobalRef",
+	"DiffRgn",
+	"DisposeRgn",
+	"EmptyRgn",
 	"GetCurrentProcess",
+	"GetRegionBounds",
 	"JNIGetObject",
+	"LineTo",
+	"MoveTo",
 	"NSBackgroundColorAttributeName",
 	"NSBaselineOffsetAttributeName",
 	"NSBitsPerPixelFromDepth",
@@ -28,6 +36,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSDeviceResolution",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
+	"NSIntersectionRect",
 	"NSLinkAttributeName",
 	"NSParagraphStyleAttributeName",
 	"NSStrikethroughColorAttributeName",
@@ -35,12 +44,22 @@ char * OS_nativeFunctionNames[] = {
 	"NSUnderlineColorAttributeName",
 	"NSUnderlineStyleAttributeName",
 	"NewGlobalRef",
+	"NewRgn",
+	"OffsetRgn",
+	"OpenRgn",
+	"PtInRgn",
+	"QDRegionToRects",
+	"RectInRgn",
+	"RectRgn",
+	"SectRgn",
 	"SetFrontProcess",
 	"TransformProcessType",
+	"UnionRgn",
 	"class_1addIvar",
 	"class_1addMethod",
 	"drawRect_1CALLBACK",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+	"memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II",
 	"objc_1allocateClassPair",
