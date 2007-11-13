@@ -484,7 +484,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		output(";");
 		outputln();
 		outputln("\t\t}");
-	} else if (getPlatform().equals("carbon")) {
+	} else if (getPlatform().equals("carbon") || getPlatform().equals("cocoa")) {
 		outputln("\t\tstatic int initialized = 0;");
 		outputln("\t\tstatic CFBundleRef bundle = NULL;");
 		output("\t\ttypedef ");
