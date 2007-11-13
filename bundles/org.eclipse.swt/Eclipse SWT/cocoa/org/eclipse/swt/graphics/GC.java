@@ -1925,6 +1925,9 @@ public Rectangle getClipping() {
 			rect.height = size.height;
 		}
 	}
+	if (rect.width <= 0 || rect.height <= 0) {
+		rect.x = rect.y = rect.width = rect.height = 0;
+	}
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
@@ -1964,7 +1967,7 @@ public void getClipping(Region region) {
 	region.add((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 	NSRect paintRect = data.paintRect;
 	if (paintRect != null) {
-		region.add((int)paintRect.x, (int)paintRect.y, (int)paintRect.width, (int)paintRect.height);
+		region.intersect((int)paintRect.x, (int)paintRect.y, (int)paintRect.width, (int)paintRect.height);
 	}
 	if (data.clipPath != null) {
 		NSBezierPath clip = data.clipPath.bezierPathByFlatteningPath();
