@@ -14,10 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGPoint;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  *  Instances of this class implement rubber banding rectangles that are
@@ -46,7 +43,8 @@ public class Tracker extends Widget {
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	int window, oldX, oldY;
+	NSWindow window;
+	int oldX, oldY;
 		
 	/*
 	* The following values mirror step sizes on Windows
@@ -201,11 +199,8 @@ Point adjustMoveCursor () {
 		newX = pt.x;
 		newY = pt.y;
 	}
-	CGPoint pt = new CGPoint ();
-	pt.x = newX;
-	pt.y = newY;
-	OS.CGWarpMouseCursorPosition (pt);
-	return new Point ((int) pt.x, (int) pt.y);
+	display.setCursorLocation(newX, newY);
+	return new Point (newX, newY);
 }
 
 Point adjustResizeCursor (boolean movePointer) {
@@ -237,10 +232,7 @@ Point adjustResizeCursor (boolean movePointer) {
 		newY = pt.y; 
 	}
 	if (movePointer) {
-		CGPoint pt = new CGPoint ();
-		pt.x = newX;
-		pt.y = newY;
-		OS.CGWarpMouseCursorPosition (pt);
+		display.setCursorLocation(newX, newY);
 	}
 
 	/*
@@ -278,7 +270,7 @@ Point adjustResizeCursor (boolean movePointer) {
 				newCursor = new Cursor(display, SWT.CURSOR_SIZEALL);
 				break;
 		}
-		display.setCursor (newCursor.handle);
+		newCursor.handle.set();
 		if (resizeCursor != null) {
 			resizeCursor.dispose ();
 		}
@@ -351,39 +343,40 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles (int window, Rectangle [] rects, boolean erase) {
-	int[] context = new int [1];
-	int port = OS.GetWindowPort (window);
-	Rect portRect = new Rect ();
-	OS.GetPortBounds (port, portRect);
-	OS.QDBeginCGContext (port, context);
-	OS.CGContextScaleCTM (context [0], 1, -1);
-	OS.CGContextTranslateCTM (context [0], 0, portRect.top - portRect.bottom);
-	CGRect cgRect = new CGRect ();
+void drawRectangles (NSWindow window, Rectangle [] rects, boolean erase) {
+	NSRect frame = window.frame();
+	NSGraphicsContext context = window.graphicsContext();
+	NSGraphicsContext.setCurrentContext(context);
+	NSAffineTransform transform = NSAffineTransform.transform();
+	context.saveGraphicsState();
+	transform.scaleXBy(1, -1);
+	transform.translateXBy(0, -frame.height);
+	transform.concat();
 	Point parentOrigin;
 	if (parent != null) {
 		parentOrigin = display.map (parent, null, 0, 0);
 	} else {
 		parentOrigin = new Point (0, 0);	
 	}
+	context.setCompositingOperation(erase ? OS.NSCompositeClear : OS.NSCompositeSourceOver);
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
-		cgRect.x = rect.x + parentOrigin.x;
-		cgRect.y = rect.y + parentOrigin.y;
-		cgRect.width = rect.width;
-		cgRect.height = rect.height;
+		frame.x = rect.x + parentOrigin.x;
+		frame.y = rect.y + parentOrigin.y;
+		frame.width = rect.width;
+		frame.height = rect.height;
 		if (erase) {
-			cgRect.width++;
-			cgRect.height++;
-			OS.CGContextClearRect (context [0], cgRect);
+			frame.width++;
+			frame.height++;
+			NSBezierPath.fillRect(frame);
 		} else {
-			cgRect.x += 0.5f;
-			cgRect.y += 0.5f;
-			OS.CGContextStrokeRect (context [0], cgRect);
+			frame.x += 0.5f;
+			frame.y += 0.5f;
+			NSBezierPath.strokeRect(frame);
 		}
 	}
-	OS.CGContextSynchronize (context [0]);
-	OS.QDEndCGContext (port, context);
+	context.flushGraphics();
+	context.restoreGraphicsState();
 }
 
 /**
@@ -423,11 +416,16 @@ public boolean getStippled () {
 	return stippled;
 }
 
-int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
-	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, where);
-	int newX = where.h, newY = where.v;	
+void mouse (NSEvent nsEvent) {
+	NSPoint location = nsEvent.locationInWindow();
+	if (parent != null) {
+		location = parent.view.convertPoint_toView_(location, parent.view);
+	} else {
+		NSWindow eventWindow = nsEvent.window();
+		location = eventWindow.convertBaseToScreen(location);
+		location.y = eventWindow.screen().frame().height - location.y;
+	}
+	int newX = (int)location.x, newY = (int)location.y;
 	if (newX != oldX || newY != oldY) {
 		Rectangle [] oldRectangles = rectangles;
 		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
@@ -451,7 +449,7 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 			*/
 			if (isDisposed ()) {
 				cancelled = true;
-				return OS.noErr;
+				return;
 			}
 			boolean draw = false;
 			/*
@@ -498,7 +496,7 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 			*/
 			if (isDisposed ()) {
 				cancelled = true;
-				return OS.noErr;
+				return;
 			}
 			boolean draw = false;
 			/*
@@ -529,23 +527,21 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 		}
 		oldX = newX;  oldY = newY;
 	}
-	tracking = eventKind != OS.kEventMouseUp;
-	return 0;
+	switch (nsEvent.type()) {
+		case OS.NSLeftMouseUp:
+		case OS.NSRightMouseUp:
+		case OS.NSOtherMouseUp:
+			tracking = false;
+	}
 }
 
-int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	return kEventMouse (OS.kEventMouseDragged, nextHandler, theEvent, userData);
-}
-
-int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
-	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	int stepSize = (modifiers [0] & OS.controlKey) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+void key (NSEvent nsEvent) {
+	//TODO send event
+//	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+	int modifierFlags = nsEvent.modifierFlags();
+	int stepSize = (modifierFlags & OS.NSControlKeyMask) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
-	switch (keyCode [0]) {
+	switch (nsEvent.keyCode()) {
 		case 53: /* Esc */
 			cancelled = true;
 			tracking = false;
@@ -593,7 +589,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			*/
 			if (isDisposed ()) {
 				cancelled = true;
-				return OS.noErr;
+				return;
 			}
 			boolean draw = false;
 			/*
@@ -635,7 +631,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			*/
 			if (isDisposed ()) {
 				cancelled = true;
-				return OS.noErr;
+				return;
 			}
 			boolean draw = false;
 			/*
@@ -670,15 +666,6 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			oldY = cursorPos.y;
 		}
 	}
-	return 0;
-}
-
-int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	return kEventMouse (OS.kEventMouseMoved, nextHandler, theEvent, userData);
-}
-
-int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	return kEventMouse (OS.kEventMouseUp, nextHandler, theEvent, userData);
 }
 
 void moveRectangles (int xChange, int yChange) {
@@ -711,8 +698,17 @@ public boolean open () {
 	checkWidget ();
 	cancelled = false;
 	tracking = true;
-	window = display.createOverlayWindow ();
-	OS.ShowWindow (window);
+	window = (NSWindow)new NSWindow().alloc();
+	NSRect frame = NSScreen.mainScreen().frame();
+	window = window.initWithContentRect_styleMask_backing_defer_(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+	window.setOpaque(false);
+	window.setContentView(null);
+	NSGraphicsContext context = window.graphicsContext();
+	NSGraphicsContext.setCurrentContext(context);
+	context.setCompositingOperation(OS.NSCompositeClear);
+	NSBezierPath.fillRect(frame);
+	window.orderFrontRegardless();
+
 	drawRectangles (window, rectangles, false);
 	
 	/*
@@ -729,10 +725,17 @@ public boolean open () {
 	}
 	
 	Point cursorPos;
-	if (OS.StillDown ()) {
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetGlobalMouse (pt);
-		cursorPos = new Point (pt.h, pt.v);
+	boolean down = false;
+	NSApplication application = NSApplication.sharedApplication();
+	NSEvent currentEvent = application.currentEvent();
+	switch (currentEvent.type()) {
+		case OS.NSLeftMouseDown:
+		case OS.NSRightMouseDown:
+		case OS.NSOtherMouseDown:
+			down = true;
+	}
+	if (down) {
+		cursorPos = display.getCursorLocation();
 	} else {
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor (true);
@@ -746,29 +749,25 @@ public boolean open () {
 	}
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
-	int [] outEvent  = new int [1];
 	while (tracking && !cancelled) {
-		int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
-		if (status != OS.noErr) continue;
-		int event = outEvent [0];
-		int eventClass = OS.GetEventClass (event);
-		int eventKind = OS.GetEventKind (event);
-		int nextHandler = 0;
-		switch (eventClass) {
-			case OS.kEventClassMouse:
-				switch (eventKind) {
-					case OS.kEventMouseUp: kEventMouseUp (nextHandler, event, 0); break;
-					case OS.kEventMouseMoved: kEventMouseMoved (nextHandler, event, 0); break;
-					case OS.kEventMouseDragged: kEventMouseDragged (nextHandler, event, 0); break;
-				}
+		NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+		NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
+		if (event == null) continue;
+		int type = event.type();
+		switch (type) {
+			case OS.NSLeftMouseUp:
+			case OS.NSRightMouseUp:
+			case OS.NSOtherMouseUp:
+			case OS.NSMouseMoved:
+			case OS.NSLeftMouseDragged:
+			case OS.NSRightMouseDragged:
+			case OS.NSOtherMouseDragged:
+				mouse(event);
 				break;
-			case OS.kEventClassKeyboard:
-				switch (eventKind) {
-					case OS.kEventRawKeyDown: kEventRawKeyDown (nextHandler, event, 0); break;
-					case OS.kEventRawKeyModifiersChanged: kEventRawKeyModifiersChanged (nextHandler, event, 0); break;
-					case OS.kEventRawKeyRepeat: kEventRawKeyRepeat (nextHandler, event, 0); break;
-					case OS.kEventRawKeyUp: kEventRawKeyUp (nextHandler, event, 0); break;
-				}
+			case OS.NSKeyDown:
+//			case OS.NSKeyUp:
+			case OS.NSFlagsChanged:
+				key(event);
 				break;
 		}
 		/*
@@ -776,22 +775,38 @@ public boolean open () {
 		* tracker has finished its work.
 		*/
 		boolean dispatch = true;
-		if (tracking && !cancelled) {
-			if (eventClass == OS.kEventClassMouse) dispatch = false;
-			if (eventClass == OS.kEventClassKeyboard) dispatch = false;
+		if (!(tracking && !cancelled)) {
+			switch (type) {
+				case OS.NSLeftMouseDown:
+				case OS.NSLeftMouseUp:
+				case OS.NSRightMouseDown:
+				case OS.NSRightMouseUp:
+				case OS.NSOtherMouseDown:
+				case OS.NSOtherMouseUp:
+				case OS.NSMouseMoved:
+				case OS.NSLeftMouseDragged:
+				case OS.NSRightMouseDragged:
+				case OS.NSOtherMouseDragged:
+				case OS.NSMouseEntered:
+				case OS.NSMouseExited:
+				case OS.NSKeyDown:
+				case OS.NSKeyUp:
+				case OS.NSFlagsChanged:
+					dispatch = false;
+			}
 		}
-		if (dispatch) OS.SendEventToEventTarget (event, OS.GetEventDispatcherTarget ());
-		OS.ReleaseEvent (event);
+		if (dispatch) application.sendEvent(event);
 		if (clientCursor != null && resizeCursor == null) {
-			display.setCursor (clientCursor.handle);
+			clientCursor.handle.set();
 		}
+		pool.release();
 	}
 	if (!isDisposed()) {
 		drawRectangles (window, rectangles, true);
 	}
-	OS.DisposeWindow (window);
+	if (window != null) window.close();
 	tracking = false;
-	window = 0;
+	window = null;
 	return !cancelled;
 }
 
@@ -997,7 +1012,7 @@ public void setCursor (Cursor newCursor) {
 	checkWidget ();
 	clientCursor = newCursor;
 	if (newCursor != null) {
-		if (inEvent) display.setCursor (newCursor.handle);
+		if (inEvent) newCursor.handle.set();
 	}
 }
 

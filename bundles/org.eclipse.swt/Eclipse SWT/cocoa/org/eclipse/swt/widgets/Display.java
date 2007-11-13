@@ -900,9 +900,10 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
-	//TODO - bug?  this returns zero all the time
 	NSPoint location = NSEvent.mouseLocation();
-	return new Point ((int) location.x, (int) location.y);
+	//TODO bad for other screens
+	NSRect rect = NSScreen.mainScreen().frame();
+	return new Point ((int) location.x, (int) (rect.height - location.y));
 }
 
 /**
@@ -2026,34 +2027,28 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
-//	if (from == to) return point;
-//	Rect rect = new Rect ();
-//	if (from != null) {
-//		int window = OS.GetControlOwner (from.handle);
-//		CGPoint pt = new CGPoint ();
-//		OS.HIViewConvertPoint (pt, from.handle, 0);
-//		point.x += (int) pt.x;
-//		point.y += (int) pt.y;
-//		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-//		point.x += rect.left;
-//		point.y += rect.top;
-//		Rect inset = from.getInset ();
-//		point.x -= inset.left; 
-//		point.y -= inset.top;
-//	}
-//	if (to != null) {
-//		int window = OS.GetControlOwner (to.handle);
-//		CGPoint pt = new CGPoint ();
-//		OS.HIViewConvertPoint (pt, to.handle, 0);
-//		point.x -= (int) pt.x;
-//		point.y -= (int) pt.y;
-//		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-//		point.x -= rect.left;
-//		point.y -= rect.top;
-//		Rect inset = to.getInset ();
-//		point.x += inset.left; 
-//		point.y += inset.top;
-//	}
+	if (from == to) return point;
+	NSPoint pt = new NSPoint();
+	pt.x = x;
+	pt.y = y;
+	NSWindow fromWindow = from != null ? from.view.window() : null;
+	NSWindow toWindow = to != null ? to.view.window() : null;
+	if (toWindow != null && fromWindow != null && toWindow.id == fromWindow.id) {
+		pt = from.view.convertPoint_toView_(pt, to.view);
+	} else {
+		if (from != null) {
+			pt = from.view.convertPoint_toView_(pt, null);
+			pt = fromWindow.convertBaseToScreen(pt);
+			pt.y = fromWindow.screen().frame().height - pt.y;
+		}
+		if (to != null) {
+			pt.y = toWindow.screen().frame().height - pt.y;
+			pt = toWindow.convertScreenToBase(pt);
+			pt = to.view.convertPoint_fromView_(pt, null);
+		}
+	}
+	point.x = (int)pt.x;
+	point.y = (int)pt.y;
 	return point;
 }
 
@@ -2142,34 +2137,28 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rectangle = new Rectangle (x, y, width, height);
-//	if (from == to) return rectangle;
-//	Rect rect = new Rect ();
-//	if (from != null) {
-//		int window = OS.GetControlOwner (from.handle);
-//		CGPoint pt = new CGPoint ();
-//		OS.HIViewConvertPoint (pt, from.handle, 0);
-//		rectangle.x += (int) pt.x;
-//		rectangle.y += (int) pt.y;
-//		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-//		rectangle.x += rect.left;
-//		rectangle.y += rect.top;
-//		Rect inset = from.getInset ();
-//		rectangle.x -= inset.left; 
-//		rectangle.y -= inset.top;
-//	}
-//	if (to != null) {
-//		int window = OS.GetControlOwner (to.handle);
-//		CGPoint pt = new CGPoint ();
-//		OS.HIViewConvertPoint (pt, to.handle, 0);
-//		rectangle.x -= (int) pt.x;
-//		rectangle.y -= (int) pt.y;
-//		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-//		rectangle.x -= rect.left;
-//		rectangle.y -= rect.top;
-//		Rect inset = to.getInset ();
-//		rectangle.x += inset.left; 
-//		rectangle.y += inset.top;
-//	}
+	if (from == to) return rectangle;
+	NSPoint pt = new NSPoint();
+	pt.x = x;
+	pt.y = y;
+	NSWindow fromWindow = from != null ? from.view.window() : null;
+	NSWindow toWindow = to != null ? to.view.window() : null;
+	if (toWindow != null && fromWindow != null && toWindow.id == fromWindow.id) {
+		pt = from.view.convertPoint_toView_(pt, to.view);
+	} else {
+		if (from != null) {
+			pt = from.view.convertPoint_toView_(pt, null);
+			pt = fromWindow.convertBaseToScreen(pt);
+			pt.y = fromWindow.screen().frame().height - pt.y;
+		}
+		if (to != null) {
+			pt.y = toWindow.screen().frame().height - pt.y;
+			pt = toWindow.convertScreenToBase(pt);
+			pt = to.view.convertPoint_fromView_(pt, null);
+		}
+	}
+	rectangle.x = (int)pt.x;
+	rectangle.y = (int)pt.y;
 	return rectangle;
 }
 

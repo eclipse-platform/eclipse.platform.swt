@@ -8,6 +8,7 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/ime"/>
+    <classpathentry kind="src" path="Eclipse SWT/emulated/tooltip"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common"/>
     <classpathentry kind="src" path="Eclipse SWT PI/cocoa">
 	    <attributes>
