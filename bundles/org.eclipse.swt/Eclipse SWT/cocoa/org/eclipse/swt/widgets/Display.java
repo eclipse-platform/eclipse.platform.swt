@@ -2199,18 +2199,23 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	boolean events = false;
-	events |= runTimers ();
-	NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
-	if (event != null) {
-		events = true;
-		application.sendEvent(event);
+	NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	try {
+		boolean events = false;
+		events |= runTimers ();
+		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+		if (event != null) {
+			events = true;
+			application.sendEvent(event);
+		}
+		if (events) {
+			runDeferredEvents ();
+			return true;
+		}
+		return runAsyncMessages (false);
+	} finally {
+		pool.release();
 	}
-	if (events) {
-		runDeferredEvents ();
-		return true;
-	}
-	return runAsyncMessages (false);
 }
 
 static void register (Display display) {
@@ -2682,10 +2687,15 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	allowTimers = runAsyncMessages = false;
-	NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
-	allowTimers = runAsyncMessages = true;
-	return true;
+	NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	try {
+		allowTimers = runAsyncMessages = false;
+		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+		allowTimers = runAsyncMessages = true;
+		return true;
+	} finally {
+		pool.release();
+	}
 }
 
 int sourceProc (int info) {

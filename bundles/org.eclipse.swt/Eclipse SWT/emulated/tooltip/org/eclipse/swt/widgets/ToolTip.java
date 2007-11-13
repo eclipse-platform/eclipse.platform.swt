@@ -37,6 +37,7 @@ import org.eclipse.swt.events.*;
  */
 public class ToolTip extends Widget {
 	Shell parent, tip;
+	TrayItem item;
 	int x, y;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
