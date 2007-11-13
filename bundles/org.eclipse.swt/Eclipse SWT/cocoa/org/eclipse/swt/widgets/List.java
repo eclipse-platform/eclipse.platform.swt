@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class List extends Scrollable {
+	NSTableColumn column;
 	String [] items;
 	int itemCount;
 	boolean ignoreSelect;
@@ -97,6 +98,7 @@ public void add (String string) {
 	}
 	items [itemCount++] = string;
 	((NSTableView)view).reloadData();
+	//TODO adjust horizontal scrollbar
 }
 
 /**
@@ -229,9 +231,8 @@ void createHandle () {
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	scrollView.setDocumentView(widget);
 	
-	NSTableColumn column = (NSTableColumn)new NSTableColumn().alloc();
+	column = (NSTableColumn)new NSTableColumn().alloc();
 	column.initWithIdentifier(NSString.stringWith(""));
-	column.setResizingMask(OS.NSTableColumnAutoresizingMask);
 	widget.addTableColumn (column);
 	
 	view = widget;
@@ -656,6 +657,21 @@ public boolean isSelected (int index) {
 	checkWidget();
 	//TODO - range check
 	return ((NSTableView)view).isRowSelected(index);
+}
+
+int numberOfRowsInTableView(int aTableView) {
+	return itemCount;
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (column != null) column.release();
+	column = null;
+}
+
+void releaseWidget () {	
+	super.releaseWidget ();
+	items = null;
 }
 
 /**
