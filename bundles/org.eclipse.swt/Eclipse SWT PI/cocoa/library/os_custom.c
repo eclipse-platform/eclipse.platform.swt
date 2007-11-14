@@ -73,6 +73,31 @@ fail:
 }
 #endif
 
+
+#ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III
+static SEL locationForGlyphAtIndex;
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
+{
+	NSPoint _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III_FUNC);
+	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	
+	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2);
+	
+	if (locationForGlyphAtIndex == 0) locationForGlyphAtIndex = sel_registerName("locationForGlyphAtIndex:");
+	if ((SEL)arg2 == locationForGlyphAtIndex) {
+		*lparg0 = [(NSLayoutManager *)arg1 locationForGlyphAtIndex: arg3];
+	}
+	
+fail:
+	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II
 static SEL mouseLocationOutsideOfEventStream;
 static SEL locationInWindow;

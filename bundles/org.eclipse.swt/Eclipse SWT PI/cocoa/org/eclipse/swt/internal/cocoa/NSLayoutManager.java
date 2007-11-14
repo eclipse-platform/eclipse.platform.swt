@@ -335,7 +335,7 @@ public NSRect lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAddition
 
 public NSPoint locationForGlyphAtIndex(int glyphIndex) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_locationForGlyphAtIndex_1, glyphIndex);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_locationForGlyphAtIndex_1, glyphIndex);
 	return result;
 }
 
