@@ -233,7 +233,7 @@ public NSRange glyphRangeForCharacterRange(NSRange charRange, int actualCharRang
 
 public NSRange glyphRangeForTextContainer(NSTextContainer container) {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_glyphRangeForTextContainer_1, container != null ? container.id : 0);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_glyphRangeForTextContainer_1, container != null ? container.id : 0);
 	return result;
 }
 

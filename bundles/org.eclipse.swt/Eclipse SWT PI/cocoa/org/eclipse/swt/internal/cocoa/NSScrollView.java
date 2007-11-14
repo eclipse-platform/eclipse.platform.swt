@@ -25,7 +25,7 @@ public int borderType() {
 
 public NSSize contentSize() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_contentSize);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_contentSize);
 	return result;
 }
 

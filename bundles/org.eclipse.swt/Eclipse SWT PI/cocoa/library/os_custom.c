@@ -129,6 +129,7 @@ fail:
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III
 static SEL doubleClickAtIndex;
+static SEL glyphRangeForTextContainer;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
 {
@@ -141,6 +142,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (doubleClickAtIndex == 0) doubleClickAtIndex = sel_registerName("doubleClickAtIndex:");
 	if ((SEL)arg2 == doubleClickAtIndex) {
 		*lparg0 = [(NSAttributedString *)arg1 doubleClickAtIndex: arg3];
+	} else {
+		if (glyphRangeForTextContainer == 0) glyphRangeForTextContainer = sel_registerName("glyphRangeForTextContainer:");
+		if ((SEL)arg2 == glyphRangeForTextContainer) {
+			*lparg0 = [(NSLayoutManager *)arg1 glyphRangeForTextContainer: (NSTextContainer *)arg3];
+		}
 	}
 		
 fail:
@@ -153,6 +159,7 @@ fail:
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II
 static SEL size;
 static SEL minimumSize;
+static SEL contentSize;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -169,6 +176,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 		if (minimumSize == 0) minimumSize = sel_registerName("minimumSize");
 		if ((SEL)arg2 == minimumSize) {
 			*lparg0 = [(NSTabView *)arg1 minimumSize];
+		} else {
+			if (contentSize == 0) contentSize = sel_registerName("contentSize");
+			if ((SEL)arg2 == contentSize) {
+				*lparg0 = [(NSScrollView *)arg1 contentSize];
+			}
 		}
 	}
 	

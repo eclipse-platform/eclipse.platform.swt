@@ -893,6 +893,8 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (handle != null) handle.release();
+	handle = null;
 	parentItem = null;
 	parent = null;
 }
