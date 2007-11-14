@@ -694,6 +694,7 @@ void hookEvents () {
 	};
 	int accessibilityProc = display.accessibilityProc;
 	int [] mask3 = new int [] {
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetAllAttributeNames,
 		OS.kEventClassAccessibility, OS.kEventAccessibleGetNamedAttribute,
 	};
 	if (iconHandle != 0) {
@@ -744,6 +745,26 @@ void invalWindowRgn (int window, int rgn) {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
+}
+
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int stringArrayRef = 0;
+	if (code != OS.noErr) {
+		int [] arrayRef = new int[1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+		stringArrayRef = arrayRef[0];
+	}
+	if (stringArrayRef == 0) {
+		stringArrayRef = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
+	}
+	String string = OS.kAXValueAttribute;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.CFArrayAppendValue(stringArrayRef, stringRef);
+	OS.CFRelease(stringRef);
+	return OS.noErr;
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
@@ -798,6 +819,10 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			return OS.noErr;
 		}
 		// END TEMPORARY CODE
+	}
+	if (attributeName.equals (OS.kAXValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {selection ? 1 : 0});
+		return OS.noErr;
 	}
 	return code;
 }
