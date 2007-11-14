@@ -202,12 +202,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	scrollView = (SWTScrollView)new SWTScrollView().alloc();
-	scrollView.initWithFrame(new NSRect ());
-	if ((style & SWT.H_SCROLL) != 0) scrollView.setHasHorizontalScroller(true);
-	if ((style & SWT.V_SCROLL) != 0) scrollView.setHasVerticalScroller(true);
-	scrollView.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
-	scrollView.setTag(jniRef);
+	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	scrollWidget.initWithFrame(new NSRect ());
+	if ((style & SWT.H_SCROLL) != 0) scrollWidget.setHasHorizontalScroller(true);
+	if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
+	scrollWidget.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
+	scrollWidget.setTag(jniRef);
 	
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.initWithFrame(new NSRect());
@@ -215,16 +215,16 @@ void createHandle () {
 	widget.setDataSource(widget);
 	widget.setHeaderView(null);
 	widget.setDelegate(widget);
-
+	widget.setTag(jniRef);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
-	scrollView.setDocumentView(widget);
 	
 	column = (NSTableColumn)new NSTableColumn().alloc();
 	column.initWithIdentifier(NSString.stringWith(""));
 	widget.addTableColumn (column);
 	
+	scrollView = scrollWidget;
 	view = widget;
-	widget.setTag(jniRef);
+	scrollView.setDocumentView(widget);
 	parent.contentView().addSubview_(scrollView);
 }
 

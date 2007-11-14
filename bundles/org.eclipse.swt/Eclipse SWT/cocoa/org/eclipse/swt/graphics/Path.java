@@ -211,6 +211,10 @@ public void addString(String string, float x, float y, Font font) {
 		point.y = y;
 		path.moveToPoint(point);
 		path.appendBezierPathWithGlyphs(glyphs, range.length, font.handle);
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.scaleXBy(1, -1);
+		transform.translateXBy(0, -(y + textStorage.size().height));
+		path.transformUsingAffineTransform(transform);
 		OS.free(glyphs);
 		handle.appendBezierPath(path);
 	}
