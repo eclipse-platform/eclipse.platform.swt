@@ -406,6 +406,7 @@ void createHandle () {
 	scrollView.setDocumentView(widget);
 	
 	headerView = widget.headerView();
+	headerView.retain();
 	widget.setHeaderView(null);
 	
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -438,6 +439,7 @@ void createItem (TreeColumn column, int index) {
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
+		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -1397,6 +1399,14 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	if (headerView != null) headerView.release();
+	headerView = null;
+	if (firstColumn != null) firstColumn.release();
+	firstColumn = null;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	//release handle
@@ -1826,7 +1836,7 @@ boolean setScrollWidth (TreeItem item) {
 //		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
 //		return true;
 //	}
-	firstColumn.setWidth(400);
+//	firstColumn.setWidth(400);
 	return false;
 }
 

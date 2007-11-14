@@ -397,6 +397,7 @@ void createHandle () {
 	scrollView.setDocumentView(widget);
 	
 	headerView = widget.headerView();
+	headerView.retain();
 	widget.setHeaderView(null);
 	
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -423,6 +424,7 @@ void createItem (TableColumn column, int index) {
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
+		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -1393,17 +1395,18 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	if (headerView != null) headerView.release();
+	headerView = null;
+	if (firstColumn != null) firstColumn.release();
+	firstColumn = null;
+}
+
 void releaseWidget () {	
 	super.releaseWidget ();
 	currentItem = null;
 	sortColumn = null;
-	if (columnCount == 0) {
-		if (firstColumn != null) firstColumn.release();
-	} else {
-		//TODO - release the other columns?
-	}
-	firstColumn = null;
-	headerView = null;
 }
 
 /**
