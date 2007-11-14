@@ -434,11 +434,12 @@ void closeWidget () {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
+	Rectangle trim = super.computeTrim(x, y, width, height);
 	NSRect rect = new NSRect ();
-	rect.x = x;
-	rect.y = y;
-	rect.width = width;
-	rect.height = height;
+	rect.x = trim.x;
+	rect.y = trim.y;
+	rect.width = trim.width;
+	rect.height = trim.height;
 	rect = NSWindow.static_frameRectForContentRect_styleMask_(rect, window.styleMask());
 	return new Rectangle ((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
@@ -466,20 +467,7 @@ void createHandle () {
 		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
 	}
 	
-	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
-		SWTScrollView widget = (SWTScrollView)new SWTScrollView().alloc();
-		widget.initWithFrame (new NSRect());
-		widget.setDrawsBackground(false);
-		if ((style & SWT.H_SCROLL) != 0) widget.setHasHorizontalScroller(true);
-		if ((style & SWT.V_SCROLL) != 0) widget.setHasVerticalScroller(true);
-		widget.setTag(jniRef);
-		view = widget;
-	} else {
-		SWTView widget = (SWTView)new SWTView().alloc();
-		widget.initWithFrame (new NSRect());
-		widget.setTag(jniRef);
-		view = widget;
-	}
+	createHandle (null);
 	
 	window.setContentView (view);
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();

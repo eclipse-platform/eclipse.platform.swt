@@ -303,43 +303,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget ();
-//	int [] size = new int [1];
-//	OS.GetThemeMetric(OS.kThemeMetricScrollBarWidth, size);
-//	if (horizontalBar != null) height += size [0];
-//	if (verticalBar != null) width += size [0];
-//	Rect inset = inset ();
-//	x -= inset.left;
-//	y -= inset.top;
-//	width += inset.left + inset.right;
-//	height += inset.top + inset.bottom;
-//	if (txnObject == 0) {
-//		inset = getInset ();
-//		x -= inset.left;
-//		y -= inset.top;
-//		width += inset.left + inset.right;
-//		height += inset.top + inset.bottom;
-//	}
-//	if ((style & SWT.SEARCH) != 0) {
-//		int [] left = new int [1], right = new int [1];
-//		int [] outAttributes = new int [1];
-//		OS.HISearchFieldGetAttributes (handle, outAttributes);
-//		if ((outAttributes [0] & OS.kHISearchFieldAttributesSearchIcon) != 0) {
-//			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetWithIconLeft : OS.kThemeMetricRoundTextFieldContentInsetWithIconLeft, left);
-//		} else {
-//			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetLeft : OS.kThemeMetricRoundTextFieldContentInsetLeft, left);			
-//		}
-//		if ((outAttributes [0] & OS.kHISearchFieldAttributesCancel) != 0) {
-//			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetWithIconRight : OS.kThemeMetricRoundTextFieldContentInsetWithIconRight, right);
-//		} else {
-//			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetRight : OS.kThemeMetricRoundTextFieldContentInsetRight, right);			
-//		}
-//		width += left [0] + right [0];
-//	}
-	return new Rectangle (x, y, width, height);
-}
-
 /**
  * Copies the selected text.
  * <p>

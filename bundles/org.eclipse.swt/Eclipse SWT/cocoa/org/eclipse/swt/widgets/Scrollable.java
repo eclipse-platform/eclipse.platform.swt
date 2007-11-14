@@ -109,7 +109,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		width = (int)size.width;
 		height = (int)size.height;
 		NSRect frame = scrollView.contentView().frame();
-		System.out.println(frame.x);
 		x -= frame.x;
 		y -= frame.y;
 	}

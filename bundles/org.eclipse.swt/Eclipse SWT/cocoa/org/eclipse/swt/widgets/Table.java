@@ -367,34 +367,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-//	int border = getBorder ();
-//	Rect rect = new Rect ();
-//	OS.GetDataBrowserScrollBarInset (handle, rect);
-//	x -= rect.left + border;
-//	y -= rect.top + border;
-//	width += rect.left + rect.right + border + border;
-//	height += rect.top + rect.bottom + border + border;
-	return new Rectangle (x, y, width, height);
-}
-
 void createHandle () {
-	//TODO - SWT.CHECK
-	scrollView = (SWTScrollView)new SWTScrollView().alloc();
-	scrollView.initWithFrame(new NSRect ());
-	scrollView.setHasHorizontalScroller(true);
-	scrollView.setHasVerticalScroller(true);
-	scrollView.setTag(jniRef);
+	//TODO - SWT.CHECK	
+	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	scrollWidget.initWithFrame(new NSRect ());
+	scrollWidget.setHasHorizontalScroller(true);
+	scrollWidget.setHasVerticalScroller(true);
+	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
+	scrollWidget.setTag(jniRef);
 	
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
-
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
-	scrollView.setDocumentView(widget);
+	widget.setTag(jniRef);
 	
 	headerView = widget.headerView();
 	headerView.retain();
@@ -407,9 +395,10 @@ void createHandle () {
 	firstColumn.setDataCell(cell);
 	cell.release();
 	widget.addTableColumn (firstColumn);
-	
+
+	scrollView = scrollWidget;
 	view = widget;
-	widget.setTag(jniRef);
+	scrollView.setDocumentView(widget);
 	parent.contentView().addSubview_(scrollView);
 }
 

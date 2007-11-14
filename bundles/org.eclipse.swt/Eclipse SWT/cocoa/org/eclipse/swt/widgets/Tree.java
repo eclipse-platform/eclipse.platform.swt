@@ -77,20 +77,6 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-//	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight;
-//	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll, drawBackground;
-//	Rectangle imageBounds;
-//	TreeItem showItem;
-//	int lastHittest, lastHittestColumn, visibleCount;
-//	static final int CHECK_COLUMN_ID = 1024;
-//	static final int COLUMN_ID = 1025;
-//	static final int GRID_WIDTH = 1;
-//	static final int ICON_AND_TEXT_GAP = 4;
-//	static final int CELL_CONTENT_INSET = 12;
-//	static final int BORDER_INSET = 1;
-//	static final int DISCLOSURE_COLUMN_EDGE_INSET = 8;
-//	static final int DISCLOSURE_COLUMN_LEVEL_INDENT = 24;
-//	static final int DISCLOSURE_TRIANGLE_AND_CONTENT_GAP = 8;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -373,24 +359,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-//	int border = getBorder ();
-//	Rect rect = new Rect ();
-//	OS.GetDataBrowserScrollBarInset (handle, rect);
-//	x -= rect.left + border;
-//	y -= rect.top + border;
-//	width += rect.left + rect.right + border + border;
-//	height += rect.top + rect.bottom + border + border;
-	return new Rectangle (x, y, width, height);
-}
-
 void createHandle () {
-	scrollView = (SWTScrollView)new SWTScrollView().alloc();
-	scrollView.initWithFrame(new NSRect ());
-	scrollView.setHasHorizontalScroller(true);
-	scrollView.setHasVerticalScroller(true);
-	scrollView.setTag(jniRef);
+	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	scrollWidget.initWithFrame(new NSRect ());
+	scrollWidget.setHasHorizontalScroller(true);
+	scrollWidget.setHasVerticalScroller(true);
+	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
+	scrollWidget.setTag(jniRef);
 	
 	NSOutlineView widget = (NSOutlineView)new SWTOutlineView().alloc();
 	widget.initWithFrame(new NSRect());
@@ -399,9 +374,8 @@ void createHandle () {
 	widget.setAutosaveExpandedItems(true);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
-
+	widget.setTag(jniRef);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
-	scrollView.setDocumentView(widget);
 	
 	headerView = widget.headerView();
 	headerView.retain();
@@ -436,8 +410,9 @@ void createHandle () {
 	firstColumn.setDataCell(cell);
 	cell.release();
 	
+	scrollView = scrollWidget;
 	view = widget;
-	widget.setTag(jniRef);
+	scrollView.setDocumentView(widget);
 	parent.contentView().addSubview_(scrollView);
 }
 

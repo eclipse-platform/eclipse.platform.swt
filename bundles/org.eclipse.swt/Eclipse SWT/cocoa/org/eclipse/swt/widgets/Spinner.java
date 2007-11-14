@@ -212,13 +212,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-//	Rect inset = inset ();
-//	width += inset.left + inset.right;
-//	height += inset.top + inset.bottom;
-//	int [] outMetric = new int [1];
-//	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsWidth, outMetric);
-//	width += outMetric [0] + GAP;
-//	return new Rectangle (x, y, width, height);
+	//TODO - trim around text
+	buttonView.sizeToFit();
+	NSRect rect = buttonView.bounds();
+	width += rect.width;
 	return super.computeTrim(x, y, width, height);
 }
 
