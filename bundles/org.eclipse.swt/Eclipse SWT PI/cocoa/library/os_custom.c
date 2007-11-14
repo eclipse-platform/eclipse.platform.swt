@@ -160,6 +160,7 @@ fail:
 static SEL size;
 static SEL minimumSize;
 static SEL contentSize;
+static SEL cellSize;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -180,6 +181,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 			if (contentSize == 0) contentSize = sel_registerName("contentSize");
 			if ((SEL)arg2 == contentSize) {
 				*lparg0 = [(NSScrollView *)arg1 contentSize];
+			} else {
+				if (cellSize == 0) cellSize = sel_registerName("cellSize");
+				if ((SEL)arg2 == contentSize) {
+					*lparg0 = [(NSCell *)arg1 cellSize];
+				}
 			}
 		}
 	}

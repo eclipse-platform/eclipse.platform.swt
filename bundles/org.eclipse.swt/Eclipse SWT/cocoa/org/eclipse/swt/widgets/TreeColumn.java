@@ -36,7 +36,6 @@ import org.eclipse.swt.events.*;
 public class TreeColumn extends Item {
 	NSTableColumn nsColumn;
 	Tree parent;
-	boolean resizable;
 	String toolTipText;
 
 /**
@@ -73,7 +72,6 @@ public class TreeColumn extends Item {
  */
 public TreeColumn (Tree parent, int style) {
 	super (parent, checkStyle (style));
-	resizable = true;
 	this.parent = parent;
 	parent.createItem (this, parent.getColumnCount ());
 }
@@ -114,7 +112,6 @@ public TreeColumn (Tree parent, int style) {
  */
 public TreeColumn (Tree parent, int style, int index) {
 	super (parent, checkStyle (style));
-	resizable = true;
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -272,7 +269,7 @@ public boolean getMoveable () {
  */
 public boolean getResizable () {
 	checkWidget ();
-	return resizable;
+	return nsColumn.resizingMask() != OS.NSTableColumnNoResizing;
 }
 
 /**
@@ -333,7 +330,11 @@ public void pack () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (nsColumn != null) nsColumn.release();
+	if (nsColumn != null) {
+		//TODO - crashes tree
+//		((NSTableView)parent.view).removeTableColumn (nsColumn);
+//		nsColumn.autorelease();
+	}
 	nsColumn.release();
 	parent = null;
 }
@@ -484,8 +485,7 @@ public void setMoveable (boolean moveable) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget ();
-	this.resizable = resizable;
-	//TODO
+	nsColumn.setResizingMask(resizable ? OS.NSTableColumnUserResizingMask : OS.NSTableColumnNoResizing);
 }
 
 public void setText (String string) {

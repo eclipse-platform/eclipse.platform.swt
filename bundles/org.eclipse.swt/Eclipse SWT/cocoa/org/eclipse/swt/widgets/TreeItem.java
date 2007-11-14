@@ -308,9 +308,38 @@ public void clearAll (boolean all) {
 	parent.clearAll (this, all);
 }
 
+NSAttributedString createString(int index) {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	Color foreground = cellForeground != null ? cellForeground [index] : null;
+	if (foreground == null) foreground = this.foreground;
+	if (foreground == null) foreground = parent.foreground;
+	if (foreground != null) {
+		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
+		dict.setObject(color, OS.NSForegroundColorAttributeName());
+	}
+	Font font = cellFont != null ? cellFont [index] : null;
+	if (font == null) font = this.font;
+//	if (font == null) font = parent.font;
+	if (font != null) {
+		dict.setObject(font.handle, OS.NSFontAttributeName());
+	}
+	Color background = cellBackground != null ? cellBackground [index] : null;
+	if (background == null) background = this.background;
+	if (background != null) {
+		NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
+		dict.setObject(color, OS.NSBackgroundColorAttributeName());
+	}
+	String text = getText (index);
+	int length = text.length();
+	char[] chars = new char[length];
+	text.getChars(0, length, chars, 0);
+	NSString str = NSString.stringWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	attribStr.autorelease();
+	return attribStr;
+}
+
 void destroyWidget () {
-	//TEMPORARY CODE
-//	parent.releaseItem (this, false);
 	parent.destroyItem (this);
 	releaseHandle ();
 }
@@ -956,7 +985,7 @@ public void setBackground (Color color) {
 	if (background != null && background.equals (color)) return;
 	background = color;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -992,7 +1021,7 @@ public void setBackground (int index, Color color) {
 	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
 	cellBackground [index] = color;
 	cached = true; 
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -1036,7 +1065,7 @@ public void setExpanded (boolean expanded) {
 		((NSOutlineView)parent.view).collapseItem_(new id(jniRef));
 	}
 //	parent.ignoreExpand = false;
-//	cached = true;
+	cached = true;
 //	if (expanded) {
 //		parent.setScrollWidth (false, childIds, false);
 //	} else {
@@ -1071,7 +1100,7 @@ public void setFont (Font font) {
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -1107,7 +1136,7 @@ public void setFont (int index, Font font) {
 	if (cellFont [index] != null && cellFont [index].equals (font)) return;
 	cellFont [index] = font;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -1139,7 +1168,7 @@ public void setForeground (Color color) {
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -1175,7 +1204,7 @@ public void setForeground (int index, Color color){
 	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
 	cellForeground [index] = color;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -1263,7 +1292,7 @@ public void setImage (int index, Image image) {
 	}
 //	cached = true;
 //	if (index == 0) parent.setScrollWidth (this);
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 public void setImage (Image image) {
@@ -1345,7 +1374,7 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-//	redraw (OS.kDataBrowserNoItem);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 public void setText (String string) {

@@ -53,7 +53,7 @@ public abstract class Control extends Widget implements Drawable {
 	int drawCount;
 //	int visibleRgn;
 	Menu menu;
-	float [] foreground, background;
+	Color foreground, background;
 	Image backgroundImage;
 	Font font;
 	Cursor cursor;
@@ -879,7 +879,7 @@ public Color getBackground () {
 }
 
 Color getBackgroundColor () {
-	return background != null ? Color.cocoa_new (display, background) : defaultBackground ();
+	return background != null ? background : defaultBackground ();
 }
 
 /**
@@ -1023,7 +1023,7 @@ public Color getForeground () {
 }
 
 Color getForegroundColor () {
-	return foreground != null ? Color.cocoa_new (display, foreground) : defaultForeground ();
+	return foreground != null ? foreground: defaultForeground ();
 }
 
 /**
@@ -1138,10 +1138,6 @@ public Monitor getMonitor () {
 public Composite getParent () {
 	checkWidget();
 	return parent;
-}
-
-float [] getParentBackground () {
-	return parent.background;
 }
 
 Control [] getPath () {
@@ -2248,10 +2244,9 @@ public void setBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	float[] background = color != null ? color.handle : null;
 //	if (equals (background, this.background)) return;
-	this.background = background;
-	setBackground (background);
+	this.background = color;
+	setBackground (color != null ? color.handle : null);
 //	redrawWidget (handle, false);
 }
 
@@ -2570,10 +2565,9 @@ public void setForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	float[] foreground = color != null ? color.handle : null;
 //	if (equals (foreground, this.foreground)) return;
-	this.foreground = foreground;
-	setForeground (foreground);
+	this.foreground = color;
+	setForeground (color != null ? color.handle : null);
 //	redrawWidget (handle, false);
 }
 

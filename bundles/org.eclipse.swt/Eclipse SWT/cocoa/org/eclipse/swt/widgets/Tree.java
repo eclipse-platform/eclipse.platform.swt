@@ -69,7 +69,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Tree extends Composite {
-	NSTableColumn firstColumn;
+	NSTableColumn firstColumn, checkColumn;
 	NSTableHeaderView headerView;
 	TreeItem [] items;
 	int itemCount;
@@ -340,7 +340,7 @@ public void clearAll (boolean all) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0;
+	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
 		if (columnCount != 0) {
 			for (int i=0; i<columnCount; i++) {
@@ -362,13 +362,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		width = wHint;
 	}
-	if (width <= 0) width = DEFAULT_WIDTH;
-	int height = 0;
 	if (hHint == SWT.DEFAULT) {
 		height = ((NSTableView)view).numberOfRows() * getItemHeight () + getHeaderHeight();
 	} else {
 		height = hHint;
 	}
+	if (width <= 0) width = DEFAULT_WIDTH;
 	if (height <= 0) height = DEFAULT_HEIGHT;
 	Rectangle rect = computeTrim (0, 0, width, height);
 	return new Point (rect.width, rect.height);
@@ -387,7 +386,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	//TODO - SWT.CHECK
 	scrollView = (SWTScrollView)new SWTScrollView().alloc();
 	scrollView.initWithFrame(new NSRect ());
 	scrollView.setHasHorizontalScroller(true);
@@ -409,12 +407,32 @@ void createHandle () {
 	headerView.retain();
 	widget.setHeaderView(null);
 	
+	NSString str = NSString.stringWith("");
+	if ((style & SWT.CHECK) != 0) {
+		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
+		checkColumn.initWithIdentifier(str);
+		checkColumn.headerCell().setTitle(str);
+		widget.addTableColumn (checkColumn);
+		widget.setOutlineTableColumn(checkColumn);
+		NSButtonCell cell = (NSButtonCell)new NSButtonCell().alloc().init();
+		checkColumn.setDataCell(cell);
+		cell.setButtonType(OS.NSSwitchButton);
+		cell.setImagePosition(OS.NSImageOnly);
+		cell.setAllowsMixedState(true);
+		//TODO - compute width
+		checkColumn.setWidth(20);
+		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
+		checkColumn.setEditable(false);
+		cell.release();
+	}
+	
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
-	firstColumn.initWithIdentifier(NSString.stringWith(""));
-	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
+	firstColumn.initWithIdentifier(str);
+	firstColumn.headerCell().setTitle(str);
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn(firstColumn);
-	NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
+	NSBrowserCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
+	cell.setLeaf(true);
 	firstColumn.setDataCell(cell);
 	cell.release();
 	
@@ -442,11 +460,14 @@ void createItem (TreeColumn column, int index) {
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
+		NSString str = NSString.stringWith("");
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
-		nsColumn.initWithIdentifier(NSString.stringWith(""));
+		nsColumn.initWithIdentifier(str);
+		nsColumn.headerCell().setTitle(str);
 		((NSTableView)view).addTableColumn (nsColumn);
 		((NSTableView)view).moveColumn (columnCount, index);
-		NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
+		NSBrowserCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
+		cell.setLeaf(true);
 		nsColumn.setDataCell(cell);
 		cell.release();
 	}
@@ -1348,12 +1369,21 @@ int outlineView_child_ofItem(int outlineView, int index, int ref) {
 
 int outlineView_objectValueForTableColumn_byItem(int outlineView, int tableColumn, int ref) {
 	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	if (checkColumn != null && tableColumn == checkColumn.id) {
+		NSNumber value;
+		if (item.checked && item.grayed) {
+			value = NSNumber.numberWithInt(OS.NSMixedState);
+		} else {
+			value = NSNumber.numberWithInt(item.checked ? OS.NSOnState : OS.NSOffState);
+		}
+		return value.id;
+	}
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
-			return NSString.stringWith(item.getText(i)).id;
+			return item.createString(i).id;
 		}
 	}
-	return NSString.stringWith(item.text).retain().id;
+	return item.createString(0).id;
 }
 
 boolean outlineView_isItemExpandable(int outlineView, int ref) {
@@ -1367,6 +1397,7 @@ int outlineView_numberOfChildrenOfItem(int outlineView, int ref) {
 }
 
 void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, int tableColumn, int ref) {
+	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
 	Image image = item.image;
 	for (int i=0; i<columnCount; i++) {
@@ -1376,7 +1407,30 @@ void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, 
 	}
 	NSBrowserCell browserCell = new NSBrowserCell(cell);
 	browserCell.setImage(image != null ? image.handle : null);
-	browserCell.setLeaf(true);
+}
+
+void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int ref) {
+	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	if (checkColumn != null && tableColumn == checkColumn.id)  {
+		int value = new NSNumber(object).intValue();
+		switch (value) {
+			case OS.NSMixedState:
+				item.checked = true;
+				item.grayed = true;
+				break;
+			case OS.NSOnState:
+				item.checked = true;
+				item.grayed = false;
+				break;
+			case OS.NSOffState:
+				item.checked = false;
+				item.grayed = false;
+				break;
+		}
+		Event event = new Event();
+		event.detail = SWT.CHECK;
+		postEvent(SWT.Selection, event);
+	}
 }
 
 void releaseChildren (boolean destroy) {
@@ -1405,6 +1459,8 @@ void releaseHandle () {
 	headerView = null;
 	if (firstColumn != null) firstColumn.release();
 	firstColumn = null;
+	if (checkColumn != null) checkColumn.release();
+	checkColumn = null;
 }
 
 void releaseWidget () {

@@ -1615,7 +1615,7 @@ void initClasses () {
 	
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
-//	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
 //	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
@@ -1626,6 +1626,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_1numberOfChildrenOfItem_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1objectValueForTableColumn_1byItem_1, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
@@ -3047,6 +3048,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2, int 
 		widget.tableViewwillDisplayCellforTableColumnrow(arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1) {
 		widget.outlineView_willDisplayCell_forTableColumn_item(arg0, arg1, arg2, arg3);
+	} else  if (sel == OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1) {
+		widget.outlineView_setObjectValue_forTableColumn_byItem(arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }

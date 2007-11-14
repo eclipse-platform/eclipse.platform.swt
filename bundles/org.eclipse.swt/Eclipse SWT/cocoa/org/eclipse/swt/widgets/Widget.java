@@ -604,6 +604,9 @@ int outlineView_numberOfChildrenOfItem(int outlineView, int item) {
 void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, int tableColumn, int item) {
 }
 
+void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int item) {
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
