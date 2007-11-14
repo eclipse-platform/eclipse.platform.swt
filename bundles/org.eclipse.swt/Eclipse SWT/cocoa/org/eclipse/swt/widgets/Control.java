@@ -751,7 +751,8 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawRect(NSRect rect) {
+void drawRect(int id, NSRect rect) {
+	super.drawRect(id, rect);
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
 	/* Send paint event */

@@ -433,7 +433,8 @@ void rightMouseDown(int event) {
 	showMenu();
 }
 
-void preDrawRect(NSRect rect) {
+void drawRect(int id, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
+	super.drawRect(id, rect);
 }
 }

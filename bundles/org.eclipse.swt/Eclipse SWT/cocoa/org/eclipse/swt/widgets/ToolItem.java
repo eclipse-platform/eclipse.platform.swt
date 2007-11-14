@@ -194,8 +194,8 @@ Point computeSize () {
 	return new Point (width, height);
 }
 
-void drawRect(NSRect rect) {
-	super.drawRect(rect);
+void drawRect(int id, NSRect rect) {
+	super.drawRect(id, rect);
 	if (getSelection ()) {
 		NSRect bounds = view.bounds();
 		NSGraphicsContext context = NSGraphicsContext.currentContext();

@@ -353,10 +353,11 @@ void drawBackground (int control, int context) {
 	/* Do nothing */
 }
 
-void preDrawRect(NSRect rect) {
-}
-
-void drawRect(NSRect rect) {
+void drawRect(int id, NSRect rect) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, OS.sel_drawRect_1, rect);
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {

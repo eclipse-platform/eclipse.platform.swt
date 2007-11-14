@@ -2950,15 +2950,15 @@ int windowDelegateProc(int delegate, int sel) {
 	return 0;
 }
 
-int windowDelegateProc(int delegate, int sel, int arg0) {
+int windowDelegateProc(int id, int sel, int arg0) {
 	if (sel == OS.sel_timerProc_1) {
 		return timerProc (arg0);
 	}
 	if (sel == OS.sel_setTag_1) {
-		OS.object_setInstanceVariable(delegate, "tag", arg0);
+		OS.object_setInstanceVariable(id, "tag", arg0);
 		return 0;
 	}
-	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
+	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
 	if (jniRef == 0 || jniRef == -1) return 0;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
@@ -2967,12 +2967,7 @@ int windowDelegateProc(int delegate, int sel, int arg0) {
 	} else if (sel == OS.sel_drawRect_1) {
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
-		objc_super super_struct = new objc_super();
-		super_struct.receiver = delegate;
-		super_struct.cls = OS.objc_msgSend(delegate, OS.sel_superclass);
-		widget.preDrawRect(rect);
-		OS.objc_msgSendSuper(super_struct, OS.sel_drawRect_1, rect);
-		widget.drawRect(rect);
+		widget.drawRect(id, rect);
 	} else if (sel == OS.sel_windowShouldClose_1) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {

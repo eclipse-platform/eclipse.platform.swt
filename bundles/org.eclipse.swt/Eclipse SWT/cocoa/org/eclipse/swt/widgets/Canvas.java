@@ -117,8 +117,8 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 //	}
 }
 
-void drawRect(NSRect rect) {
-	super.drawRect(rect);
+void drawRect(int id, NSRect rect) {
+	super.drawRect(id, rect);
 	if (caret == null) return;
 	if (caret.isShowing) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();

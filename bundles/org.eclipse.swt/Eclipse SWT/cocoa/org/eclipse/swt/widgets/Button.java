@@ -145,8 +145,10 @@ void createHandle () {
 	} else if ((style & SWT.RADIO) != 0) {
 		type = OS.NSRadioButton;		
 	} else if ((style & SWT.TOGGLE) != 0) {
-//		widget.setBezelStyle(OS.NSRoundedBezelStyle);
-		type = OS.NSToggleButton;
+		type = OS.NSPushOnPushOffButton;
+		widget.setBezelStyle(OS.NSRegularSquareBezelStyle);
+	} else if ((style & SWT.ARROW) != 0) {
+		widget.setBezelStyle(OS.NSRoundedDisclosureBezelStyle);
 	}
 	widget.setButtonType(type);
 	widget.setTitle(NSString.stringWith(""));
@@ -156,6 +158,7 @@ void createHandle () {
 	widget.setTag(jniRef);
 	view = widget;	
 	parent.contentView().addSubview_(widget);
+	_setAlignment(style);
 }
 
 /**
@@ -338,7 +341,45 @@ public void setAlignment (int alignment) {
 }
 	
 void _setAlignment (int alignment) {
-	
+	if ((style & SWT.ARROW) != 0) {
+		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
+		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+//		int orientation = OS.kThemeDisclosureRight;
+//		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
+//		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
+//		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
+//		OS.SetControl32BitValue (handle, orientation);
+		return;
+	}
+//	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
+//	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+//	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+//	/* Alignment not honoured when image and text is visible */
+//	boolean bothVisible = text != null && text.length () > 0 && image != null;
+//	if (bothVisible) {
+//		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
+//		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
+//	}
+//	int textAlignment = 0;
+//	int graphicAlignment = 0;
+//	if ((alignment & SWT.LEFT) != 0) {
+//		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
+//		graphicAlignment = OS.kControlBevelButtonAlignLeft;
+//	}
+//	if ((alignment & SWT.CENTER) != 0) {
+//		textAlignment = OS.kControlBevelButtonAlignTextCenter;
+//		graphicAlignment = OS.kControlBevelButtonAlignCenter;
+//	}
+//	if ((alignment & SWT.RIGHT) != 0) {
+//		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
+//		graphicAlignment = OS.kControlBevelButtonAlignRight;
+//	}
+//	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
+//	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
+//	if (bothVisible) {
+//		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextPlaceTag, 2, new short [] {(short)OS.kControlBevelButtonPlaceToRightOfGraphic});
+//	}
 }
 
 void setDefault (boolean value) {
