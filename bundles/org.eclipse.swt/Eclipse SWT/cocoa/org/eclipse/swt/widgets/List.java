@@ -201,18 +201,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-//	int border = getBorder ();
-//	Rect rect = new Rect ();
-//	OS.GetDataBrowserScrollBarInset (handle, rect);
-//	x -= rect.left + border;
-//	y -= rect.top + border;
-//	width += rect.left + rect.right + border + border;
-//	height += rect.top + rect.bottom + border + border;
-	return new Rectangle (x, y, width, height);
-}
-
 void createHandle () {
 	scrollView = (SWTScrollView)new SWTScrollView().alloc();
 	scrollView.initWithFrame(new NSRect ());

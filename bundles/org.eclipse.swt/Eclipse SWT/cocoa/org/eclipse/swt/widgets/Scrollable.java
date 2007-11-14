@@ -100,15 +100,19 @@ public Scrollable (Composite parent, int style) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-//	int [] outMetric = new int [1];
-//	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-//	if (horizontalBar != null) height += outMetric [0];
-//	if (verticalBar != null) width += outMetric [0];
-//	Rect inset = inset ();
-//	x -= inset.left;
-//	y -= inset.top;
-//	width += inset.left + inset.right;
-//	height += inset.top + inset.bottom;
+	if (scrollView != null) {
+		NSSize size = new NSSize();
+		size.width = width;
+		size.height = height;
+		int border = hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder;
+		size = NSScrollView.frameSizeForContentSize(size, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0, border);
+		width = (int)size.width;
+		height = (int)size.height;
+		NSRect frame = scrollView.contentView().frame();
+		System.out.println(frame.x);
+		x -= frame.x;
+		y -= frame.y;
+	}
 	return new Rectangle (x, y, width, height);
 }
 

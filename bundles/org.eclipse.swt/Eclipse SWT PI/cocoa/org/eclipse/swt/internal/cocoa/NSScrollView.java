@@ -62,7 +62,7 @@ public boolean drawsBackground() {
 
 public static NSSize frameSizeForContentSize(NSSize cSize, boolean hFlag, boolean vFlag, int aType) {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, OS.class_NSScrollView, OS.sel_frameSizeForContentSize_1hasHorizontalScroller_1hasVerticalScroller_1borderType_1, cSize, hFlag, vFlag, aType);
+	OS.objc_msgSend_struct(result, OS.class_NSScrollView, OS.sel_frameSizeForContentSize_1hasHorizontalScroller_1hasVerticalScroller_1borderType_1, cSize, hFlag, vFlag, aType);
 	return result;
 }
 

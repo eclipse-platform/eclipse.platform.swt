@@ -79,6 +79,7 @@ public static final native int objc_msgSend(int id, int sel, char[] arg0, NSRang
 public static final native int objc_msgSend(int id, int sel, String arg0);
 
 public static final native int objc_msgSend_struct(NSSize result, int object, int selector);
+public static final native void objc_msgSend_struct(NSSize result, int id, int sel, NSSize arg0, boolean arg1, boolean arg2, int arg3);
 public static final native int objc_msgSend_struct(NSPoint result, int object, int selector);
 public static final native int objc_msgSend_struct(NSPoint result, int object, int selector, int arg0);
 public static final native int objc_msgSend_struct(NSPoint result, int object, int selector, NSPoint arg0);

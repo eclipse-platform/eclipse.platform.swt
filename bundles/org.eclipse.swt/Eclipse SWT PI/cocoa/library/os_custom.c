@@ -128,6 +128,28 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI
+static SEL frameSizeForContentSize;
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jboolean arg4, jboolean arg5, jint arg6)
+{
+	NSSize _arg0, *lparg0=NULL;
+	NSSize _arg3, *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC);
+	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	//objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4, arg5, arg6);
+	if (frameSizeForContentSize == 0) frameSizeForContentSize = sel_registerName("frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:");
+	if ((SEL)arg2 == frameSizeForContentSize) {
+		*lparg0 = [(id)arg1 frameSizeForContentSize: *lparg3 hasHorizontalScroller: arg4 hasVerticalScroller: arg5 borderType: arg6];
+	}
+fail:
+	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
+	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC);
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II
 static SEL selectedRange;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II)
