@@ -922,21 +922,21 @@ public void setImage (int index, Image image) {
 //	if (parent.imageBounds == null && image != null) {
 //		parent.setItemHeight (image);
 //	}
-//	if (index == 0)  {
-//		if (image != null && image.type == SWT.ICON) {
-//			if (image.equals (this.image)) return;
-//		}
-//		width = -1;
-//		super.setImage (image);
-//	}
-//	int count = Math.max (1, parent.columnCount);
-//	if (0 <= index && index < count) {
-//		if (images == null) images = new Image [count];
-//		if (image != null && image.type == SWT.ICON) {
-//			if (image.equals (images [index])) return;
-//		}
-//		images [index] = image;	
-//	}
+	if (index == 0)  {
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (this.image)) return;
+		}
+		width = -1;
+		super.setImage (image);
+	}
+	int count = Math.max (1, parent.columnCount);
+	if (0 <= index && index < count) {
+		if (images == null) images = new Image [count];
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
+		}
+		images [index] = image;	
+	}
 //	cached = true;
 //	if (index == 0) parent.setScrollWidth (this);
 //	redraw (OS.kDataBrowserNoItem);

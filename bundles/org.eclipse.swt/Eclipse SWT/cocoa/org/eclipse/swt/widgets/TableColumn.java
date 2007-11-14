@@ -336,12 +336,12 @@ public void pack () {
 void releaseHandle () {
 	super.releaseHandle ();
 	if (nsColumn != null) nsColumn.release();
+	nsColumn = null;
 	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	nsColumn = null;
 	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}

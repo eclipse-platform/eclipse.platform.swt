@@ -11,8 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -35,8 +34,8 @@ import org.eclipse.swt.events.*;
  * @since 3.1
  */
 public class TreeColumn extends Item {
+	NSTableColumn nsColumn;
 	Tree parent;
-	int id, lastWidth, lastPosition, iconRef;
 	boolean resizable;
 	String toolTipText;
 
@@ -253,9 +252,10 @@ public Tree getParent () {
  */
 public boolean getMoveable () {
 	checkWidget ();
-	int [] flags = new int [1];
-	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
-	return (flags [0] & OS.kDataBrowserListViewMovableColumn) != 0;
+//	int [] flags = new int [1];
+//	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
+//	return (flags [0] & OS.kDataBrowserListViewMovableColumn) != 0;
+	return false;
 }
 
 /**
@@ -305,9 +305,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	short [] width = new short [1];
-	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-	return Math.max (0, width [0] + parent.getLeftDisclosureInset (id));
+	return (int)nsColumn.width();
 }
 
 /**
@@ -323,38 +321,20 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget ();
-	GC gc = new GC (parent);
-	int width = gc.stringExtent (text).x;
-	if (iconRef != 0 || (image != null && OS.VERSION >= 0x1040)) {
-		/* Note that the image is stretched to the header height */
-		width += parent.headerHeight;
-		if (text.length () != 0) width += parent.getGap ();
-	}
-	int index = parent.indexOf (this);
-	width = Math.max (width, calculateWidth (parent.childIds, index, gc, width));
-
-	gc.dispose ();
-	setWidth (width + parent.getInsetWidth (id, true));
-}
-
-int calculateWidth (int[] ids, int index, GC gc, int width) {
-	int max = width;
-	if (ids == null) return max;
-	for (int i=0; i<ids.length; i++) {
-		TreeItem item = parent._getItem (ids [i], false);
-		if (item != null && item.cached) {
-			max = Math.max (max, item.calculateWidth (index, gc));
-			if (item.getExpanded ()) {
-				max = Math.max (max, calculateWidth (item.childIds, index, gc, max));
-			}
-		}
-	}
-	return max;
+//	GC gc = new GC (parent);
+//	int width = gc.stringExtent (text).x;
+	//TODO extra header
+//	int index = parent.indexOf (this);
+//	width = Math.max (width, calculateWidth (parent.childIds, index, gc, width));
+//
+//	gc.dispose ();
+//	setWidth (width + parent.getInsetWidth (id, true));
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	id = -1;
+	if (nsColumn != null) nsColumn.release();
+	nsColumn.release();
 	parent = null;
 }
 
@@ -363,8 +343,6 @@ void releaseWidget () {
 	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}
-	if (iconRef != 0) OS.ReleaseIconRef (iconRef);
-	iconRef = 0;
 }
 
 /**
@@ -417,22 +395,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void resized (int newWidth) {
-	lastWidth = newWidth;
-	sendEvent (SWT.Resize);
-	if (isDisposed ()) return;
-	boolean moved = false;
-	int [] order = parent.getColumnOrder ();
-	TreeColumn [] columns = parent.getColumns ();
-	for (int i=0; i<order.length; i++) {
-		TreeColumn column = columns [order [i]];
-		if (moved && !column.isDisposed ()) {
-			column.sendEvent (SWT.Move);
-		}
-		if (column == this) moved = true;
-	}
-}
-
 /**
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
@@ -452,7 +414,7 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	updateHeader ();
+	//TODO
 }
 
 public void setImage (Image image) {
@@ -460,19 +422,19 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	if (iconRef != 0) {
-		OS.ReleaseIconRef (iconRef);
-		iconRef = 0;
-	}
-	super.setImage (image);
-	if (image != null) {
-		if (OS.VERSION < 0x1040) {
-			iconRef = createIconRef (image);
-		}
-	}
-	updateHeader ();
+//	int index = parent.indexOf (this);
+//	if (index == -1) return;
+//	if (iconRef != 0) {
+//		OS.ReleaseIconRef (iconRef);
+//		iconRef = 0;
+//	}
+//	super.setImage (image);
+//	if (image != null) {
+//		if (OS.VERSION < 0x1040) {
+//			iconRef = createIconRef (image);
+//		}
+//	}
+//	updateHeader ();
 }
 
 /**
@@ -498,14 +460,14 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
-	int [] flags = new int [1];
-	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
-	if (moveable) {
-		flags [0] |= OS.kDataBrowserListViewMovableColumn;
-	} else {
-		flags [0] &= ~OS.kDataBrowserListViewMovableColumn;
-	}
-	OS.SetDataBrowserPropertyFlags (parent.handle, id, flags [0]);
+//	int [] flags = new int [1];
+//	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
+//	if (moveable) {
+//		flags [0] |= OS.kDataBrowserListViewMovableColumn;
+//	} else {
+//		flags [0] &= ~OS.kDataBrowserListViewMovableColumn;
+//	}
+//	OS.SetDataBrowserPropertyFlags (parent.handle, id, flags [0]);
 }
 
 /**
@@ -523,14 +485,17 @@ public void setMoveable (boolean moveable) {
 public void setResizable (boolean resizable) {
 	checkWidget ();
 	this.resizable = resizable;
-	updateHeader ();
+	//TODO
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	updateHeader ();
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int length = fixMnemonic (buffer);
+	nsColumn.headerCell().setTitle(NSString.stringWithCharacters(buffer, length));
 }
 
 /**
@@ -564,50 +529,6 @@ public void setToolTipText (String string) {
 public void setWidth (int width) {
 	checkWidget ();
 	if (width < 0) return;
-	/*
-	* Feature in the Macintosh. The data browser widget adds the left inset
-	* of the disclosure column to the specified width making the column too
-	* wide. The fix is to subtract this value from the column width.
-	*/
-	width -= parent.getLeftDisclosureInset (id);
-	if (width < 0) width = 0;
-	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
-	updateHeader ();
-	if (width != lastWidth) resized (width);
+	nsColumn.setWidth (width);
 }
-
-void updateHeader () {
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
-	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
-	desc.btnFontStyle_just = OS.teFlushLeft;
-	if ((style & SWT.CENTER) != 0) desc.btnFontStyle_just = OS.teCenter;
-	if ((style & SWT.RIGHT) != 0) desc.btnFontStyle_just = OS.teFlushRight;
-	desc.btnFontStyle_flags |= OS.kControlUseJustMask;
-	if (resizable) {
-		desc.minimumWidth = 0;
-		desc.maximumWidth = 0x7fff;
-	} else {
-		short [] width = new short [1];
-		OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-		desc.minimumWidth = desc.maximumWidth = width [0];
-	}
-	desc.titleString = str;
-	if (OS.VERSION < 0x1040) {
-		desc.btnContentInfo_contentType = (short) (iconRef != 0 ? OS.kControlContentIconRef : OS.kControlContentTextOnly);
-		desc.btnContentInfo_iconRef = iconRef;
-	} else {
-		if (image != null) {
-			desc.btnContentInfo_contentType = OS.kControlContentCGImageRef;
-			desc.btnContentInfo_iconRef = image.handle;
-		}
-	}
-	OS.SetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
-	OS.CFRelease (str);
-}
-
 }

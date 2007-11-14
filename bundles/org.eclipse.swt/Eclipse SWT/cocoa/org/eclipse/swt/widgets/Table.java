@@ -402,6 +402,9 @@ void createHandle () {
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
 	firstColumn.initWithIdentifier(NSString.stringWith(""));
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
+	NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
+	firstColumn.setDataCell(cell);
+	cell.release();
 	widget.addTableColumn (firstColumn);
 	
 	view = widget;
@@ -426,6 +429,9 @@ void createItem (TableColumn column, int index) {
 		nsColumn.initWithIdentifier(NSString.stringWith(""));
 		((NSTableView)view).addTableColumn (nsColumn);
 		((NSTableView)view).moveColumn (columnCount, index);
+		NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
+		nsColumn.setDataCell(cell);
+		cell.release();
 	}
 	column.nsColumn = nsColumn;
 	nsColumn.headerCell().setTitle(NSString.stringWith(""));
@@ -2291,6 +2297,19 @@ void tableViewSelectionDidChange (int aNotification) {
 
 boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
 	return false;
+}
+
+void tableViewwillDisplayCellforTableColumnrow(int aTableView, int aCell, int aTableColumn, int rowIndex) {
+	TableItem item = items [rowIndex];
+	Image image = item.image;
+	for (int i=0; i<columnCount; i++) {
+		if (columns [i].nsColumn.id == aTableColumn) {
+			image = item.getImage(i);
+		}
+	}
+	NSBrowserCell cell = new NSBrowserCell(aCell);
+	cell.setImage(image != null ? image.handle : null);
+	cell.setLeaf(true);
 }
 
 int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {

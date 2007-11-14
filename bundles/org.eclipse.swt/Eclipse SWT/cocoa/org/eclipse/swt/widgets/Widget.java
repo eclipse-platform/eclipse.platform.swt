@@ -585,6 +585,25 @@ int numberOfRowsInTableView(int aTableView) {
 	return 0;
 }
 
+int outlineView_child_ofItem(int outlineView, int index, int item) {
+	return 0;
+}
+
+int outlineView_objectValueForTableColumn_byItem(int outlineView, int tableColumn, int item) {
+	return 0;
+}
+
+boolean outlineView_isItemExpandable(int outlineView, int item) {
+	return false;
+}
+
+int outlineView_numberOfChildrenOfItem(int outlineView, int item) {
+	return 0;
+}
+
+void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, int tableColumn, int item) {
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -1118,6 +1137,9 @@ boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int 
 
 int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
 	return 0;
+}
+
+void tableViewwillDisplayCellforTableColumnrow(int aTableView, int aCell, int aTableColumn, int rowIndex) {
 }
 
 /**

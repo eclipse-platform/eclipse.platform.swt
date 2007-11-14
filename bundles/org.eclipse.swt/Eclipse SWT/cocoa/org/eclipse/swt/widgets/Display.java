@@ -111,6 +111,7 @@ public class Display extends Device {
 	NSPoint cascade = new NSPoint();
 
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
+	Callback windowDelegateCallback6;
 	Callback dialogCallback3;
 	
 	/* Menus */
@@ -1533,6 +1534,9 @@ void initClasses () {
 	windowDelegateCallback5 = new Callback(this, "windowDelegateProc", 5);
 	int proc5 = windowDelegateCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowDelegateCallback6 = new Callback(this, "windowDelegateProc", 6);
+	int proc6 = windowDelegateCallback6.getAddress();
+	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	int drawRectProc = OS.drawRect_CALLBACK(proc3);
 
@@ -1605,9 +1609,34 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
+	className = "SWTOutlineView";
+	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
+//	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+//	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
+//	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
+//	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1child_1ofItem_1, proc5, "@:@i@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1isItemExpandable_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1numberOfChildrenOfItem_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1objectValueForTableColumn_1byItem_1, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.objc_registerClassPair(cls);
+
+	className = "SWTTreeItem";
+	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.objc_registerClassPair(cls);
+
 	className = "SWTTabView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
@@ -2299,10 +2328,12 @@ void releaseDisplay () {
 
 	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
-	if (windowDelegateCallback3 != null) windowDelegateCallback4.dispose ();
-	if (windowDelegateCallback3 != null) windowDelegateCallback5.dispose ();
+	if (windowDelegateCallback4 != null) windowDelegateCallback4.dispose ();
+	if (windowDelegateCallback5 != null) windowDelegateCallback5.dispose ();
+	if (windowDelegateCallback6 != null) windowDelegateCallback6.dispose ();
 	if (dialogCallback3 != null) dialogCallback3.dispose ();
-	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = windowDelegateCallback5 = null;
+	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = null;
+	windowDelegateCallback6 = windowDelegateCallback5 = null;
 }
 
 /**
@@ -2979,16 +3010,15 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_1willSelectTabViewItem_1) {
 		widget.willSelectTabViewItem(arg0, arg1);
+	} else if (sel == OS.sel_outlineView_1isItemExpandable_1) {
+		return widget.outlineView_isItemExpandable(arg0, arg1) ? 1 : 0;
+	} else if (sel == OS.sel_outlineView_1numberOfChildrenOfItem_1) {
+		return widget.outlineView_numberOfChildrenOfItem(arg0, arg1);
 	}
 	return 0;
 }
 
-
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
-	if (sel == OS.sel_setTag_1) {
-		OS.object_setInstanceVariable(delegate, "tag", arg0);
-		return 0;
-	}
 	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
 	if (jniRef == 0 || jniRef == -1) return 0;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
@@ -3000,6 +3030,23 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 		return widget.tableViewshouldEditTableColumnrow(arg0, arg1, arg2) ? 1 : 0;
 	} else  if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
 		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;
+	} else  if (sel == OS.sel_outlineView_1child_1ofItem_1) {
+		 return widget.outlineView_child_ofItem(arg0, arg1, arg2);
+	} else  if (sel == OS.sel_outlineView_1objectValueForTableColumn_1byItem_1) {
+		 return widget.outlineView_objectValueForTableColumn_byItem(arg0, arg1, arg2);
+	}
+	return 0;
+}
+
+int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2, int arg3) {
+	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
+	if (jniRef == 0 || jniRef == -1) return 0;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	if (widget == null) return 0;
+	if (sel == OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1) {
+		widget.tableViewwillDisplayCellforTableColumnrow(arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1) {
+		widget.outlineView_willDisplayCell_forTableColumn_item(arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
