@@ -367,6 +367,10 @@ public void dispose() {
 	if (device.isDisposed()) return;
 	OS.GCHandle_Free(handle);
 	handle = 0;
+	if (currentFigure != 0) OS.GCHandle_Free(currentFigure);
+	currentFigure = 0;
+	if (currentPoint != 0) OS.GCHandle_Free(currentPoint);
+	currentPoint = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
