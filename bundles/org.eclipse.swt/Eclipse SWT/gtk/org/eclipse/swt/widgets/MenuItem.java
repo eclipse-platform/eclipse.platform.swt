@@ -358,6 +358,11 @@ public Menu getMenu () {
 	return menu;
 }
 
+String getNameText () {
+	if ((style & SWT.SEPARATOR) != 0) return "|";
+	return super.getNameText ();
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Menu</code>.
  *
