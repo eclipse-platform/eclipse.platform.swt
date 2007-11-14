@@ -1362,6 +1362,18 @@ public void setAlpha (int alpha) {
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if (fullScreen) setFullScreen (false);
+	/*
+	* Bug in Windows.  When a window has alpha and
+	* SetWindowPos() is called with SWP_DRAWFRAME,
+	* the contents of the window are copied rather
+	* than allowing the windows underneath to draw.
+	* This causes pixel corruption.  The fix is to
+	* clear the SWP_DRAWFRAME bits.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE); 
+	if ((bits & OS.WS_EX_LAYERED) != 0) {
+		flags &= ~OS.SWP_DRAWFRAME;
+	}
 	super.setBounds (x, y, width, height, flags, false);
 }
 
