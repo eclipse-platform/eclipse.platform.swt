@@ -987,7 +987,7 @@ public void drawPath(Path path) {
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
 	transform.translateXBy(data.drawXOffset, data.drawYOffset);
-	transform.set();
+	transform.concat();
 	NSBezierPath drawPath = data.path;
 	drawPath.appendBezierPath(path.handle);
 	drawPath.stroke();

@@ -128,6 +128,28 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I
+static SEL glyphRangeForCharacterRange;
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+{
+	NSRange _arg0, *lparg0=NULL;
+	NSRange _arg3, *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
+	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	//objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4);
+	if (glyphRangeForCharacterRange == 0) glyphRangeForCharacterRange = sel_registerName("glyphRangeForCharacterRange:actualCharacterRange::");
+	if ((SEL)arg2 == glyphRangeForCharacterRange) {
+		*lparg0 = [(id)arg1 glyphRangeForCharacterRange: *lparg3 actualCharacterRange: arg4];
+	}
+fail:
+	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
+	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
+}
+#endif
+
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI
 static SEL frameSizeForContentSize;
 JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI)

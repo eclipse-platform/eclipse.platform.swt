@@ -227,7 +227,7 @@ public NSRange glyphRangeForBoundingRectWithoutAdditionalLayout(NSRect bounds, N
 
 public NSRange glyphRangeForCharacterRange(NSRange charRange, int actualCharRange) {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_glyphRangeForCharacterRange_1actualCharacterRange_1, charRange, actualCharRange);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_glyphRangeForCharacterRange_1actualCharacterRange_1, charRange, actualCharRange);
 	return result;
 }
 

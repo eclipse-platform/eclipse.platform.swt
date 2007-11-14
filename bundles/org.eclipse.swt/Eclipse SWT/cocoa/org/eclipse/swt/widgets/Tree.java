@@ -344,7 +344,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //			gc.dispose ();
 //			width += getInsetWidth (column_id, true);
 		}
-//		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
 	} else {
 		width = wHint;
 	}
@@ -540,7 +539,6 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
-//	itemHeight = -1;
 }
 
 Color defaultBackground () {
@@ -2261,10 +2259,6 @@ public void showSelection () {
 	//TODO - optimize
 	TreeItem [] selection = getSelection ();
 	if (selection.length > 0) showItem (selection [0], true);
-}
-
-int trackingProc (int browser, int id, int property, int theRect, int startPt, int modifiers) {
-	return 1;
 }
 
 }
