@@ -449,27 +449,55 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Callback callback = new Callback(this, "applierFunc", 2);
-	int proc = callback.getAddress();
-	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-//	count = typeCount = 0;
-//	element = new CGPathElement();
-//	OS.CGPathApply(handle, 0, proc);
-//	types = new byte[typeCount];
-//	points = new float[count];
-//	point = new float[6];
-//	count = typeCount = 0;
-//	OS.CGPathApply(handle, 0, proc);
-//	callback.dispose();
-//	PathData result = new PathData();
-//	result.types = types;
-//	result.points = points;
-//	element = null;
-//	types = null;
-//	points = null;
-//	point = null;
-//	return result;
-	return null;
+	int count = handle.elementCount();
+	int pointCount = 0, typeCount = 0;
+	byte[] types = new byte[count];
+	float[] pointArray = new float[count * 6];
+	int points = OS.malloc(3 * NSPoint.sizeof);
+	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	NSPoint pt = new NSPoint();
+	for (int i = 0; i < count; i++) {
+		int element = handle.elementAtIndex_associatedPoints_(i, points);
+		switch (element) {
+			case OS.NSMoveToBezierPathElement:
+				types[typeCount++] = SWT.PATH_MOVE_TO;
+				OS.memmove(pt, points, NSPoint.sizeof);
+				pointArray[pointCount++] = (int)pt.x;
+				pointArray[pointCount++] = (int)pt.y;
+				break;
+			case OS.NSLineToBezierPathElement:
+				types[typeCount++] = SWT.PATH_LINE_TO;
+				OS.memmove(pt, points, NSPoint.sizeof);
+				pointArray[pointCount++] = (int)pt.x;
+				pointArray[pointCount++] = (int)pt.y;
+				break;
+			case OS.NSCurveToBezierPathElement:
+				types[typeCount++] = SWT.PATH_CUBIC_TO;
+				OS.memmove(pt, points, NSPoint.sizeof);
+				pointArray[pointCount++] = (int)pt.x;
+				pointArray[pointCount++] = (int)pt.y;
+				OS.memmove(pt, points + NSPoint.sizeof, NSPoint.sizeof);
+				pointArray[pointCount++] = (int)pt.x;
+				pointArray[pointCount++] = (int)pt.y;
+				OS.memmove(pt, points + NSPoint.sizeof, NSPoint.sizeof);
+				pointArray[pointCount++] = (int)pt.x;
+				pointArray[pointCount++] = (int)pt.y;
+				break;
+			case OS.NSClosePathBezierPathElement:
+				types[typeCount++] = SWT.PATH_CLOSE;
+				break;
+		}
+	}
+	OS.free(points);
+	if (pointCount != pointArray.length) {
+		float[] temp = new float[pointCount];
+		System.arraycopy(pointArray, 0, temp, 0, pointCount);
+		pointArray = temp;
+	}
+	PathData data = new PathData();
+	data.types = types;
+	data.points = pointArray;
+	return data;
 }
 
 /**
