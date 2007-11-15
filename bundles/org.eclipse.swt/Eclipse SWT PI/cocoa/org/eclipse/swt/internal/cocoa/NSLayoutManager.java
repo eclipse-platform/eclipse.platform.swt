@@ -209,7 +209,7 @@ public int glyphIndexForPoint_inTextContainer_(NSPoint point, NSTextContainer co
 	return OS.objc_msgSend(this.id, OS.sel_glyphIndexForPoint_1inTextContainer_1, point, container != null ? container.id : 0);
 }
 
-public int glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_(NSPoint point, NSTextContainer container, int partialFraction) {
+public int glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_(NSPoint point, NSTextContainer container, float[] partialFraction) {
 	return OS.objc_msgSend(this.id, OS.sel_glyphIndexForPoint_1inTextContainer_1fractionOfDistanceThroughGlyph_1, point, container != null ? container.id : 0, partialFraction);
 }
 

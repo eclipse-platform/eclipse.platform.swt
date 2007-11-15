@@ -77,6 +77,7 @@ public static final native int objc_msgSend(int id, int sel, float[] arg0, int a
 public static final native int objc_msgSend(int id, int sel, float[] arg0);
 public static final native int objc_msgSend(int id, int sel, char[] arg0, NSRange arg1);
 public static final native int objc_msgSend(int id, int sel, String arg0);
+public static final native int objc_msgSend(int id, int sel, NSPoint arg0, int arg1, float[] arg2);
 
 public static final native int objc_msgSend_struct(NSSize result, int object, int selector);
 public static final native void objc_msgSend_struct(NSRange result, int id, int sel, NSRange arg0, int arg1);
@@ -8641,6 +8642,7 @@ public static final int NS_UnknownByteOrder = 0;
 //public static final native int NSAttachmentAttributeName();
 //public static final native int NSAttributedStringBinding();
 //public static final native int NSAuthorDocumentAttribute();
+public static final NSString NSBackgroundColorAttributeName = new NSString(OS.NSBackgroundColorAttributeName());
 public static final native int NSBackgroundColorAttributeName();
 //public static final native int NSBackgroundColorDocumentAttribute();
 //public static final native int NSBadBitmapParametersException();

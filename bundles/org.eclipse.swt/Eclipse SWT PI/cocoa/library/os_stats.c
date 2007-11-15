@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 313;
-int OS_nativeFunctionCallCount[313];
+int OS_nativeFunctionCount = 314;
+int OS_nativeFunctionCallCount[314];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -172,6 +172,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2IF",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2II",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2ILorg_eclipse_swt_internal_cocoa_NSRange_2",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_3F",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2F",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2I",
