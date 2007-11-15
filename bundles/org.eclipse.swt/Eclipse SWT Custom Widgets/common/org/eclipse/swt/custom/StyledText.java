@@ -1249,7 +1249,7 @@ public StyledText(Composite parent, int style) {
 				setCaretLocation(newCaretPos, direction);
 			}
 		};
-		BidiUtil.addLanguageListener(handle, runnable);
+		BidiUtil.addLanguageListener(this, runnable);
 	}
 	setCaret(defaultCaret);	
 	calculateScrollBars();
@@ -5027,7 +5027,7 @@ void handleDispose(Event event) {
 		rightCaretBitmap = null;
 	}
 	if (isBidiCaret()) {
-		BidiUtil.removeLanguageListener(handle);
+		BidiUtil.removeLanguageListener(this);
 	}
 	selectionBackground = null;
 	selectionForeground = null;
@@ -7443,7 +7443,7 @@ public void setOrientation(int orientation) {
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && !isMirrored()) {
 		return;
 	}
-	if (!BidiUtil.setOrientation(handle, orientation)) {
+	if (!BidiUtil.setOrientation(this, orientation)) {
 		return;
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
