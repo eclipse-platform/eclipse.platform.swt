@@ -85,7 +85,8 @@ public class Table extends Composite {
 	static final int HEADER_EXTRA = 3;
 	static final int VISTA_EXTRA = 2;
 	static final int EXPLORER_EXTRA = 2;
-	static final int SCROLL_LIMIT = 32;
+	static final int H_SCROLL_LIMIT = 32;
+	static final int V_SCROLL_LIMIT = 16;
 	static final boolean EXPLORER_THEME = true;
 	static final int /*long*/ TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -5576,8 +5577,13 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	* faster.
 	*/
 	boolean fixScroll = false;
-	if (OS.COMCTL32_MAJOR >= 6 && columnCount > SCROLL_LIMIT) {
-		fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+	if (OS.LOWORD (wParam) != OS.SB_ENDSCROLL) {
+		if (OS.COMCTL32_MAJOR >= 6) {
+			if (columnCount > H_SCROLL_LIMIT) {
+				int rowCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+				if (rowCount > V_SCROLL_LIMIT) fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+			}
+		}
 	}
 	if (fixScroll) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
@@ -5645,8 +5651,13 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	* faster.
 	*/
 	boolean fixScroll = false;
-	if (OS.COMCTL32_MAJOR >= 6 && columnCount > SCROLL_LIMIT) {
-		fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+	if (OS.LOWORD (wParam) != OS.SB_ENDSCROLL) {
+		if (OS.COMCTL32_MAJOR >= 6) {
+			if (columnCount > H_SCROLL_LIMIT) {
+				int rowCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+				if (rowCount > V_SCROLL_LIMIT) fixScroll = drawCount == 0 && OS.IsWindowVisible (handle);
+			}
+		}
 	}
 	if (fixScroll) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
