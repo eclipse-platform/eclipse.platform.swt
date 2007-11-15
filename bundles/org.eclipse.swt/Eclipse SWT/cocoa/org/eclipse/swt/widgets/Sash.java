@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
 import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
@@ -117,6 +116,14 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+boolean becomeFirstResponder () {
+	boolean result = super.becomeFirstResponder();
+	NSRect frame = view.frame();
+	lastX = (int)frame.x;
+	lastY = (int)frame.y;
+	return result;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -133,10 +140,145 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame (new NSRect());
-//	widget.setDrawsBackground(false);
 	widget.setTag(jniRef);
 	view = widget;
 	parent.contentView().addSubview_(view);
+}
+
+void keyDown(int theEvent) {
+	super.keyDown(theEvent);
+	//TODO consumed
+	NSEvent nsEvent = new NSEvent(theEvent);
+	int keyCode = nsEvent.keyCode();
+	switch (keyCode) {
+		case 126: /* Up arrow */
+		case 123: /* Left arrow */
+		case 125: /* Down arrow */
+		case 124: /* Right arrow */ {
+			int xChange = 0, yChange = 0;
+			int stepSize = PAGE_INCREMENT;
+			int modifiers = nsEvent.modifierFlags();
+			if ((modifiers & OS.NSControlKeyMask) != 0) stepSize = INCREMENT;
+			if ((style & SWT.VERTICAL) != 0) {
+				if (keyCode == 126 || keyCode == 125) break;
+				xChange = keyCode == 123 ? -stepSize : stepSize;
+			} else {
+				if (keyCode == 123 || keyCode  == 124) break;
+				yChange = keyCode == 126 ? -stepSize : stepSize;
+			}
+			
+			Rectangle bounds = getBounds ();
+			int width = bounds.width, height = bounds.height;
+			Rectangle parentBounds = parent.getBounds ();
+			int parentWidth = parentBounds.width;
+			int parentHeight = parentBounds.height;
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, lastX + xChange), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, lastY + yChange), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return;
+			Event event = new Event ();
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (isDisposed ()) break;
+			if (event.doit) {
+				setBounds (event.x, event.y, width, height);
+				if (isDisposed ()) break;
+				lastX = event.x;
+				lastY = event.y;
+				if (isDisposed ()) return;
+				int cursorX = event.x, cursorY = event.y;
+				if ((style & SWT.VERTICAL) != 0) {
+					cursorY += height / 2;
+				} else {
+					cursorX += width / 2;
+				}
+				display.setCursorLocation (parent.toDisplay (cursorX, cursorY));
+			}
+			break;
+		}
+	}
+}
+
+void mouseDown(int theEvent) {
+	super.mouseDown(theEvent);
+	NSEvent nsEvent = new NSEvent(theEvent);
+	if (nsEvent.clickCount() != 1) return;
+	NSPoint location = nsEvent.locationInWindow();
+	NSPoint point = view.convertPoint_fromView_(location, null);
+	startX = (int)point.x;
+	startY = (int)point.y;
+	NSRect frame = view.frame();
+	Event event = new Event ();
+	event.x = (int)frame.x;
+	event.y = (int)frame.y;
+	event.width = (int)frame.width;
+	event.height = (int)frame.height;
+	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return;
+	if (event.doit) {
+		lastX = event.x;
+		lastY = event.y;
+		dragging = true;
+		setLocation(event.x, event.y);
+	}
+}
+
+void mouseDragged(int theEvent) {
+	super.mouseDragged(theEvent);
+	if (!dragging) return;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	NSPoint location = nsEvent.locationInWindow();
+	NSPoint point = view.convertPoint_fromView_(location, null);
+	NSRect frame = view.frame();
+	NSRect parentFrame = parent.topView().frame();
+	int newX = lastX, newY = lastY;
+	if ((style & SWT.VERTICAL) != 0) {
+		newX = Math.min (Math.max (0, (int)(point.x + frame.x - startX)), (int)(parentFrame.width - frame.width));
+	} else {
+		newY = Math.min (Math.max (0, (int)(point.y + frame.y - startY)), (int)(parentFrame.height - frame.height));
+	}
+	if (newX == lastX && newY == lastY) return;
+	Event event = new Event ();
+	event.x = newX;
+	event.y = newY;
+	event.width = (int)frame.width;
+	event.height = (int)frame.height;
+	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return;
+	if (event.doit) {
+		lastX = event.x;
+		lastY = event.y;
+		setBounds (event.x, event.y, (int)frame.width, (int)frame.height);
+	}
+}
+
+void mouseEntered(int theEvent) {
+	//TODO need to add tracking area
+	super.mouseEntered(theEvent);
+	sizeCursor.handle.set();
+}
+
+void mouseUp(int theEvent) {
+	super.mouseUp(theEvent);
+	if (!dragging) return;
+	dragging = false;
+	NSRect frame = view.frame();
+	Event event = new Event ();
+	event.x = lastX;
+	event.y = lastY;
+	event.width = (int)frame.width;
+	event.height = (int)frame.height;
+	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return;
+	if (event.doit) {
+		setBounds (event.x, event.y, (int)frame.width, (int)frame.height);
+	}
 }
 
 void releaseWidget () {

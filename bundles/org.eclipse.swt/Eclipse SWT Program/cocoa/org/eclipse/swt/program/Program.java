@@ -11,9 +11,7 @@
 package org.eclipse.swt.program;
 
 
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.LSApplicationParameters;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -355,26 +353,9 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int rc = -1;
 	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
-	char[] chars = new char[fileName.length()];
-	fileName.getChars(0, chars.length, chars, 0);
-	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-	if (str != 0) {
-		int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
-		if (escapedStr != 0) {
-			int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
-			if (url != 0) {
-				rc = OS.LSOpenCFURLRef(url, null);
-				OS.CFRelease(url);
-			}
-			OS.CFRelease(escapedStr);
-		}
-		if (unscapedStr != 0) OS.CFRelease(unscapedStr);
-		OS.CFRelease(str);
-	}
-	return rc == OS.noErr;
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	return workspace.openURL(NSURL.static_URLWithString_(NSString.stringWith(fileName)));
 }
 
 /**
@@ -430,42 +411,6 @@ public boolean execute (String fileName) {
 		OS.DisposePtr(fsRefPtr);
 	}
 	return rc == OS.noErr;
-}
-
-ImageData createImageFromFamily (int family, int type, int maskType, int width, int height) {
-	int dataHandle = OS.NewHandle (0);
-	int result = OS.GetIconFamilyData (family, type, dataHandle);
-	if (result != OS.noErr) {
-		OS.DisposeHandle (dataHandle);
-		return null;
-	}
-	int maskHandle = OS.NewHandle (0);
-	result = OS.GetIconFamilyData (family, maskType, maskHandle);
-	if (result != OS.noErr) {
-		OS.DisposeHandle (maskHandle);
-		OS.DisposeHandle (dataHandle);
-		return null;
-	}
-	int dataSize = OS.GetHandleSize (dataHandle);
-	OS.HLock (dataHandle);
-	OS.HLock (maskHandle);
-	int[] iconPtr = new int [1];
-	int[] maskPtr = new int [1];
-	OS.memmove (iconPtr, dataHandle, 4);
-	OS.memmove (maskPtr, maskHandle, 4);
-	byte[] data = new byte[dataSize];
-	OS.memmove (data, iconPtr [0], dataSize);
-	byte[] alphaData = new byte[width * height];
-	OS.memmove(alphaData, maskPtr[0], alphaData.length);
-	OS.HUnlock (maskHandle);
-	OS.HUnlock (dataHandle);
-	OS.DisposeHandle (maskHandle);
-	OS.DisposeHandle (dataHandle);
-
-	ImageData image = new ImageData(width, height, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF), 4, data);
-	image.alphaData = alphaData;
-
-	return image;
 }
 
 /**

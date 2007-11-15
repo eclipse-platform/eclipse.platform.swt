@@ -1571,6 +1571,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
@@ -2977,7 +2978,9 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_mouseDragged_1) {
 		widget.mouseDragged(arg0);
 	} else if (sel == OS.sel_mouseUp_1) {
-			widget.mouseUp(arg0);
+		widget.mouseUp(arg0);
+	} else if (sel == OS.sel_mouseEntered_1) {
+		widget.mouseEntered(arg0);
 	} else if (sel == OS.sel_keyDown_1) {
 		widget.keyDown(arg0);
 	} else if (sel == OS.sel_keyUp_1) {

@@ -15,9 +15,9 @@ public NSURLHandle URLHandleUsingCache(boolean shouldUseCache) {
 	return result != 0 ? new NSURLHandle(result) : null;
 }
 
-public static id static_URLWithString_(NSString URLString) {
+public static NSURL static_URLWithString_(NSString URLString) {
 	int result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLWithString_1, URLString != null ? URLString.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSURL(result) : null;
 }
 
 public static id static_URLWithString_relativeToURL_(NSString URLString, NSURL baseURL) {

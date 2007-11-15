@@ -575,6 +575,9 @@ void mouseDown(int event) {
 void rightMouseDown(int event) {
 }
 
+void mouseEntered(int event) {
+}
+
 void mouseUp(int event) {
 }
 
