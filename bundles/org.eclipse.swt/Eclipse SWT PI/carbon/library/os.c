@@ -1226,6 +1226,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopObserverCreate)
 }
 #endif
 
+#ifndef NO_CFRunLoopObserverInvalidate
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopObserverInvalidate)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopObserverInvalidate_FUNC);
+	CFRunLoopObserverInvalidate((CFRunLoopObserverRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopObserverInvalidate_FUNC);
+}
+#endif
+
 #ifndef NO_CFRunLoopRunInMode
 JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopRunInMode)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jboolean arg2)
