@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.win32.*;
  * below:</p>
  * 
  * <code><pre>
- *     String urlData = "http://www.eclipse.org";
+ *     String url = "http://www.eclipse.org";
  * </code></pre>
  */
 public class URLTransfer extends ByteArrayTransfer {
@@ -89,7 +89,7 @@ public void javaToNative (Object object, TransferData transferData){
  * 
  * @param transferData the platform specific representation of the data to be 
  * converted
- * @return a java <code>String[]</code> containing a URL if the 
+ * @return a java <code>String</code> containing a URL if the 
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
