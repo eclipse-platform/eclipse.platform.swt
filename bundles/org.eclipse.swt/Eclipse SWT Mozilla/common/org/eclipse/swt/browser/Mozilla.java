@@ -40,13 +40,14 @@ class Mozilla extends WebBrowser {
 	XPCOMObject tooltipListener;
 	XPCOMObject domEventListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
-	int refCount = 0;
+	int refCount, lastKeyCode, lastCharCode;
 	int /*long*/ request;
 	Point location, size;
 	boolean visible, isChild, ignoreDispose;
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
+	String lastProxyHost, lastProxyPortString;
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
@@ -71,15 +72,155 @@ class Mozilla extends WebBrowser {
 	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
 	static final String PROFILE_DIR = SEPARATOR_OS + "eclipse" + SEPARATOR_OS; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYHOST_FTP = "network.proxy.ftp"; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYPORT_FTP = "network.proxy.ftp_port"; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYHOST_HTTP = "network.proxy.http"; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYPORT_HTTP = "network.proxy.http_port"; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYHOST_SSL = "network.proxy.ssl"; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYPORT_SSL = "network.proxy.ssl_port"; //$NON-NLS-1$
+	static final String PREFERENCE_PROXYTYPE = "network.proxy.type"; //$NON-NLS-1$
 	static final String PROFILE_AFTER_CHANGE = "profile-after-change"; //$NON-NLS-1$
 	static final String PROFILE_BEFORE_CHANGE = "profile-before-change"; //$NON-NLS-1$
 	static final String PROFILE_DO_CHANGE = "profile-do-change"; //$NON-NLS-1$
+	static final String PROPERTY_PROXY = "http.proxyHost"; //$NON-NLS-1$
+	static final String PROPERTY_PORT = "http.proxyPort"; //$NON-NLS-1$
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
 	static final String XULRUNNER_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
+
+	/* Key Mappings */
+	static final int [] [] KeyTable = {
+		/* Keyboard and Mouse Masks */
+		{nsIDOMKeyEvent.DOM_VK_ALT,		SWT.ALT},
+		{nsIDOMKeyEvent.DOM_VK_SHIFT,	SWT.SHIFT},
+		{nsIDOMKeyEvent.DOM_VK_CONTROL,	SWT.CONTROL},
+		{nsIDOMKeyEvent.DOM_VK_META,	SWT.COMMAND},
+
+		/* Literal Keys */
+		{nsIDOMKeyEvent.DOM_VK_A, 'a'},
+		{nsIDOMKeyEvent.DOM_VK_B, 'b'},
+		{nsIDOMKeyEvent.DOM_VK_C, 'c'},
+		{nsIDOMKeyEvent.DOM_VK_D, 'd'},
+		{nsIDOMKeyEvent.DOM_VK_E, 'e'},
+		{nsIDOMKeyEvent.DOM_VK_F, 'f'},
+		{nsIDOMKeyEvent.DOM_VK_G, 'g'},
+		{nsIDOMKeyEvent.DOM_VK_H, 'h'},
+		{nsIDOMKeyEvent.DOM_VK_I, 'i'},
+		{nsIDOMKeyEvent.DOM_VK_J, 'j'},
+		{nsIDOMKeyEvent.DOM_VK_K, 'k'},
+		{nsIDOMKeyEvent.DOM_VK_L, 'l'},
+		{nsIDOMKeyEvent.DOM_VK_M, 'm'},
+		{nsIDOMKeyEvent.DOM_VK_N, 'n'},
+		{nsIDOMKeyEvent.DOM_VK_O, 'o'},
+		{nsIDOMKeyEvent.DOM_VK_P, 'p'},
+		{nsIDOMKeyEvent.DOM_VK_Q, 'q'},
+		{nsIDOMKeyEvent.DOM_VK_R, 'r'},
+		{nsIDOMKeyEvent.DOM_VK_S, 's'},
+		{nsIDOMKeyEvent.DOM_VK_T, 't'},
+		{nsIDOMKeyEvent.DOM_VK_U, 'u'},
+		{nsIDOMKeyEvent.DOM_VK_V, 'v'},
+		{nsIDOMKeyEvent.DOM_VK_W, 'w'},
+		{nsIDOMKeyEvent.DOM_VK_X, 'x'},
+		{nsIDOMKeyEvent.DOM_VK_Y, 'y'},
+		{nsIDOMKeyEvent.DOM_VK_Z, 'z'},
+		{nsIDOMKeyEvent.DOM_VK_0, '0'},
+		{nsIDOMKeyEvent.DOM_VK_1, '1'},
+		{nsIDOMKeyEvent.DOM_VK_2, '2'},
+		{nsIDOMKeyEvent.DOM_VK_3, '3'},
+		{nsIDOMKeyEvent.DOM_VK_4, '4'},
+		{nsIDOMKeyEvent.DOM_VK_5, '5'},
+		{nsIDOMKeyEvent.DOM_VK_6, '6'},
+		{nsIDOMKeyEvent.DOM_VK_7, '7'},
+		{nsIDOMKeyEvent.DOM_VK_8, '8'},
+		{nsIDOMKeyEvent.DOM_VK_9, '9'},
+		{nsIDOMKeyEvent.DOM_VK_SPACE, ' '},
+		{nsIDOMKeyEvent.DOM_VK_SEMICOLON, ';'},
+		{nsIDOMKeyEvent.DOM_VK_EQUALS, '='},
+		{nsIDOMKeyEvent.DOM_VK_COMMA, ','},
+		{nsIDOMKeyEvent.DOM_VK_PERIOD, '.'},
+		{nsIDOMKeyEvent.DOM_VK_SLASH, '/'},
+		{nsIDOMKeyEvent.DOM_VK_OPEN_BRACKET, '['},
+		{nsIDOMKeyEvent.DOM_VK_CLOSE_BRACKET, ']'},
+		{nsIDOMKeyEvent.DOM_VK_QUOTE, '\''},
+		{nsIDOMKeyEvent.DOM_VK_BACK_QUOTE, '`'},
+		{nsIDOMKeyEvent.DOM_VK_BACK_SLASH, '\\'},
+		{nsIDOMKeyEvent.DOM_VK_SEPARATOR, '|'},
+
+		/* Non-Numeric Keypad Keys */
+		{nsIDOMKeyEvent.DOM_VK_LEFT,		SWT.ARROW_LEFT},
+		{nsIDOMKeyEvent.DOM_VK_RIGHT,		SWT.ARROW_RIGHT},
+		{nsIDOMKeyEvent.DOM_VK_UP,			SWT.ARROW_UP},
+		{nsIDOMKeyEvent.DOM_VK_DOWN,		SWT.ARROW_DOWN},
+		{nsIDOMKeyEvent.DOM_VK_HOME,		SWT.HOME},
+		{nsIDOMKeyEvent.DOM_VK_END,			SWT.END},
+		{nsIDOMKeyEvent.DOM_VK_INSERT,		SWT.INSERT},
+		{nsIDOMKeyEvent.DOM_VK_DELETE,		SWT.DEL},
+		{nsIDOMKeyEvent.DOM_VK_PAGE_UP,		SWT.PAGE_UP},
+		{nsIDOMKeyEvent.DOM_VK_PAGE_DOWN,	SWT.PAGE_DOWN},
+
+		/* Virtual and Ascii Keys */
+		{nsIDOMKeyEvent.DOM_VK_BACK_SPACE,	SWT.BS},
+		{nsIDOMKeyEvent.DOM_VK_RETURN,		SWT.CR},
+		{nsIDOMKeyEvent.DOM_VK_TAB,			SWT.TAB},
+		{nsIDOMKeyEvent.DOM_VK_ESCAPE,		SWT.ESC},
+		{nsIDOMKeyEvent.DOM_VK_CLEAR,		SWT.DEL},
+
+		/* Functions Keys */
+		{nsIDOMKeyEvent.DOM_VK_F1,	SWT.F1},
+		{nsIDOMKeyEvent.DOM_VK_F2,	SWT.F2},
+		{nsIDOMKeyEvent.DOM_VK_F3,	SWT.F3},
+		{nsIDOMKeyEvent.DOM_VK_F4,	SWT.F4},
+		{nsIDOMKeyEvent.DOM_VK_F5,	SWT.F5},
+		{nsIDOMKeyEvent.DOM_VK_F6,	SWT.F6},
+		{nsIDOMKeyEvent.DOM_VK_F7,	SWT.F7},
+		{nsIDOMKeyEvent.DOM_VK_F8,	SWT.F8},
+		{nsIDOMKeyEvent.DOM_VK_F9,	SWT.F9},
+		{nsIDOMKeyEvent.DOM_VK_F10,	SWT.F10},
+		{nsIDOMKeyEvent.DOM_VK_F11,	SWT.F11},
+		{nsIDOMKeyEvent.DOM_VK_F12,	SWT.F12},
+		{nsIDOMKeyEvent.DOM_VK_F13,	SWT.F13},
+		{nsIDOMKeyEvent.DOM_VK_F14,	SWT.F14},
+		{nsIDOMKeyEvent.DOM_VK_F15,	SWT.F15},
+		{nsIDOMKeyEvent.DOM_VK_F16, 0},
+		{nsIDOMKeyEvent.DOM_VK_F17, 0},
+		{nsIDOMKeyEvent.DOM_VK_F18, 0},
+		{nsIDOMKeyEvent.DOM_VK_F19, 0},
+		{nsIDOMKeyEvent.DOM_VK_F20, 0},
+		{nsIDOMKeyEvent.DOM_VK_F21, 0},
+		{nsIDOMKeyEvent.DOM_VK_F22, 0},
+		{nsIDOMKeyEvent.DOM_VK_F23, 0},
+		{nsIDOMKeyEvent.DOM_VK_F24, 0},
+
+		/* Numeric Keypad Keys */
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD0,		SWT.KEYPAD_0},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD1,		SWT.KEYPAD_1},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD2,		SWT.KEYPAD_2},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD3,		SWT.KEYPAD_3},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD4,		SWT.KEYPAD_4},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD5,		SWT.KEYPAD_5},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD6,		SWT.KEYPAD_6},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD7,		SWT.KEYPAD_7},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD8,		SWT.KEYPAD_8},
+		{nsIDOMKeyEvent.DOM_VK_NUMPAD9,		SWT.KEYPAD_9},
+		{nsIDOMKeyEvent.DOM_VK_ENTER,		SWT.KEYPAD_CR},
+		{nsIDOMKeyEvent.DOM_VK_ADD,			'+'},
+		{nsIDOMKeyEvent.DOM_VK_SUBTRACT,	'-'},
+		{nsIDOMKeyEvent.DOM_VK_MULTIPLY,	'*'},
+		{nsIDOMKeyEvent.DOM_VK_DIVIDE,		'/'},
+		{nsIDOMKeyEvent.DOM_VK_DECIMAL,		'.'},
+
+		/* Other keys */
+		{nsIDOMKeyEvent.DOM_VK_CAPS_LOCK,	SWT.CAPS_LOCK},
+		{nsIDOMKeyEvent.DOM_VK_NUM_LOCK,	SWT.NUM_LOCK},
+		{nsIDOMKeyEvent.DOM_VK_SCROLL_LOCK,	SWT.SCROLL_LOCK},
+		{nsIDOMKeyEvent.DOM_VK_PRINTSCREEN,	SWT.PRINT_SCREEN},
+		{nsIDOMKeyEvent.DOM_VK_HELP,		SWT.HELP},
+		{nsIDOMKeyEvent.DOM_VK_PAUSE,		SWT.PAUSE},
+		{nsIDOMKeyEvent.DOM_VK_CANCEL,		SWT.BREAK},
+	};
 
 	static {
 		MozillaClearSessions = new Runnable () {
@@ -951,6 +1092,7 @@ public void create (Composite parent, int style) {
 	}
 
 	delegate.init ();
+	updateProxy ();
 
 	listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -1009,6 +1151,8 @@ public void create (Composite parent, int style) {
 }
 
 public boolean back () {
+	updateProxy ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1203,6 +1347,8 @@ static Browser findBrowser (int /*long*/ handle) {
 }
 
 public boolean forward () {
+	updateProxy ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1459,6 +1605,8 @@ void onResize () {
 }
 
 public void refresh () {
+	updateProxy ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1482,6 +1630,8 @@ public void refresh () {
 }
 
 public boolean setText (String html) {
+	updateProxy ();
+
 	/*
 	*  Feature in Mozilla.  The focus memory of Mozilla must be 
 	*  properly managed through the nsIWebBrowserFocus interface.
@@ -1586,6 +1736,8 @@ public boolean setText (String html) {
 }
 
 public boolean setUrl (String url) {
+	updateProxy ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1600,6 +1752,8 @@ public boolean setUrl (String url) {
 }
 
 public void stop () {
+	updateProxy ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1698,6 +1852,26 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 		if (rc != XPCOM.NS_OK) error (rc);
 		string.dispose ();
 	}
+
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+}
+
+int translateKey (int key) {
+	for (int i = 0; i < KeyTable.length; i++) {
+		if (KeyTable[i][0] == key) return KeyTable[i][1];
+	}
+	return 0;
 }
 
 void unhookDOMListeners () {
@@ -1778,6 +1952,122 @@ void unhookDOMListeners (nsIDOMEventTarget target) {
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
 	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+}
+
+void updateProxy () {
+	/* Check the standard java properties for proxy changes and update mozilla's preferences if needed */
+	String proxyHost = System.getProperty (PROPERTY_PROXY); //$NON-NLS-1$
+	String proxyPortString = System.getProperty (PROPERTY_PORT); //$NON-NLS-1$
+	boolean hostChanged = proxyHost != null && !proxyHost.equals (lastProxyHost);
+	boolean portChanged = false;
+	int port = 0;
+	if (proxyPortString != null && !proxyPortString.equals (lastProxyPortString)) {
+		if (proxyPortString.length () > 0) {
+			try {
+				port = Integer.valueOf (proxyPortString).intValue ();
+				if (0 <= port && port <= 65535) portChanged = true;
+			} catch (NumberFormatException e) {
+				/* do nothing, java property has non-integer value */
+			}
+		} else {
+			portChanged = true;		/* changed to 0 */
+		}
+		lastProxyPortString = proxyPortString;
+	}
+	if (!hostChanged && !portChanged) return;
+
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	serviceManager.Release ();
+
+	nsIPrefService prefService = new nsIPrefService (result[0]);
+	result[0] = 0;
+	byte[] buffer = new byte[1];
+	rc = prefService.GetBranch (buffer, result);	/* empty buffer denotes root preference level */
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	prefService.Release ();
+
+	nsIPrefBranch prefBranch = new nsIPrefBranch (result[0]);
+	result[0] = 0;
+
+	if (hostChanged) {
+		rc = XPCOM.NS_GetComponentManager (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
+		result[0] = 0;
+		byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
+		rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		componentManager.Release ();
+
+		nsIPrefLocalizedString localizedString = new nsIPrefLocalizedString (result[0]);
+		result[0] = 0;
+		int length = proxyHost.length ();
+		char[] charBuffer = new char[length + 1];
+		proxyHost.getChars (0, length, charBuffer, 0);
+		rc = localizedString.SetDataWithLength (length, charBuffer);
+		if (rc != XPCOM.NS_OK) error (rc);
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_FTP, true);
+		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		if (rc != XPCOM.NS_OK) error (rc);
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_HTTP, true);
+		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		if (rc != XPCOM.NS_OK) error (rc);
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_SSL, true);
+		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+		if (rc != XPCOM.NS_OK) error (rc);
+		localizedString.Release ();
+		lastProxyHost = proxyHost;
+	}
+
+	buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_FTP, true);
+	if (portChanged) {
+		rc = prefBranch.SetIntPref (buffer, port);
+		if (rc != XPCOM.NS_OK) error (rc);
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_HTTP, true);
+		rc = prefBranch.SetIntPref (buffer, port);
+		if (rc != XPCOM.NS_OK) error (rc);
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_SSL, true);
+		rc = prefBranch.SetIntPref (buffer, port);
+		if (rc != XPCOM.NS_OK) error (rc);
+	} else {
+		int[] portResult = new int[1]; /* PRInt32 */
+		rc = prefBranch.GetIntPref (buffer, portResult);
+		if (rc != XPCOM.NS_OK) error (rc);
+		port = portResult[0];
+	}
+
+	buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYTYPE, true);
+	boolean enableProxy = (proxyHost != null && proxyHost.length () > 0) || port != 0;
+	rc = prefBranch.SetIntPref (buffer, enableProxy ? 1 : 0);
+	if (rc != XPCOM.NS_OK) error (rc);
+
+	prefBranch.Release ();
 }
 
 /* nsISupports */
@@ -2409,6 +2699,8 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 /* nsIURIContentListener */
 
 int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
+	updateProxy ();
+
 	nsIURI location = new nsIURI (aURI);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
 	location.GetSpec (aSpec);
@@ -2593,6 +2885,179 @@ int HandleEvent (int /*long*/ event) {
 
 	if (XPCOM.DOMEVENT_FOCUS.equals (typeString)) {
 		delegate.handleFocus ();
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_KEYDOWN.equals (typeString)) {
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.QueryInterface (nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
+		result[0] = 0;
+
+		int[] aKeyCode = new int[1]; /* PRUint32 */
+		rc = domKeyEvent.GetKeyCode (aKeyCode);
+		if (rc != XPCOM.NS_OK) error (rc);
+		int keyCode = translateKey (aKeyCode[0]);
+
+		/*
+		* if keyCode == lastKeyCode then either a repeating key like Shift
+		* is being held or a key for which key events are not sent has been
+		* pressed.  In both of these cases a KeyDown should not be sent.
+		*/
+		if (keyCode != lastKeyCode) {
+			lastKeyCode = keyCode;
+			switch (lastKeyCode) {
+				case SWT.SHIFT:
+				case SWT.CONTROL:
+				case SWT.ALT:
+				case SWT.CAPS_LOCK:
+				case SWT.NUM_LOCK:
+				case SWT.SCROLL_LOCK:
+				case SWT.COMMAND: {
+					/* keypress events will not be received for these keys, so send KeyDowns for them now */
+					boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+					rc = domKeyEvent.GetAltKey (aAltKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					rc = domKeyEvent.GetShiftKey (aShiftKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					rc = domKeyEvent.GetMetaKey (aMetaKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+
+					Event keyEvent = new Event ();
+					keyEvent.widget = browser;
+					keyEvent.type = SWT.KeyDown;
+					keyEvent.keyCode = lastKeyCode;
+					keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+					keyEvent.stateMask &= ~lastKeyCode;		/* remove current keydown if it's a state key */
+					browser.notifyListeners (keyEvent.type, keyEvent);
+				}
+				default: {
+					/* do nothing, KeyDown event will be sent for this key by keypress listener */
+				}
+			}
+		}
+		domKeyEvent.Release ();
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_KEYPRESS.equals (typeString)) {
+		/*
+		* if keydown could not determine a keycode for this key then it's a
+		* key for which key events are not sent (eg.- the Windows key)
+		*/
+		if (lastKeyCode == 0) return XPCOM.NS_OK;
+
+		/*
+		* On linux only, unexpected keypress events are received for some
+		* modifier keys.  The workaround is to ignore these events since
+		* KeyDown events are sent for these keys in the keydown listener.  
+		*/
+		switch (lastKeyCode) {
+			case SWT.CAPS_LOCK:
+			case SWT.NUM_LOCK:
+			case SWT.SCROLL_LOCK: return XPCOM.NS_OK;
+		}
+
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.QueryInterface (nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
+		result[0] = 0;
+
+		boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+		rc = domKeyEvent.GetAltKey (aAltKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetShiftKey (aShiftKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetMetaKey (aMetaKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		domKeyEvent.Release ();
+
+		int[] aCharCode = new int[1]; /* PRUint32 */
+		rc = domKeyEvent.GetCharCode (aCharCode);
+		if (rc != XPCOM.NS_OK) error (rc);
+		lastCharCode = aCharCode[0];
+		if (lastCharCode == 0) {
+			switch (lastKeyCode) {
+				case SWT.TAB: lastCharCode = SWT.TAB; break;
+				case SWT.CR: lastCharCode = SWT.CR; break;
+				case SWT.BS: lastCharCode = SWT.BS; break;
+				case SWT.ESC: lastCharCode = SWT.ESC; break;
+				case SWT.DEL: lastCharCode = SWT.DEL; break;
+			}
+		}
+		if (aCtrlKey[0] && (0 <= lastCharCode && lastCharCode <= 0x7F)) {
+			if ('a'  <= lastCharCode && lastCharCode <= 'z') lastCharCode -= 'a' - 'A';
+			if (64 <= lastCharCode && lastCharCode <= 95) lastCharCode -= 64;
+		}
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyDown;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.character = (char)lastCharCode;
+		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_KEYUP.equals (typeString)) {
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.QueryInterface (nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
+		result[0] = 0;
+
+		int[] aKeyCode = new int[1]; /* PRUint32 */
+		rc = domKeyEvent.GetKeyCode (aKeyCode);
+		if (rc != XPCOM.NS_OK) error (rc);
+		int keyCode = translateKey (aKeyCode[0]);
+		if (keyCode == 0) {
+			/* indicates a key for which key events are not sent */
+			domKeyEvent.Release ();
+			return XPCOM.NS_OK;
+		}
+		if (keyCode != lastKeyCode) {
+			/* keyup does not correspond to the last keydown */
+			lastKeyCode = keyCode;
+			lastCharCode = 0;
+		}
+
+		boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+		rc = domKeyEvent.GetAltKey (aAltKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetShiftKey (aShiftKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetMetaKey (aMetaKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		domKeyEvent.Release ();
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyUp;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.character = (char)lastCharCode;
+		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+		switch (lastKeyCode) {
+			case SWT.SHIFT:
+			case SWT.CONTROL:
+			case SWT.ALT:
+			case SWT.COMMAND: {
+				keyEvent.stateMask |= lastKeyCode;
+			}
+		}
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		lastKeyCode = lastCharCode = 0;
 		return XPCOM.NS_OK;
 	}
 

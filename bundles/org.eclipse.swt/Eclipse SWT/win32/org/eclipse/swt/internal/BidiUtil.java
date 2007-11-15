@@ -16,6 +16,7 @@ import java.util.Hashtable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 /*
  * Wraps Win32 API used to bidi enable the StyledText widget.
  */
@@ -107,6 +108,9 @@ public class BidiUtil {
 public static void addLanguageListener (int /*long*/ hwnd, Runnable runnable) {
 	languageMap.put(new LONG(hwnd), runnable);
 	subclass(hwnd);
+}
+public static void addLanguageListener (Control control, Runnable runnable) {
+	addLanguageListener(control.handle, runnable);
 }
 /**
  * Proc used for OS.EnumSystemLanguageGroups call during isBidiPlatform test.
@@ -492,7 +496,10 @@ public static boolean isKeyboardBidi() {
 public static void removeLanguageListener (int /*long*/ hwnd) {
 	languageMap.remove(new LONG(hwnd));
 	unsubclass(hwnd);
-}		
+}
+public static void removeLanguageListener (Control control) {
+	removeLanguageListener(control.handle);
+}
 /**
  * Switch the keyboard language to the specified language type.  We do
  * not distinguish between multiple bidi or multiple non-bidi languages, so
@@ -552,6 +559,9 @@ public static boolean setOrientation (int /*long*/ hwnd, int orientation) {
 	} 
 	OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits);
 	return true;
+}
+public static boolean setOrientation (Control control, int orientation) {
+	return setOrientation(control.handle, orientation);
 }
 /**
  * Override the window proc.
