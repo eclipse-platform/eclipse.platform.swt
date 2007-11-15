@@ -64,19 +64,20 @@ public class Snippet283 {
 			public void handleEvent(Event event) {
 				event.detail &= ~SWT.FOREGROUND;
 				String osName = System.getProperty("os.name");
-				if (osName != null && osName.contains ("Windows")) {
-					if (!osName.contains ("Vista") && !osName.contains ("unknown")) {
-						event.detail &= ~(SWT.FOREGROUND | SWT.SELECTED | SWT.HOT | SWT.FOCUSED);
-						GC gc = event.gc;
-						TableItem item = (TableItem)event.item;
-						Rectangle rect = table.getClientArea ();
-						Rectangle itemRect = item.getBounds ();
-						itemRect.x = rect.x;
-						itemRect.width = rect.width;
-						gc.setClipping ((Rectangle) null);
-						gc.fillRectangle (itemRect);
+				if (osName != null && osName.indexOf ("Windows") != -1) {
+					if (osName.indexOf ("Vista") != -1 || osName.indexOf ("unknown") != -1) {
+						return;
 					}
 				}
+				event.detail &= ~(SWT.FOREGROUND | SWT.SELECTED | SWT.HOT | SWT.FOCUSED);
+				GC gc = event.gc;
+				TableItem item = (TableItem)event.item;
+				Rectangle rect = table.getClientArea ();
+				Rectangle itemRect = item.getBounds ();
+				itemRect.x = rect.x;
+				itemRect.width = rect.width;
+				gc.setClipping ((Rectangle) null);
+				gc.fillRectangle (itemRect);
 			}
 		});
 		table.addListener(SWT.PaintItem, new Listener() {
