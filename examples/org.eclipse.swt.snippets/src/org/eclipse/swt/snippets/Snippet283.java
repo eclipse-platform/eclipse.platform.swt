@@ -62,15 +62,21 @@ public class Snippet283 {
 		 */
 		table.addListener(SWT.EraseItem, new Listener() {
 			public void handleEvent(Event event) {
-				event.detail &= ~(SWT.FOREGROUND | SWT.SELECTED | SWT.HOT | SWT.FOCUSED);
-				GC gc = event.gc;
-				TableItem item = (TableItem)event.item;
-				Rectangle rect = table.getClientArea ();
-				Rectangle itemRect = item.getBounds ();
-				itemRect.x = rect.x;
-				itemRect.width = rect.width;
-				gc.setClipping ((Rectangle) null);
-				gc.fillRectangle (itemRect);
+				event.detail &= ~SWT.FOREGROUND;
+				String osName = System.getProperty("os.name");
+				if (osName != null && osName.contains ("Windows")) {
+					if (!osName.contains ("Vista")) {
+						event.detail &= ~(SWT.FOREGROUND | SWT.SELECTED | SWT.HOT | SWT.FOCUSED);
+						GC gc = event.gc;
+						TableItem item = (TableItem)event.item;
+						Rectangle rect = table.getClientArea ();
+						Rectangle itemRect = item.getBounds ();
+						itemRect.x = rect.x;
+						itemRect.width = rect.width;
+						gc.setClipping ((Rectangle) null);
+						gc.fillRectangle (itemRect);
+					}
+				}
 			}
 		});
 		table.addListener(SWT.PaintItem, new Listener() {
