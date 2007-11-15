@@ -12,7 +12,7 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class allow the user to select
@@ -94,90 +94,95 @@ public PrintDialog (Shell parent, int style) {
  * </ul>
  */
 public PrinterData open() {
-	int[] buffer = new int[1];
-	if (OS.PMCreateSession(buffer) == OS.noErr) {
-		int printSession = buffer[0];
-		if (OS.PMCreatePrintSettings(buffer) == OS.noErr) {
-			int printSettings = buffer[0];
-			OS.PMSessionDefaultPrintSettings(printSession, printSettings);
-			if (OS.PMCreatePageFormat(buffer) == OS.noErr) {
-				int pageFormat = buffer[0];
-				OS.PMSessionDefaultPageFormat(printSession, pageFormat);
-				OS.PMSessionSetDestination(printSession, printSettings, (short) (printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
-				if (scope == PrinterData.PAGE_RANGE) {
-					OS.PMSetFirstPage(printSettings, startPage, false);
-					OS.PMSetLastPage(printSettings, endPage, false);
-					OS.PMSetPageRange(printSettings, startPage, endPage);
-				} else {
-					OS.PMSetPageRange(printSettings, 1, OS.kPMPrintAllPages);
-				}
-				boolean[] accepted = new boolean [1];
-				OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
-				if (accepted[0]) {		
-					OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
-					if (accepted[0]) {
-						short[] destType = new short[1];
-						OS.PMSessionGetDestinationType(printSession, printSettings, destType);
-						String name = Printer.getCurrentPrinterName(printSession);
-						String driver = Printer.DRIVER;
-						switch (destType[0]) {
-							case OS.kPMDestinationFax: driver = Printer.FAX_DRIVER; break;
-							case OS.kPMDestinationFile: driver = Printer.FILE_DRIVER; break;
-							case OS.kPMDestinationPreview: driver = Printer.PREVIEW_DRIVER; break;
-							case OS.kPMDestinationPrinter: driver = Printer.PRINTER_DRIVER; break;
-						}
-						PrinterData data = new PrinterData(driver, name);
-						if (destType[0] == OS.kPMDestinationFile) {
-							data.printToFile = true;
-							OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
-							int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
-							OS.CFRelease(buffer[0]);
-							data.fileName = Printer.getString(fileName);
-							OS.CFRelease(fileName);
-						}
-						OS.PMGetCopies(printSettings, buffer);
-						data.copyCount = buffer[0];						
-						OS.PMGetFirstPage(printSettings, buffer);
-						data.startPage = buffer[0];
-						OS.PMGetLastPage(printSettings, buffer);
-						data.endPage = buffer[0];
-						OS.PMGetPageRange(printSettings, null, buffer);
-						if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
-							data.scope = PrinterData.ALL_PAGES;
-						} else {
-							data.scope = PrinterData.PAGE_RANGE;
-						}
-						boolean[] collate = new boolean[1];
-						OS.PMGetCollate(printSettings, collate);
-						data.collate = collate[0];
-						
-						/* Serialize settings */
-						int[] flatSettings = new int[1];
-						OS.PMFlattenPrintSettings(printSettings, flatSettings);
-						int[] flatFormat = new int[1];
-						OS.PMFlattenPageFormat(pageFormat, flatFormat);
-						int settingsLength = OS.GetHandleSize (flatSettings[0]);
-						int formatLength = OS.GetHandleSize (flatFormat[0]);
-						byte[] otherData = data.otherData = new byte[settingsLength + formatLength + 8];
-						int offset = 0;
-						offset = Printer.packData(flatSettings[0], otherData, offset);
-						offset = Printer.packData(flatFormat[0], otherData, offset);
-						OS.DisposeHandle(flatSettings[0]);
-						OS.DisposeHandle(flatFormat[0]);
-						
-						scope = data.scope;
-						startPage = data.startPage;
-						endPage = data.endPage;
-						printToFile = data.printToFile;
-						return data;
-					}
-				}
-				OS.PMRelease(pageFormat);
-			}
-			OS.PMRelease(printSettings);
-		}
-		OS.PMRelease(printSession);
-	}
+	NSPrintPanel panel = NSPrintPanel.printPanel();
+	NSPrintInfo printInfo =(NSPrintInfo)new NSPrintInfo().alloc();
+	printInfo.initWithDictionary(null);
+	panel.runModalWithPrintInfo(printInfo);
+	printInfo.release();
+//	int[] buffer = new int[1];
+//	if (OS.PMCreateSession(buffer) == OS.noErr) {
+//		int printSession = buffer[0];
+//		if (OS.PMCreatePrintSettings(buffer) == OS.noErr) {
+//			int printSettings = buffer[0];
+//			OS.PMSessionDefaultPrintSettings(printSession, printSettings);
+//			if (OS.PMCreatePageFormat(buffer) == OS.noErr) {
+//				int pageFormat = buffer[0];
+//				OS.PMSessionDefaultPageFormat(printSession, pageFormat);
+//				OS.PMSessionSetDestination(printSession, printSettings, (short) (printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
+//				if (scope == PrinterData.PAGE_RANGE) {
+//					OS.PMSetFirstPage(printSettings, startPage, false);
+//					OS.PMSetLastPage(printSettings, endPage, false);
+//					OS.PMSetPageRange(printSettings, startPage, endPage);
+//				} else {
+//					OS.PMSetPageRange(printSettings, 1, OS.kPMPrintAllPages);
+//				}
+//				boolean[] accepted = new boolean [1];
+//				OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
+//				if (accepted[0]) {		
+//					OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
+//					if (accepted[0]) {
+//						short[] destType = new short[1];
+//						OS.PMSessionGetDestinationType(printSession, printSettings, destType);
+//						String name = Printer.getCurrentPrinterName(printSession);
+//						String driver = Printer.DRIVER;
+//						switch (destType[0]) {
+//							case OS.kPMDestinationFax: driver = Printer.FAX_DRIVER; break;
+//							case OS.kPMDestinationFile: driver = Printer.FILE_DRIVER; break;
+//							case OS.kPMDestinationPreview: driver = Printer.PREVIEW_DRIVER; break;
+//							case OS.kPMDestinationPrinter: driver = Printer.PRINTER_DRIVER; break;
+//						}
+//						PrinterData data = new PrinterData(driver, name);
+//						if (destType[0] == OS.kPMDestinationFile) {
+//							data.printToFile = true;
+//							OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
+//							int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
+//							OS.CFRelease(buffer[0]);
+//							data.fileName = Printer.getString(fileName);
+//							OS.CFRelease(fileName);
+//						}
+//						OS.PMGetCopies(printSettings, buffer);
+//						data.copyCount = buffer[0];						
+//						OS.PMGetFirstPage(printSettings, buffer);
+//						data.startPage = buffer[0];
+//						OS.PMGetLastPage(printSettings, buffer);
+//						data.endPage = buffer[0];
+//						OS.PMGetPageRange(printSettings, null, buffer);
+//						if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
+//							data.scope = PrinterData.ALL_PAGES;
+//						} else {
+//							data.scope = PrinterData.PAGE_RANGE;
+//						}
+//						boolean[] collate = new boolean[1];
+//						OS.PMGetCollate(printSettings, collate);
+//						data.collate = collate[0];
+//						
+//						/* Serialize settings */
+//						int[] flatSettings = new int[1];
+//						OS.PMFlattenPrintSettings(printSettings, flatSettings);
+//						int[] flatFormat = new int[1];
+//						OS.PMFlattenPageFormat(pageFormat, flatFormat);
+//						int settingsLength = OS.GetHandleSize (flatSettings[0]);
+//						int formatLength = OS.GetHandleSize (flatFormat[0]);
+//						byte[] otherData = data.otherData = new byte[settingsLength + formatLength + 8];
+//						int offset = 0;
+//						offset = Printer.packData(flatSettings[0], otherData, offset);
+//						offset = Printer.packData(flatFormat[0], otherData, offset);
+//						OS.DisposeHandle(flatSettings[0]);
+//						OS.DisposeHandle(flatFormat[0]);
+//						
+//						scope = data.scope;
+//						startPage = data.startPage;
+//						endPage = data.endPage;
+//						printToFile = data.printToFile;
+//						return data;
+//					}
+//				}
+//				OS.PMRelease(pageFormat);
+//			}
+//			OS.PMRelease(printSettings);
+//		}
+//		OS.PMRelease(printSession);
+//	}
 	return null;
 }
 
