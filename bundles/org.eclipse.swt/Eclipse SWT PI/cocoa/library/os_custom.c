@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	//objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4);
 	if (glyphRangeForCharacterRange == 0) glyphRangeForCharacterRange = sel_registerName("glyphRangeForCharacterRange:actualCharacterRange::");
 	if ((SEL)arg2 == glyphRangeForCharacterRange) {
-		*lparg0 = [(id)arg1 glyphRangeForCharacterRange: *lparg3 actualCharacterRange: arg4];
+		*lparg0 = [(id)arg1 glyphRangeForCharacterRange: *lparg3 actualCharacterRange: (NSRange *)arg4];
 	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
