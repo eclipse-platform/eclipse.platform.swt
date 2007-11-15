@@ -569,6 +569,8 @@ typedef enum {
 	Matrix_1ScalePrepend_FUNC,
 	Matrix_1Transform_FUNC,
 	Matrix_1TranslatePrepend_FUNC,
+	MemoryStream_1ToArray_FUNC,
+	MemoryStream_1Write_FUNC,
 	MenuItem_1Click_FUNC,
 	MenuItem_1Icon_FUNC,
 	MenuItem_1InputGestureText_FUNC,

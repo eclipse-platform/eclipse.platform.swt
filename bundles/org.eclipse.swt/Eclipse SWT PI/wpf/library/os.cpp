@@ -6588,6 +6588,30 @@ JNIEXPORT void JNICALL OS_NATIVE(Matrix_1TranslatePrepend)
 }
 #endif
 
+#ifndef NO_MemoryStream_1ToArray
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(MemoryStream_1ToArray)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(MemoryStream_1ToArray)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, MemoryStream_1ToArray_FUNC);
+	rc = (jint)TO_HANDLE(((System::IO::MemoryStream^)TO_OBJECT(arg0))->ToArray());
+	OS_NATIVE_EXIT(env, that, MemoryStream_1ToArray_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_MemoryStream_1Write
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(MemoryStream_1Write)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3);
+JNIEXPORT void JNICALL OS_NATIVE(MemoryStream_1Write)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, MemoryStream_1Write_FUNC);
+	((System::IO::MemoryStream^)TO_OBJECT(arg0))->Write((array<Byte>^)TO_OBJECT(arg1), arg2, arg3);
+	OS_NATIVE_EXIT(env, that, MemoryStream_1Write_FUNC);
+}
+#endif
+
 #ifndef NO_MenuItem_1Click
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(MenuItem_1Click)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(MenuItem_1Click)

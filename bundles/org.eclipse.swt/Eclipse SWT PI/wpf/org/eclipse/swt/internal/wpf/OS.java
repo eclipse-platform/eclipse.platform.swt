@@ -966,6 +966,8 @@ public static final native void ListBox_SelectionMode(int sender, int value);
 public static final native void ListBox_UnselectAll(int sender);
 public static final native void ListView_View(int sender, int value);
 public static final native int ListViewItem_typeid();
+public static final native int MemoryStream_ToArray(int sender);
+public static final native void MemoryStream_Write(int sender, int buffer, int offset, int count);
 public static final native void Menu_IsMainMenu(int sender, boolean value);
 public static final native void MenuItem_Click(int sender, int handler);
 public static final native void MenuItem_Icon(int sender, int value);
