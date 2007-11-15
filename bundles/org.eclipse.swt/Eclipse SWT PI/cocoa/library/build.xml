@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build_cocoa_lib" basedir="../../..">
+
+<target name="init">
+	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
+	<eclipse.refreshLocal resource="org.eclipse.swt.tools" depth="infinite" />	
+   	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
+</target>
+	
+<target name="build_cocoa_lib" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="install"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
+</target>
+
+<target name="clean">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="clean"/>
+	</exec>
+</target>
+
+</project>

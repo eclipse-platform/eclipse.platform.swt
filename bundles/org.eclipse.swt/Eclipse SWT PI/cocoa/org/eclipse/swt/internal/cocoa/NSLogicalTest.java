@@ -1,0 +1,28 @@
+package org.eclipse.swt.internal.cocoa;
+
+public class NSLogicalTest extends NSScriptWhoseTest {
+
+public NSLogicalTest() {
+	super();
+}
+
+public NSLogicalTest(int id) {
+	super(id);
+}
+
+public id initAndTestWithTests(NSArray subTests) {
+	int result = OS.objc_msgSend(this.id, OS.sel_initAndTestWithTests_1, subTests != null ? subTests.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
+public id initNotTestWithTest(NSScriptWhoseTest subTest) {
+	int result = OS.objc_msgSend(this.id, OS.sel_initNotTestWithTest_1, subTest != null ? subTest.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
+public id initOrTestWithTests(NSArray subTests) {
+	int result = OS.objc_msgSend(this.id, OS.sel_initOrTestWithTests_1, subTests != null ? subTests.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
+}

@@ -1,0 +1,1225 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.widgets;
+
+
+import org.eclipse.swt.internal.cocoa.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+
+/** 
+ * Instances of this class represent a selectable user interface
+ * object that displays a list of strings and issues notification
+ * when a string is selected.  A list may be single or multi select.
+ * <p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SINGLE, MULTI</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection, DefaultSelection</dd>
+ * </dl>
+ * <p>
+ * Note: Only one of SINGLE and MULTI may be specified.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
+public class List extends Scrollable {
+	NSTableColumn column;
+	String [] items;
+	int itemCount;
+	boolean ignoreSelect;
+
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
+public List (Composite parent, int style) {
+	super (parent, checkStyle (style));
+}
+
+/**
+ * Adds the argument to the end of the receiver's list.
+ *
+ * @param string the new item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #add(String,int)
+ */
+public void add (String string) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (itemCount == items.length) {
+		String [] newItems = new String [itemCount + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	items [itemCount++] = string;
+	((NSTableView)view).reloadData();
+	//TODO adjust horizontal scrollbar
+}
+
+/**
+ * Adds the argument to the receiver's list at the given
+ * zero-relative index.
+ * <p>
+ * Note: To add an item at the end of the list, use the
+ * result of calling <code>getItemCount()</code> as the
+ * index or use <code>add(String)</code>.
+ * </p>
+ *
+ * @param string the new item
+ * @param index the index for the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #add(String)
+ */
+public void add (String string, int index) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (index != itemCount) fixSelection (index, true);
+	if (itemCount == items.length) {
+		String [] newItems = new String [itemCount + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
+	items [index] = string;
+	((NSTableView)view).reloadData();
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the user changes the receiver's selection, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the selection changes.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * </p>
+ *
+ * @param listener the listener which should be notified when the user changes the receiver's selection
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
+public void addSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener(listener);
+	addListener(SWT.Selection,typedListener);
+	addListener(SWT.DefaultSelection,typedListener);
+}
+
+static int checkStyle (int style) {
+	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
+	int width = 0;
+	if (wHint == SWT.DEFAULT) {
+		GC gc = new GC (this);
+		for (int i=0; i<itemCount; i++) {
+			Point extent = gc.stringExtent (items [i]);
+			width = Math.max (width, extent.x);
+		}
+		gc.dispose ();
+//		width += EXTRA_WIDTH;
+	} else {
+		width = wHint;
+	}
+	if (width <= 0) width = DEFAULT_WIDTH;
+	int height = 0;
+	if (hHint == SWT.DEFAULT) {
+		height = itemCount * getItemHeight ();
+	} else {
+		height = hHint;
+	}
+	if (height <= 0) height = DEFAULT_HEIGHT;
+	Rectangle rect = computeTrim (0, 0, width, height);
+	return new Point (rect.width, rect.height);
+}
+
+void createHandle () {
+	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	scrollWidget.initWithFrame(new NSRect ());
+	if ((style & SWT.H_SCROLL) != 0) scrollWidget.setHasHorizontalScroller(true);
+	if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
+	scrollWidget.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
+	scrollWidget.setTag(jniRef);
+	
+	NSTableView widget = (NSTableView)new SWTTableView().alloc();
+	widget.initWithFrame(new NSRect());
+	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
+	widget.setDataSource(widget);
+	widget.setHeaderView(null);
+	widget.setDelegate(widget);
+	widget.setTag(jniRef);
+	widget.setDoubleAction(OS.sel_sendDoubleSelection);
+	
+	column = (NSTableColumn)new NSTableColumn().alloc();
+	column.initWithIdentifier(NSString.stringWith(""));
+	widget.addTableColumn (column);
+	
+	scrollView = scrollWidget;
+	view = widget;
+	scrollView.setDocumentView(widget);
+	parent.contentView().addSubview_(scrollView);
+}
+
+void createWidget () {
+	super.createWidget ();
+	items = new String [4];
+}
+
+Color defaultBackground () {
+	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+}
+
+Color defaultForeground () {
+	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
+/**
+ * Deselects the item at the given zero-relative index in the receiver.
+ * If the item at the index was already deselected, it remains
+ * deselected. Indices that are out of range are ignored.
+ *
+ * @param index the index of the item to deselect
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void deselect (int index) {
+	checkWidget();
+	if (0 <= index && index < itemCount) {
+		NSTableView widget = (NSTableView)view;
+		widget.setDelegate(null);
+		widget.deselectRow (index);
+		widget.setDelegate(widget);
+	}
+}
+
+/**
+ * Deselects the items at the given zero-relative indices in the receiver.
+ * If the item at the given zero-relative index in the receiver 
+ * is selected, it is deselected.  If the item at the index
+ * was not selected, it remains deselected.  The range of the
+ * indices is inclusive. Indices that are out of range are ignored.
+ *
+ * @param start the start index of the items to deselect
+ * @param end the end index of the items to deselect
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void deselect (int start, int end) {
+	checkWidget();
+	if (start > end) return;
+	if (end < 0 || start >= itemCount) return;
+	start = Math.max (0, start);
+	end = Math.min (itemCount - 1, end);
+	int length = end - start + 1;
+	if (length <= 0) return;
+	if (start == 0 && end == itemCount - 1) {
+		deselectAll ();
+	} else {
+		NSTableView widget = (NSTableView)view;
+		widget.setDelegate(null);
+		for (int i=0; i<length; i++) {
+			widget.deselectRow (i);
+		}
+		widget.setDelegate(widget);
+	}
+}
+
+/**
+ * Deselects the items at the given zero-relative indices in the receiver.
+ * If the item at the given zero-relative index in the receiver 
+ * is selected, it is deselected.  If the item at the index
+ * was not selected, it remains deselected. Indices that are out
+ * of range and duplicate indices are ignored.
+ *
+ * @param indices the array of indices for the items to deselect
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of indices is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void deselect (int [] indices) {
+	checkWidget();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	NSTableView widget = (NSTableView)view;
+	widget.setDelegate(null);
+	for (int i=0; i<indices.length; i++) {
+		widget.deselectRow (indices [i]);
+	}
+	widget.setDelegate(widget);
+}
+
+/**
+ * Deselects all selected items in the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void deselectAll () {
+	checkWidget ();
+	NSTableView widget = (NSTableView)view;
+	widget.setDelegate(null);
+	widget.deselectAll(null);
+	widget.setDelegate(widget);
+}
+
+void fixSelection (int index, boolean add) {
+	int [] selection = getSelectionIndices ();
+	if (selection.length == 0) return;
+	int newCount = 0;
+	boolean fix = false;
+	for (int i = 0; i < selection.length; i++) {
+		if (!add && selection [i] == index) {
+			fix = true;
+		} else {
+			int newIndex = newCount++;
+			selection [newIndex] = selection [i] + 1;
+			if (selection [newIndex] - 1 >= index) {
+				selection [newIndex] += add ? 1 : -1;
+				fix = true;
+			}
+		}
+	}
+	if (fix) select (selection, newCount, true);
+}
+
+/**
+ * Returns the zero-relative index of the item which currently
+ * has the focus in the receiver, or -1 if no item has focus.
+ *
+ * @return the index of the selected item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getFocusIndex () {
+	checkWidget();
+//	int [] first = new int [1], last = new int [1];
+//	if (OS.GetDataBrowserSelectionAnchor (handle, first, last) != OS.noErr) return -1;
+//    return first [0] - 1;
+	return -1;
+}
+
+/**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String getItem (int index) {
+	checkWidget();
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	return items [index];
+}
+
+/**
+ * Returns the number of items contained in the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getItemCount () {
+	checkWidget();
+	return itemCount;
+}
+
+/**
+ * Returns the height of the area which would be used to
+ * display <em>one</em> of the items in the list.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getItemHeight () {
+	checkWidget ();
+	return (int)((NSTableView)view).rowHeight();
+}
+
+/**
+ * Returns a (possibly empty) array of <code>String</code>s which
+ * are the items in the receiver. 
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the items in the receiver's list
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String [] getItems () {
+	checkWidget();
+    String [] result = new String [itemCount];
+	System.arraycopy (items, 0, result, 0, itemCount);
+	return result;
+}
+
+/**
+ * Returns an array of <code>String</code>s that are currently
+ * selected in the receiver.  The order of the items is unspecified.
+ * An empty array indicates that no items are selected.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its selection, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ * @return an array representing the selection
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String [] getSelection () {
+	checkWidget ();
+	//BUG ?
+	if (((NSTableView)view).numberOfSelectedRows() == 0) {
+		return new String [0];
+	}
+	NSIndexSet selection = ((NSTableView)view).selectedRowIndexes();
+	int bufferSize = selection.lastIndex() - selection.firstIndex() + 1;
+	int [] indexBuffer = new int [bufferSize];
+	selection.getIndexes(indexBuffer, bufferSize, 0);
+	String [] result = new String  [bufferSize];
+	for (int i=0; i<bufferSize; i++) {
+		result [i] = items [indexBuffer [i]];
+	}
+	return result;
+}
+
+/**
+ * Returns the number of selected items contained in the receiver.
+ *
+ * @return the number of selected items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getSelectionCount () {
+	checkWidget ();
+	return ((NSTableView)view).numberOfSelectedRows();
+}
+
+/**
+ * Returns the zero-relative index of the item which is currently
+ * selected in the receiver, or -1 if no item is selected.
+ *
+ * @return the index of the selected item or -1
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getSelectionIndex () {
+	checkWidget();
+	//TODO - check empty selection case
+	return ((NSTableView)view).selectedRow();
+}
+
+/**
+ * Returns the zero-relative indices of the items which are currently
+ * selected in the receiver.  The order of the indices is unspecified.
+ * The array is empty if no items are selected.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its selection, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ * @return the array of indices of the selected items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int [] getSelectionIndices () {
+	checkWidget ();
+	//BUG
+	if (((NSTableView)view).numberOfSelectedRows() == 0) {
+		return new int [0];
+	}
+	NSIndexSet selection = ((NSTableView)view).selectedRowIndexes();
+	int bufferSize = selection.lastIndex() - selection.firstIndex() + 1;
+	int [] indexBuffer = new int [bufferSize];
+	selection.getIndexes(indexBuffer, bufferSize, 0);
+	return indexBuffer;
+}
+
+/**
+ * Returns the zero-relative index of the item which is currently
+ * at the top of the receiver. This index can change when items are
+ * scrolled or new items are added or removed.
+ *
+ * @return the index of the top item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getTopIndex () {
+	checkWidget();
+	//TODO - partial item at the top
+	NSRect rect = scrollView.documentVisibleRect();
+	NSPoint point = new NSPoint();
+	point.x = rect.x;
+	point.y = rect.y;
+    return ((NSTableView)view).rowAtPoint(point);
+}
+
+/**
+ * Gets the index of an item.
+ * <p>
+ * The list is searched starting at 0 until an
+ * item is found that is equal to the search item.
+ * If no item is found, -1 is returned.  Indexing
+ * is zero based.
+ *
+ * @param string the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int indexOf (String item) {
+	checkWidget();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<itemCount; i++) {
+		if (items [i].equals (item)) return i;
+	}
+	return -1;
+}
+
+/**
+ * Searches the receiver's list starting at the given, 
+ * zero-relative index until an item is found that is equal
+ * to the argument, and returns the index of that item. If
+ * no item is found or the starting index is out of range,
+ * returns -1.
+ *
+ * @param string the search item
+ * @param start the zero-relative index at which to start the search
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int indexOf (String string, int start) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=start; i<itemCount; i++) {
+		if (items [i].equals (string)) return i;
+	}
+	return -1;
+}
+
+/**
+ * Returns <code>true</code> if the item is selected,
+ * and <code>false</code> otherwise.  Indices out of
+ * range are ignored.
+ *
+ * @param index the index of the item
+ * @return the selection state of the item at the index
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean isSelected (int index) {
+	checkWidget();
+	//TODO - range check
+	return ((NSTableView)view).isRowSelected(index);
+}
+
+int numberOfRowsInTableView(int aTableView) {
+	return itemCount;
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (column != null) column.release();
+	column = null;
+}
+
+void releaseWidget () {	
+	super.releaseWidget ();
+	items = null;
+}
+
+/**
+ * Removes the item from the receiver at the given
+ * zero-relative index.
+ *
+ * @param index the index for the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void remove (int index) {
+	checkWidget();
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (index != itemCount - 1) fixSelection (index, false);
+	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+	items [itemCount] = null;
+	((NSTableView)view).noteNumberOfRowsChanged();
+}
+
+/**
+ * Removes the items from the receiver which are
+ * between the given zero-relative start and end 
+ * indices (inclusive).
+ *
+ * @param start the start of the range
+ * @param end the end of the range
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if either the start or end are not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void remove (int start, int end) {
+	checkWidget();
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < itemCount)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int length = end - start + 1;
+	for (int i=0; i<length; i++) remove (start);
+}
+
+/**
+ * Searches the receiver's list starting at the first item
+ * until an item is found that is equal to the argument, 
+ * and removes that item from the list.
+ *
+ * @param string the item to remove
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the string is not found in the list</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void remove (String string) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int index = indexOf (string, 0);
+	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
+	remove (index);
+}
+
+/**
+ * Removes the items from the receiver at the given
+ * zero-relative indices.
+ *
+ * @param indices the array of indices of the items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void remove (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
+	int [] newIndices = new int [indices.length];
+	System.arraycopy (indices, 0, newIndices, 0, indices.length);
+	sort (newIndices);
+	int start = newIndices [newIndices.length - 1], end = newIndices [0];
+	int count = getItemCount ();
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int last = -1;
+	for (int i=0; i<newIndices.length; i++) {
+		int index = newIndices [i];
+		if (index != last) {
+			remove (index);
+			last = index;
+		}
+	}
+}
+
+/**
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void removeAll () {
+	checkWidget();
+	items = new String [4];
+	itemCount = 0;
+	((NSTableView)view).noteNumberOfRowsChanged();
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the user changes the receiver's selection.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
+public void removeSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook(SWT.Selection, listener);
+	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+/**
+ * Selects the item at the given zero-relative index in the receiver's 
+ * list.  If the item at the index was already selected, it remains
+ * selected. Indices that are out of range are ignored.
+ *
+ * @param index the index of the item to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void select (int index) {
+	checkWidget();
+	if (0 <= index && index < itemCount) {
+		NSIndexSet indexes = (NSIndexSet)new NSIndexSet().alloc();
+		indexes.initWithIndex(index);
+		NSTableView widget = (NSTableView)view;
+		widget.setDelegate(null);
+		((NSTableView)view).selectRowIndexes(indexes, true);
+		widget.setDelegate(view);
+	}
+}
+
+/**
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If an item in the given range is not selected, it is selected.
+ * If an item in the given range was already selected, it remains selected.
+ * Indices that are out of range are ignored and no items will be selected
+ * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
+ *
+ * @param start the start of the range
+ * @param end the end of the range
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see List#setSelection(int,int)
+ */
+public void select (int start, int end) {
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
+	if (start == 0 && end == itemCount - 1) {
+		selectAll ();
+	} else {
+		start = Math.max (0, start);
+		end = Math.min (end, itemCount - 1);
+		int length = end - start + 1;
+		NSIndexSet indexes = (NSIndexSet)new NSIndexSet().alloc();
+		NSRange range = new NSRange();
+		range.location = start;
+		range.length = length;
+		indexes.initWithIndexesInRange(range);
+		NSTableView widget = (NSTableView)view;
+		widget.setDelegate(null);
+		widget.selectRowIndexes(indexes, true);
+		widget.setDelegate(widget);
+	}
+}
+
+/**
+ * Selects the items at the given zero-relative indices in the receiver.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If the item at a given index is not selected, it is selected.
+ * If the item at a given index was already selected, it remains selected.
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
+ *
+ * @param indices the array of indices for the items to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see List#setSelection(int[])
+ */
+public void select (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	int count = 0;
+	NSMutableIndexSet indexes = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
+	for (int i=0; i<length; i++) {
+		int index = indices [length - i - 1];
+		if (index >= 0 && index < itemCount) {
+			indexes.addIndex (indices [i]);
+		}
+	}
+	if (count > 0) {
+		NSTableView widget = (NSTableView)view;
+		widget.setDelegate(null);
+		widget.selectRowIndexes(indexes, true);
+		widget.setDelegate(widget);
+	}
+}
+
+void select (int [] ids, int count, boolean clear) {
+	NSMutableIndexSet indexes = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
+	for (int i=0; i<count; i++) indexes.addIndex (ids [i] - 1); //WRONG -1
+	NSTableView widget = (NSTableView)view;
+	widget.setDelegate(null);
+	widget.selectRowIndexes(indexes, !clear);
+	widget.setDelegate(widget);
+
+}
+
+/**
+ * Selects all of the items in the receiver.
+ * <p>
+ * If the receiver is single-select, do nothing.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void selectAll () {
+	checkWidget ();
+	if ((style & SWT.SINGLE) != 0) return;
+	NSTableView widget = (NSTableView)view;
+	widget.setDelegate(null);
+	widget.selectAll(null);
+	widget.setDelegate(widget);
+}
+
+void sendDoubleSelection() {
+	postEvent (SWT.DefaultSelection);	
+}
+
+/**
+ * Sets the text of the item in the receiver's list at the given
+ * zero-relative index to the string argument.
+ *
+ * @param index the index for the item
+ * @param string the new text for the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setItem (int index, String string) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	items [index] = string;
+	((NSTableView)view).reloadData();
+}
+
+/**
+ * Sets the receiver's items to be the given array of items.
+ *
+ * @param items the array of items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setItems (String [] items) {
+	checkWidget();
+	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.items = new String [items.length];
+	System.arraycopy (items, 0, this.items, 0, items.length);
+	itemCount = items.length;
+	((NSTableView)view).reloadData();
+}
+
+/**
+ * Selects the item at the given zero-relative index in the receiver. 
+ * If the item at the index was already selected, it remains selected.
+ * The current selection is first cleared, then the new item is selected.
+ * Indices that are out of range are ignored.
+ *
+ * @param index the index of the item to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see List#deselectAll()
+ * @see List#select(int)
+ */
+public void setSelection (int index) {
+	checkWidget();
+	deselectAll ();
+	setSelection (index, false);
+}
+
+void setSelection (int index, boolean notify) {
+//	checkWidget();
+	if (0 <= index && index < itemCount) {
+		int [] ids = new int [] {index + 1};
+		select (ids, ids.length, true);
+		showIndex (index);
+		if (notify) postEvent (SWT.Selection);
+	}
+}
+
+/**
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Indices that are out of range are ignored and no items will be selected
+ * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
+ *
+ * @param start the start index of the items to select
+ * @param end the end index of the items to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see List#deselectAll()
+ * @see List#select(int,int)
+ */
+public void setSelection (int start, int end) {
+	checkWidget ();
+	deselectAll ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
+	start = Math.max (0, start);
+	end = Math.min (end, itemCount - 1);
+	int length = end - start + 1;
+	int [] ids = new int [length];
+	for (int i=0; i<length; i++) ids [i] = end - i + 1;
+	select (ids, length, true);
+	if (ids.length > 0) showIndex (ids [0] - 1);
+}
+
+/**
+ * Selects the items at the given zero-relative indices in the receiver.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
+ *
+ * @param indices the indices of the items to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see List#deselectAll()
+ * @see List#select(int[])
+ */
+public void setSelection (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	int [] ids = new int [length];
+	int count = 0;
+	for (int i=0; i<length; i++) {
+		int index = indices [length - i - 1];
+		if (index >= 0 && index < itemCount) {
+			ids [count++] = index + 1;
+		}
+	}
+	if (count > 0) {
+		select (ids, count, true);
+		showIndex (ids [0] - 1);
+	}
+}
+
+/**
+ * Sets the receiver's selection to be the given array of items.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Items that are not in the receiver are ignored.
+ * If the receiver is single-select and multiple items are specified,
+ * then all items are ignored.
+ *
+ * @param items the array of items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see List#deselectAll()
+ * @see List#select(int[])
+ * @see List#setSelection(int[])
+ */
+public void setSelection (String [] items) {
+	checkWidget ();
+	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	int count = 0;
+	int [] ids = new int [length];
+	for (int i=0; i<length; i++) {
+		String string = items [length - i - 1];
+		if ((style & SWT.SINGLE) != 0) {
+			int index = indexOf (string, 0);
+			if (index != -1) {
+				count = 1;
+				ids = new int [] {index + 1};
+			}
+		} else {
+			int index = 0;
+			while ((index = indexOf (string, index)) != -1) {
+				if (count == ids.length) {
+					int [] newIds = new int [ids.length + 4];
+					System.arraycopy (ids, 0, newIds, 0, ids.length);
+					ids = newIds;
+				}
+				ids [count++] = index + 1;
+				index++;
+			}
+		}
+	}
+	if (count > 0) {
+		select (ids, count, true);
+		showIndex (ids [0] - 1);
+	}
+}
+
+/**
+ * Sets the zero-relative index of the item which is currently
+ * at the top of the receiver. This index can change when items
+ * are scrolled or new items are added and removed.
+ *
+ * @param index the index of the top item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setTopIndex (int index) {
+	checkWidget();
+	NSRect rect = ((NSTableView)view).rectOfRow(index);
+	((NSTableView)view).scrollRectToVisible(rect);
+}
+
+void showIndex (int index) {
+	if (0 <= index && index < itemCount) {
+		((NSTableView)view).scrollRowToVisible(index);
+	}
+}
+
+/**
+ * Shows the selection.  If the selection is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled until
+ * the selection is visible.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void showSelection () {
+	checkWidget();
+	int index = getSelectionIndex ();
+	if (index >= 0) showIndex (index);
+}
+
+void tableViewSelectionDidChange (int aNotification) {
+	postEvent (SWT.Selection);
+}
+
+boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+	return false;
+}
+
+int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+	return NSString.stringWith(items[rowIndex]).id;
+}
+
+}
