@@ -10,50 +10,51 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.gtk.*;
-
 import java.net.*;
 
+import org.eclipse.swt.internal.motif.*;
+ 
 /**
- * The class <code>URLTransfer</code> provides a platform specific mechanism 
- * for converting text in URL format represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information. The string  
- * must be a fully specified url.
- * 
- * <p>An example of a java <code>String[]</code> containing a URL is shown 
- * below:</p>
- * 
- * <code><pre>
- *     String urlData = "http://www.eclipse.org";
- * </code></pre>
- */
+* The class <code>URLTransfer</code> provides a platform specific mechanism 
+* for converting text in URL format represented as a java <code>String[]</code> 
+* to a platform specific representation of the data and vice versa.  See 
+* <code>Transfer</code> for additional information. The string in the 
+* is mandatory and must contain the fully specified url.
+* 
+* <p>An example of a java <code>String</code> containing a URL is shown 
+* below:</p>
+* 
+* <code><pre>
+*     String urlData = "http://www.eclipse.org";
+* </code></pre>
+*/
 public class URLTransfer extends ByteArrayTransfer {
 
 	static URLTransfer _instance = new URLTransfer();
-	private static final String TEXT_UNICODE = "text/unicode"; //$NON-NLS-1$
-	private static final int TEXT_UNICODE_ID = registerType(TEXT_UNICODE);	
 	
+	static final String TEXT_UNICODE = "text/unicode"; //$NON-NLS-1$
+	static final int TEXT_UNICODE_ID = registerType(TEXT_UNICODE);
+
 private URLTransfer() {}
 
 /**
- * Returns the singleton instance of the URLTransfer class.
- *
- * @return the singleton instance of the URLTransfer class
- */
+* Returns the singleton instance of the URLTransfer class.
+*
+* @return the singleton instance of the URLTransfer class
+*/
 public static URLTransfer getInstance () {
 	return _instance;
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts a URL 
- * represented by a java <code>String</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
- * 
- * @param object a java <code>String</code> containing a URL
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
- */
+* This implementation of <code>javaToNative</code> converts a URL
+* represented by a java <code>String</code> to a platform specific representation.
+* For additional information see <code>Transfer#javaToNative</code>.
+* 
+* @param object a java <code>String</code> containing a URL 
+* @param transferData an empty <code>TransferData</code> object; this
+*  object will be filled in on return with the platform specific format of the data
+*/
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
 	if (!checkURL(object) || !isSupportedType(transferData)) {
@@ -64,27 +65,27 @@ public void javaToNative (Object object, TransferData transferData){
 	char [] chars = new char[charCount +1];
 	string.getChars(0, charCount , chars, 0);
 	int byteCount = chars.length*2;
-	int /*long*/ pValue = OS.g_malloc(byteCount);
+	int pValue = OS.XtMalloc(byteCount);
 	if (pValue == 0) return;
 	OS.memmove(pValue, chars, byteCount);
 	transferData.length = byteCount;
 	transferData.format = 8;
 	transferData.pValue = pValue;
-	transferData.result = 1;		
+	transferData.result = 1;
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of a URL <code>String</code>.
- * For additional information see <code>Transfer#nativeToJava</code>.
- * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String</code> containing a URL if the 
- * conversion was successful; otherwise null
- */
+* This implementation of <code>nativeToJava</code> converts a platform specific 
+* representation of a URL to a java <code>String</code>.
+* For additional information see <code>Transfer#nativeToJava</code>.
+* 
+* @param transferData the platform specific representation of the data to be 
+*  converted
+* @return a java <code>String</code> containing a URL if the 
+* conversion was successful; otherwise null
+*/
 public Object nativeToJava(TransferData transferData){
-	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
+	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
 	/* Ensure byteCount is a multiple of 2 bytes */
 	int size = (transferData.format * transferData.length / 8) / 2 * 2;
 	if (size <= 0) return null;			
@@ -100,7 +101,7 @@ protected int[] getTypeIds(){
 }
 
 protected String[] getTypeNames(){
-	return new String[] {TEXT_UNICODE}; 
+	return new String[] {TEXT_UNICODE};
 }
 
 boolean checkURL(Object object) {
