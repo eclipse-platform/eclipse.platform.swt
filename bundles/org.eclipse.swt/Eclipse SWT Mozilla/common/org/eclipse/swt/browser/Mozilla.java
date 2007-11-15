@@ -47,7 +47,6 @@ class Mozilla extends WebBrowser {
 	Shell tip = null;
 	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
-	String lastProxyHost, lastProxyPortString;
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
@@ -62,16 +61,13 @@ class Mozilla extends WebBrowser {
 	static final String GRERANGE_UPPER = "1.9"; //$NON-NLS-1$
 	static final boolean UpperRangeInclusive = false;
 
+	static final int MAX_PORT = 65535;
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
-	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEWINDOWSTATUSCHANGE = "dom.disable_window_status_change"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
-	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
-	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
-	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
-	static final String PROFILE_DIR = SEPARATOR_OS + "eclipse" + SEPARATOR_OS; //$NON-NLS-1$
 	static final String PREFERENCE_PROXYHOST_FTP = "network.proxy.ftp"; //$NON-NLS-1$
 	static final String PREFERENCE_PROXYPORT_FTP = "network.proxy.ftp_port"; //$NON-NLS-1$
 	static final String PREFERENCE_PROXYHOST_HTTP = "network.proxy.http"; //$NON-NLS-1$
@@ -81,11 +77,15 @@ class Mozilla extends WebBrowser {
 	static final String PREFERENCE_PROXYTYPE = "network.proxy.type"; //$NON-NLS-1$
 	static final String PROFILE_AFTER_CHANGE = "profile-after-change"; //$NON-NLS-1$
 	static final String PROFILE_BEFORE_CHANGE = "profile-before-change"; //$NON-NLS-1$
+	static final String PROFILE_DIR = SEPARATOR_OS + "eclipse" + SEPARATOR_OS; //$NON-NLS-1$
 	static final String PROFILE_DO_CHANGE = "profile-do-change"; //$NON-NLS-1$
-	static final String PROPERTY_PROXY = "http.proxyHost"; //$NON-NLS-1$
-	static final String PROPERTY_PORT = "http.proxyPort"; //$NON-NLS-1$
+	static final String PROPERTY_PROXYPORT = "network.proxy_port"; //$NON-NLS-1$
+	static final String PROPERTY_PROXYHOST = "network.proxy_host"; //$NON-NLS-1$
+	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
+	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
+	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
 	static final String XULRUNNER_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
@@ -888,6 +888,66 @@ public void create (Composite parent, int style) {
 		if (localizedString != null) localizedString.Release ();
 
 		/*
+		* Check for proxy values set as documented java properties and update mozilla's
+		* preferences with these values if needed.
+		*/
+		String proxyHost = System.getProperty (PROPERTY_PROXYHOST);
+		String proxyPortString = System.getProperty (PROPERTY_PROXYPORT);
+
+		int port = -1;
+		if (proxyPortString != null) {
+			try {
+				int value = Integer.valueOf (proxyPortString).intValue ();
+				if (0 <= value && value <= MAX_PORT) port = value;
+			} catch (NumberFormatException e) {
+				/* do nothing, java property has non-integer value */
+			}
+		}
+
+		if (proxyHost != null) {
+			byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
+			rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+			localizedString = new nsIPrefLocalizedString (result[0]);
+			result[0] = 0;
+			int length = proxyHost.length ();
+			char[] charBuffer = new char[length + 1];
+			proxyHost.getChars (0, length, charBuffer, 0);
+			rc = localizedString.SetDataWithLength (length, charBuffer);
+			if (rc != XPCOM.NS_OK) error (rc);
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_FTP, true);
+			rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+			if (rc != XPCOM.NS_OK) error (rc);
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_HTTP, true);
+			rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+			if (rc != XPCOM.NS_OK) error (rc);
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_SSL, true);
+			rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+			if (rc != XPCOM.NS_OK) error (rc);
+			localizedString.Release ();
+		}
+
+		if (port != -1) {
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_FTP, true);
+			rc = prefBranch.SetIntPref (buffer, port);
+			if (rc != XPCOM.NS_OK) error (rc);
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_HTTP, true);
+			rc = prefBranch.SetIntPref (buffer, port);
+			if (rc != XPCOM.NS_OK) error (rc);
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_SSL, true);
+			rc = prefBranch.SetIntPref (buffer, port);
+			if (rc != XPCOM.NS_OK) error (rc);
+		}
+
+		if (proxyHost != null || port != -1) {
+			buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYTYPE, true);
+			rc = prefBranch.SetIntPref (buffer, 1);
+			if (rc != XPCOM.NS_OK) error (rc);
+		}
+
+		/*
 		* Ensure that windows that are shown during page loads are not blocked.  Firefox may
 		* try to block these by default since such windows are often unwelcome, but this
 		* assumption should not be made in the Browser's context.  Since the Browser client
@@ -981,6 +1041,7 @@ public void create (Composite parent, int style) {
 
 		componentRegistrar.Release ();
 		componentManager.Release ();
+
 		Is_1_8 = IsXULRunner;
 		Initialized = true;
 	}
@@ -1092,7 +1153,6 @@ public void create (Composite parent, int style) {
 	}
 
 	delegate.init ();
-	updateProxy ();
 
 	listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -1151,8 +1211,6 @@ public void create (Composite parent, int style) {
 }
 
 public boolean back () {
-	updateProxy ();
-
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1347,8 +1405,6 @@ static Browser findBrowser (int /*long*/ handle) {
 }
 
 public boolean forward () {
-	updateProxy ();
-
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1605,8 +1661,6 @@ void onResize () {
 }
 
 public void refresh () {
-	updateProxy ();
-
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1630,8 +1684,6 @@ public void refresh () {
 }
 
 public boolean setText (String html) {
-	updateProxy ();
-
 	/*
 	*  Feature in Mozilla.  The focus memory of Mozilla must be 
 	*  properly managed through the nsIWebBrowserFocus interface.
@@ -1736,8 +1788,6 @@ public boolean setText (String html) {
 }
 
 public boolean setUrl (String url) {
-	updateProxy ();
-
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1752,8 +1802,6 @@ public boolean setUrl (String url) {
 }
 
 public void stop () {
-	updateProxy ();
-
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1964,110 +2012,6 @@ void unhookDOMListeners (nsIDOMEventTarget target) {
 	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	if (rc != XPCOM.NS_OK) error (rc);
 	string.dispose ();
-}
-
-void updateProxy () {
-	/* Check the standard java properties for proxy changes and update mozilla's preferences if needed */
-	String proxyHost = System.getProperty (PROPERTY_PROXY); //$NON-NLS-1$
-	String proxyPortString = System.getProperty (PROPERTY_PORT); //$NON-NLS-1$
-	boolean hostChanged = proxyHost != null && !proxyHost.equals (lastProxyHost);
-	boolean portChanged = false;
-	int port = 0;
-	if (proxyPortString != null && !proxyPortString.equals (lastProxyPortString)) {
-		if (proxyPortString.length () > 0) {
-			try {
-				port = Integer.valueOf (proxyPortString).intValue ();
-				if (0 <= port && port <= 65535) portChanged = true;
-			} catch (NumberFormatException e) {
-				/* do nothing, java property has non-integer value */
-			}
-		} else {
-			portChanged = true;		/* changed to 0 */
-		}
-		lastProxyPortString = proxyPortString;
-	}
-	if (!hostChanged && !portChanged) return;
-
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;
-	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	serviceManager.Release ();
-
-	nsIPrefService prefService = new nsIPrefService (result[0]);
-	result[0] = 0;
-	byte[] buffer = new byte[1];
-	rc = prefService.GetBranch (buffer, result);	/* empty buffer denotes root preference level */
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	prefService.Release ();
-
-	nsIPrefBranch prefBranch = new nsIPrefBranch (result[0]);
-	result[0] = 0;
-
-	if (hostChanged) {
-		rc = XPCOM.NS_GetComponentManager (result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
-		result[0] = 0;
-		byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
-		rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-		componentManager.Release ();
-
-		nsIPrefLocalizedString localizedString = new nsIPrefLocalizedString (result[0]);
-		result[0] = 0;
-		int length = proxyHost.length ();
-		char[] charBuffer = new char[length + 1];
-		proxyHost.getChars (0, length, charBuffer, 0);
-		rc = localizedString.SetDataWithLength (length, charBuffer);
-		if (rc != XPCOM.NS_OK) error (rc);
-		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_FTP, true);
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
-		if (rc != XPCOM.NS_OK) error (rc);
-		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_HTTP, true);
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
-		if (rc != XPCOM.NS_OK) error (rc);
-		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_SSL, true);
-		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
-		if (rc != XPCOM.NS_OK) error (rc);
-		localizedString.Release ();
-		lastProxyHost = proxyHost;
-	}
-
-	buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_FTP, true);
-	if (portChanged) {
-		rc = prefBranch.SetIntPref (buffer, port);
-		if (rc != XPCOM.NS_OK) error (rc);
-		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_HTTP, true);
-		rc = prefBranch.SetIntPref (buffer, port);
-		if (rc != XPCOM.NS_OK) error (rc);
-		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_SSL, true);
-		rc = prefBranch.SetIntPref (buffer, port);
-		if (rc != XPCOM.NS_OK) error (rc);
-	} else {
-		int[] portResult = new int[1]; /* PRInt32 */
-		rc = prefBranch.GetIntPref (buffer, portResult);
-		if (rc != XPCOM.NS_OK) error (rc);
-		port = portResult[0];
-	}
-
-	buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYTYPE, true);
-	boolean enableProxy = (proxyHost != null && proxyHost.length () > 0) || port != 0;
-	rc = prefBranch.SetIntPref (buffer, enableProxy ? 1 : 0);
-	if (rc != XPCOM.NS_OK) error (rc);
-
-	prefBranch.Release ();
 }
 
 /* nsISupports */
@@ -2699,8 +2643,6 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 /* nsIURIContentListener */
 
 int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
-	updateProxy ();
-
 	nsIURI location = new nsIURI (aURI);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
 	location.GetSpec (aSpec);
