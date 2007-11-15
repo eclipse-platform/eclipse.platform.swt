@@ -18,9 +18,9 @@ public void addObserver_selector_name_object_suspensionBehavior_(id observer, in
 	OS.objc_msgSend(this.id, OS.sel_addObserver_1selector_1name_1object_1suspensionBehavior_1, observer != null ? observer.id : 0, selector, name != null ? name.id : 0, object != null ? object.id : 0, suspensionBehavior);
 }
 
-public static id defaultCenter() {
+public static NSNotificationCenter defaultCenter() {
 	int result = OS.objc_msgSend(OS.class_NSDistributedNotificationCenter, OS.sel_defaultCenter);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSNotificationCenter(result) : null;
 }
 
 public static NSDistributedNotificationCenter notificationCenterForType(NSString notificationCenterType) {
