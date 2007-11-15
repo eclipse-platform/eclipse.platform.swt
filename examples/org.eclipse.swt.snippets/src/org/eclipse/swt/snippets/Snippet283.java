@@ -65,7 +65,7 @@ public class Snippet283 {
 				event.detail &= ~SWT.FOREGROUND;
 				String osName = System.getProperty("os.name");
 				if (osName != null && osName.contains ("Windows")) {
-					if (!osName.contains ("Vista")) {
+					if (!osName.contains ("Vista") && !osName.contains ("unknown")) {
 						event.detail &= ~(SWT.FOREGROUND | SWT.SELECTED | SWT.HOT | SWT.FOCUSED);
 						GC gc = event.gc;
 						TableItem item = (TableItem)event.item;
