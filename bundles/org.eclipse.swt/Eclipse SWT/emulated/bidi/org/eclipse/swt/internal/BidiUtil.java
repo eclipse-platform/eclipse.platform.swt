@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal;
 
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Control;
 
 /*
  * This class is supplied so that the StyledText code that supports bidi text (supported

@@ -290,7 +290,10 @@ public void setImage (Image image) {
  */
 public void setToolTip (ToolTip toolTip) {
 	checkWidget ();
-	this.toolTip = toolTip;
+	ToolTip oldTip = this.toolTip, newTip = toolTip;
+	if (oldTip != null) oldTip.item = null;
+	this.toolTip = newTip;
+	if (newTip != null) newTip.item = this;
 }
 
 /**
