@@ -41,7 +41,7 @@ public class Spinner extends Composite {
 	int pageIncrement = 10;
 	int digits = 0;
 	
-	static int GAP = 3;
+	static int GAP = 0;
 
 /**
  * Constructs a new instance of this class given its parent

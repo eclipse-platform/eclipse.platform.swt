@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
  * @since 3.1
  */
 public class Link extends Control {
+	NSScrollView scrollView;
 	String text;
 	Point [] offsets;
 	Point selection;
@@ -118,13 +119,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width, height;
+	//TODO wrapping, wHint
+	int borderStyle = hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder;
+	NSSize borderSize = NSScrollView.frameSizeForContentSize(new NSSize(), false, false, borderStyle);
 	NSTextView widget = (NSTextView)view;
-	NSRect oldRect = widget.frame();
-	widget.sizeToFit();
-	NSRect newRect = widget.frame();
-	widget.setFrame (oldRect);
-	width = (int)newRect.width;
-	height = (int)newRect.height;		
+	NSSize size = widget.textStorage().size();
+	width = (int)(size.width + borderSize.width);
+	height = (int)(size.height + borderSize.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
@@ -134,14 +135,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	scrollWidget.initWithFrame(new NSRect ());
+	scrollWidget.setDrawsBackground(false);
+	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
+	scrollWidget.setTag(jniRef);
+
 	SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setEditable(false);
 	widget.setDrawsBackground(false);
 	widget.setDelegate(widget);
+	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	widget.setTag(jniRef);
+	widget.textContainer().setLineFragmentPadding(0);
+	
+	scrollView = scrollWidget;
 	view = widget;
-	parent.contentView().addSubview_(widget);
+	scrollView.addSubview_(view);
+	scrollView.setDocumentView(view);
+	parent.contentView().addSubview_(scrollView);
 }
 
 void createWidget () {
@@ -389,6 +402,10 @@ public void setText (String string) {
 		range.length = offsets[i].y - offsets[i].x + 1;
 		textStorage.addAttribute(OS.NSLinkAttributeName(), NSString.stringWith(ids[i]), range);
 	}
+}
+
+NSView topView () {
+	return scrollView;
 }
 
 //int traversalCode (int key, int theEvent) {
