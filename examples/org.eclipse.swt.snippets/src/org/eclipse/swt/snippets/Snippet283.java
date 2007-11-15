@@ -82,12 +82,12 @@ public class Snippet283 {
 				Point textExtent = gc.stringExtent (text);
 				Rectangle imageRect = item.getImageBounds(0);
 				Rectangle textRect = item.getTextBounds (0);
-				int textY = event.y + Math.max (0, (textExtent.y - textRect.height) / 2);
+				int textY = textRect.y + Math.max (0, (textRect.height - textExtent.y) / 2);
 				if (image == null) {
 					gc.drawString(text, imageRect.x, textY, true);
 				} else {
 					Rectangle imageExtent = image.getBounds ();
-					int imageY = event.y + Math.max (0, (imageExtent.width - imageRect.height) / 2);
+					int imageY = imageRect.y + Math.max (0, (imageRect.height - imageExtent.height) / 2);
 					gc.drawImage (image, imageRect.x, imageY);
 					gc.drawString (text, textRect.x, textY, true);
 				}
