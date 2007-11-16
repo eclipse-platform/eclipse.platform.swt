@@ -58,6 +58,8 @@ public class OleControlSite extends OleClientSite
 	private int[] sitePropertyIds = new int[0];
 	private Variant[] sitePropertyValues = new Variant[0];
 	
+	private Font font;
+
 	// work around for IE destroying the caret
 	static int SWT_RESTORECARET;
 	
@@ -427,7 +429,7 @@ public Color getBackground () {
 	return super.getBackground();
 }
 public Font getFont () {
-
+	if (font != null && !font.isDisposed()) return font;
 	if (objIUnknown != null) {
 		OleAutomation oleObject= new OleAutomation(this);
 		Variant varDispFont = oleObject.getProperty(COM.DISPID_FONT);
@@ -447,7 +449,7 @@ public Font getFont () {
 				lfItalic != null && 
 				lfBold != null){
 				int style = 3 * lfBold.getInt() + 2 * lfItalic.getInt();
-				Font font = new Font(getShell().getDisplay(), lfFaceName.getString(), lfHeight.getInt(), style);
+				font = new Font(getShell().getDisplay(), lfFaceName.getString(), lfHeight.getInt(), style);
 				return font;
 			}
 		}
@@ -823,7 +825,7 @@ public void setFont (Font font) {
 			iDispFont.dispose();
 		}
 	}
-		
+	this.font = font;	
 	return;
 }
 public void setForeground (Color color) {
