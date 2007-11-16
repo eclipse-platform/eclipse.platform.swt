@@ -551,35 +551,9 @@ public void setAccelerator (int accelerator) {
 	if ((accelerator & SWT.COMMAND) != 0) mask |= OS.NSCommandKeyMask;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.NSAlternateKeyMask;
 	nsItem.setKeyEquivalentModifierMask (mask);
-	
-//	int index = parent.indexOf (this);
-//	if (index == -1) return;
-//	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
-//	this.accelerator = accelerator;
-//	boolean inSetVirtualKey = false;
-//	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
-//	if (accelerator != 0) {
-//		inKey = accelerator & SWT.KEY_MASK;
-//		inGlyph = keyGlyph (inKey);
-//		int virtualKey = Display.untranslateKey (inKey);
-//		if (inKey == ' ') virtualKey = 49;
-//		if (virtualKey != 0) {
-//			inSetVirtualKey = true;
-//			inKey = virtualKey;
-//		} else {
-//			inKey = Character.toUpperCase ((char)inKey);
-//		}
-//		inModifiers = (byte) OS.kMenuNoCommandModifier;
-//		if ((accelerator & SWT.SHIFT) != 0) inModifiers |= OS.kMenuShiftModifier;
-//		if ((accelerator & SWT.CONTROL) != 0) inModifiers |= OS.kMenuControlModifier;
-//		if ((accelerator & SWT.COMMAND) != 0) inModifiers &= ~OS.kMenuNoCommandModifier;
-//		if ((accelerator & SWT.ALT) != 0) inModifiers |= OS.kMenuOptionModifier;
-//	}
-//	short menuIndex = (short) (index + 1);
-//	OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
-//	OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
-//	OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
-//	if (update) updateText (menuIndex);
+	if ((this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0)) {
+		updateText ();
+	}
 }
 
 /**
@@ -744,13 +718,23 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (text.equals (string)) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
 	super.setText (string);
+	updateText();
+}
+	
+void updateText() {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	((NSMenuItem)nsItem).setTitle(NSString.stringWithCharacters(buffer, length));
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if (buffer [i] == '\t') break;
+		if ((buffer [j++] = buffer [i++]) == '&') {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == '&') {i++; continue;}
+			j--;
+		}
+	}
+	((NSMenuItem)nsItem).setTitle(NSString.stringWithCharacters(buffer, j));
 }
 
 }
