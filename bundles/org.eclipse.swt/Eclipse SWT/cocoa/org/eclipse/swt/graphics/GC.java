@@ -1452,6 +1452,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	checkGC(CLIPPING | TRANSFORM);
 	if ((width == 0) || (height == 0)) return;
 
 	RGB backgroundRGB, foregroundRGB;
@@ -1479,8 +1480,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		return;
 	}
 
-	NSColor startingColor = NSColor.colorWithDeviceRed(foregroundRGB.red / 255f, foregroundRGB.green / 255f, foregroundRGB.blue / 255f, data.alpha / 255f);
-	NSColor endingColor = NSColor.colorWithDeviceRed(backgroundRGB.red / 255f, backgroundRGB.green / 255f, backgroundRGB.blue / 255f, data.alpha / 255f);
+	NSColor startingColor = NSColor.colorWithDeviceRed(fromRGB.red / 255f, fromRGB.green / 255f, fromRGB.blue / 255f, data.alpha / 255f);
+	NSColor endingColor = NSColor.colorWithDeviceRed(toRGB.red / 255f, toRGB.green / 255f, toRGB.blue / 255f, data.alpha / 255f);
 	NSGradient gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(startingColor, endingColor);
 	NSRect rect = new NSRect();
 	rect.x = x;
