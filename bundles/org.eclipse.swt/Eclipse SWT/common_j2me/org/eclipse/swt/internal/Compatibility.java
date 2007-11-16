@@ -305,8 +305,8 @@ public static void exec(String prog) throws java.io.IOException {
  * @param child the file's name
  * @return true if the file exists
  */
-public static boolean fileExists(String parent, String child) throws java.io.IOException {
-	throw new IOException();
+public static boolean fileExists(String parent, String child) {
+	return false;
 }
 
 /**

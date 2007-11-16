@@ -105,7 +105,7 @@ public static int ceil(int p, int q) {
  * @param child the file's name
  * @return true if the file exists
  */
-public static boolean fileExists(String parent, String child) throws IOException {
+public static boolean fileExists(String parent, String child) {
 	return new File (parent, child).exists();
 }
 
