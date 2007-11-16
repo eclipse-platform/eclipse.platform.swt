@@ -2246,9 +2246,6 @@ public boolean readAndDispatch () {
 			return true;
 		}
 		return runAsyncMessages (false);
-	} catch (Throwable e) {
-		e.printStackTrace();
-		return true;
 	} finally {
 		pool.release();
 	}

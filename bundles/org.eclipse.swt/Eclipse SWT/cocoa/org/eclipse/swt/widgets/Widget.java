@@ -566,6 +566,9 @@ void keyDown(int event) {
 void keyUp(int event) {
 }
 
+void flagsChanged(int event) {
+}
+
 void mouseDragged(int event) {
 }
 
