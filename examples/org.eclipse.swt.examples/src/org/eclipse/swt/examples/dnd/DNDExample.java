@@ -11,6 +11,8 @@
 package org.eclipse.swt.examples.dnd;
 
  
+import java.net.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
@@ -29,6 +31,7 @@ public class DNDExample {
 	private String dragDataText;
 	private String dragDataRTF;
 	private String dragDataHTML;
+	private String dragDataURL;
 	private String[] dragDataFiles;
 	private List fileList;
 	private boolean dragEnabled = false;
@@ -165,7 +168,7 @@ private void createDragSource() {
 		public void dragFinished(org.eclipse.swt.dnd.DragSourceEvent event) {
 			dragConsole.append(">>dragFinished\n");
 			printEvent(event);
-			dragDataText = dragDataRTF = dragDataHTML = null;
+			dragDataText = dragDataRTF = dragDataHTML = dragDataURL = null;
 			dragDataFiles = null;
 			if (event.detail == DND.DROP_MOVE) {
 				switch(dragControlType) {
@@ -237,6 +240,9 @@ private void createDragSource() {
 			}
 			if (HTMLTransfer.getInstance().isSupportedType(event.dataType)) {
 				event.data = dragDataHTML;
+			}
+			if (URLTransfer.getInstance().isSupportedType(event.dataType)) {
+				event.data = dragDataURL;
 			}
 			if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
 				event.data = dragDataFiles;
@@ -368,6 +374,12 @@ private void createDragSource() {
 			if (dragDataText != null) {
 				dragDataRTF = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\cf1\\b "+dragDataText+"}";
 				dragDataHTML = "<b>"+dragDataText+"</b>";
+				dragDataURL = "http://" + dragDataText.replace(' ', '.');
+				try {
+					new URL(dragDataURL);
+				} catch (MalformedURLException e) {
+					dragDataURL = null;
+				}
 			}
 			
 			for (int i = 0; i < dragTypes.length; i++) {
@@ -378,6 +390,9 @@ private void createDragSource() {
 					event.doit = false;
 				}
 				if (dragTypes[i] instanceof HTMLTransfer && dragDataHTML == null) {
+					event.doit = false;
+				}
+				if (dragTypes[i] instanceof URLTransfer && dragDataURL == null) {
 					event.doit = false;
 				}
 				if (dragTypes[i] instanceof FileTransfer && (dragDataFiles == null || dragDataFiles.length == 0)) {
@@ -429,6 +444,18 @@ private void createDragTypes(Composite parent) {
 		}
 	});
 	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("URL Transfer");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				addDragTransfer(URLTransfer.getInstance());			
+			} else {
+				removeDragTransfer(URLTransfer.getInstance());
+			}
+		}
+	});
 	
 	b = new Button(parent, SWT.CHECK);
 	b.setText("File Transfer");
@@ -727,7 +754,8 @@ private void createDropTarget() {
 			String[] strings = null;
 			if (TextTransfer.getInstance().isSupportedType(event.currentDataType) ||
 			    RTFTransfer.getInstance().isSupportedType(event.currentDataType) ||
-			    HTMLTransfer.getInstance().isSupportedType(event.currentDataType)) {
+			    HTMLTransfer.getInstance().isSupportedType(event.currentDataType) ||
+			    URLTransfer.getInstance().isSupportedType(event.currentDataType)) {
 			    strings = new String[] {(String)event.data};
 			}
 			if (FileTransfer.getInstance().isSupportedType(event.currentDataType)) {
@@ -950,6 +978,19 @@ private void createDropTypes(Composite parent) {
 				addDropTransfer(HTMLTransfer.getInstance());			
 			} else {
 				removeDropTransfer(HTMLTransfer.getInstance());
+			}
+		}
+	});
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("URL Transfer");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				addDropTransfer(URLTransfer.getInstance());			
+			} else {
+				removeDropTransfer(URLTransfer.getInstance());
 			}
 		}
 	});
