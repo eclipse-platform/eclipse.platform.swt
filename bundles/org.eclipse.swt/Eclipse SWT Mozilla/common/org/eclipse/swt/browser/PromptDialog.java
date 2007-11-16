@@ -267,7 +267,7 @@ class PromptDialog extends Dialog {
 		}
 		Composite composite = new Composite(shell, SWT.NONE);
 		data = new GridData();
-		data.horizontalAlignment = GridData.END;
+		data.horizontalAlignment = GridData.CENTER;
 		composite.setLayoutData (data);
 		composite.setLayout(new GridLayout(2, true));
 		buttons[1] = new Button(composite, SWT.PUSH);
