@@ -419,8 +419,7 @@ void mouseDown(int event) {
 		highlight = true;
 		view.setNeedsDisplay(true);
 		int clickCount = nsEvent.clickCount();
-		//TODO post
-		sendEvent(clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+		postEvent(clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 	}
 }
 

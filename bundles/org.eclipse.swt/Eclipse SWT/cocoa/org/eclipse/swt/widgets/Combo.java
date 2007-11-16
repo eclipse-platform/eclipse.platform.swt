@@ -1095,8 +1095,7 @@ public void select (int index) {
 //}
 
 void sendSelection () {
-	//TODO post
-	sendEvent(SWT.Selection);
+	postEvent(SWT.Selection);
 }
 
 /**

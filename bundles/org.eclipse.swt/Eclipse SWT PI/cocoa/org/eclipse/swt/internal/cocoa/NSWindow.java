@@ -178,13 +178,13 @@ public NSView contentView() {
 
 public NSPoint convertBaseToScreen(NSPoint aPoint) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertBaseToScreen_1, aPoint);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_convertBaseToScreen_1, aPoint);
 	return result;
 }
 
 public NSPoint convertScreenToBase(NSPoint aPoint) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertScreenToBase_1, aPoint);
+	OS.objc_msgSend_struct(result, this.id, OS.sel_convertScreenToBase_1, aPoint);
 	return result;
 }
 

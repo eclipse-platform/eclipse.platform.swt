@@ -297,11 +297,6 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	return true;
 }
 
-void setZOrder () {
-	super.setZOrder ();
-//	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
-}
-
 NSView topView () {
 	if (scrollView != null) return scrollView;
 	return super.topView ();

@@ -456,8 +456,7 @@ void sendSelection () {
 		}
 	}
 	if ((style & SWT.CHECK) != 0) setSelection (!getSelection ());
-	//TODO post
-	sendEvent (SWT.Selection);
+	postEvent (SWT.Selection);
 }
 
 void setBounds (int x, int y, int width, int height) {

@@ -303,8 +303,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 void sendSelection () {
-	//TODO post
-	sendEvent (SWT.Selection);
+	postEvent (SWT.Selection);
 }
 
 /**
