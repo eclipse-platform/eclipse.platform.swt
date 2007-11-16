@@ -49,24 +49,25 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-	char[] chars;
-	if (extension.charAt (0) != '.') {
-		chars = new char[extension.length()];
-		extension.getChars(0, chars.length, chars, 0);
-	} else {
-		chars = new char[extension.length() - 1];
-		extension.getChars(1, extension.length(), chars, 0);		
-	}
-	int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-	Program program = null;
-	if (ext != 0) {
-		byte[] fsRef = new byte[80];
-		if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-			program = getProgram(fsRef);
-		}
-		OS.CFRelease(ext);
-	}
-	return program;
+//	char[] chars;
+//	if (extension.charAt (0) != '.') {
+//		chars = new char[extension.length()];
+//		extension.getChars(0, chars.length, chars, 0);
+//	} else {
+//		chars = new char[extension.length() - 1];
+//		extension.getChars(1, extension.length(), chars, 0);		
+//	}
+//	int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+//	Program program = null;
+//	if (ext != 0) {
+//		byte[] fsRef = new byte[80];
+//		if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
+//			program = getProgram(fsRef);
+//		}
+//		OS.CFRelease(ext);
+//	}
+//	return program;
+	return null;
 }
 
 /**
@@ -280,61 +281,62 @@ public static String [] getExtensions () {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	Hashtable bundles = new Hashtable();
-	String[] extensions = getExtensions();
-	byte[] fsRef = new byte[80];
-	for (int i = 0; i < extensions.length; i++) {
-		String extension = extensions[i];
-		char[] chars = new char[extension.length() - 1];
-		extension.getChars(1, extension.length(), chars, 0);
-		int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-		if (ext != 0) {
-			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-				Program program = getProgram(fsRef);
-				if (program != null && bundles.get(program.getName()) == null) {
-					bundles.put(program.getName(), program);
-					fsRef = new byte[80];
-				}
-			}
-			if (OS.VERSION >= 0x1040) {
-				int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
-				if (utis != 0) {
-					int utiCount = OS.CFArrayGetCount(utis);
-					for (int j = 0; j < utiCount; j++) {
-						int uti = OS.CFArrayGetValueAtIndex(utis, j);
-						if (uti != 0) {
-							int apps = OS.LSCopyAllRoleHandlersForContentType(uti, OS.kLSRolesAll);
-							if (apps != 0) {
-								int appCount = OS.CFArrayGetCount(apps);
-								for (int k = 0; k < appCount; k++) {
-									int app = OS.CFArrayGetValueAtIndex(apps, k);
-									if (app != 0) {;
-										if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app, 0, fsRef, null) == OS.noErr) {
-											Program program = getProgram(fsRef);
-											if (program != null && bundles.get(program.getName()) == null) {
-												bundles.put(program.getName(), program);
-												fsRef = new byte[80];
-											}
-										}
-									}
-								}
-								OS.CFRelease(apps);
-							}
-						}
-					}
-					OS.CFRelease(utis);
-				}
-			}
-			OS.CFRelease(ext);
-		}
-	}
-	int count = 0;
-	Program[] programs = new Program[bundles.size()];
-	Enumeration values = bundles.elements();
-	while (values.hasMoreElements()) {
-		programs[count++] = (Program)values.nextElement();
-	}
-	return programs;
+	return new Program[0];
+//	Hashtable bundles = new Hashtable();
+//	String[] extensions = getExtensions();
+//	byte[] fsRef = new byte[80];
+//	for (int i = 0; i < extensions.length; i++) {
+//		String extension = extensions[i];
+//		char[] chars = new char[extension.length() - 1];
+//		extension.getChars(1, extension.length(), chars, 0);
+//		int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+//		if (ext != 0) {
+//			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
+//				Program program = getProgram(fsRef);
+//				if (program != null && bundles.get(program.getName()) == null) {
+//					bundles.put(program.getName(), program);
+//					fsRef = new byte[80];
+//				}
+//			}
+//			if (OS.VERSION >= 0x1040) {
+//				int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
+//				if (utis != 0) {
+//					int utiCount = OS.CFArrayGetCount(utis);
+//					for (int j = 0; j < utiCount; j++) {
+//						int uti = OS.CFArrayGetValueAtIndex(utis, j);
+//						if (uti != 0) {
+//							int apps = OS.LSCopyAllRoleHandlersForContentType(uti, OS.kLSRolesAll);
+//							if (apps != 0) {
+//								int appCount = OS.CFArrayGetCount(apps);
+//								for (int k = 0; k < appCount; k++) {
+//									int app = OS.CFArrayGetValueAtIndex(apps, k);
+//									if (app != 0) {;
+//										if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app, 0, fsRef, null) == OS.noErr) {
+//											Program program = getProgram(fsRef);
+//											if (program != null && bundles.get(program.getName()) == null) {
+//												bundles.put(program.getName(), program);
+//												fsRef = new byte[80];
+//											}
+//										}
+//									}
+//								}
+//								OS.CFRelease(apps);
+//							}
+//						}
+//					}
+//					OS.CFRelease(utis);
+//				}
+//			}
+//			OS.CFRelease(ext);
+//		}
+//	}
+//	int count = 0;
+//	Program[] programs = new Program[bundles.size()];
+//	Enumeration values = bundles.elements();
+//	while (values.hasMoreElements()) {
+//		programs[count++] = (Program)values.nextElement();
+//	}
+//	return programs;
 }
 
 /**
@@ -373,44 +375,45 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (OS.VERSION < 0x1040) return launch(fileName);
-	int rc = -1;
-	int fsRefPtr = OS.NewPtr(fsRef.length);
-	if (fsRefPtr != 0) {
-		OS.memmove(fsRefPtr, fsRef, fsRef.length);
-		LSApplicationParameters params = new LSApplicationParameters();
-		params.version = 0;
-		params.flags = 0;
-		params.application = fsRefPtr;
-		if (fileName.length() == 0) {
-			rc = OS.LSOpenApplication(params, null);
-		} else {
-			if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
-			char[] chars = new char[fileName.length()];
-			fileName.getChars(0, chars.length, chars, 0);
-			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-			if (str != 0) {
-				int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
-				if (escapedStr != 0) {
-					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
-					if (urls != 0) {
-						int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
-						if (url != 0) {
-							OS.CFArrayAppendValue(urls, url);
-							rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
-						}
-						OS.CFRelease(urls);
-					}
-					OS.CFRelease(escapedStr);
-				}
-				if (unscapedStr != 0) OS.CFRelease(unscapedStr);
-				OS.CFRelease(str);
-			}
-		}
-		OS.DisposePtr(fsRefPtr);
-	}
-	return rc == OS.noErr;
+//	if (OS.VERSION < 0x1040) return launch(fileName);
+//	int rc = -1;
+//	int fsRefPtr = OS.NewPtr(fsRef.length);
+//	if (fsRefPtr != 0) {
+//		OS.memmove(fsRefPtr, fsRef, fsRef.length);
+//		LSApplicationParameters params = new LSApplicationParameters();
+//		params.version = 0;
+//		params.flags = 0;
+//		params.application = fsRefPtr;
+//		if (fileName.length() == 0) {
+//			rc = OS.LSOpenApplication(params, null);
+//		} else {
+//			if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
+//			char[] chars = new char[fileName.length()];
+//			fileName.getChars(0, chars.length, chars, 0);
+//			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+//			if (str != 0) {
+//				int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
+//				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
+//				if (escapedStr != 0) {
+//					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
+//					if (urls != 0) {
+//						int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
+//						if (url != 0) {
+//							OS.CFArrayAppendValue(urls, url);
+//							rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
+//						}
+//						OS.CFRelease(urls);
+//					}
+//					OS.CFRelease(escapedStr);
+//				}
+//				if (unscapedStr != 0) OS.CFRelease(unscapedStr);
+//				OS.CFRelease(str);
+//			}
+//		}
+//		OS.DisposePtr(fsRefPtr);
+//	}
+//	return rc == OS.noErr;
+	return false;
 }
 
 /**
@@ -421,50 +424,51 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	int[] iconRef = new int[1];
-	OS.GetIconRefFromFileInfo(fsRef, 0, null, 0, 0, 0, iconRef, null);
-	int[] family = new int[1];
-	int rc = OS.IconRefToIconFamily(iconRef[0], OS.kSelectorAlLAvailableData, family);
-	OS.ReleaseIconRef(iconRef[0]);
-	if (rc != OS.noErr) return null;
-//	ImageData result = createImageFromFamily(family[0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
-	ImageData result = createImageFromFamily(family[0], OS.kSmall32BitData, OS.kSmall8BitMask, 16, 16);
-	OS.DisposeHandle(family[0]);
-	if (result == null) {
-		RGB[] rgbs = new RGB[] {
-			new RGB(0xff, 0xff, 0xff), 
-			new RGB(0x5f, 0x5f, 0x5f),
-			new RGB(0x80, 0x80, 0x80),
-			new RGB(0xC0, 0xC0, 0xC0),
-			new RGB(0xDF, 0xDF, 0xBF),
-			new RGB(0xFF, 0xDF, 0x9F),
-			new RGB(0x00, 0x00, 0x00),
-		};  
-		result = new ImageData(16, 16, 4, new PaletteData(rgbs)	);
-		result.transparentPixel = 6; // use black for transparency
-		String[] p= {
-			"CCCCCCCCGGG",
-			"CFAAAAACBGG",
-			"CAAAAAACFBG",
-			"CAAAAAACBBB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CDDDDDDDDDB",
-			"CBBBBBBBBBB",
-		};
-		for (int y= 0; y < p.length; y++) {
-			for (int x= 0; x < 11; x++) {
-				result.setPixel(x+3, y+1, p[y].charAt(x)-'A');
-			}
-		}
-	}
-	return result;
+//	int[] iconRef = new int[1];
+//	OS.GetIconRefFromFileInfo(fsRef, 0, null, 0, 0, 0, iconRef, null);
+//	int[] family = new int[1];
+//	int rc = OS.IconRefToIconFamily(iconRef[0], OS.kSelectorAlLAvailableData, family);
+//	OS.ReleaseIconRef(iconRef[0]);
+//	if (rc != OS.noErr) return null;
+////	ImageData result = createImageFromFamily(family[0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
+//	ImageData result = createImageFromFamily(family[0], OS.kSmall32BitData, OS.kSmall8BitMask, 16, 16);
+//	OS.DisposeHandle(family[0]);
+//	if (result == null) {
+//		RGB[] rgbs = new RGB[] {
+//			new RGB(0xff, 0xff, 0xff), 
+//			new RGB(0x5f, 0x5f, 0x5f),
+//			new RGB(0x80, 0x80, 0x80),
+//			new RGB(0xC0, 0xC0, 0xC0),
+//			new RGB(0xDF, 0xDF, 0xBF),
+//			new RGB(0xFF, 0xDF, 0x9F),
+//			new RGB(0x00, 0x00, 0x00),
+//		};  
+//		result = new ImageData(16, 16, 4, new PaletteData(rgbs)	);
+//		result.transparentPixel = 6; // use black for transparency
+//		String[] p= {
+//			"CCCCCCCCGGG",
+//			"CFAAAAACBGG",
+//			"CAAAAAACFBG",
+//			"CAAAAAACBBB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CAAAAAAAAEB",
+//			"CDDDDDDDDDB",
+//			"CBBBBBBBBBB",
+//		};
+//		for (int y= 0; y < p.length; y++) {
+//			for (int x= 0; x < 11; x++) {
+//				result.setPixel(x+3, y+1, p[y].charAt(x)-'A');
+//			}
+//		}
+//	}
+//	return result;
+	return null;
 }
 
 /**
@@ -479,26 +483,26 @@ public String getName () {
 	return name;
 }
 
-static Program getProgram(byte[] fsRef) {
-	String name = "";
-	int[] namePtr = new int[1];
-	OS.LSCopyDisplayNameForRef(fsRef, namePtr);
-	if (namePtr[0] != 0) {
-		int length = OS.CFStringGetLength(namePtr[0]);
-		if (length != 0) {
-			char[] buffer= new char[length];
-			CFRange range = new CFRange();
-			range.length = length;
-			OS.CFStringGetCharacters(namePtr[0], range, buffer);
-			name = new String(buffer);
-		}
-		OS.CFRelease(namePtr[0]);
-	}
-	Program program = new Program();
-	program.fsRef = fsRef;
-	program.name = name;
-	return program;
-}
+//static Program getProgram(byte[] fsRef) {
+//	String name = "";
+//	int[] namePtr = new int[1];
+//	OS.LSCopyDisplayNameForRef(fsRef, namePtr);
+//	if (namePtr[0] != 0) {
+//		int length = OS.CFStringGetLength(namePtr[0]);
+//		if (length != 0) {
+//			char[] buffer= new char[length];
+//			CFRange range = new CFRange();
+//			range.length = length;
+//			OS.CFStringGetCharacters(namePtr[0], range, buffer);
+//			name = new String(buffer);
+//		}
+//		OS.CFRelease(namePtr[0]);
+//	}
+//	Program program = new Program();
+//	program.fsRef = fsRef;
+//	program.name = name;
+//	return program;
+//}
 
 /**
  * Compares the argument to the receiver, and returns true

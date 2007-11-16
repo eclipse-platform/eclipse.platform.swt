@@ -46,7 +46,7 @@ public abstract class Control extends Widget implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	NSView view;
+	public NSView view;
 	Composite parent;
 	String toolTipText;
 	Object layoutData;
@@ -782,6 +782,37 @@ void enableWidget (boolean enabled) {
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
+}
+
+void flagsChanged(int theEvent) {
+	Display display = this.display;
+	NSEvent nsEvent = new NSEvent();
+	int modifiers = nsEvent.modifierFlags();
+	int lastModifiers = display.lastModifiers;
+//	int chord = OS.GetCurrentEventButtonState ();
+	int type = SWT.KeyUp;	
+	if ((modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSAlternateKeyMask) != 0 && (lastModifiers & OS.NSAlternateKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSShiftKeyMask) != 0 && (lastModifiers & OS.NSShiftKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSControlKeyMask) != 0 && (lastModifiers & OS.NSControlKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSCommandKeyMask) != 0 && (lastModifiers & OS.NSCommandKeyMask) == 0) type = SWT.KeyDown;
+	if (type == SWT.KeyUp && (modifiers & OS.NSAlphaShiftKeyMask) == 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) != 0) {
+		Event event = new Event ();
+		event.keyCode = SWT.CAPS_LOCK;
+//		setInputState (event, SWT.KeyDown, chord, modifiers);
+		sendKeyEvent (SWT.KeyDown, event);
+	}
+	Event event = new Event ();
+//	setInputState (event, type, chord, modifiers);
+	if (event.keyCode == 0 && event.character == 0) return;
+	boolean result = sendKeyEvent (type, event);
+	if (type == SWT.KeyDown && (modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) {
+		event = new Event ();
+		event.keyCode = SWT.CAPS_LOCK;
+//		setInputState (event, SWT.KeyUp, chord, modifiers);
+		sendKeyEvent (SWT.KeyUp, event);
+	}
+	display.lastModifiers = modifiers;
 }
 
 Control findBackgroundControl () {
@@ -2842,7 +2873,7 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	view.setToolTip(NSString.stringWith(string));
+	view.setToolTip(string != null ? NSString.stringWith(string) : null);
 }
 
 /**

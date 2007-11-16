@@ -15,7 +15,6 @@ import java.util.Hashtable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
@@ -42,107 +41,110 @@ static Browser findBrowser (int handle) {
 }
 
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
-	int encoding = OS.CFStringGetSystemEncoding ();
-	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
-	char[] chars = null;
-	if (cfstring != 0) {
-		int length = OS.CFStringGetLength (cfstring);
-		chars = new char [length];
-		if (length != 0) {
-			CFRange range = new CFRange ();
-			range.length = length;
-			OS.CFStringGetCharacters (cfstring, range, chars);
-		}
-		OS.CFRelease (cfstring);
-	}
-	return chars;
+//	int encoding = OS.CFStringGetSystemEncoding ();
+//	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
+//	char[] chars = null;
+//	if (cfstring != 0) {
+//		int length = OS.CFStringGetLength (cfstring);
+//		chars = new char [length];
+//		if (length != 0) {
+//			CFRange range = new CFRange ();
+//			range.length = length;
+//			OS.CFStringGetCharacters (cfstring, range, chars);
+//		}
+//		OS.CFRelease (cfstring);
+//	}
+//	return chars;
+	return new String(buffer).toCharArray();
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
-	char[] chars = new char [string.length()];
-	string.getChars (0, chars.length, chars, 0);
-	int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-	byte[] buffer = null;
-	if (cfstring != 0) {
-		CFRange range = new CFRange ();
-		range.length = chars.length;
-		int encoding = OS.CFStringGetSystemEncoding ();
-		int[] size = new int[1];
-		int numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte)'?', true, null, 0, size);
-		buffer = new byte [size[0] + (terminate ? 1 : 0)];
-		if (numChars != 0) {
-			numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte)'?', true, buffer, size[0], size);
-		}
-		OS.CFRelease (cfstring);
-	}
-	return buffer;
+//	char[] chars = new char [string.length()];
+//	string.getChars (0, chars.length, chars, 0);
+//	int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+//	byte[] buffer = null;
+//	if (cfstring != 0) {
+//		CFRange range = new CFRange ();
+//		range.length = chars.length;
+//		int encoding = OS.CFStringGetSystemEncoding ();
+//		int[] size = new int[1];
+//		int numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte)'?', true, null, 0, size);
+//		buffer = new byte [size[0] + (terminate ? 1 : 0)];
+//		if (numChars != 0) {
+//			numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte)'?', true, buffer, size[0], size);
+//		}
+//		OS.CFRelease (cfstring);
+//	}
+//	return buffer;
+	return (string + "\0").getBytes();
 }
 
-static int eventProc3 (int nextHandler, int theEvent, int userData) {
-	Widget widget = Display.getCurrent ().findWidget (userData);
-	if (widget instanceof Browser) {
-		Browser browser = (Browser) widget;
-		browser.getShell ().forceActive ();
-		((Mozilla)browser.webBrowser).Activate ();
-	}
-	return OS.eventNotHandledErr;
-}
+//static int eventProc3 (int nextHandler, int theEvent, int userData) {
+//	Widget widget = Display.getCurrent ().findWidget (userData);
+//	if (widget instanceof Browser) {
+//		Browser browser = (Browser) widget;
+//		browser.getShell ().forceActive ();
+//		((Mozilla)browser.webBrowser).Activate ();
+//	}
+//	return OS.eventNotHandledErr;
+//}
 
 int getHandle () {
-    int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
-	if (embedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	NSRect r = new NSRect ();
-	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
-	int rc;
-	int[] outControl = new int[1];
-	if (USE_COCOA_VIEW_CREATE && OS.VERSION >= 0x1050) {
-		rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl);
-	} else {
-		try {
-			System.loadLibrary ("frameembedding"); //$NON-NLS-1$
-		} catch (UnsatisfiedLinkError e) {}
-		rc = Cocoa.HIJavaViewCreateWithCocoaView (outControl, embedHandle);
-	}
-	if (rc != OS.noErr || outControl[0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int subHIView = outControl[0];
-	HILayoutInfo newLayoutInfo = new HILayoutInfo ();
-	newLayoutInfo.version = 0;
-	OS.HIViewGetLayoutInfo (subHIView, newLayoutInfo);
-	HISideBinding biding = newLayoutInfo.binding.top;
-	biding.toView = 0;
-	biding.kind = OS.kHILayoutBindMin;
-	biding.offset = 0;
-	biding = newLayoutInfo.binding.left;
-	biding.toView = 0;
-	biding.kind = OS.kHILayoutBindMin;
-	biding.offset = 0;
-	biding = newLayoutInfo.binding.bottom;
-	biding.toView = 0;
-	biding.kind = OS.kHILayoutBindMax;
-	biding.offset = 0;
-	biding = newLayoutInfo.binding.right;
-	biding.toView = 0;
-	biding.kind = OS.kHILayoutBindMax;
-	biding.offset = 0;
-	OS.HIViewSetLayoutInfo (subHIView, newLayoutInfo);
-	OS.HIViewChangeFeatures (subHIView, OS.kHIViewFeatureIsOpaque, 0);
-	OS.HIViewSetVisible (subHIView, true);
-	int parentHandle = browser.handle;
-	OS.HIViewAddSubview (browser.handle, subHIView);
-	CGRect rect = new CGRect ();
-	OS.HIViewGetFrame (parentHandle, rect);
-	rect.x = rect.y = 0;
-	OS.HIViewSetFrame (subHIView, rect);
-	handles.put (new LONG (embedHandle), new LONG (browser.handle));
-
-	if (Callback3 == null) Callback3 = new Callback (this.getClass (), "eventProc3", 3); //$NON-NLS-1$
-	int callback3Address = Callback3.getAddress ();
-	if (callback3Address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	int [] mask = new int [] {
-		OS.kEventClassMouse, OS.kEventMouseDown,
-	};
-	int controlTarget = OS.GetControlEventTarget (subHIView);
-	OS.InstallEventHandler (controlTarget, callback3Address, mask.length / 2, mask, browser.handle, null);
+	int embedHandle = browser.view.id;
+//    int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
+//	if (embedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+//	NSRect r = new NSRect ();
+//	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
+//	int rc;
+//	int[] outControl = new int[1];
+//	if (USE_COCOA_VIEW_CREATE && OS.VERSION >= 0x1050) {
+//		rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl);
+//	} else {
+//		try {
+//			System.loadLibrary ("frameembedding"); //$NON-NLS-1$
+//		} catch (UnsatisfiedLinkError e) {}
+//		rc = Cocoa.HIJavaViewCreateWithCocoaView (outControl, embedHandle);
+//	}
+//	if (rc != OS.noErr || outControl[0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+//	int subHIView = outControl[0];
+//	HILayoutInfo newLayoutInfo = new HILayoutInfo ();
+//	newLayoutInfo.version = 0;
+//	OS.HIViewGetLayoutInfo (subHIView, newLayoutInfo);
+//	HISideBinding biding = newLayoutInfo.binding.top;
+//	biding.toView = 0;
+//	biding.kind = OS.kHILayoutBindMin;
+//	biding.offset = 0;
+//	biding = newLayoutInfo.binding.left;
+//	biding.toView = 0;
+//	biding.kind = OS.kHILayoutBindMin;
+//	biding.offset = 0;
+//	biding = newLayoutInfo.binding.bottom;
+//	biding.toView = 0;
+//	biding.kind = OS.kHILayoutBindMax;
+//	biding.offset = 0;
+//	biding = newLayoutInfo.binding.right;
+//	biding.toView = 0;
+//	biding.kind = OS.kHILayoutBindMax;
+//	biding.offset = 0;
+//	OS.HIViewSetLayoutInfo (subHIView, newLayoutInfo);
+//	OS.HIViewChangeFeatures (subHIView, OS.kHIViewFeatureIsOpaque, 0);
+//	OS.HIViewSetVisible (subHIView, true);
+//	int parentHandle = browser.handle;
+//	OS.HIViewAddSubview (browser.handle, subHIView);
+//	CGRect rect = new CGRect ();
+//	OS.HIViewGetFrame (parentHandle, rect);
+//	rect.x = rect.y = 0;
+//	OS.HIViewSetFrame (subHIView, rect);
+//	handles.put (new LONG (embedHandle), new LONG (browser.handle));
+//
+//	if (Callback3 == null) Callback3 = new Callback (this.getClass (), "eventProc3", 3); //$NON-NLS-1$
+//	int callback3Address = Callback3.getAddress ();
+//	if (callback3Address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+//	int [] mask = new int [] {
+//		OS.kEventClassMouse, OS.kEventMouseDown,
+//	};
+//	int controlTarget = OS.GetControlEventTarget (subHIView);
+//	OS.InstallEventHandler (controlTarget, callback3Address, mask.length / 2, mask, browser.handle, null);
 
 	return embedHandle;
 }

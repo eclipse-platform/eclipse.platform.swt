@@ -274,6 +274,7 @@ fail:
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I
 static SEL convertPointfromView;
+static SEL convertPoint_toView_;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
 {
@@ -287,7 +288,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4);
 	if (convertPointfromView == 0) convertPointfromView = sel_registerName("convertPoint:fromView:");
 	if ((SEL)arg2 == convertPointfromView) {
-		*lparg0 = [(NSView *)arg1 convertPoint: _arg3 fromView: (NSView *)arg4];
+		*lparg0 = [(NSView *)arg1 convertPoint: *lparg3 fromView: (NSView *)arg4];
+	} else {
+		if (convertPoint_toView_ == 0) convertPoint_toView_ = sel_registerName("convertPoint:toView:");
+		if ((SEL)arg2 == convertPoint_toView_) {
+			*lparg0 = [(id)arg1 convertPoint: *lparg3 toView: (id)arg4];
+		}
 	}
 	
 fail:

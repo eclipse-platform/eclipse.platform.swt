@@ -14,9 +14,9 @@ public void addObserver(id observer, int aSelector, NSString aName, id anObject)
 	OS.objc_msgSend(this.id, OS.sel_addObserver_1selector_1name_1object_1, observer != null ? observer.id : 0, aSelector, aName != null ? aName.id : 0, anObject != null ? anObject.id : 0);
 }
 
-public static id defaultCenter() {
+public static NSNotificationCenter defaultCenter() {
 	int result = OS.objc_msgSend(OS.class_NSNotificationCenter, OS.sel_defaultCenter);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSNotificationCenter(result) : null;
 }
 
 public void postNotification(NSNotification notification) {

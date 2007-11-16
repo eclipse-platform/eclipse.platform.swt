@@ -103,6 +103,8 @@ public class Display extends Device {
 	Thread thread;
 	boolean allowTimers, runAsyncMessages;
 	
+	int lastModifiers;
+
 	Caret currentCaret;
 	
 	NSApplication application;
@@ -1243,31 +1245,26 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-//	int index = 0;
-//	Shell [] result = new Shell [16];
-//	for (int i = 0; i < widgetTable.length; i++) {
-//		Widget widget = widgetTable [i];
-//		if (widget != null && widget instanceof Shell) {
-//			int j = 0;
-//			while (j < index) {
-//				if (result [j] == widget) break;
-//				j++;
-//			}
-//			if (j == index) {
-//				if (index == result.length) {
-//					Shell [] newResult = new Shell [index + 16];
-//					System.arraycopy (result, 0, newResult, 0, index);
-//					result = newResult;
-//				}
-//				result [index++] = (Shell) widget;	
-//			}
-//		}
-//	}
-//	if (index == result.length) return result;
-//	Shell [] newResult = new Shell [index];
-//	System.arraycopy (result, 0, newResult, 0, index);
-//	return newResult;
-	return new Shell[0];
+	NSArray windows = application.windows();
+	int index = 0;
+	Shell [] result = new Shell [windows.count()];
+	for (int i = 0; i < result.length; i++) {
+		NSWindow window = new NSWindow(windows.objectAtIndex(i));
+		NSView view = window.contentView();
+		if (view != null) {
+			int jniRef = OS.objc_msgSend(view.id, OS.sel_tag);
+			if (jniRef != 0 && jniRef != -1) {
+				Object object = OS.JNIGetObject(jniRef);
+				if (object instanceof Shell) {
+					result[index++] = (Shell)object;
+				}
+			}
+		}
+	}
+	if (index == result.length) return result;
+	Shell [] newResult = new Shell [index];
+	System.arraycopy (result, 0, newResult, 0, index);
+	return newResult;
 }
 
 /**
@@ -1575,6 +1572,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
@@ -1752,8 +1750,23 @@ void initClasses () {
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	//TODO - multiple monitors
-	return 0;
+	NSGraphicsContext context = application.context();
+//	NSAffineTransform transform = NSAffineTransform.transform();
+//	NSSize size = handle.size();
+//	transform.translateXBy(0, size.height);
+//	transform.scaleXBy(1, -1);
+//	transform.set();
+	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+		}
+		data.device = this;
+		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
+		data.font = getSystemFont();
+	}
+	return context.id;
 }
 
 /**	 
@@ -2233,6 +2246,9 @@ public boolean readAndDispatch () {
 			return true;
 		}
 		return runAsyncMessages (false);
+	} catch (Throwable e) {
+		e.printStackTrace();
+		return true;
 	} finally {
 		pool.release();
 	}
@@ -2985,6 +3001,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.keyDown(arg0);
 	} else if (sel == OS.sel_keyUp_1) {
 		widget.keyUp(arg0);
+	} else if (sel == OS.sel_flagsChanged_1) {
+		widget.flagsChanged(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
 		return widget.numberOfRowsInTableView(arg0);
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_1) {

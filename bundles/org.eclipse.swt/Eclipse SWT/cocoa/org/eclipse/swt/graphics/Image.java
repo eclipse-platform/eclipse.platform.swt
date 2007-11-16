@@ -87,6 +87,7 @@ public final class Image extends Resource implements Drawable {
 	 * </p>
 	 */
 	public NSImage handle;
+	NSBitmapImageRep imageRep;
 	
 	/**
 	 * specifies the transparent pixel
@@ -530,7 +531,9 @@ public void dispose () {
 	if (handle == null) return;
 	if (device.isDisposed()) return;
 	if (memGC != null) memGC.dispose();
+	if (imageRep != null) imageRep.release();
 	handle.release();
+	imageRep = null;
 	device = null;
 	handle = null;
 	memGC = null;
@@ -619,50 +622,51 @@ public Rectangle getBounds() {
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-//	int width = OS.CGImageGetWidth(handle);
-//	int height = OS.CGImageGetHeight(handle);
-//	int bpr = OS.CGImageGetBytesPerRow(handle);
-//	int bpp = OS.CGImageGetBitsPerPixel(handle);	
-//	int dataSize = height * bpr;
-//	byte[] srcData = new byte[dataSize];
-//	OS.memmove(srcData, data, dataSize);
-//	
-//	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-//	ImageData data = new ImageData(width, height, bpp, palette);
-//	data.data = srcData;
-//	data.bytesPerLine = bpr;
-//
-//	data.transparentPixel = transparentPixel;
-//	if (transparentPixel == -1 && type == SWT.ICON) {
-//		/* Get the icon mask data */
-//		int maskPad = 2;
-//		int maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
-//		byte[] maskData = new byte[height * maskBpl];
-//		int offset = 0, maskOffset = 0;
-//		for (int y = 0; y<height; y++) {
-//			for (int x = 0; x<width; x++) {
-//				if (srcData[offset] != 0) {
-//					maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
-//				} else {
-//					maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
-//				}
-//				offset += 4;
-//			}
-//			maskOffset += maskBpl;
-//		}
-//		data.maskData = maskData;
-//		data.maskPad = maskPad;
-//	}
-//	for (int i = 0; i < srcData.length; i+= 4) {
-//		srcData[i] = 0;
-//	}
-//	data.alpha = alpha;
-//	if (alpha == -1 && alphaData != null) {
-//		data.alphaData = new byte[alphaData.length];
-//		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
-//	}
-//	return data;
-	return null;
+	NSSize size = handle.size();
+	int width = (int)size.width;
+	int height = (int)size.height;
+	NSBitmapImageRep imageRep = this.imageRep;
+	int bpr = imageRep.bytesPerRow();
+	int bpp = imageRep.bitsPerPixel();
+	int dataSize = height * bpr;
+	byte[] srcData = new byte[dataSize];
+	OS.memmove(srcData, imageRep.bitmapData(), dataSize);
+	
+	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	ImageData data = new ImageData(width, height, bpp, palette);
+	data.data = srcData;
+	data.bytesPerLine = bpr;
+
+	data.transparentPixel = transparentPixel;
+	if (transparentPixel == -1 && type == SWT.ICON) {
+		/* Get the icon mask data */
+		int maskPad = 2;
+		int maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+		byte[] maskData = new byte[height * maskBpl];
+		int offset = 0, maskOffset = 0;
+		for (int y = 0; y<height; y++) {
+			for (int x = 0; x<width; x++) {
+				if (srcData[offset] != 0) {
+					maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
+				} else {
+					maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
+				}
+				offset += 4;
+			}
+			maskOffset += maskBpl;
+		}
+		data.maskData = maskData;
+		data.maskPad = maskPad;
+	}
+	for (int i = 0; i < srcData.length; i+= 4) {
+		srcData[i] = 0;
+	}
+	data.alpha = alpha;
+	if (alpha == -1 && alphaData != null) {
+		data.alphaData = new byte[alphaData.length];
+		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+	}
+	return data;
 }
 
 /**	 
@@ -719,11 +723,11 @@ void init(Device device, int width, int height) {
 	size.width = width;
 	size.height = height;
 	handle = handle.initWithSize(size);
-	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	NSBitmapImageRep rep = imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(0, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
-	rep.release();
+//	rep.release();
 }
 
 void init(Device device, ImageData image) {
@@ -829,12 +833,12 @@ void init(Device device, ImageData image) {
 	size.width = width;
 	size.height = height;
 	handle = handle.initWithSize(size);
-	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+	NSBitmapImageRep rep = imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(
 			0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
-	rep.release();
+//	rep.release();
 }
 
 /**	 

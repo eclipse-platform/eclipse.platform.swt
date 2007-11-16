@@ -58,9 +58,9 @@ public NSURL mainDocumentURL() {
 	return result != 0 ? new NSURL(result) : null;
 }
 
-public static id static_requestWithURL_(NSURL URL) {
+public static NSURLRequest static_requestWithURL_(NSURL URL) {
 	int result = OS.objc_msgSend(OS.class_NSURLRequest, OS.sel_requestWithURL_1, URL != null ? URL.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSURLRequest(result) : null;
 }
 
 public static id static_requestWithURL_cachePolicy_timeoutInterval_(NSURL URL, int cachePolicy, double timeoutInterval) {

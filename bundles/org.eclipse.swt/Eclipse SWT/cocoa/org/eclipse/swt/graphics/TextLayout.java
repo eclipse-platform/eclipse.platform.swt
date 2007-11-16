@@ -44,6 +44,9 @@ public final class TextLayout extends Resource {
 	int wrapWidth;
 	int orientation;
 	
+	int[] lineOffsets;
+	NSRect[] lineBounds;
+
 	static class StyleItem {
 		TextStyle style;
 		int start;
@@ -191,9 +194,29 @@ void computeRuns() {
 	}
 	textStorage.endEditing();
 	
-	textContainer.setLineFragmentPadding(0);
-	
+	textContainer.setLineFragmentPadding(0);	
 	layoutManager.glyphRangeForTextContainer(textContainer);
+	
+	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
+	int rangePtr = OS.malloc(NSRange.sizeof);
+	NSRange lineRange = new NSRange();
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+	    layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, true);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    index = lineRange.location + lineRange.length;
+	}
+	int[] offsets = new int[numberOfLines + 1];
+	NSRect[] bounds = new NSRect[numberOfLines];
+	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
+		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, true);
+	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+	    offsets[numberOfLines] = lineRange.location;
+	    index = lineRange.location + lineRange.length;
+	}	
+	OS.free(rangePtr);
+	offsets[numberOfLines] = textStorage.length();
+	this.lineOffsets = offsets;
+	this.lineBounds = bounds;
 }
 
 /**
@@ -285,22 +308,30 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//	NSPoint pt = new NSPoint();
-//	pt.x = x;
-//	pt.y = y;
-//	NSColor selectionColor = NSColor.colorWithDeviceRed(1, 0, 0, 1);
-//	selectionColor.set();
-//	NSRange range = new NSRange();
-//	range.length = layoutManager.numberOfGlyphs();
-//	layoutManager.drawBackgroundForGlyphRange(range, pt);
-//	textStorage.drawAtPoint(pt);
-	NSRect rect = new NSRect();
-	rect.x = x;
-	rect.y = y;
-	NSSize size = textContainer.containerSize();
-	rect.width = size.width;
-	rect.height = size.height;
-	textStorage.drawInRect(rect);
+	gc.checkGC(GC.CLIPPING | GC.TRANSFORM | GC.FOREGROUND);
+//	float[] foreground = gc.data.foreground;
+//	NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], foreground[3]);
+//	textStorage.setForegroundColor(color);
+	NSPoint pt = new NSPoint();
+	pt.x = x;
+	pt.y = y;
+	NSRange range = new NSRange();
+	range.length = layoutManager.numberOfGlyphs();
+	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+	NSRange selectionRange = null;
+	if (hasSelection) {
+		selectionRange = new NSRange();
+		selectionRange.location = selectionStart;
+		selectionRange.length = selectionEnd - selectionStart + 1;
+		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		NSColor selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
+		layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
+	}
+	layoutManager.drawBackgroundForGlyphRange(range, pt);
+	layoutManager.drawGlyphsForGlyphRange(range, pt);
+	if (selectionRange != null) {
+		layoutManager.removeTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionRange);
+	}
 }
 
 void freeRuns() {
@@ -366,8 +397,9 @@ public int getAscent () {
 public Rectangle getBounds() {
 	checkLayout();
 	computeRuns();
-	NSSize size = textStorage.size();
-	return new Rectangle(0, 0, (int)size.width, (int)size.height);
+	NSRect rect = layoutManager.usedRectForTextContainer(textContainer);
+	if (wrapWidth != -1) rect.width = wrapWidth;
+	return new Rectangle(0, 0, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -387,8 +419,18 @@ public Rectangle getBounds() {
 public Rectangle getBounds(int start, int end) {
 	checkLayout();
 	computeRuns();
-	//TODO
-	return getBounds();
+	int length = text.length();
+	if (length == 0) return new Rectangle(0, 0, 0, 0);
+	if (start > end) return new Rectangle(0, 0, 0, 0);
+	start = Math.min(Math.max(0, start), length - 1);
+	end = Math.min(Math.max(0, end), length - 1);
+	start = translateOffset(start);
+	end = translateOffset(end);
+	NSRange range = new NSRange();
+	range.location = layoutManager.glyphIndexForCharacterAtIndex(start);
+	range.length = layoutManager.glyphIndexForCharacterAtIndex(end + 1) - range.location;
+	NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
+	return new Rectangle((int)rect.x, (int)rect.y, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
 }
 
 /**
@@ -496,23 +538,10 @@ public int getLevel(int offset) {
 public int[] getLineOffsets() {
 	checkLayout ();
 	computeRuns();
-	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
-	int rangePtr = OS.malloc(NSRange.sizeof);
-	NSRange lineRange = new NSRange();
-	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    index = lineRange.location + lineRange.length;
+	int[] offsets = new int[lineOffsets.length];
+	for (int i = 0; i < offsets.length; i++) {
+		offsets[i] = untranslateOffset(lineOffsets[i]);
 	}
-	int[] offsets = new int[numberOfLines + 1];
-	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    offsets[numberOfLines] = lineRange.location;
-	    index = lineRange.location + lineRange.length;
-	}	
-	OS.free(rangePtr);
-	offsets[numberOfLines] = textStorage.length();
 	return offsets;
 }
 
@@ -534,18 +563,14 @@ public int getLineIndex(int offset) {
 	checkLayout ();
 	computeRuns();
 	int length = text.length();
-	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
-	int rangePtr = OS.malloc(NSRange.sizeof);
-	NSRange lineRange = new NSRange();
-	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    if (offset < lineRange.location) break; 
-	    index = lineRange.location + lineRange.length;
+	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	offset = translateOffset(offset);
+	for (int line=0; line<lineOffsets.length - 1; line++) {
+		if (lineOffsets[line + 1] > offset) {
+			return line;
+		}
 	}
-	OS.free(rangePtr);
-	return numberOfLines;
+	return lineBounds.length - 1;
 }
 
 /**
@@ -564,21 +589,8 @@ public int getLineIndex(int offset) {
 public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
 	computeRuns();
-	NSRect rect = null;
-	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
-	int rangePtr = OS.malloc(NSRange.sizeof);
-	NSRange lineRange = new NSRange();
-	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    NSRect r = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, false);
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    if (lineIndex == numberOfLines) {
-	    	rect = r;
-	    	break; 
-	    }
-	    index = lineRange.location + lineRange.length;
-	}
-	OS.free(rangePtr);
-	if (rect == null) SWT.error(SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= lineIndex && lineIndex < lineBounds.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	NSRect rect = lineBounds[lineIndex];
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
@@ -595,16 +607,7 @@ public Rectangle getLineBounds(int lineIndex) {
 public int getLineCount() {
 	checkLayout ();
 	computeRuns();	
-	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
-	int rangePtr = OS.malloc(NSRange.sizeof);
-	NSRange lineRange = new NSRange();
-	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    layoutManager.lineFragmentRectForGlyphAtIndex_effectiveRange_(index, rangePtr);
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    index = lineRange.location + lineRange.length;
-	}
-	OS.free(rangePtr);
-	return numberOfLines;
+	return lineOffsets.length - 1;
 }
 
 /**
@@ -666,7 +669,13 @@ public Point getLocation(int offset, boolean trailing) {
 	int glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
 	NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_(glyphIndex, 0);
 	NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
-	//TODO trailing
+	if (trailing) {
+		NSRange range = new NSRange();
+		range.location = glyphIndex;
+		range.length = 1;
+		NSRect bounds = layoutManager.boundingRectForGlyphRange(range, textContainer);
+		point.x += bounds.width;
+	}
 	return new Point((int)point.x, (int)rect.y);
 }
 
@@ -789,10 +798,10 @@ public int getOffset(int x, int y, int[] trailing) {
 	NSPoint pt = new NSPoint();
 	pt.x = x;
 	pt.y = y;
-	//TODO trailing
-	//float[] partialFration = new float[1];
-	int glyphIndex = layoutManager.glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_(pt, textContainer, 0);
+	float[] partialFration = new float[1];
+	int glyphIndex = layoutManager.glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_(pt, textContainer, partialFration);
 	int offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
+	if (trailing != null) trailing[0] = Math.round(partialFration[0]);
 	return Math.min(untranslateOffset(offset), length - 1);
 }
 

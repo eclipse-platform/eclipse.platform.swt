@@ -861,6 +861,10 @@ public void removeObserver(NSObject observer, NSString keyPath) {
 	OS.objc_msgSend(this.id, OS.sel_removeObserver_1forKeyPath_1, observer != null ? observer.id : 0, keyPath != null ? keyPath.id : 0);
 }
 
+public void removeObserver(NSObject observer) {
+	OS.objc_msgSend(this.id, OS.sel_removeObserver_1, observer != null ? observer.id : 0);
+}
+
 public void removeValueAtIndex(int index, NSString key) {
 	OS.objc_msgSend(this.id, OS.sel_removeValueAtIndex_1fromPropertyWithKey_1, index, key != null ? key.id : 0);
 }
