@@ -5591,6 +5591,31 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (handle, null, 0, flags);
+		/*
+		* Feature in Windows.  On Vista only, it is faster to
+		* compute and answer the data for the visible columns
+		* of a table when scrolling, rather than just return
+		* the data for each column when asked.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			RECT headerRect = new RECT (), rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			boolean [] visible = new boolean [columnCount];
+			for (int i=0; i<columnCount; i++) {
+				visible [i] = true;
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, headerRect) != 0) {
+					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+					visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
+				}
+			}
+			try {
+				display.hwndParent = OS.GetParent (handle);
+				display.columnVisible = visible;
+				OS.UpdateWindow (handle);
+			} finally {
+				display.columnVisible = null;
+			}
+		}
 	}
 
 	if (fixSubclass) {
@@ -5665,6 +5690,31 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (handle, null, 0, flags);
+		/*
+		* Feature in Windows.  On Vista only, it is faster to
+		* compute and answer the data for the visible columns
+		* of a table when scrolling, rather than just return
+		* the data for each column when asked.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			RECT headerRect = new RECT (), rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			boolean [] visible = new boolean [columnCount];
+			for (int i=0; i<columnCount; i++) {
+				visible [i] = true;
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, headerRect) != 0) {
+					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+					visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
+				}
+			}
+			try {
+				display.hwndParent = OS.GetParent (handle);
+				display.columnVisible = visible;
+				OS.UpdateWindow (handle);
+			} finally {
+				display.columnVisible = null;
+			}
+		}
 	}
 	
 	if (fixSubclass) {
@@ -5943,6 +5993,12 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
+			
+			boolean [] visible = display.columnVisible;
+			if (visible != null && !visible [plvfi.iSubItem]) {
+				//System.out.println("skip: " + plvfi.iSubItem);
+				break;
+			}
 			
 			/*
 			* When an item is being deleted from a virtual table, do not
