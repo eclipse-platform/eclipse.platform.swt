@@ -12,7 +12,7 @@ package org.eclipse.swt.browser;
 
 import java.util.Vector;
 
-import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 
 class AppFileLocProvider {
@@ -119,6 +119,19 @@ int Release () {
 
 void setProfilePath (String path) {
 	profilePath = path;
+	if (!Compatibility.fileExists (path, "")) { //$NON-NLS-1$
+		int /*long*/[] result = new int /*long*/[1];
+		nsEmbedString pathString = new nsEmbedString (path);
+		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+		pathString.dispose ();
+
+		nsILocalFile file = new nsILocalFile (result [0]);
+		rc = file.Create (nsILocalFile.DIRECTORY_TYPE, 0700);
+		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		file.Release ();
+	}
 }
 
 /* nsIDirectoryServiceProvider2 */
