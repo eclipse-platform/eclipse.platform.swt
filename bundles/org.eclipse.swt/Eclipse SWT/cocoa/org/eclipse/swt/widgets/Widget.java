@@ -1176,6 +1176,12 @@ void windowDidMove(int notification) {
 void windowDidResize(int notification) {
 }
 
+void windowDidResignKey(int notification) {
+}
+
+void windowDidBecomeKey(int notification) {
+}
+
 boolean windowShouldClose(int window) {
 	return false;
 }

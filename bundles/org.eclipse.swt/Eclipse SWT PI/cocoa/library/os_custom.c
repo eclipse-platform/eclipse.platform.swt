@@ -49,6 +49,8 @@ fail:
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2
 static SEL cascadeTopLeftFromPoint;
+static SEL convertScreenToBase;
+static SEL convertBaseToScreen;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3)
 {
@@ -63,7 +65,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	
 	if (cascadeTopLeftFromPoint == NULL) cascadeTopLeftFromPoint = sel_registerName("cascadeTopLeftFromPoint:");
 	if ((SEL)arg2 == cascadeTopLeftFromPoint) {
-		*lparg0 = [(NSWindow *)arg1 cascadeTopLeftFromPoint: _arg3];
+		*lparg0 = [(NSWindow *)arg1 cascadeTopLeftFromPoint: *lparg3];
+	} else {
+		if (convertScreenToBase == 0) convertScreenToBase = sel_registerName("convertScreenToBase:");
+		if ((SEL)arg2 == convertScreenToBase) {
+			*lparg0 = [(id)arg1 convertScreenToBase: *lparg3];
+		} else {
+			if (convertBaseToScreen == 0) convertBaseToScreen = sel_registerName("convertBaseToScreen:");
+			if ((SEL)arg2 == convertBaseToScreen) {
+				*lparg0 = [(id)arg1 convertBaseToScreen: *lparg3];
+			}
+		}
 	}
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
@@ -101,6 +113,7 @@ fail:
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II
 static SEL mouseLocationOutsideOfEventStream;
 static SEL locationInWindow;
+static SEL mouseLocation;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -118,6 +131,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 		if (locationInWindow == 0) locationInWindow = sel_registerName("locationInWindow");
 		if ((SEL)arg2 == locationInWindow) {
 			*lparg0 = [(NSEvent *)arg1 locationInWindow];
+		} else {
+			if (mouseLocation == 0) mouseLocation = sel_registerName("mouseLocation");
+			if ((SEL)arg2 == mouseLocation) {
+				*lparg0 = [(id)arg1 mouseLocation];
+			}
 		}
 	}
 	

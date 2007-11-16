@@ -498,6 +498,24 @@ void selectRadio () {
 	setSelection (true);
 }
 
+void sendSelection () {
+	if ((style & SWT.CHECK) != 0) {
+		setSelection (!getSelection ());
+	} else {
+		if ((style & SWT.RADIO) != 0) {
+			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
+				setSelection (!getSelection ());
+			} else {
+				selectRadio ();
+			}
+		}
+	}
+	Event event = new Event ();
+	//TODO state mask
+//	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
+	postEvent (SWT.Selection, event);
+}
+
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:

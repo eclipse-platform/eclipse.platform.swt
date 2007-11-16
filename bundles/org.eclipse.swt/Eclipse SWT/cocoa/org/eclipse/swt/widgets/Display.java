@@ -107,6 +107,8 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
+	Menu menuBar;
+
 	NSApplication application;
 	NSAutoreleasePool pool;
 
@@ -1544,6 +1546,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowDidResize_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidResignKey_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_timerProc_1, proc3, "@:@");
@@ -1585,7 +1590,6 @@ void initClasses () {
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
-	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
@@ -1713,6 +1717,12 @@ void initClasses () {
 
 	className = "SWTScroller";
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
+//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.objc_registerClassPair(cls);
+
+	className = "SWTMenuItem";
+	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
@@ -2092,6 +2102,9 @@ public Point map (Control from, Control to, int x, int y) {
 			pt = to.view.convertPoint_fromView_(pt, null);
 		}
 	}
+	if (pt.x == -4) {
+		System.out.println("BADddd");
+	}
 	point.x = (int)pt.x;
 	point.y = (int)pt.y;
 	return point;
@@ -2201,6 +2214,9 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 			pt = toWindow.convertScreenToBase(pt);
 			pt = to.view.convertPoint_fromView_(pt, null);
 		}
+	}
+	if (pt.x == -4) {
+		System.out.println("BADddd");
 	}
 	rectangle.x = (int)pt.x;
 	rectangle.y = (int)pt.y;
@@ -2649,6 +2665,21 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
+void setMenuBar (Menu menu) {
+	/*
+	* Feature in the Macintosh.  SetRootMenu() does not
+	* accept NULL to indicate that their should be no
+	* menu bar. The fix is to create a temporary empty
+	* menu, set that to be the menu bar, clear the menu
+	* bar and then delete the temporary menu.
+	*/
+	if (menu == menuBar) return;
+	menuBar = menu;
+//	application.setMenu(menu.nsMenu);
+//	application.setWindowsMenu(menu.nsMenu);
+//	application.setServicesMenu(menu.nsMenu);
+}
+
 /**
  * Sets the application defined, display specific data
  * associated with the receiver, to the argument.
@@ -3007,6 +3038,10 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.comboBoxSelectionDidChange(arg0);
 	} else if (sel == OS.sel_tableViewSelectionDidChange_1) {
 		widget.tableViewSelectionDidChange(arg0);
+	} else if (sel == OS.sel_windowDidResignKey_1) {
+		widget.windowDidResignKey(arg0);
+	} else if (sel == OS.sel_windowDidBecomeKey_1) {
+		widget.windowDidBecomeKey(arg0);
 	} else if (sel == OS.sel_windowDidResize_1) {
 		widget.windowDidResize(arg0);
 	} else if (sel == OS.sel_windowDidMove_1) {

@@ -192,6 +192,7 @@ void _setVisible (boolean visible) {
 			location = new NSPoint ();
 			location.x = x;
 			location.y = y;
+//			location.y = window.screen().frame().height - location.y;
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
@@ -268,9 +269,14 @@ void createItem (MenuItem item, int index) {
 	NSMenuItem nsItem = null;
 	if ((item.style & SWT.SEPARATOR) != 0) {
 		nsItem = NSMenuItem.separatorItem();
+//		nsItem.retain();
 	} else {
-		nsItem= (NSMenuItem)new NSMenuItem().alloc();
+		nsItem = (NSMenuItem)new SWTMenuItem().alloc();
 		nsItem.initWithTitle(NSString.stringWith(""), 0, NSString.stringWith(""));
+		nsItem.setTarget(nsItem);
+		nsItem.setAction(OS.sel_sendSelection);
+		item.createJNIRef();
+		nsItem.setTag(item.jniRef);
 	}
 	item.nsItem = nsItem;
 	nsMenu.insertItem(nsItem, index);

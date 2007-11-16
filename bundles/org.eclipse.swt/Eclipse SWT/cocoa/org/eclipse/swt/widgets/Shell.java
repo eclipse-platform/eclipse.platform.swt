@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -962,9 +961,9 @@ public void setFullScreen (boolean fullScreen) {
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	super.setMenuBar (menu);
-//	if (display.getActiveShell () == this) {
-//		display.setMenuBar (menuBar);
-//	}
+	if (display.getActiveShell () == this) {
+		display.setMenuBar (menuBar);
+	}
 }
 
 /**
@@ -1210,6 +1209,16 @@ void updateSystemUIMode () {
 //	}
 }
 
+void windowDidBecomeKey(int notification) {
+	super.windowDidBecomeKey(notification);
+	Display display = this.display;
+	display.setMenuBar (menuBar);
+	sendEvent (SWT.Activate);
+//	if (!isDisposed ()) {
+//		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+//	}
+}
+
 void windowDidMove(int notification) {
 	moved = true;
 	sendEvent(SWT.Move);
@@ -1223,6 +1232,27 @@ void windowDidResize(int notification) {
 		markLayout (false, false);
 		updateLayout (false);
 	}
+}
+
+void windowDidResignKey(int notification) {
+	super.windowDidResignKey(notification);
+	Display display = this.display;
+	sendEvent (SWT.Deactivate);
+	if (isDisposed ()) return;
+//	saveFocus ();
+//	if (savedFocus != null) {
+//		/*
+//		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
+//		* the control that has focus gets two kEventControlSetFocus
+//		* events indicating that focus was lost.  The fix is to ignore
+//		* both of these and send the focus lost event explicitly.
+//		*/
+//		display.ignoreFocus = true;
+//		OS.ClearKeyboardFocus (shellHandle);
+//		display.ignoreFocus = false;
+//		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, false);
+//	}
+	display.setMenuBar (null);
 }
 
 boolean windowShouldClose(int window) {

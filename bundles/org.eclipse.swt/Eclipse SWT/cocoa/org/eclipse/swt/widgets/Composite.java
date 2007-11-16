@@ -236,19 +236,19 @@ void createHandle () {
 
 void createHandle (NSView parent) {
 	state |= CANVAS;
+	NSRect rect = new NSRect();
 	if ((style & (SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
 		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
-		scrollWidget.initWithFrame (new NSRect());
+		scrollWidget.initWithFrame (rect);
 		scrollWidget.setDrawsBackground(false);
 		if ((style & SWT.H_SCROLL) != 0) scrollWidget.setHasHorizontalScroller(true);
 		if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
 		scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 		scrollWidget.setTag(jniRef);
 		scrollView = scrollWidget;
+		rect.width = rect.height = 100000;
 	}
 	SWTView widget = (SWTView)new SWTView().alloc();
-	NSRect rect = new NSRect();
-	rect.width = rect.height = 100000;
 	widget.initWithFrame (rect);
 //	widget.setFocusRingType(OS.NSFocusRingTypeExterior);
 	widget.setTag(jniRef);
