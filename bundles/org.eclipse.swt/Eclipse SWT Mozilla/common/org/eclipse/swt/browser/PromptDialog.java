@@ -33,6 +33,10 @@ class PromptDialog extends Dialog {
 		Label label = new Label(shell, SWT.WRAP);
 		label.setText(text);
 		GridData data = new GridData();
+		Monitor monitor = parent.getMonitor();
+		int maxWidth = monitor.getBounds().width * 2 / 3;
+		int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		data.widthHint = Math.min(width, maxWidth);
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
@@ -74,10 +78,14 @@ class PromptDialog extends Dialog {
 		Label label = new Label(shell, SWT.WRAP);
 		label.setText(text);
 		GridData data = new GridData();
+		Monitor monitor = parent.getMonitor();
+		int maxWidth = monitor.getBounds().width * 2 / 3;
+		int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		data.widthHint = Math.min(width, maxWidth);
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
-		
+
 		final Button[] buttons = new Button[4];
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
@@ -150,6 +158,10 @@ class PromptDialog extends Dialog {
 		Label label = new Label(shell, SWT.WRAP);
 		label.setText(text);
 		GridData data = new GridData();
+		Monitor monitor = parent.getMonitor();
+		int maxWidth = monitor.getBounds().width * 2 / 3;
+		int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		data.widthHint = Math.min(width, maxWidth);
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
@@ -157,10 +169,12 @@ class PromptDialog extends Dialog {
 		final Text valueText = new Text(shell, SWT.BORDER);
 		if (value[0] != null) valueText.setText(value[0]);
 		data = new GridData();
+		width = valueText.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		if (width > maxWidth) data.widthHint = maxWidth;
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		valueText.setLayoutData(data);
-				
+
 		final Button[] buttons = new Button[3];
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
