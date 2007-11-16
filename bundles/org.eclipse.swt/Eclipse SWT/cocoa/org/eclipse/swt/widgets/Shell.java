@@ -481,10 +481,9 @@ void createWidget () {
 }
 
 void destroyWidget () {
-	Display display = this.display;
 	NSWindow window = this.window;
-	if (window != null) window.close();
 	releaseHandle ();
+	if (window != null) window.close();
 }
 
 Control findBackgroundControl () {

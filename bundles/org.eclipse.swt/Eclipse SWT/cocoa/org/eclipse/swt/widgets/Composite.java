@@ -132,7 +132,7 @@ boolean acceptsFirstResponder () {
 	if ((state & CANVAS) != 0) {
 		return ((style & SWT.NO_FOCUS) == 0);
 	}
-	return acceptsFirstResponder ();
+	return super.acceptsFirstResponder ();
 }
 
 

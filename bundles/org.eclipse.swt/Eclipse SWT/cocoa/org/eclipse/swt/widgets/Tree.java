@@ -1178,7 +1178,7 @@ public TreeItem [] getSelection () {
 //		OS.DisposeHandle (ptr);
 //	}
 //	return result;
-	return null;
+	return new TreeItem[0];
 }
 
 /**

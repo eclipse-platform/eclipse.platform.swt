@@ -99,7 +99,7 @@ public class Display extends Device {
 	boolean disposing;
 
 	/* Sync/Async Widget Communication */
-	Synchronizer synchronizer = new Synchronizer (this);
+	Synchronizer synchronizer;
 	Thread thread;
 	boolean allowTimers, runAsyncMessages;
 	
@@ -561,6 +561,7 @@ protected void create (DeviceData data) {
 	checkDisplay (thread = Thread.currentThread (), false);
 	createDisplay (data);
 	register (this);
+	synchronizer = new Synchronizer (this);
 	if (Default == null) Default = this;
 }
 
