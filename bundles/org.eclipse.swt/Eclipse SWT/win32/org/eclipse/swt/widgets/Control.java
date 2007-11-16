@@ -56,6 +56,7 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 	Image backgroundImage;
 	Region region;
+	Font font;
 	int drawCount, foreground, background;
 
 /**
@@ -1207,7 +1208,8 @@ public boolean getEnabled () {
  * </ul>
  */
 public Font getFont () {
-	checkWidget ();	
+	checkWidget ();
+	if (font != null) return font;
 	int /*long*/ hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
 	return Font.win32_new (display, hFont);
@@ -2086,6 +2088,7 @@ void releaseWidget () {
 	}
 	accessible = null;
 	region = null;
+	font = null;
 }
 
 /**
@@ -2818,6 +2821,7 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		hFont = font.handle;
 	}
+	this.font = font;
 	if (hFont == 0) hFont = defaultFont ();
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 1);
 }

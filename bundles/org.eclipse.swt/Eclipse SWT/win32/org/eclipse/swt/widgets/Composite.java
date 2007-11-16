@@ -48,7 +48,6 @@ import org.eclipse.swt.graphics.*;
 
 public class Composite extends Scrollable {
 	Layout layout;
-	int /*long*/ font;
 	WINDOWPOS [] lpwp;
 	Control [] tabList;
 	int layoutCount, backgroundMode;
@@ -1199,8 +1198,7 @@ LRESULT WM_GETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (result != null) return result;
 	int /*long*/ code = callWindowProc (handle, OS.WM_GETFONT, wParam, lParam);
 	if (code != 0) return new LRESULT (code);
-	if (font == 0) font = defaultFont ();
-	return new LRESULT (font);
+	return new LRESULT (font != null ? font.handle : defaultFont ());
 }
 
 LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
@@ -1484,7 +1482,7 @@ LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 	if (lParam != 0) OS.InvalidateRect (handle, null, true);
-	return super.WM_SETFONT (font = wParam, lParam);
+	return super.WM_SETFONT (wParam, lParam);
 }
 
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
