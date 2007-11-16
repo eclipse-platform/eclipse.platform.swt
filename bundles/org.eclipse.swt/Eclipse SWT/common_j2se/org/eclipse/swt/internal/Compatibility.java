@@ -99,6 +99,17 @@ public static int ceil(int p, int q) {
 }
 
 /**
+ * Answers whether the indicated file exists or not.
+ * 
+ * @param parent the file's parent directory
+ * @param child the file's name
+ * @return true if the file exists
+ */
+public static boolean fileExists(String parent, String child) {
+	return new File (parent, child).exists();
+}
+
+/**
  * Answers the most positive (i.e. closest to positive infinity)
  * integer value which is less than the number obtained by dividing
  * the first argument p by the second argument q.

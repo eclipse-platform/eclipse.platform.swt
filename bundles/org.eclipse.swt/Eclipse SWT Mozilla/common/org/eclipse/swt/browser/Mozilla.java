@@ -425,12 +425,11 @@ public void create (Composite parent, int style) {
 			* the libwidget_gtk.so library used by Mozilla GTK1.2. Mozilla GTK2
 			* uses the libwidget_gtk2.so library.   
 			*/
-			File file = new File (mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
-			if (file.exists ()) {
+			if (Compatibility.fileExists (mozillaPath, "components/libwidget_gtk.so")) { //$NON-NLS-1$
 				browser.dispose ();
 				SWT.error (SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
 			}
-	
+
 			try {
 				Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 			} catch (UnsatisfiedLinkError e) {
@@ -491,8 +490,11 @@ public void create (Composite parent, int style) {
 					method.invoke (mozilla, new Object[0]);
 				} catch (InvocationTargetException e) {
 					/* indicates that JavaXPCOM has not been initialized yet */
-					method = clazz.getMethod ("initialize", new Class[] {File.class}); //$NON-NLS-1$
-					method.invoke (mozilla, new Object[] {new File (mozillaPath)});
+					Class fileClass = Class.forName ("java.io.File"); //$NON-NLS-1$
+					method = clazz.getMethod ("initialize", new Class[] {fileClass}); //$NON-NLS-1$
+					Constructor constructor = fileClass.getDeclaredConstructor (new Class[] {String.class});
+					Object argument = constructor.newInstance (new Object[] {mozillaPath});
+					method.invoke (mozilla, new Object[] {argument});
 				}
 			} catch (ClassNotFoundException e) {
 				/* JavaXPCOM is not on the classpath */
@@ -501,6 +503,7 @@ public void create (Composite parent, int style) {
 			} catch (IllegalArgumentException e) {
 			} catch (IllegalAccessException e) {
 			} catch (InvocationTargetException e) {
+			} catch (InstantiationException e) {
 			}
 		}
 

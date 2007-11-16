@@ -299,6 +299,17 @@ public static void exec(String prog) throws java.io.IOException {
 }
 
 /**
+ * Answers whether the indicated file exists or not.
+ * 
+ * @param parent the file's parent directory
+ * @param child the file's name
+ * @return true if the file exists
+ */
+public static boolean fileExists(String parent, String child) {
+	throw new IOException();
+}
+
+/**
  * Execute progArray[0] in a separate platform process if the
  * underlying platform support this.
  * <p>
