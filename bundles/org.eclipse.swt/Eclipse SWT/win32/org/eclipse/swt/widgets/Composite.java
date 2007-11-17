@@ -1314,7 +1314,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 
 			/* Get the system region for the paint HDC */
 			int /*long*/ sysRgn = 0;
-			if (((style & SWT.DOUBLE_BUFFERED) != 0 && (style & SWT.TRANSPARENT) == 0) || (style & SWT.NO_MERGE_PAINTS) != 0) {
+			if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0 || (style & SWT.NO_MERGE_PAINTS) != 0) {
 				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 				if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
 					if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
@@ -1341,7 +1341,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 			if (width != 0 && height != 0) {
 				GC paintGC = null;
 				Image image = null;
-				if ((style & SWT.DOUBLE_BUFFERED) != 0 && (style & SWT.TRANSPARENT) == 0) {
+				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
 					image = new Image (display, width, height);
 					paintGC = gc;
 					gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
@@ -1350,6 +1350,9 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 					gc.setForeground (getForeground ());
 					gc.setBackground (getBackground ());
 					gc.setFont (getFont ());
+					if ((style & SWT.TRANSPARENT) != 0) {
+						OS.BitBlt (gc.handle, 0, 0, width, height, paintGC.handle, ps.left, ps.top, OS.SRCCOPY);						
+					} 
 					OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
 					OS.SelectClipRgn (gc.handle, sysRgn);
 					OS.OffsetRgn (sysRgn, ps.left, ps.top);
@@ -1358,7 +1361,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 					OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
 					if ((style & (SWT.NO_BACKGROUND | SWT.TRANSPARENT)) != 0) {
 						/* This code is intentionally commented because it may be slow to copy bits from the screen */
-						//paintGC.copyArea (image, ps.left, ps.top);
+						//paintGC.copyArea (image, ps.left, ps.top);						
 					} else {
 						RECT rect = new RECT ();
 						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
@@ -1400,7 +1403,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 				}
 				// widget could be disposed at this point
 				event.gc = null;
-				if ((style & SWT.DOUBLE_BUFFERED) != 0 && (style & SWT.TRANSPARENT) == 0) {
+				if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0) {
 					if (!gc.isDisposed ()) {
 						GCData gcData = gc.getGCData ();
 						if (gcData.focusDrawn && !isDisposed ()) updateUIState ();
