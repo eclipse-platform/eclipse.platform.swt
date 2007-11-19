@@ -700,6 +700,36 @@ fail:
 }
 #endif
 
+#ifndef NO_SetRect
+JNIEXPORT void JNICALL OS_NATIVE(SetRect)
+	(JNIEnv *env, jclass that, jshortArray arg0, jshort arg1, jshort arg2, jshort arg3, jshort arg4)
+{
+	jshort *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, SetRect_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	SetRect(lparg0, arg1, arg2, arg3, arg4);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jshort *, jshort, jshort, jshort, jshort);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(SetRect_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("SetRect"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(lparg0, arg1, arg2, arg3, arg4);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SetRect_FUNC);
+}
+#endif
+
 #ifndef NO_TransformProcessType
 JNIEXPORT jint JNICALL OS_NATIVE(TransformProcessType)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
@@ -3513,6 +3543,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3FIF)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3FIF_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__II_3I
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3I_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jint *))objc_msgSend)((id)arg0, (SEL)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3I_FUNC);
 	return rc;
 }
 #endif

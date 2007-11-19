@@ -11,6 +11,7 @@
 
 /* Libraries for dynamic loaded functions */
 #define UnionRgn_LIB "com.apple.Carbon"
+#define SetRect_LIB "com.apple.Carbon"
 #define SectRgn_LIB "com.apple.Carbon"
 #define RectRgn_LIB "com.apple.Carbon"
 #define RectInRgn_LIB "com.apple.Carbon"

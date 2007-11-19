@@ -160,7 +160,8 @@ public void add(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn = OS.NewRgn();
-	short[] r = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
+	short[] r = new short[4];
+	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	OS.RectRgn(rectRgn, r);
 	OS.UnionRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);
@@ -417,7 +418,8 @@ public void intersect(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn = OS.NewRgn();
-	short[] r = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
+	short[] r = new short[4];
+	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	OS.RectRgn(rectRgn, r);
 	OS.SectRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);
@@ -466,7 +468,8 @@ public void intersect(Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	short[] rect = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
+	short[] r = new short[4];
+	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	return OS.RectInRgn(rect, handle);
 }
 
@@ -597,7 +600,8 @@ public void subtract(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn = OS.NewRgn();
-	short[] r = new short[]{(short)x, (short)y, (short)(x + width),(short)(y + height)};
+	short[] r = new short[4];
+	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	OS.RectRgn(rectRgn, r);
 	OS.DiffRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);

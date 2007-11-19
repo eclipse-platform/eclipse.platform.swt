@@ -33,7 +33,7 @@ public void getValues(int vals, int attrib, int screen) {
 	OS.objc_msgSend(this.id, OS.sel_getValues_1forAttribute_1forVirtualScreen_1, vals, attrib, screen);
 }
 
-public NSOpenGLPixelFormat initWithAttributes(int attribs) {
+public NSOpenGLPixelFormat initWithAttributes(int[] attribs) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithAttributes_1, attribs);
 	return result != 0 ? this : null;
 }

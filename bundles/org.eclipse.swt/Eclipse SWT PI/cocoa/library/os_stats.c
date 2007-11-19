@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 314;
-int OS_nativeFunctionCallCount[314];
+int OS_nativeFunctionCount = 316;
+int OS_nativeFunctionCallCount[316];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -54,6 +54,7 @@ char * OS_nativeFunctionNames[] = {
 	"RectRgn",
 	"SectRgn",
 	"SetFrontProcess",
+	"SetRect",
 	"TransformProcessType",
 	"UnionRgn",
 	"class_1addIvar",
@@ -237,6 +238,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2",
 	"objc_1msgSend__II_3F",
 	"objc_1msgSend__II_3FIF",
+	"objc_1msgSend__II_3I",
 	"objc_1msgSend__II_3III",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II",

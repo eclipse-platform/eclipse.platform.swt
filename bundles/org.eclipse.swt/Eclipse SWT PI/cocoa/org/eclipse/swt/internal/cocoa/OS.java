@@ -61,6 +61,7 @@ public static final native void DiffRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native boolean RectInRgn(short[] rect, int rgnHandle);
 public static final native int QDRegionToRects(int rgn, int dir, int proc, int userData);
 public static final native void CopyRgn(int srcRgnHandle, int dstRgnHandle);
+public static final native void SetRect(short[] r, short left, short top, short right, short bottom);
 public static final int kQDParseRegionFromTop = (1 << 0);
 public static final int kQDParseRegionFromBottom = (1 << 1);
 public static final int kQDParseRegionFromLeft = (1 << 2);
@@ -88,6 +89,7 @@ public static final native int objc_msgSend(int id, int sel, float[] arg0);
 public static final native int objc_msgSend(int id, int sel, char[] arg0, NSRange arg1);
 public static final native int objc_msgSend(int id, int sel, String arg0);
 public static final native int objc_msgSend(int id, int sel, NSPoint arg0, int arg1, float[] arg2);
+public static final native int objc_msgSend(int id, int sel, int [] arg0);
 
 public static final native int objc_msgSend_struct(NSSize result, int object, int selector);
 public static final native void objc_msgSend_struct(NSRange result, int id, int sel, NSRange arg0, int arg1);
