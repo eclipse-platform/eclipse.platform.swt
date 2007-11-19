@@ -12,8 +12,6 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.internal.gtk.*;
 
-import java.net.*;
-
 /**
  * The class <code>URLTransfer</code> provides a platform specific mechanism 
  * for converting text in URL format represented as a java <code>String</code> 
@@ -79,7 +77,7 @@ public void javaToNative (Object object, TransferData transferData){
  * For additional information see <code>Transfer#nativeToJava</code>.
  * 
  * @param transferData the platform specific representation of the data to be 
- * been converted
+ * converted
  * @return a java <code>String</code> containing a URL if the 
  * conversion was successful; otherwise null
  */
@@ -104,14 +102,7 @@ protected String[] getTypeNames(){
 }
 
 boolean checkURL(Object object) {
-	if (object == null  || !(object instanceof String) || ((String)object).length() == 0) return false;
-	String url = (String)object;
-	try {
-		new URL(url);
-	} catch (java.net.MalformedURLException e) {
-		return false;
-	}
-	return true;
+	return object != null && (object instanceof String) && ((String)object).length() > 0;
 }
 
 protected boolean validate(Object object) {

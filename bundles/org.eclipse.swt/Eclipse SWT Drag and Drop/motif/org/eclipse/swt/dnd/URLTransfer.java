@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import java.net.*;
-
 import org.eclipse.swt.internal.motif.*;
  
 /**
@@ -80,7 +78,7 @@ public void javaToNative (Object object, TransferData transferData){
 * For additional information see <code>Transfer#nativeToJava</code>.
 * 
 * @param transferData the platform specific representation of the data to be 
-*  converted
+* converted
 * @return a java <code>String</code> containing a URL if the 
 * conversion was successful; otherwise null
 */
@@ -105,14 +103,7 @@ protected String[] getTypeNames(){
 }
 
 boolean checkURL(Object object) {
-	if (object == null  || !(object instanceof String) || ((String)object).length() == 0) return false;
-	String url = (String)object;
-	try {
-		new URL(url);
-	} catch (java.net.MalformedURLException e) {
-		return false;
-	}
-	return true;
+	return object != null && (object instanceof String) && ((String)object).length() > 0;
 }
 
 protected boolean validate(Object object) {

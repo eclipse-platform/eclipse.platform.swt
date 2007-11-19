@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import java.net.*;
-
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -130,14 +128,7 @@ protected String[] getTypeNames(){
 }
 
 boolean checkURL(Object object) {
-	if (object == null  || !(object instanceof String) || ((String)object).length() == 0) return false;
-	String url = (String)object;
-	try {
-		new URL(url);
-	} catch (java.net.MalformedURLException e) {
-		return false;
-	}
-	return true;
+	return object != null && (object instanceof String) && ((String)object).length() > 0;
 }
 
 protected boolean validate(Object object) {
