@@ -90,6 +90,7 @@ public class Snippet265 {
 				Variant theFile = new Variant(filename);
 				player.setProperty(playURL[0], theFile);
 			}
+			player.dispose();
 		}
 	}
 }
