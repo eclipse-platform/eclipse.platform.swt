@@ -237,7 +237,7 @@ void createHandle () {
 void createHandle (NSView parent) {
 	state |= CANVAS;
 	NSRect rect = new NSRect();
-	if ((style & (SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL)) != 0) {
+	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0 || hasBorder ()) {
 		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
 		scrollWidget.initWithFrame (rect);
 		scrollWidget.setDrawsBackground(false);

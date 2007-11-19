@@ -474,11 +474,6 @@ void createHandle () {
 	window.setDelegate(windowDelegate);
 }
 
-void createWidget () {
-	super.createWidget ();
-	resizeBounds ();
-}
-
 void destroyWidget () {
 	NSWindow window = this.window;
 	releaseHandle ();
@@ -539,6 +534,22 @@ public Rectangle getBounds () {
 	checkWidget();
 	NSRect frame = window.frame ();
 	return new Rectangle ((int)frame.x, (int) frame.y, (int) frame.width, (int) frame.height);
+}
+
+public Rectangle getClientArea () {
+	checkWidget();
+	//TODO why super implementation fails
+	NSRect rect = window.contentRectForFrameRect_(window.frame());
+	int width = (int)rect.width, height = (int)rect.height;
+	if (scrollView != null) {
+		NSSize size = new NSSize();
+		size.width = width;
+		size.height = height;
+		size = NSScrollView.contentSizeForFrameSize(size, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0, OS.NSNoBorder);
+		width = (int)size.width;
+		height = (int)size.height;
+	}
+	return new Rectangle (0, 0, width, height);
 }
 
 int getDrawCount (int control) {
@@ -706,14 +717,6 @@ boolean isEnabledCursor () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
-}
-
-void resizeBounds () {
-//	Rect rect = new Rect ();
-//	OS.GetWindowBounds (shellHandle, (short)  OS.kWindowContentRgn, rect);
-//	int control = scrolledHandle != 0 ? scrolledHandle : handle;
-//	setBounds (control, 0, 0, rect.right - rect.left, rect.bottom - rect.top, false, true, false);
-//	resizeClientArea ();
 }
 
 /**

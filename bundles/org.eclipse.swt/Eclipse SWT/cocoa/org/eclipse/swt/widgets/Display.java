@@ -2102,9 +2102,6 @@ public Point map (Control from, Control to, int x, int y) {
 			pt = to.view.convertPoint_fromView_(pt, null);
 		}
 	}
-	if (pt.x == -4) {
-		System.out.println("BADddd");
-	}
 	point.x = (int)pt.x;
 	point.y = (int)pt.y;
 	return point;
@@ -2214,9 +2211,6 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 			pt = toWindow.convertScreenToBase(pt);
 			pt = to.view.convertPoint_fromView_(pt, null);
 		}
-	}
-	if (pt.x == -4) {
-		System.out.println("BADddd");
 	}
 	rectangle.x = (int)pt.x;
 	rectangle.y = (int)pt.y;
