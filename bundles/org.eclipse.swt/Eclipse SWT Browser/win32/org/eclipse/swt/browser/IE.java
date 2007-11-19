@@ -204,7 +204,14 @@ public void create(Composite parent, int style) {
 					ignoreDispose = true;
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
-					unhookMouseListeners(documents);
+
+					/*
+					* It is possible for the Browser's OLE frame to have been disposed
+					* by a Dispose listener that was invoked by notifyListeners above,
+					* so check for this before unhooking its mouse listeners.
+					*/
+					if (!frame.isDisposed ()) unhookMouseListeners(documents);
+
 					for (int i = 0; i < documents.length; i++) {
 						documents[i].dispose();
 					}
