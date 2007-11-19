@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.LongDateRec;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -147,6 +149,100 @@ void createHandle () {
 
 void drawBackground (int control, int context) {
 	fillBackground (control, context, null);
+}
+
+static final String [] requiredAttributes = {
+	OS.kAXOrientationAttribute,
+	OS.kAXValueAttribute,
+	OS.kAXMaxValueAttribute,
+	OS.kAXMinValueAttribute,
+};
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] arrayRef = new int[1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+	int stringArrayRef = arrayRef[0];
+	for (int i = 0; i < requiredAttributes.length; i++) {
+		String string = requiredAttributes[i];
+		char [] buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		OS.CFArrayAppendValue(stringArrayRef, stringRef);
+		OS.CFRelease(stringRef);
+	}
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+	}
+	return OS.noErr;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+		String roleText = OS.kAXSplitterRole;
+		buffer = new char [roleText.length ()];
+		roleText.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (attributeName.equals (OS.kAXRoleAttribute)) {
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+		if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+			if (stringRef [0] != 0) {
+				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+				OS.CFRelease(stringRef [0]);
+				OS.CFRelease(stringRef2);
+				return OS.noErr;
+			}
+		}
+	}
+	if (attributeName.equals (OS.kAXOrientationAttribute)) {
+		String orientation = (style & SWT.VERTICAL) != 0 ? OS.kAXVerticalOrientationValue : OS.kAXHorizontalOrientationValue;
+		buffer = new char [orientation.length ()];
+		orientation.getChars (0, buffer.length, buffer, 0);
+		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (stringRef [0] != 0) {
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+			OS.CFRelease(stringRef [0]);
+			return OS.noErr;
+		}
+	}
+	if (attributeName.equals (OS.kAXValueAttribute)) {
+		Point location = getLocation();
+		int value = (style & SWT.VERTICAL) != 0 ? location.x : location.y;
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {value});
+		return OS.noErr;
+	}
+	if (attributeName.equals (OS.kAXMaxValueAttribute)) {
+		Rect parentBounds = new Rect ();
+		OS.GetControlBounds (parent.handle, parentBounds);
+		int maxValue = (style & SWT.VERTICAL) != 0 ?
+				parentBounds.right - parentBounds.left :
+				parentBounds.bottom - parentBounds.top;
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {maxValue});
+		return OS.noErr;
+	}
+	if (attributeName.equals (OS.kAXMinValueAttribute)) {
+		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {0});
+		return OS.noErr;
+	}
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	return code;
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
