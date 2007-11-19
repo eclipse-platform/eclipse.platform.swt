@@ -206,6 +206,7 @@ void createHandle () {
 	scrollWidget.initWithFrame(new NSRect ());
 	if ((style & SWT.H_SCROLL) != 0) scrollWidget.setHasHorizontalScroller(true);
 	if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
+	scrollWidget.setAutohidesScrollers(true);
 	scrollWidget.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
 	scrollWidget.setTag(jniRef);
 	

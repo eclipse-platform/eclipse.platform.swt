@@ -363,6 +363,7 @@ void createHandle () {
 	scrollWidget.initWithFrame(new NSRect ());
 	scrollWidget.setHasHorizontalScroller(true);
 	scrollWidget.setHasVerticalScroller(true);
+	scrollWidget.setAutohidesScrollers(true);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 	scrollWidget.setTag(jniRef);
 	
