@@ -331,6 +331,7 @@ NSBezierPath getPath() {
 	path.retain();
 	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
 	callback.dispose();
+	if (path.isEmpty()) path.appendBezierPathWithRect(new NSRect());
 	return path;
 }
 
