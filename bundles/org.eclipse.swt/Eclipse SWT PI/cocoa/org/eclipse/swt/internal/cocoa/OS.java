@@ -5579,6 +5579,7 @@ public static final int sel_reservedSpaceLength = sel_registerName("reservedSpac
 public static final int sel_unsignedIntValue = sel_registerName("unsignedIntValue");
 public static final int sel_URLHandleResourceDidFinishLoading_1 = sel_registerName("URLHandleResourceDidFinishLoading:");
 public static final int sel_menuWillOpen_1 = sel_registerName("menuWillOpen:");
+public static final int sel_menuWillClose_1 = sel_registerName("menuWillClose:");
 public static final int sel_pointerArrayWithWeakObjects = sel_registerName("pointerArrayWithWeakObjects");
 public static final int sel_fetchPredicate = sel_registerName("fetchPredicate");
 public static final int sel_pathToColumn_1 = sel_registerName("pathToColumn:");
