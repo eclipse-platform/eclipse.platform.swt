@@ -492,34 +492,35 @@ public Image(Device device, String filename) {
 }
 
 void createAlpha () {
-//	if (transparentPixel == -1 && alpha == -1 && alphaData == null) return;
-//	int height = OS.CGImageGetHeight(handle);
-//	int bpr = OS.CGImageGetBytesPerRow(handle);
-//	int dataSize = height * bpr;
-//	byte[] srcData = new byte[dataSize];
-//	OS.memmove(srcData, data, dataSize);
-//	if (transparentPixel != -1) {
-//		for (int i=0; i<dataSize; i+=4) {
-//			int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
-//			srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
-//		}
-//	} else if (alpha != -1) {
-//		byte a = (byte)this.alpha;
-//		for (int i=0; i<dataSize; i+=4) {
-//			srcData[i] = a;				
-//		}
-//	} else {
-//		int width = OS.CGImageGetWidth(handle);
-//		int offset = 0, alphaOffset = 0;
-//		for (int y = 0; y<height; y++) {
-//			for (int x = 0; x<width; x++) {
-//				srcData[offset] = alphaData[alphaOffset];
-//				offset += 4;
-//				alphaOffset += 1;
-//			}
-//		}
-//	}
-//	OS.memmove(data, srcData, dataSize);
+	if (transparentPixel == -1 && alpha == -1 && alphaData == null) return;
+	NSSize size = handle.size();
+	int height = (int)size.height;
+	int bpr = imageRep.bytesPerRow();
+	int dataSize = height * bpr;
+	byte[] srcData = new byte[dataSize];
+	OS.memmove(srcData, imageRep.bitmapData(), dataSize);
+	if (transparentPixel != -1) {
+		for (int i=0; i<dataSize; i+=4) {
+			int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
+			srcData[i] = (byte)(pixel == transparentPixel ? 0 : 0xFF); 
+		}
+	} else if (alpha != -1) {
+		byte a = (byte)this.alpha;
+		for (int i=0; i<dataSize; i+=4) {
+			srcData[i] = a;				
+		}
+	} else {
+		int width = (int)size.width;
+		int offset = 0, alphaOffset = 0;
+		for (int y = 0; y<height; y++) {
+			for (int x = 0; x<width; x++) {
+				srcData[offset] = alphaData[alphaOffset];
+				offset += 4;
+				alphaOffset += 1;
+			}
+		}
+	}
+	OS.memmove(imageRep.bitmapData(), srcData, dataSize);
 }
 
 /**
