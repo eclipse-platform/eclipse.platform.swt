@@ -249,6 +249,7 @@ static SEL minimumSize;
 static SEL contentSize;
 static SEL containerSize;
 static SEL cellSize;
+static SEL sizeValue;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -277,6 +278,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 					if (containerSize == 0) containerSize = sel_registerName("containerSize");
 					if ((SEL)arg2 == containerSize) {
 						*lparg0 = [(id)arg1 containerSize];
+					} else {
+						if (sizeValue == 0) sizeValue = sel_registerName("sizeValue");
+						if ((SEL)arg2 == sizeValue) {
+							*lparg0 = [(id)arg1 sizeValue];
+						}
 					}
 				}
 			}

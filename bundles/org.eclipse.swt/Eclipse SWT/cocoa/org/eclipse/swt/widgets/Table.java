@@ -383,6 +383,7 @@ void createHandle () {
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
+	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 	widget.setTag(jniRef);
 	
 	headerView = widget.headerView();

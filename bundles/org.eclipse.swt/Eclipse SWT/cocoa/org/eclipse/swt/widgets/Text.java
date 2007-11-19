@@ -335,6 +335,7 @@ void createHandle () {
 		}
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
+		if ((style & SWT.BORDER) == 0) widget.setBordered(false);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
@@ -352,6 +353,7 @@ void createHandle () {
 		SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
+		if ((style & SWT.BORDER) == 0) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 		
 		NSSize size = new NSSize ();
 		size.width = size.height = Float.MAX_VALUE;

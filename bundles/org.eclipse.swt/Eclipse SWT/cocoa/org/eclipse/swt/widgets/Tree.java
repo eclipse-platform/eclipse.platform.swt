@@ -374,8 +374,9 @@ void createHandle () {
 	widget.setAutosaveExpandedItems(true);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
-	widget.setTag(jniRef);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
+	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
+	widget.setTag(jniRef);
 	
 	headerView = widget.headerView();
 	headerView.retain();

@@ -216,8 +216,9 @@ void createHandle () {
 	widget.setDataSource(widget);
 	widget.setHeaderView(null);
 	widget.setDelegate(widget);
-	widget.setTag(jniRef);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
+	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
+	widget.setTag(jniRef);
 	
 	column = (NSTableColumn)new NSTableColumn().alloc();
 	column.initWithIdentifier(NSString.stringWith(""));
