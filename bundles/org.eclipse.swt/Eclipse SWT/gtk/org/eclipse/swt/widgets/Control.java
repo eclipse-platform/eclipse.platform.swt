@@ -3530,8 +3530,8 @@ public void setEnabled (boolean enabled) {
 		}
 	} else {
 		OS.gtk_widget_realize (handle);
-		int /*long*/ parentHandle = parent.parentingHandle ();
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (parentHandle);
+		int /*long*/ parentHandle = parent.eventHandle ();
+		int /*long*/ window = parent.eventWindow ();
 		Rectangle rect = getBounds ();
 		GdkWindowAttr attributes = new GdkWindowAttr ();
 		attributes.x = rect.x;
