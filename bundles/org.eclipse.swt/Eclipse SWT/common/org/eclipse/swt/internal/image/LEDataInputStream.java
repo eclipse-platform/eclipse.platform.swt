@@ -148,9 +148,9 @@ final class LEDataInputStream extends InputStream {
 	public int readInt() throws IOException {
 		byte[] buf = new byte[4];
 		read(buf);
-		return ((((((buf[3] & 0xFF) << 24) | 
-			(buf[2] & 0xFF)) << 16) | 
-			(buf[1] & 0xFF)) << 8) | 
+		return ((buf[3] & 0xFF) << 24) | 
+			((buf[2] & 0xFF) << 16) | 
+			((buf[1] & 0xFF) << 8) | 
 			(buf[0] & 0xFF);
 	}
 	
