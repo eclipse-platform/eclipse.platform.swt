@@ -330,12 +330,8 @@ public void pack () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (nsColumn != null) {
-		//TODO - crashes tree
-//		((NSTableView)parent.view).removeTableColumn (nsColumn);
-//		nsColumn.autorelease();
-	}
-	nsColumn.release();
+	if (nsColumn != null) nsColumn.release();
+	nsColumn = null;
 	parent = null;
 }
 

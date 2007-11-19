@@ -328,6 +328,7 @@ NSBezierPath getPath() {
 	Callback callback = new Callback(this, "regionToRects", 4);
 	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	NSBezierPath path = NSBezierPath.bezierPath();
+	path.retain();
 	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
 	callback.dispose();
 	return path;
