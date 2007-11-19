@@ -31,7 +31,7 @@
     <classpathentry kind="src" path="Eclipse SWT Browser/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/cocoa"/>
-    <classpathentry kind="src" path="Eclipse SWT OpenGL/emulated"/>
+    <classpathentry kind="src" path="Eclipse SWT OpenGL/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
     <classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
     <classpathentry kind="lib" path="extra_jars/exceptions.jar"/>

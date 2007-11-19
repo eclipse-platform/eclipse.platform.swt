@@ -258,9 +258,12 @@ public void addMenuListener (MenuListener listener) {
 
 void createHandle () {
 //	display.addMenu (this);
-	nsMenu = (NSMenu)new NSMenu().alloc();
-	nsMenu.initWithTitle(NSString.stringWith(""));
-	nsMenu.setAutoenablesItems(false);
+	SWTMenu widget = (SWTMenu)new SWTMenu().alloc();
+	widget.initWithTitle(NSString.stringWith(""));
+	widget.setAutoenablesItems(false);
+	widget.setTag(jniRef);
+	widget.setDelegate(widget);	
+	nsMenu = widget;	
 }
 
 void createItem (MenuItem item, int index) {
@@ -269,7 +272,7 @@ void createItem (MenuItem item, int index) {
 	NSMenuItem nsItem = null;
 	if ((item.style & SWT.SEPARATOR) != 0) {
 		nsItem = NSMenuItem.separatorItem();
-//		nsItem.retain();
+		nsItem.retain();
 	} else {
 		nsItem = (NSMenuItem)new SWTMenuItem().alloc();
 		nsItem.initWithTitle(NSString.stringWith(""), 0, NSString.stringWith(""));
@@ -616,6 +619,28 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
+void menu_willHighlightItem(int menu, int itemID) {
+	int jniRef = OS.objc_msgSend(itemID, OS.sel_tag);
+	if (jniRef != -1 && jniRef != 0) {
+		Object object = OS.JNIGetObject(jniRef);
+		if (object instanceof MenuItem) {
+			MenuItem item = (MenuItem)object;
+			item.sendEvent (SWT.Arm);
+		}
+	}
+}
+
+void menuNeedsUpdate(int menu) {
+	sendEvent (SWT.Show);
+}
+
+void menuWillClose(int menu) {
+	sendEvent (SWT.Hide);
+}
+
+void menuWillOpen(int menu) {
+}
+
 int modifierIndex (String accelText) {
 	int start = accelText.length () - 1;
 	int index = start;
@@ -634,6 +659,11 @@ int modifierIndex (String accelText) {
 		index--;
 	}
 	return -1;
+}
+
+int numberOfItemsInMenu(int menu) {
+	System.out.println("numver");
+	return 4;
 }
 
 void releaseChildren (boolean destroy) {

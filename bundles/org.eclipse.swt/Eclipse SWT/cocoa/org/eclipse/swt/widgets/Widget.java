@@ -588,6 +588,18 @@ int menuForEvent (int event) {
 	return 0;
 }
 
+void menuNeedsUpdate(int menu) {
+}
+
+void menu_willHighlightItem(int menu, int item) {
+}
+
+void menuWillClose(int menu) {
+}
+
+void menuWillOpen(int menu) {
+}
+
 int numberOfRowsInTableView(int aTableView) {
 	return 0;
 }

@@ -397,6 +397,8 @@ public boolean isEnabled () {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (nsItem != null) nsItem.release();
+	nsItem = null;
 	parent = null;
 }
 

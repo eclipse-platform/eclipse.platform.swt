@@ -1564,6 +1564,18 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
 	
+	className = "SWTMenu";
+	cls = OS.objc_allocateClassPair(OS.class_NSMenu, className, 0);
+	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+//	OS.class_addMethod(cls, OS.sel_menuWillOpen_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuWillClose_1, proc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_numberOfItemsInMenu_1, proc3, "@:@");	
+	OS.class_addMethod(cls, OS.sel_menu_1willHighlightItem_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_1, proc3, "@:@");
+	OS.objc_registerClassPair(cls);
+
 	className = "SWTView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
@@ -2669,6 +2681,7 @@ void setMenuBar (Menu menu) {
 	*/
 	if (menu == menuBar) return;
 	menuBar = menu;
+//	NSMenu.setMenuBarVisible(true);
 //	application.setMenu(menu.nsMenu);
 //	application.setWindowsMenu(menu.nsMenu);
 //	application.setServicesMenu(menu.nsMenu);
@@ -3042,6 +3055,12 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.windowDidMove(arg0);
 	} else if (sel == OS.sel_menuForEvent_1) {
 		return widget.menuForEvent(arg0);
+	} else if (sel == OS.sel_menuWillOpen_1) {
+		widget.menuWillOpen(arg0);
+	} else if (sel == OS.sel_menuWillClose_1) {
+		widget.menuWillClose(arg0);
+	} else if (sel == OS.sel_menuNeedsUpdate_1) {
+		widget.menuNeedsUpdate(arg0);
 	}
 	return 0;
 }
@@ -3058,6 +3077,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 		return widget.outlineView_isItemExpandable(arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_1numberOfChildrenOfItem_1) {
 		return widget.outlineView_numberOfChildrenOfItem(arg0, arg1);
+	} else if (sel == OS.sel_menu_1willHighlightItem_1) {
+		widget.menu_willHighlightItem(arg0, arg1);
 	}
 	return 0;
 }
