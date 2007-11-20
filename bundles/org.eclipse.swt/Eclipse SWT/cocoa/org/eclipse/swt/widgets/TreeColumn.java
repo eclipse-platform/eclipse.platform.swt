@@ -326,6 +326,8 @@ public void pack () {
 //
 //	gc.dispose ();
 //	setWidth (width + parent.getInsetWidth (id, true));
+	//TODO this only takes care of the header
+	nsColumn.sizeToFit();
 }
 
 void releaseHandle () {

@@ -77,7 +77,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	boolean ignoreExpand;
+	boolean ignoreExpand, ignoreSelect;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -563,9 +563,9 @@ Color defaultForeground () {
 public void deselectAll () {
 	checkWidget ();
 	NSTableView widget = (NSTableView)view;
-	widget.setDelegate(null);
+	ignoreSelect = true;
 	widget.deselectAll(null);
-	widget.setDelegate(widget);
+	ignoreSelect = false;
 }
 
 public void deselect (TreeItem item) {
@@ -1376,6 +1376,7 @@ void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, 
 }
 
 void outlineViewSelectionDidChange(int notification) {
+	if (ignoreSelect) return;
 	postEvent(SWT.Selection);
 }
 
@@ -1567,9 +1568,9 @@ public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	NSTableView widget = (NSTableView)view;
-	widget.setDelegate(null);
+	ignoreSelect = true;
 	widget.selectAll(null);
-	widget.setDelegate(widget);
+	ignoreSelect = false;
 }
 
 public void select (TreeItem item) {

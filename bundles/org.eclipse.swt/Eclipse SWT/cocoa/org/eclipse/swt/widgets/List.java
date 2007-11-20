@@ -259,9 +259,9 @@ public void deselect (int index) {
 	checkWidget();
 	if (0 <= index && index < itemCount) {
 		NSTableView widget = (NSTableView)view;
-		widget.setDelegate(null);
+		ignoreSelect = true;
 		widget.deselectRow (index);
-		widget.setDelegate(widget);
+		ignoreSelect = false;
 	}
 }
 
@@ -292,11 +292,11 @@ public void deselect (int start, int end) {
 		deselectAll ();
 	} else {
 		NSTableView widget = (NSTableView)view;
-		widget.setDelegate(null);
+		ignoreSelect = true;
 		for (int i=0; i<length; i++) {
 			widget.deselectRow (i);
 		}
-		widget.setDelegate(widget);
+		ignoreSelect = false;
 	}
 }
 
@@ -321,11 +321,11 @@ public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	NSTableView widget = (NSTableView)view;
-	widget.setDelegate(null);
+	ignoreSelect = true;
 	for (int i=0; i<indices.length; i++) {
 		widget.deselectRow (indices [i]);
 	}
-	widget.setDelegate(widget);
+	ignoreSelect = false;
 }
 
 /**
@@ -339,9 +339,9 @@ public void deselect (int [] indices) {
 public void deselectAll () {
 	checkWidget ();
 	NSTableView widget = (NSTableView)view;
-	widget.setDelegate(null);
+	ignoreSelect = true;
 	widget.deselectAll(null);
-	widget.setDelegate(widget);
+	ignoreSelect = false;
 }
 
 void fixSelection (int index, boolean add) {
@@ -832,9 +832,9 @@ public void select (int index) {
 		NSIndexSet indexes = (NSIndexSet)new NSIndexSet().alloc();
 		indexes.initWithIndex(index);
 		NSTableView widget = (NSTableView)view;
-		widget.setDelegate(null);
+		ignoreSelect = true;
 		((NSTableView)view).selectRowIndexes(indexes, true);
-		widget.setDelegate(view);
+		ignoreSelect = false;
 	}
 }
 
@@ -876,9 +876,9 @@ public void select (int start, int end) {
 		range.length = length;
 		indexes.initWithIndexesInRange(range);
 		NSTableView widget = (NSTableView)view;
-		widget.setDelegate(null);
+		ignoreSelect = true;
 		widget.selectRowIndexes(indexes, true);
-		widget.setDelegate(widget);
+		ignoreSelect = false;
 	}
 }
 
@@ -919,9 +919,9 @@ public void select (int [] indices) {
 	}
 	if (count > 0) {
 		NSTableView widget = (NSTableView)view;
-		widget.setDelegate(null);
+		ignoreSelect = true;
 		widget.selectRowIndexes(indexes, true);
-		widget.setDelegate(widget);
+		ignoreSelect = false;
 	}
 }
 
@@ -929,10 +929,9 @@ void select (int [] ids, int count, boolean clear) {
 	NSMutableIndexSet indexes = (NSMutableIndexSet)new NSMutableIndexSet().alloc().init();
 	for (int i=0; i<count; i++) indexes.addIndex (ids [i] - 1); //WRONG -1
 	NSTableView widget = (NSTableView)view;
-	widget.setDelegate(null);
+	ignoreSelect = true;
 	widget.selectRowIndexes(indexes, !clear);
-	widget.setDelegate(widget);
-
+	ignoreSelect = false;
 }
 
 /**
@@ -949,9 +948,9 @@ public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	NSTableView widget = (NSTableView)view;
-	widget.setDelegate(null);
+	ignoreSelect = true;
 	widget.selectAll(null);
-	widget.setDelegate(widget);
+	ignoreSelect = false;
 }
 
 void sendDoubleSelection() {
@@ -1213,6 +1212,7 @@ public void showSelection () {
 }
 
 void tableViewSelectionDidChange (int aNotification) {
+	if (ignoreSelect) return;
 	postEvent (SWT.Selection);
 }
 

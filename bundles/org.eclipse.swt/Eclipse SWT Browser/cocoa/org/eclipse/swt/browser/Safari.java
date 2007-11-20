@@ -155,6 +155,8 @@ public void create (Composite parent, int style) {
 					Safari.this.webView = null;
 					Safari.this.delegate.release();
 					Safari.this.delegate = null;
+					OS.DeleteGlobalRef(jniRef);
+					jniRef = 0;
 					html = null;
 					lastHoveredLinkURL = null;
 					break;
