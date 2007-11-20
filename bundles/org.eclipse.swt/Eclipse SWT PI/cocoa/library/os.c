@@ -174,6 +174,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EmptyRgn)
 }
 #endif
 
+#ifndef NO_Gestalt
+JNIEXPORT jint JNICALL OS_NATIVE(Gestalt)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Gestalt_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)Gestalt(arg0, lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, Gestalt_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcess)
 	(JNIEnv *env, jclass that, jintArray arg0)

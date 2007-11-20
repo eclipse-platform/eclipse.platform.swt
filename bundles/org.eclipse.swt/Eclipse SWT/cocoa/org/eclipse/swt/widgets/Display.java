@@ -568,9 +568,10 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
-	if (OS.VERSION < 0x1040) {
-		System.out.println ("***WARNING: SWT requires MacOS X version " + 10 + "." + 4 + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	if (OS.VERSION < 0x1050) {
+		System.out.println ("***WARNING: SWT requires MacOS X version " + 10 + "." + 5 + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		System.out.println ("***WARNING: Detected: " + Integer.toHexString((OS.VERSION & 0xFF00) >> 8) + "." + Integer.toHexString((OS.VERSION & 0xF0) >> 4) + "." + Integer.toHexString(OS.VERSION & 0xF)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
 
 	/*

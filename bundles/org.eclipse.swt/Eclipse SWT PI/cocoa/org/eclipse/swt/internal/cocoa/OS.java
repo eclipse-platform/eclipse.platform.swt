@@ -16,10 +16,18 @@ public class OS extends C {
 	static {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
+	
+	public static final int VERSION;
+	static {
+		int [] response = new int [1];
+		OS.Gestalt (OS.gestaltSystemVersion, response);
+		VERSION = response [0] & 0xffff;		
+	}
 
 	//TODO - don't hard code
-	public static final int VERSION = 0x1040;
 	public static final int PTR_SIZEOF = 4;
+	
+	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int noErr = 0;
 	public static final int kProcessTransformToForegroundApplication = 1;
 
@@ -37,6 +45,7 @@ public static final native int NewGlobalRef(Object object);
 public static final native void DeleteGlobalRef(int globalRef);
 public static final native Object JNIGetObject(int globalRef);
 
+public static final native int Gestalt(int selector, int[] response);
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int TransformProcessType(int[] psn, int transformState);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 316;
-int OS_nativeFunctionCallCount[316];
+int OS_nativeFunctionCount = 317;
+int OS_nativeFunctionCallCount[317];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -24,6 +24,7 @@ char * OS_nativeFunctionNames[] = {
 	"DiffRgn",
 	"DisposeRgn",
 	"EmptyRgn",
+	"Gestalt",
 	"GetCurrentProcess",
 	"GetRegionBounds",
 	"JNIGetObject",
