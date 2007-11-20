@@ -4278,7 +4278,7 @@ public void setLineAttributes(LineAttributes attributes) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
-	int cap = attributes.join;
+	int cap = attributes.cap;
 	if (cap != data.lineCap) {
 		mask |= LINE_CAP;
 		switch (cap) {
