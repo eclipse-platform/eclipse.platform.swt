@@ -284,7 +284,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 				ignoreResize = true;
 				int result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
 				ignoreResize = false;
-				break;
+				return result;
 			}
 		}
 		return OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
