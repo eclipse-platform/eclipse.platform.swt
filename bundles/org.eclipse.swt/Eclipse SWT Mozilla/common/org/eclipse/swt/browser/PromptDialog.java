@@ -223,6 +223,10 @@ class PromptDialog extends Dialog {
 		Label label = new Label(shell, SWT.WRAP);
 		label.setText(text);
 		GridData data = new GridData();
+		Monitor monitor = parent.getMonitor();
+		int maxWidth = monitor.getBounds().width * 2 / 3;
+		int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		data.widthHint = Math.min(width, maxWidth);
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
