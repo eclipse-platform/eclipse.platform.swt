@@ -77,6 +77,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
+	boolean ignoreExpand;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1379,18 +1380,22 @@ void outlineViewSelectionDidChange(int notification) {
 }
 
 boolean outlineView_shouldCollapseItem(int outlineView, int ref) {
-	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
-	Event event = new Event();
-	event.item = item;
-	sendEvent(SWT.Collapse, event);
+	if (!ignoreExpand) {
+		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+		Event event = new Event();
+		event.item = item;
+		sendEvent(SWT.Collapse, event);
+	}
 	return true;
 }
 
 boolean outlineView_shouldExpandItem(int outlineView, int ref) {
-	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
-	Event event = new Event();
-	event.item = item;
-	sendEvent(SWT.Expand, event);
+	if (!ignoreExpand) {
+		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+		Event event = new Event();
+		event.item = item;
+		sendEvent(SWT.Expand, event);
+	}
 	return true;
 }
 

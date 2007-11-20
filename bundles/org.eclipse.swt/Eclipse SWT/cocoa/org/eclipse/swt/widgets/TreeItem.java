@@ -1058,13 +1058,13 @@ public void setChecked (boolean checked) {
 public void setExpanded (boolean expanded) {
 	checkWidget ();
 	if (expanded == getExpanded ()) return;
-//	parent.ignoreExpand = true;
+	parent.ignoreExpand = true;
 	if (expanded) {
 		((NSOutlineView)parent.view).expandItem_(handle);
 	} else {
 		((NSOutlineView)parent.view).collapseItem_(handle);
 	}
-//	parent.ignoreExpand = false;
+	parent.ignoreExpand = false;
 	cached = true;
 //	if (expanded) {
 //		parent.setScrollWidth (false, childIds, false);
