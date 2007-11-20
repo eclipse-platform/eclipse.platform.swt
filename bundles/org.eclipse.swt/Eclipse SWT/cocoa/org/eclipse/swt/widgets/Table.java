@@ -2280,13 +2280,11 @@ public void showSelection () {
 }
 
 void sendDoubleSelection() {
-	//TODO - post
-	sendEvent (SWT.DefaultSelection);
-	
+	postEvent (SWT.DefaultSelection);
 }
+
 void tableViewSelectionDidChange (int aNotification) {
-	//TODO - post
-	sendEvent (SWT.Selection);
+	postEvent (SWT.Selection);
 }
 
 boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {

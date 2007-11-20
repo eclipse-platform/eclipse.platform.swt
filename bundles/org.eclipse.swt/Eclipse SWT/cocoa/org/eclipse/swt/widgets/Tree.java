@@ -1384,6 +1384,26 @@ void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, 
 	browserCell.setImage(image != null ? image.handle : null);
 }
 
+void outlineViewSelectionDidChange(int notification) {
+	postEvent(SWT.Selection);
+}
+
+boolean outlineView_shouldCollapseItem(int outlineView, int ref) {
+	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	Event event = new Event();
+	event.item = item;
+	sendEvent(SWT.Collapse, event);
+	return true;
+}
+
+boolean outlineView_shouldExpandItem(int outlineView, int ref) {
+	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	Event event = new Event();
+	event.item = item;
+	sendEvent(SWT.Expand, event);
+	return true;
+}
+
 void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int ref) {
 	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
 	if (checkColumn != null && tableColumn == checkColumn.id)  {
@@ -1583,6 +1603,10 @@ public void select (TreeItem item) {
 //		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 //	}
 //	ignoreSelect = false;
+}
+
+void sendDoubleSelection() {
+	postEvent (SWT.DefaultSelection);
 }
 
 /**

@@ -1631,11 +1631,9 @@ void initClasses () {
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
-//	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
-//	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
-//	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
-//	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1shouldCollapseItem_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_1shouldExpandItem_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1child_1ofItem_1, proc5, "@:@i@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1isItemExpandable_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1numberOfChildrenOfItem_1, proc4, "@:@@");
@@ -3061,6 +3059,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.menuWillClose(arg0);
 	} else if (sel == OS.sel_menuNeedsUpdate_1) {
 		widget.menuNeedsUpdate(arg0);
+	} else if (sel == OS.sel_outlineViewSelectionDidChange_1) {
+		widget.outlineViewSelectionDidChange(arg0);
 	}
 	return 0;
 }
@@ -3077,6 +3077,10 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 		return widget.outlineView_isItemExpandable(arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_1numberOfChildrenOfItem_1) {
 		return widget.outlineView_numberOfChildrenOfItem(arg0, arg1);
+	} else if (sel == OS.sel_outlineView_1shouldCollapseItem_1) {
+		return widget.outlineView_shouldCollapseItem(arg0, arg1) ? 1 : 0;
+	} else if (sel == OS.sel_outlineView_1shouldExpandItem_1) {
+		return widget.outlineView_shouldExpandItem(arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_menu_1willHighlightItem_1) {
 		widget.menu_willHighlightItem(arg0, arg1);
 	}

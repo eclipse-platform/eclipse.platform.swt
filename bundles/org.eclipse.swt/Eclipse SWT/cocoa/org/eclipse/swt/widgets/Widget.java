@@ -623,6 +623,17 @@ int outlineView_numberOfChildrenOfItem(int outlineView, int item) {
 void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, int tableColumn, int item) {
 }
 
+boolean outlineView_shouldCollapseItem(int outlineView, int item) {
+	return false;
+}
+
+boolean outlineView_shouldExpandItem(int outlineView, int item) {
+	return false;
+}
+
+void outlineViewSelectionDidChange(int notification) {
+}
+
 void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int item) {
 }
 
