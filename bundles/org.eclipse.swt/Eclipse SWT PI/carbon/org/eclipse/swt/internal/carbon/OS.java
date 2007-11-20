@@ -2242,6 +2242,14 @@ public static final String kAXCreatedNotification          = "AXCreated";
 // AXValue types
 public static final int kAXValueCFRangeType = 4;
 
+// AXValue Constants
+public static final String kAXAscendingSortDirectionValue  = "AXAscendingSortDirection";
+public static final String kAXDescendingSortDirectionValue = "AXDescendingSortDirection";
+public static final String kAXHorizontalOrientationValue   = "AXHorizontalOrientation";
+public static final String kAXUnknownOrientationValue      = "AXUnknownOrientation";
+public static final String kAXUnknownSortDirectionValue    = "AXUnknownSortDirection";
+public static final String kAXVerticalOrientationValue     = "AXVerticalOrientation";
+
 // Error codes
 public static final int kAXErrorIllegalArgument = -25201;
 public static final int kAXErrorInvalidUIElement = -25202;
