@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify;
+	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize;
 	int scrollWidth, visibleCount = 5;
 	int /*long*/ cbtHook;
 	/**
@@ -279,6 +279,14 @@ public void addVerifyListener (VerifyListener listener) {
 int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == handle) {
+		switch (msg) {
+			case OS.WM_SIZE: {
+				ignoreResize = true;
+				int result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
+				ignoreResize = false;
+				break;
+			}
+		}
 		return OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
 	}
 	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -2107,7 +2115,17 @@ LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {	
+LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Feature in Windows.  When a combo box is resized,
+	* the size of the drop down rectangle is specified
+	* using the height and then the combo box resizes
+	* to be the height of the text field.  This causes
+	* two WM_SIZE messages to be sent and two SWT.Resize
+	* events to be issued.  The fix is to ignore the
+	* second resize.
+	*/
+	if (ignoreResize) return null;
 	/*
 	* Bug in Windows.  If the combo box has the CBS_SIMPLE style,
 	* the list portion of the combo box is not redrawn when the
@@ -2180,6 +2198,29 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (scrollWidth);
 	return result; 
+}
+
+LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Feature in Windows.  When a combo box is resized,
+	* the size of the drop down rectangle is specified
+	* using the height and then the combo box resizes
+	* to be the height of the text field.  This causes
+	* sibling windows that intersect with the original
+	* bounds to redrawn.  The fix is to stop the redraw
+	* using SWP_NOREDRAW and then damage only the combo
+	* box text field.
+	*/
+	WINDOWPOS lpwp = new WINDOWPOS ();
+	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+	if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
+		if (ignoreResize) {
+			lpwp.flags |= OS.SWP_NOREDRAW;
+			OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
+			OS.InvalidateRect (handle, null, true);
+		}
+	}
+	return super.WM_WINDOWPOSCHANGING (wParam, lParam);
 }
 
 LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
