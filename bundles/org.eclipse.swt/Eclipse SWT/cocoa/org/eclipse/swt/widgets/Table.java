@@ -1137,16 +1137,16 @@ public boolean getLinesVisible () {
  */
 public TableItem [] getSelection () {
 	checkWidget ();
-	//BUG ?
-	if (((NSTableView)view).numberOfSelectedRows() == 0) {
+	NSTableView widget = (NSTableView)view;
+	if (widget.numberOfSelectedRows() == 0) {
 		return new TableItem [0];
 	}
-	NSIndexSet selection = ((NSTableView)view).selectedRowIndexes();
-	int bufferSize = selection.lastIndex() - selection.firstIndex() + 1;
-	int [] indexBuffer = new int [bufferSize];
-	selection.getIndexes(indexBuffer, bufferSize, 0);
-	TableItem [] result = new TableItem  [bufferSize];
-	for (int i=0; i<bufferSize; i++) {
+	NSIndexSet selection = widget.selectedRowIndexes();
+	int count = selection.count();
+	int [] indexBuffer = new int [count];
+	selection.getIndexes(indexBuffer, count, 0);
+	TableItem [] result = new TableItem  [count];
+	for (int i=0; i<count; i++) {
 		result [i] = _getItem (indexBuffer [i]);
 	}
 	return result;
@@ -1202,15 +1202,15 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-	//BUG
-	if (((NSTableView)view).numberOfSelectedRows() == 0) {
+	NSTableView widget = (NSTableView)view;
+	if (widget.numberOfSelectedRows() == 0) {
 		return new int [0];
 	}
-	NSIndexSet selection = ((NSTableView)view).selectedRowIndexes();
-	int bufferSize = selection.lastIndex() - selection.firstIndex() + 1;
-	int [] indexBuffer = new int [bufferSize];
-	selection.getIndexes(indexBuffer, bufferSize, 0);
-	return indexBuffer;
+	NSIndexSet selection = widget.selectedRowIndexes();
+	int count = selection.count();
+	int [] result = new int [count];
+	selection.getIndexes(result, count, 0);
+	return result;
 }
 
 /**

@@ -1060,9 +1060,9 @@ public void setExpanded (boolean expanded) {
 	if (expanded == getExpanded ()) return;
 //	parent.ignoreExpand = true;
 	if (expanded) {
-		((NSOutlineView)parent.view).expandItem_(new id(jniRef));
+		((NSOutlineView)parent.view).expandItem_(handle);
 	} else {
-		((NSOutlineView)parent.view).collapseItem_(new id(jniRef));
+		((NSOutlineView)parent.view).collapseItem_(handle);
 	}
 //	parent.ignoreExpand = false;
 	cached = true;

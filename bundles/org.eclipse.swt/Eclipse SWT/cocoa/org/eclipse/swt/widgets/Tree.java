@@ -1157,30 +1157,24 @@ public TreeItem getParentItem () {
  */
 public TreeItem [] getSelection () {
 	checkWidget ();
-//	int [] count = new int [1];
-//	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, count) != OS.noErr) {
-//		error (SWT.ERROR_CANNOT_GET_COUNT);
-//	}
-//	TreeItem [] result = new TreeItem [count[0]];
-//	if (count[0] > 0) {
-//		int ptr = OS.NewHandle (0);
-//		if (count[0] == 1) {
-//			if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
-//				error (SWT.ERROR_CANNOT_GET_SELECTION);
-//			}
-//			OS.HLock (ptr);
-//			int [] id = new int [1];
-//			OS.memmove (id, ptr, 4);
-//			OS.memmove (id, id [0], 4);
-//			result [0] = _getItem (id [0], true);
-//			OS.HUnlock (ptr);
-//		} else {
-//			getSelection (result, OS.kDataBrowserNoItem, ptr, 0);
-//		}
-//		OS.DisposeHandle (ptr);
-//	}
-//	return result;
-	return new TreeItem[0];
+	NSOutlineView widget = (NSOutlineView)view;
+	if (widget.numberOfSelectedRows() == 0) {
+		return new TreeItem [0];
+	}
+	NSIndexSet selection = widget.selectedRowIndexes();
+	int count = selection.count();
+	int [] indexBuffer = new int [count];
+	selection.getIndexes(indexBuffer, count, 0);
+	TreeItem [] result = new TreeItem  [count];
+	for (int i=0; i<count; i++) {
+		id item = widget.itemAtRow(indexBuffer [i]);
+		int jniRef = OS.objc_msgSend(item.id, OS.sel_tag);
+		if (jniRef != -1 && jniRef != 0) {
+			//TODO virtual
+			result[i] = (TreeItem)OS.JNIGetObject(jniRef);
+		}
+	}
+	return result;
 }
 
 /**
@@ -1195,11 +1189,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	int [] count = new int [1];
-//	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, count) != OS.noErr) {
-//		error (SWT.ERROR_CANNOT_GET_COUNT);
-//	}
-	return count [0];
+	return ((NSTableView)view).numberOfSelectedRows();
 }
 
 /**

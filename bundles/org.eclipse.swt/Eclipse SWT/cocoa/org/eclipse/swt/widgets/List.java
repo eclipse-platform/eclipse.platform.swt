@@ -476,16 +476,16 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget ();
-	//BUG ?
-	if (((NSTableView)view).numberOfSelectedRows() == 0) {
+	NSTableView widget = (NSTableView)view;
+	if (widget.numberOfSelectedRows() == 0) {
 		return new String [0];
 	}
-	NSIndexSet selection = ((NSTableView)view).selectedRowIndexes();
-	int bufferSize = selection.lastIndex() - selection.firstIndex() + 1;
-	int [] indexBuffer = new int [bufferSize];
-	selection.getIndexes(indexBuffer, bufferSize, 0);
-	String [] result = new String  [bufferSize];
-	for (int i=0; i<bufferSize; i++) {
+	NSIndexSet selection = widget.selectedRowIndexes();
+	int count = selection.count();
+	int [] indexBuffer = new int [count];
+	selection.getIndexes(indexBuffer, count, 0);
+	String [] result = new String  [count];
+	for (int i=0; i<count; i++) {
 		result [i] = items [indexBuffer [i]];
 	}
 	return result;
@@ -541,15 +541,15 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-	//BUG
-	if (((NSTableView)view).numberOfSelectedRows() == 0) {
+	NSTableView widget = (NSTableView)view;
+	if (widget.numberOfSelectedRows() == 0) {
 		return new int [0];
 	}
-	NSIndexSet selection = ((NSTableView)view).selectedRowIndexes();
-	int bufferSize = selection.lastIndex() - selection.firstIndex() + 1;
-	int [] indexBuffer = new int [bufferSize];
-	selection.getIndexes(indexBuffer, bufferSize, 0);
-	return indexBuffer;
+	NSIndexSet selection = widget.selectedRowIndexes();
+	int count = selection.count();
+	int [] result = new int [count];
+	selection.getIndexes(result, count, 0);
+	return result;
 }
 
 /**
