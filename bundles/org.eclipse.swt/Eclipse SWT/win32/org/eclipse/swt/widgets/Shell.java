@@ -2052,8 +2052,8 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT WM_ENTERIDLE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
 	if (result != null) return result;
-	if (OS.IsWinCE && display.runMessages) {
-		if (display.runAsyncMessages (true)) display.wakeThread ();
+	if (display.runMessages) {
+		if (display.runAsyncMessages (false)) display.wakeThread ();
 	}
 	return result;
 }
