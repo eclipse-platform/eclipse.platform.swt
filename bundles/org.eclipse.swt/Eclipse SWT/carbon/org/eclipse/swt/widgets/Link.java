@@ -298,7 +298,7 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		}
 	}
 	if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
-		String text = getText ();
+		String text = parse (getText ());
 		if (text != null) {
 			buffer = new char [text.length ()];
 			text.getChars (0, buffer.length, buffer, 0);
