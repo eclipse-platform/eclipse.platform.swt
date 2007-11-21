@@ -340,8 +340,7 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = tvItem.lParam != -1 ? parent.items [(int)/*64*/tvItem.lParam] : null;
 		if (item != null) {
-			int /*long*/ hFont = item.cellFont != null ? item.cellFont [index] : -1;
-			if (hFont == -1) hFont = item.font;
+			int /*long*/ hFont = item.fontHandle (index);
 			if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
 			if (hFont != -1) OS.SelectObject (hDC, hFont);

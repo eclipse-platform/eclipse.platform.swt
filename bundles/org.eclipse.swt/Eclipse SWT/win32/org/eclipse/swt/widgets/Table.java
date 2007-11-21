@@ -669,8 +669,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 	*/
 	TableItem item = _getItem ((int)/*64*/nmcd.dwItemSpec);
 	if (item == null) return null;
-	int /*long*/ hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-	if (hFont == -1) hFont = item.font;
+	int /*long*/ hFont = item.fontHandle (nmcd.iSubItem);
 	if (hFont != -1) OS.SelectObject (hDC, hFont);
 	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
@@ -1379,11 +1378,10 @@ void createItem (TableColumn column, int index) {
 				item.cellForeground = temp;
 			}
 			if (item.cellFont != null) {
-				int /*long*/ [] cellFont = item.cellFont;
-				int /*long*/ [] temp = new int /*long*/ [columnCount + 1];
+				Font [] cellFont = item.cellFont;
+				Font [] temp = new Font [columnCount + 1];
 				System.arraycopy (cellFont, 0, temp, 0, index);
 				System.arraycopy (cellFont, index, temp, index + 1, columnCount - index);
-				temp [index] = -1;
 				item.cellFont = temp;
 			}
 		}
@@ -1778,8 +1776,8 @@ void destroyItem (TableColumn column) {
 					item.cellForeground = temp;
 				}
 				if (item.cellFont != null) {
-					int /*long*/ [] cellFont = item.cellFont;
-					int /*long*/ [] temp = new int /*long*/ [columnCount];
+					Font [] cellFont = item.cellFont;
+					Font [] temp = new Font [columnCount];
 					System.arraycopy (cellFont, 0, temp, 0, index);
 					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 					item.cellFont = temp;
@@ -3066,8 +3064,6 @@ public void selectAll () {
 
 void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lParam) {
 	int /*long*/ hDC = nmcd.hdc;
-	int /*long*/ hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-	if (hFont == -1) hFont = item.font;
 	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 	if (clrText == -1) clrText = item.foreground;
 	int clrTextBk = -1;
@@ -3136,7 +3132,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 		if (selected) clrSelectionBk = data.background;
 	}
-	data.hFont = hFont;
+	data.hFont = item.fontHandle (nmcd.iSubItem);
 	data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
@@ -3246,11 +3242,9 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 }
 
 Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hDC) {
-	int /*long*/ hFont = item.cellFont != null ? item.cellFont [column] : -1;
-	if (hFont == -1) hFont = item.font;
 	GCData data = new GCData ();
 	data.device = display;
-	data.hFont = hFont;
+	data.hFont = item.fontHandle (column);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
 	RECT itemRect = item.getBounds (row, column, true, true, false, false, hDC);
@@ -3389,9 +3383,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	int /*long*/ hDC = nmcd.hdc;
 	GCData data = new GCData ();
 	data.device = display;
-	int /*long*/ hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-	if (hFont == -1) hFont = item.font;
-	data.hFont = hFont;
+	data.hFont = item.fontHandle (nmcd.iSubItem);
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
 	* even for items that are not selected.  The fix is to get
@@ -4242,25 +4234,23 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		while (index < itemCount) {
 			String string = null;
-			int /*long*/ font = -1;
+			int /*long*/ hFont = -1;
 			if (item != null) {
 				string = item.text;
 				imageIndent = Math.max (imageIndent, item.imageIndent);
-				if (item.cellFont != null) font = item.cellFont [0];
-				if (font == -1) font = item.font;
+				hFont = item.fontHandle (0);
 			} else {
 				if (items [index] != null) {
 					TableItem tableItem = items [index];
 					string = tableItem.text;
 					imageIndent = Math.max (imageIndent, tableItem.imageIndent);
-					if (tableItem.cellFont != null) font = tableItem.cellFont [0];
-					if (font == -1) font = tableItem.font;
+					hFont = tableItem.fontHandle (0);
 				}
 			}
 			if (string != null && string.length () != 0) {
-				if (font != -1) {
+				if (hFont != -1) {
 					int /*long*/ hDC = OS.GetDC (handle);
-					int /*long*/ oldFont = OS.SelectObject (hDC, font);
+					int /*long*/ oldFont = OS.SelectObject (hDC, hFont);
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 					TCHAR buffer = new TCHAR (getCodePage (), string, false);
 					RECT rect = new RECT ();

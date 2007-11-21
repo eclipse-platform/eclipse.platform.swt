@@ -532,8 +532,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 				backgroundRect = rect;
 			}
 			int clrText = -1, clrTextBk = -1;
-			int /*long*/ hFont = item.cellFont != null ? item.cellFont [index] : -1;
-			if (hFont == -1) hFont = item.font;
+			int /*long*/ hFont = item.fontHandle (index);
 			if (selectionForeground != -1) clrText = selectionForeground;
 			if (OS.IsWindowEnabled (handle)) {
 				boolean drawForeground = false;
@@ -942,8 +941,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 	if (item == null) return null;
 	int /*long*/ hDC = nmcd.hdc;
 	int index = hwndHeader != 0 ? (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
-	int /*long*/ hFont = item.cellFont != null ? item.cellFont [index] : -1;
-	if (hFont == -1) hFont = item.font;
+	int /*long*/ hFont = item.fontHandle (index);
 	if (hFont != -1) OS.SelectObject (hDC, hFont);
 	if (ignoreCustomDraw || nmcd.left == nmcd.right) {
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
@@ -1954,11 +1952,10 @@ void createItem (TreeColumn column, int index) {
 				item.cellForeground = temp;
 			}
 			if (item.cellFont != null) {
-				int /*long*/ [] cellFont = item.cellFont;
-				int /*long*/ [] temp = new int /*long*/ [columnCount + 1];
+				Font [] cellFont = item.cellFont;
+				Font [] temp = new Font [columnCount + 1];
 				System.arraycopy (cellFont, 0, temp, 0, index);
 				System.arraycopy (cellFont, index, temp, index + 1, columnCount- index);
-				temp [index] = -1;
 				item.cellFont = temp;
 			}
 		}
@@ -2430,8 +2427,8 @@ void destroyItem (TreeColumn column) {
 					item.cellForeground = temp;
 				}
 				if (item.cellFont != null) {
-					int /*long*/ [] cellFont = item.cellFont;
-					int /*long*/ [] temp = new int /*long*/ [columnCount];
+					Font [] cellFont = item.cellFont;
+					Font [] temp = new Font [columnCount];
 					System.arraycopy (cellFont, 0, temp, 0, index);
 					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 					item.cellFont = temp;
@@ -5155,8 +5152,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 				int [] order = new int [count];
 				OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
 				while (index < count) {
-					int /*long*/ hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
-					if (hFont == -1) hFont = item.font;
+					int /*long*/ hFont = item.fontHandle (order [index]);
 					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 					RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
 					if (hFont != -1) OS.SelectObject (hDC, hFont);
@@ -6261,8 +6257,7 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 				int [] order = new int [count];
 				OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
 				while (index < count) {
-					int /*long*/ hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
-					if (hFont == -1) hFont = item.font;
+					int /*long*/ hFont = item.fontHandle (order [index]);
 					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 					RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
 					if (hFont != -1) OS.SelectObject (hDC, hFont);
@@ -6633,8 +6628,7 @@ LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 						int [] order = new int [count];
 						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
 						while (index < count) {
-							int /*long*/ hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
-							if (hFont == -1) hFont = item.font;
+							int /*long*/ hFont = item.fontHandle (order [index]);
 							if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 							RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
 							if (hFont != -1) OS.SelectObject (hDC, hFont);

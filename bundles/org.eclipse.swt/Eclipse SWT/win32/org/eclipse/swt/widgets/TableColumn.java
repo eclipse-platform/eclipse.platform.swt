@@ -372,8 +372,7 @@ public void pack () {
 		for (int i=0; i<count; i++) {
 			TableItem item = parent.items [i];
 			if (item != null) {
-				int /*long*/ hFont = item.cellFont != null ? item.cellFont [index] : -1;
-				if (hFont == -1) hFont = item.font;
+				int /*long*/ hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				Event event = parent.sendMeasureItemEvent (item, i, index, hDC);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);

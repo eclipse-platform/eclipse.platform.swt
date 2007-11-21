@@ -45,11 +45,11 @@ public class TreeItem extends Item {
 	Tree parent;
 	String [] strings;
 	Image [] images;
+	Font font;
+	Font [] cellFont;
 	boolean cached;
 	int background = -1, foreground = -1; 
-	int /*long*/ font = -1;
 	int [] cellBackground, cellForeground; 
-	int /*long*/ [] cellFont;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -244,7 +244,7 @@ void clear () {
 		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 	}
 	background = foreground = -1;
-	font = -1;
+	font = null;
 	cellBackground = cellForeground = null; 
 	cellFont = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
@@ -324,6 +324,12 @@ void destroyWidget () {
 	parent.releaseItem (handle, tvItem, false);
 	parent.destroyItem (this, handle);
 	releaseHandle ();
+}
+
+int /*long*/ fontHandle (int index) {
+	if (cellFont != null && cellFont [index] != null) return cellFont [index].handle;
+	if (font != null) return font.handle;
+	return -1;
 }
 
 /**
@@ -503,8 +509,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 						int /*long*/ hNewDC = hDC, hFont = 0;
 						if (hDC == 0) {
 							hNewDC = OS.GetDC (hwnd);
-							hFont = cellFont != null ? cellFont [index] : -1;
-							if (hFont == -1) hFont = font;
+							hFont = fontHandle (index);
 							if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 							hFont = OS.SelectObject (hNewDC, hFont);
 						}
@@ -610,7 +615,7 @@ public boolean getExpanded () {
 public Font getFont () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
+	return font != null ? font : parent.getFont ();
 }
 
 /**
@@ -632,8 +637,8 @@ public Font getFont (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
-	int /*long*/ hFont = (cellFont != null) ? cellFont [index] : font;
-	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -1400,13 +1405,10 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (this.font == hFont) return;
-	this.font = hFont;
+	if (this.font == font) return;
+	if (this.font != null && this.font.equals (font)) return;
+	if (font != null) parent.customDraw = true;
+	this.font = font;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
 	* Bug in Windows.  When the font is changed for an item,
@@ -1452,19 +1454,11 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int /*long*/ hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (cellFont == null) {
-		cellFont = new int /*long*/ [count];
-		for (int i = 0; i < count; i++) {
-			cellFont [i] = -1;
-		}
-	}
-	if (cellFont [index] == hFont) return;
-	cellFont [index] = hFont;
+	if (cellFont == null) cellFont = new Font [count];
+	if (cellFont [index] == font) return;
+	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	cellFont [index] = font;
+	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
 	* Bug in Windows.  When the font is changed for an item,
