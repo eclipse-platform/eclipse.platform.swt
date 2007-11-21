@@ -282,7 +282,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		switch (msg) {
 			case OS.WM_SIZE: {
 				ignoreResize = true;
-				int result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
+				int /*long*/ result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
 				ignoreResize = false;
 				return result;
 			}
