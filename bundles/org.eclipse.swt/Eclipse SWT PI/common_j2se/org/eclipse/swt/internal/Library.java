@@ -164,6 +164,19 @@ public static void loadLibrary (String name) {
  * @param mapName true if the name should be mapped, false otherwise
  */
 public static void loadLibrary (String name, boolean mapName) {
+	String prop = System.getProperty("sun.arch.data.model");
+	if (prop != null) {
+		if ("32".equals(prop)) {
+			 if (0x1FFFFFFFFL == (int /*long*/)0x1FFFFFFFFL) {
+				throw new UnsatisfiedLinkError("Cannot load 32-bit SWT libraries on 64-bit JVM"); //$NON-NLS-1$
+			 }
+		}
+		if ("64".equals(prop)) {
+			if (0x1FFFFFFFFL != (int /*long*/)0x1FFFFFFFFL) {
+				throw new UnsatisfiedLinkError("Cannot load 64-bit SWT libraries on 32-bit JVM"); //$NON-NLS-1$
+			}		
+		}
+	}
 	
 	/* Compute the library name and mapped name */
 	String libName1, libName2, mappedName1, mappedName2;
