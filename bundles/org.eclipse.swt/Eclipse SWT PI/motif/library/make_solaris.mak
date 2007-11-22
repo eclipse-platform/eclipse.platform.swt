@@ -39,6 +39,11 @@ GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_OBJS = swt.o glx.o glx_structs.o glx_stats.o
 GLX_LIBS = -G -L/usr/X11R6/lib -lGL -lGLU -lm
 
+AWT_PREFIX = swt-awt
+AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+AWT_OBJS = swt_awt.o
+AWT_LIBS = -G -L$(JAVA_HOME)/jre/lib/sparc -ljawt
+
 CAIRO_PREFIX = swt-cairo
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_OBJS = swt.o cairo.o cairo_structs.o cairo_stats.o
@@ -65,7 +70,7 @@ CFLAGS = -O -s \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-all: make_swt make_glx make_cde make_cairo
+all: make_swt make_awt make_glx make_cde make_cairo
 
 make_swt: $(SWT_LIB)
 
@@ -88,6 +93,11 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC)  $(CAIROCFLAGS)  $(CFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC)  $(CAIROCFLAGS) $(CFLAGS) -c cairo_stats.c
+
+make_awt: $(AWT_LIB)
+
+$(AWT_LIB): $(AWT_OBJS)
+	ld -o $@ $(AWT_OBJS) $(AWT_LIBS)
 
 make_glx: $(GLX_LIB)
 
