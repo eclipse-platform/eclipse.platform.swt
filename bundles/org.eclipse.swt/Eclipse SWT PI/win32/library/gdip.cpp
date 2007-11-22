@@ -496,6 +496,19 @@ fail:
 }
 #endif
 
+#ifndef NO_GraphicsPath_1Clone
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Clone)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Clone)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1Clone_FUNC);
+	rc = (jint)((GraphicsPath *)arg0)->Clone();
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1Clone_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1CloseFigure
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)
@@ -2004,6 +2017,19 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__I)
 	Gdip_NATIVE_ENTER(env, that, Region_1new__I_FUNC);
 	rc = (jint)new Region((HRGN)arg0);
 	Gdip_NATIVE_EXIT(env, that, Region_1new__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Region_1newGraphicsPath
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1newGraphicsPath)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1newGraphicsPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Region_1newGraphicsPath_FUNC);
+	rc = (jint)new Region((GraphicsPath*)arg0);
+	Gdip_NATIVE_EXIT(env, that, Region_1newGraphicsPath_FUNC);
 	return rc;
 }
 #endif

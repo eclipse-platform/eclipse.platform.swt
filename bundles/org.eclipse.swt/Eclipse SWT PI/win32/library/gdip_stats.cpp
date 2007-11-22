@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 173;
-int Gdip_nativeFunctionCallCount[173];
+int Gdip_nativeFunctionCount = 175;
+int Gdip_nativeFunctionCallCount[175];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -52,6 +52,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"GraphicsPath_1AddPath",
 	"GraphicsPath_1AddRectangle",
 	"GraphicsPath_1AddString",
+	"GraphicsPath_1Clone",
 	"GraphicsPath_1CloseFigure",
 	"GraphicsPath_1Flatten",
 	"GraphicsPath_1GetBounds",
@@ -174,6 +175,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"Region_1delete",
 	"Region_1new__",
 	"Region_1new__I",
+	"Region_1newGraphicsPath",
 	"SolidBrush_1delete",
 	"SolidBrush_1new",
 	"StringFormat_1Clone",

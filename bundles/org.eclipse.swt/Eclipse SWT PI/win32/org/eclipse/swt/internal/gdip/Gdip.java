@@ -18,6 +18,7 @@ public class Gdip extends Platform {
 	}
 	
 	/** GdiPlus constants */
+	public static final float FlatnessDefault = 0.25f;
 	public static final int BrushTypeSolidColor = 0;
 	public static final int BrushTypeHatchFill = 1;
 	public static final int BrushTypeTextureFill = 2;
@@ -222,6 +223,7 @@ public static final native int GraphicsPath_AddPath(int /*long*/ path, int /*lon
 public static final native int GraphicsPath_AddRectangle(int /*long*/ path, RectF rect);
 public static final native int GraphicsPath_AddString(int /*long*/ path, char[] string, int length, int /*long*/ family, int style, float emSize, PointF origin, int /*long*/ format);
 public static final native int GraphicsPath_CloseFigure(int /*long*/ path);
+public static final native int /*long*/ GraphicsPath_Clone(int /*long*/ path);
 public static final native int GraphicsPath_Flatten(int /*long*/ path, int /*long*/ matrix, float flatness);
 public static final native int GraphicsPath_GetBounds(int /*long*/ path, RectF bounds, int /*long*/ matrix, int /*long*/ pen);
 public static final native int GraphicsPath_GetLastPoint(int /*long*/ path, PointF lastPoint);
@@ -289,6 +291,7 @@ public static final native int Pen_SetWidth(int /*long*/ pen, float width);
 public static final native int /*long*/ Point_new(int x, int y);
 public static final native void Point_delete(int /*long*/ point);
 public static final native int /*long*/ Region_new(int /*long*/ hRgn);
+public static final native int /*long*/ Region_newGraphicsPath(int /*long*/ path);
 public static final native int /*long*/ Region_new();
 public static final native void Region_delete(int /*long*/ region);
 public static final native int /*long*/ Region_GetHRGN(int /*long*/ region, int /*long*/ graphics);
