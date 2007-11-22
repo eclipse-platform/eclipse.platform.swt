@@ -91,6 +91,12 @@ String getLibraryName () {
 }
 
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+	if (event.type == OS.GDK_BUTTON_PRESS) {
+		if (!hasFocus) browser.setFocus ();
+	}
+
 	/* 
 	* Stop the propagation of events that are not consumed by Mozilla, before
 	* they reach the parent embedder.  These event have already been received.
@@ -155,6 +161,7 @@ void init () {
 			*/
 			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, STOP_PROPOGATE);
 			OS.g_signal_connect (mozillaHandle, OS.key_release_event, eventProc, STOP_PROPOGATE);
+			OS.g_signal_connect (mozillaHandle, OS.button_press_event, eventProc, STOP_PROPOGATE);
 		}
 	}
 }
