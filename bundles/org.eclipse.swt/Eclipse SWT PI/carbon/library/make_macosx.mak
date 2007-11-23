@@ -18,7 +18,6 @@ SWTPI_PREFIX=swt-pi
 SWTCOCOA_PREFIX=swt-cocoa
 SWTAGL_PREFIX=swt-agl
 SWTXULRUNNER_PREFIX=swt-xulrunner
-SWTXPCOMINIT_PREFIX=swt-xpcominit
 WS_PREFIX=carbon
 SWT_VERSION=$(maj_ver)$(min_ver)
 SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
@@ -26,7 +25,6 @@ SWTPI_LIB=lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 COCOA_LIB=lib$(SWTCOCOA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 AGL_LIB=lib$(SWTAGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 XULRUNNER_LIB=lib$(SWTXULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
-XPCOMINIT_LIB=lib$(SWTXPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
@@ -42,8 +40,7 @@ SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_custom.o os_structs.o os_stats.o
 COCOA_OBJECTS = swt.o cocoa.o cocoa_custom.o cocoa_structs.o cocoa_stats.o 
 AGL_OBJECTS = swt.o agl.o agl_stats.o
-XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
-XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcom_stats.o
+XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o xpcominit.o xpcominit_structs.o xpcom_stats.o
 
 XULRUNNER_SDK = /Users/Shared/xulrunner/1.8.0.1/mozilla/dist/i386/dist/sdk
 #XULRUNNER_SDK = /Users/Shared/gecko-sdk
@@ -52,7 +49,7 @@ XULRUNNER_LIBS = $(XULRUNNER_SDK)/lib/libxpcomglue.a $(XULRUNNER_SDK)/../../../p
 XULRUNNERCFLAGS = $(CFLAGS) -Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include 
 XULRUNNERLFLAGS = $(LFLAGS)
 
-all: $(SWT_LIB) $(SWTPI_LIB) $(COCOA_LIB) $(AGL_LIB) $(XULRUNNER_LIB) $(XPCOMINIT_LIB)
+all: $(SWT_LIB) $(SWTPI_LIB) $(COCOA_LIB) $(AGL_LIB) $(XULRUNNER_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c
@@ -81,9 +78,6 @@ $(AGL_LIB): $(AGL_OBJECTS)
 $(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
 	g++ -o $(XULRUNNER_LIB) $(XULRUNNERLFLAGS) $(XULRUNNER_LIBS) $(XULRUNNER_OBJECTS)
 
-$(XPCOMINIT_LIB): $(XPCOMINIT_OBJECTS)
-	g++ -o $(XPCOMINIT_LIB) $(XULRUNNERLFLAGS) $(XULRUNNER_LIBS) $(XPCOMINIT_OBJECTS)
-
 xpcom.o: xpcom.cpp
 	g++ $(XULRUNNERCFLAGS) xpcom.cpp
 xpcom_custom.o: xpcom_custom.cpp
@@ -97,7 +91,7 @@ xpcominit.o: xpcominit.cpp
 xpcominit_structs.o: xpcominit_structs.cpp
 	g++ $(XULRUNNERCFLAGS) xpcominit_structs.cpp
 xpcominit_stats.o: xpcominit_stats.cpp
-	g++ $(XULRUNNERCFLAGS) xpcominit _stats.cpp
+	g++ $(XULRUNNERCFLAGS) xpcominit_stats.cpp
 
 
 install: all
