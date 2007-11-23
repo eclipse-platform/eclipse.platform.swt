@@ -137,6 +137,10 @@ boolean hookEnterExit () {
 void init () {
 }
 
+boolean needsSpinup () {
+	return true;
+}
+
 void onDispose (int embedHandle) {
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);

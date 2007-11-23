@@ -176,6 +176,10 @@ boolean hookEnterExit () {
 void init () {
 }
 
+boolean needsSpinup () {
+	return false;
+}
+
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
 	if (callback3 != null) {

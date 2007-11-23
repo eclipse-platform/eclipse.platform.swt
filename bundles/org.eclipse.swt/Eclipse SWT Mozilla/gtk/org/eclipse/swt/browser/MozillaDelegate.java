@@ -182,6 +182,10 @@ void init () {
 	}
 }
 
+boolean needsSpinup () {
+	return true;
+}
+
 void onDispose (int /*long*/ embedHandle) {
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
