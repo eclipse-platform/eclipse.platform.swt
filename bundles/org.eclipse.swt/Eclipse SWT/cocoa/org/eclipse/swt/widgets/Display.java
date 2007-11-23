@@ -723,7 +723,15 @@ boolean filters (int eventType) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-//	return getWidget (handle);
+	if (handle != 0 && OS.objc_msgSend(handle, OS.sel_respondsToSelector_1, OS.sel_tag) != 0) {
+		int tag = OS.objc_msgSend(handle, OS.sel_tag);
+		if (tag != -1) {
+			Object object = OS.JNIGetObject(tag);
+			if (object instanceof Widget) {
+				return (Widget)object;
+			}
+		}
+	}
 	return null;
 }
 

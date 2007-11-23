@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
@@ -22,9 +20,6 @@ class MozillaDelegate {
 	Browser browser;
 	Listener listener;
 	boolean hasFocus;
-	static Callback Callback3;
-	static Hashtable handles = new Hashtable ();
-	static final boolean USE_COCOA_VIEW_CREATE = false;
 	
 MozillaDelegate (Browser browser) {
 	super ();
@@ -32,12 +27,8 @@ MozillaDelegate (Browser browser) {
 }
 
 static Browser findBrowser (int handle) {
-	LONG value = (LONG)handles.get (new LONG (handle));
-	if (value != null) {
-		Display display = Display.getCurrent ();
-		return (Browser)display.findWidget (value.value);
-	}
-	return null;
+	Display display = Display.getCurrent ();
+	return (Browser)display.findWidget (handle);
 }
 
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
@@ -120,7 +111,6 @@ boolean needsSpinup () {
 }
 
 void onDispose (int embedHandle) {
-	handles.remove (new LONG (embedHandle));
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		browser.getShell ().removeListener (SWT.Deactivate, listener);
