@@ -289,7 +289,8 @@ public void create (Composite parent, int style) {
 		String mozillaPath = System.getProperty (XULRUNNER_PATH);
 		if (mozillaPath == null) {
 			try {
-				Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
+				String libName = delegate.getSWTInitLibraryName ();
+				Library.loadLibrary (libName);
 				initLoaded = true;
 			} catch (UnsatisfiedLinkError e) {
 				/* 

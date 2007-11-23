@@ -87,7 +87,11 @@ int /*long*/ getHandle () {
 }
 
 String getLibraryName () {
-	return "libxpcom.so";
+	return "libxpcom.so"; //$NON-NLS-1$
+}
+
+String getSWTInitLibraryName () {
+	return "swt-xpcominit"; //$NON-NLS-1$
 }
 
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {

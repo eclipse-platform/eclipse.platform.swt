@@ -62,6 +62,10 @@ String getLibraryName () {
 	return "xpcom.dll"; //$NON-NLS-1$
 }
 
+String getSWTInitLibraryName () {
+	return "swt-xpcominit"; //$NON-NLS-1$
+}
+
 void handleFocus () {
 }
 
