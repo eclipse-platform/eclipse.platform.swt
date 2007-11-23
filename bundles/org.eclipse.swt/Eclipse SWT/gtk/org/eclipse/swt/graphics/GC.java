@@ -159,7 +159,11 @@ static void addCairoString(int /*long*/ cairo, String string, float x, float y, 
 		if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.pango_layout_set_text(layout, buffer, -1);
 		OS.pango_layout_set_font_description(layout, font.handle);
-		Cairo.cairo_move_to(cairo, x, y);
+		double[] currentX = new double[1], currentY = new double[1];
+		Cairo.cairo_get_current_point(cairo, currentX, currentY);
+		if (currentX[0] != x || currentY[0] != y) {
+			Cairo.cairo_move_to(cairo, x, y);
+		}
 		OS.pango_cairo_layout_path(cairo, layout);
 		OS.g_object_unref(layout);
 	} else {
