@@ -13,6 +13,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent paths through the two-dimensional
@@ -75,6 +76,111 @@ public Path (Device device) {
 	this.device = device;
 	handle = OS.CGPathCreateMutable();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+
+public Path (Device device, Path path, float flatness) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.device = device;
+	flatness = Math.max(0, flatness);
+	if (flatness == 0) {
+		handle = OS.CGPathCreateMutableCopy(path.handle);
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	} else {
+		handle = OS.CGPathCreateMutable();
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		PathData data = path.getPathData();
+		int bezierPath = Cocoa.objc_msgSend(Cocoa.C_NSBezierPath, Cocoa.S_bezierPath);
+		byte[] types = data.types;
+		float[] points = data.points;
+		NSPoint point = new NSPoint(), point2 = new NSPoint(), point3 = new NSPoint();
+		for (int i = 0, j = 0; i < types.length; i++) {
+			switch (types[i]) {
+				case SWT.PATH_MOVE_TO:
+					point.x = points[j++];
+					point.y = points[j++];
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_moveToPoint, point);
+					break;
+				case SWT.PATH_LINE_TO:
+					point.x = points[j++];
+					point.y = points[j++];
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_lineToPoint, point);
+					break;
+				case SWT.PATH_CUBIC_TO:
+					point2.x = points[j++];
+					point2.y = points[j++];
+					point3.x = points[j++];
+					point3.y = points[j++];
+					point.x = points[j++];
+					point.y = points[j++];
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_curveToPoint, point, point2, point3);
+					break;
+				case SWT.PATH_QUAD_TO:
+					float currentX = point.x;
+					float currentY = point.y;
+					point2.x = points[j++];
+					point2.y = points[j++];
+					point.x = points[j++];
+					point.y = points[j++];
+					float x0 = currentX;
+					float y0 = currentY;
+					float cx1 = x0 + 2 * (point2.x - x0) / 3;
+					float cy1 = y0 + 2 * (point2.y - y0) / 3;
+					float cx2 = cx1 + (point.x - x0) / 3;
+					float cy2 = cy1 + (point.y - y0) / 3;
+					point2.x = cx1;
+					point2.y = cy1;
+					point3.x = cx2;
+					point3.y = cy2;
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_curveToPoint, point, point2, point3);
+					break;
+				case SWT.PATH_CLOSE:
+					Cocoa.objc_msgSend(bezierPath, Cocoa.S_closePath);
+					break;
+				default:
+					dispose();
+					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+		}
+		Cocoa.objc_msgSend(Cocoa.C_NSBezierPath, Cocoa.S_setDefaultFlatness, flatness);
+		bezierPath = Cocoa.objc_msgSend(bezierPath, Cocoa.S_bezierPathByFlatteningPath);
+		int count = Cocoa.objc_msgSend(bezierPath, Cocoa.S_elementCount);
+		int pointsPtr = OS.malloc(NSPoint.sizeof * 3);
+		if (pointsPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		for (int i = 0; i < count; i++) {
+			int element = Cocoa.objc_msgSend(bezierPath, Cocoa.S_elementAtIndex_associatedPoints, i, pointsPtr);
+			switch (element) {
+				case Cocoa.NSMoveToBezierPathElement:
+					Cocoa.memmove(point, pointsPtr, NSPoint.sizeof);
+					moveTo(point.x, point.y);
+					break;
+				case Cocoa.NSLineToBezierPathElement:
+					Cocoa.memmove(point, pointsPtr, NSPoint.sizeof);
+					lineTo(point.x, point.y);
+					break;
+				case Cocoa.NSCurveToBezierPathElement:
+					Cocoa.memmove(point, pointsPtr, NSPoint.sizeof);
+					Cocoa.memmove(point2, pointsPtr + NSPoint.sizeof, NSPoint.sizeof);
+					Cocoa.memmove(point3, pointsPtr + NSPoint.sizeof + NSPoint.sizeof, NSPoint.sizeof);
+					cubicTo(point2.x, point2.y, point3.x, point3.y, point.x, point.y);
+					break;
+				case Cocoa.NSClosePathBezierPathElement:
+					close();
+					break;
+			}
+		}
+		OS.free(pointsPtr);
+	}
+	if (device.tracking) device.new_Object(this);
+}
+
+public Path (Device device, PathData data) {
+	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(data);
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -537,6 +643,33 @@ public PathData getPathData() {
 	points = null;
 	point = null;
 	return result;
+}
+
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**
