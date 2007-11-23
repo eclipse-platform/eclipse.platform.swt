@@ -80,6 +80,82 @@ public Path (Device device) {
 }
 
 /**
+ * Constructs a new Path that is a copy of <code>path</code>. If
+ * <code>flatness</code> is less than or equal to zero, an unflatten
+ * copy of the path is created. Otherwise, it specifies the maximum
+ * error between the path and its flatten copy. Smaller numbers give
+ * better approximation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param path the path to make a copy
+ * @param flatness the flatness value
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the path is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, Path path, float flatness) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.device = device;
+	flatness = Math.max(0, flatness);
+	handle = Gdip.GraphicsPath_Clone(path.handle);
+	if (flatness != 0) Gdip.GraphicsPath_Flatten(handle, 0, flatness);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+
+/**
+ * Constructs a new with the specifed PathData.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
+ * @param device the device on which to allocate the path
+ * @param data the data for the path
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the data is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @since 3.4
+ */
+public Path (Device device, PathData data) {
+	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(data);
+	if (device.tracking) device.new_Object(this);
+}
+
+/**
  * Adds to the receiver a circular or elliptical arc that lies within
  * the specified rectangular area.
  * <p>
@@ -439,6 +515,33 @@ public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_AddLine(handle, currentPoint.X, currentPoint.Y, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+}
+
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**

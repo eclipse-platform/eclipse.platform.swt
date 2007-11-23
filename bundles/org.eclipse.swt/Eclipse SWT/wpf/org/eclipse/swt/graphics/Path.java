@@ -77,6 +77,28 @@ public Path (Device device) {
 	if (device.tracking) device.new_Object(this);
 }
 
+public Path (Device device, Path path, float flatness) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.device = device;
+	flatness = Math.max(0, flatness);
+	if (flatness == 0) {
+		handle = OS.PathGeometry_Clone(path.handle);
+	} else {
+		handle = OS.Geometry_GetFlattenedPathGeometry(path.handle, flatness, OS.ToleranceType_Absolute);
+	}
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+
+public Path (Device device, PathData data) {
+	this(device);
+	init(data);
+	if (device.tracking) device.new_Object(this);
+}
+
 /**
  * Adds to the receiver a circular or elliptical arc that lies within
  * the specified rectangular area.
@@ -502,6 +524,33 @@ public void lineTo(float x, float y) {
 	OS.PathSegmentCollection_Add(segments, segment);
 	OS.GCHandle_Free(segments);
 	OS.GCHandle_Free(segment);
+}
+
+void init(PathData data) {
+	byte[] types = data.types;
+	float[] points = data.points;
+	for (int i = 0, j = 0; i < types.length; i++) {
+		switch (types[i]) {
+			case SWT.PATH_MOVE_TO:
+				moveTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_LINE_TO:
+				lineTo(points[j++], points[j++]);
+				break;
+			case SWT.PATH_CUBIC_TO:
+				cubicTo(points[j++], points[j++], points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_QUAD_TO:
+				quadTo(points[j++], points[j++], points[j++], points[j++]);
+				break;
+			case SWT.PATH_CLOSE:
+				close();
+				break;
+			default:
+				dispose();
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
 }
 
 /**
