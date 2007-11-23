@@ -37,6 +37,7 @@ public static final int C_NSWindow = Cocoa.objc_getClass("NSWindow"); //$NON-NLS
 public static final int C_NSBitmapImageRep = Cocoa.objc_getClass("NSBitmapImageRep"); //$NON-NLS-1$
 public static final int C_NSImageView = Cocoa.objc_getClass("NSImageView"); //$NON-NLS-1$
 public static final int C_WebPreferences = Cocoa.objc_getClass("WebPreferences"); //$NON-NLS-1$
+public static final int C_NSBezierPath = Cocoa.objc_getClass("NSBezierPath"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
@@ -122,19 +123,36 @@ public static final int S_clickCount = Cocoa.sel_registerName("clickCount"); //$
 public static final int S_drawStatusBarBackgroundInRect_withHighlight = Cocoa.sel_registerName("drawStatusBarBackgroundInRect:withHighlight:"); //$NON-NLS-1$
 public static final int S_drawRect = Cocoa.sel_registerName("drawRect:"); //$NON-NLS-1$
 public static final int S_setNeedsDisplay = Cocoa.sel_registerName("setNeedsDisplay:"); //$NON-NLS-1$
-public static final int S_getLocation = Cocoa.sel_registerName("getLocation:"); //$NON-NLS-1$
 public static final int S_initWithImage_hotSpot = Cocoa.sel_registerName("initWithImage:hotSpot:"); //$NON-NLS-1$
 public static final int S_set = Cocoa.sel_registerName("set"); //$NON-NLS-1$
 public static final int S_init = Cocoa.sel_registerName("init"); //$NON-NLS-1$
+public static final int S_frame = Cocoa.sel_registerName("frame"); //$NON-NLS-1$
+public static final int S_window = Cocoa.sel_registerName("window"); //$NON-NLS-1$
 public static final int S_addRepresentation = Cocoa.sel_registerName("addRepresentation:"); //$NON-NLS-1$
 public static final int S_initWithBitmapDataPlanes = Cocoa.sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:"); //$NON-NLS-1$
 public static final int S_bitmapData = Cocoa.sel_registerName("bitmapData"); //$NON-NLS-1$
 public static final int S_modifierFlags = Cocoa.sel_registerName("modifierFlags"); //$NON-NLS-1$
+public static final int S_bezierPath = Cocoa.sel_registerName("bezierPath"); //$NON-NLS-1$
+public static final int S_bezierPathByFlatteningPath = Cocoa.sel_registerName("bezierPathByFlatteningPath");
+public static final int S_moveToPoint = Cocoa.sel_registerName("moveToPoint:"); //$NON-NLS-1$
+public static final int S_lineToPoint = Cocoa.sel_registerName("lineToPoint:"); //$NON-NLS-1$
+public static final int S_curveToPoint = Cocoa.sel_registerName("curveToPoint:controlPoint1:controlPoint2:"); //$NON-NLS-1$
+public static final int S_closePath = Cocoa.sel_registerName("closePath"); //$NON-NLS-1$
+public static final int S_elementCount = Cocoa.sel_registerName("elementCount"); //$NON-NLS-1$
+public static final int S_elementAtIndex_associatedPoints = Cocoa.sel_registerName("elementAtIndex:associatedPoints:"); //$NON-NLS-1$
+public static final int S_setFlatness = Cocoa.sel_registerName("setFlatness:"); //$NON-NLS-1$
+public static final int S_setDefaultFlatness = Cocoa.sel_registerName("setDefaultFlatness:"); //$NON-NLS-1$
+public static final int S_convertRect_toView = Cocoa.sel_registerName("convertRect:toView:"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
 public static final int NSControlKeyMask = 1 << 18;
 public static final int NSDeviceIndependentModifierFlagsMask = 0xffff0000;
+
+public static final int NSMoveToBezierPathElement = 0;
+public static final int NSLineToBezierPathElement = 1;
+public static final int NSCurveToBezierPathElement = 2;
+public static final int NSClosePathBezierPathElement = 3;
 
 /* WebKit */
 public static final native int HIWebViewCreate(int[] outView);
@@ -150,6 +168,7 @@ public static final native int objc_getClass(byte[] className);
 public static final native int objc_msgSend(int object, int selector);
 public static final native int objc_msgSend(int object, int selector, int arg0);
 public static final native int objc_msgSend(int object, int selector, float arg0);
+public static final native int objc_msgSend(int object, int selector, float arg0, float arg1);
 public static final native int objc_msgSend(int object, int selector, NSSize arg0);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0);
 public static final native int objc_msgSend(int object, int selector, int arg0, NSRect arg1, int arg2);
@@ -157,15 +176,19 @@ public static final native int objc_msgSend(int object, int selector, NSRect arg
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, int arg0, NSPoint arg1);
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0);
+public static final native int objc_msgSend(int object, int selector, NSPoint arg0, NSPoint arg1, NSPoint arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
 public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
+public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
+public static final native void objc_msgSend_stret(NSRect result, int object, int selector, NSRect arg0, int arg1);
 public static final native int sel_registerName(byte[] selectorName);
 
 public static final native int NSDeviceRGBColorSpace();
 
 public static final native void memcpy(NSRect dest, int src, int size);
+public static final native void memmove(NSPoint dest, int src, int size);
 
 static byte [] ascii (String name) {
 	int length = name.length ();

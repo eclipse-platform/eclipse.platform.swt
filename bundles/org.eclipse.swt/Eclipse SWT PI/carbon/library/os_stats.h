@@ -245,6 +245,7 @@ typedef enum {
 	CGPathApply_FUNC,
 	CGPathCloseSubpath_FUNC,
 	CGPathCreateMutable_FUNC,
+	CGPathCreateMutableCopy_FUNC,
 	CGPathGetBoundingBox_FUNC,
 	CGPathGetCurrentPoint_FUNC,
 	CGPathIsEmpty_FUNC,

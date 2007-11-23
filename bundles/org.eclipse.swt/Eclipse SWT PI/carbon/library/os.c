@@ -2926,6 +2926,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPathCreateMutable)
 }
 #endif
 
+#ifndef NO_CGPathCreateMutableCopy
+JNIEXPORT jint JNICALL OS_NATIVE(CGPathCreateMutableCopy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPathCreateMutableCopy_FUNC);
+	rc = (jint)CGPathCreateMutableCopy((CGPathRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPathCreateMutableCopy_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGPathIsEmpty
 JNIEXPORT jboolean JNICALL OS_NATIVE(CGPathIsEmpty)
 	(JNIEnv *env, jclass that, jint arg0)

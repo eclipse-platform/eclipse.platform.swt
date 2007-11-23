@@ -165,9 +165,15 @@ void destroyWidget () {
 }
 
 Point getLocation () {
-	NSPoint point = new NSPoint ();
-	Cocoa.objc_msgSend (view, Cocoa.S_getLocation, point);
-	return new Point ((int)point.x, (int)point.y);
+	NSRect rect = new NSRect();
+	Cocoa.objc_msgSend_stret(rect, view, Cocoa.S_frame);
+	NSRect windowRect = new NSRect();
+	Cocoa.objc_msgSend_stret(windowRect, Cocoa.objc_msgSend(view, Cocoa.S_window), Cocoa.S_frame);
+	rect.x += rect.width / 2;
+	rect.y += rect.height;
+	Cocoa.objc_msgSend_stret(rect, view, Cocoa.S_convertRect_toView, rect, 0);
+	rect.x += windowRect.x;
+	return new Point ((int)rect.x, (int)rect.y);
 }
 
 /**

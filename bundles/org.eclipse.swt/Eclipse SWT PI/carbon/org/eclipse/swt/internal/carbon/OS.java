@@ -1233,6 +1233,7 @@ public static final native void CGPathAddRect (int path, float[] m, CGRect rect)
 public static final native void CGPathApply (int path, int info, int function);
 public static final native void CGPathCloseSubpath (int path);
 public static final native int CGPathCreateMutable ();
+public static final native int CGPathCreateMutableCopy (int path);
 public static final native void CGPathGetBoundingBox (int path, CGRect rect);
 public static final native void CGPathGetCurrentPoint (int path, CGPoint point);
 public static final native boolean CGPathIsEmpty (int path);

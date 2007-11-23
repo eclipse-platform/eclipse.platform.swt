@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 943;
-int OS_nativeFunctionCallCount[943];
+int OS_nativeFunctionCount = 944;
+int OS_nativeFunctionCallCount[944];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -237,6 +237,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGPathApply",
 	"CGPathCloseSubpath",
 	"CGPathCreateMutable",
+	"CGPathCreateMutableCopy",
 	"CGPathGetBoundingBox",
 	"CGPathGetCurrentPoint",
 	"CGPathIsEmpty",

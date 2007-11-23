@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 23;
-int Cocoa_nativeFunctionCallCount[23];
+int Cocoa_nativeFunctionCount = 28;
+int Cocoa_nativeFunctionCallCount[28];
 char * Cocoa_nativeFunctionNames[] = {
 	"HICocoaViewCreate",
 	"HIJavaViewCreateWithCocoaView",
@@ -24,9 +24,11 @@ char * Cocoa_nativeFunctionNames[] = {
 	"NSDeviceRGBColorSpace",
 	"WebInitForCarbon",
 	"memcpy",
+	"memmove",
 	"objc_1getClass",
 	"objc_1msgSend__II",
 	"objc_1msgSend__IIF",
+	"objc_1msgSend__IIFF",
 	"objc_1msgSend__III",
 	"objc_1msgSend__IIII",
 	"objc_1msgSend__IIIII",
@@ -35,10 +37,13 @@ char * Cocoa_nativeFunctionNames[] = {
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2",
 	"objc_1msgSend__II_3IIIIIIIIIII",
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II",
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"sel_1registerName",
 };
 
