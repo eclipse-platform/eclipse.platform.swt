@@ -95,6 +95,7 @@ public Path (Device device, Path path, float flatness) {
 
 public Path (Device device, PathData data) {
 	this(device);
+	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
 	if (device.tracking) device.new_Object(this);
 }
