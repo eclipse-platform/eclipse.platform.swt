@@ -357,6 +357,8 @@ public class OS extends C {
 	public static final int TextDecorationLocation_Underline = 0;
 	public static final int TextDecorationLocation_Strikethrough = 2;
 	
+	public static final int ToleranceType_Absolute = 0;
+	
 
 	/*
 	* Note that these GCHandles are leaked.
@@ -802,6 +804,7 @@ public static final native void GeometryCollection_Remove(int sender, int geomet
 public static final native int Geometry_Clone(int sender);
 public static final native int Geometry_Bounds(int sender);
 public static final native int Geometry_GetFlattenedPathGeometry(int sender);
+public static final native int Geometry_GetFlattenedPathGeometry(int sender, double tolerance, int type);
 public static final native boolean Geometry_IsEmpty(int sender);
 public static final native boolean Geometry_FillContains(int sender, int point);
 public static final native int Geometry_FillContainsWithDetail(int sender, int geometry);
@@ -1018,6 +1021,7 @@ public static final native int PathFigure_Segments(int sender);
 public static final native int PathFigure_Segments(int sender, int index);
 public static final native void PathGeometry_AddGeometry(int sender, int geometry);
 public static final native int PathGeometry_Bounds(int sender);
+public static final native int PathGeometry_Clone(int sender);
 public static final native void PathGeometry_FillRule(int sender, int value);
 public static final native int PathGeometry_Figures(int sender);
 public static final native int PathGeometry_Figures(int sender, int index);

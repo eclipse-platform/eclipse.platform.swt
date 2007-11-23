@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1285;
-int OS_nativeFunctionCallCount[1285];
+int OS_nativeFunctionCount = 1287;
+int OS_nativeFunctionCallCount[1287];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -420,7 +420,8 @@ char * OS_nativeFunctionNames[] = {
 	"Geometry_1Clone",
 	"Geometry_1FillContains",
 	"Geometry_1FillContainsWithDetail",
-	"Geometry_1GetFlattenedPathGeometry",
+	"Geometry_1GetFlattenedPathGeometry__I",
+	"Geometry_1GetFlattenedPathGeometry__IDI",
 	"Geometry_1IsEmpty",
 	"Geometry_1StrokeContains",
 	"Geometry_1Transform__I",
@@ -626,6 +627,7 @@ char * OS_nativeFunctionNames[] = {
 	"PathFigure_1StartPoint",
 	"PathGeometry_1AddGeometry",
 	"PathGeometry_1Bounds",
+	"PathGeometry_1Clone",
 	"PathGeometry_1Figures__I",
 	"PathGeometry_1Figures__II",
 	"PathGeometry_1FillRule",

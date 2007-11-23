@@ -4893,15 +4893,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1FillContainsWithDetail)
 }
 #endif
 
-#ifndef NO_Geometry_1GetFlattenedPathGeometry
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1GetFlattenedPathGeometry)(JNIEnv *env, jclass that, jint arg0);
-JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1GetFlattenedPathGeometry)
+#ifndef NO_Geometry_1GetFlattenedPathGeometry__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1GetFlattenedPathGeometry__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1GetFlattenedPathGeometry__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, Geometry_1GetFlattenedPathGeometry_FUNC);
+	OS_NATIVE_ENTER(env, that, Geometry_1GetFlattenedPathGeometry__I_FUNC);
 	rc = (jint)TO_HANDLE(((Geometry^)TO_OBJECT(arg0))->GetFlattenedPathGeometry());
-	OS_NATIVE_EXIT(env, that, Geometry_1GetFlattenedPathGeometry_FUNC);
+	OS_NATIVE_EXIT(env, that, Geometry_1GetFlattenedPathGeometry__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Geometry_1GetFlattenedPathGeometry__IDI
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1GetFlattenedPathGeometry__IDI)(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(Geometry_1GetFlattenedPathGeometry__IDI)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Geometry_1GetFlattenedPathGeometry__IDI_FUNC);
+	rc = (jint)TO_HANDLE(((Geometry^)TO_OBJECT(arg0))->GetFlattenedPathGeometry(arg1, (ToleranceType)arg2));
+	OS_NATIVE_EXIT(env, that, Geometry_1GetFlattenedPathGeometry__IDI_FUNC);
 	return rc;
 }
 #endif
@@ -7375,6 +7388,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(PathGeometry_1Bounds)
 	OS_NATIVE_ENTER(env, that, PathGeometry_1Bounds_FUNC);
 	rc = (jint)TO_HANDLE(((PathGeometry^)TO_OBJECT(arg0))->Bounds);
 	OS_NATIVE_EXIT(env, that, PathGeometry_1Bounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PathGeometry_1Clone
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(PathGeometry_1Clone)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(PathGeometry_1Clone)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PathGeometry_1Clone_FUNC);
+	rc = (jint)TO_HANDLE(((PathGeometry^)TO_OBJECT(arg0))->Clone());
+	OS_NATIVE_EXIT(env, that, PathGeometry_1Clone_FUNC);
 	return rc;
 }
 #endif
