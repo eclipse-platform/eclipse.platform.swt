@@ -1006,6 +1006,7 @@ public class OS extends C {
 	public static final int LVM_SETSELECTEDCOLUMN = LVM_FIRST + 140;
 	public static final int LVM_SETTEXTBKCOLOR = 0x1026;
 	public static final int LVM_SETTEXTCOLOR = 0x1024;
+	public static final int LVM_SETTOOLTIPS = LVM_FIRST + 74;
 	public static final int LVNI_FOCUSED = 0x1;
 	public static final int LVNI_SELECTED = 0x2;
 	public static final int LVN_BEGINDRAG = 0xffffff93;
