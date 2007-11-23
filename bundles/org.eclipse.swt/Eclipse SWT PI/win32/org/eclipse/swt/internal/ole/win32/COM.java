@@ -28,7 +28,7 @@ public class COM extends OS {
 	public static final GUID IIDIAdviseSink = IIDFromString("{0000010F-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	//public static final GUID IIDIAdviseSink2 = IIDFromString("{00000125-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	//public static final GUID IIDIBindCtx = IIDFromString("{0000000E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-	//public static final GUID IIDIClassFactory = IIDFromString("{00000001-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+	public static final GUID IIDIClassFactory = IIDFromString("{00000001-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIClassFactory2 = IIDFromString("{B196B28F-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
 	public static final GUID IIDIConnectionPoint = IIDFromString("{B196B286-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
 	public static final GUID IIDIConnectionPointContainer = IIDFromString("{B196B284-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
