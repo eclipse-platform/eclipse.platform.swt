@@ -481,29 +481,28 @@ protected int /*long*/ getLicenseInfo(GUID clsid) {
 		return 0;
 	}
 	IUnknown unknown = new IUnknown(ppvObject[0]);
-	try {
-		if (unknown.QueryInterface(COM.IIDIClassFactory2, ppvObject) != COM.S_OK) {
-			return 0;
-		}
-		IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
-		try {
-			LICINFO licinfo = new LICINFO();
-			if (classFactory.GetLicInfo(licinfo) != COM.S_OK) {
-				return 0;
-			}
-			int /*long*/[] pBstrKey = new int /*long*/[1];
-			if (licinfo != null && licinfo.fRuntimeKeyAvail) {
-				if (classFactory.RequestLicKey(0, pBstrKey) == COM.S_OK) {
-					return pBstrKey[0];
-				}
-			}
-			return 0;
-		} finally {
-			classFactory.Release();
-		}
-	} finally {
+	if (unknown.QueryInterface(COM.IIDIClassFactory2, ppvObject) != COM.S_OK) {
 		unknown.Release();	
+		return 0;
 	}
+	IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
+	LICINFO licinfo = new LICINFO();
+	if (classFactory.GetLicInfo(licinfo) != COM.S_OK) {
+		unknown.Release();	
+		classFactory.Release();
+		return 0;
+	}
+	int /*long*/[] pBstrKey = new int /*long*/[1];
+	if (licinfo != null && licinfo.fRuntimeKeyAvail) {
+		if (classFactory.RequestLicKey(0, pBstrKey) == COM.S_OK) {
+			unknown.Release();	
+			classFactory.Release();
+			return pBstrKey[0];
+		}
+	}
+	unknown.Release();	
+	classFactory.Release();
+	return 0;
 }
 /**
  * 
