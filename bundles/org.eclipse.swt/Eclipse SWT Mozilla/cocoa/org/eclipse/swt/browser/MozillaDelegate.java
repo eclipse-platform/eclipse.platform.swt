@@ -76,7 +76,8 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 //		OS.CFRelease (cfstring);
 //	}
 //	return buffer;
-	return (string + "\0").getBytes();
+	if (terminate) string += "\0";
+	return string.getBytes();
 }
 
 //static int eventProc3 (int nextHandler, int theEvent, int userData) {
