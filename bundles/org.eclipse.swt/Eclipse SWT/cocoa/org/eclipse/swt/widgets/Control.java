@@ -771,12 +771,10 @@ void drawRect(int id, NSRect rect) {
 }
 
 void enableWidget (boolean enabled) {
-//	int topHandle = stopHandle ();
-//	if (enabled) {
-//		OS.EnableControl (topHandle);
-//	} else {
-//		OS.DisableControl (topHandle);
-//	}
+	//TODO - other views
+	if (view instanceof NSControl) {
+		((NSControl)view).setEnabled(enabled);
+	}
 }
 
 Cursor findCursor () {

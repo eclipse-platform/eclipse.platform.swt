@@ -295,6 +295,11 @@ public void cut () {
 //	}
 }
 
+void enableWidget (boolean enabled) {
+	buttonView.setEnabled(enabled);
+	textView.setEnabled(enabled);
+}
+
 /**
  * Returns the number of decimal places used by the receiver.
  *
