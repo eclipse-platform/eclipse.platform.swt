@@ -63,7 +63,7 @@ String getLibraryName () {
 }
 
 String getSWTInitLibraryName () {
-	return "swt-xpcominit"; //$NON-NLS-1$
+	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
 void handleFocus () {
