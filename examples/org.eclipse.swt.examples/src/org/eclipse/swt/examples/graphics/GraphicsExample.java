@@ -456,6 +456,7 @@ GraphicsTab[] createTabs() {
 		new TextAntialiasTab(this),
 		new GraphicAntialiasTab(this),
 		new ImageFlipTab(this),
+		new ImageScaleTab(this),
 		new PathTab(this),
 	};
 }
