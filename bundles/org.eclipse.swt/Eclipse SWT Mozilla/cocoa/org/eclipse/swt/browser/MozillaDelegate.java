@@ -79,6 +79,10 @@ String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
+String getSWTInitLibraryName () {
+	return "swt-xulrunner"; //$NON-NLS-1$
+}
+
 void handleFocus () {
 	if (hasFocus) return;
 	hasFocus = true;
