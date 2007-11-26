@@ -2168,8 +2168,10 @@ LRESULT WM_NCACTIVATE (int /*long*/ wParam, int /*long*/ lParam) {
 			if (OS.GetAsyncKeyState (OS.VK_LBUTTON) < 0) return result;
 			if (OS.GetAsyncKeyState (OS.VK_MBUTTON) < 0) return result;
 			if (OS.GetAsyncKeyState (OS.VK_RBUTTON) < 0) return result;
-			if (OS.GetAsyncKeyState (OS.VK_XBUTTON1) < 0) return result;
-			if (OS.GetAsyncKeyState (OS.VK_XBUTTON2) < 0) return result;
+			if (display.xMouse) {
+				if (OS.GetAsyncKeyState (OS.VK_XBUTTON1) < 0) return result;
+				if (OS.GetAsyncKeyState (OS.VK_XBUTTON2) < 0) return result;
+			}
 			return LRESULT.ZERO;
 		}
 	}
