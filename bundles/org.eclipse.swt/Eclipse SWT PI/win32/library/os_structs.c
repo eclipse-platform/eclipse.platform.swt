@@ -3590,6 +3590,40 @@ void setNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct)
 }
 #endif
 
+#ifndef NO_NMTTCUSTOMDRAW
+typedef struct NMTTCUSTOMDRAW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID uDrawFlags;
+} NMTTCUSTOMDRAW_FID_CACHE;
+
+NMTTCUSTOMDRAW_FID_CACHE NMTTCUSTOMDRAWFc;
+
+void cacheNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMTTCUSTOMDRAWFc.cached) return;
+	cacheNMCUSTOMDRAWFields(env, lpObject);
+	NMTTCUSTOMDRAWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMTTCUSTOMDRAWFc.uDrawFlags = (*env)->GetFieldID(env, NMTTCUSTOMDRAWFc.clazz, "uDrawFlags", "I");
+	NMTTCUSTOMDRAWFc.cached = 1;
+}
+
+NMTTCUSTOMDRAW *getNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpStruct)
+{
+	if (!NMTTCUSTOMDRAWFc.cached) cacheNMTTCUSTOMDRAWFields(env, lpObject);
+	getNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
+	lpStruct->uDrawFlags = (*env)->GetIntField(env, lpObject, NMTTCUSTOMDRAWFc.uDrawFlags);
+	return lpStruct;
+}
+
+void setNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpStruct)
+{
+	if (!NMTTCUSTOMDRAWFc.cached) cacheNMTTCUSTOMDRAWFields(env, lpObject);
+	setNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMTTCUSTOMDRAWFc.uDrawFlags, (jint)lpStruct->uDrawFlags);
+}
+#endif
+
 #ifndef NO_NMTTDISPINFO
 typedef struct NMTTDISPINFO_FID_CACHE {
 	int cached;

@@ -465,7 +465,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 					headerRect.right = parent.scrollWidth;
 					if (headerRect.right == 0) headerRect = rect;
 				}
-				if (fullText) rect.right = headerRect.right;
+				if (fullText && clip) rect.right = headerRect.right;
 				if (fullImage) rect.left = headerRect.left;
 				if (clip && headerRect.right < rect.right) {
 					rect.right = headerRect.right;
@@ -482,7 +482,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 			return new RECT ();
 		}
 		rect.left = headerRect.left;
-		if (fullText && getImage) {
+		if (fullText && getImage && clip) {
 			rect.right = headerRect.right;
 		} else {
 			rect.right = headerRect.left;
@@ -497,7 +497,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 				rect.right += size.x;
 			}
 			if (getText) {
-				if (fullText) {
+				if (fullText && clip) {
 					rect.left = rect.right + Tree.INSET;
 					rect.right = headerRect.right;
 				} else {

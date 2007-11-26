@@ -575,26 +575,8 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 			if (drawItem) {
 				if (i != 0) {
 					if (hooks (SWT.MeasureItem)) {
-						RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-						int nSavedDC = OS.SaveDC (hDC);
-						GCData data = new GCData ();
-						data.device = display;
-						data.hFont = hFont;
-						GC gc = GC.win32_new (hDC, data);
-						Event event = new Event ();
-						event.item = item;
-						event.index = index;
-						event.gc = gc;
-						event.x = itemRect.left;
-						event.y = itemRect.top;
-						event.width = itemRect.right - itemRect.left;
-						event.height = itemRect.bottom - itemRect.top;
-						sendEvent (SWT.MeasureItem, event);
-						event.gc = null;
-						gc.dispose ();
-						OS.RestoreDC (hDC, nSavedDC);
+						sendMeasureItemEvent (item, index, hDC);
 						if (isDisposed () || item.isDisposed ()) break;
-						if (event.height > getItemHeight ()) setItemHeight (event.height);
 					}
 					if (hooks (SWT.EraseItem)) {
 						RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
@@ -993,33 +975,8 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 		}
 		//TODO - BUG - measure and erase sent when first column is clipped
 		if (hooks (SWT.MeasureItem)) {
-			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-			int nSavedDC = OS.SaveDC (hDC);
-			GCData data = new GCData ();
-			data.device = display;
-			data.hFont = hFont;
-			GC gc = GC.win32_new (hDC, data);
-			Event event = new Event ();
-			event.item = item;
-			event.gc = gc;
-			event.index = index;
-			event.x = itemRect.left;
-			event.y = itemRect.top;
-			event.width = itemRect.right - itemRect.left;
-			event.height = itemRect.bottom - itemRect.top;
-			sendEvent (SWT.MeasureItem, event);
-			event.gc = null;
-			gc.dispose ();
-			OS.RestoreDC (hDC, nSavedDC);
+			sendMeasureItemEvent (item, index, hDC);
 			if (isDisposed () || item.isDisposed ()) return null;
-			if (hwndHeader != 0) {
-				if (count == 0) {
-					if (event.x + event.width > scrollWidth) {
-						setScrollWidth (scrollWidth = event.x + event.width);
-					}
-				}
-			}
-			if (event.height > getItemHeight ()) setItemHeight (event.height);
 		}
 		selectionForeground = -1;
 		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = ignoreDrawHot = ignoreFullSelection = false;
@@ -2635,6 +2592,68 @@ void enableWidget (boolean enabled) {
 	updateFullSelection ();
 }
 
+boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect, RECT [] itemRect) {
+	boolean found = false;
+	TVHITTESTINFO lpht = new TVHITTESTINFO ();
+	lpht.x = x;
+	lpht.y = y;
+	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+	if (lpht.hItem != 0) {
+		item [0] = _getItem (lpht.hItem);
+		POINT pt = new POINT ();
+		pt.x = x;
+		pt.y = y;
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		RECT rect = new RECT ();
+		if (hwndParent != 0) {
+			OS.GetClientRect (hwndParent, rect);
+			OS.MapWindowPoints (hwndParent, handle, rect, 2);
+		} else {
+			OS.GetClientRect (handle, rect);
+		}
+		int count = 1;
+		if (hwndHeader != 0) {
+			count = Math.max (1, (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
+		}
+		int [] order = new int [count];
+		if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+		index [0] = 0;
+		boolean quit = false;
+		while (index [0] < count && !quit) {
+			int /*long*/ hFont = item [0].fontHandle (order [index [0]]);
+			if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+			cellRect [0] = item [0].getBounds (order [index [0]], true, false, true, false, true, hDC);
+			if (cellRect [0].left > rect.right) {
+				quit = true;
+			} else {
+				cellRect [0].right = Math.min (cellRect [0].right, rect.right);
+				if (OS.PtInRect (cellRect [0], pt)) {
+					if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+						Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC);
+						if (isDisposed () || item [0].isDisposed ()) break;
+						itemRect [0] = new RECT ();
+						itemRect [0].left = event.x;
+						itemRect [0].right = event.x + event.width;
+						itemRect [0].top = event.y;
+						itemRect [0].bottom = event.y + event.height;
+					} else {
+						itemRect [0] = item [0].getBounds (order [index [0]], true, false, false, false, false, hDC);
+					}
+					if (itemRect [0].right > cellRect [0].right) found = true;
+					quit = true;
+				}
+			}
+			if (hFont != -1) OS.SelectObject (hDC, hFont);
+			if (!found) index [0]++;
+		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+	}
+	return found;
+}
+
 int findIndex (int /*long*/ hFirstItem, int /*long*/ hItem) {
 	if (hFirstItem == 0) return -1;
 	if (hFirstItem == hFirstIndexOf) {
@@ -4172,6 +4191,105 @@ public void selectAll () {
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
 }
 
+Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
+	RECT inset = new RECT ();
+	OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, inset);
+	int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
+	int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
+	RECT frame = new RECT ();
+	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
+	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
+	int nSavedDC = OS.SaveDC (nmcd.hdc);
+	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left + insetX, cellRect.top + insetY, null);
+	GCData data = new GCData ();
+	data.device = display;
+	data.foreground = OS.GetTextColor (nmcd.hdc);
+	data.background = OS.GetBkColor (nmcd.hdc);
+	data.hFont = hFont;
+	GC gc = GC.win32_new (nmcd.hdc, data);
+	Event event = new Event ();
+	event.item = item;
+	event.index = column;
+	event.gc = gc;
+	event.detail |= SWT.FOREGROUND;
+	event.x = cellRect.left;
+	event.y = cellRect.top;
+	event.width = cellRect.right - cellRect.left;
+	event.height = cellRect.bottom - cellRect.top;
+	//gc.setClipping (event.x, event.y, event.width, event.height);
+	sendEvent (SWT.EraseItem, event);
+	event.gc = null;
+	//int newTextClr = data.foreground;
+	gc.dispose ();
+	OS.RestoreDC (nmcd.hdc, nSavedDC);
+	return event;
+}
+
+Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
+	RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+	int nSavedDC = OS.SaveDC (hDC);
+	GCData data = new GCData ();
+	data.device = display;
+	data.hFont = item.fontHandle (index);
+	GC gc = GC.win32_new (hDC, data);
+	Event event = new Event ();
+	event.item = item;
+	event.gc = gc;
+	event.index = index;
+	event.x = itemRect.left;
+	event.y = itemRect.top;
+	event.width = itemRect.right - itemRect.left;
+	event.height = itemRect.bottom - itemRect.top;
+	sendEvent (SWT.MeasureItem, event);
+	event.gc = null;
+	gc.dispose ();
+	OS.RestoreDC (hDC, nSavedDC);
+	if (isDisposed () || item.isDisposed ()) return null;
+	if (hwndHeader != 0) {
+		int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (count == 0) {
+			if (event.x + event.width > scrollWidth) {
+				setScrollWidth (scrollWidth = event.x + event.width);
+			}
+		}
+	}
+	if (event.height > getItemHeight ()) setItemHeight (event.height);
+	return event;
+}
+
+Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
+	RECT inset = new RECT ();
+	OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, inset);
+	int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
+	int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
+	RECT frame = new RECT ();
+	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
+	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
+	int nSavedDC = OS.SaveDC (nmcd.hdc);
+	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left + insetX, itemRect.top + insetY, null);
+	GCData data = new GCData ();
+	data.device = display;
+	data.hFont = hFont;
+	data.foreground = OS.GetTextColor (nmcd.hdc);
+	data.background = OS.GetBkColor (nmcd.hdc);
+	GC gc = GC.win32_new (nmcd.hdc, data);
+	Event event = new Event ();
+	event.item = item;
+	event.index = column;
+	event.gc = gc;
+	event.detail |= SWT.FOREGROUND;
+	event.x = itemRect.left;
+	event.y = itemRect.top;
+	event.width = itemRect.right - itemRect.left;
+	event.height = itemRect.bottom - itemRect.top;
+	//gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
+	sendEvent (SWT.PaintItem, event);
+	event.gc = null;
+	gc.dispose ();
+	OS.RestoreDC (nmcd.hdc, nSavedDC);
+	return event;
+}
+
 void setBackgroundImage (int /*long*/ hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	if (hBitmap != 0) {
@@ -5128,54 +5246,28 @@ String toolTipText (NMTTDISPINFO hdr) {
 		}
 		return super.toolTipText (hdr);
 	}
-	if (itemToolTipHandle == hdr.hwndFrom && hwndHeader != 0) {
+	if (itemToolTipHandle == hdr.hwndFrom) {
 		if (toolTipText != null) return "";
-		if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
-			int pos = OS.GetMessagePos ();
-			POINT pt = new POINT();
-			OS.POINTSTOPOINT (pt, pos);
-			OS.ScreenToClient (handle, pt);
-			TVHITTESTINFO lpht = new TVHITTESTINFO ();
-			lpht.x = pt.x;
-			lpht.y = pt.y;
-			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-			if (lpht.hItem != 0) {
-				int /*long*/ hDC = OS.GetDC (handle);
-				int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-				RECT rect = new RECT ();
-				OS.GetClientRect (hwndParent, rect);
-				OS.MapWindowPoints (hwndParent, handle, rect, 2);
-				TreeItem item = _getItem (lpht.hItem);
-				String text = null;
-				int index = 0, count = Math.max (1, (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
-				int [] order = new int [count];
-				OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-				while (index < count) {
-					int /*long*/ hFont = item.fontHandle (order [index]);
-					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-					RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
-					if (hFont != -1) OS.SelectObject (hDC, hFont);
-					if (cellRect.left > rect.right) break;
-					cellRect.right = Math.min (cellRect.right, rect.right);
-					if (OS.PtInRect (cellRect, pt)) {
-						RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
-						if (textRect.right > cellRect.right) {
-							if (order [index] == 0) {
-								text = item.text;
-							} else {
-								String[] strings = item.strings;
-								if (strings != null) text = strings [order [index]];
-							}
-						}
-						break;
-					}
-					index++;
-				}
-				if (newFont != 0) OS.SelectObject (hDC, oldFont);
-				OS.ReleaseDC (handle, hDC);
-				if (text != null) return text;
+		int pos = OS.GetMessagePos ();
+		POINT pt = new POINT();
+		OS.POINTSTOPOINT (pt, pos);
+		OS.ScreenToClient (handle, pt);
+		int [] index = new int [1];
+		TreeItem [] item = new TreeItem [1];
+		RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
+		if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
+			String text = null;
+			if (index [0] == 0) {
+				text = item [0].text;
+			} else {
+				String[] strings = item [0].strings;
+				if (strings != null) text = strings [index [0]];
 			}
+			//TEMPORARY CODE
+			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				text = " ";
+			}
+			if (text != null) return text;
 		}
 	}
 	return super.toolTipText (hdr);
@@ -6228,7 +6320,7 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
-	if (itemToolTipHandle != 0 && hwndHeader != 0) {
+	if (itemToolTipHandle != 0) {
 		/*
 		* Bug in Windows.  On some machines that do not have XBUTTONs,
 		* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
@@ -6238,51 +6330,22 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 		int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 		if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 		if ((wParam & mask) == 0) {
-			TVHITTESTINFO lpht = new TVHITTESTINFO ();
-			lpht.x = OS.GET_X_LPARAM (lParam);
-			lpht.y = OS.GET_Y_LPARAM (lParam);
-			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-			if (lpht.hItem != 0) {
-				int /*long*/ hDC = OS.GetDC (handle);
-				int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-				POINT pt = new POINT();
-				pt.x = lpht.x;
-				pt.y = lpht.y;
-				RECT rect = new RECT ();
-				OS.GetClientRect (hwndParent, rect);
-				OS.MapWindowPoints (hwndParent, handle, rect, 2);
-				TreeItem item = _getItem (lpht.hItem);
-				int index = 0, count = Math.max (1, (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
-				int [] order = new int [count];
-				OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-				while (index < count) {
-					int /*long*/ hFont = item.fontHandle (order [index]);
-					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-					RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
-					if (hFont != -1) OS.SelectObject (hDC, hFont);
-					if (cellRect.left > rect.right) break;
-					cellRect.right = Math.min (cellRect.right, rect.right);
-					if (OS.PtInRect (cellRect, pt)) {
-						RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
-						if (textRect.right > cellRect.right) {
-							TOOLINFO lpti = new TOOLINFO ();
-							lpti.cbSize = TOOLINFO.sizeof;
-							lpti.hwnd = handle;
-							lpti.uId = handle;
-							lpti.uFlags = OS.TTF_SUBCLASS | OS.TTF_TRANSPARENT;
-							lpti.left = cellRect.left;
-							lpti.top = cellRect.top;
-							lpti.right = cellRect.right;
-							lpti.bottom = cellRect.bottom;
-							OS.SendMessage (itemToolTipHandle, OS.TTM_NEWTOOLRECT, 0, lpti);
-						}
-						break;
-					}
-					index++;
-				}
-				if (newFont != 0) OS.SelectObject (hDC, oldFont);
-				OS.ReleaseDC (handle, hDC);
+			int x = OS.GET_X_LPARAM (lParam);
+			int y = OS.GET_Y_LPARAM (lParam);
+			int [] index = new int [1];
+			TreeItem [] item = new TreeItem [1];
+			RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
+			if (findCell (x, y, item, index, cellRect, itemRect)) {
+				TOOLINFO lpti = new TOOLINFO ();
+				lpti.cbSize = TOOLINFO.sizeof;
+				lpti.hwnd = handle;
+				lpti.uId = handle;
+				lpti.uFlags = OS.TTF_SUBCLASS | OS.TTF_TRANSPARENT;
+				lpti.left = cellRect [0].left;
+				lpti.top = cellRect [0].top;
+				lpti.right = cellRect [0].right;
+				lpti.bottom = cellRect [0].bottom;
+				OS.SendMessage (itemToolTipHandle, OS.TTM_NEWTOOLRECT, 0, lpti);
 			}
 		}
 	}
@@ -6592,269 +6655,13 @@ LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
-	if (hdr.hwndFrom == itemToolTipHandle && hwndHeader != 0) {
-		if (!OS.IsWinCE) {
-			switch (hdr.code) {
-				case OS.TTN_POP: {
-					if (display.isXMouseActive ()) {
-						Shell shell = getShell ();
-						shell.lockToolTipControl = null;
-					}
-					break;
-				}
-				case OS.TTN_SHOW: {
-					if (display.isXMouseActive ()) {
-						Shell shell = getShell ();
-						shell.lockToolTipControl = this;
-					}
-					int pos = OS.GetMessagePos ();
-					POINT pt = new POINT();
-					OS.POINTSTOPOINT (pt, pos);
-					OS.ScreenToClient (handle, pt);
-					TVHITTESTINFO lpht = new TVHITTESTINFO ();
-					lpht.x = pt.x;
-					lpht.y = pt.y;
-					OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-					if (lpht.hItem != 0) {
-						int /*long*/ hDC = OS.GetDC (handle);
-						int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-						if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-						LRESULT result = null;
-						RECT rect = new RECT ();
-						OS.GetClientRect (hwndParent, rect);
-						OS.MapWindowPoints (hwndParent, handle, rect, 2);
-						TreeItem item = _getItem (lpht.hItem);
-						int index = 0, count = Math.max (1, (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
-						int [] order = new int [count];
-						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-						while (index < count) {
-							int /*long*/ hFont = item.fontHandle (order [index]);
-							if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-							RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
-							if (hFont != -1) OS.SelectObject (hDC, hFont);
-							if (cellRect.left > rect.right) break;
-							cellRect.right = Math.min (cellRect.right, rect.right);
-							if (OS.PtInRect (cellRect, pt)) {
-								RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
-								if (textRect.right > cellRect.right) {
-									OS.MapWindowPoints (handle, 0, textRect, 2);
-									int flags = OS.SWP_NOACTIVATE | OS.SWP_NOSIZE | OS.SWP_NOZORDER;
-									SetWindowPos (itemToolTipHandle, 0, textRect.left, textRect.top, 0, 0, flags);
-									result = LRESULT.ONE;
-								}
-								break;
-							}
-							index++;
-						}
-						if (newFont != 0) OS.SelectObject (hDC, oldFont);
-						OS.ReleaseDC (handle, hDC);
-						if (result != null) return result;
-					}
-				}
-			}
-		}
+	if (hdr.hwndFrom == itemToolTipHandle) {
+		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
+		if (result != null) return result;
 	}
 	if (hdr.hwndFrom == hwndHeader) {
-		/*
-		* Feature in Windows.  On NT, the automatically created
-		* header control is created as a UNICODE window, not an
-		* ANSI window despite the fact that the parent is created
-		* as an ANSI window.  This means that it sends UNICODE
-		* notification messages to the parent window on NT for
-		* no good reason.  The data and size in the NMHEADER and
-		* HDITEM structs is identical between the platforms so no
-		* different message is actually necessary.  Despite this,
-		* Windows sends different messages.  The fix is to look
-		* for both messages, despite the platform.  This works
-		* because only one will be sent on either platform, never
-		* both.
-		*/
-		switch (hdr.code) {
-			case OS.HDN_BEGINTRACKW:
-			case OS.HDN_BEGINTRACKA:
-			case OS.HDN_DIVIDERDBLCLICKW:
-			case OS.HDN_DIVIDERDBLCLICKA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TreeColumn column = columns [phdn.iItem];
-				if (column != null && !column.getResizable ()) {
-					return LRESULT.ONE;
-				}
-				ignoreColumnMove = true;
-				switch (hdr.code) {
-					case OS.HDN_DIVIDERDBLCLICKW:
-					case OS.HDN_DIVIDERDBLCLICKA:
-						if (column != null) column.pack ();
-				}
-				break;
-			}
-			case OS.NM_RELEASEDCAPTURE: {
-				if (!ignoreColumnMove) {
-					int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-					for (int i=0; i<count; i++) {
-						TreeColumn column = columns [i];
-						column.updateToolTip (i);
-					}
-					updateImageList ();
-				}
-				ignoreColumnMove = false;
-				break;
-			}
-			case OS.HDN_BEGINDRAG: {
-				if (ignoreColumnMove) return LRESULT.ONE;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem != -1) {
-					TreeColumn column = columns [phdn.iItem];
-					if (column != null && !column.getMoveable ()) {
-						ignoreColumnMove = true;
-						return LRESULT.ONE;
-					}
-				}
-				break;
-			}
-			case OS.HDN_ENDDRAG: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem != -1 && phdn.pitem != 0) {
-					HDITEM pitem = new HDITEM ();
-					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-						int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						int [] order = new int [count];
-						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-						int index = 0;
-						while (index < order.length) {
-						 	if (order [index] == phdn.iItem) break;
-							index++;
-						}
-						if (index == order.length) index = 0;
-						if (index == pitem.iOrder) break;
-						int start = Math.min (index, pitem.iOrder);
-						int end = Math.max (index, pitem.iOrder);
-						RECT rect = new RECT (), headerRect = new RECT ();
-						OS.GetClientRect (handle, rect);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], headerRect);
-						rect.left = Math.max (rect.left, headerRect.left);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], headerRect);
-						rect.right = Math.min (rect.right, headerRect.right);
-						OS.InvalidateRect (handle, rect, true);
-						ignoreColumnMove = false;
-						for (int i=start; i<=end; i++) {
-							TreeColumn column = columns [order [i]];
-							if (!column.isDisposed ()) {
-								column.postEvent (SWT.Move);
-							}
-						}
-					}
-				}
-				break;
-			}
-			case OS.HDN_ITEMCHANGINGW:
-			case OS.HDN_ITEMCHANGINGA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.pitem != 0) {
-					HDITEM newItem = new HDITEM ();
-					OS.MoveMemory (newItem, phdn.pitem, HDITEM.sizeof);
-					if ((newItem.mask & OS.HDI_WIDTH) != 0) {
-						RECT rect = new RECT ();
-						OS.GetClientRect (handle, rect);
-						HDITEM oldItem = new HDITEM ();
-						oldItem.mask = OS.HDI_WIDTH;
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
-						int deltaX = newItem.cxy - oldItem.cxy;
-						RECT headerRect = new RECT ();
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
-						int gridWidth = linesVisible ? GRID_WIDTH : 0;
-						rect.left = headerRect.right - gridWidth;
-						int newX = rect.left + deltaX;
-						rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
-						if (explorerTheme || (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
-							OS.InvalidateRect (handle, rect, true);
-							OS.OffsetRect (rect, deltaX, 0);
-							OS.InvalidateRect (handle, rect, true);
-						} else {
-							int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
-							OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
-						}
-						if (OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, phdn.iItem, 0) != 0) {
-							rect.left = headerRect.left;
-							rect.right = newX;
-							OS.InvalidateRect (handle, rect, true);
-						}
-						setScrollWidth ();
-					}
-				}
-				break;
-			}
-			case OS.HDN_ITEMCHANGEDW:
-			case OS.HDN_ITEMCHANGEDA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.pitem != 0) {
-					HDITEM pitem = new HDITEM ();
-					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
-						if (ignoreColumnMove) {
-							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-								int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-								OS.RedrawWindow (handle, null, 0, flags);
-							} else {
-								if ((style & SWT.DOUBLE_BUFFERED) == 0) {
-									int oldStyle = style;
-									style |= SWT.DOUBLE_BUFFERED;
-									OS.UpdateWindow (handle);
-									style = oldStyle;
-								}
-							}
-						}
-						TreeColumn column = columns [phdn.iItem];
-						if (column != null) {
-							column.updateToolTip (phdn.iItem);
-							column.sendEvent (SWT.Resize);
-							if (isDisposed ()) return LRESULT.ZERO;	
-							int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-							TreeColumn [] newColumns = new TreeColumn [count];
-							System.arraycopy (columns, 0, newColumns, 0, count);
-							int [] order = new int [count];
-							OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-							boolean moved = false;
-							for (int i=0; i<count; i++) {
-								TreeColumn nextColumn = newColumns [order [i]];
-								if (moved && !nextColumn.isDisposed ()) {
-									nextColumn.updateToolTip (order [i]);
-									nextColumn.sendEvent (SWT.Move);
-								}
-								if (nextColumn == column) moved = true;
-							}
-						}
-					}
-					setScrollWidth ();
-				}
-				break;
-			}
-			case OS.HDN_ITEMCLICKW:
-			case OS.HDN_ITEMCLICKA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TreeColumn column = columns [phdn.iItem];
-				if (column != null) {
-					column.postEvent (SWT.Selection);
-				}
-				break;
-			}
-			case OS.HDN_ITEMDBLCLICKW:      
-			case OS.HDN_ITEMDBLCLICKA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TreeColumn column = columns [phdn.iItem];
-				if (column != null) {
-					column.postEvent (SWT.DefaultSelection);
-				}
-				break;
-			}
-		}
+		LRESULT result = wmNotifyHeader (hdr, wParam, lParam);
+		if (result != null) return result;
 	}
 	return super.wmNotify (hdr, wParam, lParam);
 }
@@ -6995,6 +6802,10 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (hdr.hwndFrom == hwndHeader) break;
 			if (hooks (SWT.MeasureItem)) {
 				if (hwndHeader == 0) createParent ();
+			} else {
+				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+					createItemToolTips ();
+				}
 			}
 			if (!customDraw && findImageControl () == null) {
 				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
@@ -7282,6 +7093,357 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);
+}
+
+LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Feature in Windows.  On NT, the automatically created
+	* header control is created as a UNICODE window, not an
+	* ANSI window despite the fact that the parent is created
+	* as an ANSI window.  This means that it sends UNICODE
+	* notification messages to the parent window on NT for
+	* no good reason.  The data and size in the NMHEADER and
+	* HDITEM structs is identical between the platforms so no
+	* different message is actually necessary.  Despite this,
+	* Windows sends different messages.  The fix is to look
+	* for both messages, despite the platform.  This works
+	* because only one will be sent on either platform, never
+	* both.
+	*/
+	switch (hdr.code) {
+		case OS.HDN_BEGINTRACKW:
+		case OS.HDN_BEGINTRACKA:
+		case OS.HDN_DIVIDERDBLCLICKW:
+		case OS.HDN_DIVIDERDBLCLICKA: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			TreeColumn column = columns [phdn.iItem];
+			if (column != null && !column.getResizable ()) {
+				return LRESULT.ONE;
+			}
+			ignoreColumnMove = true;
+			switch (hdr.code) {
+				case OS.HDN_DIVIDERDBLCLICKW:
+				case OS.HDN_DIVIDERDBLCLICKA:
+					if (column != null) column.pack ();
+			}
+			break;
+		}
+		case OS.NM_RELEASEDCAPTURE: {
+			if (!ignoreColumnMove) {
+				int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				for (int i=0; i<count; i++) {
+					TreeColumn column = columns [i];
+					column.updateToolTip (i);
+				}
+				updateImageList ();
+			}
+			ignoreColumnMove = false;
+			break;
+		}
+		case OS.HDN_BEGINDRAG: {
+			if (ignoreColumnMove) return LRESULT.ONE;
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			if (phdn.iItem != -1) {
+				TreeColumn column = columns [phdn.iItem];
+				if (column != null && !column.getMoveable ()) {
+					ignoreColumnMove = true;
+					return LRESULT.ONE;
+				}
+			}
+			break;
+		}
+		case OS.HDN_ENDDRAG: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			if (phdn.iItem != -1 && phdn.pitem != 0) {
+				HDITEM pitem = new HDITEM ();
+				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+				if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
+					int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+					int [] order = new int [count];
+					OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+					int index = 0;
+					while (index < order.length) {
+					 	if (order [index] == phdn.iItem) break;
+						index++;
+					}
+					if (index == order.length) index = 0;
+					if (index == pitem.iOrder) break;
+					int start = Math.min (index, pitem.iOrder);
+					int end = Math.max (index, pitem.iOrder);
+					RECT rect = new RECT (), headerRect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], headerRect);
+					rect.left = Math.max (rect.left, headerRect.left);
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], headerRect);
+					rect.right = Math.min (rect.right, headerRect.right);
+					OS.InvalidateRect (handle, rect, true);
+					ignoreColumnMove = false;
+					for (int i=start; i<=end; i++) {
+						TreeColumn column = columns [order [i]];
+						if (!column.isDisposed ()) {
+							column.postEvent (SWT.Move);
+						}
+					}
+				}
+			}
+			break;
+		}
+		case OS.HDN_ITEMCHANGINGW:
+		case OS.HDN_ITEMCHANGINGA: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			if (phdn.pitem != 0) {
+				HDITEM newItem = new HDITEM ();
+				OS.MoveMemory (newItem, phdn.pitem, HDITEM.sizeof);
+				if ((newItem.mask & OS.HDI_WIDTH) != 0) {
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					HDITEM oldItem = new HDITEM ();
+					oldItem.mask = OS.HDI_WIDTH;
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
+					int deltaX = newItem.cxy - oldItem.cxy;
+					RECT headerRect = new RECT ();
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
+					int gridWidth = linesVisible ? GRID_WIDTH : 0;
+					rect.left = headerRect.right - gridWidth;
+					int newX = rect.left + deltaX;
+					rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
+					if (explorerTheme || (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
+						OS.InvalidateRect (handle, rect, true);
+						OS.OffsetRect (rect, deltaX, 0);
+						OS.InvalidateRect (handle, rect, true);
+					} else {
+						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
+						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
+					}
+					if (OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, phdn.iItem, 0) != 0) {
+						rect.left = headerRect.left;
+						rect.right = newX;
+						OS.InvalidateRect (handle, rect, true);
+					}
+					setScrollWidth ();
+				}
+			}
+			break;
+		}
+		case OS.HDN_ITEMCHANGEDW:
+		case OS.HDN_ITEMCHANGEDA: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			if (phdn.pitem != 0) {
+				HDITEM pitem = new HDITEM ();
+				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+				if ((pitem.mask & OS.HDI_WIDTH) != 0) {
+					if (ignoreColumnMove) {
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+							OS.RedrawWindow (handle, null, 0, flags);
+						} else {
+							if ((style & SWT.DOUBLE_BUFFERED) == 0) {
+								int oldStyle = style;
+								style |= SWT.DOUBLE_BUFFERED;
+								OS.UpdateWindow (handle);
+								style = oldStyle;
+							}
+						}
+					}
+					TreeColumn column = columns [phdn.iItem];
+					if (column != null) {
+						column.updateToolTip (phdn.iItem);
+						column.sendEvent (SWT.Resize);
+						if (isDisposed ()) return LRESULT.ZERO;	
+						int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						TreeColumn [] newColumns = new TreeColumn [count];
+						System.arraycopy (columns, 0, newColumns, 0, count);
+						int [] order = new int [count];
+						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+						boolean moved = false;
+						for (int i=0; i<count; i++) {
+							TreeColumn nextColumn = newColumns [order [i]];
+							if (moved && !nextColumn.isDisposed ()) {
+								nextColumn.updateToolTip (order [i]);
+								nextColumn.sendEvent (SWT.Move);
+							}
+							if (nextColumn == column) moved = true;
+						}
+					}
+				}
+				setScrollWidth ();
+			}
+			break;
+		}
+		case OS.HDN_ITEMCLICKW:
+		case OS.HDN_ITEMCLICKA: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			TreeColumn column = columns [phdn.iItem];
+			if (column != null) {
+				column.postEvent (SWT.Selection);
+			}
+			break;
+		}
+		case OS.HDN_ITEMDBLCLICKW:      
+		case OS.HDN_ITEMDBLCLICKA: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			TreeColumn column = columns [phdn.iItem];
+			if (column != null) {
+				column.postEvent (SWT.DefaultSelection);
+			}
+			break;
+		}
+	}
+	return null;
+}
+
+LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	if (OS.IsWinCE) return null;
+	switch (hdr.code) {
+		case OS.NM_CUSTOMDRAW: {
+			NMTTCUSTOMDRAW nmcd = new NMTTCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMTTCUSTOMDRAW.sizeof);
+			return wmNotifyToolTip (nmcd, lParam);
+		}
+		case OS.TTN_POP: {
+			if (display.isXMouseActive ()) {
+				Shell shell = getShell ();
+				shell.lockToolTipControl = null;
+			}
+			break;
+		}
+		case OS.TTN_SHOW: {
+			if (display.isXMouseActive ()) {
+				Shell shell = getShell ();
+				shell.lockToolTipControl = this;
+			}
+			int pos = OS.GetMessagePos ();
+			POINT pt = new POINT();
+			OS.POINTSTOPOINT (pt, pos);
+			OS.ScreenToClient (handle, pt);
+			int [] index = new int [1];
+			TreeItem [] item = new TreeItem [1];
+			RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
+			if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
+				OS.MapWindowPoints (handle, 0, itemRect [0], 2);
+				int width = 0, height = 0, flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
+				if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+					flags &= ~OS.SWP_NOSIZE;
+					OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, itemRect [0]);
+					width = itemRect [0].right - itemRect [0].left;
+					height = itemRect [0].bottom - itemRect [0].top;
+				}
+				SetWindowPos (itemToolTipHandle, 0, itemRect [0].left, itemRect [0].top, width, height, flags);
+				return LRESULT.ONE;
+			}
+			break;
+		}
+	}
+	return null;
+}
+
+LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
+	if (OS.IsWinCE) return null;
+	switch (nmcd.dwDrawStage) {
+		case OS.CDDS_PREPAINT: {
+			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				//TEMPORARY CODE
+//				nmcd.uDrawFlags |= OS.DT_CALCRECT;
+//				OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
+				return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT | OS.CDRF_NEWFONT);
+			}
+			break;
+		}
+		case OS.CDDS_POSTPAINT: {
+			if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+				TOOLINFO lpti = new TOOLINFO ();
+				lpti.cbSize = TOOLINFO.sizeof;
+				if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+					int [] index = new int [1];
+					TreeItem [] item = new TreeItem [1];
+					RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
+					if (findCell (lpti.left, lpti.top, item, index, cellRect, itemRect)) {
+						int /*long*/ hDC = OS.GetDC (handle);
+						int /*long*/ hFont = item [0].fontHandle (index [0]);
+						if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+						int /*long*/ oldFont = OS.SelectObject (hDC, hFont);
+						LRESULT result = null;
+						boolean drawForeground = true;
+						cellRect [0] = item [0].getBounds (index [0], true, true, false, false, false, hDC);
+						if (hooks (SWT.EraseItem)) {
+							Event event = sendEraseItemEvent (item [0], nmcd, index [0], cellRect [0], hFont);
+							if (isDisposed () || item [0].isDisposed ()) break;
+							if (event.doit) {
+								drawForeground = (event.detail & SWT.FOREGROUND) != 0;
+							} else {
+								drawForeground = false;
+							}
+						}
+						if (drawForeground) {
+							RECT inset = new RECT ();
+							OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, inset);
+							int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
+							int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
+							RECT frame = new RECT ();
+							OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
+							int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
+							int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+							int nSavedDC = OS.SaveDC (nmcd.hdc);
+							OS.SetWindowOrgEx (nmcd.hdc, cellRect [0].left + insetX, cellRect [0].top + insetY, null);
+							GCData data = new GCData ();
+							data.device = display;
+							data.foreground = OS.GetTextColor (nmcd.hdc);
+							data.background = OS.GetBkColor (nmcd.hdc);
+							data.hFont = hFont;
+							GC gc = GC.win32_new (nmcd.hdc, data);
+							int offset = cellRect [0].left + INSET;
+							if (index [0] != 0) offset -= gridWidth;
+							Image image = item [0].getImage (index [0]);
+							if (image != null || index [0] == 0) {
+								Point size = getImageSize ();
+								RECT imageRect = item [0].getBounds (index [0], false, true, false, false, false, hDC);
+								if (imageList == null) size.x = imageRect.right - imageRect.left;
+								if (image != null) {
+									Rectangle rect = image.getBounds ();
+									gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, offset, imageRect.top, size.x, size.y);
+								}
+								offset += size.x + INSET + (index [0] == 0 ? 1 : 0);
+							} else {
+								offset += INSET;
+							}
+							String string = item [0].getText (index [0]);
+							if (string != null) {
+								int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
+								TreeColumn column = columns != null ? columns [index [0]] : null;
+								if (column != null) {
+									if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+									if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+								}
+								TCHAR buffer = new TCHAR (getCodePage (), string, false);
+								RECT textRect = new RECT ();
+								OS.SetRect (textRect, offset, cellRect [0].top, cellRect [0].right, cellRect [0].bottom);
+								OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+							}
+							gc.dispose ();
+							OS.RestoreDC (nmcd.hdc, nSavedDC);
+						}
+						if (hooks (SWT.PaintItem)) {
+							itemRect [0] = item [0].getBounds (index [0], true, true, false, false, false, hDC);
+							sendPaintItemEvent (item [0], nmcd, index[0], itemRect [0], hFont);
+						}
+						OS.SelectObject (hDC, oldFont);
+						OS.ReleaseDC (handle, hDC);
+						if (result != null) return result;
+					}
+					break;
+				}
+			}
+			break;
+		}
+	}
+	return null;
 }
 
 }

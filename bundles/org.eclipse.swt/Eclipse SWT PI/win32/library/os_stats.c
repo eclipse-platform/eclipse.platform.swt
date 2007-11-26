@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 924;
-int OS_nativeFunctionCallCount[924];
+int OS_nativeFunctionCount = 927;
+int OS_nativeFunctionCallCount[927];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -523,6 +523,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I",
@@ -566,6 +567,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II",
@@ -613,6 +615,7 @@ char * OS_nativeFunctionNames[] = {
 	"NMTBHOTITEM_1sizeof",
 	"NMTOOLBAR_1sizeof",
 	"NMTREEVIEW_1sizeof",
+	"NMTTCUSTOMDRAW_1sizeof",
 	"NMTTDISPINFOA_1sizeof",
 	"NMTTDISPINFOW_1sizeof",
 	"NMTVCUSTOMDRAW_1sizeof",

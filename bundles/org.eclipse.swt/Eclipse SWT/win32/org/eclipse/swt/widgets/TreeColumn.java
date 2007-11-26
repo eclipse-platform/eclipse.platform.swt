@@ -340,34 +340,19 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = tvItem.lParam != -1 ? parent.items [(int)/*64*/tvItem.lParam] : null;
 		if (item != null) {
-			int /*long*/ hFont = item.fontHandle (index);
-			if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-			if (hFont != -1) OS.SelectObject (hDC, hFont);
+			int itemRight = 0;
 			if (parent.hooks (SWT.MeasureItem)) {
-				int nSavedDC = OS.SaveDC (hDC);
-				GCData data = new GCData ();
-				data.device = display;
-				data.hFont = hFont;
-				GC gc = GC.win32_new (hDC, data);
-				Event event = new Event ();
-				event.item = item;
-				event.gc = gc;
-				event.index = index;
-				event.x = itemRect.left;
-				event.y = itemRect.top;
-				event.width = itemRect.right - itemRect.left;
-				event.height = itemRect.bottom - itemRect.top;
-				parent.sendEvent (SWT.MeasureItem, event);
-				event.gc = null;
-				gc.dispose ();
-				OS.RestoreDC (hDC, nSavedDC);
+				Event event = parent.sendMeasureItemEvent (item, index, hDC);
 				if (isDisposed () || parent.isDisposed ()) break;
-				if (event.height > parent.getItemHeight ()) parent.setItemHeight (event.height);
-				//itemRect.left = event.x;
-				itemRect.right = event.x + event.width;
+				itemRight = event.x + event.width;
+			} else {
+				int /*long*/ hFont = item.fontHandle (index);
+				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+				RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+				if (hFont != -1) OS.SelectObject (hDC, hFont);
+				itemRight = itemRect.right;
 			}
-			columnWidth = Math.max (columnWidth, itemRect.right - headerRect.left);
+			columnWidth = Math.max (columnWidth, itemRight - headerRect.left);
 		}
 		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, tvItem.hItem);
 	}

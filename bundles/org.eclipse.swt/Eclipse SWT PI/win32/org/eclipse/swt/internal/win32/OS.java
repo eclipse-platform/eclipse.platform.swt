@@ -1007,6 +1007,7 @@ public class OS extends C {
 	public static final int LVM_SETTEXTBKCOLOR = 0x1026;
 	public static final int LVM_SETTEXTCOLOR = 0x1024;
 	public static final int LVM_SETTOOLTIPS = LVM_FIRST + 74;
+	public static final int LVM_SUBITEMHITTEST = LVM_FIRST + 57;
 	public static final int LVNI_FOCUSED = 0x1;
 	public static final int LVNI_SELECTED = 0x2;
 	public static final int LVN_BEGINDRAG = 0xffffff93;
@@ -1693,6 +1694,7 @@ public class OS extends C {
 	public static final int TTI_ERROR= 3;
 	public static final int TTM_ACTIVATE = 0x400 + 1;
 	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
+	public static final int TTM_ADJUSTRECT = 0x400 + 31;
 	public static final int TTM_GETCURRENTTOOLA = 0x400 + 15;
 	public static final int TTM_GETCURRENTTOOLW = 0x400 + 59;
 	public static final int TTM_GETCURRENTTOOL = 0x400 + (IsUnicode ? 59 : 15);
@@ -2146,6 +2148,7 @@ public static final native int NMTREEVIEW_sizeof ();
 public static final native int NMTOOLBAR_sizeof ();
 public static final native int NMTTDISPINFOA_sizeof ();
 public static final native int NMTTDISPINFOW_sizeof ();
+public static final native int NMTTCUSTOMDRAW_sizeof ();
 public static final native int NMTVCUSTOMDRAW_sizeof ();
 public static final native int NMTVDISPINFO_sizeof ();
 public static final native int NMTVITEMCHANGE_sizeof ();
@@ -3681,6 +3684,7 @@ public static final native void MoveMemory (NMTVITEMCHANGE Destination, int /*lo
 public static final native void MoveMemory (NMUPDOWN Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, NMLVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, NMTVCUSTOMDRAW Source, int Length);
+public static final native void MoveMemory (int /*long*/ Destination, NMTTCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, NMLVDISPINFO Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, NMTVDISPINFO Source, int Length);
 public static final native void MoveMemory (NMLVDISPINFO Destination, int /*long*/ Source, int Length);
@@ -3693,6 +3697,7 @@ public static final native void MoveMemory (NMLISTVIEW Destination, int /*long*/
 public static final native void MoveMemory (NMREBARCHILDSIZE Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMREBARCHEVRON Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTOOLBAR Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (NMTTCUSTOMDRAW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTTDISPINFOW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTTDISPINFOA Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (RECT Destination, int /*long*/[] Source, int Length);

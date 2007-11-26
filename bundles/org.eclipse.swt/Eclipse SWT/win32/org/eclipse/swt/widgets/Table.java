@@ -142,8 +142,7 @@ void _addListener (int eventType, Listener listener) {
 			setCustomDraw (true);
 			setBackgroundTransparent (true);
 			if (OS.COMCTL32_MAJOR < 6) style |= SWT.DOUBLE_BUFFERED;
-			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
-			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
+			if (OS.IsWinCE) OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
 			break;
 	}
 }
@@ -494,6 +493,13 @@ LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ l
 				int dwExStyle = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
 					int bits = OS.LVS_EX_FULLROWSELECT;
+					/*
+					* Feature in Windows.  When LVM_SETEXTENDEDLISTVIEWSTYLE is
+					* used to set or clear the extended style bits and the table
+					* has a tooltip, the tooltip is hidden.  The fix is to clear
+					* the tooltip before setting the bits and then reset it.
+					*/
+					int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_SETTOOLTIPS, 0, 0);
 					if (OS.IsWinCE) {
 						RECT rect = new RECT ();
 						boolean damaged = OS.GetUpdateRect (handle, rect, true);
@@ -508,6 +514,12 @@ LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ l
 						if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
 						OS.DeleteObject (rgn);
 					}
+					/*
+					* Bug in Windows.  Despite the documentation, LVM_SETTOOLTIPS
+					* uses WPARAM instead of LPARAM for the new tooltip  The fix
+					* is to put the tooltip in both parameters.
+					*/
+					hwndToolTip = OS.SendMessage (handle, OS.LVM_SETTOOLTIPS, hwndToolTip, hwndToolTip);
 				}
 			}
 		}
@@ -533,6 +545,13 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ lP
 				int dwExStyle = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) != 0) {
 					int bits = OS.LVS_EX_FULLROWSELECT;
+					/*
+					* Feature in Windows.  When LVM_SETEXTENDEDLISTVIEWSTYLE is
+					* used to set or clear the extended style bits and the table
+					* has a tooltip, the tooltip is hidden.  The fix is to clear
+					* the tooltip before setting the bits and then reset it.
+					*/
+					int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_SETTOOLTIPS, 0, 0);
 					if (OS.IsWinCE) {
 						RECT rect = new RECT ();
 						boolean damaged = OS.GetUpdateRect (handle, rect, true);
@@ -547,6 +566,12 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ lP
 						if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
 						OS.DeleteObject (rgn);
 					}
+					/*
+					* Bug in Windows.  Despite the documentation, LVM_SETTOOLTIPS
+					* uses WPARAM instead of LPARAM for the new tooltip  The fix
+					* is to put the tooltip in both parameters.
+					*/
+					hwndToolTip = OS.SendMessage (handle, OS.LVM_SETTOOLTIPS, hwndToolTip, hwndToolTip);
 				}
 			}
 		}
@@ -3241,6 +3266,41 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	}
 }
 
+Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
+	RECT inset = new RECT ();
+	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+	OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, inset);
+	int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
+	int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
+	RECT frame = new RECT ();
+	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
+	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
+	int nSavedDC = OS.SaveDC (nmcd.hdc);
+	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left + insetX, cellRect.top + insetY, null);
+	GCData data = new GCData ();
+	data.device = display;
+	data.foreground = OS.GetTextColor (nmcd.hdc);
+	data.background = OS.GetBkColor (nmcd.hdc);
+	data.hFont = hFont;
+	GC gc = GC.win32_new (nmcd.hdc, data);
+	Event event = new Event ();
+	event.item = item;
+	event.index = column;
+	event.gc = gc;
+	event.detail |= SWT.FOREGROUND;
+	event.x = cellRect.left;
+	event.y = cellRect.top;
+	event.width = cellRect.right - cellRect.left;
+	event.height = cellRect.bottom - cellRect.top;
+	//gc.setClipping (event.x, event.y, event.width, event.height);
+	sendEvent (SWT.EraseItem, event);
+	event.gc = null;
+	//int newTextClr = data.foreground;
+	gc.dispose ();
+	OS.RestoreDC (nmcd.hdc, nSavedDC);
+	return event;
+}
+
 Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hDC) {
 	GCData data = new GCData ();
 	data.device = display;
@@ -3477,6 +3537,40 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	event.gc = null;
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
+}
+
+Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
+	RECT inset = new RECT ();
+	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+	OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, inset);
+	int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
+	int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
+	RECT frame = new RECT ();
+	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
+	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
+	int nSavedDC = OS.SaveDC (nmcd.hdc);
+	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left + insetX, itemRect.top + insetY, null);
+	GCData data = new GCData ();
+	data.device = display;
+	data.hFont = hFont;
+	data.foreground = OS.GetTextColor (nmcd.hdc);
+	data.background = OS.GetBkColor (nmcd.hdc);
+	GC gc = GC.win32_new (nmcd.hdc, data);
+	Event event = new Event ();
+	event.item = item;
+	event.index = column;
+	event.gc = gc;
+	event.detail |= SWT.FOREGROUND;
+	event.x = itemRect.left;
+	event.y = itemRect.top;
+	event.width = itemRect.right - itemRect.left;
+	event.height = itemRect.bottom - itemRect.top;
+	//gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
+	sendEvent (SWT.PaintItem, event);
+	event.gc = null;
+	gc.dispose ();
+	OS.RestoreDC (nmcd.hdc, nSavedDC);
+	return event;
 }
 
 void setBackgroundImage (int /*long*/ hBitmap) {
@@ -5770,193 +5864,17 @@ LRESULT wmMeasureChild (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+	if (hdr.hwndFrom == hwndToolTip) {
+		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
+		if (result != null) return result;
+	}
 	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hdr.hwndFrom == hwndHeader) {
-		/*
-		* Feature in Windows.  On NT, the automatically created
-		* header control is created as a UNICODE window, not an
-		* ANSI window despite the fact that the parent is created
-		* as an ANSI window.  This means that it sends UNICODE
-		* notification messages to the parent window on NT for
-		* no good reason.  The data and size in the NMHEADER and
-		* HDITEM structs is identical between the platforms so no
-		* different message is actually necessary.  Despite this,
-		* Windows sends different messages.  The fix is to look
-		* for both messages, despite the platform.  This works
-		* because only one will be sent on either platform, never
-		* both.
-		*/
-		switch (hdr.code) {
-			case OS.HDN_BEGINTRACKW:
-			case OS.HDN_BEGINTRACKA:
-			case OS.HDN_DIVIDERDBLCLICKW:
-			case OS.HDN_DIVIDERDBLCLICKA: {
-				if (columnCount == 0) return LRESULT.ONE;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TableColumn column = columns [phdn.iItem];
-				if (column != null && !column.getResizable ()) {
-					return LRESULT.ONE;
-				}
-				ignoreColumnMove = true;
-				switch (hdr.code) {
-					case OS.HDN_DIVIDERDBLCLICKW:
-					case OS.HDN_DIVIDERDBLCLICKA:
-						/*
-						* Bug in Windows.  When the first column of a table does not
-						* have an image and the user double clicks on the divider,
-						* Windows packs the column but does not take into account
-						* the empty space left for the image.  The fix is to measure
-						* each items ourselves rather than letting Windows do it.
-						*/
-						boolean fixPack = phdn.iItem == 0 && !firstColumnImage;
-						if (column != null && (fixPack || hooks (SWT.MeasureItem))) {
-							column.pack ();
-							return LRESULT.ONE;
-						}
-				}
-				break;
-			}
-			case OS.NM_RELEASEDCAPTURE: {
-				if (!ignoreColumnMove) {
-					for (int i=0; i<columnCount; i++) {
-						TableColumn column = columns [i];
-						column.updateToolTip (i);
-					}
-				}
-				ignoreColumnMove = false;
-				break;
-			}
-			case OS.HDN_BEGINDRAG: {
-				if (ignoreColumnMove) return LRESULT.ONE;
-				int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
-				if (columnCount == 0) return LRESULT.ONE;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem != -1) {
-					TableColumn column = columns [phdn.iItem];
-					if (column != null && !column.getMoveable ()) {
-						ignoreColumnMove = true;
-						return LRESULT.ONE;
-					}
-				}
-				break;
-			}
-			case OS.HDN_ENDDRAG: {
-				int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem != -1 && phdn.pitem != 0) {
-					HDITEM pitem = new HDITEM ();
-					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-						if (columnCount == 0) break;
-						int [] order = new int [columnCount];
-						OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
-						int index = 0;
-						while (index < order.length) {
-						 	if (order [index] == phdn.iItem) break;
-							index++;
-						}
-						if (index == order.length) index = 0;
-						if (index == pitem.iOrder) break;
-						int start = Math.min (index, pitem.iOrder);
-						int end = Math.max (index, pitem.iOrder);
-						ignoreColumnMove = false;
-						for (int i=start; i<=end; i++) {
-							TableColumn column = columns [order [i]];
-							if (!column.isDisposed ()) {
-								column.postEvent (SWT.Move);
-							}
-						}
-					}
-				}
-				break;
-			}
-			case OS.HDN_ITEMCHANGEDW:
-			case OS.HDN_ITEMCHANGEDA: {
-				/*
-				* Bug in Windows.  When a table has the LVS_EX_GRIDLINES extended
-				* style and the user drags any column over the first column in the
-				* table, making the size become zero, when the user drags a column
-				* such that the size of the first column becomes non-zero, the grid
-				* lines are not redrawn.  The fix is to detect the case and force
-				* a redraw of the first column.
-				*/
-				int width = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-				if (lastWidth == 0 && width > 0) {
-					int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-					if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
-						RECT rect = new RECT ();
-						OS.GetClientRect (handle, rect);
-						rect.right = rect.left + width;
-						OS.InvalidateRect (handle, rect, true);
-					}
-				}
-				lastWidth = width;
-				if (!ignoreColumnResize) {
-					NMHEADER phdn = new NMHEADER ();
-					OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-					if (phdn.pitem != 0) {
-						HDITEM pitem = new HDITEM ();
-						OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-						if ((pitem.mask & OS.HDI_WIDTH) != 0) {
-							TableColumn column = columns [phdn.iItem];
-							if (column != null) {
-								column.updateToolTip (phdn.iItem);
-								column.sendEvent (SWT.Resize);
-								if (isDisposed ()) return LRESULT.ZERO;
-								/*
-								* It is possible (but unlikely), that application
-								* code could have disposed the column in the move
-								* event.  If this happens, process the move event
-								* for those columns that have not been destroyed.
-								*/
-								TableColumn [] newColumns = new TableColumn [columnCount];
-								System.arraycopy (columns, 0, newColumns, 0, columnCount);
-								int [] order = new int [columnCount];
-								OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
-								boolean moved = false;
-								for (int i=0; i<columnCount; i++) {
-									TableColumn nextColumn = newColumns [order [i]];
-									if (moved && !nextColumn.isDisposed ()) {
-										nextColumn.updateToolTip (order [i]);
-										nextColumn.sendEvent (SWT.Move);
-									}
-									if (nextColumn == column) moved = true;
-								}
-							}
-						}
-					}
-				}
-				break;
-			}
-			case OS.HDN_ITEMDBLCLICKW:
-			case OS.HDN_ITEMDBLCLICKA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TableColumn column = columns [phdn.iItem];
-				if (column != null) {
-					column.postEvent (SWT.DefaultSelection);
-				}
-				break;
-			}
-		}
+		LRESULT result = wmNotifyHeader (hdr, wParam, lParam);
+		if (result != null) return result;
 	}
-	LRESULT result = super.wmNotify (hdr, wParam, lParam);
-	if (result != null) return result;
-	switch (hdr.code) {
-		case OS.TTN_GETDISPINFOA:
-		case OS.TTN_GETDISPINFOW: {
-			tipRequested = true;
-			int /*long*/ code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
-			tipRequested = false;
-			return new LRESULT (code);
-		}
-	}
-	return result;
+	return super.wmNotify (hdr, wParam, lParam);
 }
 
 LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
@@ -5986,7 +5904,6 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			
 			boolean [] visible = display.columnVisible;
 			if (visible != null && !visible [plvfi.iSubItem]) {
-				//System.out.println("skip: " + plvfi.iSubItem);
 				break;
 			}
 			
@@ -6252,4 +6169,370 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Feature in Windows.  On NT, the automatically created
+	* header control is created as a UNICODE window, not an
+	* ANSI window despite the fact that the parent is created
+	* as an ANSI window.  This means that it sends UNICODE
+	* notification messages to the parent window on NT for
+	* no good reason.  The data and size in the NMHEADER and
+	* HDITEM structs is identical between the platforms so no
+	* different message is actually necessary.  Despite this,
+	* Windows sends different messages.  The fix is to look
+	* for both messages, despite the platform.  This works
+	* because only one will be sent on either platform, never
+	* both.
+	*/
+	switch (hdr.code) {
+		case OS.HDN_BEGINTRACKW:
+		case OS.HDN_BEGINTRACKA:
+		case OS.HDN_DIVIDERDBLCLICKW:
+		case OS.HDN_DIVIDERDBLCLICKA: {
+			if (columnCount == 0) return LRESULT.ONE;
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			TableColumn column = columns [phdn.iItem];
+			if (column != null && !column.getResizable ()) {
+				return LRESULT.ONE;
+			}
+			ignoreColumnMove = true;
+			switch (hdr.code) {
+				case OS.HDN_DIVIDERDBLCLICKW:
+				case OS.HDN_DIVIDERDBLCLICKA:
+					/*
+					* Bug in Windows.  When the first column of a table does not
+					* have an image and the user double clicks on the divider,
+					* Windows packs the column but does not take into account
+					* the empty space left for the image.  The fix is to measure
+					* each items ourselves rather than letting Windows do it.
+					*/
+					boolean fixPack = phdn.iItem == 0 && !firstColumnImage;
+					if (column != null && (fixPack || hooks (SWT.MeasureItem))) {
+						column.pack ();
+						return LRESULT.ONE;
+					}
+			}
+			break;
+		}
+		case OS.NM_RELEASEDCAPTURE: {
+			if (!ignoreColumnMove) {
+				for (int i=0; i<columnCount; i++) {
+					TableColumn column = columns [i];
+					column.updateToolTip (i);
+				}
+			}
+			ignoreColumnMove = false;
+			break;
+		}
+		case OS.HDN_BEGINDRAG: {
+			if (ignoreColumnMove) return LRESULT.ONE;
+			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+			if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
+			if (columnCount == 0) return LRESULT.ONE;
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			if (phdn.iItem != -1) {
+				TableColumn column = columns [phdn.iItem];
+				if (column != null && !column.getMoveable ()) {
+					ignoreColumnMove = true;
+					return LRESULT.ONE;
+				}
+			}
+			break;
+		}
+		case OS.HDN_ENDDRAG: {
+			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+			if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			if (phdn.iItem != -1 && phdn.pitem != 0) {
+				HDITEM pitem = new HDITEM ();
+				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+				if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
+					if (columnCount == 0) break;
+					int [] order = new int [columnCount];
+					OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+					int index = 0;
+					while (index < order.length) {
+					 	if (order [index] == phdn.iItem) break;
+						index++;
+					}
+					if (index == order.length) index = 0;
+					if (index == pitem.iOrder) break;
+					int start = Math.min (index, pitem.iOrder);
+					int end = Math.max (index, pitem.iOrder);
+					ignoreColumnMove = false;
+					for (int i=start; i<=end; i++) {
+						TableColumn column = columns [order [i]];
+						if (!column.isDisposed ()) {
+							column.postEvent (SWT.Move);
+						}
+					}
+				}
+			}
+			break;
+		}
+		case OS.HDN_ITEMCHANGEDW:
+		case OS.HDN_ITEMCHANGEDA: {
+			/*
+			* Bug in Windows.  When a table has the LVS_EX_GRIDLINES extended
+			* style and the user drags any column over the first column in the
+			* table, making the size become zero, when the user drags a column
+			* such that the size of the first column becomes non-zero, the grid
+			* lines are not redrawn.  The fix is to detect the case and force
+			* a redraw of the first column.
+			*/
+			int width = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+			if (lastWidth == 0 && width > 0) {
+				int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					rect.right = rect.left + width;
+					OS.InvalidateRect (handle, rect, true);
+				}
+			}
+			lastWidth = width;
+			if (!ignoreColumnResize) {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.pitem != 0) {
+					HDITEM pitem = new HDITEM ();
+					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
+						TableColumn column = columns [phdn.iItem];
+						if (column != null) {
+							column.updateToolTip (phdn.iItem);
+							column.sendEvent (SWT.Resize);
+							if (isDisposed ()) return LRESULT.ZERO;
+							/*
+							* It is possible (but unlikely), that application
+							* code could have disposed the column in the move
+							* event.  If this happens, process the move event
+							* for those columns that have not been destroyed.
+							*/
+							TableColumn [] newColumns = new TableColumn [columnCount];
+							System.arraycopy (columns, 0, newColumns, 0, columnCount);
+							int [] order = new int [columnCount];
+							OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+							boolean moved = false;
+							for (int i=0; i<columnCount; i++) {
+								TableColumn nextColumn = newColumns [order [i]];
+								if (moved && !nextColumn.isDisposed ()) {
+									nextColumn.updateToolTip (order [i]);
+									nextColumn.sendEvent (SWT.Move);
+								}
+								if (nextColumn == column) moved = true;
+							}
+						}
+					}
+				}
+			}
+			break;
+		}
+		case OS.HDN_ITEMDBLCLICKW:
+		case OS.HDN_ITEMDBLCLICKA: {
+			NMHEADER phdn = new NMHEADER ();
+			OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+			TableColumn column = columns [phdn.iItem];
+			if (column != null) {
+				column.postEvent (SWT.DefaultSelection);
+			}
+			break;
+		}
+	}
+	return null;
+}
+
+LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+	if (OS.IsWinCE) return null;
+	switch (hdr.code) {
+		case OS.NM_CUSTOMDRAW: {
+			NMTTCUSTOMDRAW nmcd = new NMTTCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMTTCUSTOMDRAW.sizeof);
+			return wmNotifyToolTip (nmcd, lParam);
+		}
+		case OS.TTN_GETDISPINFOA:
+		case OS.TTN_GETDISPINFOW: 
+		case OS.TTN_SHOW: {
+			if (hdr.code != OS.TTN_SHOW) tipRequested = true;
+			int code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
+			if (hdr.code != OS.TTN_SHOW) tipRequested = false;
+			if (hooks (SWT.MeasureItem)) {
+				LVHITTESTINFO pinfo = new LVHITTESTINFO ();
+				int pos = OS.GetMessagePos ();
+				POINT pt = new POINT();
+				OS.POINTSTOPOINT (pt, pos);
+				OS.ScreenToClient (handle, pt);
+				pinfo.x = pt.x;
+				pinfo.y = pt.y;
+				if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) != -1) {
+					TableItem item = _getItem (pinfo.iItem);
+					int /*long*/ hDC = OS.GetDC (handle);
+					int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+					if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+					int /*long*/ hFont = item.fontHandle (pinfo.iSubItem);
+					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+					Event event = sendMeasureItemEvent (item, pinfo.iItem, pinfo.iSubItem, hDC);
+					if (!isDisposed () && !item.isDisposed ()) {
+						RECT itemRect = new RECT ();
+						OS.SetRect (itemRect, event.x, event.y, event.x + event.width, event.y + event.height);
+						if (hdr.code == OS.TTN_SHOW) {
+							int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+							OS.MapWindowPoints (handle, 0, itemRect, 2);
+							OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, itemRect);
+							int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
+							int width = itemRect.right - itemRect.left, height = itemRect.bottom - itemRect.top;
+							SetWindowPos (hwndToolTip, 0, itemRect.left , itemRect.top, width, height, flags);
+						} else {
+							NMTTDISPINFO lpnmtdi = null;
+							if (hdr.code == OS.TTN_GETDISPINFOA) {
+								lpnmtdi = new NMTTDISPINFOA ();
+								OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
+								if (lpnmtdi.lpszText != 0) {
+									OS.MoveMemory (lpnmtdi.lpszText, new byte [1], 1);
+									OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
+								}
+							} else {
+								lpnmtdi = new NMTTDISPINFOW ();
+								OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
+								if (lpnmtdi.lpszText != 0) {
+									OS.MoveMemory (lpnmtdi.lpszText, new char [1], 2);
+									OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
+								}
+							}
+							RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, true, true, hDC);
+							if (itemRect.right > cellRect.right) {
+								//TEMPORARY CODE
+								String string = " ";
+//								String string = null;
+//								if (pinfo.iSubItem == 0) {
+//									string = item.text;
+//								} else {
+//									String [] strings  = item.strings;
+//									if (strings != null) string = strings [pinfo.iSubItem];
+//								}
+								if (string != null) {
+									Shell shell = getShell ();
+									char [] chars = new char [string.length () + 1];
+									string.getChars (0, string.length (), chars, 0);
+									if (hdr.code == OS.TTN_GETDISPINFOA) {
+										byte [] bytes = new byte [chars.length * 2];
+										OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
+										shell.setToolTipText (lpnmtdi, bytes);
+										OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
+									} else {
+										shell.setToolTipText (lpnmtdi, chars);
+										OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
+									}
+								}
+							}
+						}			
+					}
+					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+					if (newFont != 0) OS.SelectObject (hDC, oldFont);
+					OS.ReleaseDC (handle, hDC);
+				}
+			}
+			return new LRESULT (code);
+		}
+	}
+	return null;
+}
+
+LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
+	if (OS.IsWinCE) return null;
+	switch (nmcd.dwDrawStage) {
+		case OS.CDDS_PREPAINT: {
+			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				//TEMPORARY CODE
+//				nmcd.uDrawFlags |= OS.DT_CALCRECT;
+//				OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
+				return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT | OS.CDRF_NEWFONT);
+			}
+			break;
+		}
+		case OS.CDDS_POSTPAINT: {
+			LVHITTESTINFO pinfo = new LVHITTESTINFO ();
+			int pos = OS.GetMessagePos ();
+			POINT pt = new POINT();
+			OS.POINTSTOPOINT (pt, pos);
+			OS.ScreenToClient (handle, pt);
+			pinfo.x = pt.x;
+			pinfo.y = pt.y;
+			if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) != -1) {
+				TableItem item = _getItem (pinfo.iItem);
+				int /*long*/ hDC = OS.GetDC (handle);
+				int /*long*/ hFont = item.fontHandle (pinfo.iSubItem);
+				if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				int /*long*/ oldFont = OS.SelectObject (hDC, hFont);
+				boolean drawForeground = true;
+				RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, false, false, hDC);
+				if (hooks (SWT.EraseItem)) {
+					Event event = sendEraseItemEvent (item, nmcd, pinfo.iSubItem, cellRect, hFont);
+					if (isDisposed () || item.isDisposed ()) break;
+					if (event.doit) {
+						drawForeground = (event.detail & SWT.FOREGROUND) != 0;
+					} else {
+						drawForeground = false;
+					}
+				}
+				if (drawForeground) {
+					RECT inset = new RECT ();
+					int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+					OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, inset);
+					int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
+					int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
+					RECT frame = new RECT ();
+					OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
+					int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
+					int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+					int nSavedDC = OS.SaveDC (nmcd.hdc);
+					OS.SetWindowOrgEx (nmcd.hdc, cellRect.left + insetX, cellRect.top + insetY, null);
+					GCData data = new GCData ();
+					data.device = display;
+					data.foreground = OS.GetTextColor (nmcd.hdc);
+					data.background = OS.GetBkColor (nmcd.hdc);
+					data.hFont = hFont;
+					GC gc = GC.win32_new (nmcd.hdc, data);
+					int offset = cellRect.left;
+					if (pinfo.iSubItem != 0) offset -= gridWidth;
+					Image image = item.getImage (pinfo.iSubItem);
+					if (image != null) {
+						Rectangle rect = image.getBounds ();
+						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
+						Point size = imageList == null ? new Point (rect.width, rect.height) : imageList.getImageSize ();						
+						gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, offset, imageRect.top, size.x, size.y);
+						offset += size.x + INSET + (pinfo.iSubItem == 0 ? -2 : 4);
+					} else {
+						offset += INSET + 2;
+					}
+					String string = item.getText (pinfo.iSubItem);
+					if (string != null) {
+						int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
+						TableColumn column = columns != null ? columns [pinfo.iSubItem] : null;
+						if (column != null) {
+							if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+							if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+						}
+						TCHAR buffer = new TCHAR (getCodePage (), string, false);
+						RECT textRect = new RECT ();
+						OS.SetRect (textRect, offset, cellRect.top, cellRect.right, cellRect.bottom);
+						OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
+					}
+					gc.dispose ();
+					OS.RestoreDC (nmcd.hdc, nSavedDC);
+				}
+				if (hooks (SWT.PaintItem)) {
+					RECT itemRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, false, false, hDC);
+					sendPaintItemEvent (item, nmcd, pinfo.iSubItem, itemRect, hFont);
+				}
+				OS.SelectObject (hDC, oldFont);
+				OS.ReleaseDC (handle, hDC);
+			}
+		}
+	}
+	return null;
+}
 }

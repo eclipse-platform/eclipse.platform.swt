@@ -827,6 +827,18 @@ void setNMTREEVIEWFields(JNIEnv *env, jobject lpObject, NMTREEVIEW *lpStruct);
 #define NMTREEVIEW_sizeof() 0
 #endif
 
+#ifndef NO_NMTTCUSTOMDRAW
+void cacheNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject);
+NMTTCUSTOMDRAW *getNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpStruct);
+void setNMTTCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTTCUSTOMDRAW *lpStruct);
+#define NMTTCUSTOMDRAW_sizeof() sizeof(NMTTCUSTOMDRAW)
+#else
+#define cacheNMTTCUSTOMDRAWFields(a,b)
+#define getNMTTCUSTOMDRAWFields(a,b,c) NULL
+#define setNMTTCUSTOMDRAWFields(a,b,c)
+#define NMTTCUSTOMDRAW_sizeof() 0
+#endif
+
 #ifndef NO_NMTTDISPINFO
 void cacheNMTTDISPINFOFields(JNIEnv *env, jobject lpObject);
 NMTTDISPINFO *getNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpStruct);
