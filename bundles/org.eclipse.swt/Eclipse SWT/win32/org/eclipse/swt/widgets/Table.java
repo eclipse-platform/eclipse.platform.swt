@@ -6357,7 +6357,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 		case OS.TTN_GETDISPINFOW: 
 		case OS.TTN_SHOW: {
 			if (hdr.code != OS.TTN_SHOW) tipRequested = true;
-			int code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
+			int /*long*/ code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
 			if (hdr.code != OS.TTN_SHOW) tipRequested = false;
 			if (hooks (SWT.MeasureItem)) {
 				LVHITTESTINFO pinfo = new LVHITTESTINFO ();
