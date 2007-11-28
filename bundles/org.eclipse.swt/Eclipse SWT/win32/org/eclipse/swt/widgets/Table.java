@@ -6359,7 +6359,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (hdr.code != OS.TTN_SHOW) tipRequested = true;
 			int /*long*/ code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
 			if (hdr.code != OS.TTN_SHOW) tipRequested = false;
-			if (hooks (SWT.MeasureItem)) {
+			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 				int pos = OS.GetMessagePos ();
 				POINT pt = new POINT();
