@@ -2642,7 +2642,7 @@ void resetCustomDraw () {
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
 	if (item == null) {
-		OS.gtk_tree_view_unset_rows_drag_dest(handle);
+		OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
 		return;
 	}
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);

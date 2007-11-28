@@ -111,7 +111,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	public void dragLeave(DropTargetEvent event) {
 		Tree tree = (Tree) control;
 		int /*long*/ handle = tree.handle;
-		OS.gtk_tree_view_unset_rows_drag_dest(handle);
+		OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
 
 		scrollBeginTime = 0;
 		scrollIndex = -1;
@@ -209,10 +209,10 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 			if (position != -1) {
 				OS.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
 			} else {
-				OS.gtk_tree_view_unset_rows_drag_dest(handle);
+				OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
 			}
 		} else {
-			OS.gtk_tree_view_unset_rows_drag_dest(handle);
+			OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
 		}
 		
 		if (path[0] != 0) OS.gtk_tree_path_free (path [0]);
