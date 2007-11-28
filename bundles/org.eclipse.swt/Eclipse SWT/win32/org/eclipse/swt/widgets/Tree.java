@@ -2110,7 +2110,7 @@ void createItemToolTips () {
 	bits |= OS.TVS_NOTOOLTIPS;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	itemToolTipHandle = OS.CreateWindowEx (
-		0,
+		OS.WS_EX_TRANSPARENT,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
 		0,
