@@ -7363,7 +7363,8 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 					int [] index = new int [1];
 					TreeItem [] item = new TreeItem [1];
 					RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
-					int x = (lpti.right - lpti.left) / 2, y = (lpti.bottom - lpti.top) / 2;
+					int x = lpti.left + (lpti.right - lpti.left) / 2;
+					int y = lpti.top + (lpti.bottom - lpti.top) / 2;
 					if (findCell (x, y, item, index, cellRect, itemRect)) {
 						int /*long*/ hDC = OS.GetDC (handle);
 						int /*long*/ hFont = item [0].fontHandle (index [0]);
