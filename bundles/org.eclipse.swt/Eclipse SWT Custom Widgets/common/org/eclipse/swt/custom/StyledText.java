@@ -3226,11 +3226,11 @@ int getClusterPrevious(int offset, int lineIndex) {
 	return offset;
 }
 /**
- * Returns the content implementation that is used for text storage
- * or null if no user defined content implementation has been set.
- *
- * @return content implementation that is used for text storage or null 
- * if no user defined content implementation has been set.
+ * Returns the content implementation that is used for text storage.
+ * 
+ * @return content the user defined content implementation that is used for
+ * text storage or the default content implementation if no user defined 
+ * content implementation has been set.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
