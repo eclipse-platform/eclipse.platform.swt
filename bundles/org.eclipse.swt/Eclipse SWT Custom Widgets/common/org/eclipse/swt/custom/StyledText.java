@@ -3385,6 +3385,32 @@ public int getCharCount() {
 	return content.getCharCount();
 }
 /**
+ * Returns the line at the given line index without delimiters.
+ * Index 0 is the first line of the content. When there are not
+ * any lines, getLine(0) is a valid call that answers an empty string.
+ * <p>
+ *
+ * @param lineIndex index of the line to return.
+ * @return the line text without delimiters
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_RANGE when the line index is outside the valid range (< 0 or >= getLineCount())</li> 
+ * </ul>
+ * @since 3.4
+ */
+public String getLine(int lineIndex) {
+	checkWidget();
+	if (lineIndex < 0 || 
+		(lineIndex > 0 && lineIndex >= content.getLineCount())) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);		
+	}
+	return content.getLine(lineIndex);
+}
+/**
  * Returns the alignment of the line at the given index.
  * 
  * @param index the index of the line
@@ -3776,7 +3802,7 @@ public Point getLocationAtOffset(int offset) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li> 
+ *   <li>ERROR_INVALID_RANGE when the line index is outside the valid range (< 0 or >= getLineCount())</li> 
  * </ul>
  * @since 2.0
  */
