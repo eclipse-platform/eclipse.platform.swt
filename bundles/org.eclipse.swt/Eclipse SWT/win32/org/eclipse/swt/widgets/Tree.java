@@ -1953,6 +1953,9 @@ void createItem (TreeColumn column, int index) {
 		if (count != 0) {
 			if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
 		}
+		if (itemToolTipHandle != 0) {
+			OS.SendMessage (itemToolTipHandle, OS.TTM_SETDELAYTIME, OS.TTDT_AUTOMATIC, -1);
+		}
 	}
 	setScrollWidth ();
 	updateImageList ();
@@ -2120,14 +2123,7 @@ void createItemToolTips () {
 		OS.GetModuleHandle (null),
 		null);
 	if (itemToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	/*
-	* Feature in Windows.  Despite the fact that the
-	* tool tip text contains \r\n, the tooltip will
-	* not honour the new line unless TTM_SETMAXTIPWIDTH
-	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
-	* a large value.
-	*/
-	OS.SendMessage (itemToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	OS.SendMessage (itemToolTipHandle, OS.TTM_SETDELAYTIME, OS.TTDT_INITIAL, 0);
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
 	lpti.hwnd = handle;
@@ -2406,6 +2402,9 @@ void destroyItem (TreeColumn column) {
 			bits &= ~OS.TVS_NOHSCROLL;
 			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 			OS.InvalidateRect (handle, null, true);
+		}
+		if (itemToolTipHandle != 0) {
+			OS.SendMessage (itemToolTipHandle, OS.TTM_SETDELAYTIME, OS.TTDT_INITIAL, 0);
 		}
 	} else {
 		if (index == 0) {
