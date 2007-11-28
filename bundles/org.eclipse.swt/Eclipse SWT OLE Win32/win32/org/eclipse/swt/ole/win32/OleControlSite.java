@@ -480,7 +480,7 @@ protected int /*long*/ getLicenseInfo(GUID clsid) {
 				| COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory, ppvObject) != COM.S_OK) {
 		return 0;
 	}
-	int result = 0;
+	int /*long*/ result = 0;
 	IUnknown unknown = new IUnknown(ppvObject[0]);
 	if (unknown.QueryInterface(COM.IIDIClassFactory2, ppvObject) == COM.S_OK) {
 		IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
