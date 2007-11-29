@@ -161,7 +161,7 @@ abstract class Tab {
 		createSetGetGroup();
 		createSizeGroup ();
 		createColorAndFontGroup ();
-		if (RTL_SUPPORT_ENABLE) {
+		if (rtlSupport()) {
 			createOrientationGroup ();
 		}
 	
@@ -203,7 +203,7 @@ abstract class Tab {
 				}
 			}
 		}
-		if (RTL_SUPPORT_ENABLE) {
+		if (rtlSupport()) {
 			rtlButton.addSelectionListener (selectionListener); 
 			ltrButton.addSelectionListener (selectionListener);		
 			defaultOrietationButton.addSelectionListener (selectionListener);
@@ -227,7 +227,7 @@ abstract class Tab {
 					Button button = (Button)e.widget;
 					Point pt = button.getLocation();
 					pt = e.display.map(button, null, pt);
-					createSetGetDialog(pt.x, pt.y, methodNames);
+					if (getExampleControls().length >  0) createSetGetDialog(pt.x, pt.y, methodNames);
 				}
 			});
 		}
@@ -576,6 +576,15 @@ abstract class Tab {
 			}
 		});
 		dialog.pack ();
+		/*
+		 * If the preferred size of the dialog is too tall for the screen,
+		 * then reduce the height, so that the vertical scrollbar will appear.
+		 */
+		Point size = dialog.getSize();
+		Rectangle bounds = display.getBounds();
+		if (size.y > bounds.height) {
+			dialog.setSize(bounds.height, size.x);
+		}
 		dialog.open ();
 		while (! dialog.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -1089,9 +1098,9 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Gets the "Example" widget children's items, if any.
+	 * Gets the "Example" widget's items, if any.
 	 *
-	 * @return an array containing the example widget children's items
+	 * @return an array containing the example widget's items
 	 */
 	Item [] getExampleWidgetItems () {
 		return new Item [0];
@@ -1259,6 +1268,10 @@ abstract class Tab {
 		setExampleWidgetFont ();
 		setExampleWidgetSize ();
 		if (oldFont != null) oldFont.dispose();
+	}
+	
+	boolean rtlSupport() {
+		return RTL_SUPPORT_ENABLE;
 	}
 	
 	/**

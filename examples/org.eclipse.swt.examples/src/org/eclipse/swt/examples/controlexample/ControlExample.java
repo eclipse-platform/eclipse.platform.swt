@@ -92,6 +92,7 @@ public class ControlExample {
 			new ToolBarTab (this),
 			new ToolTipTab (this),
 			new TreeTab (this),
+			new BrowserTab (this),
 		};
 	}
 
