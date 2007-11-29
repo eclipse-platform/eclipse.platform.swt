@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.*;
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>MOZILLA</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>CloseWindowListener, LocationListener, OpenWindowListener, ProgressListener, StatusTextListener, TitleListener, VisibilityWindowListener</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
