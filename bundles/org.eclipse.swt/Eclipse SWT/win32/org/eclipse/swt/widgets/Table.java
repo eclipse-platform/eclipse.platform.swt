@@ -4943,7 +4943,7 @@ void subclass () {
 RECT toolTipInset (RECT rect) {
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		RECT insetRect = new RECT ();
-		OS.SetRect (insetRect, rect.left + 1, rect.top + 1, rect.right - 1, rect.bottom - 1);
+		OS.SetRect (insetRect, rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1);
 		return insetRect;
 	}
 	return rect;
