@@ -3268,7 +3268,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 
 Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
-	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left, cellRect.top, null);
+	RECT insetRect = toolTipInset (cellRect);
+	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
 	data.foreground = OS.GetTextColor (nmcd.hdc);
@@ -3533,7 +3534,8 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 
 Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
-	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left, itemRect.top, null);
+	RECT insetRect = toolTipInset (itemRect);
+	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
 	data.hFont = hFont;
@@ -4936,6 +4938,29 @@ void subclass () {
 		int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, display.windowProc);
 	}
+}
+
+RECT toolTipInset (RECT rect) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		RECT insetRect = new RECT ();
+		OS.SetRect (insetRect, rect.left + 1, rect.top + 1, rect.right - 1, rect.bottom - 1);
+		return insetRect;
+	}
+	return rect;
+}
+
+RECT toolTipRect (RECT rect) {
+	RECT toolRect = new RECT ();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		OS.SetRect (toolRect, rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1);
+	} else {
+		int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+		OS.SetRect (toolRect, rect.left, rect.top, rect.right, rect.bottom);
+		int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
+		int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
+		OS.AdjustWindowRectEx (toolRect, dwStyle, false, dwExStyle);
+	}
+	return toolRect;
 }
 
 String toolTipText (NMTTDISPINFO hdr) {
@@ -6363,13 +6388,9 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 						RECT itemRect = new RECT ();
 						OS.SetRect (itemRect, event.x, event.y, event.x + event.width, event.y + event.height);
 						if (hdr.code == OS.TTN_SHOW) {
-							RECT toolRect = new RECT ();
-							OS.SetRect (toolRect, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
-							int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-							int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
-							int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
-							OS.AdjustWindowRectEx (toolRect, dwStyle, false, dwExStyle);
+							RECT toolRect = toolTipRect (itemRect);
 							OS.MapWindowPoints (handle, 0, toolRect, 2);
+							int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
 							int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
 							int width = toolRect.right - toolRect.left, height = toolRect.bottom - toolRect.top;
 							SetWindowPos (hwndToolTip, 0, toolRect.left , toolRect.top, width, height, flags);
@@ -6467,9 +6488,10 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 					}
 				}
 				if (drawForeground) {
-					int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
 					int nSavedDC = OS.SaveDC (nmcd.hdc);
-					OS.SetWindowOrgEx (nmcd.hdc, cellRect.left, cellRect.top, null);
+					int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
+					RECT insetRect = toolTipInset (cellRect);
+					OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 					GCData data = new GCData ();
 					data.device = display;
 					data.foreground = OS.GetTextColor (nmcd.hdc);
