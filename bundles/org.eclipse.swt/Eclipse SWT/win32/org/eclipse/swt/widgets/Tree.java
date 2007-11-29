@@ -7373,9 +7373,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 					int [] index = new int [1];
 					TreeItem [] item = new TreeItem [1];
 					RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
-					int x = lpti.left + (lpti.right - lpti.left) / 2;
-					int y = lpti.top + (lpti.bottom - lpti.top) / 2;
-					if (findCell (x, y, item, index, cellRect, itemRect)) {
+					int centerX = lpti.left + (lpti.right - lpti.left) / 2;
+					int centerY = lpti.top + (lpti.bottom - lpti.top) / 2;
+					if (findCell (centerX, centerY, item, index, cellRect, itemRect)) {
 						int /*long*/ hDC = OS.GetDC (handle);
 						int /*long*/ hFont = item [0].fontHandle (index [0]);
 						if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -7403,8 +7403,8 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 							data.background = OS.GetBkColor (nmcd.hdc);
 							data.hFont = hFont;
 							GC gc = GC.win32_new (nmcd.hdc, data);
-							int offset = cellRect [0].left + INSET;
-							if (index [0] != 0) offset -= gridWidth;
+							int x = cellRect [0].left + INSET;
+							if (index [0] != 0) x -= gridWidth;
 							Image image = item [0].getImage (index [0]);
 							if (image != null || index [0] == 0) {
 								Point size = getImageSize ();
@@ -7412,11 +7412,11 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 								if (imageList == null) size.x = imageRect.right - imageRect.left;
 								if (image != null) {
 									Rectangle rect = image.getBounds ();
-									gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, offset, imageRect.top, size.x, size.y);
+									gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, x, imageRect.top, size.x, size.y);
 								}
-								offset += size.x + INSET + (index [0] == 0 ? 1 : 0);
+								x += size.x + INSET + (index [0] == 0 ? 1 : 0);
 							} else {
-								offset += INSET;
+								x += INSET;
 							}
 							String string = item [0].getText (index [0]);
 							if (string != null) {
@@ -7428,7 +7428,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 								}
 								TCHAR buffer = new TCHAR (getCodePage (), string, false);
 								RECT textRect = new RECT ();
-								OS.SetRect (textRect, offset, cellRect [0].top, cellRect [0].right, cellRect [0].bottom);
+								OS.SetRect (textRect, x, cellRect [0].top, cellRect [0].right, cellRect [0].bottom);
 								OS.DrawText (nmcd.hdc, buffer, buffer.length (), textRect, flags);
 							}
 							gc.dispose ();
