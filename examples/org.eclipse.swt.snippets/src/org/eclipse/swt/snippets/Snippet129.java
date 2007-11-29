@@ -33,7 +33,7 @@ public static void main(String[] args) {
 	Color gray = display.getSystemColor(SWT.COLOR_GRAY);
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	Table table = new Table(shell, SWT.BORDER);
+	Table table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
 	table.setBackground(gray);
 	TableColumn column1 = new TableColumn(table, SWT.NONE);
 	TableColumn column2 = new TableColumn(table, SWT.NONE);
