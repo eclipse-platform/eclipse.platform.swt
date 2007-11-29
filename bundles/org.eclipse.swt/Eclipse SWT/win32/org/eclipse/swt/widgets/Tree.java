@@ -1835,7 +1835,7 @@ void createHeaderToolTips () {
 		0,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
-		0,
+		OS.TTS_NOPREFIX,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
 		handle,
 		0,
@@ -4191,15 +4191,8 @@ public void selectAll () {
 }
 
 Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
-	RECT inset = new RECT ();
-	OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, inset);
-	int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
-	int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
-	RECT frame = new RECT ();
-	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
-	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
-	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left + insetX, cellRect.top + insetY, null);
+	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left, cellRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
 	data.foreground = OS.GetTextColor (nmcd.hdc);
@@ -4257,15 +4250,8 @@ Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
 }
 
 Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
-	RECT inset = new RECT ();
-	OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, inset);
-	int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
-	int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
-	RECT frame = new RECT ();
-	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
-	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
-	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left + insetX, itemRect.top + insetY, null);
+	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left, itemRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
 	data.hFont = hFont;
@@ -7326,15 +7312,19 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			TreeItem [] item = new TreeItem [1];
 			RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
 			if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
-				OS.MapWindowPoints (handle, 0, itemRect [0], 2);
-				int width = 0, height = 0, flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
+				RECT toolRect = new RECT ();
+				OS.SetRect (toolRect, itemRect [0].left, itemRect [0].top, itemRect [0].right, itemRect[0].bottom);
+				OS.MapWindowPoints (handle, 0, toolRect, 2);
+				int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
+				int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
+				OS.AdjustWindowRectEx (toolRect, dwStyle, false, dwExStyle);
+				int width = toolRect.right - toolRect.left;
+				int height = toolRect.bottom - toolRect.top;
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
 				if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 					flags &= ~OS.SWP_NOSIZE;
-					OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, itemRect [0]);
-					width = itemRect [0].right - itemRect [0].left;
-					height = itemRect [0].bottom - itemRect [0].top;
 				}
-				SetWindowPos (itemToolTipHandle, 0, itemRect [0].left, itemRect [0].top, width, height, flags);
+				SetWindowPos (itemToolTipHandle, 0, toolRect.left, toolRect.top, width, height, flags);
 				return LRESULT.ONE;
 			}
 			break;
@@ -7383,16 +7373,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 							}
 						}
 						if (drawForeground) {
-							RECT inset = new RECT ();
-							OS.SendMessage (itemToolTipHandle, OS.TTM_ADJUSTRECT, 1, inset);
-							int dwStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_STYLE);
-							int dwExStyle = OS.GetWindowLong (itemToolTipHandle, OS.GWL_EXSTYLE);
-							RECT frame = new RECT ();
-							OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
-							int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
 							int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
 							int nSavedDC = OS.SaveDC (nmcd.hdc);
-							OS.SetWindowOrgEx (nmcd.hdc, cellRect [0].left + insetX, cellRect [0].top + insetY, null);
+							OS.SetWindowOrgEx (nmcd.hdc, cellRect [0].left, cellRect [0].top, null);
 							GCData data = new GCData ();
 							data.device = display;
 							data.foreground = OS.GetTextColor (nmcd.hdc);

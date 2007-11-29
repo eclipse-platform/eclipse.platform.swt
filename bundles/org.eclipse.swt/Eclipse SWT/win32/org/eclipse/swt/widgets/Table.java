@@ -3267,16 +3267,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 }
 
 Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
-	RECT inset = new RECT ();
-	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-	OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, inset);
-	int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
-	int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
-	RECT frame = new RECT ();
-	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
-	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
-	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left + insetX, cellRect.top + insetY, null);
+	OS.SetWindowOrgEx (nmcd.hdc, cellRect.left, cellRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
 	data.foreground = OS.GetTextColor (nmcd.hdc);
@@ -3540,16 +3532,8 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 }
 
 Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
-	RECT inset = new RECT ();
-	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-	OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, inset);
-	int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
-	int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
-	RECT frame = new RECT ();
-	OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
-	int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
-	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left + insetX, itemRect.top + insetY, null);
+	OS.SetWindowOrgEx (nmcd.hdc, itemRect.left, itemRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
 	data.hFont = hFont;
@@ -6379,12 +6363,16 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 						RECT itemRect = new RECT ();
 						OS.SetRect (itemRect, event.x, event.y, event.x + event.width, event.y + event.height);
 						if (hdr.code == OS.TTN_SHOW) {
+							RECT toolRect = new RECT ();
+							OS.SetRect (toolRect, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
 							int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-							OS.MapWindowPoints (handle, 0, itemRect, 2);
-							OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, itemRect);
+							int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
+							int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
+							OS.AdjustWindowRectEx (toolRect, dwStyle, false, dwExStyle);
+							OS.MapWindowPoints (handle, 0, toolRect, 2);
 							int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER;
-							int width = itemRect.right - itemRect.left, height = itemRect.bottom - itemRect.top;
-							SetWindowPos (hwndToolTip, 0, itemRect.left , itemRect.top, width, height, flags);
+							int width = toolRect.right - toolRect.left, height = toolRect.bottom - toolRect.top;
+							SetWindowPos (hwndToolTip, 0, toolRect.left , toolRect.top, width, height, flags);
 						} else {
 							NMTTDISPINFO lpnmtdi = null;
 							if (hdr.code == OS.TTN_GETDISPINFOA) {
@@ -6479,17 +6467,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 					}
 				}
 				if (drawForeground) {
-					RECT inset = new RECT ();
-					int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-					OS.SendMessage (hwndToolTip, OS.TTM_ADJUSTRECT, 1, inset);
-					int dwStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_STYLE);
-					int dwExStyle = OS.GetWindowLong (hwndToolTip, OS.GWL_EXSTYLE);
-					RECT frame = new RECT ();
-					OS.AdjustWindowRectEx (frame, dwStyle, false, dwExStyle);
-					int insetX = inset.left - frame.left, insetY = inset.top - frame.top;
 					int gridWidth = getLinesVisible () ? Table.GRID_WIDTH : 0;
 					int nSavedDC = OS.SaveDC (nmcd.hdc);
-					OS.SetWindowOrgEx (nmcd.hdc, cellRect.left + insetX, cellRect.top + insetY, null);
+					OS.SetWindowOrgEx (nmcd.hdc, cellRect.left, cellRect.top, null);
 					GCData data = new GCData ();
 					data.device = display;
 					data.foreground = OS.GetTextColor (nmcd.hdc);
