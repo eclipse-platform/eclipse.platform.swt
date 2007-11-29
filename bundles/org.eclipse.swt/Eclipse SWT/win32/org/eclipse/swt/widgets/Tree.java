@@ -7413,9 +7413,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 								if (image != null) {
 									Rectangle rect = image.getBounds ();
 									gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, x, imageRect.top, size.x, size.y);
-									x += INSET;
+									x += INSET + (index [0] == 0 ? 1 : 0);
 								}
-								x += size.x + (index [0] == 0 ? 1 : 0);
+								x += size.x;
 							} else {
 								x += INSET;
 							}
