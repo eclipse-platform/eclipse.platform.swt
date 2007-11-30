@@ -227,7 +227,7 @@ abstract class Tab {
 					Button button = (Button)e.widget;
 					Point pt = button.getLocation();
 					pt = e.display.map(button, null, pt);
-					if (getExampleControls().length >  0) createSetGetDialog(pt.x, pt.y, methodNames);
+					if (getExampleWidgets().length >  0) createSetGetDialog(pt.x, pt.y, methodNames);
 				}
 			});
 		}
@@ -803,7 +803,9 @@ abstract class Tab {
 				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, new Class[] {returnType});
 				String typeName = returnType.getName();
 				Object[] parameter = null;
-				if (typeName.equals("int")) {
+				if (value.equals("null")) {
+					parameter = new Object[] {null};
+				} else if (typeName.equals("int")) {
 					parameter = new Object[] {new Integer(value)};
 				} else if (typeName.equals("long")) {
 					parameter = new Object[] {new Long(value)};
@@ -830,7 +832,11 @@ abstract class Tab {
 				}
 				method.invoke(widgets[i], parameter);
 			} catch (Exception e) {
+				Throwable cause = e.getCause();
+				String message = e.getMessage();
 				getText.setText(e.toString());
+				if (cause != null) getText.append(", cause=\n" + cause.toString());
+				if (message != null) getText.append(", message=\n" + message);
 			}
 		}
 	}
