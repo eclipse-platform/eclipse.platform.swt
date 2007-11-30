@@ -85,7 +85,7 @@ class BrowserTab extends Tab {
 			dialog.open();
 		}
 		
-        InputStream htmlStream= ControlExample.class.getResourceAsStream("about.html");
+        InputStream htmlStream= ControlExample.class.getResourceAsStream("browser-content.html");
 		BufferedReader br= new BufferedReader(new InputStreamReader(htmlStream));
 		StringBuffer sb= new StringBuffer(300);
 		try {
@@ -103,6 +103,39 @@ class BrowserTab extends Tab {
 		}
 		String text= sb.toString();
 		browser.setText(text);
+	}
+	
+	/**
+	 * Creates the "Other" group.  This is typically
+	 * a child of the "Control" group.
+	 */
+	void createOtherGroup () {
+		super.createOtherGroup ();
+		backgroundImageButton.dispose ();
+	}
+	
+	/**
+	 * Creates the "Size" group.  The "Size" group contains
+	 * controls that allow the user to change the size of
+	 * the example widgets.
+	 */
+	void createSizeGroup () {
+		super.createSizeGroup ();
+		
+		/* Set the default state for Browser to fill horizontally & vertically. */
+		fillHButton.setSelection (true);
+		fillVButton.setSelection (true);
+	}
+
+	/**
+	 * Creates the "Style" group.
+	 */
+	void createStyleGroup () {
+		super.createStyleGroup ();
+	
+		/* Create the extra widgets */
+		mozillaButton = new Button (styleGroup, SWT.CHECK);
+		mozillaButton.setText ("SWT.MOZILLA");
 	}
 	
 	/**
@@ -143,17 +176,6 @@ class BrowserTab extends Tab {
 		return tabFolderPage;
 	}
 
-	/**
-	 * Creates the "Style" group.
-	 */
-	void createStyleGroup () {
-		super.createStyleGroup ();
-	
-		/* Create the extra widgets */
-		mozillaButton = new Button (styleGroup, SWT.CHECK);
-		mozillaButton.setText ("SWT.MOZILLA");
-	}
-	
 	public static String getContents(InputStream in) throws IOException {
 		BufferedReader br= new BufferedReader(new InputStreamReader(in));
 		
