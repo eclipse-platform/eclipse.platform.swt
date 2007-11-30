@@ -148,6 +148,18 @@ class BrowserTab extends Tab {
 		super.createTabFolderPage (tabFolder);
 
 		/*
+		 * Add a resize listener to the tabFolderPage so that
+		 * if the user types into the example widget to change
+		 * its preferred size, and then resizes the shell, we
+		 * recalculate the preferred size correctly.
+		 */
+		tabFolderPage.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				setExampleWidgetSize ();
+			}
+		});
+		
+		/*
 		 * Add a selection listener to the tabFolder to bring up a
 		 * dialog if this platform does not support the Browser.
 		 */
