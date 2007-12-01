@@ -6345,6 +6345,19 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 			TreeItem [] item = new TreeItem [1];
 			RECT [] cellRect = new RECT [1], itemRect = new RECT [1];
 			if (findCell (x, y, item, index, cellRect, itemRect)) {
+				/*
+				* Feature in Windows.  When the new tool rectangle is
+				* set using TTM_NEWTOOLRECT and the tooltip is visible,
+				* Windows draws the tooltip right away and the sends
+				* WM_NOTIFY with TTN_SHOW.  This means that the tooltip
+				* shows first at the wrong location and then moves to
+				* the right one.  The fix is to hide the tooltip window.
+				*/
+				if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, 0) == 0) {
+					if (OS.IsWindowVisible (itemToolTipHandle)) {
+						OS.ShowWindow (itemToolTipHandle, OS.SW_HIDE);
+					}
+				}
 				TOOLINFO lpti = new TOOLINFO ();
 				lpti.cbSize = TOOLINFO.sizeof;
 				lpti.hwnd = handle;
