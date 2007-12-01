@@ -1055,7 +1055,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							fillBackground (hDC, clrTextBk, rect);
 						} else {
-							RECT textRect = item.getBounds (index, true, false, true, false, true, hDC);
+							RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
 							fillBackground (hDC, clrTextBk, textRect);
 						}
 					} else {
