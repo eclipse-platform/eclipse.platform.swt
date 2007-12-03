@@ -327,8 +327,11 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		NSColor selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
 		layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
 	}
-	layoutManager.drawBackgroundForGlyphRange(range, pt);
-	layoutManager.drawGlyphsForGlyphRange(range, pt);
+	//TODO draw selection for flags (LAST_LINE_SELECTION and FULL_SELECTION)
+	if (range.length > 0) {
+		layoutManager.drawBackgroundForGlyphRange(range, pt);
+		layoutManager.drawGlyphsForGlyphRange(range, pt);
+	}
 	if (selectionRange != null) {
 		layoutManager.removeTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionRange);
 	}
