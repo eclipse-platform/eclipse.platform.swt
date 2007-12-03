@@ -3256,7 +3256,10 @@ public void setTransform(Transform transform) {
 		if (data.inverseTransform != null) data.inverseTransform.release();
 		data.transform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
 		data.inverseTransform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
-		data.inverseTransform.invert();
+		NSAffineTransformStruct struct = data.inverseTransform.transformStruct();
+		if ((struct.m11 * struct.m22 - struct.m12 * struct.m21) != 0) {
+			data.inverseTransform.invert();
+		}
 	} else {
 		data.transform = data.inverseTransform = null;
 	}

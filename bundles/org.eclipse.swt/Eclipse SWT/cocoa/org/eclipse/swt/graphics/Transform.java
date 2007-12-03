@@ -194,10 +194,10 @@ public void getElements(float[] elements) {
  */
 public void invert() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	//TODO
-//	if ((handle [0] * handle [3] - handle [1] * handle [2]) == 0) {
-//		SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
-//	}
+	NSAffineTransformStruct struct = handle.transformStruct();
+	if ((struct.m11 * struct.m22 - struct.m12 * struct.m21) == 0) {
+		SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	}
 	handle.invert();
 }
 
