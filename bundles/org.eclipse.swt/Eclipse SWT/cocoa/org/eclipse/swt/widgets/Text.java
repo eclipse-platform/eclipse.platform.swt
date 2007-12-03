@@ -336,6 +336,10 @@ void createHandle () {
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.BORDER) == 0) widget.setBordered(false);
+		int align = OS.NSLeftTextAlignment;
+		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
+		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
+		widget.setAlignment(align);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
@@ -372,7 +376,11 @@ void createHandle () {
 		if ((style & SWT.VERTICAL) != 0 && (style & SWT.HORIZONTAL) != 0) {
 			widget.textContainer().setWidthTracksTextView (false);
 		}
-		
+		int align = OS.NSLeftTextAlignment;
+		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
+		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
+		widget.setAlignment(align);
+
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
@@ -382,97 +390,6 @@ void createHandle () {
 		scrollView.setDocumentView(widget);
 		parent.contentView().addSubview_(scrollView);
 	}
-	
-//	int [] outControl = new int [1];
-//	if ((style & SWT.MULTI) != 0 || (style & (SWT.BORDER | SWT.SEARCH)) == 0) {
-//		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-//			int options = 0;
-//			if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.H_SCROLL | SWT.V_SCROLL)) options |= OS.kHIScrollViewOptionsAllowGrow;
-//			if ((style & SWT.H_SCROLL) != 0) options |= OS.kHIScrollViewOptionsHorizScroll;
-//			if ((style & SWT.V_SCROLL) != 0) options |= OS.kHIScrollViewOptionsVertScroll;
-//			OS.HIScrollViewCreate (options, outControl);
-//			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//			scrolledHandle = outControl [0];
-//			OS.HIViewSetVisible (scrolledHandle, true);
-//		}
-//		int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
-//		/*
-//		* Bug in the Macintosh.  For some reason a single line text does not
-//		* display properly when it is right aligned.  The fix is to use a
-//		* multi line text when right aligned.
-//		*/
-//		if ((style & SWT.RIGHT) == 0) {
-//			if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
-//		}
-//		if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
-//		OS.HITextViewCreate (null, 0, iFrameOptions, outControl);
-//		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//		handle = outControl [0];
-//		OS.HIViewSetVisible (handle, true);
-//		if ((style & SWT.MULTI) != 0 && (style & SWT.BORDER) != 0) {
-//			int features = OS.kControlSupportsEmbedding;
-//			OS.CreateUserPaneControl (0, null, features, outControl);
-//			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//			frameHandle = outControl [0];			
-//		}
-//		txnObject = OS.HITextViewGetTXNObject (handle);			
-//		int ptr = OS.NewPtr (Rect.sizeof);
-//		Rect rect = (style & SWT.SINGLE) != 0 ? inset () : new Rect ();
-//		OS.memmove (ptr, rect, Rect.sizeof);
-//		int [] tags = new int [] {
-//			OS.kTXNDisableDragAndDropTag,
-//			OS.kTXNDoFontSubstitution,
-//			OS.kTXNIOPrivilegesTag,
-//			OS.kTXNMarginsTag,
-//			OS.kTXNJustificationTag,
-//		};
-//		int just = OS.kTXNFlushLeft;
-//		if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
-//		if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
-//		int [] datas = new int [] {
-//			1,
-//			1,
-//			(style & SWT.READ_ONLY) != 0 ? 1 : 0,
-//			ptr,
-//			just,
-//		};
-//		OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
-//		OS.DisposePtr (ptr);
-//	} else {
-//		if ((style & SWT.SEARCH) != 0) {
-//			int attributes = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
-//			OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
-//		} else {
-//			int window = OS.GetControlOwner (parent.handle);
-//			OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
-//		}
-//		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-//		handle = outControl [0];
-//		if ((style & SWT.SEARCH) != 0 && display.smallFonts) {
-//			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlSizeTag, 2, new short [] {OS.kControlSizeSmall});
-//		}
-//		/*
-//		* Bug in the Macintosh.  For some reason a single line text does not
-//		* display selection properly when it is right aligned.  The fix is to use a
-//		* multi line text when right aligned.
-//		*/
-//		if ((style & SWT.RIGHT) == 0) {
-//			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
-//		}
-//		if ((style & SWT.READ_ONLY) != 0) {
-//			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
-//		}
-//		if ((style & (SWT.RIGHT | SWT.CENTER)) != 0) {
-//			ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-//			fontStyle.flags |= OS.kControlUseJustMask;
-//			if ((style & SWT.CENTER) != 0) fontStyle.just = OS.teJustCenter;
-//			if ((style & SWT.RIGHT) != 0) fontStyle.just = OS.teJustRight;
-//			OS.SetControlFontStyle (handle, fontStyle);
-//		}
-//		if ((style & SWT.SEARCH) != 0) {
-//			OS.HIViewSetVisible (handle, true);
-//		}
-//	}
 }
 
 void createWidget () {
