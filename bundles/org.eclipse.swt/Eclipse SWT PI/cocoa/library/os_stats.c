@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 317;
-int OS_nativeFunctionCallCount[317];
+int OS_nativeFunctionCount = 318;
+int OS_nativeFunctionCallCount[318];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -36,6 +36,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSDefaultRunLoopMode",
 	"NSDeviceRGBColorSpace",
 	"NSDeviceResolution",
+	"NSFileTypeForHFSTypeCode",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
 	"NSIntersectionRect",

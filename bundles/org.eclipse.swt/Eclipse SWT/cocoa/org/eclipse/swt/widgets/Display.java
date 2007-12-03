@@ -1450,32 +1450,25 @@ public Cursor getSystemCursor (int id) {
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
-//	switch (id) {
-//		case SWT.ICON_ERROR: {	
-//			if (errorImage != null) return errorImage;
-//			int [] image = createImage (OS.kAlertStopIcon);
-//			if (image == null) break;
-//			return errorImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
-//		}
-//		case SWT.ICON_INFORMATION:
-//		case SWT.ICON_QUESTION:
-//		case SWT.ICON_WORKING: {
-//			if (infoImage != null) return infoImage;
-//			int [] image = createImage (OS.kAlertNoteIcon);
-//			if (image == null) break;
-//			return infoImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
-//		}
-//		case SWT.ICON_WARNING: {
-//			if (warningImage != null) return warningImage;
-//			int [] image = createImage (OS.kAlertCautionIcon);
-//			if (image == null) break;
-//			return warningImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
-//		}
-//	}
-	
-	//[[NSWorkspace sharedWorkspace] iconForFileType:NSFileTypeForHFSTypeCode(code)];
-	return null;
-//	return Image.cocoa_new (this, SWT.ICON, NSImage.imageNamed (NSString.stringWith("NSImageNameGoRightTemplate")));
+	int code;
+	switch(id) {
+		case SWT.ICON_ERROR:
+			code = OS.kAlertStopIcon;
+			break;
+		case SWT.ICON_INFORMATION:
+		case SWT.ICON_WORKING:
+		case SWT.ICON_QUESTION:
+			code = OS.kAlertNoteIcon;
+			break;
+		case SWT.ICON_WARNING:
+			code = OS.kAlertCautionIcon;
+			break;
+		default:
+			return null;
+	}
+	NSImage nsImage = NSWorkspace.sharedWorkspace().iconForFileType(new NSString(OS.NSFileTypeForHFSTypeCode(code)));
+	if (nsImage == null) return null;
+	return Image.cocoa_new(this, SWT.ICON, nsImage);
 }
 
 /**

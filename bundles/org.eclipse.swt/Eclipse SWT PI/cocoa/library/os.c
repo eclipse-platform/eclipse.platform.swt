@@ -360,6 +360,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceResolution)
 }
 #endif
 
+#ifndef NO_NSFileTypeForHFSTypeCode
+JNIEXPORT jint JNICALL OS_NATIVE(NSFileTypeForHFSTypeCode)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSFileTypeForHFSTypeCode_FUNC);
+	rc = (jint)NSFileTypeForHFSTypeCode(arg0);
+	OS_NATIVE_EXIT(env, that, NSFileTypeForHFSTypeCode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSFontAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSFontAttributeName)
 	(JNIEnv *env, jclass that)
