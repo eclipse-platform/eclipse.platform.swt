@@ -464,6 +464,9 @@ void createHandle () {
 		}
 		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, false);
 		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
+		if ((style & SWT.ON_TOP) != 0) {
+			window.setLevel(OS.NSFloatingWindowLevel);
+		}
 	}
 	
 	createHandle (null);
