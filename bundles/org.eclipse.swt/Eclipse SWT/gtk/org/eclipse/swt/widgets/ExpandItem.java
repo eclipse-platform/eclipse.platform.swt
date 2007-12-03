@@ -73,7 +73,7 @@ public class ExpandItem extends Item {
  * @see Widget#getStyle
  */
 public ExpandItem (ExpandBar parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	this.parent = parent;
 	createWidget (parent.getItemCount ());
 }
@@ -109,9 +109,20 @@ public ExpandItem (ExpandBar parent, int style) {
  * @see Widget#getStyle
  */
 public ExpandItem (ExpandBar parent, int style, int index) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	this.parent = parent;
 	createWidget (index);
+}
+
+static int checkStyle (ExpandBar parent, int style) {
+	style &= ~SWT.MIRRORED;
+	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
+		if (parent != null) {
+			if ((parent.style & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
+			if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
+		}
+	}
+	return Widget.checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
 }
 
 protected void checkSubclass () {
@@ -572,6 +583,14 @@ public void setImage (Image image) {
 	}
 }
 
+void setOrientation() {
+	super.setOrientation ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);	
+	}
+}
+	
 public void setText (String string) {
 	super.setText (string);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
