@@ -212,6 +212,12 @@ void drawRect(int id, NSRect rect) {
 	}
 }
 
+void enableWidget(boolean enabled) {
+	if ((style & SWT.SEPARATOR) == 0) {
+		((NSButton)view).setEnabled(enabled);
+	}
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -523,9 +529,7 @@ public void setEnabled (boolean enabled) {
 	} else {
 		state |= DISABLED;
 	}
-	if ((style & SWT.SEPARATOR) == 0) {
-		((NSButton)view).setEnabled(enabled);
-	}
+	enableWidget(enabled);
 }
 
 /**

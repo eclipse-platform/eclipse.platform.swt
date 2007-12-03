@@ -154,6 +154,7 @@ void createItem (ToolItem item, int index) {
 		widget.setTag(item.jniRef);
 		widget.setImagePosition(OS.NSImageOverlaps);
 		widget.setTitle(NSString.stringWith(""));
+		widget.setEnabled(getEnabled());
 		item.view = widget;
 	}
 	view.addSubview_(item.view);
@@ -181,6 +182,16 @@ void destroyItem (ToolItem item) {
 	nsItem.removeFromSuperview();
 	item.view = null;
 	relayout ();
+}
+
+void enableWidget(boolean enabled) {
+	super.enableWidget(enabled);
+	for (int i = 0; i < itemCount; i++) {
+		ToolItem item = items[i];
+		if (item != null) {
+			item.enableWidget(enabled);
+		}
+	}
 }
 
 public Rectangle getClientArea () {
