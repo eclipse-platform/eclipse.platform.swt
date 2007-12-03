@@ -832,7 +832,8 @@ public void setText (String string) {
 	String accelString = "";
 	int index = string.indexOf ('\t');
 	if (index != -1) {
-		accelString = string.substring (index, string.length());
+		boolean isRTL = (parent.style & SWT.RIGHT_TO_LEFT) != 0;
+		accelString = (isRTL? "" : "  ") + string.substring (index+1, string.length()) + (isRTL? "  " : "");
 		string = string.substring (0, index);
 	}
 	char [] chars = fixMnemonic (string);
