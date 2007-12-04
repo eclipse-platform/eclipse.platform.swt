@@ -418,6 +418,7 @@ protected void addObjectReferences() {
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND, result);
 	objIOleObject = new IOleObject(ppvObject[0]);
+	objIOleObject.SetClientSite(iOleClientSite.getAddress());
 	int[] pdwConnection = new int[1];
 	objIOleObject.Advise(iAdviseSink.getAddress(), pdwConnection);
 	objIOleObject.SetHostNames("main", "main");  //$NON-NLS-1$ //$NON-NLS-2$
