@@ -107,7 +107,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 			rect.x = area.x;
 			rect.width = area.width;
 			if (rect.contains(coordinates)) return item;
-			if (!(area.contains(rect.x, rect.y))) break;
+			if (rect.y > area.y + area.height) break;
 		}
 		return null;
 	}
