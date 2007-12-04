@@ -220,7 +220,7 @@ public class Accessible {
 	 */
 	public int internal_kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
-			int code = OS.CallNextEventHandler (nextHandler, theEvent);
+			OS.CallNextEventHandler (nextHandler, theEvent);
 			//TODO: check error?
 			int childID = getChildIDFromEvent(theEvent);
 			CGPoint pt = new CGPoint ();
@@ -262,7 +262,7 @@ public class Accessible {
 	 */
 	public int internal_kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
-			int code = OS.CallNextEventHandler (nextHandler, theEvent);
+			OS.CallNextEventHandler (nextHandler, theEvent);
 			//TODO: check error?
 			int childID = getChildIDFromEvent(theEvent);
 			if (childID != ACC.CHILDID_SELF) {
