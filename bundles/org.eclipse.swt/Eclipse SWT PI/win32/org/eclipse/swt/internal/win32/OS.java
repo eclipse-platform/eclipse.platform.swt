@@ -1740,6 +1740,7 @@ public class OS extends C {
 	public static final int TVHT_ONITEM = 0x46;
 	public static final int TVHT_ONITEMBUTTON = 16;
 	public static final int TVHT_ONITEMICON = 0x2;
+	public static final int TVHT_ONITEMINDENT = 0x8;
 	public static final int TVHT_ONITEMRIGHT = 0x20;
 	public static final int TVHT_ONITEMLABEL = 0x4;
 	public static final int TVHT_ONITEMSTATEICON = 0x40;

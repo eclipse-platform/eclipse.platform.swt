@@ -3068,7 +3068,9 @@ public TreeItem getItem (Point point) {
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem != 0) {
 		int flags = OS.TVHT_ONITEM;
-		if ((style & SWT.FULL_SELECTION) != 0) flags |= OS.TVHT_ONITEMRIGHT;
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			flags |= OS.TVHT_ONITEMRIGHT | OS.TVHT_ONITEMINDENT;
+		}
 		if ((lpht.flags & flags) != 0) {
 			return _getItem (lpht.hItem);
 		}
@@ -5957,7 +5959,9 @@ LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 	if (result == LRESULT.ZERO) return result;
 	if (lpht.hItem != 0) {
 		int flags = OS.TVHT_ONITEM;
-		if ((style & SWT.FULL_SELECTION) != 0) flags |= OS.TVHT_ONITEMRIGHT;
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			flags |= OS.TVHT_ONITEMRIGHT | OS.TVHT_ONITEMINDENT;
+		}
 		if ((lpht.flags & flags) != 0) {
 			Event event = new Event ();
 			event.item = _getItem (lpht.hItem);
