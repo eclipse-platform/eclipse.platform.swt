@@ -1302,6 +1302,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		width = Math.max (1, Math.max (width, (int) inMinLimits.x + (rect.left + rect.right)));
 		height = Math.max (1, Math.max (height, (int) inMinLimits.y + (rect.top + rect.bottom)));
 	}
+	if (rgnRect != null) {
+		OS.SetRect (rgnRect, (short) 0, (short) 0, (short) width, (short) height);	
+	}
 	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 	return 0;
