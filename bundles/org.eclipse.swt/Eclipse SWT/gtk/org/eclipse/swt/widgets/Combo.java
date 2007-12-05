@@ -1070,6 +1070,20 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
+int gtk_button_press_event(int widget, int event) {
+	/*
+	* Feature in GTK. Depending on where the user clicks, GTK prevents 
+	* the left mouse button event from being propagated. The fix is to
+	* send the mouse event from the event_after handler.
+	*/
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+		if (gdkEvent.type == OS.GDK_BUTTON_PRESS) return 0;
+	}
+	return super.gtk_button_press_event (widget, event);
+}
+
 int /*long*/ gtk_changed (int /*long*/ widget) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (widget == handle) {
@@ -1196,6 +1210,31 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 		}
 	}
 	return 0;
+}
+
+int gtk_event_after(int widget, int gdkEvent) {
+	/*
+	* Feature in GTK. Depending on where the user clicks, GTK prevents 
+	* the left mouse button event from being propagated. The fix is to
+	* send the mouse event from the event_after handler.
+	*/
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		GdkEvent event = new GdkEvent ();
+		OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+		switch (event.type) {
+			case OS.GDK_BUTTON_PRESS: {
+				GdkEventButton gdkEventButton = new GdkEventButton ();
+				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+				if (gdkEventButton.button == 1) {
+					if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
+						return 1;
+					}
+				}
+				break;
+			}
+		}
+	}
+	return super.gtk_event_after(widget, gdkEvent);
 }
 
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
