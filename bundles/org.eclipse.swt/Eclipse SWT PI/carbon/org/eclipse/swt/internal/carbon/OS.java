@@ -1519,6 +1519,7 @@ public static final native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int
 public static final native int HIComboBoxCreate(CGRect boundsRect, int text, ControlFontStyleRec style, int list, int inAttributes, int[] outComboBox);
 public static final native int HIComboBoxGetItemCount(int inComboBox);
 public static final native int HIComboBoxInsertTextItemAtIndex(int inComboBox, int inIndex, int inText);
+public static final native boolean HIComboBoxIsListVisible(int inComboBox);
 public static final native int HIComboBoxRemoveItemAtIndex(int inComboBox, int inIndex);
 public static final native int HIComboBoxSetListVisible (int inComboBox, boolean inVisible);
 public static final native int HICopyAccessibilityRoleDescription(int inRole, int inSubrole);

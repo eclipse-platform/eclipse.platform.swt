@@ -7340,6 +7340,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxInsertTextItemAtIndex)
 }
 #endif
 
+#ifndef NO_HIComboBoxIsListVisible
+JNIEXPORT jboolean JNICALL OS_NATIVE(HIComboBoxIsListVisible)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HIComboBoxIsListVisible_FUNC);
+	rc = (jboolean)HIComboBoxIsListVisible((HIViewRef)arg0);
+	OS_NATIVE_EXIT(env, that, HIComboBoxIsListVisible_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIComboBoxRemoveItemAtIndex
 JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxRemoveItemAtIndex)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

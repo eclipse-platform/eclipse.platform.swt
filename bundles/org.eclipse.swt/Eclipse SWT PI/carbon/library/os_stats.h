@@ -531,6 +531,7 @@ typedef enum {
 	HIComboBoxCreate_FUNC,
 	HIComboBoxGetItemCount_FUNC,
 	HIComboBoxInsertTextItemAtIndex_FUNC,
+	HIComboBoxIsListVisible_FUNC,
 	HIComboBoxRemoveItemAtIndex_FUNC,
 	HIComboBoxSetListVisible_FUNC,
 	HICopyAccessibilityRoleDescription_FUNC,
