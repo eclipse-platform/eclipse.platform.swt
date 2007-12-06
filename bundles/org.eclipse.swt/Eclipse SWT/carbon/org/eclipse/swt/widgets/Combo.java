@@ -712,6 +712,16 @@ public String [] getItems () {
 	return result;
 }
 
+/*public*/ boolean getListVisible () {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO - return the visibility state
+		return false;
+	} else {
+		return OS.HIComboBoxIsListVisible (handle);
+	}
+}
+
 int getMininumHeight () {
 	return getTextHeight ();
 }
