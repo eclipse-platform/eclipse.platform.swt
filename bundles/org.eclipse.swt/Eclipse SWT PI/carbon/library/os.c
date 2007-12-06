@@ -7346,7 +7346,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HIComboBoxIsListVisible)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, HIComboBoxIsListVisible_FUNC);
+/*
 	rc = (jboolean)HIComboBoxIsListVisible((HIViewRef)arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jboolean (*FPTR)(HIViewRef);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIComboBoxIsListVisible_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIComboBoxIsListVisible"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((HIViewRef)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, HIComboBoxIsListVisible_FUNC);
 	return rc;
 }

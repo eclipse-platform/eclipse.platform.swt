@@ -19,6 +19,7 @@
 #define DataBrowserSetMetric_LIB "com.apple.Carbon"
 #define GetIconRefFromIconFamilyPtr_LIB "com.apple.Carbon"
 #define HIComboBoxSetListVisible_LIB "com.apple.Carbon"
+#define HIComboBoxIsListVisible_LIB "com.apple.Carbon"
 #define HICreateTransformedCGImage_LIB "com.apple.Carbon"
 #define HIThemeSetFill_LIB "com.apple.Carbon"
 #define HIThemeSetTextFill_LIB "com.apple.Carbon"
