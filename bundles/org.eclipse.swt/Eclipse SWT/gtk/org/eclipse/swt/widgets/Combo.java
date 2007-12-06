@@ -1070,7 +1070,7 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
-int gtk_button_press_event(int widget, int event) {
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
 	* the left mouse button event from being propagated. The fix is to
@@ -1212,7 +1212,7 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	return 0;
 }
 
-int gtk_event_after(int widget, int gdkEvent) {
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
 	* the left mouse button event from being propagated. The fix is to
