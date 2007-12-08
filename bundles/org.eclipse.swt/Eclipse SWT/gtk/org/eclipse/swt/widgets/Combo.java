@@ -876,6 +876,14 @@ public String [] getItems () {
 	return result;
 }
 
+public boolean getListVisible () {
+	checkWidget ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		return popupHandle != 0 && OS.GTK_WIDGET_VISIBLE (popupHandle); 
+	}
+	return false;
+}
+
 String getNameText () {
 	return getText ();
 }
@@ -1823,7 +1831,7 @@ public void setItems (String [] items) {
 	}
 }
 
-/*public*/ void setListVisible (boolean visible) {
+public void setListVisible (boolean visible) {
 	checkWidget ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (visible) {

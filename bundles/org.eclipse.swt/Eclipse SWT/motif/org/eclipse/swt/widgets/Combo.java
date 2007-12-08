@@ -609,6 +609,25 @@ public String [] getItems () {
 	}
 	return result;
 }
+public boolean getListVisible () {
+	checkWidget ();
+	int[] argList1 = new int[] {OS.XmNlist, 0, OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int xtParent = OS.XtParent (argList1 [1]);
+	while (xtParent != 0 && !OS.XtIsSubclass (xtParent, OS.shellWidgetClass ())) {
+		xtParent = OS.XtParent (xtParent);
+	}
+	if (xtParent != 0) {
+		int xDisplay = OS.XtDisplay (xtParent);
+		if (xDisplay == 0) return false;
+		int xWindow = OS.XtWindow (xtParent);
+		if (xWindow == 0) return false;
+		XWindowAttributes attributes = new XWindowAttributes ();
+		OS.XGetWindowAttributes (xDisplay, xWindow, attributes);
+		return attributes.map_state == OS.IsViewable;
+	}
+	return false;
+}
 int getMinimumHeight () {
 	return getTextHeight ();
 }
@@ -1334,6 +1353,31 @@ public void setItems (String [] items) {
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
 	int [] argList4 = {OS.XmNselectedItemCount, 0, OS.XmNselectedItems, 0};
 	OS.XtSetValues (argList3 [1], argList4, argList4.length / 2);
+}
+public void setListVisible (boolean visible) {
+	checkWidget ();
+	if ((style & SWT.DROP_DOWN) != 0) {
+		int[] argList1 = new int[] {OS.XmNlist, 0, OS.XmNtextField, 0};
+		OS.XtGetValues (handle, argList1, argList1.length / 2);
+		int xtParent = OS.XtParent (argList1 [1]);
+		while (xtParent != 0 && !OS.XtIsSubclass (xtParent, OS.shellWidgetClass ())) {
+			xtParent = OS.XtParent (xtParent);
+		}
+		if (xtParent != 0) {
+			if (visible) {
+				int [] argList2 = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+				OS.XtGetValues (argList1 [3], argList2, argList2.length / 2);
+				int x = argList2 [1], y = argList2 [3] + argList2 [7] + argList2 [9];
+				short [] root_x = new short [1], root_y = new short [1];
+				OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
+				OS.XtMoveWidget (xtParent, root_x [0], root_y [0]);
+				OS.XtPopup (xtParent, OS.XtGrabNone);
+			} else {
+				// This code is intentionally commented
+				//OS.XtPopdown (xtParent);
+			}
+		}
+	}
 }
 /**
  * Sets the orientation of the receiver, which must be one

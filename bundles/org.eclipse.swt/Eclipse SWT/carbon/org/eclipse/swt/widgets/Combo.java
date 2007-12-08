@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
+import org.eclipse.swt.internal.carbon.MenuTrackingData;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -712,13 +713,16 @@ public String [] getItems () {
 	return result;
 }
 
-/*public*/ boolean getListVisible () {
+public boolean getListVisible () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		//TODO - return the visibility state
-		return false;
+		MenuTrackingData outData = new MenuTrackingData ();
+		return OS.GetMenuTrackingData (menuHandle, outData) == OS.noErr;
 	} else {
-		return OS.HIComboBoxIsListVisible (handle);
+ 		if (OS.VERSION >= 0x1040) {
+ 			return OS.HIComboBoxIsListVisible (handle);
+ 		}
+ 		return false;
 	}
 }
 
@@ -1567,12 +1571,18 @@ public void setItems (String [] items) {
 	}
 }
 
-/*public*/ void setListVisible (boolean visible) {
+public void setListVisible (boolean visible) {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		//TODO - show the menu in the right place
+		if (visible) {
+			OS.HIViewSimulateClick (handle, (short) 0, 0, null);
+		} else {
+			OS.CancelMenuTracking (menuHandle, true, 0);
+		}
 	} else {
-		OS.HIComboBoxSetListVisible (handle, visible);
+ 		if (OS.VERSION >= 0x1040) {
+ 			OS.HIComboBoxSetListVisible (handle, visible);
+ 		}
 	}
 }
 
