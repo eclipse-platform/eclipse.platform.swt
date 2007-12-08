@@ -569,26 +569,7 @@ public String [] getItems () {
 	return result;
 }
 
-/**
- * Returns <code>true</code> if the receiver's list is visible,
- * and <code>false</code> otherwise.
- * <p>
- * If one of the receiver's ancestors is not visible or some
- * other condition makes the receiver not visible, this method
- * may still indicate that it is considered visible even though
- * it may not actually be showing.
- * </p>
- *
- * @return the receiver's list's visibility state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.3
- */
-/*public*/ boolean getListVisible () {
+public boolean getListVisible () {
 	checkWidget ();
 	return OS.ComboBox_IsDropDownOpen (handle);
 }
@@ -1232,25 +1213,7 @@ public void setItems (String [] items) {
 	OS.GCHandle_Free(itemCollection);
 }
 
-/**
- * Marks the receiver's list as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise.
- * <p>
- * If one of the receiver's ancestors is not visible or some
- * other condition makes the receiver not visible, marking
- * it visible may not actually cause it to be displayed.
- * </p>
- *
- * @param visible the new visibility state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.3
- */
-/*public*/ void setListVisible (boolean visible) {
+public void setListVisible (boolean visible) {
 	checkWidget ();
 	OS.ComboBox_IsDropDownOpen (handle, visible);
 }

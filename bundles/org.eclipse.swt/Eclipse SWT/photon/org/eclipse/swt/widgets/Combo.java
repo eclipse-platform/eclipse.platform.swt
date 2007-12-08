@@ -622,6 +622,11 @@ public String [] getItems () {
 	return result;
 }
 
+public boolean getListVisible () {
+	checkWidget ();
+	return false;
+}
+
 String getNameText () {
 	return getText ();
 }
@@ -1189,6 +1194,10 @@ public void setItems (String [] items) {
 	}
 	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, 0, 0);
 	sendEvent (SWT.Modify);
+}
+
+public void setListVisible (boolean visible) {
+	checkWidget ();
 }
 
 /**
