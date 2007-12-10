@@ -137,13 +137,6 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
-int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlTrack(nextHandler, theEvent, userData);
-	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
-		redraw ();
-	}
-	return result;
-}
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
 	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
 		int [] context = new int [1];
@@ -486,6 +479,14 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	}
 	postEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
+}
+
+int kEventControlTrack (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlTrack(nextHandler, theEvent, userData);
+	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
+		redraw ();
+	}
+	return result;
 }
 
 void releaseWidget () {
