@@ -141,7 +141,13 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
 		int [] context = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-		int state = display.grabControl == this ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+			if (display.grabControl == this) state = OS.kThemeStatePressed;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
 		CGRect rect = new CGRect ();
 		OS.HIViewGetBounds (handle, rect);
 		int orientation = OS.kThemeArrowRight;
