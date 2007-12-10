@@ -802,8 +802,12 @@ public class OS extends C {
 	public static final int kThemeAliasArrowCursor = 2;
 	public static final int kThemeArrowButton = 4;
 	public static final int kThemeArrowCursor = 0;
+	public static final int kThemeArrowLeft = 0;
 	public static final int kThemeArrowDown = 1;
+	public static final int kThemeArrowRight = 2;
+	public static final int kThemeArrowUp = 3;
 	public static final int kThemeArrow5pt = 1;
+	public static final int kThemeArrow9pt = 3;
 	public static final int kThemeBevelButtonSmall = 8;
 	public static final int kThemeBrushDialogBackgroundActive = 1;
 	public static final int kThemeBrushDocumentWindowBackground = 15;

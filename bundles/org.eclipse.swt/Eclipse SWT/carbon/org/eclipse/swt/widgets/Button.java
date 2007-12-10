@@ -11,16 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -142,7 +137,31 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
+int kEventControlTrack (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlTrack(nextHandler, theEvent, userData);
+	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
+		redraw ();
+	}
+	return result;
+}
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
+		int [] context = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+		int state = display.grabControl == this ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (handle, rect);
+		int orientation = OS.kThemeArrowRight;
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeArrowUp;
+		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeArrowDown;;
+		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeArrowLeft;
+		HIThemePopupArrowDrawInfo info = new HIThemePopupArrowDrawInfo ();
+		info.state = state;
+		info.orientation = (short) orientation;
+		info.size = (short) OS.kThemeArrow9pt;
+		OS.HIThemeDrawPopupArrow (rect, info, context [0], OS.kHIThemeOrientationNormal);
+		return OS.noErr;
+	}
 	int [] context = null;
 	if ((style & SWT.ARROW) != 0 && (style & SWT.UP) != 0) {
 		context = new int [1];
