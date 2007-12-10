@@ -447,48 +447,8 @@ public void deselectAll () {
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
-	if (drop == isDropped ()) return;
-	if (!drop) {
-		popup.setVisible (false);
-		if (!isDisposed ()&& arrow.isFocusControl()) {
-			text.setFocus();
-		}
-		return;
-	}
-
-	if (getShell() != popup.getParent ()) {
-		String[] items = list.getItems ();
-		int selectionIndex = list.getSelectionIndex ();
-		list.removeListener (SWT.Dispose, listener);
-		popup.dispose();
-		popup = null;
-		list = null;
-		createPopup (items, selectionIndex);
-	}
-	
-	Point size = getSize ();
-	int itemCount = list.getItemCount ();
-	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
-	int itemHeight = list.getItemHeight () * itemCount;
-	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight, false);
-	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
-	
-	int index = list.getSelectionIndex ();
-	if (index != -1) list.setTopIndex (index);
-	Display display = getDisplay ();
-	Rectangle listRect = list.getBounds ();
-	Rectangle parentRect = display.map (getParent (), null, getBounds ());
-	Point comboSize = getSize ();
-	Rectangle displayRect = getMonitor ().getClientArea ();
-	int width = Math.max (comboSize.x, listRect.width + 2);
-	int height = listRect.height + 2;
-	int x = parentRect.x;
-	int y = parentRect.y + comboSize.y;
-	if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
-	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
-	popup.setBounds (x, y, width, height);
-	popup.setVisible (true);
-	list.setFocus ();
+	setListVisible(drop);
+	if (isDropped()) list.setFocus ();
 }
 /*
  * Return the lowercase of the first non-'&' character following
@@ -610,6 +570,29 @@ public int getItemHeight () {
 public String [] getItems () {
 	checkWidget ();
 	return list.getItems ();
+}
+/**
+ * Returns <code>true</code> if the receiver's list is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's list's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getListVisible () {
+	checkWidget ();
+	return isDropped();
 }
 public Menu getMenu() {
 	return text.getMenu();
@@ -1348,6 +1331,68 @@ public void setItems (String [] items) {
 public void setLayout (Layout layout) {
 	checkWidget ();
 	return;
+}
+/**
+ * Marks the receiver's list as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setListVisible (boolean visible) {
+	checkWidget ();
+	if (visible == isDropped ()) return;
+	if (!visible) {
+		popup.setVisible (false);
+		if (!isDisposed ()&& arrow.isFocusControl()) {
+			text.setFocus();
+		}
+		return;
+	}
+
+	if (getShell() != popup.getParent ()) {
+		String[] items = list.getItems ();
+		int selectionIndex = list.getSelectionIndex ();
+		list.removeListener (SWT.Dispose, listener);
+		popup.dispose();
+		popup = null;
+		list = null;
+		createPopup (items, selectionIndex);
+	}
+	
+	Point size = getSize ();
+	int itemCount = list.getItemCount ();
+	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
+	int itemHeight = list.getItemHeight () * itemCount;
+	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight, false);
+	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
+	
+	int index = list.getSelectionIndex ();
+	if (index != -1) list.setTopIndex (index);
+	Display display = getDisplay ();
+	Rectangle listRect = list.getBounds ();
+	Rectangle parentRect = display.map (getParent (), null, getBounds ());
+	Point comboSize = getSize ();
+	Rectangle displayRect = getMonitor ().getClientArea ();
+	int width = Math.max (comboSize.x, listRect.width + 2);
+	int height = listRect.height + 2;
+	int x = parentRect.x;
+	int y = parentRect.y + comboSize.y;
+	if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
+	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
+	popup.setBounds (x, y, width, height);
+	popup.setVisible (true);
 }
 public void setMenu(Menu menu) {
 	text.setMenu(menu);
