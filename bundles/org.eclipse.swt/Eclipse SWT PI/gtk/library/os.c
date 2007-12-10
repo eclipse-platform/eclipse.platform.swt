@@ -6969,6 +6969,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1active)
 }
 #endif
 
+#ifndef NO__1gtk_1combo_1box_1set_1focus_1on_1click
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1focus_1on_1click)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
+/*
+	gtk_combo_box_set_focus_on_click(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_set_focus_on_click_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_set_focus_on_click");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1combo_1disable_1activate
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1disable_1activate)
 	(JNIEnv *env, jclass that, jint arg0)

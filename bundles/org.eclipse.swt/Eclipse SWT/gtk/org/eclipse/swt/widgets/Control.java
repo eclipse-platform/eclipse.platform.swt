@@ -192,8 +192,7 @@ void hookEvents () {
 
 	/* Connect the mouse signals */
 	int /*long*/ eventHandle = eventHandle ();
-	int eventMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
-		OS.GDK_BUTTON_RELEASE_MASK;
+	int eventMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
 	OS.gtk_widget_add_events (eventHandle, eventMask);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
@@ -993,6 +992,10 @@ public void setSize (int width, int height) {
  */
 boolean isDescribedByLabel () {
 	return true;
+}
+
+boolean isFocusHandle (int /*long*/ widget) {
+	return widget == focusHandle (); 
 }
 
 /**
@@ -2591,7 +2594,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 			break;
 		}
 		case OS.GDK_FOCUS_CHANGE: {
-			if (widget != focusHandle ()) break;
+			if (!isFocusHandle (widget)) break;
 			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 

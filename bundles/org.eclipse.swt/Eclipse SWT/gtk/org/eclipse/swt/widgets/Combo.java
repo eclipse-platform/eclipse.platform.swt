@@ -1225,6 +1225,14 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
 	* the left mouse button event from being propagated. The fix is to
 	* send the mouse event from the event_after handler.
+	* 
+	* Feature in GTK. When the user clicks anywhere in an editable 
+	* combo box, a single focus event should be issued, despite the 
+	* fact that focus might switch between the drop down button and
+	* the text field. The fix is to use gtk_combo_box_set_focus_on_click ()
+	* to eat all focus events while focus is in the combo box. When the 
+	* user clicks on the drop down button focus is assigned to the text 
+	* field.
 	*/
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		GdkEvent event = new GdkEvent ();
@@ -1236,6 +1244,25 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 				if (gdkEventButton.button == 1) {
 					if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
 						return 1;
+					}
+					if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+						if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
+							OS.gtk_widget_grab_focus (entryHandle);
+						}
+					}
+				}
+				break;
+			}
+			case OS.GDK_FOCUS_CHANGE: {
+				if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+					if ((style & SWT.READ_ONLY) == 0) {
+						GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+						OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+						if (gdkEventFocus.in != 0) {
+							OS.gtk_combo_box_set_focus_on_click (handle, false);
+						} else {
+							OS.gtk_combo_box_set_focus_on_click (handle, true);
+						}
 					}
 				}
 				break;
@@ -1301,6 +1328,45 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (result != 0) fixIM ();
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0) && (style & SWT.READ_ONLY) == 0) {
+		GdkEventKey keyEvent = new GdkEventKey ();
+		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+		int oldIndex = OS.gtk_combo_box_get_active (handle);
+		int newIndex = oldIndex;
+		int key = keyEvent.keyval;
+		switch (key) {
+			case OS.GDK_Down:
+			case OS.GDK_KP_Down: 
+				 if (oldIndex != (items.length - 1)) {
+					newIndex = oldIndex + 1;
+				 }
+				 break;
+			case OS.GDK_Up:
+			case OS.GDK_KP_Up: 
+				if (oldIndex != -1 && oldIndex != 0) {
+					newIndex = oldIndex - 1;
+				}
+				break;
+			case OS.GDK_Page_Up:
+		    case OS.GDK_KP_Page_Up:
+		    case OS.GDK_Home: 
+		    case OS.GDK_KP_Home:
+		    	newIndex = 0;
+		    	break;
+		    case OS.GDK_Page_Down:
+		    case OS.GDK_KP_Page_Down:
+		    case OS.GDK_End: 
+		    case OS.GDK_KP_End:
+		    	newIndex = items.length - 1;
+		    	break;  
+		}
+		if (newIndex != oldIndex) {
+			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_combo_box_set_active (handle, newIndex);
+			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		}
+		return 1;
+	}
 	return result;
 }
 
@@ -1353,6 +1419,14 @@ public int indexOf (String string, int start) {
 		if (string.equals(items [i])) return i;
 	}
 	return -1;
+}
+
+boolean isFocusHandle(int widget) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (buttonHandle != 0 && widget == buttonHandle) return true;
+		if (entryHandle != 0 && widget == entryHandle) return true;
+	}
+	return super.isFocusHandle (widget);
 }
 
 int /*long*/ paintWindow () {

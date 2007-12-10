@@ -4198,6 +4198,15 @@ public static final void gtk_combo_set_case_sensitive(int /*long*/ combo, boolea
 		lock.unlock();
 	}
 }
+public static final native void _gtk_combo_box_set_focus_on_click(int /*long*/ combo, boolean val);
+public static final void gtk_combo_box_set_focus_on_click(int /*long*/ combo, boolean val) {
+	lock.lock();
+	try {
+		_gtk_combo_box_set_focus_on_click(combo, val);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings);
 public static final void gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings) {
 	lock.lock();
