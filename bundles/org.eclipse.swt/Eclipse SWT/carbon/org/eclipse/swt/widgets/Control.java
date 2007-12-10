@@ -2817,6 +2817,8 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 
 void sendTrackEvents () {
 	Display display = this.display;
+	display.runPopups ();
+	if (isDisposed ()) return;
 	display.runDeferredEvents ();
 	if (isDisposed ()) return;
 	boolean events = false;
