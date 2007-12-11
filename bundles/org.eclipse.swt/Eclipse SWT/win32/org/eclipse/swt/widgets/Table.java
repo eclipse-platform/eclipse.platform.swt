@@ -6356,6 +6356,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsWinCE) return null;
+	if (toolTipText != null) return null;
 	switch (hdr.code) {
 		case OS.NM_CUSTOMDRAW: {
 			NMTTCUSTOMDRAW nmcd = new NMTTCUSTOMDRAW ();
