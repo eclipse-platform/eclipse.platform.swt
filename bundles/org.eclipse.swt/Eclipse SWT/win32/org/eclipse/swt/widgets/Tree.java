@@ -5702,15 +5702,20 @@ LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
-	boolean fixScroll = false;
-	if (hwndParent == 0) {
-		if ((style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-			fixScroll = true;
+	boolean fixScroll = hwndParent == 0 && (style & SWT.DOUBLE_BUFFERED) != 0;
+	if (fixScroll) {
+		style &= ~SWT.DOUBLE_BUFFERED;
+		if (explorerTheme) {
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, OS.TVS_EX_DOUBLEBUFFER, 0);
 		}
 	}
-	if (fixScroll) style &= ~SWT.DOUBLE_BUFFERED;
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
-	if (fixScroll) style |= SWT.DOUBLE_BUFFERED;
+	if (fixScroll) {
+		style |= SWT.DOUBLE_BUFFERED;
+		if (explorerTheme) {
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, OS.TVS_EX_DOUBLEBUFFER, OS.TVS_EX_DOUBLEBUFFER);
+		}
+	}
 	if (result != null) return result;
 	return result;
 }
@@ -6481,11 +6486,9 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	}
 	if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
 		boolean doubleBuffer = true;
-		if (EXPLORER_THEME) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				int exStyle = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-				if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) doubleBuffer = false;
-			}
+		if (explorerTheme) {
+			int exStyle = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) doubleBuffer = false;
 		}
 		if (doubleBuffer) {
 			GC gc = null;
@@ -6654,12 +6657,8 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	* of the selected items is not drawn.  The fix is the
 	* redraw the entire tree.
 	*/
-	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			if ((style & SWT.FULL_SELECTION) != 0) {
-				OS.InvalidateRect (handle, null, false);
-			}
-		}
+	if (explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
+		OS.InvalidateRect (handle, null, false);
 	}
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
