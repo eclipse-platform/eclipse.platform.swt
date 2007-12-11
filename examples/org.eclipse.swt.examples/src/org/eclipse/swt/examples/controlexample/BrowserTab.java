@@ -227,6 +227,7 @@ class BrowserTab extends Tab {
 	 * Hooks the custom listener specified by eventName.
 	 */
 	void hookCustomListener (final String eventName) {
+		if (browser == null) return;
 		if (eventName == "CloseWindowListener") {
 			browser.addCloseWindowListener (new CloseWindowListener () {
 				public void close(WindowEvent event) {
