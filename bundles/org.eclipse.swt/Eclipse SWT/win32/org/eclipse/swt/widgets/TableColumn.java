@@ -546,7 +546,7 @@ public void setAlignment (int alignment) {
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	int hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
+	lvColumn.mask = OS.LVCF_FMT;
 	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
 	lvColumn.fmt &= ~OS.LVCFMT_JUSTIFYMASK;
 	int fmt = 0;
