@@ -6682,14 +6682,32 @@ LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	boolean fixScroll = false;
-	if (hwndParent == 0) {
-		if ((style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-			fixScroll = true;
+	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+		int code = OS.LOWORD (wParam);
+		switch (code) {
+			case OS.SB_TOP:
+			case OS.SB_BOTTOM:
+			case OS.SB_LINEDOWN:
+			case OS.SB_LINEUP:
+			case OS.SB_PAGEDOWN:
+			case OS.SB_PAGEUP:
+				fixScroll = true;
+				break;
 		}
 	}
-	if (fixScroll) style &= ~SWT.DOUBLE_BUFFERED;
+	if (fixScroll) {
+		style &= ~SWT.DOUBLE_BUFFERED;
+		if (explorerTheme) {
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, OS.TVS_EX_DOUBLEBUFFER, 0);
+		}
+	}
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
-	if (fixScroll) style |= SWT.DOUBLE_BUFFERED;
+	if (fixScroll) {
+		style |= SWT.DOUBLE_BUFFERED;
+		if (explorerTheme) {
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, OS.TVS_EX_DOUBLEBUFFER, OS.TVS_EX_DOUBLEBUFFER);
+		}
+	}
 	if (result != null) return result;
 	return result;
 }
