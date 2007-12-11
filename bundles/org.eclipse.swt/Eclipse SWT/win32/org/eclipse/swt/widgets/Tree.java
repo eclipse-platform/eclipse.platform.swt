@@ -5702,7 +5702,10 @@ LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
-	boolean fixScroll = hwndParent == 0 && (style & SWT.DOUBLE_BUFFERED) != 0;
+	boolean fixScroll = false;
+	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+		fixScroll = (style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
+	}
 	if (fixScroll) {
 		style &= ~SWT.DOUBLE_BUFFERED;
 		if (explorerTheme) {
@@ -6691,7 +6694,7 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 			case OS.SB_LINEUP:
 			case OS.SB_PAGEDOWN:
 			case OS.SB_PAGEUP:
-				fixScroll = true;
+				fixScroll = (style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
 				break;
 		}
 	}
