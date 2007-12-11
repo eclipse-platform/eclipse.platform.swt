@@ -5701,6 +5701,20 @@ LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
+LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
+	boolean fixScroll = false;
+	if (hwndParent == 0) {
+		if ((style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			fixScroll = true;
+		}
+	}
+	if (fixScroll) style &= ~SWT.DOUBLE_BUFFERED;
+	LRESULT result = super.WM_HSCROLL (wParam, lParam);
+	if (fixScroll) style |= SWT.DOUBLE_BUFFERED;
+	if (result != null) return result;
+	return result;
+}
+
 LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
@@ -6664,6 +6678,20 @@ LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 		if (foreground == -1) setForegroundPixel (-1);
 	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	return result;
+}
+
+LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
+	boolean fixScroll = false;
+	if (hwndParent == 0) {
+		if ((style & SWT.VIRTUAL) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			fixScroll = true;
+		}
+	}
+	if (fixScroll) style &= ~SWT.DOUBLE_BUFFERED;
+	LRESULT result = super.WM_VSCROLL (wParam, lParam);
+	if (fixScroll) style |= SWT.DOUBLE_BUFFERED;
+	if (result != null) return result;
 	return result;
 }
 
