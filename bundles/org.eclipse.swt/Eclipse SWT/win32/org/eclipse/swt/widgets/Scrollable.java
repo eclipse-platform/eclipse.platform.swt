@@ -273,10 +273,10 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
 		int msg = (vertical) ? OS.WM_VSCROLL : (horizontal) ? OS.WM_HSCROLL : 0;
 		if (msg == 0) return result;
-		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 		int [] linesToScroll = new int [1];
 		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
 		int code = 0;
+		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
   		if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {	
    			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
   		} else {
