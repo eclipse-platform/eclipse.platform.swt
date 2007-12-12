@@ -100,6 +100,12 @@ Region(Device device, int /*long*/ handle) {
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Bug in GTK. If gdk_region_polygon() is called with one point,
+	* it segment faults. The fix is to make sure that it is called 
+	* with enough points for a polygon.
+	*/
+	if (pointArray.length < 6) return;
 	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_union(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
@@ -456,6 +462,12 @@ public boolean isEmpty() {
 public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Bug in GTK. If gdk_region_polygon() is called with one point,
+	* it segment faults. The fix is to make sure that it is called 
+	* with enough points for a polygon.
+	*/
+	if (pointArray.length < 6) return;
 	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_subtract(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
