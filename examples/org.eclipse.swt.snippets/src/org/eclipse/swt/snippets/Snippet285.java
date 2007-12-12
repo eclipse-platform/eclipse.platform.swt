@@ -41,13 +41,14 @@ public class Snippet285 {
 			}
 		}
 	}
-	public static void main2(String[] args) {
+	public static void main(String[] args) {
 		int width = 250, height = 250;
 		final Display display = new Display();
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
 		final Path path = new Path(display);
 		path.addArc(0, 0, width, height, 0, 360);
 		Path path2 = new Path(display, path, 0.1f);
+		path.dispose();
 		PathData data = path2.getPathData();
 		path2.dispose();
 		Region region = new Region(display);
@@ -68,7 +69,7 @@ public class Snippet285 {
 								.getSystemColor(SWT.COLOR_BLUE), display
 								.getSystemColor(SWT.COLOR_WHITE));
 						gc.setBackgroundPattern(pattern);
-						gc.fillPath(path);
+						gc.fillRectangle(rect);
 						pattern.dispose();
 						break;
 					}
@@ -83,21 +84,7 @@ public class Snippet285 {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		path.dispose();
 		display.dispose();
 	}
 	
-	public static void main(String[] args) {
-		int width = 250, height = 250;
-		final Display display = new Display();
-		Region region = new Region(display);
-		region.add(10,10,75,75);
-		
-	//	region.add(new int[]{125,125,126,126,200,200, 125,125});
-		
-		region.add(new int[]{0, 0, 100, 0, 0, 100});
-		System.out.println(region.getBounds());
-		
-		display.dispose();
-	}
 }
