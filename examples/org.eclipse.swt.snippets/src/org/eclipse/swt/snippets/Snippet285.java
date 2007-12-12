@@ -41,7 +41,7 @@ public class Snippet285 {
 			}
 		}
 	}
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		int width = 250, height = 250;
 		final Display display = new Display();
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
@@ -84,6 +84,20 @@ public class Snippet285 {
 				display.sleep();
 		}
 		path.dispose();
+		display.dispose();
+	}
+	
+	public static void main(String[] args) {
+		int width = 250, height = 250;
+		final Display display = new Display();
+		Region region = new Region(display);
+		region.add(10,10,75,75);
+		
+	//	region.add(new int[]{125,125,126,126,200,200, 125,125});
+		
+		region.add(new int[]{0, 0, 100, 0, 0, 100});
+		System.out.println(region.getBounds());
+		
 		display.dispose();
 	}
 }
