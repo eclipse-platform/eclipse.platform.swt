@@ -1994,6 +1994,10 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	* state.
 	*/
 	Display display = this.display;
+	display.runDeferredEvents();
+	if (isDisposed ()) return OS.noErr;
+	if (display.runPopups ()) return OS.noErr;
+	if (isDisposed ()) return OS.noErr;
 	display.lastState = OS.GetCurrentEventButtonState ();
 	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
 	display.grabControl = this;
@@ -2817,8 +2821,6 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 
 void sendTrackEvents () {
 	Display display = this.display;
-//	display.runPopups ();
-//	if (isDisposed ()) return;
 	display.runDeferredEvents ();
 	if (isDisposed ()) return;
 	boolean events = false;
