@@ -3008,7 +3008,7 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			break;
 		}
 		case OS.WM_SETTINGCHANGE: {
-			if (OS.COMCTL32_MAJOR >= 6) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 				OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
 				break;
 			} 
