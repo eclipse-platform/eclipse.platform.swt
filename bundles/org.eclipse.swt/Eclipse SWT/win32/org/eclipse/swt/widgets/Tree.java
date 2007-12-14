@@ -3792,12 +3792,6 @@ void releaseWidget () {
 	if (itemToolTipHandle != 0) OS.DestroyWindow (itemToolTipHandle);
 	if (headerToolTipHandle != 0) OS.DestroyWindow (headerToolTipHandle);
 	itemToolTipHandle = headerToolTipHandle = 0;
-	if (display.isXMouseActive ()) {
-		Shell shell = getShell ();
-		if (shell.lockToolTipControl == this) {
-			shell.lockToolTipControl = null;
-		}
-	}
 }
 
 /**
@@ -7385,18 +7379,9 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			OS.MoveMemory (nmcd, lParam, NMTTCUSTOMDRAW.sizeof);
 			return wmNotifyToolTip (nmcd, lParam);
 		}
-		case OS.TTN_POP: {
-			if (display.isXMouseActive ()) {
-				Shell shell = getShell ();
-				shell.lockToolTipControl = null;
-			}
-			break;
-		}
 		case OS.TTN_SHOW: {
-			if (display.isXMouseActive ()) {
-				Shell shell = getShell ();
-				shell.lockToolTipControl = this;
-			}
+			LRESULT result = super.wmNotify (hdr, wParam, lParam);
+			if (result != null) return result;
 			int pos = OS.GetMessagePos ();
 			POINT pt = new POINT();
 			OS.POINTSTOPOINT (pt, pos);
@@ -7416,7 +7401,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				SetWindowPos (itemToolTipHandle, 0, toolRect.left, toolRect.top, width, height, flags);
 				return LRESULT.ONE;
 			}
-			break;
+			return result;
 		}
 	}
 	return null;
