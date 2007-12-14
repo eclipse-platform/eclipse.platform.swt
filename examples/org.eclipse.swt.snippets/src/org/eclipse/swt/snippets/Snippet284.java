@@ -28,6 +28,7 @@ public static void main (String [] args) {
 	
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("URLTransfer");
 	shell.setLayout(new FillLayout());
 	final Label label1 = new Label (shell, SWT.BORDER);
 	label1.setText ("http://www.eclipse.org");
