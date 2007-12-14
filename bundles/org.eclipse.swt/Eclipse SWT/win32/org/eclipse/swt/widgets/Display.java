@@ -3003,7 +3003,15 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			if (!event.doit) return 0;
 			break;
 		}
+		case OS.WM_DWMCOLORIZATIONCOLORCHANGED: {
+			OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
+			break;
+		}
 		case OS.WM_SETTINGCHANGE: {
+			if (OS.COMCTL32_MAJOR >= 6) {
+				OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
+				break;
+			} 
 			switch ((int)/*64*/wParam) {
 				case 0:
 				case 1:
