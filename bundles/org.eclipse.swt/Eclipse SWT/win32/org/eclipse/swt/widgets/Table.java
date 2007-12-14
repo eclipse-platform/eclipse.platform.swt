@@ -6356,19 +6356,25 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.IsWinCE) return null;
-	if (toolTipText != null) return null;
 	switch (hdr.code) {
 		case OS.NM_CUSTOMDRAW: {
-			NMTTCUSTOMDRAW nmcd = new NMTTCUSTOMDRAW ();
-			OS.MoveMemory (nmcd, lParam, NMTTCUSTOMDRAW.sizeof);
-			return wmNotifyToolTip (nmcd, lParam);
+			if (toolTipText != null) break;
+			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				NMTTCUSTOMDRAW nmcd = new NMTTCUSTOMDRAW ();
+				OS.MoveMemory (nmcd, lParam, NMTTCUSTOMDRAW.sizeof);
+				return wmNotifyToolTip (nmcd, lParam);
+			}
+			break;
 		}
 		case OS.TTN_GETDISPINFOA:
 		case OS.TTN_GETDISPINFOW: 
 		case OS.TTN_SHOW: {
+			LRESULT result = super.wmNotify (hdr, wParam, lParam);
+			if (result != null) return result;
 			if (hdr.code != OS.TTN_SHOW) tipRequested = true;
 			int /*long*/ code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
 			if (hdr.code != OS.TTN_SHOW) tipRequested = false;
+			if (toolTipText != null) break;
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 				int pos = OS.GetMessagePos ();
