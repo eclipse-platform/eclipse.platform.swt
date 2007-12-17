@@ -1710,8 +1710,10 @@ public void clearAll (boolean all) {
 void clearAll (int /*long*/ hItem, TVITEM tvItem, boolean all) {
 	while (hItem != 0) {
 		clear (hItem, tvItem);
-		int /*long*/ hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-		if (all) clearAll (hFirstItem, tvItem, all);
+		if (all) {
+			int /*long*/ hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+			clearAll (hFirstItem, tvItem, all);
+		}
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
 }
