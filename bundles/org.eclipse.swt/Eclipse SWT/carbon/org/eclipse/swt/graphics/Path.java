@@ -532,7 +532,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!moved) {
 		CGPoint pt = new CGPoint();
-		OS.CGPathGetCurrentPoint(handle, pt);
+		if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
 		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
 		moved = true;
 	}
@@ -599,7 +599,7 @@ public void getCurrentPoint(float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	CGPoint pt = new CGPoint();
-	OS.CGPathGetCurrentPoint(handle, pt);
+	if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
 	point[0] = pt.x;
 	point[1] = pt.y;
 }
@@ -695,7 +695,7 @@ public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!moved) {
 		CGPoint pt = new CGPoint();
-		OS.CGPathGetCurrentPoint(handle, pt);
+		if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
 		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
 		moved = true;
 	}
@@ -744,7 +744,7 @@ public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!moved) {
 		CGPoint pt = new CGPoint();
-		OS.CGPathGetCurrentPoint(handle, pt);
+		if (!OS.CGPathIsEmpty(handle)) OS.CGPathGetCurrentPoint(handle, pt);
 		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
 		moved = true;
 	}
