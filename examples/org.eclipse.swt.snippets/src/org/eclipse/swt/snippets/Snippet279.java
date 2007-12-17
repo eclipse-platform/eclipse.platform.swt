@@ -9,10 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
 
 /*
  * draw a reflection of an image
@@ -20,6 +16,11 @@ import org.eclipse.swt.widgets.*;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
 public class Snippet279 {
 	public static void main (String [] args) {
 		Display display = new Display ();

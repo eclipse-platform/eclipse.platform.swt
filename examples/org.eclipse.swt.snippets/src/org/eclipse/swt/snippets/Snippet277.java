@@ -10,14 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.mozilla.interfaces.*;
-import org.mozilla.xpcom.Mozilla;
-
 /*
  * Browser example snippet: Implement a custom download handler for a Mozilla Browser.
  * 
@@ -30,6 +22,14 @@ import org.mozilla.xpcom.Mozilla;
  * 
  * @since 3.3
  */
+import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+import org.mozilla.interfaces.*;
+import org.mozilla.xpcom.Mozilla;
+
 public class Snippet277 {
 	static Shell shell;
 	static Table table;

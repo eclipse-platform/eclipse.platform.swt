@@ -1,4 +1,3 @@
-package org.eclipse.swt.snippets;
 /*******************************************************************************
  * Copyright (c) 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,7 +8,7 @@ package org.eclipse.swt.snippets;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-
+package org.eclipse.swt.snippets;
 
 /*
  * Drag and Drop example snippet: drag a URL between two labels.
