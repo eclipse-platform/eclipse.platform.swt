@@ -217,15 +217,9 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] cmt = new float[6];
 	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
-	if (arcAngle < 0) {
-		float angle = -(startAngle + arcAngle) * (float)Compatibility.PI / 180;
-		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
-		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -startAngle * (float)Compatibility.PI / 180, true);
-	} else {
-		float angle = -startAngle * (float)Compatibility.PI / 180;
-		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
-		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
-	}
+	float angle = -startAngle * (float)Compatibility.PI / 180;
+	if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
+	OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180, arcAngle >= 0);
 	moved = true;
 	closed = false;
 	if (Math.abs(arcAngle) >= 360) close();
