@@ -100,6 +100,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 		TableItem item = table.getItem(coordinates);
 		if (item != null) return item;
 		Rectangle area = table.getClientArea();
+		int tableBottom = area.y + area.height;
 		int itemCount = table.getItemCount();
 		for (int i=table.getTopIndex(); i<itemCount; i++) {
 			item = table.getItem(i);
@@ -107,26 +108,28 @@ public class DropTargetEffect extends DropTargetAdapter {
 			rect.x = area.x;
 			rect.width = area.width;
 			if (rect.contains(coordinates)) return item;
-			if (rect.y > area.y + area.height) break;
+			if (rect.y > tableBottom) break;
 		}
 		return null;
 	}
 	
 	Widget getItem(Tree tree, int x, int y) {
-		Point coordinates = new Point(x, y);
-		coordinates = tree.toControl(coordinates);
-		Item item = tree.getItem(coordinates);
+		Point point = new Point(x, y);
+		point = tree.toControl(point);
+		TreeItem item = tree.getItem(point);
 		if (item == null) {
 			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = tree.getItem(pt);
-					if (item != null) {
-						break;
-					}
+			if (area.contains(point)) {
+				int treeBottom = area.y + area.height;
+				item = tree.getTopItem();
+				while (item != null) {
+					Rectangle rect = item.getBounds();
+					int itemBottom = rect.y + rect.height;
+					if (rect.y <= point.y && point.y <= itemBottom) return item;
+					if (itemBottom > treeBottom) break;
+					item = nextItem(tree, item);
 				}
+				return null;
 			}
 		}
 		return item;
