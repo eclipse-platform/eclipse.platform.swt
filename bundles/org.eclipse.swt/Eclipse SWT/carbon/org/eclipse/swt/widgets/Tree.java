@@ -1535,6 +1535,10 @@ public TreeItem getItem (Point point) {
 	if (0 < lastHittest && lastHittest <= items.length && lastHittestColumn != 0) {
 		TreeItem item = _getItem (lastHittest, false);
 		if (item != null) {
+			int columnId = columnCount == 0 ? column_id : columns [getColumnOrder()[columnCount - 1]].id;
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if (pt.h > rect.right) return null;
+			}
 			if (OS.GetDataBrowserItemPartBounds (handle, item.id, disclosure[0], OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
 				if (OS.PtInRect (pt, rect)) return null;
 			}
