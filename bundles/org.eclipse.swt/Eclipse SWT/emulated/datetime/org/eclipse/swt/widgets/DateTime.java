@@ -607,7 +607,7 @@ void handleSelection(Event event) {
 		return;
 	}
 	redraw();
-	notifyListeners(SWT.Selection, new Event());
+	postEvent(SWT.Selection);
 }
 
 void handleTraverse(Event event) {
@@ -842,7 +842,7 @@ void setField(int fieldName, int value) {
 		calendar.roll(Calendar.HOUR_OF_DAY, 12); // TODO: needs more work for setFormat and locale
 	}
 	calendar.set(fieldName, value);
-	notifyListeners(SWT.Selection, new Event());
+	postEvent(SWT.Selection);
 }
 
 /**
@@ -913,7 +913,7 @@ void setDay(int newDay, boolean notify) {
 	redraw(getCell(calendar.get(Calendar.DAY_OF_MONTH)), cellSize);
 	calendar.set(Calendar.DAY_OF_MONTH, newDay);
 	redraw(getCell(calendar.get(Calendar.DAY_OF_MONTH)), cellSize);
-	if (notify) notifyListeners(SWT.Selection, new Event());
+	if (notify) postEvent(SWT.Selection);
 }
 
 public void setFont(Font font) {
