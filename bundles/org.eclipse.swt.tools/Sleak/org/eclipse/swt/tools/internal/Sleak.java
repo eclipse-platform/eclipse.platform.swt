@@ -179,17 +179,10 @@ void refreshDifference () {
 	text.setText ("");
 	canvas.redraw ();
 	for (int i=0; i<objects.length; i++) {
-		list.add (objectName (objects [i]));
+		list.add (objects [i].toString());
 	}
 	refreshLabel ();
 	layout ();
-}
-
-String objectName (Object object) {
-	String string = object.toString ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
 }
 
 void toggleStackTrace () {
