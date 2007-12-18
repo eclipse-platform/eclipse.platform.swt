@@ -1535,8 +1535,18 @@ public TreeItem getItem (Point point) {
 	if (0 < lastHittest && lastHittest <= items.length && lastHittestColumn != 0) {
 		TreeItem item = _getItem (lastHittest, false);
 		if (item != null) {
-			int columnId = columnCount == 0 ? column_id : columns [getColumnOrder()[columnCount - 1]].id;
-			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			int lastPosColumnId = column_id;
+			for (int i=0; i<columnCount; i++) {
+				TreeColumn column = columns [i];
+				int [] position = new int [1];
+				OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
+				if ((style & SWT.CHECK) != 0) position [0] -= 1;
+				if (position [0] == columnCount - 1) {
+					lastPosColumnId = column.id;
+					break;
+				}
+			}
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, lastPosColumnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 				if (pt.h > rect.right) return null;
 			}
 			if (OS.GetDataBrowserItemPartBounds (handle, item.id, disclosure[0], OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
