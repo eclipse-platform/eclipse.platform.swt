@@ -783,7 +783,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
 		case OS.MCN_SELCHANGE: //SENT WHEN YOU SET IT?
 		case OS.DTN_DATETIMECHANGE:
-			sendEvent (SWT.Selection);
+			postEvent (SWT.Selection);
 			break;
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);
