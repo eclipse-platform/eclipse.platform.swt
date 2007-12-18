@@ -546,16 +546,10 @@ void onActivate(Event e) {
 	if (objIOleInPlaceActiveObject != null) {
 		objIOleInPlaceActiveObject.OnFrameWindowActivate(true);
 	}
-	if (objIOleInPlaceActiveObject != null) {
-		objIOleInPlaceActiveObject.OnDocWindowActivate(true);
-	}
 }
 void onDeactivate(Event e) {
 	if (objIOleInPlaceActiveObject != null) {
 		objIOleInPlaceActiveObject.OnFrameWindowActivate(false);
-	}
-	if (objIOleInPlaceActiveObject != null) {
-		objIOleInPlaceActiveObject.OnDocWindowActivate(false);
 	}
 }
 private void onDispose(Event e) {
