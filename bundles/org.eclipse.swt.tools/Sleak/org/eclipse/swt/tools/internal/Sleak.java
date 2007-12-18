@@ -114,7 +114,8 @@ void open () {
 }
 
 void refreshLabel () {
-	int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0, regions = 0;
+	int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+	int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms= 0;
 	for (int i=0; i<objects.length; i++) {
 		Object object = objects [i];
 		if (object instanceof Color) colors++;
@@ -122,7 +123,11 @@ void refreshLabel () {
 		if (object instanceof Font) fonts++;
 		if (object instanceof GC) gcs++;
 		if (object instanceof Image) images++;
+		if (object instanceof Path) paths++;
+		if (object instanceof Pattern) patterns++;
 		if (object instanceof Region) regions++;
+		if (object instanceof TextLayout) textLayouts++;
+		if (object instanceof Transform) transforms++;
 	}
 	String string = "";
 	if (colors != 0) string += colors + " Color(s)\n";
@@ -130,7 +135,11 @@ void refreshLabel () {
 	if (fonts != 0) string += fonts + " Font(s)\n";
 	if (gcs != 0) string += gcs + " GC(s)\n";
 	if (images != 0) string += images + " Image(s)\n";
+	if (paths != 0) string += paths + " Paths(s)\n";
+	if (patterns != 0) string += patterns + " Pattern(s)\n";
 	if (regions != 0) string += regions + " Region(s)\n";
+	if (textLayouts != 0) string += textLayouts + " TextLayout(s)\n";
+	if (transforms != 0) string += transforms + " Transform(s)\n";
 	if (string.length () != 0) {
 		string = string.substring (0, string.length () - 1);
 	}
@@ -233,9 +242,32 @@ void paintCanvas (Event event) {
 		gc.drawImage ((Image) object, 0, 0);
 		return;
 	}
+	if (object instanceof Path) {
+		if (((Path)object).isDisposed ()) return;
+		gc.drawPath ((Path) object);
+		return;
+	}
+	if (object instanceof Pattern) {
+		if (((Pattern)object).isDisposed ()) return;
+		gc.setBackgroundPattern ((Pattern)object);
+		gc.fillRectangle (canvas.getClientArea ());
+		gc.setBackgroundPattern (null);
+		return;
+	}
 	if (object instanceof Region) {
 		if (((Region)object).isDisposed ()) return;
 		String string = ((Region)object).getBounds().toString();
+		gc.drawString (string, 0, 0);
+		return;
+	}
+	if (object instanceof TextLayout) {
+		if (((TextLayout)object).isDisposed ()) return;
+		((TextLayout)object).draw (gc, 0, 0);
+		return;
+	}
+	if (object instanceof Transform) {
+		if (((Transform)object).isDisposed ()) return;
+		String string = ((Transform)object).toString();
 		gc.drawString (string, 0, 0);
 		return;
 	}
