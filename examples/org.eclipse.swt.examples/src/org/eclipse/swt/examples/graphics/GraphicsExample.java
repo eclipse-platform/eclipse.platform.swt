@@ -542,7 +542,7 @@ Image loadImage(Device device, String name) {
 
 public Shell open(final Display display) {
 	Shell shell = new Shell(display);
-	shell.setText(getResourceString("AdvancedGraphics")); //$NON-NLS-1$
+	shell.setText(getResourceString("GraphicsExample")); //$NON-NLS-1$
 	final GraphicsExample example = new GraphicsExample(shell);
 	shell.addListener(SWT.Close, new Listener() {
 		public void handleEvent(Event event) {
