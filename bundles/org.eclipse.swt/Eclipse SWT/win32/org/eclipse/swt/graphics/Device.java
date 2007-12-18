@@ -264,6 +264,7 @@ public void dispose () {
 		disposed = true;
 		if (tracking) {
 			synchronized (trackingLock) {
+				printErrors ();
 				objects = null;
 				errors = null;
 				trackingLock = null;
@@ -812,6 +813,54 @@ void new_Object (Object object) {
 		System.arraycopy (errors, 0, newErrors, 0, errors.length);
 		newErrors [errors.length] = new Error ();
 		errors = newErrors;
+	}
+}
+
+void printErrors () {
+	if (!DEBUG) return;
+	if (tracking) {
+		synchronized (trackingLock) {
+			if (objects == null || errors == null) return;
+			int objectCount = 0;
+			int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+			int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms = 0;
+			for (int i=0; i<objects.length; i++) {
+				Object object = objects [i];
+				if (object != null) {
+					objectCount++;
+					if (object instanceof Color) colors++;
+					if (object instanceof Cursor) cursors++;
+					if (object instanceof Font) fonts++;
+					if (object instanceof GC) gcs++;
+					if (object instanceof Image) images++;
+					if (object instanceof Path) paths++;
+					if (object instanceof Pattern) patterns++;
+					if (object instanceof Region) regions++;
+					if (object instanceof TextLayout) textLayouts++;
+					if (object instanceof Transform) transforms++;
+				}
+			}
+			if (objectCount != 0) {
+				String string = "Summary: ";
+				if (colors != 0) string += colors + " Color(s), ";
+				if (cursors != 0) string += cursors + " Cursor(s), ";
+				if (fonts != 0) string += fonts + " Font(s), ";
+				if (gcs != 0) string += gcs + " GC(s), ";
+				if (images != 0) string += images + " Image(s), ";
+				if (paths != 0) string += paths + " Path(s), ";
+				if (patterns != 0) string += patterns + " Pattern(s), ";
+				if (regions != 0) string += regions + " Region(s), ";
+				if (textLayouts != 0) string += textLayouts + " TextLayout(s), ";
+				if (transforms != 0) string += transforms + " Transforms(s), ";
+				if (string.length () != 0) {
+					string = string.substring (0, string.length () - 2);
+					System.err.println (string);
+				}
+				for (int i=0; i<errors.length; i++) {
+					if (errors [i] != null) errors [i].printStackTrace (System.err);
+				}
+			}
+		}
 	}
 }
 
