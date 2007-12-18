@@ -782,7 +782,7 @@ void setField(int fieldName, int value) {
 		calendar.roll(Calendar.HOUR_OF_DAY, 12); // TODO: needs more work for setFormat and locale
 	}
 	calendar.set(fieldName, value);
-	notifyListeners(SWT.Selection, new Event());
+	postEvent(SWT.Selection);
 }
 
 void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
