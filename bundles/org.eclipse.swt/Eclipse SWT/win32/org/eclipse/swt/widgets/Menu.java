@@ -73,6 +73,10 @@ public class Menu extends Widget {
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
  * will be a popup menu on the given parent's shell.
+ * <p>
+ * After constructing a menu, it can be set into its parent
+ * using parent.setMenu(menu);
+ * </p>
  *
  * @param parent a control which will be the parent of the new instance (cannot be null)
  *
@@ -104,6 +108,9 @@ public Menu (Control parent) {
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
+ * </p><p>
+ * After constructing a menu or menuBar, it can be set into its parent
+ * using parent.setMenu(menu); or parent.setMenuBar(menuBar);
  * </p>
  *
  * @param parent a decorations control which will be the parent of the new instance (cannot be null)
@@ -132,6 +139,10 @@ public Menu (Decorations parent, int style) {
  * (which must be a <code>Menu</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentMenu
+ * using parentMenu.setMenu(menu);
+ * </p>
  *
  * @param parentMenu a menu which will be the parent of the new instance (cannot be null)
  *
@@ -156,6 +167,10 @@ public Menu (Menu parentMenu) {
  * (which must be a <code>MenuItem</code>) and sets the style
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent menu.
+ * <p>
+ * After constructing a drop-down menu, it can be set into its parentItem
+ * using parentItem.setMenu(menu);
+ * </p>
  *
  * @param parentItem a menu item which will be the parent of the new instance (cannot be null)
  *
