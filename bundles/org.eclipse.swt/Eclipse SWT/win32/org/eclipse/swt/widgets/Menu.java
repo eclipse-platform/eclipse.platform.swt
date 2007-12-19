@@ -75,7 +75,8 @@ public class Menu extends Widget {
  * will be a popup menu on the given parent's shell.
  * <p>
  * After constructing a menu, it can be set into its parent
- * using parent.setMenu(menu);
+ * using parent.setMenu(menu);  In this case, the parent may
+ * be any control in the same widget tree as the parent.
  * </p>
  *
  * @param parent a control which will be the parent of the new instance (cannot be null)
