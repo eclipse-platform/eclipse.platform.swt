@@ -2214,6 +2214,7 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	* text field and the area in the parent where the
 	* combo box used to be.
 	*/
+	if (OS.IsWinCE) return result;
 	if (drawCount != 0) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
 	if (ignoreResize) {
