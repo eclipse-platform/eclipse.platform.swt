@@ -2201,6 +2201,8 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	if (result != null) return result;
 	/*
 	* Feature in Windows.  When a combo box is resized,
 	* the size of the drop down rectangle is specified
@@ -2208,19 +2210,45 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	* to be the height of the text field.  This causes
 	* sibling windows that intersect with the original
 	* bounds to redrawn.  The fix is to stop the redraw
-	* using SWP_NOREDRAW and then damage only the combo
-	* box text field.
+	* using SWP_NOREDRAW and then damage the combo box
+	* text field and the area in the parent where the
+	* combo box used to be.
 	*/
-	WINDOWPOS lpwp = new WINDOWPOS ();
-	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
-	if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
-		if (ignoreResize) {
+	if (drawCount != 0) return result;
+	if (!OS.IsWindowVisible (handle)) return result;
+	if (ignoreResize) {
+		WINDOWPOS lpwp = new WINDOWPOS ();
+		OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+		if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
 			lpwp.flags |= OS.SWP_NOREDRAW;
 			OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
 			OS.InvalidateRect (handle, null, true);
+			RECT rect = new RECT ();
+			OS.GetWindowRect (handle, rect);
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			if (width != 0 && height != 0) {
+				int /*long*/ hwndParent = parent.handle;
+				int /*long*/ hwndChild = OS.GetWindow (hwndParent, OS.GW_CHILD);
+				OS.MapWindowPoints (0, hwndParent, rect, 2);
+				int /*long*/ rgn1 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+				while (hwndChild != 0) {
+					if (hwndChild != handle) {
+						OS.GetWindowRect (hwndChild, rect);
+						OS.MapWindowPoints (0, hwndParent, rect, 2);
+						int /*long*/ rgn2 = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+						OS.CombineRgn (rgn1, rgn1, rgn2, OS.RGN_DIFF);
+						OS.DeleteObject (rgn2);
+					}
+					hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+				}
+				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+				OS.RedrawWindow (hwndParent, null, rgn1, flags);
+				OS.DeleteObject (rgn1);
+			}
 		}
 	}
-	return super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	return result;
 }
 
 LRESULT wmChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
