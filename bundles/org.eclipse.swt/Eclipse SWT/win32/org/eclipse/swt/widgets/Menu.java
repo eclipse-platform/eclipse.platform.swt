@@ -75,7 +75,7 @@ public class Menu extends Widget {
  * will be a popup menu on the given parent's shell.
  * <p>
  * After constructing a menu, it can be set into its parent
- * using parent.setMenu(menu);  In this case, the parent may
+ * using <code>parent.setMenu(menu)</code>.  In this case, the parent may
  * be any control in the same widget tree as the parent.
  * </p>
  *
@@ -111,7 +111,7 @@ public Menu (Control parent) {
  * Style bits are also inherited from superclasses.
  * </p><p>
  * After constructing a menu or menuBar, it can be set into its parent
- * using parent.setMenu(menu); or parent.setMenuBar(menuBar);
+ * using <code>parent.setMenu(menu)</code> or <code>parent.setMenuBar(menuBar)</code>.
  * </p>
  *
  * @param parent a decorations control which will be the parent of the new instance (cannot be null)
@@ -142,7 +142,7 @@ public Menu (Decorations parent, int style) {
  * menu on the given parent's parent.
  * <p>
  * After constructing a drop-down menu, it can be set into its parentMenu
- * using parentMenu.setMenu(menu);
+ * using <code>parentMenu.setMenu(menu)</code>.
  * </p>
  *
  * @param parentMenu a menu which will be the parent of the new instance (cannot be null)
@@ -170,7 +170,7 @@ public Menu (Menu parentMenu) {
  * menu on the given parent's parent menu.
  * <p>
  * After constructing a drop-down menu, it can be set into its parentItem
- * using parentItem.setMenu(menu);
+ * using <code>parentItem.setMenu(menu)</code>.
  * </p>
  *
  * @param parentItem a menu item which will be the parent of the new instance (cannot be null)
