@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.layoutexample;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -30,33 +29,19 @@ public class LayoutExample {
 	 * @param parent the container of the example
 	 */
 	public LayoutExample(Composite parent) {
-		tabFolder = new TabFolder (parent, SWT.NONE);
-		Tab [] tabs = new Tab [] {
-			new FillLayoutTab (this),
-			new RowLayoutTab (this),
-			new GridLayoutTab (this),
-			new FormLayoutTab (this),
+		tabFolder = new TabFolder(parent, SWT.NULL);
+		Tab[] tabs = new Tab[] {
+			new FillLayoutTab(),
+			new RowLayoutTab(),
+			new GridLayoutTab(),
+			new FormLayoutTab(),
+			new StackLayoutTab()
 		};
-		for (int i=0; i<tabs.length; i++) {
-			TabItem item = new TabItem (tabFolder, SWT.NONE);
-		    item.setText (tabs [i].getTabText ());
-		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
+		for(int i=0; i<tabs.length; i++) {
+			TabItem item = new TabItem(tabFolder, SWT.NULL);
+		    item.setText(tabs [i].getTabText());
+		    item.setControl(tabs[i].createTabFolderPage(tabFolder));
 		}
-	}
-	
-	/**
-	 * Grabs input focus.
-	 */
-	public void setFocus() {
-		tabFolder.setFocus();
-	}
-	
-	/**
-	 * Disposes of all resources associated with a particular
-	 * instance of the LayoutExample.
-	 */	
-	public void dispose() {
-		tabFolder = null;
 	}
 	
 	/**
@@ -68,17 +53,17 @@ public class LayoutExample {
 		shell.setLayout(new FillLayout());
 		new LayoutExample(shell);
 		shell.setText(getResourceString("window.title"));
-		shell.addShellListener (new ShellAdapter () {
+		shell.addShellListener(new ShellAdapter() {
 			public void shellClosed(ShellEvent e) {
-				Shell [] shells = display.getShells();
-				for (int i = 0; i < shells.length; i++) {
-					if (shells [i] != shell) shells [i].close ();
+				Shell[] shells = display.getShells();
+				for(int i = 0; i < shells.length; i++) {
+					if(shells[i] != shell) shells[i].close();
 				}
 			}
 		});
 		shell.open();
-		while (! shell.isDisposed()) {
-			if (! display.readAndDispatch()) display.sleep();
+		while(! shell.isDisposed()) {
+			if(! display.readAndDispatch()) display.sleep();
 		}
 	}
 
@@ -90,9 +75,9 @@ public class LayoutExample {
 	static String getResourceString(String key) {
 		try {
 			return resourceBundle.getString(key);
-		} catch (MissingResourceException e) {
+		} catch(MissingResourceException e) {
 			return key;
-		} catch (NullPointerException e) {
+		} catch(NullPointerException e) {
 			return "!" + key + "!";
 		}			
 	}
@@ -105,9 +90,9 @@ public class LayoutExample {
 	static String getResourceString(String key, Object[] args) {
 		try {
 			return MessageFormat.format(getResourceString(key), args);
-		} catch (MissingResourceException e) {
+		} catch(MissingResourceException e) {
 			return key;
-		} catch (NullPointerException e) {
+		} catch(NullPointerException e) {
 			return "!" + key + "!";
 		}
 	}

@@ -21,80 +21,87 @@ import org.eclipse.swt.custom.*;
 class RowLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
 	Button horizontal, vertical;
-	Button wrap, pack, justify;
-	Combo marginRight, marginLeft, marginTop, marginBottom, spacing;
+	Button wrap, pack, fill, justify;
+	Spinner marginWidth, marginHeight, marginRight, marginTop, marginLeft, marginBottom, spacing;
 	/* The example layout instance */
 	RowLayout rowLayout;
 	/* TableEditors and related controls*/
-	TableEditor comboEditor, widthEditor, heightEditor;
+	TableEditor comboEditor, widthEditor, heightEditor, nameEditor;
 	CCombo combo;
-	Text widthText, heightText;
+	Text nameText, widthText, heightText;
+	int prevSelected;
 	
 	/* Constants */
+	final int NAME_COL = 0;
 	final int COMBO_COL = 1;
 	final int WIDTH_COL = 2;
-	final int HEIGHT_COL = 3;
-	
+	final int HEIGHT_COL = 3;		
 	final int TOTAL_COLS = 4;
+
 	
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
-	RowLayoutTab(LayoutExample instance) {
-		super(instance);
+	RowLayoutTab() {
 	}
 	
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
-	void createChildWidgets () {
+	void createChildWidgets() {
 		/* Add common controls */
-		super.createChildWidgets ();
+		super.createChildWidgets();
 		
-		/* Add TableEditors */			
-		comboEditor = new TableEditor (table);
-		widthEditor = new TableEditor (table);
-		heightEditor = new TableEditor (table);
-		table.addMouseListener (new MouseAdapter () {
+		/* Add TableEditors */		
+		nameEditor = new TableEditor(table);
+		comboEditor = new TableEditor(table);
+		widthEditor = new TableEditor(table);
+		heightEditor = new TableEditor(table);
+		table.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				resetEditors();
-				index = table.getSelectionIndex ();
-				Point pt = new Point (e.x, e.y);
-                newItem = table.getItem (pt);
-                if (newItem == null) return;
-                TableItem oldItem = comboEditor.getItem ();
-                if (newItem == oldItem || newItem != lastSelected) {
+				index = table.getSelectionIndex();
+				Point pt = new Point(e.x, e.y);
+                newItem = table.getItem(pt);
+                if(newItem == null) return;
+                TableItem oldItem = comboEditor.getItem();
+                if(newItem == oldItem || newItem != lastSelected) {
 					lastSelected = newItem;
 					return;
 				}
-				table.showSelection ();
-				
+				table.showSelection ();				
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
 				
-				widthText = new Text (table, SWT.SINGLE);
-				widthText.setText (((String [])data.elementAt (index)) [WIDTH_COL]);
-				createTextEditor (widthText, widthEditor, WIDTH_COL);
+				nameText = new Text(table, SWT.SINGLE);
+				nameText.setText(((String[])data.elementAt(index))[NAME_COL]);
+				createTextEditor(nameText, nameEditor, NAME_COL);
 				
-				heightText = new Text (table, SWT.SINGLE);
-				heightText.setText (((String [])data.elementAt (index)) [HEIGHT_COL]);
-				createTextEditor (heightText, heightEditor, HEIGHT_COL);
+				widthText = new Text(table, SWT.SINGLE);
+				widthText.setText(((String[])data.elementAt(index))[WIDTH_COL]);
+				createTextEditor(widthText, widthEditor, WIDTH_COL);
+				
+				heightText = new Text(table, SWT.SINGLE);
+				heightText.setText(((String[])data.elementAt(index))[HEIGHT_COL]);
+				createTextEditor(heightText, heightEditor, HEIGHT_COL);
                 
-                for (int i=0; i<table.getColumnCount (); i++) {
-                	Rectangle rect = newItem.getBounds (i);
-                    if (rect.contains (pt)) {
-                    	switch (i) {
+                for(int i=0; i<table.getColumnCount(); i++) {
+                	Rectangle rect = newItem.getBounds(i);
+                    if(rect.contains(pt)) {
+                    	switch(i) {
+                    		case NAME_COL :
+                    			nameText.setFocus();
 							case COMBO_COL :
-								combo.setFocus ();	
+								combo.setFocus();	
 								break;
 							case WIDTH_COL :	
-								widthText.setFocus ();
+								widthText.setFocus();
 								break;
 							case HEIGHT_COL :
-								heightText.setFocus ();
+								heightText.setFocus();
 								break;
 							default :
-								resetEditors ();
+								resetEditors();
 								break;
 						}
                     }
@@ -102,16 +109,54 @@ class RowLayoutTab extends Tab {
 			}
 		});
 		
-		/* Add listener to add an element to the table */
-		add.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				TableItem item = new TableItem (table, 0);
-				String [] insert = new String [] { 
-					String.valueOf (table.indexOf (item)),
-					"Button", "-1", "-1"};
-				item.setText (insert);
-				data.addElement (insert);
-				resetEditors ();
+		 //Add listener to add an element to the table
+		add.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {				
+				if(event.detail == SWT.ARROW) {
+					ToolItem item = (ToolItem)event.widget;
+					ToolBar bar = item.getParent();
+					Display display = bar.getDisplay();
+					Shell shell = bar.getShell();
+					Menu menu = new Menu (shell, SWT.POP_UP);
+					for(int i = 0; i < OPTIONS.length; i++) {
+						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
+						newItem.setText(OPTIONS[i]);						
+						newItem.addSelectionListener (new SelectionAdapter(){
+							public void widgetSelected(SelectionEvent event) {
+								MenuItem menuItem = (MenuItem)event.widget;
+								if (menuItem.getSelection()) {
+									Menu menu  = menuItem.getParent();
+									prevSelected = menu.indexOf(menuItem);
+									TableItem item = new TableItem(table, SWT.NONE);
+									String name = menuItem.getText().toLowerCase() + String.valueOf(table.indexOf (item));
+									String[] insert = new String[] {name, menuItem.getText(), "-1", "-1"};
+									item.setText(insert);
+									data.addElement(insert);
+									resetEditors();
+								}
+							}
+						});							
+						newItem.setSelection(i == prevSelected);
+					}
+					Point pt = display.map(bar, null, event.x, event.y);
+					menu.setLocation(pt.x, pt.y);
+					menu.setVisible(true);
+					
+					while(menu != null && !menu.isDisposed() && menu.isVisible()) {
+						if(!display.readAndDispatch()) {
+							display.sleep();
+						}
+					}
+					menu.dispose();
+				}else {
+					String selection = OPTIONS[prevSelected];
+					TableItem item = new TableItem(table, 0);
+					String name = selection.toLowerCase() + String.valueOf (table.indexOf(item));
+					String[] insert = new String[] {name, selection, "-1", "-1"};
+					item.setText(insert);
+					data.addElement(insert);
+					resetEditors();
+				}
 			}
 		});
 	}
@@ -119,170 +164,172 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Creates the control widgets.
 	 */
-	void createControlWidgets () {
+	void createControlWidgets() {
 		/* Controls the type of RowLayout */
-		Group typeGroup = new Group (controlGroup, SWT.NONE);
-		typeGroup.setText (LayoutExample.getResourceString ("Type"));
-		typeGroup.setLayout (new GridLayout ());
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		typeGroup.setLayoutData (data);
-		horizontal = new Button (typeGroup, SWT.RADIO);
-		horizontal.setText ("SWT.HORIZONTAL");
-		horizontal.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
+		Group typeGroup = new Group(controlGroup, SWT.NONE);
+		typeGroup.setText(LayoutExample.getResourceString("Type"));
+		typeGroup.setLayout(new GridLayout());
+		typeGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		horizontal = new Button(typeGroup, SWT.RADIO);
+		horizontal.setText("SWT.HORIZONTAL");
+		horizontal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
 		horizontal.setSelection(true);
-		horizontal.addSelectionListener (selectionListener);
-		vertical = new Button (typeGroup, SWT.RADIO);
-		vertical.setText ("SWT.VERTICAL");
-		vertical.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
-		vertical.addSelectionListener (selectionListener);
+		horizontal.addSelectionListener(selectionListener);
+		vertical = new Button(typeGroup, SWT.RADIO);
+		vertical.setText("SWT.VERTICAL");
+		vertical.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
+		vertical.addSelectionListener(selectionListener);
 		
 		/* Controls the margins and spacing of the RowLayout */
-		String [] marginValues = new String [] {"0","3","5","10"};
-		Group marginGroup = new Group (controlGroup, SWT.NONE);
-		marginGroup.setText (LayoutExample.getResourceString ("Margins_Spacing"));
-		data = new GridData (GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-		data.verticalSpan = 2;
-		marginGroup.setLayoutData (data);
-		GridLayout layout = new GridLayout ();
-		layout.numColumns = 2;
-		marginGroup.setLayout (layout);
-		new Label (marginGroup, SWT.NONE).setText ("marginRight");
-		marginRight = new Combo (marginGroup, SWT.NONE);
-		marginRight.setItems (marginValues);
-		marginRight.select (1);
-		marginRight.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
-		marginRight.addSelectionListener (selectionListener);
-		marginRight.addTraverseListener (traverseListener);
-		new Label (marginGroup, SWT.NONE).setText ("marginLeft");
-		marginLeft = new Combo (marginGroup, SWT.NONE);
-		marginLeft.setItems (marginValues);
-		marginLeft.select (1);
-		marginLeft.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
-		marginLeft.addSelectionListener (selectionListener);
-		marginLeft.addTraverseListener(traverseListener);
-		new Label (marginGroup, SWT.NONE).setText ("marginTop");
-		marginTop = new Combo (marginGroup, SWT.NONE);
-		marginTop.setItems (marginValues);
-		marginTop.select (1);
-		marginTop.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
-		marginTop.addSelectionListener (selectionListener);
-		marginTop.addTraverseListener(traverseListener);
-		new Label (marginGroup, SWT.NONE).setText ("marginBottom");
-		marginBottom = new Combo (marginGroup, SWT.NONE);
-		marginBottom.setItems (marginValues);
-		marginBottom.select (1);
-		marginBottom.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
-		marginBottom.addSelectionListener (selectionListener);
-		marginBottom.addTraverseListener(traverseListener);
-		new Label (marginGroup, SWT.NONE).setText ("spacing");
-		spacing = new Combo (marginGroup, SWT.NONE);
-		spacing.setItems (marginValues);
-		spacing.select (1);
-		spacing.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
-		spacing.addSelectionListener (selectionListener);
-		spacing.addTraverseListener(traverseListener);
+		Group marginGroup = new Group(controlGroup, SWT.NONE);
+		marginGroup.setText(LayoutExample.getResourceString("Margins_Spacing"));
+		marginGroup.setLayout(new GridLayout(2, false));
+		marginGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 2));
+		new Label(marginGroup, SWT.NONE).setText("Margin Width");
+		marginWidth = new Spinner(marginGroup, SWT.BORDER);
+		marginWidth.setSelection(0);
+		marginWidth.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText("Margin Height");
+		marginHeight = new Spinner(marginGroup, SWT.BORDER);
+		marginHeight.setSelection(0);
+		marginHeight.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		marginHeight.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText("Right Margin");
+		marginRight = new Spinner(marginGroup, SWT.BORDER);
+		marginRight.setSelection(3);
+		marginRight.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText("Left Margin");
+		marginLeft = new Spinner(marginGroup, SWT.BORDER);
+		marginLeft.setSelection(3);
+		marginLeft.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText("Top Margin");
+		marginTop = new Spinner(marginGroup, SWT.BORDER);
+		marginTop.setSelection(3);
+		marginTop.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText("Bottom Margin");
+		marginBottom = new Spinner(marginGroup, SWT.BORDER);
+		marginBottom.setSelection(3);
+		marginBottom.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText ("Spacing");
+		spacing = new Spinner(marginGroup, SWT.BORDER);
+		spacing.setSelection(3);
+		spacing.addSelectionListener(selectionListener);
 		
 		/* Controls other parameters of the RowLayout */
-		Group specGroup = new Group (controlGroup, SWT.NONE);
-		specGroup.setText (LayoutExample.getResourceString ("Properties"));
-		specGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
-		specGroup.setLayout (new GridLayout ());
-		wrap = new Button (specGroup, SWT.CHECK);
-		wrap.setText ("wrap");
-		wrap.setSelection (true);
-		wrap.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
-		wrap.addSelectionListener (selectionListener);
-		pack = new Button (specGroup, SWT.CHECK);
-		pack.setText ("pack");
-		pack.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
-		pack.setSelection (true);
-		pack.addSelectionListener (selectionListener);
-		justify = new Button (specGroup, SWT.CHECK);
-		justify.setText ("justify");
-		justify.setLayoutData (new GridData (GridData.FILL_HORIZONTAL)); 
-		justify.addSelectionListener (selectionListener);
+		Group specGroup = new Group(controlGroup, SWT.NONE);
+		specGroup.setText(LayoutExample.getResourceString("Properties"));
+		specGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		specGroup.setLayout(new GridLayout());
+		wrap = new Button(specGroup, SWT.CHECK);
+		wrap.setText("Wrap");
+		wrap.setSelection(true);
+		wrap.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
+		wrap.addSelectionListener(selectionListener);
+		pack = new Button(specGroup, SWT.CHECK);
+		pack.setText("Pack");
+		pack.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		pack.setSelection(true);
+		pack.addSelectionListener(selectionListener);
+		fill = new Button(specGroup, SWT.CHECK);
+		fill.setText("Fill");
+		fill.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
+		fill.addSelectionListener(selectionListener);
+		justify = new Button(specGroup, SWT.CHECK);
+		justify.setText("Justify");
+		justify.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
+		justify.addSelectionListener(selectionListener);
 		
 		/* Add common controls */
-		super.createControlWidgets ();
+		super.createControlWidgets();
 		
 		/* Position the sash */
-		sash.setWeights (new int [] {6,5});
+		sash.setWeights(new int[] {6,5});
 	}
 	
 	/**
 	 * Creates the example layout.
 	 */
-	void createLayout () {
-		rowLayout = new RowLayout ();
-		layoutComposite.setLayout (rowLayout);
+	void createLayout() {
+		rowLayout = new RowLayout();
+		layoutComposite.setLayout(rowLayout);
 	}
 		
 	/** 
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
-	void disposeEditors () {
-		comboEditor.setEditor (null, null, -1);
-		combo.dispose ();
-		widthText.dispose ();
-		heightText.dispose ();
+	void disposeEditors() {
+		comboEditor.setEditor(null, null, -1);
+		combo.dispose();
+		widthText.dispose();
+		heightText.dispose();
+		nameText.dispose();
 	}
 	
 	/**
 	 * Generates code for the example layout.
 	 */	
-	StringBuffer generateLayoutCode () {
-		StringBuffer code = new StringBuffer ();
-		code.append ("\t\tRowLayout rowLayout = new RowLayout ();\n");
+	StringBuffer generateLayoutCode() {
+		StringBuffer code = new StringBuffer();
+		code.append("\t\tRowLayout rowLayout = new RowLayout ();\n");
 		if (rowLayout.type == SWT.VERTICAL) {
-			code.append ("\t\trowLayout.type = SWT.VERTICAL;\n");
+			code.append("\t\trowLayout.type = SWT.VERTICAL;\n");
 		}
-		if (rowLayout.wrap == false) {
-			code.append ("\t\trowLayout.wrap = false;\n");
+		if(rowLayout.wrap == false) {
+			code.append("\t\trowLayout.wrap = false;\n");
 		} 
-		if (rowLayout.pack == false) {
-			code.append ("\t\trowLayout.pack = false;\n");
+		if(rowLayout.pack == false) {
+			code.append("\t\trowLayout.pack = false;\n");
 		}
-		if (rowLayout.justify == true) {
-			code.append ("\t\trowLayout.justify = true;\n");
+		if(rowLayout.fill == true) {
+			code.append("\t\trowLayout.fill = false;\n");
 		}
-		if (rowLayout.marginLeft != 3) {
-			code.append ("\t\trowLayout.marginLeft = " + rowLayout.marginLeft + ";\n");
+		if(rowLayout.justify == true) {
+			code.append("\t\trowLayout.justify = true;\n");
 		}
-		if (rowLayout.marginRight != 3) {
-			code.append ("\t\trowLayout.marginRight = " + rowLayout.marginRight + ";\n");
+		if (rowLayout.marginWidth != 0) {
+			code.append("\t\trowLayout.marginWidth = " + rowLayout.marginWidth + ";\n");
 		}
-		if (rowLayout.marginTop != 3) {
-			code.append ("\t\trowLayout.marginTop = " + rowLayout.marginTop + ";\n");
+		if (rowLayout.marginHeight != 0) {
+			code.append("\t\trowLayout.marginHeight = " + rowLayout.marginHeight + ";\n");
 		}
-		if (rowLayout.marginBottom != 3) {
-			code.append ("\t\trowLayout.marginBottom = " + rowLayout.marginBottom + ";\n");
+		if(rowLayout.marginLeft != 3) {
+			code.append("\t\trowLayout.marginLeft = " + rowLayout.marginLeft + ";\n");
 		}
-		if (rowLayout.spacing != 3) {
-			code.append ("\t\trowLayout.spacing = " + rowLayout.spacing + ";\n");
+		if(rowLayout.marginRight != 3) {
+			code.append("\t\trowLayout.marginRight = " + rowLayout.marginRight + ";\n");
 		}
-		code.append ("\t\tshell.setLayout (rowLayout);\n");
+		if(rowLayout.marginTop != 3) {
+			code.append("\t\trowLayout.marginTop = " + rowLayout.marginTop + ";\n");
+		}
+		if(rowLayout.marginBottom != 3) {
+			code.append("\t\trowLayout.marginBottom = " + rowLayout.marginBottom + ";\n");
+		}
+		if(rowLayout.spacing != 3) {
+			code.append("\t\trowLayout.spacing = " + rowLayout.spacing + ";\n");
+		}
+		code.append("\t\tshell.setLayout (rowLayout);\n");
 		
 		boolean first = true;
-		for (int i = 0; i < children.length; i++) {
+		for(int i = 0; i < children.length; i++) {
 			Control control = children [i];
-			code.append (getChildCode (control,i));
-			RowData data = (RowData) control.getLayoutData ();
-			if (data != null) {
-				if (data.width != -1 || data.height != -1) {
-					code.append ("\t\t");
-					if (first) {
-						code.append ("RowData ");
+			code.append(getChildCode(control,i));
+			RowData rowData = (RowData)control.getLayoutData();
+			if(rowData != null) {
+				if(rowData.width != -1 || rowData.height != -1) {
+					code.append("\t\t");
+					if(first) {
+						code.append("RowData ");
 						first = false;
 					}
-					if (data.width == -1) {
-						code.append ("data = new RowData (SWT.DEFAULT, " + data.height + ");\n");
-					} else if (data.height == -1) {
-						code.append ("data = new RowData (" + data.width + ", SWT.DEFAULT);\n");
+					if(rowData.width == -1) {
+						code.append("rowData = new RowData (SWT.DEFAULT, " + rowData.height + ");\n");
+					} else if(rowData.height == -1) {
+						code.append("rowData = new RowData (" + rowData.width + ", SWT.DEFAULT);\n");
 					} else {
-						code.append ("data = new RowData (" + data.width + ", " + data.height + ");\n");				
+						code.append("rowData = new RowData (" + rowData.width + ", " + rowData.height + ");\n");				
 					}
-					code.append ("\t\t" + names [i] + ".setLayoutData (data);\n");
+					code.append("\t\t" + names [i] + ".setLayoutData (rowData);\n");
 				}
 			}
 		}
@@ -292,10 +339,10 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Returns the layout data field names.
 	 */
-	String [] getLayoutDataFieldNames() {
-		return new String [] { 
-			"",
-			"Control",
+	String[] getLayoutDataFieldNames() {
+		return new String[] { 
+			"Control Name",
+			"Control Type",
 			"width", 
 			"height"
 		};
@@ -304,60 +351,60 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
-	String getTabText () {
+	String getTabText() {
 		return "RowLayout";
 	}
 	
-	/**
-	 * Takes information from TableEditors and stores it.
-	 */
-	void resetEditors () {
-		resetEditors (false);
-	}
-	
-	void resetEditors (boolean tab) {
+	void resetEditors(boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
-		if (oldItem != null) {
-			int row = table.indexOf (oldItem);
+		
+		if(oldItem != null) {
+			int row = table.indexOf(oldItem);
 			/* Make sure user has entered valid data */
-			try {
-				new Integer (widthText.getText ()).intValue ();
-			} catch (NumberFormatException e) {
-				widthText.setText (oldItem.getText (WIDTH_COL));
+			try {				
+				new String(nameText.getText());
+			} catch(NumberFormatException e) {
+				nameText.setText(oldItem.getText(NAME_COL));
 			}
 			try {
-				new Integer (heightText.getText ()).intValue ();
+				new Integer(widthText.getText()).intValue();
 			} catch (NumberFormatException e) {
-				heightText.setText (oldItem.getText (HEIGHT_COL));
+				widthText.setText(oldItem.getText(WIDTH_COL));
 			}
-			String [] insert = new String [] {
-				String.valueOf (row), combo.getText (), widthText.getText (), heightText.getText ()};
+			try {
+				new Integer(heightText.getText()).intValue();
+			} catch(NumberFormatException e) {
+				heightText.setText(oldItem.getText(HEIGHT_COL));
+			}
+
+			String[] insert = new String[] {
+				nameText.getText(), combo.getText(), widthText.getText(), heightText.getText()};
 			data.setElementAt (insert, row);
-			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
+			for(int i = 0 ; i < TOTAL_COLS; i++) {
+				oldItem.setText(i, ((String [])data.elementAt(row))[i]);
 			}
-			if (!tab) disposeEditors ();
+			if (!tab) disposeEditors();
 		}
-		setLayoutState ();
-		refreshLayoutComposite ();
-		setLayoutData ();
-		layoutComposite.layout (true);
-		layoutGroup.layout (true);
+		setLayoutState();
+		refreshLayoutComposite();
+		setLayoutData();
+		layoutComposite.layout(true);
+		layoutGroup.layout(true);
 	}
 	
 	/**
 	 * Sets the layout data for the children of the layout.
 	 */
-	void setLayoutData () {
-		Control [] children = layoutComposite.getChildren ();
-		TableItem [] items = table.getItems ();
+	void setLayoutData() {
+		Control[] children = layoutComposite.getChildren();
+		TableItem[] items = table.getItems();
 		RowData data;
 		int width, height;
-		for (int i = 0; i < children.length; i++) {
-			width = new Integer (items [i].getText (WIDTH_COL)).intValue ();
-			height = new Integer (items [i].getText (HEIGHT_COL)).intValue ();
-			data = new RowData (width, height);
-			children [i].setLayoutData (data);
+		for(int i = 0; i < children.length; i++) {
+			width = new Integer(items[i].getText(WIDTH_COL)).intValue();
+			height = new Integer(items[i].getText(HEIGHT_COL)).intValue();
+			data = new RowData(width, height);
+			children[i].setLayoutData(data);
 		}
 		
 	}
@@ -365,49 +412,23 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Sets the state of the layout.
 	 */
-	void setLayoutState () {
+	void setLayoutState() {
 		/* Set the type of layout */
-		if (vertical.getSelection ()) {
-			rowLayout.type = SWT.VERTICAL;
-		} else {
-			rowLayout.type = SWT.HORIZONTAL;
-		}
+		rowLayout.type = vertical.getSelection() ? SWT.VERTICAL : SWT.HORIZONTAL;
 		
 		/* Set the margins and spacing */
-		try {
-			rowLayout.marginRight = new Integer (marginRight.getText ()).intValue ();
-		} catch (NumberFormatException e) {
-			rowLayout.marginRight = 3;
-			marginRight.select (1);
-		}
-		try {
-			rowLayout.marginLeft = new Integer (marginLeft.getText ()).intValue ();
-		} catch (NumberFormatException e) {
-			rowLayout.marginLeft = 3;
-			marginLeft.select (1);
-		}
-		try {
-			rowLayout.marginTop = new Integer (marginTop.getText ()).intValue ();
-		} catch (NumberFormatException e) {
-			rowLayout.marginTop = 3;
-			marginTop.select (1);
-		}
-		try {
-			rowLayout.marginBottom = new Integer (marginBottom.getText ()).intValue ();
-		} catch (NumberFormatException e) {
-			rowLayout.marginBottom = 3;
-			marginBottom.select (1);
-		}
-		try {
-			rowLayout.spacing = new Integer (spacing.getText ()).intValue ();
-		} catch (NumberFormatException e) {
-			rowLayout.spacing = 3;
-			spacing.select (1);
-		}
+		rowLayout.marginWidth = marginWidth.getSelection();		
+		rowLayout.marginHeight = marginHeight.getSelection();		
+		rowLayout.marginRight = marginRight.getSelection();
+		rowLayout.marginLeft = marginLeft.getSelection();
+		rowLayout.marginTop = marginTop.getSelection();
+		rowLayout.marginBottom = marginBottom.getSelection();
+		rowLayout.spacing = spacing.getSelection();
 		
 		/* Set the other layout properties */
-		rowLayout.wrap = wrap.getSelection ();
-		rowLayout.pack = pack.getSelection ();
-		rowLayout.justify = justify.getSelection ();
+		rowLayout.wrap = wrap.getSelection();
+		rowLayout.pack = pack.getSelection();
+		rowLayout.fill = fill.getSelection();
+		rowLayout.justify = justify.getSelection();
 	}
 }
