@@ -68,6 +68,7 @@ class BrowserTab extends Tab {
 		
 		/* Compute the widget style */
 		int style = getDefaultStyle();
+		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (mozillaButton.getSelection ()) style |= SWT.MOZILLA;
 		
 		/* Create the example widgets */
@@ -136,6 +137,8 @@ class BrowserTab extends Tab {
 		/* Create the extra widgets */
 		mozillaButton = new Button (styleGroup, SWT.CHECK);
 		mozillaButton.setText ("SWT.MOZILLA");
+		borderButton = new Button (styleGroup, SWT.CHECK);
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**
@@ -298,5 +301,6 @@ class BrowserTab extends Tab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		mozillaButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.MOZILLA) != 0);
+		borderButton.setSelection ((browser.getStyle () & SWT.BORDER) != 0);
 	}
 }
