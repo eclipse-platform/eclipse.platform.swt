@@ -77,8 +77,6 @@ class FillLayoutTab extends Tab {
 				if (event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
 					ToolBar bar = item.getParent();
-					Display display = bar.getDisplay();
-					Shell shell = bar.getShell();
 					final Menu menu = new Menu(shell, SWT.POP_UP);					
 					for (int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
@@ -146,17 +144,17 @@ class FillLayoutTab extends Tab {
 		Group marginGroup = new Group(controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString("Margins_Spacing"));
 		marginGroup.setLayout(new GridLayout(2, false));
-		marginGroup.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, true, false));
-		new Label(marginGroup, SWT.NONE).setText("Margin Width");
+		marginGroup.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, false, false));
+		new Label(marginGroup, SWT.NONE).setText("marginWidth");
 		marginWidth = new Spinner(marginGroup, SWT.BORDER);
 		marginWidth.setSelection(0);
 		marginWidth.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Margin Height");
+		new Label(marginGroup, SWT.NONE).setText("marginHeight");
 		marginHeight = new Spinner(marginGroup, SWT.BORDER);
 		marginHeight.setSelection(0);
 		marginHeight.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		marginHeight.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText ("Spacing");
+		new Label(marginGroup, SWT.NONE).setText ("spacing");
 		spacing = new Spinner(marginGroup, SWT.BORDER);
 		spacing.setSelection(0);
 		spacing.addSelectionListener(selectionListener);

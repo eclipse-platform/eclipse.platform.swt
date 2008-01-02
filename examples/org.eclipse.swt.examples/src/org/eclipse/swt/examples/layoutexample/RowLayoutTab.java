@@ -116,8 +116,6 @@ class RowLayoutTab extends Tab {
 				if (event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
 					ToolBar bar = item.getParent();
-					Display display = bar.getDisplay();
-					Shell shell = bar.getShell();
 					Menu menu = new Menu (shell, SWT.POP_UP);
 					for(int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
@@ -186,32 +184,32 @@ class RowLayoutTab extends Tab {
 		marginGroup.setText (LayoutExample.getResourceString ("Margins_Spacing"));
 		marginGroup.setLayout(new GridLayout(2, false));
 		marginGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, false, 1, 2));
-		new Label(marginGroup, SWT.NONE).setText("Margin Width");
+		new Label(marginGroup, SWT.NONE).setText("marginWidth");
 		marginWidth = new Spinner(marginGroup, SWT.BORDER);
 		marginWidth.setSelection(0);
 		marginWidth.addSelectionListener(selectionListener);
-		new Label (marginGroup, SWT.NONE).setText ("Margin Height");
+		new Label (marginGroup, SWT.NONE).setText ("marginHeight");
 		marginHeight = new Spinner(marginGroup, SWT.BORDER);
 		marginHeight.setSelection(0);
 		marginHeight.setLayoutData (new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		marginHeight.addSelectionListener (selectionListener);
-		new Label (marginGroup, SWT.NONE).setText ("Left Margin");
+		new Label (marginGroup, SWT.NONE).setText ("marginLeft");
 		marginLeft = new Spinner(marginGroup, SWT.BORDER);
 		marginLeft.setSelection(3);
 		marginLeft.addSelectionListener (selectionListener);
-		new Label (marginGroup, SWT.NONE).setText ("Right Margin");
+		new Label (marginGroup, SWT.NONE).setText ("marginRight");
 		marginRight = new Spinner(marginGroup, SWT.BORDER);
 		marginRight.setSelection(3);
 		marginRight.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Top Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginTop");
 		marginTop = new Spinner(marginGroup, SWT.BORDER);
 		marginTop.setSelection(3);
 		marginTop.addSelectionListener(selectionListener);
-		new Label (marginGroup, SWT.NONE).setText ("Bottom Margin");
+		new Label (marginGroup, SWT.NONE).setText ("marginBottom");
 		marginBottom = new Spinner(marginGroup, SWT.BORDER);
 		marginBottom.setSelection(3);
 		marginBottom.addSelectionListener (selectionListener);
-		new Label (marginGroup, SWT.NONE).setText ("Spacing");
+		new Label (marginGroup, SWT.NONE).setText ("spacing");
 		spacing = new Spinner(marginGroup, SWT.BORDER);
 		spacing.setSelection(3);
 		spacing.addSelectionListener (selectionListener);

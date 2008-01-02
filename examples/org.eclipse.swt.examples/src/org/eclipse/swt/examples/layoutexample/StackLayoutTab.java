@@ -20,9 +20,11 @@ import org.eclipse.swt.widgets.*;
 class StackLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
 	Button backButton, advanceButton;
+	Label topControl;
 	Spinner marginWidth, marginHeight;
+	/* The example layout instance */
 	StackLayout stackLayout;
-	int currentLayer = 0;
+	int currentLayer = -1;
 	/* TableEditors and related controls*/
 	TableEditor comboEditor, nameEditor;
 	CCombo combo;
@@ -52,17 +54,13 @@ class StackLayoutTab extends Tab {
 			public void mouseDown(MouseEvent e) { 	
 				resetEditors();
 				index = table.getSelectionIndex();
-				if(index == -1) return;
+				if (index == -1) return;
 				//set top layer of stack to the selected item
-				currentLayer = index;
-				stackLayout.topControl = children[currentLayer];
-				backButton.setEnabled(currentLayer > 0);
-				advanceButton.setEnabled(currentLayer < children.length - 1);
-				layoutComposite.layout();
+				setTopControl (index);
 				
 				TableItem oldItem = comboEditor.getItem();
 				newItem = table.getItem(index);
-				if(newItem == oldItem || newItem != lastSelected) {
+				if (newItem == oldItem || newItem != lastSelected) {
 					lastSelected = newItem;
 					return;
 				}
@@ -82,8 +80,6 @@ class StackLayoutTab extends Tab {
 				if (event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
 					ToolBar bar = item.getParent();
-					Display display = bar.getDisplay();
-					Shell shell = bar.getShell();
 					final Menu menu = new Menu(shell, SWT.POP_UP);					
 					for(int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
@@ -110,7 +106,7 @@ class StackLayoutTab extends Tab {
 					menu.setVisible(true);
 					
 					while(menu != null && !menu.isDisposed() && menu.isVisible()) {
-						if(!display.readAndDispatch()) {
+						if (!display.readAndDispatch()) {
 							display.sleep();
 						}
 					}
@@ -124,11 +120,7 @@ class StackLayoutTab extends Tab {
 					data.addElement(insert);
 					resetEditors();
 				}
-				currentLayer = children.length -1;
-				stackLayout.topControl = children[currentLayer];
-				layoutComposite.layout();
-				backButton.setEnabled(children.length > 1);
-				advanceButton.setEnabled(false);
+				setTopControl (children.length - 1);
 			}
 		});
 	}
@@ -137,16 +129,41 @@ class StackLayoutTab extends Tab {
 	 * Creates the control widgets.
 	 */
 	void createControlWidgets() {
+        /* Controls the topControl in the StackLayout */
+		Group columnGroup = new Group (controlGroup, SWT.NONE);
+		columnGroup.setText ("topControl");//(LayoutExample.getResourceString ("Top_Control"));
+		columnGroup.setLayout(new GridLayout(3, false));
+		columnGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, false));
+		backButton = new Button(columnGroup, SWT.PUSH);
+	    backButton.setText("<<");
+	    backButton.setEnabled(false);
+		backButton.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
+		backButton.addSelectionListener(new SelectionAdapter() {
+	        public void widgetSelected(SelectionEvent e) {
+		    	setTopControl (currentLayer - 1);
+	        }
+		});
+		topControl = new Label (columnGroup, SWT.BORDER);
+		topControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		advanceButton = new Button(columnGroup, SWT.PUSH);
+		advanceButton.setText(">>");
+		advanceButton.setEnabled(false);
+		advanceButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+		    	setTopControl (currentLayer + 1);
+	        }
+		});		
+
 		/* Controls the margins of the StackLayout */
 		Group marginGroup = new Group(controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString("Margins"));
 		marginGroup.setLayout(new GridLayout(2, false));
-		marginGroup.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, true, false));
-		new Label(marginGroup, SWT.NONE).setText("Margin Width");
+		marginGroup.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, false, false));
+		new Label(marginGroup, SWT.NONE).setText("marginWidth");
 		marginWidth = new Spinner(marginGroup, SWT.BORDER);
 		marginWidth.setSelection(0);
 		marginWidth.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Margin Height");
+		new Label(marginGroup, SWT.NONE).setText("marginHeight");
 		marginHeight = new Spinner(marginGroup, SWT.BORDER);
 		marginHeight.setSelection(0);
 		marginHeight.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
@@ -168,44 +185,6 @@ class StackLayoutTab extends Tab {
 		layoutComposite = new Composite(layoutGroup, SWT.BORDER);
 		layoutComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		createLayout();
-	}
-	
-	/**
-	 * Creates the layout group. This is the group on the
-	 * left half of each example tab.
-	 */
-	void createLayoutGroup() {
-		layoutGroup = new Group(sash, SWT.NONE);
-		layoutGroup.setText(LayoutExample.getResourceString("Layout"));
-		layoutGroup.setLayout(new GridLayout(2, true));
-		createLayoutComposite();
-		
-		backButton = new Button(layoutGroup, SWT.PUSH);
-	    backButton.setText("<<");
-	    backButton.setEnabled(false);
-		backButton.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
-		backButton.addSelectionListener(new SelectionAdapter() {
-	        public void widgetSelected(SelectionEvent e) {
-		    	currentLayer--;
-		    	stackLayout.topControl = children [currentLayer];
-	    		layoutComposite.layout();
-	    		backButton.setEnabled(currentLayer > 0);
-	    		advanceButton.setEnabled(currentLayer < children.length);
-	        }
-		});		    
-	    
-	    advanceButton = new Button(layoutGroup, SWT.PUSH);
-		advanceButton.setText(">>");
-		advanceButton.setEnabled(false);
-		advanceButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-		    	currentLayer++;
-		    	stackLayout.topControl = children [currentLayer];
-		    	layoutComposite.layout();
-		    	backButton.setEnabled(currentLayer > 0);
-		    	advanceButton.setEnabled(currentLayer < children.length - 1);
-	        }
-		});		
 	}
 	
 	/** 
@@ -236,7 +215,7 @@ class StackLayoutTab extends Tab {
 			code.append (getChildCode(control, i));
 		}
 		if (children.length > 0) {
-			code.append("\n\t\tstackLayout.topControl = " + names[0] + ";\n");
+			code.append("\n\t\tstackLayout.topControl = " + names[currentLayer] + ";\n");
 		}
 		return code;
 	}
@@ -281,12 +260,24 @@ class StackLayoutTab extends Tab {
 		}
 		setLayoutState ();
 		refreshLayoutComposite ();
-		if (children.length > 0) {
-			stackLayout.topControl = children [currentLayer];
-			layoutComposite.layout (true);
-		}
+		setTopControl (-1);
 		layoutGroup.layout (true);
 	}	
+
+	void setTopControl (int index) {
+		if (index == -1 || children.length == 0) {
+			currentLayer = -1;
+			topControl.setText ("");
+		} else {
+			currentLayer = index;
+			stackLayout.topControl = children [currentLayer];
+			layoutComposite.layout ();
+			TableItem item = table.getItem(currentLayer);
+			topControl.setText (item.getText(0));
+		}
+		backButton.setEnabled(children.length > 1 && currentLayer > 0);
+		advanceButton.setEnabled(children.length > 1 && currentLayer < children.length - 1);
+	}
 
 	/**
 	 * Sets the state of the layout.

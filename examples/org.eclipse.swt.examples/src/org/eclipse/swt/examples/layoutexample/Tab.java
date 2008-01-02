@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.*;
  * (or parts of it) can be selected and copied to the clipboard.
  */
 abstract class Tab {	
+	Shell shell;
+	Display display;
 	/* Common groups and composites */
 	Composite tabFolderPage;
 	SashForm sash;
@@ -182,7 +184,6 @@ abstract class Tab {
 				shell.pack();
 				shell.setSize(400, 500);
 				shell.open();
-				Display display = shell.getDisplay();
 				while(!shell.isDisposed())
 					if (!display.readAndDispatch()) display.sleep();
 			}
@@ -202,8 +203,8 @@ abstract class Tab {
 		table = new Table (childGroup, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		table.setLinesVisible (true);
 		table.setHeaderVisible (true);
-		FontData def[] = Display.getCurrent().getSystemFont().getFontData();
-		table.setFont(new Font(Display.getCurrent(), def[0].getName(), 10, SWT.NONE));
+		FontData def[] = display.getSystemFont().getFontData();
+		table.setFont(new Font(display, def[0].getName(), 10, SWT.NONE));
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		gridData.heightHint = 150;
 		table.setLayoutData (gridData);
@@ -327,6 +328,10 @@ abstract class Tab {
 	 * @return the new page for the tab folder
 	 */
 	Composite createTabFolderPage (TabFolder tabFolder) {
+		/* Cache the shell and display. */
+		shell = tabFolder.getShell ();
+		display = shell.getDisplay ();
+
 		/* Create a two column page with a SashForm*/
 		tabFolderPage = new Composite (tabFolder, SWT.NONE);
 		tabFolderPage.setLayoutData (new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -337,11 +342,19 @@ abstract class Tab {
 		createLayoutGroup ();
 		createControlGroup ();
 		
-		/* Position the sash */
-		sash.setWeights(new int[] {50, 50});		
+		sash.setWeights(sashWeights ());		
 		return tabFolderPage;
 	}
 	
+	/**
+	 * Return the initial weight of the layout and control groups within the SashForm.
+	 * Subclasses may override to provide tab-specific weights.
+	 * @return the desired sash weights for the tab page
+	 */
+	int[] sashWeights () {
+		return new int[] {50, 50};		
+	}
+
 	/**
 	 * Creates the TableEditor with a Text in the given column
 	 * of the table.
@@ -385,13 +398,13 @@ abstract class Tab {
 		for (int i = 0; i < children.length; i++) {
 			TableItem myItem = table.getItem(i);
 			String name = myItem.getText(0);
-			if (name.matches("\\d")){
+			if (name.matches("\\d")) {
 				Control control = children [i];
 				String controlClass = control.getClass ().toString ();
 				String controlType = controlClass.substring (controlClass.lastIndexOf ('.') + 1);
 				names [i] = controlType.toLowerCase () + i;
 			} else {
-				names[i] = myItem.getText(0);
+				names [i] = myItem.getText(0);
 			}	
 		}
 	

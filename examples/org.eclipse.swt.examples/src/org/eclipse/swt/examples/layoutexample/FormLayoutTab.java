@@ -248,8 +248,6 @@ class FormLayoutTab extends Tab {
 				if(event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
 					ToolBar bar = item.getParent();
-					Display display = bar.getDisplay();
-					Shell shell = bar.getShell();
 					Menu menu = new Menu (shell, SWT.POP_UP);
 					for(int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
@@ -306,32 +304,32 @@ class FormLayoutTab extends Tab {
 		Group marginGroup = new Group (controlGroup, SWT.NONE);
 		marginGroup.setText (LayoutExample.getResourceString ("Margins_Spacing"));
 		marginGroup.setLayout(new GridLayout (2, false));
-		marginGroup.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-		new Label (marginGroup, SWT.NONE).setText ("Margin Width");
+		marginGroup.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, false, false));
+		new Label (marginGroup, SWT.NONE).setText ("marginWidth");
 		marginWidth = new Spinner(marginGroup, SWT.BORDER);
 		marginWidth.setSelection(0);
 		marginWidth.addSelectionListener(selectionListener);
-		new Label (marginGroup, SWT.NONE).setText("Margin Height");
+		new Label (marginGroup, SWT.NONE).setText("marginHeight");
 		marginHeight = new Spinner(marginGroup, SWT.BORDER);
 		marginHeight.setSelection(0);
 		marginHeight.addSelectionListener (selectionListener);
-		new Label (marginGroup, SWT.NONE).setText("Left Margin");
+		new Label (marginGroup, SWT.NONE).setText("marginLeft");
 		marginLeft = new Spinner(marginGroup, SWT.BORDER);
 		marginLeft.setSelection(0);
 		marginLeft.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Right Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginRight");
 		marginRight = new Spinner(marginGroup, SWT.BORDER);
 		marginRight.setSelection(0);
 		marginRight.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Top Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginTop");
 		marginTop = new Spinner(marginGroup, SWT.BORDER);
 		marginTop.setSelection(0);
 		marginTop.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Bottom Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginBottom");
 		marginBottom = new Spinner(marginGroup, SWT.BORDER);
 		marginBottom.setSelection(0);
 		marginBottom.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText ("Spacing");
+		new Label(marginGroup, SWT.NONE).setText ("spacing");
 		spacing = new Spinner(marginGroup, SWT.BORDER);
 		spacing.setSelection(0);
 		spacing.addSelectionListener(selectionListener);
@@ -520,6 +518,14 @@ class FormLayoutTab extends Tab {
 		layoutGroup.layout (true);
 	}
 	
+	/**
+	 * Return the initial weight of the layout and control groups within the SashForm.
+	 * @return the desired sash weights for the tab page
+	 */
+	int[] sashWeights () {
+		return new int[] {40, 60};		
+	}
+
 	/**
 	 * Sets an attachment to the edge of a widget using the
 	 * information in the table.
@@ -802,7 +808,6 @@ class FormLayoutTab extends Tab {
 			center.y = center.y + (parent.getBounds ().height / 2) - (shell.getBounds ().height / 2);
 			shell.setLocation (center);
 			shell.open ();
-			Display display = shell.getDisplay ();
 			while (!shell.isDisposed ()) {
 				if (display.readAndDispatch ()) display.sleep ();
 			}
