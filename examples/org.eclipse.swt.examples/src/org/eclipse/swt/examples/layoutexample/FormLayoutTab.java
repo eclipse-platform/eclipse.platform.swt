@@ -470,10 +470,10 @@ class FormLayoutTab extends Tab {
 			"Control Type", 
 			"width", 
 			"height", 
-			"marginLeft", 
-			"marginRight", 
-			"marginTop", 
-			"marginBottom"
+			"left", 
+			"right", 
+			"top", 
+			"bottom"
 		};
 	}
 	
