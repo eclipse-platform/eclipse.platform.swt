@@ -156,7 +156,7 @@ class GridLayoutTab extends Tab {
 				vSpan.setText (((String [])data.elementAt (index)) [VSPAN_COL]);
 				createTextEditor (vSpan, vSpanEditor, VSPAN_COL);
 				
-				String [] boolValues = new String [] {"false","true"};
+				String [] boolValues = new String [] {"false", "true"};
 				hGrab = new CCombo (table, SWT.NONE);
 				hGrab.setItems (boolValues);
 				hGrab.setText (newItem.getText (HGRAB_COL));
@@ -662,28 +662,15 @@ class GridLayoutTab extends Tab {
 			data.verticalSpan = vSpan;
 			/* Set grabbers */
 			hGrab = items [i].getText (HGRAB_COL);
-			if (hGrab.equals ("true")) {
-				data.grabExcessHorizontalSpace = true;
-			} else {
-				data.grabExcessHorizontalSpace = false;
-			}
+			data.grabExcessHorizontalSpace = hGrab.equals ("true");
 			vGrab = items [i].getText (VGRAB_COL);
-			if (vGrab.equals ("true")) {
-				data.grabExcessVerticalSpace = true;
-			} else {
-				data.grabExcessVerticalSpace = false;
-			}
+			data.grabExcessVerticalSpace = vGrab.equals ("true");
 			/* Set minimum width and height */
 			data.minimumWidth = new Integer (items [i].getText (MINWIDTH_COL)).intValue ();
 			data.minimumHeight = new Integer (items [i].getText (MINHEIGHT_COL)).intValue ();
-
 			/* Set exclude boolean */
 			exclude = items [i].getText (EXCLUDE_COL);
-			if (exclude.equals ("true")) {
-				data.exclude = true;
-			} else {
-				data.exclude = false;
-			}
+			data.exclude = exclude.equals ("true");
 			
 			children [i].setLayoutData (data);
 		}

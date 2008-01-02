@@ -692,7 +692,8 @@ class FormLayoutTab extends Tab {
 			posButton.setText (LayoutExample.getResourceString ("Position"));
 			posButton.setSelection (!isControl);			
 			final Combo position = new Combo (shell, SWT.NONE);
-			position.setItems (new String [] {"0","25","50","75","100"});
+			position.setItems (new String [] {"0","25","33","50","67","75","100"});
+			position.setVisibleItemCount (7);
 			position.setText (oldPos);
 			position.setEnabled (!isControl);			
 			position.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false, 2, 1));
