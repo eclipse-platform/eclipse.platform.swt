@@ -280,7 +280,7 @@ class RowLayoutTab extends Tab {
 			code.append ("\t\trowLayout.pack = false;\n");
 		}
 		if (rowLayout.fill == true) {
-			code.append("\t\trowLayout.fill = false;\n");
+			code.append("\t\trowLayout.fill = true;\n");
 		}
 		if (rowLayout.justify == true) {
 			code.append ("\t\trowLayout.justify = true;\n");
