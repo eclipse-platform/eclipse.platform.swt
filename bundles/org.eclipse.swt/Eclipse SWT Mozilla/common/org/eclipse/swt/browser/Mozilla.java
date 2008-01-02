@@ -1386,6 +1386,10 @@ void disposeCOMInterfaces () {
 		tooltipListener.dispose ();
 		tooltipListener = null;
 	}
+	if (domEventListener != null) {
+		domEventListener.dispose ();
+		domEventListener = null;
+	}
 }
 
 public boolean execute (String script) {
