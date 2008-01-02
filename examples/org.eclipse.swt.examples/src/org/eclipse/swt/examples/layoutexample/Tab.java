@@ -336,6 +336,8 @@ abstract class Tab {
 		/* Create the "layout" and "control" columns */
 		createLayoutGroup ();
 		createControlGroup ();
+		
+		/* Position the sash */
 		sash.setWeights(new int[] {50, 50});		
 		return tabFolderPage;
 	}
@@ -641,14 +643,14 @@ abstract class Tab {
 		}
 	}	
 	
-	/**
-	 * Takes information from TableEditors and stores it.
-	 * Subclasses override this method.
-	 */
 	void resetEditors () {
 		resetEditors (false);
 	}
 	
+	/**
+	 * Takes information from TableEditors and stores it.
+	 * Subclasses override this method.
+	 */
 	void resetEditors (boolean tab) {
 	}
 	

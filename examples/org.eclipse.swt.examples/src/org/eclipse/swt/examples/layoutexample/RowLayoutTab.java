@@ -242,9 +242,6 @@ class RowLayoutTab extends Tab {
 		
 		/* Add common controls */
 		super.createControlWidgets ();
-		
-		/* Position the sash */
-		sash.setWeights (new int [] {6,5});
 	}
 	
 	/**
@@ -359,10 +356,6 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
-	void resetEditors () {
-		resetEditors (false);
-	}
-	
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		if (oldItem != null) {

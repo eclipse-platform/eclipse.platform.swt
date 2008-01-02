@@ -134,7 +134,6 @@ class FormLayoutTab extends Tab {
 				createComboEditor (combo, comboEditor);
 				
 				nameText = new Text (table, SWT.SINGLE);
-				System.out.println (((String[])data.elementAt(index))[NAME_COL]);
 				nameText.setText (((String[])data.elementAt(index))[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 				
@@ -339,9 +338,6 @@ class FormLayoutTab extends Tab {
 		
 		/* Add common controls */
 		super.createControlWidgets ();
-		
-		/* Position the sash */
-		sash.setWeights (new int [] {6,4});
 	}
 	
 	/**
@@ -491,10 +487,6 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
-	void resetEditors () {
-		resetEditors (false);
-	}
-	
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		if (oldItem != null) {

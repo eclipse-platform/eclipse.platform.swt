@@ -163,10 +163,6 @@ class FillLayoutTab extends Tab {
 		
 		/* Add common controls */
 		super.createControlWidgets ();
-		
-		/* Position the sash */
-		sash.setWeights (new int [] {4,1});
-//		sash.setWeights(new int[] {6,4});
 	}
 	
 	/**
@@ -231,22 +227,22 @@ class FillLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
-	void resetEditors () {
+	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		comboEditor.setEditor (null, null, -1);
 		if (oldItem != null) {
 			int row = table.indexOf (oldItem);
 			try {				
-				new String(nameText.getText());
-			} catch(NumberFormatException e) {
-				nameText.setText(oldItem.getText (NAME_COL));
+				new String (nameText.getText ());
+			} catch (NumberFormatException e) {
+				nameText.setText (oldItem.getText (NAME_COL));
 			}
-			String[] insert = new String[] {nameText.getText(), combo.getText ()};
-			data.setElementAt(insert, row);
+			String [] insert = new String [] {nameText.getText (), combo.getText ()};
+			data.setElementAt (insert, row);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, ((String[])data.elementAt (row))[i]);
+				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
 			}
-			disposeEditors();
+			if (!tab) disposeEditors ();
 		}
 		setLayoutState ();
 		refreshLayoutComposite ();

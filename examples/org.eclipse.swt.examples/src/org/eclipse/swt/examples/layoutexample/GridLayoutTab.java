@@ -479,10 +479,6 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
-	void resetEditors () {
-		resetEditors (false);
-	}
-	
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		if (oldItem != null) {

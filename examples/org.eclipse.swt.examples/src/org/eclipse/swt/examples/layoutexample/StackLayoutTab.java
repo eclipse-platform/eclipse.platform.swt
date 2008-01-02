@@ -29,6 +29,7 @@ class StackLayoutTab extends Tab {
 	int prevSelected = 0;
 	Text nameText;
 	final int NAME_COL = 0;
+	final int TOTAL_COLS = 2;
 	
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
@@ -153,9 +154,6 @@ class StackLayoutTab extends Tab {
 		
 		/* Add common controls */
 		super.createControlWidgets();
-		
-		/* Position the sash */
-		sash.setWeights(new int[] {4,1});
 	}
 	
 	/**
@@ -237,6 +235,9 @@ class StackLayoutTab extends Tab {
 			Control control = children[i];
 			code.append (getChildCode(control, i));
 		}
+		if (children.length > 0) {
+			code.append("\n\t\tstackLayout.topControl = " + names[0] + ";\n");
+		}
 		return code;
 	}
 	
@@ -261,29 +262,30 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
-	void resetEditors() {
-		TableItem oldItem = comboEditor.getItem();
-		comboEditor.setEditor(null, null, -1);
-		if(oldItem != null) {
-			int row = table.indexOf(oldItem);
+	void resetEditors (boolean tab) {
+		TableItem oldItem = comboEditor.getItem ();
+		comboEditor.setEditor (null, null, -1);
+		if (oldItem != null) {
+			int row = table.indexOf (oldItem);
 			try {				
-				new String(nameText.getText());
-			} catch(NumberFormatException e) {
-				nameText.setText(oldItem.getText(NAME_COL));
+				new String (nameText.getText ());
+			} catch (NumberFormatException e) {
+				nameText.setText (oldItem.getText (NAME_COL));
 			}
-			String[] insert = new String[] {nameText.getText(), combo.getText()};
-			data.setElementAt(insert, row);
-			for(int i = 0 ; i < table.getColumnCount(); i++) {
-				oldItem.setText(i, ((String[])data.elementAt(row))[i]);
+			String [] insert = new String [] {nameText.getText (), combo.getText ()};
+			data.setElementAt (insert, row);
+			for (int i = 0 ; i < TOTAL_COLS; i++) {
+				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
 			}
-			disposeEditors();
+			if (!tab) disposeEditors ();
 		}
-		refreshLayoutComposite();
-		if(children.length > 0){
-			stackLayout.topControl = children[currentLayer];
-			layoutComposite.layout(true);			
+		setLayoutState ();
+		refreshLayoutComposite ();
+		if (children.length > 0) {
+			stackLayout.topControl = children [currentLayer];
+			layoutComposite.layout (true);
 		}
-		layoutGroup.layout(true);
+		layoutGroup.layout (true);
 	}	
 
 	/**
