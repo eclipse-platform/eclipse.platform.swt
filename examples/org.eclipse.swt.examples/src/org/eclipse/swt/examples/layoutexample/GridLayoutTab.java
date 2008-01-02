@@ -27,10 +27,10 @@ class GridLayoutTab extends Tab {
 	GridLayout gridLayout;
 	/* TableEditors and related controls*/
 	TableEditor nameEditor, comboEditor, widthEditor, heightEditor;
-	TableEditor vAlignEditor, hAlignEditor, hIndentEditor;
+	TableEditor vAlignEditor, hAlignEditor, hIndentEditor, vIndentEditor;
 	TableEditor hSpanEditor, vSpanEditor, hGrabEditor, vGrabEditor;
 	CCombo combo, vAlign, hAlign, hGrab, vGrab;
-	Text nameText, widthText, heightText, hIndent, hSpan, vSpan;
+	Text nameText, widthText, heightText, hIndent, vIndent, hSpan, vSpan;
 	int prevSelected = 0;
 	/* Constants */
 	final int NAME_COL = 0;
@@ -40,12 +40,13 @@ class GridLayoutTab extends Tab {
 	final int HALIGN_COL = 4;
 	final int VALIGN_COL = 5;
 	final int HINDENT_COL = 6;
-	final int HSPAN_COL = 7;
-	final int VSPAN_COL = 8;
-	final int HGRAB_COL = 9;
-	final int VGRAB_COL = 10;
+	final int VINDENT_COL = 7;
+	final int HSPAN_COL = 8;
+	final int VSPAN_COL = 9;
+	final int HGRAB_COL = 10;
+	final int VGRAB_COL = 11;
 	
-	final int TOTAL_COLS = 11;
+	final int TOTAL_COLS = 12;
 		
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
@@ -79,6 +80,7 @@ class GridLayoutTab extends Tab {
 		vAlignEditor = new TableEditor (table);
 		hAlignEditor = new TableEditor (table);
 		hIndentEditor = new TableEditor (table);
+		vIndentEditor = new TableEditor (table);
 		hSpanEditor = new TableEditor (table);
 		vSpanEditor = new TableEditor (table);
 		hGrabEditor = new TableEditor (table);
@@ -134,6 +136,10 @@ class GridLayoutTab extends Tab {
 				hIndent.setText (((String [])data.elementAt (index)) [HINDENT_COL]);
 				createTextEditor (hIndent, hIndentEditor, HINDENT_COL);
 				
+				vIndent = new Text (table, SWT.SINGLE);
+				vIndent.setText (((String [])data.elementAt (index)) [VINDENT_COL]);
+				createTextEditor (vIndent, vIndentEditor, VINDENT_COL);
+				
 				hSpan = new Text (table, SWT.SINGLE);
 				hSpan.setText (((String [])data.elementAt (index)) [HSPAN_COL]);
 				createTextEditor (hSpan, hSpanEditor, HSPAN_COL);
@@ -186,6 +192,9 @@ class GridLayoutTab extends Tab {
 							case HINDENT_COL :
 								hIndent.setFocus ();
 								break;
+							case VINDENT_COL :
+								vIndent.setFocus ();
+								break;
 							case HSPAN_COL :
 								hSpan.setFocus ();
 								break;
@@ -228,7 +237,7 @@ class GridLayoutTab extends Tab {
 									String name = menuItem.getText().toLowerCase() + String.valueOf(table.indexOf(item));
 									String [] insert = new String [] {name, menuItem.getText(),
 											"-1","-1","BEGINNING","CENTER",
-											"0","1","1","false","false"};
+											"0","0","1","1","false","false"};
 									item.setText(insert);
 									data.addElement(insert);
 									resetEditors ();
@@ -252,7 +261,7 @@ class GridLayoutTab extends Tab {
 					String name = selection.toLowerCase () + String.valueOf(table.indexOf (item));
 					String[] insert = new String[] {name, selection,
 							"-1","-1","BEGINNING","CENTER",
-							"0","1","1","false","false"};
+							"0","0","1","1","false","false"};
 					item.setText (insert);
 					data.addElement (insert);
 					resetEditors ();
@@ -344,6 +353,7 @@ class GridLayoutTab extends Tab {
 		hAlign.dispose ();
 		vAlign.dispose ();
 		hIndent.dispose ();
+		vIndent.dispose ();
 		hSpan.dispose ();
 		vSpan.dispose ();
 		hGrab.dispose ();
@@ -462,10 +472,14 @@ class GridLayoutTab extends Tab {
 			"horizontalAlignment", 
 			"verticalAlignment", 
 			"horizontalIndent", 
+			"verticalIndent",
 			"horizontalSpan",
 			"verticalSpan", 
 			"grabExcessHorizontalSpace", 
-			"grabExcessVerticalSpace"
+			"grabExcessVerticalSpace", 
+			//"minimumWidth",
+			//"minimumHeight", 
+			//"exclude"
 		};
 	}
 	
@@ -505,6 +519,11 @@ class GridLayoutTab extends Tab {
 				hIndent.setText (oldItem.getText (HINDENT_COL));
 			}
 			try {
+				new Integer (vIndent.getText ()).intValue ();
+			} catch (NumberFormatException e) {
+				vIndent.setText (oldItem.getText (VINDENT_COL));
+			}
+			try {
 				new Integer (hSpan.getText ()).intValue ();
 			} catch (NumberFormatException e) {
 				hSpan.setText (oldItem.getText (HSPAN_COL));
@@ -516,7 +535,7 @@ class GridLayoutTab extends Tab {
 			}
 			String [] insert = new String [] {
 				nameText.getText (), combo.getText (), widthText.getText (), heightText.getText (),
-				hAlign.getText (), vAlign.getText (), hIndent.getText (), 
+				hAlign.getText (), vAlign.getText (), hIndent.getText (), vIndent.getText (), 
 				hSpan.getText (), vSpan.getText (), hGrab.getText (), vGrab.getText ()
 			};
 			data.setElementAt (insert, row);
@@ -539,7 +558,7 @@ class GridLayoutTab extends Tab {
 		Control [] children = layoutComposite.getChildren ();
 		TableItem [] items = table.getItems ();
 		GridData data;
-		int hIndent, hSpan, vSpan;
+		int hIndent, vIndent, hSpan, vSpan;
 		String vAlign, hAlign, vGrab, hGrab;
 		for (int i = 0; i < children.length; i++) {
 			data = new GridData ();
@@ -570,6 +589,8 @@ class GridLayoutTab extends Tab {
 			/* Set indents and spans */
 			hIndent = new Integer (items [i].getText (HINDENT_COL)).intValue ();
 			data.horizontalIndent = hIndent;
+			vIndent = new Integer (items [i].getText (VINDENT_COL)).intValue ();
+			data.verticalIndent = vIndent;
 			hSpan = new Integer (items [i].getText (HSPAN_COL)).intValue ();
 			data.horizontalSpan = hSpan;
 			vSpan = new Integer (items [i].getText (VSPAN_COL)).intValue ();
