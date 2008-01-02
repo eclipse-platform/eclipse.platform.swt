@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
 class StackLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
 	Button backButton, advanceButton;
+	Spinner marginWidth, marginHeight;
 	StackLayout stackLayout;
 	int currentLayer = 0;
 	/* TableEditors and related controls*/
@@ -32,7 +33,8 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
-	StackLayoutTab() {
+	StackLayoutTab(LayoutExample instance) {
+		super(instance);
 	}
 	
 	/**
@@ -134,6 +136,21 @@ class StackLayoutTab extends Tab {
 	 * Creates the control widgets.
 	 */
 	void createControlWidgets() {
+		/* Controls the margins of the StackLayout */
+		Group marginGroup = new Group(controlGroup, SWT.NONE);
+		marginGroup.setText (LayoutExample.getResourceString("Margins"));
+		marginGroup.setLayout(new GridLayout(2, false));
+		marginGroup.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, true, false));
+		new Label(marginGroup, SWT.NONE).setText("Margin Width");
+		marginWidth = new Spinner(marginGroup, SWT.BORDER);
+		marginWidth.setSelection(0);
+		marginWidth.addSelectionListener(selectionListener);
+		new Label(marginGroup, SWT.NONE).setText("Margin Height");
+		marginHeight = new Spinner(marginGroup, SWT.BORDER);
+		marginHeight.setSelection(0);
+		marginHeight.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		marginHeight.addSelectionListener(selectionListener);
+		
 		/* Add common controls */
 		super.createControlWidgets();
 		
@@ -209,6 +226,12 @@ class StackLayoutTab extends Tab {
 	StringBuffer generateLayoutCode() {
 		StringBuffer code = new StringBuffer();
 		code.append("\t\tStackLayout stackLayout = new StackLayout ();\n");
+		if (stackLayout.marginWidth != 0) {
+			code.append("\t\tstackLayout.marginWidth = " + stackLayout.marginWidth + ";\n");
+		}
+		if (stackLayout.marginHeight != 0) {
+			code.append("\t\tstackLayout.marginHeight = " + stackLayout.marginHeight + ";\n");
+		}
 		code.append("\t\tshell.setLayout (stackLayout);\n");
 		for(int i = 0; i < children.length; i++) {
 			Control control = children[i];
@@ -262,5 +285,15 @@ class StackLayoutTab extends Tab {
 		}
 		layoutGroup.layout(true);
 	}	
+
+	/**
+	 * Sets the state of the layout.
+	 */
+	void setLayoutState() {
+		/* Set the margins and spacing */
+		stackLayout.marginWidth = marginWidth.getSelection();		
+		stackLayout.marginHeight = marginHeight.getSelection();		
+	}	
+	
 }
 

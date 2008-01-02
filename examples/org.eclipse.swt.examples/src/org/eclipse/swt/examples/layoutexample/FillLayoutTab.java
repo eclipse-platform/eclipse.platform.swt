@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.layoutexample;
 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
@@ -34,44 +35,46 @@ class FillLayoutTab extends Tab {
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
 	 */
-	FillLayoutTab() {
+	FillLayoutTab(LayoutExample instance) {
+		super(instance);
 	}
 	
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
-	void createChildWidgets() {
+	void createChildWidgets () {
 		/* Add common controls */
-		super.createChildWidgets();
+		super.createChildWidgets ();
 		
 		/* Add TableEditors */
-		comboEditor = new TableEditor(table);
-		nameEditor = new TableEditor(table);
+		comboEditor = new TableEditor (table);
+		nameEditor = new TableEditor (table);
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
-				resetEditors();
-				index = table.getSelectionIndex();
-				if(index == -1) return;
-				TableItem oldItem = comboEditor.getItem();
-				newItem = table.getItem(index);
-				if(newItem == oldItem || newItem != lastSelected) {
+				resetEditors ();
+				index = table.getSelectionIndex ();
+				if (index == -1) return;
+				TableItem oldItem = comboEditor.getItem ();
+				newItem = table.getItem (index);
+				if (newItem == oldItem || newItem != lastSelected) {
 					lastSelected = newItem;
 					return;
 				}
-				table.showSelection();				
-				combo = new CCombo(table, SWT.READ_ONLY);				
-				createComboEditor(combo, comboEditor);
+				table.showSelection ();
+				
+				combo = new CCombo (table, SWT.READ_ONLY);
+				createComboEditor (combo, comboEditor);
 				
 				nameText = new Text(table, SWT.SINGLE);
 				nameText.setText(((String[])data.elementAt(index))[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 			}
-		});		
+		});
 		
-		// Add listener to add an element to the table
+		/* Add listener to add an element to the table */
 		add.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {				
-				if(event.detail == SWT.ARROW) {
+				if (event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
 					ToolBar bar = item.getParent();
 					Display display = bar.getDisplay();
@@ -80,7 +83,7 @@ class FillLayoutTab extends Tab {
 					for (int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
 						newItem.setText(OPTIONS[i]);						
-						newItem.addSelectionListener(new SelectionAdapter (){
+						newItem.addSelectionListener(new SelectionAdapter () {
 							public void widgetSelected (SelectionEvent event) {
 								MenuItem menuItem = (MenuItem)event.widget;
 								if (menuItem.getSelection()) {
@@ -101,8 +104,8 @@ class FillLayoutTab extends Tab {
 					menu.setLocation(pt.x, pt.y);
 					menu.setVisible(true);
 					
-					while(menu != null && !menu.isDisposed() && menu.isVisible()) {
-						if(!display.readAndDispatch()) {
+					while (menu != null && !menu.isDisposed() && menu.isVisible()) {
+						if (!display.readAndDispatch()) {
 							display.sleep();
 						}
 					}
@@ -123,25 +126,25 @@ class FillLayoutTab extends Tab {
 	/**
 	 * Creates the control widgets.
 	 */
-	void createControlWidgets() {
+	void createControlWidgets () {
 		/* Controls the type of FillLayout */
-		Group typeGroup = new Group(controlGroup, SWT.NONE);
-		typeGroup.setText(LayoutExample.getResourceString("Type"));
-		typeGroup.setLayout(new GridLayout());
-		typeGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, false));
-		horizontal = new Button(typeGroup, SWT.RADIO);
-		horizontal.setText("SWT.HORIZONTAL");
-		horizontal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Group typeGroup = new Group (controlGroup, SWT.NONE);
+		typeGroup.setText (LayoutExample.getResourceString ("Type"));
+		typeGroup.setLayout (new GridLayout ());
+		typeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false));
+		horizontal = new Button (typeGroup, SWT.RADIO);
+		horizontal.setText ("SWT.HORIZONTAL");
+		horizontal.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false));
 		horizontal.setSelection(true);
-		horizontal.addSelectionListener(selectionListener);
-		vertical = new Button(typeGroup, SWT.RADIO);
-		vertical.setText("SWT.VERTICAL");
-		vertical.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		vertical.addSelectionListener(selectionListener); 
+		horizontal.addSelectionListener (selectionListener);
+		vertical = new Button (typeGroup, SWT.RADIO);
+		vertical.setText ("SWT.VERTICAL");
+		vertical.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false));
+		vertical.addSelectionListener (selectionListener); 
 		
-		/* Controls the margins and spacing of the FormLayout */
+		/* Controls the margins and spacing of the FillLayout */
 		Group marginGroup = new Group(controlGroup, SWT.NONE);
-		marginGroup.setText (LayoutExample.getResourceString("Margins"));
+		marginGroup.setText (LayoutExample.getResourceString("Margins_Spacing"));
 		marginGroup.setLayout(new GridLayout(2, false));
 		marginGroup.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, true, false));
 		new Label(marginGroup, SWT.NONE).setText("Margin Width");
@@ -159,29 +162,28 @@ class FillLayoutTab extends Tab {
 		spacing.addSelectionListener(selectionListener);
 		
 		/* Add common controls */
-		super.createControlWidgets();
+		super.createControlWidgets ();
 		
 		/* Position the sash */
-		sash.setWeights(new int[] {4,1});
+		sash.setWeights (new int [] {4,1});
 //		sash.setWeights(new int[] {6,4});
 	}
-	
 	
 	/**
 	 * Creates the example layout.
 	 */
-	void createLayout() {
-		fillLayout = new FillLayout();
-		layoutComposite.setLayout(fillLayout);
+	void createLayout () {
+		fillLayout = new FillLayout ();
+		layoutComposite.setLayout (fillLayout);
 	}
 	
 	/** 
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
-	void disposeEditors() {
-		comboEditor.setEditor(null, null, -1);
-		combo.dispose();
+	void disposeEditors () {
+		comboEditor.setEditor (null, null, -1);
+		combo.dispose ();
 		nameText.dispose();
 	}
 
@@ -189,11 +191,11 @@ class FillLayoutTab extends Tab {
 	/**
 	 * Generates code for the example layout.
 	 */
-	StringBuffer generateLayoutCode() {
-		StringBuffer code = new StringBuffer();
-		code.append("\t\tFillLayout fillLayout = new FillLayout ();\n");
+	StringBuffer generateLayoutCode () {
+		StringBuffer code = new StringBuffer ();
+		code.append ("\t\tFillLayout fillLayout = new FillLayout ();\n");
 		if (fillLayout.type == SWT.VERTICAL) {
-			code.append("\t\tfillLayout.type = SWT.VERTICAL;\n");
+			code.append ("\t\tfillLayout.type = SWT.VERTICAL;\n");
 		}
 		if (fillLayout.marginWidth != 0) {
 			code.append("\t\tfillLayout.marginWidth = " + fillLayout.marginWidth + ";\n");
@@ -216,24 +218,24 @@ class FillLayoutTab extends Tab {
 	 * Returns the layout data field names.
 	 */
 	String [] getLayoutDataFieldNames() {
-		return new String[] { "Control Name", "Control Type" };
+		return new String [] { "Control Name", "Control Type" };
 	}
 	
 	/**
 	 * Gets the text for the tab folder item.
 	 */
-	String getTabText() {
+	String getTabText () {
 		return "FillLayout";
 	}
 	
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
-	void resetEditors() {
-		TableItem oldItem = comboEditor.getItem();
-		comboEditor.setEditor(null, null, -1);
+	void resetEditors () {
+		TableItem oldItem = comboEditor.getItem ();
+		comboEditor.setEditor (null, null, -1);
 		if (oldItem != null) {
-			int row = table.indexOf(oldItem);
+			int row = table.indexOf (oldItem);
 			try {				
 				new String(nameText.getText());
 			} catch(NumberFormatException e) {
@@ -242,21 +244,21 @@ class FillLayoutTab extends Tab {
 			String[] insert = new String[] {nameText.getText(), combo.getText ()};
 			data.setElementAt(insert, row);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText(i, ((String[])data.elementAt(row))[i]);
+				oldItem.setText (i, ((String[])data.elementAt (row))[i]);
 			}
 			disposeEditors();
 		}
-		setLayoutState();
-		refreshLayoutComposite();
-		layoutComposite.layout(true);
-		layoutGroup.layout(true);
+		setLayoutState ();
+		refreshLayoutComposite ();
+		layoutComposite.layout (true);
+		layoutGroup.layout (true);
 	}
 	
 	/**
 	 * Sets the state of the layout.
 	 */
-	void setLayoutState() {
-		if(vertical.getSelection()) {
+	void setLayoutState () {
+		if (vertical.getSelection()) {
 			fillLayout.type = SWT.VERTICAL;
 		} else {
 			fillLayout.type = SWT.HORIZONTAL;
