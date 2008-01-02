@@ -411,6 +411,17 @@ public boolean forward () {
 	return webBrowser.forward ();
 }
 
+public int getStyle () {
+	int result = super.getStyle ();
+	String platform = SWT.getPlatform ();
+	if ((result & SWT.MOZILLA) == 0 && "win32".equals (platform)) { //$NON-NLS-1$
+		if ((((IE)webBrowser).style & SWT.BORDER) != 0) {
+			result |= SWT.BORDER;
+		}
+	}
+	return result;
+}
+
 /**
  * Returns a string with HTML that represents the content of the current page.
  *
