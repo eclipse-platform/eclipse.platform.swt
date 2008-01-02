@@ -29,8 +29,9 @@ class GridLayoutTab extends Tab {
 	TableEditor nameEditor, comboEditor, widthEditor, heightEditor;
 	TableEditor vAlignEditor, hAlignEditor, hIndentEditor, vIndentEditor;
 	TableEditor hSpanEditor, vSpanEditor, hGrabEditor, vGrabEditor;
-	CCombo combo, vAlign, hAlign, hGrab, vGrab;
-	Text nameText, widthText, heightText, hIndent, vIndent, hSpan, vSpan;
+	TableEditor minWidthEditor, minHeightEditor, excludeEditor;
+	CCombo combo, vAlign, hAlign, hGrab, vGrab, exclude;
+	Text nameText, widthText, heightText, hIndent, vIndent, hSpan, vSpan, minWidthText, minHeightText;
 	int prevSelected = 0;
 	/* Constants */
 	final int NAME_COL = 0;
@@ -45,8 +46,11 @@ class GridLayoutTab extends Tab {
 	final int VSPAN_COL = 9;
 	final int HGRAB_COL = 10;
 	final int VGRAB_COL = 11;
+	final int MINWIDTH_COL = 12;
+	final int MINHEIGHT_COL = 13;
+	final int EXCLUDE_COL = 14;
 	
-	final int TOTAL_COLS = 12;
+	final int TOTAL_COLS = 15;
 		
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
@@ -85,6 +89,9 @@ class GridLayoutTab extends Tab {
 		vSpanEditor = new TableEditor (table);
 		hGrabEditor = new TableEditor (table);
 		vGrabEditor = new TableEditor (table);
+		minWidthEditor = new TableEditor (table);
+		minHeightEditor = new TableEditor (table);
+		excludeEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
 			public void mouseDown(MouseEvent e) {
 				resetEditors();
@@ -113,6 +120,7 @@ class GridLayoutTab extends Tab {
 				heightText = new Text (table, SWT.SINGLE);
 				heightText.setText (((String [])data.elementAt (index)) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
+				
 				String [] alignValues = new String [] {"BEGINNING","CENTER","END","FILL"};
 				hAlign = new CCombo (table, SWT.NONE);
 				hAlign.setItems (alignValues);
@@ -167,6 +175,23 @@ class GridLayoutTab extends Tab {
 				vGrabEditor.setEditor (vGrab, newItem, VGRAB_COL);
 				vGrab.addTraverseListener (traverseListener);
                 
+				minWidthText = new Text (table, SWT.SINGLE);
+				minWidthText.setText (((String [])data.elementAt (index)) [MINWIDTH_COL]);
+				createTextEditor (minWidthText, minWidthEditor, MINWIDTH_COL);
+				
+				minHeightText = new Text (table, SWT.SINGLE);
+				minHeightText.setText (((String [])data.elementAt (index)) [MINHEIGHT_COL]);
+				createTextEditor (minHeightText, minHeightEditor, MINHEIGHT_COL);
+
+				exclude = new CCombo (table, SWT.NONE);
+				exclude.setItems (boolValues);
+				exclude.setText (newItem.getText (EXCLUDE_COL));
+				excludeEditor.horizontalAlignment = SWT.LEFT;
+				excludeEditor.grabHorizontal = true;
+				excludeEditor.minimumWidth = 50;
+				excludeEditor.setEditor (exclude, newItem, EXCLUDE_COL);
+				exclude.addTraverseListener (traverseListener);
+                
                 for (int i=0; i<table.getColumnCount (); i++) {
                 	Rectangle rect = newItem.getBounds (i);
                     if (rect.contains (pt)) {
@@ -207,6 +232,15 @@ class GridLayoutTab extends Tab {
 							case VGRAB_COL :
 								vGrab.setFocus ();
 								break;
+							case MINWIDTH_COL :	
+								minWidthText.setFocus ();
+								break;
+							case MINHEIGHT_COL :
+								minHeightText.setFocus ();
+								break;
+							case EXCLUDE_COL :
+								exclude.setFocus ();
+								break;
 							default :
 								resetEditors ();
 								break;
@@ -221,8 +255,6 @@ class GridLayoutTab extends Tab {
 				if (event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
 					ToolBar bar = item.getParent();
-					Display display = bar.getDisplay();
-					Shell shell = bar.getShell();
 					Menu menu = new Menu(shell, SWT.POP_UP);
 					for(int i = 0; i < OPTIONS.length; i++) {
 						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
@@ -237,7 +269,8 @@ class GridLayoutTab extends Tab {
 									String name = menuItem.getText().toLowerCase() + String.valueOf(table.indexOf(item));
 									String [] insert = new String [] {name, menuItem.getText(),
 											"-1","-1","BEGINNING","CENTER",
-											"0","0","1","1","false","false"};
+											"0","0","1","1","false","false",
+											"0","0","false"};
 									item.setText(insert);
 									data.addElement(insert);
 									resetEditors ();
@@ -261,7 +294,8 @@ class GridLayoutTab extends Tab {
 					String name = selection.toLowerCase () + String.valueOf(table.indexOf (item));
 					String[] insert = new String[] {name, selection,
 							"-1","-1","BEGINNING","CENTER",
-							"0","0","1","1","false","false"};
+							"0","0","1","1","false","false",
+							"0","0","false"};
 					item.setText (insert);
 					data.addElement (insert);
 					resetEditors ();
@@ -279,12 +313,12 @@ class GridLayoutTab extends Tab {
 		columnGroup.setText (LayoutExample.getResourceString ("Columns"));
 		columnGroup.setLayout(new GridLayout(2, false));
 		columnGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, false));
-		new Label(columnGroup, SWT.NONE).setText ("Number of Columns");
+		new Label(columnGroup, SWT.NONE).setText ("numColumns");
 		numColumns = new Spinner (columnGroup, SWT.BORDER);
 		numColumns.setMinimum (1);
 		numColumns.addSelectionListener (selectionListener);
 		makeColumnsEqualWidth = new Button (columnGroup, SWT.CHECK);
-		makeColumnsEqualWidth.setText ("Make Columns Equal Width");
+		makeColumnsEqualWidth.setText ("makeColumnsEqualWidth");
 		makeColumnsEqualWidth.addSelectionListener (selectionListener);
 		makeColumnsEqualWidth.setEnabled (false);
 		makeColumnsEqualWidth.setLayoutData (new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
@@ -294,35 +328,35 @@ class GridLayoutTab extends Tab {
 		marginGroup.setText (LayoutExample.getResourceString("Margins_Spacing"));
 		marginGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		marginGroup.setLayout(new GridLayout(2, false));
-		new Label (marginGroup, SWT.NONE).setText("Margin Width");
+		new Label (marginGroup, SWT.NONE).setText("marginWidth");
 		marginWidth = new Spinner (marginGroup, SWT.BORDER);
 		marginWidth.setSelection(5);
 		marginWidth.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Margin Height");
+		new Label(marginGroup, SWT.NONE).setText("marginHeight");
 		marginHeight = new Spinner(marginGroup, SWT.BORDER);
 		marginHeight.setSelection(5);
 		marginHeight.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Left Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginLeft");
 		marginLeft = new Spinner(marginGroup, SWT.BORDER);
 		marginLeft.setSelection(0);
 		marginLeft.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Right Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginRight");
 		marginRight = new Spinner(marginGroup, SWT.BORDER);
 		marginRight.setSelection(0);
 		marginRight.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Top Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginTop");
 		marginTop = new Spinner(marginGroup, SWT.BORDER);
 		marginTop.setSelection(0);
 		marginTop.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Bottom Margin");
+		new Label(marginGroup, SWT.NONE).setText("marginBottom");
 		marginBottom = new Spinner(marginGroup, SWT.BORDER);
 		marginBottom.setSelection(0);
 		marginBottom.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Horizontal Spacing");
+		new Label(marginGroup, SWT.NONE).setText("horizontalSpacing");
 		horizontalSpacing = new Spinner(marginGroup, SWT.BORDER);
 		horizontalSpacing.setSelection(5);
 		horizontalSpacing.addSelectionListener(selectionListener);
-		new Label(marginGroup, SWT.NONE).setText("Vertical Spacing");
+		new Label(marginGroup, SWT.NONE).setText("verticalSpacing");
 		verticalSpacing = new Spinner(marginGroup, SWT.BORDER);
 		verticalSpacing.setSelection(5);
 		verticalSpacing.addSelectionListener(selectionListener);
@@ -358,6 +392,9 @@ class GridLayoutTab extends Tab {
 		vSpan.dispose ();
 		hGrab.dispose ();
 		vGrab.dispose ();
+		minWidthText.dispose ();
+		minHeightText.dispose ();
+		exclude.dispose ();
 	}
 	
 	/**
@@ -447,6 +484,15 @@ class GridLayoutTab extends Tab {
 				if (data.grabExcessVerticalSpace) {
 					code.append ("\t\tdata.grabExcessVerticalSpace = true;\n");
 				}
+				if (data.minimumWidth != 0) {
+					code.append ("\t\tdata.minimumWidth = " + data.minimumWidth + ";\n");
+				}
+				if (data.minimumHeight != 0) {
+					code.append ("\t\tdata.minimumHeight = " + data.minimumHeight + ";\n");
+				}
+				if (data.exclude) {
+					code.append ("\t\tdata.exclude = true;\n");
+				}
 				if (code.substring (code.length () - 33).equals ("GridData data = new GridData ();\n")) {
 					code.delete (code.length () - 33, code.length ());
 					first = true;
@@ -477,9 +523,9 @@ class GridLayoutTab extends Tab {
 			"verticalSpan", 
 			"grabExcessHorizontalSpace", 
 			"grabExcessVerticalSpace", 
-			//"minimumWidth",
-			//"minimumHeight", 
-			//"exclude"
+			"minimumWidth",
+			"minimumHeight", 
+			"exclude"
 		};
 	}
 	
@@ -533,10 +579,21 @@ class GridLayoutTab extends Tab {
 			} catch (NumberFormatException e) {
 				vSpan.setText (oldItem.getText (VSPAN_COL));
 			}
+			try {
+				new Integer (minWidthText.getText ()).intValue ();
+			} catch (NumberFormatException e) {
+				minWidthText.setText (oldItem.getText (MINWIDTH_COL));
+			}
+			try {
+				new Integer (minHeightText.getText ()).intValue ();
+			} catch (NumberFormatException e) {
+				minHeightText.setText (oldItem.getText (MINHEIGHT_COL));
+			}
 			String [] insert = new String [] {
 				nameText.getText (), combo.getText (), widthText.getText (), heightText.getText (),
 				hAlign.getText (), vAlign.getText (), hIndent.getText (), vIndent.getText (), 
-				hSpan.getText (), vSpan.getText (), hGrab.getText (), vGrab.getText ()
+				hSpan.getText (), vSpan.getText (), hGrab.getText (), vGrab.getText (), 
+				minWidthText.getText (), minHeightText.getText (), exclude.getText ()
 			};
 			data.setElementAt (insert, row);
 			for (int i = 0; i < TOTAL_COLS; i++) {
@@ -552,6 +609,14 @@ class GridLayoutTab extends Tab {
 	}	
 	
 	/**
+	 * Return the initial weight of the layout and control groups within the SashForm.
+	 * @return the desired sash weights for the tab page
+	 */
+	int[] sashWeights () {
+		return new int[] {40, 60};		
+	}
+
+	/**
 	 * Sets the layout data for the children of the layout.
 	 */
 	void setLayoutData () {
@@ -559,7 +624,7 @@ class GridLayoutTab extends Tab {
 		TableItem [] items = table.getItems ();
 		GridData data;
 		int hIndent, vIndent, hSpan, vSpan;
-		String vAlign, hAlign, vGrab, hGrab;
+		String vAlign, hAlign, vGrab, hGrab, exclude;
 		for (int i = 0; i < children.length; i++) {
 			data = new GridData ();
 			/* Set widthHint and heightHint */
@@ -608,6 +673,18 @@ class GridLayoutTab extends Tab {
 			} else {
 				data.grabExcessVerticalSpace = false;
 			}
+			/* Set minimum width and height */
+			data.minimumWidth = new Integer (items [i].getText (MINWIDTH_COL)).intValue ();
+			data.minimumHeight = new Integer (items [i].getText (MINHEIGHT_COL)).intValue ();
+
+			/* Set exclude boolean */
+			exclude = items [i].getText (EXCLUDE_COL);
+			if (exclude.equals ("true")) {
+				data.exclude = true;
+			} else {
+				data.exclude = false;
+			}
+			
 			children [i].setLayoutData (data);
 		}
 	}
