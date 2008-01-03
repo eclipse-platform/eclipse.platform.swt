@@ -1874,24 +1874,19 @@ void hookDOMListeners () {
 
 void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-	int rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 
 	/*
@@ -1900,26 +1895,21 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	*/
 	if (isTop && delegate.hookEnterExit ()) {
 		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
-		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-		if (rc != XPCOM.NS_OK) error (rc);
+		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 		string.dispose ();
 		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
-		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-		if (rc != XPCOM.NS_OK) error (rc);
+		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 		string.dispose ();
 	}
 
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 }
 
@@ -1983,42 +1973,34 @@ void unhookDOMListeners () {
 
 void unhookDOMListeners (nsIDOMEventTarget target) {
 	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-	int rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
-	if (rc != XPCOM.NS_OK) return; 	/* listeners not hooked */
 	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
-	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 }
 
