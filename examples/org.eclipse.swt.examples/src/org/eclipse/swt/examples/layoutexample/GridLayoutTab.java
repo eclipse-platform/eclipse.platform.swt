@@ -76,6 +76,18 @@ class GridLayoutTab extends Tab {
 		/* Add common controls */
 		super.createChildWidgets ();
 			
+		/* Add hovers to the column headers whose field names have been shortened to save space */
+		table.getColumn (HALIGN_COL).setToolTipText ("horizontalAlignment");
+		table.getColumn (VALIGN_COL).setToolTipText ("verticalAlignment");
+		table.getColumn (HINDENT_COL).setToolTipText ("horizontalIndent");
+		table.getColumn (VINDENT_COL).setToolTipText ("verticalIndent");
+		table.getColumn (HSPAN_COL).setToolTipText ("horizontalSpan");
+		table.getColumn (VSPAN_COL).setToolTipText ("verticalSpan");
+		table.getColumn (HGRAB_COL).setToolTipText ("grabExcessHorizontalSpace");
+		table.getColumn (VGRAB_COL).setToolTipText ("grabExcessVerticalSpace");
+		table.getColumn (MINWIDTH_COL).setToolTipText ("minimumWidth");
+		table.getColumn (MINHEIGHT_COL).setToolTipText ("minimumHeight");
+		
 		/* Add TableEditors */		
 		nameEditor = new TableEditor (table);
 		comboEditor = new TableEditor (table);
@@ -515,16 +527,16 @@ class GridLayoutTab extends Tab {
 			"Control Type", 
 			"width", 
 			"height", 
-			"horizontalAlignment", 
-			"verticalAlignment", 
-			"horizontalIndent", 
-			"verticalIndent",
-			"horizontalSpan",
-			"verticalSpan", 
-			"grabExcessHorizontalSpace", 
-			"grabExcessVerticalSpace", 
-			"minimumWidth",
-			"minimumHeight", 
+			"hAlignment", //"horizontalAlignment", 
+			"vAlignment", //"verticalAlignment", 
+			"hIndent", //"horizontalIndent", 
+			"vIndent", //"verticalIndent",
+			"hSpan", //"horizontalSpan",
+			"vSpan", //"verticalSpan", 
+			"grabH", //"grabExcessHorizontalSpace", 
+			"grabV", //"grabExcessVerticalSpace", 
+			"minWidth", //"minimumWidth",
+			"minHeight", //"minimumHeight", 
 			"exclude"
 		};
 	}
@@ -601,7 +613,7 @@ class GridLayoutTab extends Tab {
 			}
 			if (!tab) disposeEditors ();
 		}
-		setLayoutState ();		
+		setLayoutState ();
 		refreshLayoutComposite ();
 		setLayoutData ();
 		layoutComposite.layout (true);
@@ -613,7 +625,7 @@ class GridLayoutTab extends Tab {
 	 * @return the desired sash weights for the tab page
 	 */
 	int[] sashWeights () {
-		return new int[] {40, 60};		
+		return new int[] {35, 65};		
 	}
 
 	/**

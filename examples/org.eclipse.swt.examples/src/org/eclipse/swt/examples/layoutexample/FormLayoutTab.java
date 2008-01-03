@@ -102,10 +102,10 @@ class FormLayoutTab extends Tab {
 		super.createChildWidgets ();
 		
 		/* Resize the columns */
-		table.getColumn (LEFT_COL).setWidth (100);
-		table.getColumn (RIGHT_COL).setWidth (100);
-		table.getColumn (TOP_COL).setWidth (100);
-		table.getColumn (BOTTOM_COL).setWidth (100);
+		table.getColumn (LEFT_COL).setWidth (90);
+		table.getColumn (RIGHT_COL).setWidth (90);
+		table.getColumn (TOP_COL).setWidth (90);
+		table.getColumn (BOTTOM_COL).setWidth (90);
 				
 		/* Add TableEditors */
 		nameEditor = new TableEditor (table);
