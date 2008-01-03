@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.*;
 
 public class Browser extends Composite {
 	WebBrowser webBrowser;
+	int userStyle;
 
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
@@ -72,6 +73,8 @@ public class Browser extends Composite {
  */
 public Browser (Composite parent, int style) {
 	super (checkParent (parent), checkStyle (style));
+	userStyle = style;
+
 	String platform = SWT.getPlatform ();
 	Display display = parent.getDisplay ();
 	if ("gtk".equals (platform)) display.setData (NO_INPUT_METHOD, null); //$NON-NLS-1$
@@ -141,6 +144,10 @@ static int checkStyle(int style) {
 	}
 
 	if ("win32".equals (platform)) { //$NON-NLS-1$
+		/*
+		* For IE on win32 the border is supplied by the embedded browser, so remove
+		* the style so that the parent Composite will not draw a second border.
+		*/
 		return style & ~SWT.BORDER;
 	} else if ("motif".equals (platform)) { //$NON-NLS-1$
 		return style | SWT.EMBEDDED;
@@ -412,14 +419,11 @@ public boolean forward () {
 }
 
 public int getStyle () {
-	int result = super.getStyle ();
-	String platform = SWT.getPlatform ();
-	if ((result & SWT.MOZILLA) == 0 && "win32".equals (platform)) { //$NON-NLS-1$
-		if ((((IE)webBrowser).style & SWT.BORDER) != 0) {
-			result |= SWT.BORDER;
-		}
-	}
-	return result;
+	/*
+	* If SWT.BORDER was specified at creation time then getStyle() should answer
+	* it even though it is removed for IE on win32 in checkStyle().
+	*/
+	return super.getStyle () | (userStyle & SWT.BORDER);
 }
 
 /**
