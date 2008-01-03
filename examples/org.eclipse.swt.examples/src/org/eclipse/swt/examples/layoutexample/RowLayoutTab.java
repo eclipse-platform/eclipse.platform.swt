@@ -26,8 +26,8 @@ class RowLayoutTab extends Tab {
 	/* The example layout instance */
 	RowLayout rowLayout;
 	/* TableEditors and related controls*/
-	TableEditor comboEditor, widthEditor, heightEditor, nameEditor;
-	CCombo combo;
+	TableEditor comboEditor, widthEditor, heightEditor, nameEditor, excludeEditor;
+	CCombo combo, exclude;
 	Text nameText, widthText, heightText;
 	int prevSelected;
 	
@@ -36,7 +36,8 @@ class RowLayoutTab extends Tab {
 	final int COMBO_COL = 1;
 	final int WIDTH_COL = 2;
 	final int HEIGHT_COL = 3;
-	final int TOTAL_COLS = 4;
+	final int EXCLUDE_COL = 4;
+	final int TOTAL_COLS = 5;
 	
 	/**
 	 * Creates the Tab within a given instance of LayoutExample.
@@ -57,6 +58,7 @@ class RowLayoutTab extends Tab {
 		comboEditor = new TableEditor (table);
 		widthEditor = new TableEditor (table);
 		heightEditor = new TableEditor (table);
+		excludeEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
 			public void mouseDown(MouseEvent e) {
 				resetEditors();
@@ -86,7 +88,17 @@ class RowLayoutTab extends Tab {
 				heightText.setText (((String [])data.elementAt (index)) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
                 
-                for (int i=0; i<table.getColumnCount (); i++) {
+				String [] boolValues = new String [] {"false", "true"};
+				exclude = new CCombo (table, SWT.NONE);
+				exclude.setItems (boolValues);
+				exclude.setText (newItem.getText (EXCLUDE_COL));
+				excludeEditor.horizontalAlignment = SWT.LEFT;
+				excludeEditor.grabHorizontal = true;
+				excludeEditor.minimumWidth = 50;
+				excludeEditor.setEditor (exclude, newItem, EXCLUDE_COL);
+				exclude.addTraverseListener (traverseListener);
+
+				for (int i=0; i<table.getColumnCount (); i++) {
                 	Rectangle rect = newItem.getBounds (i);
                     if (rect.contains (pt)) {
                     	switch (i) {
@@ -100,6 +112,9 @@ class RowLayoutTab extends Tab {
 								break;
 							case HEIGHT_COL :
 								heightText.setFocus ();
+								break;
+							case EXCLUDE_COL :
+								exclude.setFocus ();
 								break;
 							default :
 								resetEditors ();
@@ -128,7 +143,7 @@ class RowLayoutTab extends Tab {
 									prevSelected = menu.indexOf(menuItem);
 									TableItem item = new TableItem(table, SWT.NONE);
 									String name = menuItem.getText().toLowerCase() + String.valueOf(table.indexOf (item));
-									String[] insert = new String[] {name, menuItem.getText(), "-1", "-1"};
+									String[] insert = new String[] {name, menuItem.getText(), "-1", "-1", "false"};
 									item.setText(insert);
 									data.addElement (insert);
 									resetEditors ();
@@ -151,7 +166,7 @@ class RowLayoutTab extends Tab {
 					String selection = OPTIONS[prevSelected];
 					TableItem item = new TableItem (table, 0);
 					String name = selection.toLowerCase() + String.valueOf (table.indexOf(item));
-					String[] insert = new String[] {name, selection, "-1", "-1"};
+					String[] insert = new String[] {name, selection, "-1", "-1", "false"};
 					item.setText (insert);
 					data.addElement (insert);
 					resetEditors ();
@@ -260,6 +275,7 @@ class RowLayoutTab extends Tab {
 		widthText.dispose ();
 		heightText.dispose ();
 		nameText.dispose ();
+		exclude.dispose ();
 	}
 	
 	/**
@@ -312,18 +328,23 @@ class RowLayoutTab extends Tab {
 			code.append (getChildCode (control,i));
 			RowData rowData = (RowData) control.getLayoutData ();
 			if (rowData != null) {
-				if (rowData.width != -1 || rowData.height != -1) {
+				if (rowData.width != -1 || rowData.height != -1 || rowData.exclude) {
 					code.append ("\t\t");
 					if (first) {
 						code.append ("RowData ");
 						first = false;
 					}
-					if (rowData.width == -1) {
+					if (rowData.width == -1 && rowData.height == -1) {
+						code.append ("rowData = new RowData ();\n");
+					} else if (rowData.width == -1) {
 						code.append ("rowData = new RowData (SWT.DEFAULT, " + rowData.height + ");\n");
 					} else if (rowData.height == -1) {
 						code.append ("rowData = new RowData (" + rowData.width + ", SWT.DEFAULT);\n");
 					} else {
 						code.append ("rowData = new RowData (" + rowData.width + ", " + rowData.height + ");\n");				
+					}
+					if (rowData.exclude) {
+						code.append ("\t\trowData.exclude = true;\n");
 					}
 					code.append ("\t\t" + names [i] + ".setLayoutData (rowData);\n");
 				}
@@ -340,7 +361,8 @@ class RowLayoutTab extends Tab {
 			"Control Name",
 			"Control Type",
 			"width", 
-			"height"
+			"height",
+			"exclude"
 		};
 	}
 	
@@ -375,7 +397,7 @@ class RowLayoutTab extends Tab {
 				heightText.setText (oldItem.getText (HEIGHT_COL));
 			}
 			String [] insert = new String [] {
-				nameText.getText(), combo.getText (), widthText.getText (), heightText.getText ()};
+				nameText.getText(), combo.getText (), widthText.getText (), heightText.getText (), exclude.getText ()};
 			data.setElementAt (insert, row);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
 				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
@@ -397,10 +419,13 @@ class RowLayoutTab extends Tab {
 		TableItem [] items = table.getItems ();
 		RowData data;
 		int width, height;
+		String exclude;
 		for (int i = 0; i < children.length; i++) {
 			width = new Integer (items [i].getText (WIDTH_COL)).intValue ();
 			height = new Integer (items [i].getText (HEIGHT_COL)).intValue ();
 			data = new RowData (width, height);
+			exclude = items [i].getText (EXCLUDE_COL);
+			data.exclude = exclude.equals ("true");
 			children [i].setLayoutData (data);
 		}
 		
