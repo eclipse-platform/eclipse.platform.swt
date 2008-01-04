@@ -543,6 +543,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 28: runOpenPanelForFileButtonWithResultListener(arg0); break;
 		case 29: decideDestinationWithSuggestedFilename(arg0, arg1); break;
 		case 30: mouseDidMoveOverElement(arg0, arg1); break;
+		case 31: didChangeLocationWithinPageForFrame(arg0); break;
 	}
 	return ret;
 }
@@ -651,7 +652,47 @@ public void stop() {
 }
 
 /* WebFrameLoadDelegate */
-  
+void didChangeLocationWithinPageForFrame(int frame) {
+	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
+	//id url= [[[[frame provisionalDataSource] request] URL] absoluteString];
+	int dataSource = Cocoa.objc_msgSend(frame, Cocoa.S_dataSource);
+	int request = Cocoa.objc_msgSend(dataSource, Cocoa.S_request);
+	int url = Cocoa.objc_msgSend(request, Cocoa.S_URL);
+	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);	
+	int length = OS.CFStringGetLength(s);
+	if (length == 0) return;
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(s, range, buffer);
+	String url2 = new String(buffer);
+	/*
+	 * If the URI indicates that the page is being rendered from memory
+	 * (via setText()) then set it to about:blank to be consistent with IE.
+	 */
+	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
+
+	final Display display = browser.getDisplay();
+	boolean top = frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
+	if (top) {
+		StatusTextEvent statusText = new StatusTextEvent(browser);
+		statusText.display = display;
+		statusText.widget = browser;
+		statusText.text = url2;
+		for (int i = 0; i < statusTextListeners.length; i++) {
+			statusTextListeners[i].changed(statusText);
+		}
+	}
+	LocationEvent location = new LocationEvent(browser);
+	location.display = display;
+	location.widget = browser;
+	location.location = url2;
+	location.top = top;
+	for (int i = 0; i < locationListeners.length; i++) {
+		locationListeners[i].changed(location);
+	}
+}
+
 void didFailProvisionalLoadWithError(int error, int frame) {
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
@@ -660,7 +701,7 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  Howeever, Safari fires
+		* the identifierForInitialRequest event is received.  However, Safari fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted

@@ -117,6 +117,11 @@ fail:
 	proc((int)sender, user_data, 10, (int)frame, 0, 0, 0);
 }
 
+- (void)webView:(WebView *)sender didChangeLocationWithinPageForFrame:(WebFrame *)frame
+{
+	proc((int)sender, user_data, 31, (int)frame, 0, 0, 0);
+}
+
 /* WebResourceLoadDelegate */
 
 - (void)webView:(WebView *)sender resource:(id)identifier didFinishLoadingFromDataSource:(WebDataSource *)dataSource
