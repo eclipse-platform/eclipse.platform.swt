@@ -182,7 +182,7 @@ abstract class Tab {
 				editItem.setMenu(menu);
 				
 				shell.pack();
-				shell.setSize(400, 500);
+				shell.setSize(500, 600);
 				shell.open();
 				while(!shell.isDisposed())
 					if (!display.readAndDispatch()) display.sleep();
