@@ -448,53 +448,55 @@ class GridLayoutTab extends Tab {
 		code.append ("\t\tshell.setLayout (gridLayout);\n");
 		
 		boolean first = true;
+		boolean bounds, align, grab, span;
 		for (int i = 0; i < children.length; i++) {
 			Control control = children [i];
 			code.append (getChildCode (control, i));
 			GridData data = (GridData) control.getLayoutData ();
 			if (data != null) {
+				/* Use the most efficient constructor */
+				bounds = data.widthHint != SWT.DEFAULT || data.heightHint != SWT.DEFAULT;
+				align = data.horizontalAlignment != SWT.BEGINNING || data.verticalAlignment != SWT.CENTER;
+				grab = data.grabExcessHorizontalSpace || data.grabExcessVerticalSpace;
+				span = data.horizontalSpan != 1 || data.verticalSpan != 1;
+
 				code.append ("\t\t");
 				if (first) {
 					code.append ("GridData ");
 					first = false;
 				}
-				code.append ("data = new GridData ();\n");	
-				if (data.widthHint != SWT.DEFAULT) {
-					code.append ("\t\tdata.widthHint = " + data.widthHint + ";\n");
+				if (align || grab || span) {
+					code.append ("data = new GridData (");
+					code.append (alignmentString(data.horizontalAlignment) + ", ");
+					code.append (alignmentString(data.verticalAlignment) + ", ");
+					code.append (data.grabExcessHorizontalSpace + ", ");
+					code.append (data.grabExcessVerticalSpace);
+					if (span) {
+						code.append (", " + data.horizontalSpan);
+						code.append (", " + data.verticalSpan);
+					}
+					code.append(");\n");
+					if (data.widthHint != SWT.DEFAULT) {
+						code.append ("\t\tdata.widthHint = " + data.widthHint + ";\n");
+					}
+					if (data.heightHint != SWT.DEFAULT) {
+						code.append ("\t\tdata.heightHint = " + data.heightHint + ";\n");
+					}
+				} else {
+					if (bounds) {
+						code.append ("data = new GridData (");
+						code.append (data.widthHint == SWT.DEFAULT ? "SWT.DEFAULT" : String.valueOf(data.widthHint) + ", ");
+						code.append (data.heightHint == SWT.DEFAULT ? "SWT.DEFAULT" : String.valueOf(data.heightHint));
+						code.append(");\n");
+					} else {
+						code.append ("data = new GridData ();\n");
+					}
 				}
-				if (data.heightHint != SWT.DEFAULT) {
-					code.append ("\t\tdata.heightHint = " + data.heightHint + ";\n");
-				}
-				if (data.horizontalAlignment != SWT.BEGINNING) {
-					String alignment;
-					int hAlignment = data.horizontalAlignment;
-					if (hAlignment == SWT.CENTER) alignment = "SWT.CENTER";
-					else if (hAlignment == SWT.END) alignment = "SWT.END";
-					else alignment = "SWT.FILL";
-					code.append ("\t\tdata.horizontalAlignment = " + alignment + ";\n");
-				}
-				if (data.verticalAlignment != SWT.CENTER) {
-					String alignment;
-					int vAlignment = data.verticalAlignment;
-					if (vAlignment == SWT.BEGINNING) alignment = "SWT.BEGINNING";
-					else if (vAlignment == SWT.END) alignment = "SWT.END";
-					else alignment = "SWT.FILL";
-					code.append ("\t\tdata.verticalAlignment = " + alignment + ";\n");
-				}	
 				if (data.horizontalIndent != 0) {
 					code.append ("\t\tdata.horizontalIndent = " + data.horizontalIndent + ";\n");
 				}
-				if (data.horizontalSpan != 1) {
-					code.append ("\t\tdata.horizontalSpan = " + data.horizontalSpan + ";\n");
-				}
-				if (data.verticalSpan != 1) {
-					code.append ("\t\tdata.verticalSpan = " + data.verticalSpan + ";\n");
-				}
-				if (data.grabExcessHorizontalSpace) {
-					code.append ("\t\tdata.grabExcessHorizontalSpace = true;\n");
-				}
-				if (data.grabExcessVerticalSpace) {
-					code.append ("\t\tdata.grabExcessVerticalSpace = true;\n");
+				if (data.verticalIndent != 0) {
+					code.append ("\t\tdata.verticalIndent = " + data.verticalIndent + ";\n");
 				}
 				if (data.minimumWidth != 0) {
 					code.append ("\t\tdata.minimumWidth = " + data.minimumWidth + ";\n");
@@ -518,6 +520,13 @@ class GridLayoutTab extends Tab {
 		return code;
 	}
 	
+	String alignmentString(int alignment) {
+		if (alignment == SWT.BEGINNING) return "SWT.BEGINNING";
+		if (alignment == SWT.CENTER) return "SWT.CENTER";
+		if (alignment == SWT.END) return "SWT.END";
+		return "SWT.FILL";
+	}
+
 	/**
 	 * Returns the layout data field names.
 	 */
