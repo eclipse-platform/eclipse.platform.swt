@@ -413,13 +413,11 @@ class GridLayoutTab extends Tab {
 	 */	
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
-		code.append ("\t\tGridLayout gridLayout = new GridLayout ();\n");
-		if (gridLayout.numColumns != 1) {
-			code.append ("\t\tgridLayout.numColumns = " + gridLayout.numColumns + ";\n");
+		code.append ("\t\tGridLayout gridLayout = new GridLayout (");
+		if (gridLayout.numColumns != 1 || gridLayout.makeColumnsEqualWidth) {
+			code.append (gridLayout.numColumns + ", " + gridLayout.makeColumnsEqualWidth);
 		}
-		if (gridLayout.makeColumnsEqualWidth) {
-			code.append ("\t\tgridLayout.makeColumnsEqualWidth = true;\n");
-		}
+		code.append(");\n");
 		if (gridLayout.marginWidth != 5) {
 			code.append("\t\tgridLayout.marginWidth = " + gridLayout.marginWidth + ";\n");
 		}
