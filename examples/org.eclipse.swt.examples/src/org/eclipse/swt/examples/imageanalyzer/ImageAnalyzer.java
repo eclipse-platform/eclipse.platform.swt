@@ -77,10 +77,11 @@ public class ImageAnalyzer {
 			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg, *.jpeg, *.jfif)",
 			"PNG (*.png)", "TIFF (*.tif, *.tiff)" };
 	static final String[] SAVE_FILTER_EXTENSIONS = new String[] {
-			"*.bmp", "*.gif", "*.ico", "*.jpg", "*.png", "*.tif" };
+			"*.bmp", "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png", "*.tif", "*.bmp" };
 	static final String[] SAVE_FILTER_NAMES = new String[] {
-			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)",
-			"PNG (*.png)", "TIFF (*.tif)" };
+			"Uncompressed BMP (*.bmp)", "RLE Compressed BMP (*.bmp)", "GIF (*.gif)",
+			"ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)",
+			"TIFF (*.tif)", "OS/2 BMP (*.bmp)" };
 
 	class TextPrompter extends Dialog {
 		String message = "";
@@ -1079,15 +1080,19 @@ public class ImageAnalyzer {
 			return;
 
 		// Figure out what file type the user wants saved.
-		// We need to rely on the file extension because FileDialog
-		// does not have API for asking what filter type was selected.
-		int filetype = determineFileType(filename);
-		if (filetype == SWT.IMAGE_UNDEFINED) {
-			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-			box.setMessage(createMsg(bundle.getString("Unknown_extension"), 
-			                         filename.substring(filename.lastIndexOf('.') + 1)));
-			box.open();
-			return;
+		int filetype = fileChooser.getFilterIndex();
+		if (filetype == -1) {
+			/* The platform file dialog does not support user-selectable file filters.
+			 * Determine the desired type by looking at the file extension. 
+			 */
+			filetype = determineFileType(filename);
+			if (filetype == SWT.IMAGE_UNDEFINED) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+				box.setMessage(createMsg(bundle.getString("Unknown_extension"), 
+					filename.substring(filename.lastIndexOf('.') + 1)));
+				box.open();
+				return;
+			}
 		}
 		
 		if (new java.io.File(filename).exists()) {
@@ -1159,15 +1164,19 @@ public class ImageAnalyzer {
 			return;
 
 		// Figure out what file type the user wants saved.
-		// We need to rely on the file extension because FileDialog
-		// does not have API for asking what filter type was selected.
-		int filetype = determineFileType(filename);
-		if (filetype == SWT.IMAGE_UNDEFINED) {
-			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-			box.setMessage(createMsg(bundle.getString("Unknown_extension"), 
-			                         filename.substring(filename.lastIndexOf('.') + 1)));
-			box.open();
-			return;
+		int filetype = fileChooser.getFilterIndex();
+		if (filetype == -1) {
+			/* The platform file dialog does not support user-selectable file filters.
+			 * Determine the desired type by looking at the file extension. 
+			 */
+			filetype = determineFileType(filename);
+			if (filetype == SWT.IMAGE_UNDEFINED) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+				box.setMessage(createMsg(bundle.getString("Unknown_extension"), 
+					filename.substring(filename.lastIndexOf('.') + 1)));
+				box.open();
+				return;
+			}
 		}
 		
 		if (new java.io.File(filename).exists()) {

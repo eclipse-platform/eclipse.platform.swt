@@ -125,6 +125,24 @@ public String [] getFilterExtensions () {
 }
 
 /**
+ * Get the 0-based index of the file extension filter
+ * which was selected by the user, or -1 if no filter
+ * was selected.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @return index the file extension filter index
+ * 
+ * @see #getFilterExtensions
+ * @see #getFilterNames
+ */
+public int getFilterIndex () {
+	return filterExtensions == null || filterExtensions.length == 0 ? -1 : 0;
+}
+
+/**
  * Returns the names that describe the filter extensions
  * which the dialog will use to filter the files it shows.
  *
@@ -527,6 +545,23 @@ public void setFileName (String string) {
  */
 public void setFilterExtensions (String [] extensions) {
 	filterExtensions = extensions;
+}
+
+/**
+ * Set the 0-based index of the file extension filter
+ * which the dialog will use initially to filter the files
+ * it shows to the argument.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @param index the file extension filter index
+ * 
+ * @see #setFilterExtensions
+ * @see #setFilterNames
+ */
+public void setFilterIndex (int index) {
 }
 
 /**

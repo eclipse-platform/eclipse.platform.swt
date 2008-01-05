@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1243;
-int OS_nativeFunctionCallCount[1243];
+int OS_nativeFunctionCount = 1246;
+int OS_nativeFunctionCallCount[1246];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -573,12 +573,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1chooser_1get_1current_1folder",
 	"_1gtk_1file_1chooser_1get_1filename",
 	"_1gtk_1file_1chooser_1get_1filenames",
+	"_1gtk_1file_1chooser_1get_1filter",
 	"_1gtk_1file_1chooser_1set_1current_1folder",
 	"_1gtk_1file_1chooser_1set_1current_1name",
 	"_1gtk_1file_1chooser_1set_1extra_1widget",
 	"_1gtk_1file_1chooser_1set_1filename",
+	"_1gtk_1file_1chooser_1set_1filter",
 	"_1gtk_1file_1chooser_1set_1select_1multiple",
 	"_1gtk_1file_1filter_1add_1pattern",
+	"_1gtk_1file_1filter_1get_1name",
 	"_1gtk_1file_1filter_1new",
 	"_1gtk_1file_1filter_1set_1name",
 	"_1gtk_1file_1selection_1get_1filename",

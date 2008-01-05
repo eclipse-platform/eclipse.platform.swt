@@ -7921,6 +7921,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1filenames)
 }
 #endif
 
+#ifndef NO__1gtk_1file_1chooser_1get_1filter
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1filter)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1get_1filter_FUNC);
+/*
+	rc = (jint)gtk_file_chooser_get_filter(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_get_filter_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_get_filter");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1get_1filter_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -8029,6 +8058,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1filename)
 }
 #endif
 
+#ifndef NO__1gtk_1file_1chooser_1set_1filter
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1filter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1filter_FUNC);
+/*
+	gtk_file_chooser_set_filter(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_filter_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_filter");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1filter_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1set_1select_1multiple
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1select_1multiple)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -8082,6 +8137,35 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1filter_1add_1pattern)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1add_1pattern_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1file_1filter_1get_1name
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1file_1filter_1get_1name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1filter_1get_1name_FUNC);
+/*
+	rc = (jint)gtk_file_filter_get_name(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_filter_get_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_filter_get_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1get_1name_FUNC);
+	return rc;
 }
 #endif
 

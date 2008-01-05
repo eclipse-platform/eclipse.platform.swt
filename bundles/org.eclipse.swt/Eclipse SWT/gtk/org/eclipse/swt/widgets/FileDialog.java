@@ -38,6 +38,7 @@ public class FileDialog extends Dialog {
 	String fileName = "";
 	String[] fileNames = new String [0];
 	String fullPath = "";
+	int filterIndex = -1;
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
@@ -137,6 +138,30 @@ String computeResultChooserDialog () {
 					fullPath = new String (chars);
 					fileNames = new String [1];
 					fileNames[0] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
+				}
+			}
+		}
+	}
+	int /*long*/ filter = OS.gtk_file_chooser_get_filter (handle);
+	if (filter != 0) {
+		int /*long*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
+		if (filterNamePtr != 0) {
+			int length = OS.strlen (filterNamePtr);
+			byte[] buffer = new byte [length];
+			OS.memmove (buffer, filterNamePtr, length);
+			//OS.g_free (filterNamePtr); //GTK owns this pointer - do not free
+			String filterName = new String (Converter.mbcsToWcs (null, buffer));
+			for (int i = 0; i < filterExtensions.length; i++) {
+				if (filterNames.length > 0) {
+					if (filterNames[i].equals(filterName)) {
+						filterIndex = i;
+						break;
+					}
+				} else {
+					if (filterExtensions[i].equals(filterName)) {
+						filterIndex = i;
+						break;
+					}
 				}
 			}
 		}
@@ -260,6 +285,9 @@ public String [] getFileNames () {
  */
 public String [] getFilterExtensions () {
 	return filterExtensions;
+}
+public int getFilterIndex () {
+	return filterIndex;
 }
 /**
  * Returns the names that describe the filter extensions
@@ -449,6 +477,7 @@ void presetChooserDialog () {
 	/* Set the extension filters */
 	if (filterNames == null) filterNames = new String [0];
 	if (filterExtensions == null) filterExtensions = new String [0];
+	int /*long*/ initialFilter = 0;
 	for (int i = 0; i < filterExtensions.length; i++) {
 		if (filterExtensions [i] != null) {
 			int /*long*/ filter = OS.gtk_file_filter_new ();
@@ -472,7 +501,13 @@ void presetChooserDialog () {
 			byte [] filterString = Converter.wcsToMbcs (null, current, true);
 			OS.gtk_file_filter_add_pattern (filter, filterString);
 			OS.gtk_file_chooser_add_filter (handle, filter);
+			if (i == filterIndex) {
+				initialFilter = filter;
+			}
 		}
+	}
+	if (initialFilter != 0) {
+		OS.gtk_file_chooser_set_filter(handle, initialFilter);
 	}
 	fullPath = null;
 	fileNames = new String [0];
@@ -540,6 +575,9 @@ public void setFileName (String string) {
  */
 public void setFilterExtensions (String [] extensions) {
 	filterExtensions = extensions;
+}
+public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 /**
  * Sets the the names that describe the filter extensions

@@ -4828,6 +4828,15 @@ public static final int /*long*/ gtk_file_chooser_get_filenames(int /*long*/ cho
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_file_chooser_get_filter(int /*long*/ chooser);
+public static final int /*long*/ gtk_file_chooser_get_filter(int /*long*/ chooser) {
+	lock.lock();
+	try {
+		return _gtk_file_chooser_get_filter(chooser);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_file_chooser_set_current_folder(int /*long*/ chooser, int /*long*/ filename);
 public static final void gtk_file_chooser_set_current_folder(int /*long*/ chooser, int /*long*/ filename) {
 	lock.lock();
@@ -4864,6 +4873,15 @@ public static final void gtk_file_chooser_set_filename(int /*long*/ chooser, int
 		lock.unlock();
 	}
 }
+public static final native void _gtk_file_chooser_set_filter(int /*long*/ chooser, int /*long*/ filter);
+public static final void gtk_file_chooser_set_filter(int /*long*/ chooser, int /*long*/ filter) {
+	lock.lock();
+	try {
+		_gtk_file_chooser_set_filter(chooser, filter);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_file_chooser_set_select_multiple(int /*long*/ chooser, boolean select_multiple);
 public static final void gtk_file_chooser_set_select_multiple(int /*long*/ chooser, boolean select_multiple) {
 	lock.lock();
@@ -4887,6 +4905,15 @@ public static final int /*long*/ gtk_file_filter_new() {
 	lock.lock();
 	try {
 		return _gtk_file_filter_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_file_filter_get_name(int /*long*/ filter);
+public static final int gtk_file_filter_get_name(int /*long*/ filter) {
+	lock.lock();
+	try {
+		return _gtk_file_filter_get_name(filter);
 	} finally {
 		lock.unlock();
 	}

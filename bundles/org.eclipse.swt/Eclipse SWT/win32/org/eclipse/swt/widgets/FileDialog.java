@@ -36,6 +36,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
+	int filterIndex = 0;
 	static final String FILTER = "*.*";
 	static int BUFFER_SIZE = 1024 * 32;
 	static boolean USE_HOOK;
@@ -115,6 +116,24 @@ public String [] getFileNames () {
  */
 public String [] getFilterExtensions () {
 	return filterExtensions;
+}
+
+/**
+ * Get the 0-based index of the file extension filter
+ * which was selected by the user, or -1 if no filter
+ * was selected.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @return index the file extension filter index
+ * 
+ * @see #getFilterExtensions
+ * @see #getFilterNames
+ */
+public int getFilterIndex () {
+	return filterIndex;
 }
 
 /**
@@ -262,7 +281,7 @@ public String open () {
 	struct.nMaxFile = nMaxFile;
 	struct.lpstrInitialDir = lpstrInitialDir;
 	struct.lpstrFilter = lpstrFilter;
-	struct.nFilterIndex = 0;
+	struct.nFilterIndex = filterIndex == 0 ? filterIndex : filterIndex + 1;
 
 	/*
 	* Set the default extension to an empty string.  If the
@@ -396,6 +415,7 @@ public String open () {
 				fileNames = newFileNames;
 			}
 		}
+		filterIndex = struct.nFilterIndex - 1;
 	}
 	
 	/* Free the memory that was allocated. */
@@ -446,6 +466,24 @@ public void setFileName (String string) {
  */
 public void setFilterExtensions (String [] extensions) {
 	filterExtensions = extensions;
+}
+
+/**
+ * Set the 0-based index of the file extension filter
+ * which the dialog will use initially to filter the files
+ * it shows to the argument.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @param index the file extension filter index
+ * 
+ * @see #setFilterExtensions
+ * @see #setFilterNames
+ */
+public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 
 /**
