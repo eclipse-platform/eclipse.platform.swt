@@ -35,6 +35,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";  //$NON-NLS-1$//$NON-NLS-2$
+	int filterIndex = -1;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -128,7 +129,7 @@ public String [] getFilterExtensions () {
  * @see #getFilterNames
  */
 public int getFilterIndex () {
-	return -1;
+	return filterIndex;
 }
 
 /**
@@ -196,6 +197,7 @@ public String open () {
 		int filterPtr = parent.createDotNetString(strFilter.toString (), false);
 		OS.FileDialog_Filter (dialog, filterPtr);
 		OS.GCHandle_Free (filterPtr);
+		if (filterIndex != -1) OS.FileDialog_FilterIndex (dialog, filterIndex + 1);
 	}
 	
 	int filterPathPtr = parent.createDotNetString (filterPath, false);
@@ -231,6 +233,7 @@ public String open () {
 	} else {
 		fileNames = new String [0];
 	}
+	filterIndex = OS.FileDialog_FilterIndex(dialog) - 1;
 	
 	OS.GCHandle_Free (dialog);
 	/* Answer the full path or null */
@@ -283,6 +286,7 @@ public void setFilterExtensions (String [] extensions) {
  * @see #setFilterNames
  */
 public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 
 /**

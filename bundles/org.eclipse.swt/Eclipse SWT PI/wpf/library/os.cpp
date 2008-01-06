@@ -3257,6 +3257,30 @@ JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1Filter)
 }
 #endif
 
+#ifndef NO_FileDialog_1FilterIndex__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FileDialog_1FilterIndex__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FileDialog_1FilterIndex__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FileDialog_1FilterIndex__I_FUNC);
+	rc = (jint)((FileDialog^)TO_OBJECT(arg0))->FilterIndex;
+	OS_NATIVE_EXIT(env, that, FileDialog_1FilterIndex__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FileDialog_1FilterIndex__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1FilterIndex__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1FilterIndex__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FileDialog_1FilterIndex__II_FUNC);
+	((FileDialog^)TO_OBJECT(arg0))->FilterIndex = (arg1);
+	OS_NATIVE_EXIT(env, that, FileDialog_1FilterIndex__II_FUNC);
+}
+#endif
+
 #ifndef NO_FileDialog_1InitialDirectory
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1InitialDirectory)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1InitialDirectory)

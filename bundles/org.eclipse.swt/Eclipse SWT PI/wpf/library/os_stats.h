@@ -290,6 +290,8 @@ typedef enum {
 	FileDialog_1FileName_FUNC,
 	FileDialog_1FileNames_FUNC,
 	FileDialog_1Filter_FUNC,
+	FileDialog_1FilterIndex__I_FUNC,
+	FileDialog_1FilterIndex__II_FUNC,
 	FileDialog_1InitialDirectory_FUNC,
 	FileDialog_1Title_FUNC,
 	FileInfo_1DirectoryName_FUNC,

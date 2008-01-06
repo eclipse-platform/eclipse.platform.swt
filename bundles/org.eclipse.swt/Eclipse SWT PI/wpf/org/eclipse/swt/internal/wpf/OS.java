@@ -675,6 +675,8 @@ public static final native void Expander_IsExpanded(int sender, boolean value);
 public static final native void FileDialog_FileName(int sender, int value);
 public static final native int FileDialog_FileNames(int sender);
 public static final native void FileDialog_Filter(int sender, int value);
+public static final native int FileDialog_FilterIndex(int sender);
+public static final native void FileDialog_FilterIndex(int sender, int value);
 public static final native void FileDialog_InitialDirectory(int sender, int value);
 public static final native void FileDialog_Title(int sender, int value);
 public static final native int FileInfo_DirectoryName(int sender);
