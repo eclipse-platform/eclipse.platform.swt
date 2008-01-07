@@ -233,7 +233,7 @@ public String open () {
 	} else {
 		fileNames = new String [0];
 	}
-	filterIndex = OS.FileDialog_FilterIndex(dialog) - 1;
+	filterIndex = OS.FileDialog_FilterIndex (dialog) - 1;
 	
 	OS.GCHandle_Free (dialog);
 	/* Answer the full path or null */
