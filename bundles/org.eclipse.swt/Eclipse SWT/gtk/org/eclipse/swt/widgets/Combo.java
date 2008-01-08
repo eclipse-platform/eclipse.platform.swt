@@ -1347,16 +1347,18 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 					newIndex = oldIndex - 1;
 				}
 				break;
+			/*
+			* Feature in GTK. In gtk_combo_box, the PageUp and PageDown keys
+			* go the first and last items in the list rather than scrolling
+			* a page at a time. The fix is to emulate this behavior for
+			* gtk_combo_box_entry.
+			*/
 			case OS.GDK_Page_Up:
 		    case OS.GDK_KP_Page_Up:
-		    case OS.GDK_Home: 
-		    case OS.GDK_KP_Home:
 		    	newIndex = 0;
 		    	break;
 		    case OS.GDK_Page_Down:
 		    case OS.GDK_KP_Page_Down:
-		    case OS.GDK_End: 
-		    case OS.GDK_KP_End:
 		    	newIndex = items.length - 1;
 		    	break;  
 		}
