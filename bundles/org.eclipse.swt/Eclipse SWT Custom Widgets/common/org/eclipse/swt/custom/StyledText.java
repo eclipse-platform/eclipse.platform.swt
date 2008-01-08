@@ -5335,7 +5335,6 @@ void handleResize(Event event) {
 			super.redraw(x, 0, rightMargin, oldHeight, false);
 		}
 	}
-//	System.out.println(clientArea);
 	if (oldHeight != clientAreaHeight) {
 		if (bottomMargin > 0) {
 			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight) - bottomMargin; 
