@@ -894,6 +894,14 @@ public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
 	}
 }
 
+public void test_add_intArray() {
+	Region reg = new Region(display);
+	int[] onePoint = new int[] {};
+	reg.add(new Rectangle(0,0,50,25));
+	reg.dispose();
+	
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
