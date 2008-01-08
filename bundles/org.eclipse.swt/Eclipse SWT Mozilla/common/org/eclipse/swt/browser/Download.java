@@ -345,7 +345,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 int OnProgressChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
 	int currentKBytes = aCurTotalProgress / 1024;
 	int totalKBytes = aMaxTotalProgress / 1024;
-	if (shell != null & !shell.isDisposed ()) {
+	if (shell != null && !shell.isDisposed ()) {
 		Object[] arguments = {new Integer (currentKBytes), new Integer (totalKBytes)};
 		String statusMsg = Compatibility.getMessage ("SWT_Download_Status", arguments); //$NON-NLS-1$
 		status.setText (statusMsg);
