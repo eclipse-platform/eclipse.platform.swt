@@ -131,6 +131,8 @@ public String [] getFilterExtensions () {
  * 
  * @see #getFilterExtensions
  * @see #getFilterNames
+ * 
+ * @since 3.4
  */
 public int getFilterIndex () {
 	return filterIndex;
@@ -481,6 +483,8 @@ public void setFilterExtensions (String [] extensions) {
  * 
  * @see #setFilterExtensions
  * @see #setFilterNames
+ * 
+ * @since 3.4
  */
 public void setFilterIndex (int index) {
 	filterIndex = index;
