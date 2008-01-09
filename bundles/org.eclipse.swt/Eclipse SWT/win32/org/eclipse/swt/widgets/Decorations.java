@@ -1375,11 +1375,7 @@ public void setVisible (boolean visible) {
 				if (OS.IsZoomed (handle)) {
 					swFlags = OS.SW_SHOWMAXIMIZED;
 				} else {
-					if (handle == OS.GetActiveWindow ()) {
-						swFlags = OS.SW_RESTORE;
-					} else {
-						swFlags = OS.SW_SHOWNOACTIVATE;
-					}
+					swFlags = OS.SW_SHOWNOACTIVATE;
 				}
 			}
 		}
