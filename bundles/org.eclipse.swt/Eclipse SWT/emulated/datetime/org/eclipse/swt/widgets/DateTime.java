@@ -509,7 +509,8 @@ public int getMonth() {
 }
 
 String getNameText() {
-	return calendar.getTime().toString();
+	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
+			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
 }
 
 /**

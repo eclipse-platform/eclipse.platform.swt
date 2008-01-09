@@ -510,10 +510,8 @@ public int getMonth () {
 }
 
 String getNameText() {
-	Calendar cal = Calendar.getInstance();
-	cal.set(getYear(), getMonth(), getDay(), 
-			getHours(), getMinutes(), getSeconds());
-	return cal.getTime().toString();
+	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
+			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
 }
 
 /**
