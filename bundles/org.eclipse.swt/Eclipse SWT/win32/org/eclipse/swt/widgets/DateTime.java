@@ -46,6 +46,8 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class DateTime extends Composite {
+	boolean ignoreSelection;
+	SYSTEMTIME lastSystemTime;
 	static final int /*long*/ DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
 	static final int /*long*/ CalendarProc;
@@ -546,10 +548,8 @@ public int getMonth () {
 }
 
 String getNameText() {
-	Calendar cal = Calendar.getInstance();
-	cal.set(getYear(), getMonth(), getDay(), 
-			getHours(), getMinutes(), getSeconds());
-	return cal.getTime().toString();
+	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
+			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
 }
 
 /**
@@ -592,6 +592,11 @@ public int getYear () {
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
 	return systime.wYear;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	lastSystemTime = null;
 }
 
 /**
@@ -640,6 +645,7 @@ public void setDay (int day) {
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
 	systime.wDay = (short)day;
 	OS.SendMessage (handle, msg, 0, systime);
+	lastSystemTime = null;
 }
 
 /**
@@ -709,6 +715,7 @@ public void setMonth (int month) {
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
 	systime.wMonth = (short)(month + 1);
 	OS.SendMessage (handle, msg, 0, systime);
+	lastSystemTime = null;
 }
 
 /**
@@ -755,6 +762,7 @@ public void setYear (int year) {
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
 	systime.wYear = (short)year;
 	OS.SendMessage (handle, msg, 0, systime);
+	lastSystemTime = null;
 }
 
 int widgetStyle () {
@@ -781,11 +789,32 @@ int /*long*/ windowProc () {
 
 LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
-		case OS.MCN_SELCHANGE: //SENT WHEN YOU SET IT?
+		case OS.MCN_SELCHANGE:
 		case OS.DTN_DATETIMECHANGE:
-			postEvent (SWT.Selection);
+			if (ignoreSelection) break;
+			SYSTEMTIME systime = new SYSTEMTIME ();
+			int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
+			OS.SendMessage (handle, msg, 0, systime);
+			if (lastSystemTime == null || systime.wDay != lastSystemTime.wDay || systime.wMonth != lastSystemTime.wMonth || systime.wYear != lastSystemTime.wYear) {
+				postEvent (SWT.Selection);
+				if ((style & SWT.TIME) == 0) lastSystemTime = systime;
+			}
 			break;
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);
+}
+
+LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_TIMER (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows. For some reason, Windows sends WM_NOTIFY with
+	* MCN_SELCHANGE at regular intervals. This is unexpected. The fix is
+	* to ignore MCN_SELCHANGE during WM_TIMER.
+	*/
+	ignoreSelection = true;
+	int /*long*/ code = callWindowProc(handle, OS.WM_TIMER, wParam, lParam);
+	ignoreSelection = false;
+	return code == 0 ? LRESULT.ZERO : new LRESULT(code);
 }
 }
