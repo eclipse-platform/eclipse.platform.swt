@@ -512,7 +512,7 @@ abstract class Tab {
 	 * Creates and opens the "Listener selection" dialog.
 	 */
 	void createListenerSelectionDialog () {
-		final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
 		dialog.setText (ControlExample.getResourceString ("Select_Listeners"));
 		dialog.setLayout (new GridLayout (2, false));
 		final Table table = new Table (dialog, SWT.BORDER | SWT.V_SCROLL | SWT.CHECK);
@@ -583,7 +583,7 @@ abstract class Tab {
 		Point size = dialog.getSize();
 		Rectangle bounds = display.getBounds();
 		if (size.y > bounds.height) {
-			dialog.setSize(bounds.height, size.x);
+			dialog.setSize(size.x, bounds.height);
 		}
 		dialog.open ();
 		while (! dialog.isDisposed()) {
