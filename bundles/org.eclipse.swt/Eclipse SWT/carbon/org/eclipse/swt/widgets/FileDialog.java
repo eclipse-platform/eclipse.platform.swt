@@ -35,6 +35,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
+	int filterIndex = -1;
 	static final char EXTENSION_SEPARATOR = ';';
 
 /**
@@ -127,9 +128,11 @@ public String [] getFilterExtensions () {
  * 
  * @see #getFilterExtensions
  * @see #getFilterNames
+ * 
+ * @since 3.4
  */
 public int getFilterIndex () {
-	return -1;
+	return filterIndex;
 }
 
 /**
@@ -275,6 +278,7 @@ public String open () {
 				OS.AECountItems (selection, count);
 				if (count [0] > 0) {
 					fileNames = new String [count [0]];
+					filterIndex = -1;
 					int maximumSize = 80; // size of FSRef
 					int dataPtr = OS.NewPtr (maximumSize);
 					int[] aeKeyword = new int [1];
@@ -415,8 +419,11 @@ public void setFilterExtensions (String [] extensions) {
  * 
  * @see #setFilterExtensions
  * @see #setFilterNames
+ * 
+ * @since 3.4
  */
 public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 
 /**
