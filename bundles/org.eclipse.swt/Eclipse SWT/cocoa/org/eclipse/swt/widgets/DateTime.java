@@ -241,6 +241,11 @@ public int getMonth () {
 	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).monthOfYear();
 }
 
+String getNameText() {
+	return (style & SWT.TIME) != 0 ? getHours() + ":" + getMinutes() + ":" + getSeconds()
+			: (getMonth() + 1) + "/" + getDay() + "/" + getYear();
+}
+
 /**
  * Returns the receiver's seconds.
  * <p>
