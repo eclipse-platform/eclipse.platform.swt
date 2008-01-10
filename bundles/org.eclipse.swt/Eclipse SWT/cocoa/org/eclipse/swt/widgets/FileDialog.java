@@ -35,6 +35,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
+	int filterIndex = -1;
 	static final char EXTENSION_SEPARATOR = ';';
 
 /**
@@ -127,9 +128,11 @@ public String [] getFilterExtensions () {
  * 
  * @see #getFilterExtensions
  * @see #getFilterNames
+ * 
+ * @since 3.4
  */
 public int getFilterIndex () {
-	return -1;
+	return filterIndex;
 }
 
 /**
@@ -198,6 +201,7 @@ public String open () {
 				fileNames[i] = new String(buffer);
 			}
 		}
+		filterIndex = -1;
 	}
 	return fullPath;	
 }
@@ -246,8 +250,11 @@ public void setFilterExtensions (String [] extensions) {
  * 
  * @see #setFilterExtensions
  * @see #setFilterNames
+ * 
+ * @since 3.4
  */
 public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 
 /**

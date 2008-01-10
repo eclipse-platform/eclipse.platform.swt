@@ -40,6 +40,7 @@ public class FileDialog extends Dialog {
 	String fileName = ""; //$NON-NLS-1$
 	String filterPath = ""; //$NON-NLS-1$
 	String fullPath;
+	int filterIndex = -1;
 	static final String FILTER = "*"; //$NON-NLS-1$
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 
@@ -137,9 +138,11 @@ public String [] getFilterExtensions () {
  * 
  * @see #getFilterExtensions
  * @see #getFilterNames
+ * 
+ * @since 3.4
  */
 public int getFilterIndex () {
-	return filterExtensions == null || filterExtensions.length == 0 ? -1 : 0;
+	return filterIndex;
 }
 
 /**
@@ -236,6 +239,7 @@ int okPressed (int widget, int client, int call) {
 	}
 	OS.XmStringFree (xmString1);
 	
+	filterIndex = filterExtensions == null || filterExtensions.length == 0 ? -1 : 0;
 	if ((style & SWT.MULTI) != 0) {
 		int fileList = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
 		if (fileList == 0) return 0;
@@ -560,8 +564,11 @@ public void setFilterExtensions (String [] extensions) {
  * 
  * @see #setFilterExtensions
  * @see #setFilterNames
+ * 
+ * @since 3.4
  */
 public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 
 /**

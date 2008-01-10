@@ -142,6 +142,7 @@ String computeResultChooserDialog () {
 			}
 		}
 	}
+	filterIndex = -1;
 	int /*long*/ filter = OS.gtk_file_chooser_get_filter (handle);
 	if (filter != 0) {
 		int /*long*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
@@ -174,6 +175,7 @@ String computeResultChooserDialog () {
 	return fullPath;
 }
 String computeResultClassicDialog () {
+	filterIndex = -1;
 	GtkFileSelection selection = new GtkFileSelection ();
 	OS.memmove (selection, handle);
 	int /*long*/ entry = selection.selection_entry;
@@ -299,6 +301,8 @@ public String [] getFilterExtensions () {
  * 
  * @see #getFilterExtensions
  * @see #getFilterNames
+ * 
+ * @since 3.4
  */
 public int getFilterIndex () {
 	return filterIndex;
@@ -603,6 +607,8 @@ public void setFilterExtensions (String [] extensions) {
  * 
  * @see #setFilterExtensions
  * @see #setFilterNames
+ * 
+ * @since 3.4
  */
 public void setFilterIndex (int index) {
 	filterIndex = index;
