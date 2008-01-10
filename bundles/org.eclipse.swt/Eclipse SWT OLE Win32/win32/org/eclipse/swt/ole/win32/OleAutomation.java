@@ -90,10 +90,12 @@ OleAutomation(IDispatch idispatch) {
 	objIDispatch.AddRef();
 	
 	int /*long*/[] ppv = new int /*long*/[1];
+	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
+	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
+	 */
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
-		objITypeInfo.AddRef();
 	}
 }
 /**
@@ -111,10 +113,12 @@ OleAutomation(IDispatch idispatch) {
 	objIDispatch = clientSite.getAutomationObject();
 
 	int /*long*/[] ppv = new int /*long*/[1];
+	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
+	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
+	 */
 	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
 	if (result == OLE.S_OK) {
 		objITypeInfo = new ITypeInfo(ppv[0]);
-		objITypeInfo.AddRef();
 	}
  }
 /**
