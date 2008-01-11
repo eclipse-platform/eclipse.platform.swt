@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 927;
-int OS_nativeFunctionCallCount[927];
+int OS_nativeFunctionCount = 928;
+int OS_nativeFunctionCallCount[928];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -868,6 +868,7 @@ char * OS_nativeFunctionNames[] = {
 	"Shell_1NotifyIconA",
 	"Shell_1NotifyIconW",
 	"ShowCaret",
+	"ShowCursor",
 	"ShowOwnedPopups",
 	"ShowScrollBar",
 	"ShowWindow",

@@ -876,6 +876,7 @@ typedef enum {
 	Shell_1NotifyIconA_FUNC,
 	Shell_1NotifyIconW_FUNC,
 	ShowCaret_FUNC,
+	ShowCursor_FUNC,
 	ShowOwnedPopups_FUNC,
 	ShowScrollBar_FUNC,
 	ShowWindow_FUNC,

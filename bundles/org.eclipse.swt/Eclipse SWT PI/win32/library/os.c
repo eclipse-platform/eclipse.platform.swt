@@ -13753,6 +13753,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ShowCaret)
 }
 #endif
 
+#ifndef NO_ShowCursor
+JNIEXPORT jint JNICALL OS_NATIVE(ShowCursor)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ShowCursor_FUNC);
+	rc = (jint)ShowCursor(arg0);
+	OS_NATIVE_EXIT(env, that, ShowCursor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ShowOwnedPopups
 JNIEXPORT jboolean JNICALL OS_NATIVE(ShowOwnedPopups)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)

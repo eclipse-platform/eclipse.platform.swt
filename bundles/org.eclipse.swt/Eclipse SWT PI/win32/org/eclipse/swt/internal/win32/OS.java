@@ -311,7 +311,9 @@ public class OS extends C {
 	public static final int BP_CHECKBOX = 3;
 	public static final int BP_GROUPBOX = 4;
 	public static final int BST_CHECKED = 0x1;
+	public static final int BST_INDETERMINATE = 0x2;
 	public static final int BST_UNCHECKED = 0x0;
+	public static final int BS_3STATE = 0x5;
 	public static final int BS_BITMAP = 0x80;
 	public static final int BS_CENTER = 0x300;
 	public static final int BS_CHECKBOX = 0x2;
@@ -3934,6 +3936,7 @@ public static final native boolean SHGetPathFromIDListW (int /*long*/ pidl, char
 public static final native boolean SHGetPathFromIDListA (int /*long*/ pidl, byte [] pszPath);
 public static final native boolean SHSetAppKeyWndAssoc (byte bVk, int /*long*/ hwnd);
 public static final native boolean ShowCaret (int /*long*/ hWnd);
+public static final native int ShowCursor (boolean bShow);
 public static final native boolean ShowOwnedPopups (int /*long*/ hWnd, boolean fShow);
 public static final native boolean ShowScrollBar (int /*long*/ hWnd, int wBar, boolean bShow);
 public static final native boolean ShowWindow (int /*long*/ hWnd, int nCmdShow);
