@@ -1448,6 +1448,7 @@ public class OS extends C {
 	public static final int SPI_GETFONTSMOOTHINGTYPE = 0x200A;
 	public static final int SPI_GETHIGHCONTRAST = 66;
 	public static final int SPI_GETWORKAREA = 0x30;
+	public static final int SPI_GETMOUSEVANISH = 0x1020;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
 	public static final int SPI_GETCARETWIDTH = 0x2006;

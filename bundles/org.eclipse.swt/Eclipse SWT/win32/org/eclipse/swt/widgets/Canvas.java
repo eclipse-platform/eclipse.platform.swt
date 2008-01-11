@@ -334,6 +334,27 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	if (caret != null) {
+		switch ((int)/*64*/wParam) {
+			case SWT.DEL:
+			case SWT.BS:
+				break;
+			default: {
+				if (OS.GetKeyState (OS.VK_CONTROL) >= 0) {
+					int [] value = new int [1];
+					if (OS.SystemParametersInfo (OS.SPI_GETMOUSEVANISH, 0, value, 0)) {
+						if (value [0] != 0) OS.SetCursor (0);
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_COMPOSITION (wParam, lParam);
