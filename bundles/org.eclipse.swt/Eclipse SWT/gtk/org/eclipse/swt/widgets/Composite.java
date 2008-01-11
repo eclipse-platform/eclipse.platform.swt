@@ -272,7 +272,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
 	if ((style & SWT.EMBEDDED) == 0) {
-		if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+		if ((state & CANVAS) != 0) {
 			/* Prevent an input method context from being created for the Browser widget */
 			if (display.getData (NO_INPUT_METHOD) == null) {
 				imHandle = OS.gtk_im_multicontext_new ();
