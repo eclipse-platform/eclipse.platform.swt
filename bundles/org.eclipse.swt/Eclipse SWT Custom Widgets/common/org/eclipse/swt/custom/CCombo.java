@@ -82,7 +82,7 @@ public final class CCombo extends Composite {
  * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
-	super (parent, style = checkStyle (style));
+	super (parent, style = (checkStyle (style) | SWT.NO_FOCUS));
 	
 	int textStyle = SWT.SINGLE;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
@@ -510,6 +510,12 @@ char _findMnemonic (String string) {
 	} while (index < length);
  	return '\0';
 }
+//public boolean forceFocus () {
+//	checkWidget();
+//	if (!isEnabled () || !isVisible ()) return false;
+//	if (isFocusControl ()) return true;
+//	return text.forceFocus ();
+//}
 /* 
  * Return the Label immediately preceding the receiver in the z-order, 
  * or null if none. 
