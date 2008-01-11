@@ -56,7 +56,7 @@
 </target>
 
 <!-- Build swt.dll for ia64 -->
-<target name="build_win32_ai64_dll" depends="init">
+<target name="build_win32_ia64_dll" depends="init">
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 		<arg line="ia64"/>
 		<arg line="install"/>
