@@ -489,6 +489,7 @@ int getSelectionText () {
 					value = wholeValue + decimalValue;
 				} else {
 					value = Integer.parseInt (string);
+					for (int i = 0; i < digits; i++) value *= 10;
 				}
 			} else {
 				value = Integer.parseInt (string);
