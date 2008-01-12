@@ -1235,7 +1235,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 boolean setTabGroupFocus (boolean next) {
 	if (isTabItem ()) return setTabItemFocus (next);
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
-	if ((state & CANVAS) != 0) {
+	if (takeFocus && (state & CANVAS) != 0) {
 		takeFocus = hooksKeys ();
 		if ((style & SWT.EMBEDDED) != 0) takeFocus = true;
 	}

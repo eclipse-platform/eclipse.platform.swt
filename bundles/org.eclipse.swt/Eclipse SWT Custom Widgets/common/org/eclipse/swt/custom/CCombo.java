@@ -510,12 +510,6 @@ char _findMnemonic (String string) {
 	} while (index < length);
  	return '\0';
 }
-//public boolean forceFocus () {
-//	checkWidget();
-//	if (!isEnabled () || !isVisible ()) return false;
-//	if (isFocusControl ()) return true;
-//	return text.forceFocus ();
-//}
 /* 
  * Return the Label immediately preceding the receiver in the z-order, 
  * or null if none. 
