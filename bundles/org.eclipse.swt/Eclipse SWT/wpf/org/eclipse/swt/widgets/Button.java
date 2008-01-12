@@ -566,6 +566,7 @@ public void setText (String string) {
 
 int traversalCode (int key, int event) {
 	int code = super.traversalCode (key, event);
+	if ((style & SWT.ARROW) != 0) code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
 	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;
 }
