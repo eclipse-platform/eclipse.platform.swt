@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Button extends Control {
 	String text = "";
 	Image image;
+	boolean grayed;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -142,6 +143,7 @@ void createHandle () {
 		widget.setBezelStyle(OS.NSRoundedBezelStyle);
 	} else if ((style & SWT.CHECK) != 0) {
 		type = OS.NSSwitchButton;
+		widget.setAllowsMixedState (true);
 	} else if ((style & SWT.RADIO) != 0) {
 		type = OS.NSRadioButton;		
 	} else if ((style & SWT.TOGGLE) != 0) {
@@ -192,6 +194,12 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+public boolean getGrayed() {
+	checkWidget ();
+	if ((style &SWT.CHECK) != 0) return false;
+	return grayed;
+}
+
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.
@@ -231,6 +239,7 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
+	if ((style & SWT.CHECK) != 0 && grayed) return ((NSButton)view).state() == OS.NSMixedState;
     return ((NSButton)view).state() == OS.NSOnState;
 }
 
@@ -313,6 +322,14 @@ void sendSelection () {
 			selectRadio ();
 		}
 	}
+	if ((style & SWT.CHECK) != 0) {
+		if (grayed && ((NSButton)view).state() == OS.NSOnState) {
+			((NSButton)view).setState(OS.NSOffState);
+		}
+		if (!grayed && ((NSButton)view).state() == OS.NSMixedState) {
+			((NSButton)view).setState(OS.NSOnState);
+		}
+	}
 	postEvent (SWT.Selection);
 }
 
@@ -387,6 +404,20 @@ void setDefault (boolean value) {
 //	OS.SetWindowDefaultButton (window, value ? handle : 0);
 }
 
+public void setGrayed(boolean grayed) {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return;
+	boolean checked = getSelection ();
+	this.grayed = grayed;
+	if (checked) {
+		if (grayed) {
+			((NSButton) view).setState (OS.NSMixedState);
+		} else {
+			((NSButton) view).setState (OS.NSOnState);
+		}
+	}
+}
+
 /**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
@@ -444,7 +475,11 @@ boolean setRadioSelection (boolean value){
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	((NSButton)view).setState(selected ? OS.NSOnState : OS.NSOffState);
+	if (grayed) {
+		((NSButton)view).setState (selected ? OS.NSMixedState : OS.NSOffState);
+	} else {
+		((NSButton)view).setState (selected ? OS.NSOnState : OS.NSOffState);
+	}
 }
 
 /**

@@ -44,7 +44,7 @@ public class Button extends Control {
 	String text = "";
 	Image image;
 	int textHandle, imageHandle;
-	boolean ignoreSelection;
+	boolean ignoreSelection, grayed;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -286,6 +286,12 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+public boolean getGrayed () {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.
@@ -325,6 +331,13 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
+	if ((style & SWT.CHECK) != 0 && grayed) {
+		int property = OS.ToggleButton_IsCheckedProperty();
+		int value = OS.DependencyObject_GetValue(handle, property);
+		OS.GCHandle_Free(property);
+		if (value == 0) return true;
+		OS.GCHandle_Free(value);
+	}
 	return OS.ToggleButton_IsChecked (handle);
 }
 
@@ -348,6 +361,15 @@ public String getText () {
 
 void HandleClick (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if ((style & SWT.CHECK) != 0) {
+		if (grayed) {
+			if (OS.ToggleButton_IsChecked (handle)) {
+				ignoreSelection = true;
+				OS.ToggleButton_IsCheckedNullSetter (handle);
+				ignoreSelection = false;
+			}
+		}
+	}
 	if (!ignoreSelection) postEvent (SWT.Selection);	
 }
 
@@ -452,6 +474,23 @@ public void setAlignment (int alignment) {
 	OS.Control_HorizontalContentAlignment (handle, value);
 }
 
+public void setGrayed (boolean grayed) {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return;
+	boolean checked = getSelection();
+	this.grayed = grayed;
+	ignoreSelection = true;
+	if (checked){
+	if (grayed) {
+				OS.ToggleButton_IsCheckedNullSetter(handle);
+			} else {
+				OS.ToggleButton_IsChecked(handle, true);
+			}
+		}
+	setSelection (checked);
+	ignoreSelection = false;
+}
+
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	OS.Button_IsDefault (handle, value);
@@ -511,7 +550,11 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	ignoreSelection = true;
-	OS.ToggleButton_IsChecked (handle, selected);
+	if ((style & SWT.CHECK) != 0 && grayed) {
+		OS.ToggleButton_IsCheckedNullSetter (handle);
+	} else {
+		OS.ToggleButton_IsChecked (handle, selected);
+	}
 	ignoreSelection = false;
 }
 
