@@ -951,7 +951,9 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (hwndText, buffer);
 		OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
-		OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hwndText, OS.OBJID_CLIENT, 0);
+		if (!OS.IsWinCE) {
+			OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hwndText, OS.OBJID_CLIENT, 0);
+		}
 	}
 	if (notify) postEvent (SWT.Selection);
 }
