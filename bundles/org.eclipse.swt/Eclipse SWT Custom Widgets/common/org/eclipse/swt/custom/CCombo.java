@@ -82,7 +82,7 @@ public final class CCombo extends Composite {
  * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
-	super (parent, style = (checkStyle (style) | SWT.NO_FOCUS));
+	super (parent, style = checkStyle (style));
 	
 	int textStyle = SWT.SINGLE;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
