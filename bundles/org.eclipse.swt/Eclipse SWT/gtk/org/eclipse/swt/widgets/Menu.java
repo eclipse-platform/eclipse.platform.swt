@@ -696,9 +696,9 @@ int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y
     OS.gtk_widget_size_request (menu, requisition);
     int screenHeight = OS.gdk_screen_height ();
 	int reqy = this.y;
-	if (reqy + requisition.height > screenHeight && reqy - requisition.height >= 0) {
-    	reqy -= requisition.height;
-    }
+	if (reqy + requisition.height > screenHeight) {
+    	reqy = Math.max (0, reqy - requisition.height);
+	} 
     int screenWidth = OS.gdk_screen_width ();
 	int reqx = this.x;
     if ((style & SWT.RIGHT_TO_LEFT) != 0) {
