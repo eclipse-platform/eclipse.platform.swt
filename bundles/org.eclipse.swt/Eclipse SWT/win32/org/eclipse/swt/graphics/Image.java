@@ -995,16 +995,16 @@ int /*long*/ [] createGdipImage() {
 				OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
 				OS.DeleteObject(memDib);
 				OS.SelectObject(srcHdc, iconInfo.hbmMask);
-				if (bm.bmBitsPixel != 32) {
-					for (int y = 0, dp = 0; y < imgHeight; ++y) {
-						for (int x = 0; x < imgWidth; ++x) {
-								if (OS.GetPixel(srcHdc, x, y) != 0) {
-									srcData[dp + 3] = (byte)0;
-								} else {
-									srcData[dp + 3] = (byte)0xFF;
-								}
-							dp += 4;
+				for (int y = 0, dp = 3; y < imgHeight; ++y) {
+					for (int x = 0; x < imgWidth; ++x) {
+						if (srcData[dp] == 0) {
+							if (OS.GetPixel(srcHdc, x, y) != 0) {
+								srcData[dp] = (byte)0;
+							} else {
+								srcData[dp] = (byte)0xFF;
+							}
 						}
+						dp += 4;
 					}
 				}
 				OS.SelectObject(srcHdc, oldSrcBitmap);
