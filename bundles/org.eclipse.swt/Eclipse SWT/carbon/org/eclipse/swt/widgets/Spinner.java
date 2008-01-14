@@ -1153,11 +1153,12 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		}
 		index = 0;
 	}
-	boolean maxPositive = OS.GetControl32BitMaximum (buttonHandle) > 0;
-	boolean minNegative = OS.GetControl32BitMinimum (buttonHandle) < 0;
+	if (string.length() > 0) {
+		int minimum = OS.GetControl32BitMinimum (buttonHandle);
+		if (minimum < 0 && string.charAt (0) == '-') index++;
+	}
 	while (index < string.length ()) {
-		char ch = string.charAt (index);
-		if (!(Character.isDigit (ch) || (minNegative && ch == '-') || (maxPositive && ch == '+'))) break;
+		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
 	}
 	event.doit = index == string.length ();	
