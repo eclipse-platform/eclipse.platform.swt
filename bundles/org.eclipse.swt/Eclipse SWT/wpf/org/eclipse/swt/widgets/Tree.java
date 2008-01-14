@@ -1289,20 +1289,6 @@ void HandleExpanded (int sender, int e) {
 	OS.GCHandle_Free (source);
 }
 
-void HandleIndeterminate (int sender, int e) {
-	if (!checkEvent (e)) return;
-	int source = OS.RoutedEventArgs_Source (e);
-	TreeItem item = (TreeItem) display.getWidget (source);
-	OS.GCHandle_Free (source);
-	if (!item.grayed) {
-		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
-		if (checkbox != 0) {
-			OS.ToggleButton_IsChecked (checkbox, false);
-			OS.GCHandle_Free (checkbox);
-		}
-	}
-}
-
 void HandlePreviewKeyDown (int sender, int e) {
 	super.HandlePreviewKeyDown (sender, e);
 	if (!checkEvent (e)) return;
@@ -1465,12 +1451,6 @@ void hookEvents () {
 		handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleUnchecked");
 		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 		event = OS.ToggleButton_UncheckedEvent ();
-		OS.UIElement_AddHandler (handle, event, handler, false);
-		OS.GCHandle_Free (event);
-		OS.GCHandle_Free (handler);
-		handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleIndeterminate");
-		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
-		event = OS.ToggleButton_IndeterminateEvent ();
 		OS.UIElement_AddHandler (handle, event, handler, false);
 		OS.GCHandle_Free (event);
 		OS.GCHandle_Free (handler);
