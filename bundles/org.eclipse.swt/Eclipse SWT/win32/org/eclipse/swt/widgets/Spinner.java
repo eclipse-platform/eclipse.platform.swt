@@ -507,7 +507,7 @@ public int getSelection () {
 	}
 }
 
-int getSelectionText () {
+int getSelectionText (boolean [] parseFail) {
 	int length = OS.GetWindowTextLength (hwndText);
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (hwndText, buffer, length + 1);
@@ -518,7 +518,8 @@ int getSelectionText () {
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.indexOf (decimalSeparator);
 			if (index != -1)  {
-				String wholePart = string.substring (0, index);
+				int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
+				String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
 				String decimalPart = string.substring (index + 1);
 				if (decimalPart.length () > digits) {
 					decimalPart = decimalPart.substring (0, digits);
@@ -532,6 +533,7 @@ int getSelectionText () {
 				int decimalValue = Integer.parseInt (decimalPart);
 				for (int i = 0; i < digits; i++) wholeValue *= 10;
 				value = wholeValue + decimalValue;
+				if (string.startsWith ("-")) value = -value;
 			} else {
 				value = Integer.parseInt (string);
 				for (int i = 0; i < digits; i++) value *= 10;
@@ -544,6 +546,7 @@ int getSelectionText () {
 		if (min [0] <= value && value <= max [0]) return value;
 	} catch (NumberFormatException e) {
 	}
+	parseFail [0] = true;
 	return -1;
 }
 
@@ -839,7 +842,6 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int [] min = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
 	if (value <= min [0]) return;
@@ -868,7 +870,6 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int [] max = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
 	if (value >= max [0]) return;
@@ -926,11 +927,12 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
 	}
 	if (setText) {
-		String string = String.valueOf (value);
+		String string = String.valueOf (Math.abs (value));
 		if (digits > 0) {
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.length () - digits;
 			StringBuffer buffer = new StringBuffer ();
+			if (value < 0) buffer.append ("-");
 			if (index > 0) {
 				buffer.append (string.substring (0, index));
 				buffer.append (decimalSeparator);
@@ -988,7 +990,6 @@ void setToolTipText (Shell shell, String string) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (minimum < 0) return;
 	if (maximum <= minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
@@ -1033,8 +1034,12 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		}
 		index = 0;
 	}
+	int [] max = new int [1];
+	int [] min = new int [1];
+	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
 	while (index < string.length ()) {
-		if (!Character.isDigit (string.charAt (index))) break;
+		char ch = string.charAt (index);
+		if (!(Character.isDigit (ch) || (min [0]  < 0 && ch == '-') || (max [0] > 0 && ch == '+'))) break;
 		index++;
 	}
 	event.doit = index == string.length ();
@@ -1238,8 +1243,9 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	switch (code) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;
-			int value = getSelectionText ();
-			if (value != -1) {
+			boolean [] parseFail = new boolean [1];
+			int value = getSelectionText (parseFail);
+			if (!parseFail [0]) {
 				int pos;
 				if (OS.IsWinCE) {
 					pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
@@ -1270,8 +1276,9 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 		case OS.VK_NEXT: delta = -pageIncrement; break;
 	}
 	if (delta != 0) {
-		int value = getSelectionText ();
-		if (value != -1) {
+		boolean [] parseFail = new boolean [1];
+		int value = getSelectionText (parseFail);
+		if (parseFail [0]) {
 			if (OS.IsWinCE) {
 				value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 			} else {
@@ -1299,8 +1306,9 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 }
 
 LRESULT wmKillFocus (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
-	int value = getSelectionText ();
-	if (value == -1) {
+	boolean [] parseFail = new boolean [1];
+	int value = getSelectionText (parseFail);
+	if (parseFail [0]) {
 		if (OS.IsWinCE) {
 			value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 		} else {
