@@ -43,6 +43,7 @@ import org.eclipse.swt.events.*;
 public class Button extends Control {
 	String text = "";
 	Image image, bitmap, disabled;
+	boolean grayed;
 	static final byte [] ARM_AND_ACTIVATE;
 	static {
 		String name = "ArmAndActivate";
@@ -440,6 +441,11 @@ boolean getDefault () {
 //	return argList [1] != 0;
 	return this == menuShell ().defaultButton;
 }
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.
@@ -653,6 +659,11 @@ public void setFont (Font font) {
 	}
 	super.setFont (font);
 	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
+}
+public void setGrayed (boolean grayed) {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
 }
 /**
  * Sets the receiver's image to the argument, which may be

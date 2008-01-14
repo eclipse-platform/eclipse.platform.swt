@@ -43,6 +43,7 @@ import org.eclipse.swt.events.*;
 public class Button extends Control {
 	String text = "";
 	Image image;
+	boolean grayed;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -279,6 +280,24 @@ boolean getDefault () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the widget does not have
+ * the <code>CHECK</code> style, return false.
+ *
+ * @return the grayed state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
+/**
  * Returns the receiver's image if it has one, or null
  * if it does not.
  *
@@ -503,6 +522,24 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET);
+}
+
+/**
+ * Sets the grayed state of the receiver.  This state change 
+ * only applies if the control was created with the SWT.CHECK
+ * style.
+ *
+ * @param grayed the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
 }
 
 /**

@@ -13161,6 +13161,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1toggle_1button_1get_1active)
 }
 #endif
 
+#ifndef NO__1gtk_1toggle_1button_1get_1inconsistent
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1toggle_1button_1get_1inconsistent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1toggle_1button_1get_1inconsistent_FUNC);
+	rc = (jboolean)gtk_toggle_button_get_inconsistent((GtkToggleButton *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toggle_1button_1get_1inconsistent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1toggle_1button_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1toggle_1button_1new)
 	(JNIEnv *env, jclass that)
@@ -13180,6 +13192,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toggle_1button_1set_1active)
 	OS_NATIVE_ENTER(env, that, _1gtk_1toggle_1button_1set_1active_FUNC);
 	gtk_toggle_button_set_active((GtkToggleButton *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1toggle_1button_1set_1active_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1toggle_1button_1set_1inconsistent
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toggle_1button_1set_1inconsistent)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1toggle_1button_1set_1inconsistent_FUNC);
+	gtk_toggle_button_set_inconsistent((GtkToggleButton *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toggle_1button_1set_1inconsistent_FUNC);
 }
 #endif
 

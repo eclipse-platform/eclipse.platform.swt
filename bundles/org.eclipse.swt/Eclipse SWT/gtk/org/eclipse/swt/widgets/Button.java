@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
  */
 public class Button extends Control {
 	int /*long*/ boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
-	boolean selected;
+	boolean selected, grayed;
 	ImageList imageList;
 	Image image;
 	String text;
@@ -295,6 +295,12 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.
@@ -368,6 +374,16 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 			setSelection (!selected);
 		} else {
 			selectRadio ();
+		}
+	} else {
+		if ((style & SWT.CHECK) != 0) {
+			if (grayed) {
+				if (OS.gtk_toggle_button_get_active (handle)) {
+					OS.gtk_toggle_button_set_inconsistent (handle, true);
+				} else {
+					OS.gtk_toggle_button_set_inconsistent (handle, false);
+				}
+			}
 		}
 	}
 	postEvent (SWT.Selection);
@@ -625,6 +641,17 @@ void setForegroundColor (GdkColor color) {
 	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
+public void setGrayed (boolean grayed) {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
+	if (grayed && OS.gtk_toggle_button_get_active (handle)) {
+		OS.gtk_toggle_button_set_inconsistent (handle, true);
+	} else {
+		OS.gtk_toggle_button_set_inconsistent (handle, false);
+	}
+}
+
 /**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
@@ -702,6 +729,13 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 	OS.gtk_toggle_button_set_active (handle, selected);
+	if ((style & SWT.CHECK) != 0) {
+		if (selected && grayed) {
+			OS.gtk_toggle_button_set_inconsistent (handle, true);
+		} else {
+			OS.gtk_toggle_button_set_inconsistent (handle, false);
+		}
+	}
 	if ((style & SWT.RADIO) != 0) OS.gtk_toggle_button_set_active (groupHandle, !selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }

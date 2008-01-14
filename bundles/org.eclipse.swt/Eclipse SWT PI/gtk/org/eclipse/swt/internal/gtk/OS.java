@@ -7710,11 +7710,29 @@ public static final int /*long*/ gtk_toggle_button_new() {
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_toggle_button_get_inconsistent(int /*long*/ toggle_button);
+public static final boolean gtk_toggle_button_get_inconsistent(int /*long*/ toggle_button) {
+	lock.lock();
+	try {
+		return _gtk_toggle_button_get_inconsistent(toggle_button);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_toggle_button_set_active(int /*long*/ toggle_button, boolean is_active);
 public static final void gtk_toggle_button_set_active(int /*long*/ toggle_button, boolean is_active) {
 	lock.lock();
 	try {
 		_gtk_toggle_button_set_active(toggle_button, is_active);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_toggle_button_set_inconsistent(int /*long*/ toggle_button, boolean setting);
+public static final void gtk_toggle_button_set_inconsistent(int /*long*/ toggle_button, boolean setting) {
+	lock.lock();
+	try {
+		_gtk_toggle_button_set_inconsistent(toggle_button, setting);
 	} finally {
 		lock.unlock();
 	}

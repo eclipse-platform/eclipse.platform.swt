@@ -44,7 +44,7 @@ public class Button extends Control {
 	String text = "";
 	Image image;
 	int cIcon;
-	boolean isImage;
+	boolean isImage, grayed;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -371,6 +371,12 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.
@@ -481,6 +487,22 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
 			selectRadio ();
+		}
+	} else {
+		if ((style & SWT.CHECK) != 0) {
+			if (grayed) {
+				switch (OS.GetControl32BitValue (handle)) {
+					case 0: 
+						OS.SetControl32BitMaximum (handle, 2);
+						OS.SetControl32BitValue (handle, 2);
+						break;
+					case 1:
+					case 2:
+						OS.SetControl32BitMaximum (handle, 0);
+						OS.SetControl32BitValue (handle, 0);
+						break;
+				}
+			}
 		}
 	}
 	postEvent (SWT.Selection);
@@ -635,6 +657,26 @@ void setDefault (boolean value) {
 	OS.SetWindowDefaultButton (window, value ? handle : 0);
 }
 
+public void setGrayed (boolean grayed) {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
+	if (grayed) {
+		if (OS.GetControl32BitValue (handle) != 0) {
+			OS.SetControl32BitMaximum (handle, 2);
+			OS.SetControl32BitValue (handle, 2);
+		} else {
+			OS.SetControl32BitMaximum (handle, 0);
+			OS.SetControl32BitValue (handle, 0);
+		}
+	} else {
+		if (OS.GetControl32BitValue (handle) != 0) {
+			OS.SetControl32BitValue (handle, 1);
+		}
+		OS.SetControl32BitMaximum (handle, 1);
+	}
+}
+
 /**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
@@ -726,6 +768,19 @@ boolean setRadioSelection (boolean value){
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
+	if ((style & SWT.CHECK) != 0) {
+		if (grayed) {
+			if (selected) {
+				OS.SetControl32BitMaximum (handle, 2);
+				OS.SetControl32BitValue (handle, 2);
+			} else {
+				OS.SetControl32BitMaximum (handle, 0);
+				OS.SetControl32BitValue (handle, 0);
+			}
+			return;
+		}
+		OS.SetControl32BitMaximum (handle, 1);
+	}
 	OS.SetControl32BitValue (handle, selected ? 1 : 0);
 }
 

@@ -45,7 +45,7 @@ public class Button extends Control {
 	String text = "", message = "";
 	Image image, image2, disabledImage;
 	ImageList imageList;
-	boolean ignoreMouse;
+	boolean ignoreMouse, grayed;
 	static final int MARGIN = 4;
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
@@ -638,6 +638,24 @@ boolean getDefault () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the widget does not have
+ * the <code>CHECK</code> style, return false.
+ *
+ * @return the grayed state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getGrayed () {
+	checkWidget();
+	if ((style & SWT.CHECK) == 0) return false;
+	return grayed;
+}
+
+/**
  * Returns the receiver's image if it has one, or null
  * if it does not.
  *
@@ -695,8 +713,8 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	int /*long*/ state = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
-	return (state & OS.BST_CHECKED) != 0;
+	int /*long*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	return flags != OS.BST_UNCHECKED;
 }
 
 /**
@@ -918,6 +936,30 @@ public void setImage (Image image) {
 }
 
 /**
+ * Sets the grayed state of the receiver.  This state change 
+ * only applies if the control was created with the SWT.CHECK
+ * style.
+ *
+ * @param grayed the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget ();
+	if ((style & SWT.CHECK) == 0) return;
+	this.grayed = grayed;
+	int /*long*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	if (grayed) {
+		if (flags == OS.BST_CHECKED) updateSelection (OS.BST_INDETERMINATE);
+	} else {
+		if (flags == OS.BST_INDETERMINATE) updateSelection (OS.BST_CHECKED);
+	}
+}
+
+/**
  * Sets the widget message. When the widget is created
  * with the style <code>SWT.COMMAND</code>, the message text
  * is displayed to provide further information for the user.
@@ -995,16 +1037,10 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int flags = selected ? OS.BST_CHECKED : OS.BST_UNCHECKED;
-	/*
-	* Feature in Windows. When BM_SETCHECK is used
-	* to set the checked state of a radio or check
-	* button, it sets the WM_TABSTOP style.  This
-	* is undocumented and unwanted.  The fix is
-	* to save and restore the window style bits.
-	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);     
+	if ((style & SWT.CHECK) != 0) {
+		if (selected && grayed) flags = OS.BST_INDETERMINATE;
+	}
+	updateSelection (flags);
 }
 
 /**
@@ -1051,6 +1087,35 @@ public void setText (String string) {
 //		}
 //	}
 	_setText (string);
+}
+
+void updateSelection (int flags) {
+	if (flags != OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0)) {
+		/*
+		* Feature in Windows. When BM_SETCHECK is used
+		* to set the checked state of a radio or check
+		* button, it sets the WM_TABSTOP style.  This
+		* is undocumented and unwanted.  The fix is
+		* to save and restore the window style bits.
+		*/
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((style & SWT.CHECK) != 0) {
+			if (flags == OS.BST_INDETERMINATE) {
+				bits &= ~OS.BS_CHECKBOX;
+				bits |= OS.BS_3STATE;
+			} else {
+				bits |= OS.BS_CHECKBOX;
+				bits &= ~OS.BS_3STATE;
+			}
+			if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			}
+		}
+		OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
+		if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		}
+	}
 }
 
 int widgetStyle () {
