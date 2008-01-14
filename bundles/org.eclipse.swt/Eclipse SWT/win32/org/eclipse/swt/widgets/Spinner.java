@@ -950,6 +950,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		}
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (hwndText, buffer);
+		OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
 	}
 	if (notify) postEvent (SWT.Selection);
 }
@@ -1119,6 +1120,7 @@ LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	OS.SetFocus (hwndText);
+	OS.SendMessage (hwndText, OS.EM_SETSEL, 0, -1);
 	return null;
 }
 
