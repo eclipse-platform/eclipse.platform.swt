@@ -1034,12 +1034,13 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		}
 		index = 0;
 	}
-	int [] max = new int [1];
-	int [] min = new int [1];
-	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+	if (string.length() > 0) {
+		int [] min = new int [1];
+		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
+		if (min [0] < 0 && string.charAt (0) == '-') index++;
+	}
 	while (index < string.length ()) {
-		char ch = string.charAt (index);
-		if (!(Character.isDigit (ch) || (min [0]  < 0 && ch == '-') || (max [0] > 0 && ch == '+'))) break;
+		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
 	}
 	event.doit = index == string.length ();
