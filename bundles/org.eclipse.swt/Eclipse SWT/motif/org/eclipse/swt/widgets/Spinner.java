@@ -639,7 +639,6 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int [] argList1 = {OS.XmNminimumValue, 0, OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);	
 	if (value <= argList1 [1]) return;
@@ -663,7 +662,6 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int [] argList1 = {OS.XmNmaximumValue, 0, OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	if (value >= argList1 [1]) return;
@@ -735,7 +733,6 @@ public void setSelection (int value) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (minimum < 0) return;
 	if (maximum <= minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
@@ -773,7 +770,8 @@ void updateText () {
 				String decimalSeparator = getDecimalSeparator ();
 				int index = string.indexOf (decimalSeparator);
 				if (index != -1)  {
-					String wholePart = string.substring (0, index);
+					int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
+					String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
 					String decimalPart = string.substring (index + 1);
 					if (decimalPart.length () > digits) {
 						decimalPart = decimalPart.substring (0, digits);
@@ -787,8 +785,10 @@ void updateText () {
 					int decimalValue = Integer.parseInt (decimalPart);
 					for (int i = 0; i < digits; i++) wholeValue *= 10;
 					value = wholeValue + decimalValue;
+					if (string.startsWith ("-")) value = -value;
 				} else {
 					value = Integer.parseInt (string);
+					for (int i = 0; i < digits; i++) value *= 10;
 				}
 			} else {
 				value = Integer.parseInt (string);
@@ -800,11 +800,12 @@ void updateText () {
 		}
 	}
 	if (position == argList [7]) {
-		String string = String.valueOf (position);
+		String string = String.valueOf (Math.abs (position));
 		if (digits > 0) {
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.length () - digits;
 			StringBuffer buffer = new StringBuffer ();
+			if (position < 0) buffer.append ("-");
 			if (index > 0) {
 				buffer.append (string.substring (0, index));
 				buffer.append (decimalSeparator);
@@ -884,7 +885,7 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	event.text = text;
 	String string = text;
 	int index = 0;
-	int [] argList = {OS.XmNdecimalPoints, 0};
+	int [] argList = {OS.XmNdecimalPoints, 0, OS.XmNmaximumValue, 0, OS.XmNminimumValue, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (argList [1] > 0) {
 		String decimalSeparator = getDecimalSeparator ();
@@ -894,8 +895,11 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 		}
 		index = 0;
 	}
+	boolean maxPositive = argList [3] > 0;
+	boolean minNegative = argList [5] < 0;
 	while (index < string.length ()) {
-		if (!Character.isDigit (string.charAt (index))) break;
+		char ch = string.charAt (index);
+		if (!(Character.isDigit (ch) || (minNegative && ch == '-') || (maxPositive && ch == '+'))) break;
 		index++;
 	}
 	event.doit = index == string.length ();

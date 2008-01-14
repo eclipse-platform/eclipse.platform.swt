@@ -85,8 +85,9 @@ int actionProc (int theControl, int partCode) {
 	int result = super.actionProc (theControl, partCode);
 	if (result == OS.noErr) return result;
 	if (theControl == buttonHandle) {
-		int value = getSelectionText ();
-		if (value == -1) {
+		boolean [] parseFail = new boolean [1];
+		int value = getSelectionText (parseFail);
+		if (parseFail [0]) {
 			value = OS.GetControl32BitValue (buttonHandle);
 		}
 		int newValue = value;
@@ -456,7 +457,7 @@ public int getSelection () {
 	return OS.GetControl32BitValue (buttonHandle);
 }
 
-int getSelectionText () {
+int getSelectionText (boolean [] parseFail) {
 	int [] actualSize = new int [1];
 	int [] ptr = new int [1];
 	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
@@ -473,7 +474,8 @@ int getSelectionText () {
 				String decimalSeparator = getDecimalSeparator ();
 				int index = string.indexOf (decimalSeparator);
 				if (index != -1)  {
-					String wholePart = string.substring (0, index);
+					int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
+					String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
 					String decimalPart = string.substring (index + 1);
 					if (decimalPart.length () > digits) {
 						decimalPart = decimalPart.substring (0, digits);
@@ -487,6 +489,7 @@ int getSelectionText () {
 					int decimalValue = Integer.parseInt (decimalPart);
 					for (int i = 0; i < digits; i++) wholeValue *= 10;
 					value = wholeValue + decimalValue;
+					if (string.startsWith ("-")) value = -value;
 				} else {
 					value = Integer.parseInt (string);
 					for (int i = 0; i < digits; i++) value *= 10;
@@ -500,6 +503,7 @@ int getSelectionText () {
 		} catch (NumberFormatException e) {
 		}
 	}
+	parseFail [0] = true;
 	return -1;
 }
 
@@ -590,8 +594,9 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 		if (part [0] == OS.kControlFocusNoPart) {
-			int value = getSelectionText ();
-			if (value == -1) {
+			boolean [] parseFail = new boolean [1];
+			int value = getSelectionText (parseFail);
+			if (parseFail [0]) {
 				value = OS.GetControl32BitValue (buttonHandle);
 				setSelection (value, false, true, false);
 			}
@@ -633,8 +638,9 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		case 126: /* Up */ delta = increment; break;
 	}
 	if (delta != 0) {
-		int value = getSelectionText ();
-		if (value == -1) {
+		boolean [] parseFail = new boolean [1];
+		int value = getSelectionText (parseFail);
+		if (parseFail [0]) {
 			value = OS.GetControl32BitValue (buttonHandle);
 		}
 		int newValue = value + delta;
@@ -649,8 +655,9 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		return OS.noErr;
 	} else {
 		result = OS.CallNextEventHandler (nextHandler, theEvent);
-		int value = getSelectionText ();
-		if (value != -1) {
+		boolean [] parseFail = new boolean [1];
+		int value = getSelectionText (parseFail);
+		if (!parseFail [0]) {
 			int pos = OS.GetControl32BitValue (buttonHandle);
 			if (pos != value) setSelection (value, true, false, true);
 		}
@@ -927,7 +934,6 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int min = OS.GetControl32BitMinimum (buttonHandle);
 	if (value <= min) return;
 	int pos = OS.GetControl32BitValue (buttonHandle);
@@ -950,7 +956,6 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	int max = OS.GetControl32BitMaximum (buttonHandle);
 	if (value >= max) return;
 	int pos = OS.GetControl32BitValue (buttonHandle);
@@ -1002,11 +1007,12 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		OS.SetControl32BitValue (buttonHandle, value);
 	}
 	if (setText) {
-		String string = String.valueOf (value);
+		String string = String.valueOf (Math.abs (value));
 		if (digits > 0) {
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.length () - digits;
 			StringBuffer buffer = new StringBuffer ();
+			if (value < 0) buffer.append ("-");
 			if (index > 0) {
 				buffer.append (string.substring (0, index));
 				buffer.append (decimalSeparator);
@@ -1109,7 +1115,6 @@ char [] setText (String string, int start, int end, boolean notify) {
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
-	if (minimum < 0) return;
 	if (maximum <= minimum) return;
 	if (digits < 0) return;
 	if (increment < 1) return;
@@ -1148,8 +1153,11 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		}
 		index = 0;
 	}
+	boolean maxPositive = OS.GetControl32BitMaximum (buttonHandle) > 0;
+	boolean minNegative = OS.GetControl32BitMinimum (buttonHandle) < 0;
 	while (index < string.length ()) {
-		if (!Character.isDigit (string.charAt (index))) break;
+		char ch = string.charAt (index);
+		if (!(Character.isDigit (ch) || (minNegative && ch == '-') || (maxPositive && ch == '+'))) break;
 		index++;
 	}
 	event.doit = index == string.length ();	
