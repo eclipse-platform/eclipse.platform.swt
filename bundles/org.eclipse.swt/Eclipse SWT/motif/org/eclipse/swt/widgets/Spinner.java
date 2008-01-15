@@ -885,7 +885,7 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	event.text = text;
 	String string = text;
 	int index = 0;
-	int [] argList = {OS.XmNdecimalPoints, 0, OS.XmNmaximumValue, 0, OS.XmNminimumValue, 0};
+	int [] argList = {OS.XmNdecimalPoints, 0, OS.XmNminimumValue, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (argList [1] > 0) {
 		String decimalSeparator = getDecimalSeparator ();
@@ -895,11 +895,11 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 		}
 		index = 0;
 	}
-	boolean maxPositive = argList [3] > 0;
-	boolean minNegative = argList [5] < 0;
+	if (string.length () > 0) {
+		if (argList [3] < 0 && string.charAt (0) == '-') index++;
+	}
 	while (index < string.length ()) {
-		char ch = string.charAt (index);
-		if (!(Character.isDigit (ch) || (minNegative && ch == '-') || (maxPositive && ch == '+'))) break;
+		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
 	}
 	event.doit = index == string.length ();
