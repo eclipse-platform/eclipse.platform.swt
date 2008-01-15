@@ -128,7 +128,7 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 	
-	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
+	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
 	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.Verify};
@@ -324,6 +324,9 @@ void comboEvent (Event event) {
 			text = null;  
 			list = null;  
 			arrow = null;
+			break;
+		case SWT.FocusIn:
+			text.setFocus();
 			break;
 		case SWT.Move:
 			dropDown (false);
@@ -1616,8 +1619,6 @@ void textEvent (Event event) {
 		}
 		case SWT.Traverse: {		
 			switch (event.detail) {
-				//NOT SURE
-//				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
 				case SWT.TRAVERSE_ARROW_NEXT:
 					// The enter causes default selection and
@@ -1636,6 +1637,10 @@ void textEvent (Event event) {
 			notifyListeners (SWT.Traverse, e);
 			event.doit = e.doit;
 			event.detail = e.detail;
+			if (event.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
+				traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+				event.detail = SWT.TRAVERSE_NONE;
+			}
 			break;
 		}
 		case SWT.Verify: {
