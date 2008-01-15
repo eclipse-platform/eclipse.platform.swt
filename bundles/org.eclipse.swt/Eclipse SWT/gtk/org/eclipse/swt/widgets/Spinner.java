@@ -1067,14 +1067,14 @@ String verifyText (String string, int start, int end) {
 		}
 		index = 0;
 	}
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	boolean minNegative = adjustment.lower < 0;
-	boolean maxPositive = adjustment.upper > 0;
+	if (string.length () > 0) {
+		int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+		GtkAdjustment adjustment = new GtkAdjustment ();
+		OS.memmove (adjustment, hAdjustment);
+		if (adjustment.lower < 0 && string.charAt (0) == '-') index++;
+	}
 	while (index < string.length ()) {
-		char ch = string.charAt (index);
-		if (!(Character.isDigit (ch) || (minNegative && ch == '-') || (maxPositive && ch == '+'))) break;
+		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
 	}
 	event.doit = index == string.length ();
