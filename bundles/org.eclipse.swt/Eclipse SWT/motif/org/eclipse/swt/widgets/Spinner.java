@@ -800,8 +800,11 @@ void updateText () {
 		}
 	}
 	if (position == argList [7]) {
-		String string = String.valueOf (Math.abs (position));
-		if (digits > 0) {
+		String string;
+		if (digits == 0) {
+			string = String.valueOf (position);
+		} else {	
+			string = String.valueOf (Math.abs (position));
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.length () - digits;
 			StringBuffer buffer = new StringBuffer ();
