@@ -2840,7 +2840,7 @@ int HandleEvent (int /*long*/ event) {
 		*/
 		if (keyCode != lastKeyCode) {
 			lastKeyCode = keyCode;
-			switch (lastKeyCode) {
+			switch (keyCode) {
 				case SWT.SHIFT:
 				case SWT.CONTROL:
 				case SWT.ALT:
@@ -2862,16 +2862,45 @@ int HandleEvent (int /*long*/ event) {
 					Event keyEvent = new Event ();
 					keyEvent.widget = browser;
 					keyEvent.type = SWT.KeyDown;
-					keyEvent.keyCode = lastKeyCode;
-					keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
-					keyEvent.stateMask &= ~lastKeyCode;		/* remove current keydown if it's a state key */
+					keyEvent.keyCode = keyCode;
+					keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+					keyEvent.stateMask &= ~keyCode;		/* remove current keydown if it's a state key */
 					browser.notifyListeners (keyEvent.type, keyEvent);
+					break;
 				}
 				default: {
-					/* do nothing, KeyDown event will be sent for this key by keypress listener */
+					/* 
+					* If the keydown has Meta (but not Meta+Ctrl) as a modifier then send a KeyDown event for it here
+					* because a corresponding keypress event will not be received for it from the DOM.  If the keydown
+					* does not have Meta as a modifier, or has Meta+Ctrl as a modifier, then then do nothing here
+					* because its KeyDown event will be sent from the keypress listener.
+					*/
+					boolean[] aMetaKey = new boolean[1]; 
+					rc = domKeyEvent.GetMetaKey (aMetaKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (aMetaKey[0]) {
+						boolean[] aCtrlKey = new boolean[1];
+						rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+						if (rc != XPCOM.NS_OK) error (rc);
+						if (!aCtrlKey[0]) {
+							boolean[] aAltKey = new boolean[1], aShiftKey = new boolean[1]; 
+							rc = domKeyEvent.GetAltKey (aAltKey);
+							if (rc != XPCOM.NS_OK) error (rc);
+							rc = domKeyEvent.GetShiftKey (aShiftKey);
+							if (rc != XPCOM.NS_OK) error (rc);
+
+							Event keyEvent = new Event ();
+							keyEvent.widget = browser;
+							keyEvent.type = SWT.KeyDown;
+							keyEvent.keyCode = lastKeyCode;
+							keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+							browser.notifyListeners (keyEvent.type, keyEvent);
+						}
+					}
 				}
 			}
 		}
+
 		domKeyEvent.Release ();
 		return XPCOM.NS_OK;
 	}
@@ -2935,7 +2964,7 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.type = SWT.KeyDown;
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.character = (char)lastCharCode;
-		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 		browser.notifyListeners (keyEvent.type, keyEvent);
 		return XPCOM.NS_OK;
 	}
@@ -2979,7 +3008,7 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.type = SWT.KeyUp;
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.character = (char)lastCharCode;
-		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 		switch (lastKeyCode) {
 			case SWT.SHIFT:
 			case SWT.CONTROL:
@@ -3042,7 +3071,7 @@ int HandleEvent (int /*long*/ event) {
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
 	mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
-	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 
 	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		mouseEvent.type = SWT.MouseDown;
@@ -3075,7 +3104,7 @@ int HandleEvent (int /*long*/ event) {
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
 		mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
-		mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
+		mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 		mouseEvent.type = SWT.MouseDoubleClick;
 		mouseEvent.button = aButton[0] + 1;
 		mouseEvent.count = aDetail[0];
