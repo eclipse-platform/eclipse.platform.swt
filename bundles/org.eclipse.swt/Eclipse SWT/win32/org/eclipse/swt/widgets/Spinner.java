@@ -927,8 +927,11 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
 	}
 	if (setText) {
-		String string = String.valueOf (Math.abs (value));
-		if (digits > 0) {
+		String string;
+		if (digits == 0) {
+			string = String.valueOf (value);
+		} else {
+			string = String.valueOf (Math.abs (value));
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.length () - digits;
 			StringBuffer buffer = new StringBuffer ();
