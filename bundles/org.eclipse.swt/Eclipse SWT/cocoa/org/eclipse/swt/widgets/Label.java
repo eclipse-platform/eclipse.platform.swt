@@ -149,13 +149,14 @@ void createHandle () {
 			NSTextFieldCell cell = new NSTextFieldCell(textWidget.cell());
 			cell.setWraps(true);
 		}
-	
+		
 		widget.addSubview_(imageWidget);
 		widget.addSubview_(textWidget);
 		widget.setContentView(textWidget);
 		
 		imageView = imageWidget;
 		textView = textWidget;
+		_setAlignment();
 	}
 	view = widget;
 	parent.contentView().addSubview_(widget);
@@ -240,7 +241,22 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	//TODO - not implemented
+	_setAlignment();
+}
+
+void _setAlignment() {
+	if ((style & SWT.RIGHT) != 0) {
+		textView.setAlignment(OS.NSRightTextAlignment);
+		imageView.setImageAlignment(OS.NSImageAlignRight);
+	}
+	if ((style & SWT.LEFT) != 0) {
+		textView.setAlignment(OS.NSLeftTextAlignment);
+		imageView.setImageAlignment(OS.NSImageAlignLeft);
+	}
+	if ((style & SWT.CENTER) != 0) {
+		textView.setAlignment(OS.NSCenterTextAlignment);
+		imageView.setImageAlignment(OS.NSImageAlignCenter);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
