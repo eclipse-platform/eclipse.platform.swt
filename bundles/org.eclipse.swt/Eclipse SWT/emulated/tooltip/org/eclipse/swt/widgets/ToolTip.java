@@ -147,6 +147,8 @@ public void addSelectionListener (SelectionListener listener) {
 
 void configure () {
 	Display display = parent.getDisplay ();
+	int x = this.x;
+	int y = this.y;
 	if (x == -1 || y == -1) {
 		Point point = display.getCursorLocation ();
 		x = point.x;
