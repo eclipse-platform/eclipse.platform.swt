@@ -145,7 +145,10 @@ void createHandle () {
 		textWidget.setEditable(false);
 		textWidget.setDrawsBackground(false);
 		textWidget.setTag(jniRef);
-		
+		if ((style & SWT.WRAP) != 0) {
+			NSTextFieldCell cell = new NSTextFieldCell(textWidget.cell());
+			cell.setWraps(true);
+		}
 	
 		widget.addSubview_(imageWidget);
 		widget.addSubview_(textWidget);
