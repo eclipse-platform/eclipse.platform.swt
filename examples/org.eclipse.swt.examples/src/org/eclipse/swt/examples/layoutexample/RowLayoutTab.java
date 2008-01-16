@@ -29,7 +29,6 @@ class RowLayoutTab extends Tab {
 	TableEditor comboEditor, widthEditor, heightEditor, nameEditor, excludeEditor;
 	CCombo combo, exclude;
 	Text nameText, widthText, heightText;
-	int prevSelected;
 	
 	/* Constants */
 	final int NAME_COL = 0;
@@ -122,55 +121,6 @@ class RowLayoutTab extends Tab {
 						}
                     }
                 } 
-			}
-		});
-		
-		/* Add listener to add an element to the table */
-		add.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {				
-				if (event.detail == SWT.ARROW) {
-					ToolItem item = (ToolItem)event.widget;
-					ToolBar bar = item.getParent();
-					Menu menu = new Menu (shell, SWT.POP_UP);
-					for(int i = 0; i < OPTIONS.length; i++) {
-						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
-						newItem.setText(OPTIONS[i]);						
-						newItem.addSelectionListener (new SelectionAdapter(){
-							public void widgetSelected(SelectionEvent event) {
-								MenuItem menuItem = (MenuItem)event.widget;
-								if (menuItem.getSelection()) {
-									Menu menu  = menuItem.getParent();
-									prevSelected = menu.indexOf(menuItem);
-									TableItem item = new TableItem(table, SWT.NONE);
-									String name = menuItem.getText().toLowerCase() + String.valueOf(table.indexOf (item));
-									String[] insert = new String[] {name, menuItem.getText(), "-1", "-1", "false"};
-									item.setText(insert);
-									data.addElement (insert);
-									resetEditors ();
-								}
-							}
-						});							
-						newItem.setSelection (i == prevSelected);
-					}
-					Point pt = display.map (bar, null, event.x, event.y);
-					menu.setLocation (pt.x, pt.y);
-					menu.setVisible (true);
-					
-					while (menu != null && !menu.isDisposed () && menu.isVisible ()) {
-						if (!display.readAndDispatch ()) {
-							display.sleep ();
-						}
-					}
-					menu.dispose ();
-				} else {
-					String selection = OPTIONS[prevSelected];
-					TableItem item = new TableItem (table, 0);
-					String name = selection.toLowerCase() + String.valueOf (table.indexOf(item));
-					String[] insert = new String[] {name, selection, "-1", "-1", "false"};
-					item.setText (insert);
-					data.addElement (insert);
-					resetEditors ();
-				}
 			}
 		});
 	}
@@ -353,6 +303,14 @@ class RowLayoutTab extends Tab {
 		return code;
 	}
 	
+	/**
+	 * Returns the string to insert when a new child control is added to the table.
+	 */
+	String[] getInsertString (String controlType) {
+		String name = controlType.toLowerCase () + String.valueOf (table.getItemCount () - 1);
+		return new String [] {name, controlType, "-1", "-1", "false"};
+	}
+
 	/**
 	 * Returns the layout data field names.
 	 */

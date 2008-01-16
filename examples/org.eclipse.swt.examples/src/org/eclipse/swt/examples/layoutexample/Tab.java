@@ -50,6 +50,7 @@ abstract class Tab {
 	String [] names;
 	Control [] children;
 	ToolItem add, delete, clear, code;
+	int prevSelected = 0;
 	/* Common values for working with TableEditors */
 	Table table;
 	int index;
@@ -100,6 +101,56 @@ abstract class Tab {
 		toolBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		add = new ToolItem(toolBar, SWT.DROP_DOWN);
 		add.setText(LayoutExample.getResourceString("Add"));	
+		add.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent event) {
+				if (event.detail == SWT.ARROW) {
+					ToolItem item = (ToolItem)event.widget;
+					ToolBar bar = item.getParent ();
+					final Menu menu = new Menu (shell, SWT.POP_UP);
+					for (int i = 0; i < OPTIONS.length; i++) {
+						final MenuItem newItem = new MenuItem (menu, SWT.RADIO);
+						newItem.setText (OPTIONS [i]);						
+						newItem.addSelectionListener (new SelectionAdapter () {
+							public void widgetSelected (SelectionEvent event) {
+								MenuItem menuItem = (MenuItem)event.widget;
+								if (menuItem.getSelection ()) {
+									Menu menu  = menuItem.getParent ();
+									prevSelected = menu.indexOf (menuItem);
+									String [] insert = getInsertString (menuItem.getText ());
+									if (insert != null) {
+										TableItem item = new TableItem (table, SWT.NONE);
+										item.setText (insert);
+										data.addElement (insert);
+									}
+									resetEditors ();
+								}
+							}
+						});							
+						newItem.setSelection (i == prevSelected);
+					}
+					Point pt = display.map (bar, null, event.x, event.y);
+					menu.setLocation (pt.x, pt.y);
+					menu.setVisible (true);
+					
+					while (menu != null && !menu.isDisposed () && menu.isVisible ()) {
+						if (!display.readAndDispatch ()) {
+							display.sleep ();
+						}
+					}
+					menu.dispose ();
+				} else {
+					String selection = OPTIONS [prevSelected];
+					String [] insert = getInsertString (selection);
+					if (insert != null) {
+						TableItem item = new TableItem (table, 0);
+						item.setText (insert);
+						data.addElement (insert);
+					}
+					resetEditors ();
+				}
+			}
+		});
+
 		new ToolItem(toolBar,SWT.SEPARATOR);
 
 		delete = new ToolItem(toolBar, SWT.PUSH);
@@ -527,7 +578,15 @@ abstract class Tab {
 		}
 		return code;
 	}
-		
+
+	/**
+	 * Returns the string to insert when a new child control is added to the table.
+	 * Subclasses override this method.
+	 */
+	String[] getInsertString (String controlType) {
+		return null;
+	}
+
 	/**
 	 * Returns the layout data field names.
 	 * Subclasses override this method.

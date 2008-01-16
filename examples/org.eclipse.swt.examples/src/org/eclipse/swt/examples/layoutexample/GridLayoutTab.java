@@ -31,7 +31,6 @@ class GridLayoutTab extends Tab {
 	TableEditor hIndentEditor, vIndentEditor, minWidthEditor, minHeightEditor, excludeEditor;
 	CCombo combo, vAlign, hAlign, hGrab, vGrab, exclude;
 	Text nameText, widthText, heightText, hSpan, vSpan, hIndent, vIndent, minWidthText, minHeightText;
-	int prevSelected = 0;
 	/* Constants */
 	static final int NAME_COL = 0;
 	static final int COMBO_COL = 1;
@@ -260,59 +259,6 @@ class GridLayoutTab extends Tab {
                 } 
 			}
 		});
-		
-		add.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {				
-				if (event.detail == SWT.ARROW) {
-					ToolItem item = (ToolItem)event.widget;
-					ToolBar bar = item.getParent();
-					Menu menu = new Menu(shell, SWT.POP_UP);
-					for(int i = 0; i < OPTIONS.length; i++) {
-						final MenuItem newItem = new MenuItem(menu, SWT.RADIO);
-						newItem.setText(OPTIONS[i]);						
-						newItem.addSelectionListener(new SelectionAdapter(){
-							public void widgetSelected (SelectionEvent event) {
-								MenuItem menuItem = (MenuItem)event.widget;
-								if (menuItem.getSelection()) {
-									Menu menu  = menuItem.getParent();
-									prevSelected = menu.indexOf(menuItem);
-									TableItem item = new TableItem (table, SWT.NONE);
-									String name = menuItem.getText().toLowerCase() + String.valueOf(table.indexOf(item));
-									String [] insert = new String [] {name, menuItem.getText(),
-											"-1","-1","BEGINNING","CENTER",
-											"false","false","1","1","0","0",
-											"0","0","false"};
-									item.setText(insert);
-									data.addElement(insert);
-									resetEditors ();
-								}
-							}
-						});							
-						newItem.setSelection(i == prevSelected);
-					}
-					Point pt = display.map(bar, null, event.x, event.y);
-					menu.setLocation(pt.x, pt.y);
-					menu.setVisible(true);					
-					while (menu != null && !menu.isDisposed() && menu.isVisible()) {
-						if (!display.readAndDispatch()) {
-							display.sleep();
-						}
-					}
-					menu.dispose();
-				} else {
-					String selection = OPTIONS[prevSelected];
-					TableItem item = new TableItem (table, 0);
-					String name = selection.toLowerCase () + String.valueOf(table.indexOf (item));
-					String[] insert = new String[] {name, selection,
-							"-1","-1","BEGINNING","CENTER",
-							"false","false","1","1","0","0",
-							"0","0","false"};
-					item.setText (insert);
-					data.addElement (insert);
-					resetEditors ();
-				}
-			}
-		});
 	}
 
 	/**
@@ -522,6 +468,17 @@ class GridLayoutTab extends Tab {
 		if (alignment == SWT.CENTER) return "SWT.CENTER";
 		if (alignment == SWT.END) return "SWT.END";
 		return "SWT.FILL";
+	}
+
+	/**
+	 * Returns the string to insert when a new child control is added to the table.
+	 */
+	String[] getInsertString (String controlType) {
+		String name = controlType.toLowerCase () + String.valueOf (table.getItemCount () - 1);
+		return new String [] {name, controlType,
+				"-1","-1","BEGINNING","CENTER",
+				"false","false","1","1","0","0",
+				"0","0","false"};
 	}
 
 	/**
