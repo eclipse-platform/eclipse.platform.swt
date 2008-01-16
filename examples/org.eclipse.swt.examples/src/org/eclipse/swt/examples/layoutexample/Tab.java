@@ -56,7 +56,7 @@ abstract class Tab {
 	int index;
 	boolean comboReset = false;
 	final String[] OPTIONS = {"Button", "Canvas", "Combo", "Composite",	"CoolBar", 
-			"Group", "Label", "List", "ProgressBar", "Scale", "Slider", "StyledText",
+			"Group", "Label", "Link", "List", "ProgressBar", "Scale", "Slider", "StyledText",
 			"Table", "Text", "ToolBar", "Tree"};
 	TableItem newItem, lastSelected;
 	Vector data = new Vector ();
@@ -116,7 +116,9 @@ abstract class Tab {
 								if (menuItem.getSelection ()) {
 									Menu menu  = menuItem.getParent ();
 									prevSelected = menu.indexOf (menuItem);
-									String [] insert = getInsertString (menuItem.getText ());
+									String controlType = menuItem.getText ();
+									String name = controlType.toLowerCase () + String.valueOf (table.getItemCount ());
+									String [] insert = getInsertString (name, controlType);
 									if (insert != null) {
 										TableItem item = new TableItem (table, SWT.NONE);
 										item.setText (insert);
@@ -139,8 +141,9 @@ abstract class Tab {
 					}
 					menu.dispose ();
 				} else {
-					String selection = OPTIONS [prevSelected];
-					String [] insert = getInsertString (selection);
+					String controlType = OPTIONS [prevSelected];
+					String name = controlType.toLowerCase () + String.valueOf (table.getItemCount ());
+					String [] insert = getInsertString (name, controlType);
 					if (insert != null) {
 						TableItem item = new TableItem (table, 0);
 						item.setText (insert);
@@ -512,14 +515,12 @@ abstract class Tab {
 		String styleString;
 		if (controlType.equals ("Button")) {
 			styleString = "SWT.PUSH";
-		} else if (controlType.equals ("Text")) {
-			styleString = "SWT.BORDER";
 		} else if (controlType.equals ("StyledText")) {
 			styleString = "SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL";
 		} else if (controlType.equals ("Canvas") || controlType.equals ("Composite") || 
 					controlType.equals ("Table") || controlType.equals ("StyledText") ||
 					controlType.equals ("ToolBar") || controlType.equals ("Tree") ||
-					controlType.equals ("List")) {
+					controlType.equals ("List") || controlType.equals ("Text")) {
 			styleString = "SWT.BORDER";
 		} else styleString = "SWT.NONE";
 		/* Write out the control being declared */
@@ -572,6 +573,7 @@ abstract class Tab {
 			controlType.equals ("Combo") ||
 			controlType.equals ("Group") ||
 			controlType.equals ("Label") ||
+			controlType.equals ("Link") ||
 			controlType.equals ("StyledText") ||
 			controlType.equals ("Text")) {
 			code.append ("\t\t" + names [i] + ".setText (\"" + names [i] + "\");\n");
@@ -583,7 +585,7 @@ abstract class Tab {
 	 * Returns the string to insert when a new child control is added to the table.
 	 * Subclasses override this method.
 	 */
-	String[] getInsertString (String controlType) {
+	String[] getInsertString (String name, String controlType) {
 		return null;
 	}
 
@@ -667,6 +669,10 @@ abstract class Tab {
 				Label label = new Label (layoutComposite, SWT.NONE);
 				label.setText (controlName);
 				children [i] = label;
+			} else if (control.equals ("Link")) {
+				Link link = new Link (layoutComposite, SWT.NONE);
+				link.setText (controlName);
+				children [i] = link;
 			} else if (control.equals ("List")) {
 				List list = new List (layoutComposite, SWT.BORDER);
 				list.setItems (itemValues);

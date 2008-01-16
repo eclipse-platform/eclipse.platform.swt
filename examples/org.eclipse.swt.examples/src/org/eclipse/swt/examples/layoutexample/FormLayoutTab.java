@@ -408,8 +408,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
-	String[] getInsertString (String controlType) {
-		String name = controlType.toLowerCase () + String.valueOf (table.getItemCount () - 1);
+	String[] getInsertString (String name, String controlType) {
 		return new String [] {name, controlType, "-1", "-1",
 				"0,0 (" + LayoutExample.getResourceString ("Default") + ")", "", 
 				"0,0 (" + LayoutExample.getResourceString ("Default") + ")", ""};
