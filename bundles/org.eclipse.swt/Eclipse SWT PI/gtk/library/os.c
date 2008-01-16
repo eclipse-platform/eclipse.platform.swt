@@ -15676,6 +15676,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1icon_1list)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1set_1keep_1below
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1keep_1below)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1keep_1below_FUNC);
+/*
+	gtk_window_set_keep_below((GtkWindow *)arg0, (gboolean)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkWindow *, gboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_window_set_keep_below_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_window_set_keep_below");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkWindow *)arg0, (gboolean)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1keep_1below_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1window_1set_1modal
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1modal)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)

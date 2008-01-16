@@ -1105,6 +1105,7 @@ typedef enum {
 	_1gtk_1window_1set_1destroy_1with_1parent_FUNC,
 	_1gtk_1window_1set_1geometry_1hints_FUNC,
 	_1gtk_1window_1set_1icon_1list_FUNC,
+	_1gtk_1window_1set_1keep_1below_FUNC,
 	_1gtk_1window_1set_1modal_FUNC,
 	_1gtk_1window_1set_1opacity_FUNC,
 	_1gtk_1window_1set_1resizable_FUNC,

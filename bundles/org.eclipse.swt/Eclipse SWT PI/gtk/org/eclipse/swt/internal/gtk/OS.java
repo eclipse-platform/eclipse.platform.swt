@@ -9537,6 +9537,15 @@ public static final void gtk_window_set_destroy_with_parent(int /*long*/ window,
 		lock.unlock();
 	}
 }
+public static final native void _gtk_window_set_keep_below(int /*long*/ window, boolean setting);
+public static final void gtk_window_set_keep_below(int /*long*/ window,  boolean setting) {
+	lock.lock();
+	try {
+		_gtk_window_set_keep_below(window, setting);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_window_set_geometry_hints(int /*long*/ window, int /*long*/ geometry_widget, GdkGeometry geometry, int geom_mask);
 public static final void gtk_window_set_geometry_hints(int /*long*/ window, int /*long*/ geometry_widget, GdkGeometry geometry, int geom_mask) {
 	lock.lock();
