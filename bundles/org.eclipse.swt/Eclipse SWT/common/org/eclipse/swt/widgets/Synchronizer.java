@@ -38,6 +38,9 @@ public class Synchronizer {
 	Object messageLock = new Object ();
 	Thread syncThread;
 
+	//TEMPORARY CODE
+	static final boolean IS_CARBON = "carbon".equals (SWT.getPlatform ());
+
 /**
  * Constructs a new instance of this class.
  * 
@@ -75,8 +78,11 @@ void addLast (RunnableLock lock) {
  */
 protected void asyncExec (Runnable runnable) {
 	if (runnable == null) {
-		display.wake ();
-		return;
+		//TEMPORARY CODE
+		if (!IS_CARBON) {
+			display.wake ();
+			return;
+		}
 	}
 	addLast (new RunnableLock (runnable));
 }
