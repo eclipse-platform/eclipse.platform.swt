@@ -39,6 +39,7 @@ public class XPCOM extends C {
 	public static final String DOMEVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
+	public static final String DOMEVENT_MOUSEDRAG = "draggesture"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
 	public static final String DOMEVENT_MOUSEOUT = "mouseout"; //$NON-NLS-1$
 	public static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$

@@ -1888,6 +1888,10 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
 	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	string.dispose ();
+
 
 	/*
 	* Only hook mouseover and mouseout if the target is a top-level frame, so that mouse moves
@@ -1985,6 +1989,9 @@ void unhookDOMListeners (nsIDOMEventTarget target) {
 	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
 	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
@@ -3097,6 +3104,16 @@ int HandleEvent (int /*long*/ event) {
 		mouseEvent.type = SWT.MouseEnter;
 	} else if (XPCOM.DOMEVENT_MOUSEOUT.equals (typeString)) {
 		mouseEvent.type = SWT.MouseExit;
+	} else if (XPCOM.DOMEVENT_MOUSEDRAG.equals (typeString)) {
+		mouseEvent.type = SWT.DragDetect;
+		mouseEvent.button = aButton[0] + 1;
+		switch (mouseEvent.button) {
+			case 1: mouseEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: mouseEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: mouseEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
+		}
 	}
 
 	browser.notifyListeners (mouseEvent.type, mouseEvent);

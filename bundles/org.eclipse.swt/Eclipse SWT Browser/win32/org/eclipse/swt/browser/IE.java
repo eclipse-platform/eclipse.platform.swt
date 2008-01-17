@@ -984,10 +984,12 @@ void handleMouseEvent (OleEvent e) {
 		newEvent.type = SWT.MouseExit;
 	} else if (eventType.equals("dragstart")) { //$NON-NLS-1$
 		newEvent.type = SWT.DragDetect;
+		newEvent.stateMask |= SWT.BUTTON1;
+		newEvent.button = 1;
 	}
 
 	browser.notifyListeners(newEvent.type, newEvent);
-	
+
 	if (eventType.equals("dblclick")) { //$NON-NLS-1$
 		newEvent = new Event ();
 		newEvent.widget = browser;
