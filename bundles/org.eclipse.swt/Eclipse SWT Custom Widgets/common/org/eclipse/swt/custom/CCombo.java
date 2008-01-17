@@ -1626,8 +1626,11 @@ void textEvent (Event event) {
 					// do not use them for traversal.
 					event.doit = false;
 					break;
-			}
-			
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					event.doit = traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+					event.detail = SWT.TRAVERSE_NONE;
+					return;
+			}		
 			Event e = new Event ();
 			e.time = event.time;
 			e.detail = event.detail;
@@ -1637,10 +1640,6 @@ void textEvent (Event event) {
 			notifyListeners (SWT.Traverse, e);
 			event.doit = e.doit;
 			event.detail = e.detail;
-			if (event.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
-				traverse(SWT.TRAVERSE_TAB_PREVIOUS);
-				event.detail = SWT.TRAVERSE_NONE;
-			}
 			break;
 		}
 		case SWT.Verify: {
