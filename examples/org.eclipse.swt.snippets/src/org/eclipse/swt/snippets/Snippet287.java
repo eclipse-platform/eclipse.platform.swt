@@ -26,29 +26,29 @@ static Tree tree;
 public static void main(String[] args) {
 	final String SEARCH_STRING = "4b";
 
-    Display display = new Display ();
-    Shell shell = new Shell (display);
-    shell.setBounds (10,10,300,300);
-    shell.setLayout (new GridLayout ());
+	Display display = new Display ();
+	Shell shell = new Shell (display);
+	shell.setBounds (10,10,300,300);
+	shell.setLayout (new GridLayout ());
 
-    /* create the Tree */
-    tree = new Tree (shell, SWT.FULL_SELECTION);
-    tree.setLinesVisible (true);
-    tree.setLayoutData (new GridData (GridData.FILL_BOTH));
-    for (int i = 0; i < 3; i++) {
-    	new TreeColumn (tree, SWT.NONE).setWidth (90);
-    }
-    int index = 0;
-    for (int i = 0; i < 3; i++) {
-    	TreeItem item = createItem (null, index++);
-    	for (int j = 0; j < i; j++) {
-    		item = createItem (item, index++);
-    	}
-    }
+	/* create the Tree */
+	tree = new Tree (shell, SWT.FULL_SELECTION);
+	tree.setLinesVisible (true);
+	tree.setLayoutData (new GridData (GridData.FILL_BOTH));
+	for (int i = 0; i < 3; i++) {
+		new TreeColumn (tree, SWT.NONE).setWidth (90);
+	}
+	int index = 0;
+	for (int i = 0; i < 3; i++) {
+		TreeItem item = createItem (null, index++);
+		for (int j = 0; j < i; j++) {
+			item = createItem (item, index++);
+		}
+	}
 
-    Button button = new Button (shell, SWT.PUSH);
-    button.setText ("Find '" + SEARCH_STRING + "'");
-    button.addListener (SWT.Selection, new Listener () {
+	Button button = new Button (shell, SWT.PUSH);
+	button.setText ("Find '" + SEARCH_STRING + "'");
+	button.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			TreeItem[] rootItems = tree.getItems ();
 			for (int i = 0; i < rootItems.length; i++) {
@@ -61,11 +61,11 @@ public static void main(String[] args) {
 			System.out.println ("Did not find it");
 		}
 	});
-    shell.open ();
-    while (!shell.isDisposed ()) {
-        if (!display.readAndDispatch ()) display.sleep ();
-    }
-    display.dispose ();
+	shell.open ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	display.dispose ();
 }
 
 /* for creating sample Tree */
