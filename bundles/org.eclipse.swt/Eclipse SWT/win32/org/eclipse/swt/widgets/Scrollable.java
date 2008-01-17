@@ -263,7 +263,6 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	int scrollRemainder = display.scrollRemainder;
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
-	
 	/*
 	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
 	*/
@@ -271,25 +270,37 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
 		boolean vertical = verticalBar != null && verticalBar.getEnabled ();
 		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
-		int msg = (vertical) ? OS.WM_VSCROLL : (horizontal) ? OS.WM_HSCROLL : 0;
+		int msg = vertical ? OS.WM_VSCROLL : horizontal ? OS.WM_HSCROLL : 0;
 		if (msg == 0) return result;
 		int [] linesToScroll = new int [1];
 		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
-		int code = 0;
 		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
-  		if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {	
-   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
-  		} else {
-  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
-  			if (msg == OS.WM_VSCROLL) {
-  				delta *= linesToScroll [0];
-  			}
-  		}
-  		/* Check if the delta and the remainder have the same direction (sign) */
-  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
-		int count = Math.abs (delta) / OS.WHEEL_DELTA;
-		for (int i=0; i<count; i++) {
-			OS.SendMessage (handle, msg, code, 0);
+		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			ScrollBar bar = vertical ? verticalBar : horizontalBar;
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_POS;
+			OS.GetScrollInfo (handle, bar.scrollBarType (), info);
+			if (vertical && !pageScroll) delta *= linesToScroll [0];
+			int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
+			info.nPos -=  increment * delta / OS.WHEEL_DELTA;
+			OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
+			OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
+		} else {
+			int code = 0;
+	  		if (pageScroll) {
+	   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
+	  		} else {
+	  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
+	  			if (msg == OS.WM_VSCROLL) delta *= linesToScroll [0];
+	  		}
+	  		/* Check if the delta and the remainder have the same direction (sign) */
+	  		if ((delta ^ scrollRemainder) >= 0) delta += scrollRemainder;
+			int count = Math.abs (delta) / OS.WHEEL_DELTA;
+			for (int i=0; i<count; i++) {
+				OS.SendMessage (handle, msg, code, 0);
+			}
 		}
 		return LRESULT.ZERO;
 	}
