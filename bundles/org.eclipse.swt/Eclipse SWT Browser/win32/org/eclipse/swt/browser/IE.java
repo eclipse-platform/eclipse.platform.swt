@@ -972,10 +972,17 @@ void handleMouseEvent (OleEvent e) {
 		newEvent.type = SWT.MouseDown;
 		newEvent.button = button;
 		newEvent.count = 1;
-	} else if (eventType.equals("mouseup")) { //$NON-NLS-1$
+	} else if (eventType.equals("mouseup") || eventType.equals("dragend")) { //$NON-NLS-1$ //$NON-NLS-2$
 		newEvent.type = SWT.MouseUp;
-		newEvent.button = button;
+		newEvent.button = button != 0 ? button : 1;	/* button assumed to be 1 for dragends */
 		newEvent.count = 1;
+		switch (newEvent.button) {
+			case 1: newEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: newEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: newEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: newEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: newEvent.stateMask |= SWT.BUTTON5; break;
+		}
 	} else if (eventType.equals("mousemove")) { //$NON-NLS-1$
 		newEvent.type = SWT.MouseMove;
 	} else if (eventType.equals("mouseover")) { //$NON-NLS-1$
@@ -984,8 +991,8 @@ void handleMouseEvent (OleEvent e) {
 		newEvent.type = SWT.MouseExit;
 	} else if (eventType.equals("dragstart")) { //$NON-NLS-1$
 		newEvent.type = SWT.DragDetect;
+		newEvent.button = 1;	/* button assumed to be 1 for dragstarts */
 		newEvent.stateMask |= SWT.BUTTON1;
-		newEvent.button = 1;
 	}
 
 	browser.notifyListeners(newEvent.type, newEvent);
@@ -1029,6 +1036,7 @@ void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND, mouseListener);
 	/* ensure that enter/exit are only fired once, by the top-level document */
 	if (isTop) {
 		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
@@ -1052,6 +1060,7 @@ void unhookMouseListeners(OleAutomation[] documents) {
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
 		}

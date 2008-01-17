@@ -202,6 +202,7 @@ public class COM extends OS {
 	public static final int DISPID_FONT_WEIGHT = 7;
 	public static final int DISPID_FORECOLOR = -513;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK = 0xFFFFFDA7;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND = 0x80010015;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART = 0x8001000B;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT = 0x80010009;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER = 0x80010008;
