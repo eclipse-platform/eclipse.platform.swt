@@ -26,6 +26,7 @@ class WebSite extends OleControlSite {
 
 	static final int OLECMDID_SHOWSCRIPTERROR = 40;
 	static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
+	boolean ignoreNextMessage;
 
 public WebSite(Composite parent, int style, String progId) {
 	super(parent, style, progId);		
@@ -317,44 +318,9 @@ int UpdateUI() {
 /* IDocHostShowUI */
 
 int ShowMessage(int /*long*/ hwnd, int /*long*/ lpstrText, int /*long*/ lpstrCaption, int dwType, int /*long*/ lpstrHelpFile, int dwHelpContext, int /*long*/ plResult) {
-	/*
-	* Feature on IE.  When IE navigates to a website that contains an ActiveX that is prevented from
-	* being executed, IE displays a message "Your current security settings prohibit running ActiveX 
-	* controls on this page ...".  The workaround is to selectively block this alert as indicated
-	* in the MSDN article "WebBrowser customization".
-	*/
-	/* resource identifier in shdoclc.dll for window caption "Your current security settings prohibit 
-	 * running ActiveX controls on this page ..." 
-	 */
-	int IDS_MESSAGE_BOX_CAPTION = 8033;
-		if (lpstrText != 0) {
-		TCHAR lpLibFileName = new TCHAR (0, "SHDOCLC.DLL", true); //$NON-NLS-1$
-		int /*long*/ hModule = OS.LoadLibrary(lpLibFileName);
-		if (hModule != 0) {
-			/* 
-			* Note.  lpstrText is a LPOLESTR, i.e. a null terminated unicode string LPWSTR, i.e. a WCHAR*.
-			* It is not a BSTR.  A BSTR is a null terminated unicode string that contains its length
-			* at the beginning. 
-			*/
-			int cnt = OS.wcslen(lpstrText);
-			char[] buffer = new char[cnt];
-			/* 
-			* Note.  lpstrText is unicode on both unicode and ansi platforms.
-			* The nbr of chars is multiplied by the constant 2 and not by TCHAR.sizeof since
-			* TCHAR.sizeof returns 1 on ansi platforms.
-			*/
-			OS.MoveMemory(buffer, lpstrText, cnt * 2);
-			String text = new String(buffer);
-			/* provide a buffer large enough to hold the string to compare to and a null terminated character */
-			int length = (OS.IsUnicode ? cnt : OS.WideCharToMultiByte (OS.CP_ACP, 0, buffer, cnt, 0, 0, null, null)) + 1;
-
-			TCHAR lpBuffer = new TCHAR(0, length);
-			int result = OS.LoadString(hModule, IDS_MESSAGE_BOX_CAPTION, lpBuffer, length);
-			OS.FreeLibrary(hModule);
-			return result > 0 && text.equals(lpBuffer.toString(0, result)) ? COM.S_OK : COM.S_FALSE;
-		}
-	}
-	return COM.S_FALSE;
+	boolean ignore = ignoreNextMessage;
+	ignoreNextMessage = false;
+	return ignore ? COM.S_OK : COM.S_FALSE;
 }
 
 int ShowHelp_64(int /*long*/ hwnd, int /*long*/ pszHelpFile, int uCommand, int dwData, long pt, int /*long*/ pDispatchObjectHit) {
@@ -430,6 +396,8 @@ int GetSecurityId(int /*long*/ pwszUrl, int /*long*/ pbSecurityId, int /*long*/ 
 }
 
 int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, int cbPolicy, int /*long*/ pContext, int cbContext, int dwFlags, int dwReserved) {
+	ignoreNextMessage = false;
+
 	/*
 	* Feature in IE 6 sp1.  HTML rendered in memory
 	* containing an OBJECT tag referring to a local file
@@ -454,6 +422,7 @@ int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, i
 	*/
 	if (dwAction >= IE.URLACTION_JAVA_MIN && dwAction <= IE.URLACTION_JAVA_MAX) {
 		policy = IE.URLPOLICY_JAVA_PROHIBIT;
+		ignoreNextMessage = true;
 	}
 	/*
 	* Note.  Some ActiveX plugins crash when executing
@@ -467,6 +436,7 @@ int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, i
 		COM.MoveMemory(guid, pContext, GUID.sizeof);
 		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge) || COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) {
 			policy = IE.URLPOLICY_DISALLOW;
+			ignoreNextMessage = true;
 		}
 	}
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
