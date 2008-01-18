@@ -50,9 +50,10 @@ public static void main(String[] args) {
 	button.setText ("Find '" + SEARCH_STRING + "'");
 	button.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
-			TreeItem[] rootItems = tree.getItems ();
-			for (int i = 0; i < rootItems.length; i++) {
-				boolean success = find (rootItems[i], SEARCH_STRING);
+			int itemCount = tree.getItemCount ();
+			for (int i = 0; i < itemCount; i++) {
+				TreeItem item = tree.getItem (i);
+				boolean success = find (item, SEARCH_STRING);
 				if (success) {
 					System.out.println ("Found it");
 					return;
@@ -96,9 +97,10 @@ public static boolean find (TreeItem item, String searchString) {
 	if (!item.getExpanded ()) return false; /* don't check child items */
 
 	/* check child items */
-	TreeItem[] children = item.getItems ();
-	for (int i = 0; i < children.length; i++) {
-		boolean success = find (children[i], searchString);
+	int childCount = item.getItemCount ();
+	for (int i = 0; i < childCount; i++) {
+		TreeItem child = item.getItem (i);
+		boolean success = find (child, searchString);
 		if (success) return true;
 	}
 
