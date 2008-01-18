@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1249;
-int OS_nativeFunctionCallCount[1249];
+int OS_nativeFunctionCount = 1251;
+int OS_nativeFunctionCallCount[1251];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -899,6 +899,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1toolbar_1insert_1widget",
 	"_1gtk_1toolbar_1new",
 	"_1gtk_1toolbar_1set_1orientation",
+	"_1gtk_1tooltip_1trigger_1tooltip_1query",
 	"_1gtk_1tooltips_1data_1get",
 	"_1gtk_1tooltips_1disable",
 	"_1gtk_1tooltips_1enable",
@@ -1062,6 +1063,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1set_1size_1request",
 	"_1gtk_1widget_1set_1state",
 	"_1gtk_1widget_1set_1style",
+	"_1gtk_1widget_1set_1tooltip_1text",
 	"_1gtk_1widget_1shape_1combine_1mask",
 	"_1gtk_1widget_1show",
 	"_1gtk_1widget_1show_1now",

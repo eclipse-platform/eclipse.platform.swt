@@ -2557,6 +2557,21 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 }
 
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		/*
+		 * Feature in GTK. Children of a shell will inherit and display the shell's
+		 * tooltip if they do not have a tooltip of their own. The fix is to use the
+		 * new tooltip API in GTK 2.12 to null the shell's tooltip when the control
+		 * being entered does not have any tooltip text set. 
+		 */
+		byte [] buffer = null;
+		if (toolTipText != null && toolTipText.length() != 0) { 
+			char [] chars = fixMnemonic (toolTipText, false);
+			buffer = Converter.wcsToMbcs (null, chars, true);
+		}
+		int /*long*/ toolHandle = getShell().handle;
+		OS.gtk_widget_set_tooltip_text (toolHandle, buffer);
+	}
 	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
@@ -3888,7 +3903,32 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
-	shell.setToolTipText (eventHandle (), newString);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		/*
+		* Feature in GTK.  In order to prevent children widgets
+		* from inheriting their parent's tooltip, the tooltip is
+		* a set on a shell only. In order to force the shell tooltip
+		* to update when a new tip string is set, the existing string
+		* in the tooltip is set to null, followed by running a query.
+		* The real tip text can then be set. 
+		* 
+		* Note that this will only run if the control for which the 
+		* tooltip is being set is the current control (i.e. the control
+		* under the pointer).
+		*/
+		if (display.currentControl == this) {
+			byte[] buffer = null;
+			if (newString != null && newString.length() > 0) {
+				char[] chars = fixMnemonic(newString, false);
+				buffer = Converter.wcsToMbcs(null, chars, true);
+			}
+			OS.gtk_widget_set_tooltip_text (shell.handle, null);
+			OS.gtk_tooltip_trigger_tooltip_query (OS.gdk_display_get_default ());
+			OS.gtk_widget_set_tooltip_text (shell.handle, buffer);
+		}
+	} else {
+		shell.setToolTipText (eventHandle (), newString);
+	}
 }
 
 /**

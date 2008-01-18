@@ -3388,6 +3388,16 @@ public static final int gdk_text_property_to_utf8_list  (int /*long*/ encoding, 
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tooltip_trigger_tooltip_query (int /*long*/ display);
+public static final void gtk_tooltip_trigger_tooltip_query (int /*long*/ display){
+	lock.lock();
+	try {
+		 _gtk_tooltip_trigger_tooltip_query (display);
+	} finally {
+		lock.unlock();
+	}
+}
+
 public static final native  int _gdk_unicode_to_keyval(int wc);
 public static final  int gdk_unicode_to_keyval(int wc) {
 	lock.lock();
@@ -9578,6 +9588,15 @@ public static final void gtk_window_set_opacity(int /*long*/ window, double opac
 	lock.lock();
 	try {
 		 _gtk_window_set_opacity(window, opacity);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_widget_set_tooltip_text(int /*long*/ widget, byte[] tip_text);
+public static final void gtk_widget_set_tooltip_text(int /*long*/ widget, byte[] tip_text) {
+	lock.lock();
+	try {
+		_gtk_widget_set_tooltip_text(widget, tip_text);
 	} finally {
 		lock.unlock();
 	}

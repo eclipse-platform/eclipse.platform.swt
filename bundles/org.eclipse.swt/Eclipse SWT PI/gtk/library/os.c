@@ -13254,6 +13254,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1orientation)
 }
 #endif
 
+#ifndef NO__1gtk_1tooltip_1trigger_1tooltip_1query
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltip_1trigger_1tooltip_1query)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tooltip_1trigger_1tooltip_1query_FUNC);
+/*
+	gtk_tooltip_trigger_tooltip_query((GdkDisplay*)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GdkDisplay*);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_tooltip_trigger_tooltip_query_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_tooltip_trigger_tooltip_query");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GdkDisplay*)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1tooltip_1trigger_1tooltip_1query_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tooltips_1data_1get
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tooltips_1data_1get)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -15241,6 +15267,36 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1style)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1style_FUNC);
 	gtk_widget_set_style((GtkWidget *)arg0, (GtkStyle *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1style_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1tooltip_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1tooltip_1text)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1tooltip_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_widget_set_tooltip_text((GtkWidget *)arg0, (const gchar *)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkWidget *, const gchar *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_widget_set_tooltip_text_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_widget_set_tooltip_text");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkWidget *)arg0, (const gchar *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1tooltip_1text_FUNC);
 }
 #endif
 

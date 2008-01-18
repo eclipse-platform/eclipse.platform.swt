@@ -79,6 +79,7 @@
 #define gtk_expander_set_label_widget_LIB "libgtk-x11-2.0.so.0"
 #define gtk_menu_shell_set_take_focus_LIB "libgtk-x11-2.0.so.0"
 #define gtk_window_set_keep_below_LIB "libgtk-x11-2.0.so.0"
+#define gtk_tooltip_trigger_tooltip_query_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_selection_count_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so.0"
@@ -100,6 +101,7 @@
 #define gtk_window_set_opacity_LIB "libgtk-x11-2.0.so.0"
 #define gtk_window_set_skip_taskbar_hint_LIB "libgtk-x11-2.0.so.0"
 #define gtk_widget_is_composited_LIB "libgtk-x11-2.0.so.0"
+#define gtk_widget_set_tooltip_text_LIB "libgtk-x11-2.0.so.0"
 #define gdk_x11_screen_get_window_manager_name_LIB "libgdk-x11-2.0.so.0"
 #define gdk_x11_screen_lookup_visual_LIB "libgdk-x11-2.0.so.0"
 

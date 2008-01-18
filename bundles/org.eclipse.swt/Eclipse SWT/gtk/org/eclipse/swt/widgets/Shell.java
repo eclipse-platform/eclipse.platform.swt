@@ -1840,70 +1840,82 @@ void releaseWidget () {
 }
 
 void setToolTipText (int /*long*/ widget, String string) {
-	byte [] buffer = null;
-	if (string != null && string.length () > 0) {
-		char [] chars = fixMnemonic (string, false);
-		buffer = Converter.wcsToMbcs (null, chars, true);
-	}
-	if (tooltipsHandle == 0) {
-		tooltipsHandle = OS.gtk_tooltips_new ();
-		if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.g_object_ref (tooltipsHandle);
-		OS.gtk_object_sink (tooltipsHandle);
-	}
-
-	/*
-	* Feature in GTK.  There is no API to position a tooltip.
-	* The fix is to connect to the size_allocate signal for
-	* the tooltip window and position it before it is mapped.
-	*
-	* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
-	* can cause a crash in older versions of GTK.  The fix is
-	* to avoid this call if the GTK version is older than 2.2.x.
-	*/
-	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) {
-		OS.gtk_tooltips_force_window (tooltipsHandle);
-	}
-	int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
-	if (tipWindow != 0 && tipWindow != tooltipWindow) {
-		OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
-		tooltipWindow = tipWindow;
-	}
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		byte [] buffer = null;
+		if (string != null && string.length () > 0) {
+			char [] chars = fixMnemonic (string, false);
+			buffer = Converter.wcsToMbcs (null, chars, true);
+		}
+		OS.gtk_widget_set_tooltip_text (widget, null);
+		OS.gtk_tooltip_trigger_tooltip_query (OS.gdk_display_get_default ());
+		OS.gtk_widget_set_tooltip_text (widget, buffer);	
+	} else {
+		byte [] buffer = null;
+		if (string != null && string.length () > 0) {
+			char [] chars = fixMnemonic (string, false);
+			buffer = Converter.wcsToMbcs (null, chars, true);
+		}
+		if (tooltipsHandle == 0) {
+			tooltipsHandle = OS.gtk_tooltips_new ();
+			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.g_object_ref (tooltipsHandle);
+			OS.gtk_object_sink (tooltipsHandle);
+		}
 	
-	/*
-	* Bug in GTK.  If the cursor is inside the window when a new
-	* tooltip is set and the old tooltip is hidden, the new tooltip
-	* is not displayed until the mouse re-enters the window.  The
-	* fix is force the new tooltip to be active.
-	*/
-	boolean set = true;
-	if (tipWindow != 0) {
-		if ((OS.GTK_WIDGET_FLAGS (widget) & (OS.GTK_REALIZED | OS.GTK_VISIBLE)) != 0) {
-			int [] x = new int [1], y = new int [1];
-			int /*long*/ window = OS.gdk_window_at_pointer (x, y);
-			if (window != 0) {
-				int /*long*/ [] user_data = new int /*long*/ [1];
-				OS.gdk_window_get_user_data (window, user_data);
-				if (widget == user_data [0]) {
-					/* 
-					* Feature in GTK.  Calling gtk_tooltips_set_tip() positions and
-					* shows the tooltip.  If the tooltip is already visible, moving
-					* it to a new location in the size_allocate signal causes flashing.
-					* The fix is to hide the tip window in the size_request signal
-					* and before the new tooltip is forced to be active. 
-					*/
-					set = false;
-					int handler_id = OS.g_signal_connect (tipWindow, OS.size_request, display.sizeRequestProc, shellHandle);
-					OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
-					OS.gtk_widget_hide (tipWindow);
-					int /*long*/ data = OS.gtk_tooltips_data_get (widget);
-					OS.GTK_TOOLTIPS_SET_ACTIVE (tooltipsHandle, data);
-					OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
-					if (handler_id != 0) OS.g_signal_handler_disconnect (tipWindow, handler_id);
+		/*
+		* Feature in GTK.  There is no API to position a tooltip.
+		* The fix is to connect to the size_allocate signal for
+		* the tooltip window and position it before it is mapped.
+		*
+		* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
+		* can cause a crash in older versions of GTK.  The fix is
+		* to avoid this call if the GTK version is older than 2.2.x.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) {
+			OS.gtk_tooltips_force_window (tooltipsHandle);
+		}
+		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
+		if (tipWindow != 0 && tipWindow != tooltipWindow) {
+			OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
+			tooltipWindow = tipWindow;
+		}
+		
+		/*
+		* Bug in GTK.  If the cursor is inside the window when a new
+		* tooltip is set and the old tooltip is hidden, the new tooltip
+		* is not displayed until the mouse re-enters the window.  The
+		* fix is force the new tooltip to be active.
+		*/
+		boolean set = true;
+		if (tipWindow != 0) {
+			if ((OS.GTK_WIDGET_FLAGS (widget) & (OS.GTK_REALIZED | OS.GTK_VISIBLE)) != 0) {
+				int [] x = new int [1], y = new int [1];
+				int /*long*/ window = OS.gdk_window_at_pointer (x, y);
+				if (window != 0) {
+					int /*long*/ [] user_data = new int /*long*/ [1];
+					OS.gdk_window_get_user_data (window, user_data);
+					if (widget == user_data [0]) {
+						/* 
+						* Feature in GTK.  Calling gtk_tooltips_set_tip() positions and
+						* shows the tooltip.  If the tooltip is already visible, moving
+						* it to a new location in the size_allocate signal causes flashing.
+						* The fix is to hide the tip window in the size_request signal
+						* and before the new tooltip is forced to be active. 
+						*/
+						set = false;
+						int handler_id = OS.g_signal_connect (tipWindow, OS.size_request, display.sizeRequestProc, shellHandle);
+						OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
+						OS.gtk_widget_hide (tipWindow);
+						int /*long*/ data = OS.gtk_tooltips_data_get (widget);
+						OS.GTK_TOOLTIPS_SET_ACTIVE (tooltipsHandle, data);
+						OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
+						if (handler_id != 0) OS.g_signal_handler_disconnect (tipWindow, handler_id);
+					}
 				}
 			}
 		}
+		if (set) OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
 	}
-	if (set) OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
+		
 }
 }
