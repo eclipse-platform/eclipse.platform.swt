@@ -41,7 +41,8 @@ public class Tracker extends Widget {
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
-	int cursor, window, oldX, oldY;
+	Cursor cursor;
+	int window, oldX, oldY;
 
 	final static int STEPSIZE_SMALL = 1;
 	final static int STEPSIZE_LARGE = 9;
@@ -662,8 +663,7 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor (Cursor value) {
 	checkWidget ();
-	cursor = 0;
-	if (value != null) cursor = value.handle;
+	cursor = value;
 }
 /**
  * Specifies the rectangles that should be drawn, expressed relative to the parent
@@ -858,11 +858,11 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 }
 
 int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
-	if (cursor != 0) {
+	if (cursor != null) {
 		int xDisplay = display.xDisplay;
 		OS.XChangeActivePointerGrab (xDisplay,
 			OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
-			cursor, OS.CurrentTime);
+			cursor.handle, OS.CurrentTime);
 	}
 	return xMouse (OS.MotionNotify, w, client_data, call_data, continue_to_dispatch);
 }

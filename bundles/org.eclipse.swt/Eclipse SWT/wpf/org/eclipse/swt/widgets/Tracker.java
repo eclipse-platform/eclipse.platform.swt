@@ -40,7 +40,8 @@ public class Tracker extends Widget {
 	boolean cancelled, stippled;
 	Rectangle [] rectangles, proportions;
 	Rectangle bounds;
-	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
+	Cursor clientCursor;
+	int resizeCursor, cursorOrientation = SWT.NONE;
 	int oldX, oldY;
 	int canvasHandle;
 	int frame;
@@ -220,7 +221,7 @@ Point adjustResizeCursor () {
 	* If the client has not provided a custom cursor then determine
 	* the appropriate resize cursor.
 	*/
-	if (clientCursor == 0) {
+	if (clientCursor == null) {
 		int newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
@@ -593,8 +594,8 @@ public boolean open () {
 	OS.Popup_Child (handle, canvasHandle);
 	OS.UIElement_IsHitTestVisible (canvasHandle, false);
 	OS.FrameworkElement_FocusVisualStyle (canvasHandle, 0);
-	if (clientCursor != 0) {
-		OS.FrameworkElement_Cursor (canvasHandle, clientCursor);
+	if (clientCursor != null) {
+		OS.FrameworkElement_Cursor (canvasHandle, clientCursor.handle);
 	}
 
 	drawRectangles ();
@@ -832,9 +833,9 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor(Cursor newCursor) {
 	checkWidget();
-	clientCursor = newCursor != null ? newCursor.handle : 0;
+	clientCursor = newCursor;
 	if (canvasHandle != 0) {
-		OS.FrameworkElement_Cursor (canvasHandle, clientCursor);
+		OS.FrameworkElement_Cursor (canvasHandle, clientCursor != null ? clientCursor.handle : 0);
 	}
 }
 

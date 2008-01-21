@@ -41,7 +41,8 @@ public class Tracker extends Widget {
 	boolean tracking, cancelled, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
-	int /*long*/ resizeCursor, clientCursor;
+	int /*long*/ resizeCursor;
+	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
 	int /*long*/ hwndTransparent, oldProc;
@@ -238,7 +239,7 @@ Point adjustResizeCursor () {
 	* If the client has not provided a custom cursor then determine
 	* the appropriate resize cursor.
 	*/
-	if (clientCursor == 0) {
+	if (clientCursor == null) {
 		int /*long*/ newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
@@ -769,10 +770,9 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor(Cursor newCursor) {
 	checkWidget();
-	clientCursor = 0;
+	clientCursor = newCursor;
 	if (newCursor != null) {
-		clientCursor = newCursor.handle;
-		if (inEvent) OS.SetCursor (clientCursor);
+		if (inEvent) OS.SetCursor (clientCursor.handle);
 	}
 }
 
@@ -832,8 +832,8 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 			if (inEvent) return OS.HTTRANSPARENT;
 			break;
 		case OS.WM_SETCURSOR:
-			if (clientCursor != 0) {
-				OS.SetCursor (clientCursor);
+			if (clientCursor != null) {
+				OS.SetCursor (clientCursor.handle);
 				return 1;
 			}
 			if (resizeCursor != 0) {

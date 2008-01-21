@@ -37,7 +37,8 @@ import org.eclipse.swt.events.*;
  */
 public class Tracker extends Widget {
 	Composite parent;
-	int /*long*/ cursor, lastCursor, window;
+	Cursor cursor;
+	int /*long*/ lastCursor, window;
 	boolean tracking, cancelled, grabbed, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
@@ -359,6 +360,7 @@ public boolean getStippled () {
 }
 
 boolean grab () {
+	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	int result = OS.gdk_pointer_grab (window, false, OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK, window, cursor, OS.GDK_CURRENT_TIME);
 	return result == OS.GDK_GRAB_SUCCESS;
 }
@@ -503,6 +505,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 }
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	if (cursor != lastCursor) {
 		ungrab ();
 		grabbed = grab ();
@@ -695,7 +698,7 @@ public boolean open () {
 	this.oldY = oldY [0];
 	
 	grabbed = grab ();
-	lastCursor = cursor;
+	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	GdkEvent gdkEvent = new GdkEvent();
@@ -927,8 +930,7 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor (Cursor value) {
 	checkWidget ();
-	cursor = 0;
-	if (value != null) cursor = value.handle;
+	cursor = value;
 }
 
 /**

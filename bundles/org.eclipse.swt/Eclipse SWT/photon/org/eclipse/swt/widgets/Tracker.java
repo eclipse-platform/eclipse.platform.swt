@@ -40,7 +40,8 @@ public class Tracker extends Widget {
 	boolean tracking, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
-	int resizeCursor, clientCursor, clientBitmap;
+	int resizeCursor;
+	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 
 	/*
@@ -236,7 +237,7 @@ Point adjustResizeCursor () {
 	* If the client has not provided a custom cursor then determine
 	* the appropriate resize cursor.
 	*/
-	if (clientCursor == 0) {
+	if (clientCursor == null) {
 		int newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
@@ -967,24 +968,17 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	int type = 0;
-	int bitmap = 0;
-	if (cursor != null) {
-		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		type = cursor.type;
-		bitmap = cursor.bitmap;
-	}
-	clientCursor = type;
-	clientBitmap = bitmap;
+	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	clientCursor = cursor;
 }
 
 void setCursor (int cursorHandle) {
 	if (cursorHandle == 0) return;
 	int type = 0;
 	int bitmap = 0;
-	if (clientCursor != 0) {
-		type = clientCursor;
-		bitmap = clientBitmap;
+	if (clientCursor != null) {
+		type = clientCursor.type;
+		bitmap = clientCursor.bitmap;
 	} else if (resizeCursor != 0) {
 		type = resizeCursor;
 	}
