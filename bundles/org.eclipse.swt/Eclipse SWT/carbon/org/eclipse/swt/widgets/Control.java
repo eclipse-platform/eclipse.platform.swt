@@ -1993,8 +1993,8 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	* action proc of the widget by diffing the mouse and modifier keys
 	* state.
 	*/
-	Display display = this.display;
-	display.runDeferredEvents();
+	Display display = this.display;	
+//	display.runDeferredEvents ();
 	if (isDisposed ()) return OS.noErr;
 	if (display.runPopups ()) return OS.noErr;
 	if (isDisposed ()) return OS.noErr;
