@@ -131,7 +131,7 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.Traverse, SWT.FocusIn, SWT.Verify};
+	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
 	int [] arrowEvents = {SWT.MouseDown, SWT.MouseUp, SWT.Selection, SWT.FocusIn};
@@ -1667,6 +1667,33 @@ void textEvent (Event event) {
 			mouseEvent.time = event.time;
 			mouseEvent.x = event.x; mouseEvent.y = event.y;
 			notifyListeners (SWT.MouseDoubleClick, mouseEvent);
+			break;
+		}
+		case SWT.MouseWheel: {
+			Event keyEvent = new Event ();
+			keyEvent.time = event.time;
+			keyEvent.keyCode = event.count > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;
+			keyEvent.stateMask = event.stateMask;
+			notifyListeners (SWT.KeyDown, keyEvent);
+			if (isDisposed ()) break;
+			event.doit = keyEvent.doit;
+			if (!event.doit) break;
+			if (event.count != 0) {
+				event.doit = false;
+				int oldIndex = getSelectionIndex ();
+				if (event.count > 0) {
+					select (Math.max (oldIndex - 1, 0));
+				} else {
+					select (Math.min (oldIndex + 1, getItemCount () - 1));
+				}
+				if (oldIndex != getSelectionIndex ()) {
+					Event e = new Event();
+					e.time = event.time;
+					e.stateMask = event.stateMask;
+					notifyListeners (SWT.Selection, e);
+				}
+				if (isDisposed ()) break;
+			}
 			break;
 		}
 		case SWT.Traverse: {		
