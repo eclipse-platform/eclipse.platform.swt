@@ -262,7 +262,7 @@ void computeRuns () {
 int[] computePolyline(int left, int top, int right, int bottom) {
 	int height = bottom - top; // can be any number
 	int width = 2 * height; // must be even
-	int peaks = (right - left) / width;
+	int peaks = Compatibility.ceil(right - left, width);
 	if (peaks == 0 && right - left > 2) {
 		peaks = 1;
 	}
@@ -277,7 +277,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 		coordinates[index+2] = coordinates[index] + width / 2;
 		coordinates[index+3] = top;
 	}
-	coordinates[length-2] = Math.min(Math.max(0, right - 1), left + (width * peaks));
+	coordinates[length-2] = left + (width * peaks);
 	coordinates[length-1] = bottom;
 	return coordinates;
 }
