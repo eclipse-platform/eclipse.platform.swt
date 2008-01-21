@@ -302,6 +302,7 @@ public class OS extends C {
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
 	public static final int GTK_REALIZED  = 1 << 6;
+	public static final int GTK_RECEIVES_DEFAULT = 1 << 20;
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RELIEF_NORMAL = 0;
 	public static final int GTK_RC_BG = 1 << 1;

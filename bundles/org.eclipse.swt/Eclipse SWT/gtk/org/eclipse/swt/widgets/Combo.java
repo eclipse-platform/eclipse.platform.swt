@@ -477,6 +477,15 @@ void createHandle (int index) {
 			OS.g_list_free (display.allChildren);
 			display.allChildren = 0;
 		}
+		/*
+		* Feature in GTK. By default, read only combo boxes 
+		* process the RETURN key rather than allowing the 
+		* default button to process the key. The fix is to
+		* clear the GTK_RECEIVES_DEFAULT flag.
+		*/
+		if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
+			OS.GTK_WIDGET_UNSET_FLAGS (buttonHandle, OS.GTK_RECEIVES_DEFAULT);
+		}
 	} else {
 		handle = OS.gtk_combo_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
