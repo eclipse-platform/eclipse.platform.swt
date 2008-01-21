@@ -2868,7 +2868,7 @@ public boolean post (Event event) {
 						case SWT.TAB: keysym = OS.GDK_Tab; break;
 						case SWT.LF: keysym = OS.GDK_Linefeed; break;
 						default:
-							keysym = wcsToMbcs (key);
+							keysym = key;
 					}
 					keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 					if (keyCode == 0) return false;
