@@ -209,15 +209,15 @@ void compress(ImageData image, byte[] dataYComp, byte[] dataCbComp, byte[] dataC
 			int delta = componentWidth - compressedWidth;
 			for (int yPos = 0; yPos < compressedHeight; yPos++) {
 				int dstOfs = ((yPos + 1) * componentWidth - delta);
-				int dataValue = imageComponent[dstOfs - 1] & 0xFF;
+				int dataValue = imageComponent[(dstOfs > 0) ? dstOfs - 1 : 0] & 0xFF;
 				for (int i = 0; i < delta; i++) {
 					imageComponent[dstOfs + i] = (byte)dataValue;
 				}
 			}
 		}
 		if (compressedHeight < componentHeight) {
-			int srcOfs = (compressedHeight - 1) * componentWidth;
-			for (int yPos = compressedHeight; yPos <= componentHeight; yPos++) {
+			int srcOfs = (compressedHeight > 0) ? (compressedHeight - 1) * componentWidth : 1;
+			for (int yPos = (compressedHeight > 0) ? compressedHeight : 1; yPos <= componentHeight; yPos++) {
 				int dstOfs = (yPos - 1) * componentWidth;
 				System.arraycopy(imageComponent, srcOfs, imageComponent, dstOfs, componentWidth);
 			}
