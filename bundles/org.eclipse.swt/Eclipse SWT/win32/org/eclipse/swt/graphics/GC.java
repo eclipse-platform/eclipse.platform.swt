@@ -290,10 +290,11 @@ void checkGC(int mask) {
 			}
 		}
 		if ((state & FONT) != 0) {
-			OS.SelectObject(handle, data.hFont);
-			int /*long*/ font = createGdipFont(handle, data.hFont);
+			Font font = data.font;
+			OS.SelectObject(handle, font.handle);
+			int /*long*/ gdipFont = createGdipFont(handle, font.handle);
 			if (data.gdipFont != 0) Gdip.Font_delete(data.gdipFont);
-			data.gdipFont = font;
+			data.gdipFont = gdipFont;
 		}
 		if ((state & DRAW_OFFSET) != 0) {
 			data.gdipXOffset = data.gdipYOffset = 0;
@@ -403,7 +404,8 @@ void checkGC(int mask) {
 		OS.SetTextColor(handle, data.foreground);
 	}
 	if ((state & FONT) != 0) {
-		OS.SelectObject(handle, data.hFont);
+		Font font = data.font;
+		OS.SelectObject(handle, font.handle);
 	}
 }
 
@@ -3221,7 +3223,7 @@ public int getFillRule() {
  */
 public Font getFont () {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Font.win32_new(data.device, data.hFont);
+	return data.font;
 }
 
 /**
@@ -3647,11 +3649,11 @@ void init(Drawable drawable, GCData data, int /*long*/ hDC) {
 		data.background = OS.GetBkColor(hDC);
 	}
 	data.state &= ~(NULL_BRUSH | NULL_PEN);
-	int /*long*/ hFont = data.hFont;
-	if (hFont != 0 && hFont != -1) {
+	Font font = data.font;
+	if (font != null) {
 		data.state &= ~FONT;
 	} else {
-		data.hFont = OS.GetCurrentObject(hDC, OS.OBJ_FONT);
+		data.font = Font.win32_new(device, OS.GetCurrentObject(hDC, OS.OBJ_FONT));
 	}
 	int /*long*/ hPalette = data.device.hPalette;
 	if (hPalette != 0) {
@@ -4114,7 +4116,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.hFont = font != null ? font.handle : data.device.systemFont;
+	data.font = font != null ? font : data.device.systemFont;
 	data.state &= ~FONT;
 }
 

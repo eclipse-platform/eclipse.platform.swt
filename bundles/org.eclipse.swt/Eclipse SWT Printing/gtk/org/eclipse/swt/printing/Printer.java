@@ -345,7 +345,7 @@ public int /*long*/ internal_new_GC(GCData data) {
 		data.drawable = drawable;
 		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
-		data.font = getSystemFont ().handle;
+		data.font = getSystemFont ();
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		data.cairo = cairo;
 		isGCCreated = true;

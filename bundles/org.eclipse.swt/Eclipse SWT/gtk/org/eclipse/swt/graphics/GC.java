@@ -233,7 +233,8 @@ void checkGC (int mask) {
 		}
 		if ((state & FONT) != 0) {
 			if (data.layout != 0) {
-				OS.pango_layout_set_font_description(data.layout, data.font);
+				Font font = data.font;
+				OS.pango_layout_set_font_description(data.layout, font.handle);
 			}
 			if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
 				setCairoFont(cairo, data.font);
@@ -329,7 +330,8 @@ void checkGC (int mask) {
 	}
 	if ((state & FONT) != 0) {
 		if (data.layout != 0) {
-			OS.pango_layout_set_font_description(data.layout, data.font);
+			Font font = data.font;
+			OS.pango_layout_set_font_description(data.layout, font.handle);
 		}
 	}
 	if ((state & (LINE_CAP | LINE_JOIN | LINE_STYLE | LINE_WIDTH)) != 0) {
@@ -2403,7 +2405,7 @@ public int getFillRule() {
  */
 public Font getFont() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Font.gtk_new(data.device, data.font);
+	return data.font;
 }
 
 /**
@@ -2421,9 +2423,10 @@ public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.context == 0) createLayout();
 	checkGC(FONT);
+	Font font = data.font;
 	int /*long*/ context = data.context;
 	int /*long*/ lang = OS.pango_context_get_language(context);
-	int /*long*/ metrics = OS.pango_context_get_metrics(context, data.font, lang);
+	int /*long*/ metrics = OS.pango_context_get_metrics(context, font.handle, lang);
 	FontMetrics fm = new FontMetrics();
 	fm.ascent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_ascent(metrics));
 	fm.descent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_descent(metrics));
@@ -2770,7 +2773,7 @@ double[] identity() {
 void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
 	if (data.foreground != null) data.state &= ~FOREGROUND;
 	if (data.background != null) data.state &= ~(BACKGROUND | BACKGROUND_BG);
-	if (data.font != 0) data.state &= ~FONT;
+	if (data.font != null) data.state &= ~FONT;
 
 	Image image = data.image;
 	if (image != null) {
@@ -3291,9 +3294,8 @@ public void setClipping(Region region) {
  */
 public void setFont(Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (font == null) font = data.device.systemFont;
-	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font.handle;
+	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.font = font != null ? font : data.device.systemFont;
 	data.state &= ~FONT;
 	data.stringWidth = data.stringHeight = -1;
 }

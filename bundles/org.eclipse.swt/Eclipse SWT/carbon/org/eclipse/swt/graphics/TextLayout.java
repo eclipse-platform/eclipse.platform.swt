@@ -1751,10 +1751,11 @@ void setLayoutControl(int tag, int value, int size) {
 public void setFont (Font font) {
 	checkLayout ();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.font == font) return;
-	if (font != null && font.equals(this.font)) return;
-	freeRuns();
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals(font)) return;
+	freeRuns();
 }
 
 /**

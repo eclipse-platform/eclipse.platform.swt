@@ -1769,9 +1769,10 @@ public void setDescent (int descent) {
 public void setFont (Font font) {
 	checkLayout ();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.font == font) return;
-	if (font != null && font.equals(this.font)) return;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals(font)) return;
 	OS.pango_layout_set_font_description(layout, font != null ? font.handle : 0);
 }
 

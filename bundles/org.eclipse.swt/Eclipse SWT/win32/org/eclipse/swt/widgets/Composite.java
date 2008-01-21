@@ -1281,7 +1281,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 				Control control = findBackgroundControl ();
 				if (control == null) control = this;
 				data.background = control.getBackgroundPixel ();
-				data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
 				data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 				if ((style & SWT.NO_BACKGROUND) != 0) {
 					/* This code is intentionally commented because it may be slow to copy bits from the screen */
@@ -1465,7 +1465,7 @@ LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 			Control control = findBackgroundControl ();
 			if (control == null) control = this;
 			data.background = control.getBackgroundPixel ();
-			data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
 			data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			GC gc = GC.win32_new (wParam, data);
 			Event event = new Event ();

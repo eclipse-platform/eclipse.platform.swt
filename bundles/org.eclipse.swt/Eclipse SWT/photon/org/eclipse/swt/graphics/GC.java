@@ -1306,8 +1306,9 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 			OS.PgDrawText(buffer, buffer.length, pos, drawFlags);
 		} else {
 			if (isTransparent) {
+				Font font = data.font;
 				PhRect_t rect = new PhRect_t();
-				OS.PfExtentText(rect, null, data.font, buffer, buffer.length);
+				OS.PfExtentText(rect, null, font.handle, buffer, buffer.length);
 				short width = (short)(rect.lr_x - rect.ul_x + 1);
 				short height = (short)(rect.lr_y - rect.ul_y + 1);
 				int image = OS.PhCreateImage(null, width, height, OS.Pg_IMAGE_DIRECT_888, 0, 0, 0);
@@ -1319,7 +1320,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 				if (pmMC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				int prevCont = OS.PmMemStart(pmMC);
 				OS.PgSetTextColor(data.foreground);
-				OS.PgSetFont(data.font);
+				OS.PgSetFont(font.handle);
 				pos.x = pos.y = (short)0;
 				OS.PgDrawText(buffer, buffer.length, pos, drawFlags);
 				OS.PmMemFlush(pmMC, image);
@@ -2168,7 +2169,7 @@ public int getFillRule() {
  */
 public Font getFont () {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Font.photon_new(data.device, data.font);
+	return data.font;
 }
 
 /**
@@ -2185,7 +2186,7 @@ public Font getFont () {
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	FontQueryInfo info = new FontQueryInfo();
-	OS.PfQueryFontInfo(data.font, info);
+	OS.PfQueryFontInfo(data.font.handle, info);
 	return FontMetrics.photon_new(info);
 }
 
@@ -2907,7 +2908,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font == null ? data.device.systemFont : font.handle;
+	data.font = font == null ? data.device.systemFont : font;
 	dirtyBits |= DIRTY_FONT;
 }
 
@@ -3199,8 +3200,9 @@ int setGC() {
 			OS.PgSetTextColor(foreColor);
 		}
 		if ((dirtyBits & DIRTY_FONT) != 0) {
-			OS.PfLoadMetrics(data.font);
-			OS.PgSetFont(data.font);
+			Font font = data.font;
+			OS.PfLoadMetrics(font.handle);
+			OS.PgSetFont(font.handle);
 		}
 		if ((dirtyBits & DIRTY_CLIPPING) != 0) {
 			OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);
@@ -3544,7 +3546,7 @@ public Point stringExtent(String string) {
 
 	int flags = OS.PtEnter(0);
 	try {
-		OS.PfExtentWideText(rect, null, data.font, buffer, size * 2);
+		OS.PfExtentWideText(rect, null, data.font.handle, buffer, size * 2);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
 	}

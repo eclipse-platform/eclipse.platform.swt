@@ -1274,8 +1274,14 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (cellFont == null) cellFont = new Font [count];
+	if (cellFont == null) {
+		if (font == null) return;
+		cellFont = new Font [count];
+	}
+	Font oldFont = cellFont [index];
+	if (oldFont == font) return;
 	cellFont [index] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	updateFont (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 }

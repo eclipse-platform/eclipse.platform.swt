@@ -233,7 +233,7 @@ void init(Device device, String name, int height, int style, byte[] stem) {
 		byte[] buffer = new byte[OS.MAX_FONT_TAG];
 		if (OS.PfGenerateFontName(description, osStyle, height, buffer) != 0) handle = buffer;
 		if (handle == null) {
-			byte[] defaultFont = device.systemFont;
+			byte[] defaultFont = device.systemFont.handle;
 			int fontID = OS.PfDecomposeStemToID(defaultFont);
 			if (fontID != 0) {
 				int desc = OS.PfFontDescription(fontID);

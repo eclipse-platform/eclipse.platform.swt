@@ -1530,7 +1530,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		if (control == null) control = this;
 		int background = control.getBackgroundPixel ();
 		if (background != OS.GetBkColor (hDC)) data.background = background;
-		data.hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+		data.font = font != null ? font : Font.win32_new (display, OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0));
 		data.uiState = (int)/*64*/OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
 	return hDC;

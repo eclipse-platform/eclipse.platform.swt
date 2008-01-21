@@ -2438,7 +2438,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = this;
-		data.hFont = getSystemFont ().handle;
+		data.font = getSystemFont ();
 	}
 	return hDC;
 }

@@ -30,7 +30,7 @@ public final class GCData {
 	public int style, state = -1;
 	public int foreground = -1;
 	public int background = -1;
-	public int /*long*/ hFont;
+	public Font font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public int lineStyle = SWT.LINE_SOLID;

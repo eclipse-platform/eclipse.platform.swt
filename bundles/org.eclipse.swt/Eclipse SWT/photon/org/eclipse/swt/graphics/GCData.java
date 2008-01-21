@@ -31,7 +31,7 @@ public final class GCData {
 	public int widget, topWidget;
 	public int foreground = -1;
 	public int background = -1;
-	public byte[] font;
+	public Font font;
 	public boolean xorMode;
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;

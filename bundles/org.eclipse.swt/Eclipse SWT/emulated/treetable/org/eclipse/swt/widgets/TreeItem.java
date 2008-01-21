@@ -2398,17 +2398,18 @@ public void setExpanded (boolean value) {
  * 
  * @since 3.0
  */
-public void setFont (Font value) {
+public void setFont (Font font) {
 	checkWidget ();
-	if (value != null && value.isDisposed ()) {
+	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (font == value) return;
-	if (value != null && value.equals (font)) return;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
+	this.font = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	
 	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
-	font = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
 	/* recompute cached values for string measurements */
@@ -2446,21 +2447,22 @@ public void setFont (Font value) {
  * 
  * @since 3.1
  */
-public void setFont (int columnIndex, Font value) {
+public void setFont (int columnIndex, Font font) {
 	checkWidget ();
-	if (value != null && value.isDisposed ()) {
+	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellFonts == null) {
-		if (value == null) return;
+		if (font == null) return;
 		cellFonts = new Font [validColumnCount];
 	}
-	if (cellFonts [columnIndex] == value) return;
-	if (cellFonts [columnIndex] != null && cellFonts [columnIndex].equals (value)) return;
-	cellFonts [columnIndex] = value;
+	Font oldFont = cellFonts [columnIndex];
+	if (oldFont == font) return;
+	cellFonts [columnIndex] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
 	/* recompute cached values for string measurements */

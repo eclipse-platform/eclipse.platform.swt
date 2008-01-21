@@ -3157,7 +3157,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 		if (selected) clrSelectionBk = data.background;
 	}
-	data.hFont = item.fontHandle (nmcd.iSubItem);
+	data.font = Font.win32_new (display, item.fontHandle (nmcd.iSubItem));
 	data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
@@ -3274,7 +3274,7 @@ Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	data.device = display;
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
-	data.hFont = hFont;
+	data.font = Font.win32_new (display, hFont);
 	GC gc = GC.win32_new (nmcd.hdc, data);
 	Event event = new Event ();
 	event.item = item;
@@ -3297,7 +3297,7 @@ Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hDC) {
 	GCData data = new GCData ();
 	data.device = display;
-	data.hFont = item.fontHandle (column);
+	data.font = Font.win32_new (display, item.fontHandle (column));
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
 	RECT itemRect = item.getBounds (row, column, true, true, false, false, hDC);
@@ -3436,7 +3436,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	int /*long*/ hDC = nmcd.hdc;
 	GCData data = new GCData ();
 	data.device = display;
-	data.hFont = item.fontHandle (nmcd.iSubItem);
+	data.font = Font.win32_new (display, item.fontHandle (nmcd.iSubItem));
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
 	* even for items that are not selected.  The fix is to get
@@ -3538,7 +3538,7 @@ Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
-	data.hFont = hFont;
+	data.font = Font.win32_new (display, hFont);
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
 	GC gc = GC.win32_new (nmcd.hdc, data);
@@ -6503,7 +6503,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 					data.device = display;
 					data.foreground = OS.GetTextColor (nmcd.hdc);
 					data.background = OS.GetBkColor (nmcd.hdc);
-					data.hFont = hFont;
+					data.font = Font.win32_new (display, hFont);
 					GC gc = GC.win32_new (nmcd.hdc, data);
 					int x = cellRect.left;
 					if (pinfo.iSubItem != 0) x -= gridWidth;

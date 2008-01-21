@@ -38,6 +38,7 @@ import org.eclipse.swt.accessibility.*;
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Cursor cursor;
+	Font font;
 	Menu menu;
 	Object layoutData;
 	String toolTipText;
@@ -823,6 +824,7 @@ public Image getBackgroundImage () {
  */
 public Font getFont () {
 	checkWidget();
+	if (font != null) return font;
 	int [] args = {
 		OS.Pt_ARG_TEXT_FONT, 0, 0,
 		OS.Pt_ARG_LIST_FONT, 0, 0,
@@ -1240,7 +1242,7 @@ public int internal_new_GC (GCData data) {
 	data.topWidget = topHandle ();
 	data.foreground = args [1];
 	data.background = args [4];
-	data.font = getFont ().handle;
+	data.font = getFont ();
 	return phGC;
 }
 
@@ -2565,6 +2567,7 @@ public void setFont (Font font) {
 	} else {
 		buffer = defaultFont ();
 	}
+	this.font = font;
 	setFont (buffer);
 }
 

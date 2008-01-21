@@ -244,7 +244,7 @@ public int /*long*/ internal_new_GC(GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = this;
-		data.hFont = OS.GetCurrentObject(handle, OS.OBJ_FONT);
+		data.font = Font.win32_new(this, OS.GetCurrentObject(handle, OS.OBJ_FONT));
 		isGCCreated = true;
 	}
 	return handle;

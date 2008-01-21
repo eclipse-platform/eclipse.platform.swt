@@ -1281,9 +1281,10 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (this.font == font) return;
-	if (this.font != null && this.font.equals (font)) return;
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	int /*long*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
 	/*
@@ -1326,11 +1327,13 @@ public void setFont (int index, Font font) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if (cellFont == null) {
+		if (font == null) return;
 		cellFont = new Font [count];
 	}
-	if (cellFont [index] == font) return;
-	if (cellFont [index] != null && cellFont [index].equals (font)) return;
+	Font oldFont = cellFont [index];
+	if (oldFont == font) return;
 	cellFont [index] = font;
+	if (oldFont != null && oldFont.equals (font)) return;
 	
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	int /*long*/ fontHandle  = font != null ? font.handle : 0;

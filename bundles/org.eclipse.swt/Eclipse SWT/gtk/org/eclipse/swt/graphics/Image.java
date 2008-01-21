@@ -1088,7 +1088,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.drawable = pixmap;
 		data.background = device.COLOR_WHITE.handle;
 		data.foreground = device.COLOR_BLACK.handle;
-		data.font = device.systemFont.handle;
+		data.font = device.systemFont;
 		data.image = this;
 	}
 	return gdkGC;

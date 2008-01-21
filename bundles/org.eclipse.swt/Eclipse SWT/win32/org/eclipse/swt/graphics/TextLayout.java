@@ -1473,7 +1473,7 @@ int /*long*/ getItemFont (StyleItem item) {
 	if (this.font != null) {
 		return this.font.handle;
 	}
-	return device.systemFont;
+	return device.systemFont.handle;
 }
 
 /**
@@ -1622,7 +1622,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int /*long*/ hDC = device.internal_new_GC(null);
 	int /*long*/ srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
-	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont);
+	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont.handle);
 	OS.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
@@ -2403,10 +2403,11 @@ public void setDescent(int descent) {
 public void setFont (Font font) {
 	checkLayout();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.font == font) return;
-	if (font != null && font.equals(this.font)) return;
-	freeRuns();
+	Font oldFont = this.font;
+	if (oldFont == font) return;
 	this.font = font;
+	if (oldFont != null && oldFont.equals(font)) return;
+	freeRuns();
 }
 
 /**

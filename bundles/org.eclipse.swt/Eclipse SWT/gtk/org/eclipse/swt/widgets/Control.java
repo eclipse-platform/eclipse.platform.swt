@@ -88,8 +88,8 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
-int /*long*/ defaultFont () {
-	return display.getSystemFont ().handle;
+Font defaultFont () {
+	return display.getSystemFont ();
 }
 
 void deregister () {
@@ -335,7 +335,7 @@ void printWindow (boolean first, Control control, int /*long*/ gc, int /*long*/ 
 				Control backgroundControl = findBackgroundControl ();
 				if (backgroundControl == null) backgroundControl = this;
 				data.background = backgroundControl.getBackgroundColor ();
-				data.font = font != null ? font.handle : defaultFont (); 
+				data.font = font != null ? font : defaultFont (); 
 			}
 			Event event = new Event ();
 			event.width = width [0];
@@ -2237,8 +2237,7 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget();
-	if (font != null) return font;
-	return Font.gtk_new (display, defaultFont ());
+	return font != null ? font : defaultFont ();
 }
 	
 int /*long*/ getFontDescription () {
@@ -2906,7 +2905,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
 		data.background = control.getBackgroundColor ();
-		data.font = font != null ? font.handle : defaultFont (); 
+		data.font = font != null ? font : defaultFont (); 
 	}	
 	return gdkGC;
 }
@@ -3623,7 +3622,7 @@ public void setFont (Font font) {
 	this.font = font;
 	int /*long*/ fontDesc;
 	if (font == null) {
-		fontDesc = defaultFont ();
+		fontDesc = defaultFont ().handle;
 	} else {
 		if (font.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		fontDesc = font.handle;

@@ -46,7 +46,7 @@ public abstract class Device implements Drawable {
 	int [] colorRefCount;
 	
 	/* System Font */
-	int /*long*/ systemFont;
+	Font systemFont;
 
 	/* Font Enumeration */
 	int nFonts = 256;
@@ -134,7 +134,7 @@ public Device(DeviceData data) {
 		}
 		
 		/* Initialize the system font slot */
-		systemFont = getSystemFont().handle;
+		systemFont = getSystemFont();
 	}
 }
 

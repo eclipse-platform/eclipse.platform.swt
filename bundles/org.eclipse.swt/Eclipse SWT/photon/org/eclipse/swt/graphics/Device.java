@@ -33,7 +33,7 @@ public abstract class Device implements Drawable {
 
 	boolean disposed;
 	
-	byte[] systemFont;
+	Font systemFont;
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -104,7 +104,7 @@ public Device(DeviceData data) {
 		}
 	
 		/* Initialize the system font slot */
-		systemFont = getSystemFont ().handle;
+		systemFont = getSystemFont ();
 	}
 }
 
@@ -461,7 +461,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.photon_new (this, systemFont);
+	return systemFont;
 }
 
 /**

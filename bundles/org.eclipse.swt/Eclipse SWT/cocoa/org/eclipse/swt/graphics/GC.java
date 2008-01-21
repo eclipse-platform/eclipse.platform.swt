@@ -2772,9 +2772,8 @@ public void setFillRule(int rule) {
  */
 public void setFont(Font font) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (font == null) font = data.device.systemFont;
-	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font;
+	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.font = font != null ? font : data.device.systemFont;
 	data.state &= ~FONT;
 }
 

@@ -29,7 +29,7 @@ public final class GCData {
 	public int style, state = -1;
 	public GdkColor foreground;
 	public GdkColor background;
-	public int /*long*/ font;
+	public Font font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public int /*long*/ clipRgn;

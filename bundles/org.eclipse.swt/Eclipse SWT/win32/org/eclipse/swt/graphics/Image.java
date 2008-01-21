@@ -1999,7 +1999,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		}
 		data.device = device;
 		data.image = this;
-		data.hFont = device.systemFont;
+		data.font = device.systemFont;
 	}
 	return imageDC;
 }
