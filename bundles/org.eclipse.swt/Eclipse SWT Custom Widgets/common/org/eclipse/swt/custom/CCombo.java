@@ -131,10 +131,10 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.Verify};
+	int [] textEvents = {SWT.DefaultSelection, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.Traverse, SWT.FocusIn, SWT.Verify};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
-	int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
+	int [] arrowEvents = {SWT.MouseDown, SWT.MouseUp, SWT.Selection, SWT.FocusIn};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
 	createPopup(null, -1);
@@ -279,6 +279,28 @@ void arrowEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
 			handleFocus (SWT.FocusIn);
+			break;
+		}
+		case SWT.MouseDown: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseDown, mouseEvent);
+			event.doit = mouseEvent.doit;
+			break;
+		}
+		case SWT.MouseUp: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseUp, mouseEvent);
+			event.doit = mouseEvent.doit;
 			break;
 		}
 		case SWT.Selection: {
@@ -1603,6 +1625,16 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.MouseDown: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseDown, mouseEvent);
+			if (isDisposed ()) break;
+			event.doit = mouseEvent.doit;
+			if (!event.doit) break;
 			if (event.button != 1) return;
 			if (text.getEditable ()) return;
 			boolean dropped = isDropped ();
@@ -1612,9 +1644,29 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.MouseUp: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseUp, mouseEvent);
+			if (isDisposed ()) break;
+			event.doit = mouseEvent.doit;
+			if (!event.doit) break;
 			if (event.button != 1) return;
 			if (text.getEditable ()) return;
 			text.selectAll ();
+			break;
+		}
+		case SWT.MouseDoubleClick: {
+			Event mouseEvent = new Event ();
+			mouseEvent.button = event.button;
+			mouseEvent.count = event.count;
+			mouseEvent.stateMask = event.stateMask;
+			mouseEvent.time = event.time;
+			mouseEvent.x = event.x; mouseEvent.y = event.y;
+			notifyListeners (SWT.MouseDoubleClick, mouseEvent);
 			break;
 		}
 		case SWT.Traverse: {		
