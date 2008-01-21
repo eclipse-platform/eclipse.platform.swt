@@ -315,7 +315,8 @@ public Rectangle getBounds () {
 			rect.width = Math.max (0, right - rect.x);
 		}
 	}
-	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
@@ -382,7 +383,8 @@ public Rectangle getBounds (int index) {
 			rect.width -= w [0]  + buffer [0];
 		}
 	}
-	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
@@ -579,7 +581,8 @@ public Rectangle getImageBounds (int index) {
 		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
 		rect.width = w [0];
 	}
-	return new Rectangle (rect.x, rect.y, rect.width, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 /**
@@ -722,7 +725,8 @@ public Rectangle getTextBounds (int index) {
 			rect.width = Math.max (0, right - rect.x);
 		}
 	}
-	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
+	int width = OS.gtk_tree_view_column_get_visible (column) ? rect.width + 1 : 0;
+	return new Rectangle (rect.x, rect.y, width, rect.height + 1);
 }
 
 void redraw () {
