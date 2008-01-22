@@ -680,9 +680,10 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (background == color) return;
-	if (background != null && background.equals (color)) return;
+	Color oldColor = background;
+	if (oldColor == color) return;
 	background = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -713,11 +714,13 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellBackground == null) {
+		if (color == null) return;
 		cellBackground = new Color [count];
 	}
-	if (cellBackground [index] == color) return;
-	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
+	Color oldColor = cellBackground [index];
+	if (oldColor == color) return;
 	cellBackground [index] = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -832,9 +835,10 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (foreground == color) return;
-	if (foreground != null && foreground.equals (color)) return;
+	Color oldColor = foreground;
+	if (oldColor == color) return;
 	foreground = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
@@ -865,11 +869,13 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	if (cellForeground == null) {
+		if (color == null) return;
 		cellForeground = new Color [count];
 	}
-	if (cellForeground [index] == color) return;
-	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
+	Color oldColor = cellForeground [index];
+	if (oldColor == color) return;
 	cellForeground [index] = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
