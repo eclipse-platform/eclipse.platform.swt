@@ -258,7 +258,9 @@ void init(Device device, String name, float height, int style, byte[] fontString
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		byte[] buffer = Converter.wcsToMbcs(null, name, true);
 		OS.pango_font_description_set_family(handle, buffer);
-		OS.pango_font_description_set_size(handle, (int)(0.5f + height * OS.PANGO_SCALE));
+		if (height > 0) {
+			OS.pango_font_description_set_size(handle, (int)(0.5f + height * OS.PANGO_SCALE));
+		}
 		OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL);
 		int pangoStyle = OS.PANGO_STYLE_NORMAL;
 		int pangoWeight = OS.PANGO_WEIGHT_NORMAL;
