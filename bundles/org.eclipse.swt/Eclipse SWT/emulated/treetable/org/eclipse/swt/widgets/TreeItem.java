@@ -2187,14 +2187,15 @@ void removeItem (TreeItem item, int index) {
  * @since 2.0
  * 
  */
-public void setBackground (Color value) {
+public void setBackground (Color color) {
 	checkWidget ();
-	if (value != null && value.isDisposed ()) {
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (background == value) return;
-	if (background != null && background.equals (value)) return;
-	background = value;
+	Color oldColor = background;
+	if (oldColor == color) return;
+	background = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redrawItem ();
 }
@@ -2217,19 +2218,21 @@ public void setBackground (Color value) {
  * @since 3.1
  * 
  */
-public void setBackground (int columnIndex, Color value) {
+public void setBackground (int columnIndex, Color color) {
 	checkWidget ();
-	if (value != null && value.isDisposed ()) {
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellBackgrounds == null) {
+		if (color == null) return;
 		cellBackgrounds = new Color [validColumnCount];
 	}
-	if (cellBackgrounds [columnIndex] == value) return;
-	if (cellBackgrounds [columnIndex] != null && cellBackgrounds [columnIndex].equals (value)) return;
-	cellBackgrounds [columnIndex] = value;
+	Color oldColor = cellBackgrounds [columnIndex];
+	if (oldColor == color) return;
+	cellBackgrounds [columnIndex] = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (isInViewport ()) {
 		Rectangle bounds = getCellBounds (columnIndex);
@@ -2498,14 +2501,15 @@ public void setFont (int columnIndex, Font font) {
  * @since 2.0
  * 
  */
-public void setForeground (Color value) {
+public void setForeground (Color color) {
 	checkWidget ();
-	if (value != null && value.isDisposed ()) {
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (foreground == value) return;
-	if (foreground != null && foreground.equals (value)) return;
-	foreground = value;
+	Color oldColor = foreground;
+	if (oldColor == color) return;
+	foreground = color;
+	if (oldColor != null && oldColor.equals (color)) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redrawItem ();
 }
@@ -2536,11 +2540,13 @@ public void setForeground (int columnIndex, Color value) {
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellForegrounds == null) {
+		if (value == null) return;
 		cellForegrounds = new Color [validColumnCount];
 	}
-	if (cellForegrounds [columnIndex] == value) return;
-	if (cellForegrounds [columnIndex] != null && cellForegrounds [columnIndex].equals (value)) return;
+	Color oldColor = cellForegrounds [columnIndex];
+	if (oldColor == value) return;
 	cellForegrounds [columnIndex] = value;
+	if (oldColor != null && oldColor.equals (value)) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (isInViewport ()) {
 		redraw (
