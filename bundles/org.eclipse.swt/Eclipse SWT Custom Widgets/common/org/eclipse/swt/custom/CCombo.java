@@ -348,6 +348,8 @@ void comboEvent (Event event) {
 			arrow = null;
 			break;
 		case SWT.FocusIn:
+			Control focusControl = getDisplay ().getFocusControl ();
+			if (focusControl == arrow || focusControl == list) return;
 			text.setFocus();
 			break;
 		case SWT.Move:
