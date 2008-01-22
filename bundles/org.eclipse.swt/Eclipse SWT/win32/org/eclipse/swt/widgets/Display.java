@@ -2964,6 +2964,8 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			*/
 			if (wParam != 0) {
 				if (!isXMouseActive ()) {
+					int /*long*/ hwndActive = OS.GetActiveWindow ();
+					if (hwndActive != 0 && OS.IsWindowEnabled (hwndActive)) break;
 					Shell modal = modalDialog != null ? modalDialog.parent : getModalShell ();
 					if (modal != null && !modal.isDisposed ()) {
 						int /*long*/ hwndModal = modal.handle;
