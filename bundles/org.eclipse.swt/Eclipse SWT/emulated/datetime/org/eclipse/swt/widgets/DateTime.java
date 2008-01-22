@@ -219,8 +219,8 @@ String getFormattedString(int style) {
 		int m = calendar.get(Calendar.MINUTE);
 		int s = calendar.get(Calendar.SECOND);
 		int a = calendar.get(Calendar.AM_PM);
-		if ((style & SWT.SHORT) != 0) return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + " " + ampm[a];
-		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + ampm[a];
+		if ((style & SWT.SHORT) != 0) return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? "0" : "") + m + " " + ampm[a];
+		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + " " + ampm[a];
 	}
 	/* SWT.DATE */
 	int y = calendar.get(Calendar.YEAR);
@@ -827,8 +827,16 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
 	/* Convert leading 0's into spaces. */
 	int prependCount = end - start - buffer.length();
 	for (int i = 0; i < prependCount; i++) {
-		buffer.insert(0, ' ');
-	}
+		switch (fieldName) {
+		case Calendar.MINUTE:
+		case Calendar.SECOND:
+			buffer.insert(0, 0);
+		break;
+		default:
+			buffer.insert(0, ' ');
+		break;
+		}
+	}	
 	newValue = buffer.toString();
 	ignoreVerify = true;
 	text.insert(newValue);
