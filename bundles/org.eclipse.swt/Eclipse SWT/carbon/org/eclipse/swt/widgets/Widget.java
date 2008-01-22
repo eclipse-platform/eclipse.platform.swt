@@ -1877,7 +1877,7 @@ boolean setKeyState (Event event, int type, int theEvent) {
 					event.character = chars [0];
 				}
 				/*
-				* Bug in the Mactonish.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
+				* Bug in the Macintosh.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
 				* fail to give 0x0 (^@ or ASCII NUL) and 0x1e (^^).  Other control character
 				* key sequences such as ^A or even Ctrl+Shift+'-' (^_ or 0x1f) are correctly
 				* translated to control characters.  Since it is not possible to know which
