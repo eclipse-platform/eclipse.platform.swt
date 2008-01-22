@@ -206,11 +206,11 @@ class Mozilla extends WebBrowser {
 		{nsIDOMKeyEvent.DOM_VK_NUMPAD8,		SWT.KEYPAD_8},
 		{nsIDOMKeyEvent.DOM_VK_NUMPAD9,		SWT.KEYPAD_9},
 		{nsIDOMKeyEvent.DOM_VK_ENTER,		SWT.KEYPAD_CR},
-		{nsIDOMKeyEvent.DOM_VK_ADD,			'+'},
-		{nsIDOMKeyEvent.DOM_VK_SUBTRACT,	'-'},
-		{nsIDOMKeyEvent.DOM_VK_MULTIPLY,	'*'},
-		{nsIDOMKeyEvent.DOM_VK_DIVIDE,		'/'},
-		{nsIDOMKeyEvent.DOM_VK_DECIMAL,		'.'},
+		{nsIDOMKeyEvent.DOM_VK_ADD,			SWT.KEYPAD_ADD},
+		{nsIDOMKeyEvent.DOM_VK_SUBTRACT,	SWT.KEYPAD_SUBTRACT},
+		{nsIDOMKeyEvent.DOM_VK_MULTIPLY,	SWT.KEYPAD_MULTIPLY},
+		{nsIDOMKeyEvent.DOM_VK_DIVIDE,		SWT.KEYPAD_DIVIDE},
+		{nsIDOMKeyEvent.DOM_VK_DECIMAL,		SWT.KEYPAD_DECIMAL},
 
 		/* Other keys */
 		{nsIDOMKeyEvent.DOM_VK_CAPS_LOCK,	SWT.CAPS_LOCK},
