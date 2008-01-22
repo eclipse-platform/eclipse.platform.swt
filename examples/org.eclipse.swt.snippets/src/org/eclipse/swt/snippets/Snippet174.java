@@ -15,8 +15,9 @@ package org.eclipse.swt.snippets;
  * SWT OpenGL snippet: draw a square
  * 
  * This snippet requires the experimental org.eclipse.swt.opengl plugin, which
- * is not included in swt by default.  For information on this plugin see
- * http://www.eclipse.org/swt/opengl/opengl.html  
+ * is not included in SWT by default and should only be used with versions of
+ * SWT prior to 3.2.  For information on using OpenGL in SWT see
+ * http://www.eclipse.org/swt/opengl/ .
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
