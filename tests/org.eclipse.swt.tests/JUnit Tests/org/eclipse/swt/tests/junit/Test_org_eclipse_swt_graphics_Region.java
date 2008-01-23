@@ -896,10 +896,34 @@ public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
 
 public void test_add_intArray() {
 	Region reg = new Region(display);
-	int[] onePoint = new int[] {};
-	reg.add(new Rectangle(0,0,50,25));
+	int[] points = new int[] {1};
+	reg.add(points);
 	reg.dispose();
 	
+	Region reg2 = new Region(display);
+	points = new int[] {1,2};
+	reg2.add(points);
+	reg2.dispose();
+	
+	Region reg3 = new Region(display);
+	points = new int[] {1,2,3};
+	reg3.add(points);
+	reg3.dispose();
+	
+	Region reg4 = new Region(display);
+	points = new int[] {1,2,3,4};
+	reg4.add(points);
+	reg4.dispose();
+	
+	Region reg5 = new Region(display);
+	points = new int[] {1,2,3,4,5};
+	reg5.add(points);
+	reg5.dispose();
+	
+	Region reg6 = new Region(display);
+	points = new int[] {1,2,3,4,5,6};
+	reg6.add(points);
+	reg6.dispose();
 }
 
 public static Test suite() {
@@ -935,6 +959,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_toString");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
+	methodNames.addElement("test_add_intArray");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -960,6 +985,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Region")) test_subtractLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
+	else if (getName().equals("test_add_intArray")) test_add_intArray();
 }
 
 /* custom */
