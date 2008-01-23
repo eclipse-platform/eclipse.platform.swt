@@ -96,7 +96,7 @@ public class Display extends Device {
 	
 	int application, dispatcher, frame, jniRef;
 	boolean idle;
-	int sleep;
+	int sleep, operation;
 	int operationCount;
 	
 	/* Windows and Events */
@@ -608,15 +608,6 @@ static void checkDisplay (Thread thread, boolean multiple) {
 				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 			}
 		}
-	}
-}
-
-void checkExitFrame (int e) {
-	int operation = OS.DispatcherHookEventArgs_Operation (e);
-	int priority = OS.DispatcherOperation_Priority (operation);
-	OS.GCHandle_Free (operation);
-	if (priority != OS.DispatcherPriority_Send) {
-		OS.DispatcherFrame_Continue (frame, false);
 	}
 }
 
@@ -1705,9 +1696,6 @@ protected void init () {
 	handler = OS.gcnew_DispatcherHookEventHandler (jniRef, "HandleOperationPosted");
 	OS.DispatcherHooks_OperationPosted (hooks, handler);
 	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_DispatcherHookEventHandler (jniRef, "HandleOperationAborted");
-	OS.DispatcherHooks_OperationAborted (hooks, handler);
-	OS.GCHandle_Free (handler);
 	OS.GCHandle_Free (hooks);
 	timerHandler = OS.gcnew_TimerHandler(jniRef, "timerProc");
 	
@@ -1751,29 +1739,20 @@ void invalidateHandler () {
 }
 
 void HandleDispatcherInactive (int sender, int e) {
-	if (runAsyncMessages (false)) {
-		wakeThread ();
-	} else {
-		idle = true;
-	}
-}
-
-void HandleOperationAborted (int sender, int e) {
-//	operationCount--;
-	checkExitFrame (e);
-//	idle = false;
+	if (runAsyncMessages (false)) wakeThread ();
 }
 
 void HandleOperationCompleted (int sender, int e) {
-//	operationCount--;
-	checkExitFrame (e);
-	idle = false;
+	if (operation != 0) {
+		int current = OS.DispatcherHookEventArgs_Operation(e);
+		int priority = OS.DispatcherOperation_Priority(current);
+		if (priority == 5) OS.DispatcherOperation_Abort(operation);
+		OS.GCHandle_Free(current);
+	}
 }
 
 void HandleOperationPosted (int sender, int e) {
-//	operationCount++;
-//	idle = false;
-//	wakeThread ();
+	if (sleep != 0) OS.DispatcherOperation_Priority(sleep, 10);
 }
 
 /**	 
@@ -2213,20 +2192,19 @@ void removeShell (Shell shell) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-//	System.out.print("[");
 	runPopups ();
-	try {
-		OS.DispatcherFrame_Continue (frame, true);
-		OS.Dispatcher_PushFrame (frame);
-		if (!idle) {
-			runDeferredEvents();
-			return true;
-		}
-//		return runAsyncMessages (false);
-		return !idle;
-	} finally {
-//		System.out.print("]");
+	idle = false;
+	int handler = OS.gcnew_NoArgsDelegate(jniRef, "setIdleHandler");
+	operation = OS.Dispatcher_BeginInvoke(dispatcher, 2, handler);
+	OS.DispatcherOperation_Wait(operation);
+	OS.GCHandle_Free(handler);
+	OS.GCHandle_Free(operation);
+	operation = 0;
+	if (!idle) {
+		runDeferredEvents();
+		return true;
 	}
+	return runAsyncMessages(false);
 }
 
 static void register (Display display) {
@@ -2759,6 +2737,10 @@ public static void setAppName (String name) {
 //	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 //}
 
+void setIdleHandler () {
+	idle = true;
+}
+
 void setModalShell (Shell shell) {
 	if (modalShells == null) modalShells = new Shell [4];
 	int index = 0, length = modalShells.length;
@@ -2822,17 +2804,16 @@ public void setSynchronizer (Synchronizer synchronizer) {
  */
 public boolean sleep () {
 	checkDevice ();
-//System.out.print("<");
-//try {
-//	if (getMessageCount () != 0) return true;
-//	sleep = 0;
-//	OS.DispatcherFrame_Continue(frame, true);
-//	OS.Dispatcher_PushFrame(frame);
-//	sleep = -1;
+	int handler = OS.gcnew_NoArgsDelegate (jniRef, "sleep_noop");
+	sleep = OS.Dispatcher_BeginInvoke(dispatcher, 0, handler);
+	OS.DispatcherOperation_Wait(sleep);
+	OS.GCHandle_Free(handler);
+	OS.GCHandle_Free(sleep);
+	sleep = 0;
 	return true;
-//} finally {
-//	System.out.println(">");
-//}
+}
+
+void sleep_noop() {
 }
 
 /**
@@ -3008,8 +2989,6 @@ public void wake () {
 }
 
 void wakeThreadHandler () {
-	//OS.DispatcherFrame_Continue (frame, false);
-	idle = false;
 }
 
 void wakeThread () {

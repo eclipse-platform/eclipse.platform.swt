@@ -620,9 +620,13 @@ public static final native void DispatcherHooks_DispatcherInactive(int sender, i
 public static final native void DispatcherHooks_OperationAborted(int sender, int handler);
 public static final native void DispatcherHooks_OperationCompleted(int sender, int handler);
 public static final native void DispatcherHooks_OperationPosted(int sender, int handler);
+public static final native boolean DispatcherFrame_Continue(int sender);
 public static final native void DispatcherFrame_Continue(int sender, boolean value);
-public static final native int DispatcherHookEventArgs_Operation(int sender); 
+public static final native int DispatcherHookEventArgs_Operation(int sender);
+public static final native boolean DispatcherOperation_Abort(int sender);
 public static final native int DispatcherOperation_Priority(int sender);
+public static final native void DispatcherOperation_Priority(int sender, int value);
+public static final native int DispatcherOperation_Wait(int sender);
 public static final native int Dispatcher_BeginInvoke(int sender, int priority, int method);
 public static final native void DispatcherTimer_Interval(int sender, int value);
 public static final native void DispatcherTimer_Start(int sender);

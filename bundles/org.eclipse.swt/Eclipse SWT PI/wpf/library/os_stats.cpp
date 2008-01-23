@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1289;
-int OS_nativeFunctionCallCount[1289];
+int OS_nativeFunctionCount = 1293;
+int OS_nativeFunctionCallCount[1293];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -221,13 +221,17 @@ char * OS_nativeFunctionNames[] = {
 	"DependencyPropertyDescriptor_1AddValueChanged",
 	"DependencyPropertyDescriptor_1FromProperty",
 	"DependencyProperty_1UnsetValue",
-	"DispatcherFrame_1Continue",
+	"DispatcherFrame_1Continue__I",
+	"DispatcherFrame_1Continue__IZ",
 	"DispatcherHookEventArgs_1Operation",
 	"DispatcherHooks_1DispatcherInactive",
 	"DispatcherHooks_1OperationAborted",
 	"DispatcherHooks_1OperationCompleted",
 	"DispatcherHooks_1OperationPosted",
-	"DispatcherOperation_1Priority",
+	"DispatcherOperation_1Abort",
+	"DispatcherOperation_1Priority__I",
+	"DispatcherOperation_1Priority__II",
+	"DispatcherOperation_1Wait",
 	"DispatcherTimer_1Interval",
 	"DispatcherTimer_1Start",
 	"DispatcherTimer_1Stop",

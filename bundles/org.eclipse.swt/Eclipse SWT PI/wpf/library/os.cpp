@@ -2526,14 +2526,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(DependencyProperty_1UnsetValue)
 }
 #endif
 
-#ifndef NO_DispatcherFrame_1Continue
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(DispatcherFrame_1Continue)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
-JNIEXPORT void JNICALL OS_NATIVE(DispatcherFrame_1Continue)
+#ifndef NO_DispatcherFrame_1Continue__I
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(DispatcherFrame_1Continue__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(DispatcherFrame_1Continue__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DispatcherFrame_1Continue__I_FUNC);
+	rc = (jboolean)((DispatcherFrame^)TO_OBJECT(arg0))->Continue;
+	OS_NATIVE_EXIT(env, that, DispatcherFrame_1Continue__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DispatcherFrame_1Continue__IZ
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(DispatcherFrame_1Continue__IZ)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(DispatcherFrame_1Continue__IZ)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, DispatcherFrame_1Continue_FUNC);
+	OS_NATIVE_ENTER(env, that, DispatcherFrame_1Continue__IZ_FUNC);
 	((DispatcherFrame^)TO_OBJECT(arg0))->Continue = (arg1);
-	OS_NATIVE_EXIT(env, that, DispatcherFrame_1Continue_FUNC);
+	OS_NATIVE_EXIT(env, that, DispatcherFrame_1Continue__IZ_FUNC);
 }
 #endif
 
@@ -2594,15 +2607,52 @@ JNIEXPORT void JNICALL OS_NATIVE(DispatcherHooks_1OperationPosted)
 }
 #endif
 
-#ifndef NO_DispatcherOperation_1Priority
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DispatcherOperation_1Priority)(JNIEnv *env, jclass that, jint arg0);
-JNIEXPORT jint JNICALL OS_NATIVE(DispatcherOperation_1Priority)
+#ifndef NO_DispatcherOperation_1Abort
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(DispatcherOperation_1Abort)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(DispatcherOperation_1Abort)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DispatcherOperation_1Abort_FUNC);
+	rc = (jboolean)((DispatcherOperation^)TO_OBJECT(arg0))->Abort();
+	OS_NATIVE_EXIT(env, that, DispatcherOperation_1Abort_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DispatcherOperation_1Priority__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DispatcherOperation_1Priority__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DispatcherOperation_1Priority__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, DispatcherOperation_1Priority_FUNC);
+	OS_NATIVE_ENTER(env, that, DispatcherOperation_1Priority__I_FUNC);
 	rc = (jint)((DispatcherOperation ^)TO_OBJECT(arg0))->Priority;
-	OS_NATIVE_EXIT(env, that, DispatcherOperation_1Priority_FUNC);
+	OS_NATIVE_EXIT(env, that, DispatcherOperation_1Priority__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DispatcherOperation_1Priority__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(DispatcherOperation_1Priority__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(DispatcherOperation_1Priority__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, DispatcherOperation_1Priority__II_FUNC);
+	((DispatcherOperation ^)TO_OBJECT(arg0))->Priority = ((DispatcherPriority)arg1);
+	OS_NATIVE_EXIT(env, that, DispatcherOperation_1Priority__II_FUNC);
+}
+#endif
+
+#ifndef NO_DispatcherOperation_1Wait
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DispatcherOperation_1Wait)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DispatcherOperation_1Wait)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DispatcherOperation_1Wait_FUNC);
+	rc = (jint)((DispatcherOperation^)TO_OBJECT(arg0))->Wait();
+	OS_NATIVE_EXIT(env, that, DispatcherOperation_1Wait_FUNC);
 	return rc;
 }
 #endif
