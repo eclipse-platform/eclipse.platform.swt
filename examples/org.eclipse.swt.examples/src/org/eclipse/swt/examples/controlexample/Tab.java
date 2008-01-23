@@ -1052,8 +1052,10 @@ abstract class Tab {
 	
 	/**
 	 * Gets the list of custom event names.
+	 * Subclasses override this method to allow adding of custom events.
 	 * 
 	 * @return an array containing custom event names
+	 * @see hookCustomListener
 	 */
 	String [] getCustomEventNames () {
 		return new String [0];
@@ -1153,6 +1155,8 @@ abstract class Tab {
 	
 	/**
 	 * Hooks the custom listener specified by eventName.
+	 * Subclasses override this method to add custom listeners.
+	 * @see getCustomEventNames
 	 */
 	void hookCustomListener (String eventName) {
 	}
@@ -1406,7 +1410,7 @@ abstract class Tab {
 	
 	/**
 	 * Sets the state of the "Example" widgets.  Subclasses
-	 * reimplement this method to set "Example" widget state
+	 * may extend this method to set "Example" widget state
 	 * that is specific to the widget.
 	 */
 	void setExampleWidgetState () {

@@ -293,6 +293,18 @@ class StyledTextTab extends ScrollableTab {
 	}
 
 	/**
+	 * Gets the list of custom event names.
+	 * 
+	 * @return an array containing custom event names
+	 */
+	String [] getCustomEventNames () {
+		return new String [] {
+				"ExtendedModifyListener", "BidiSegmentListener", "LineBackgroundListener",
+				"LineStyleListener", "PaintObjectListener", "TextChangeListener",
+				"VerifyKeyListener", "WordMovementListener"};
+	}
+
+	/**
 	 * Gets the "Example" widget children.
 	 */
 	Widget [] getExampleWidgets () {
@@ -315,6 +327,77 @@ class StyledTextTab extends ScrollableTab {
 		return "StyledText";
 	}
 	
+	/**
+	 * Hooks the custom listener specified by eventName.
+	 */
+	void hookCustomListener (final String eventName) {
+		if (eventName == "ExtendedModifyListener") {
+			styledText.addExtendedModifyListener (new ExtendedModifyListener() {
+				public void modifyText(ExtendedModifyEvent event) {
+					log (eventName, event);
+				}
+			});
+		}
+		if (eventName == "BidiSegmentListener") {
+			styledText.addBidiSegmentListener (new BidiSegmentListener() {
+				public void lineGetSegments(BidiSegmentEvent event) {
+					log (eventName, event);
+				}
+			});
+		}
+		if (eventName == "LineBackgroundListener") {
+			styledText.addLineBackgroundListener (new LineBackgroundListener() {
+				public void lineGetBackground(LineBackgroundEvent event) {
+					log (eventName, event);
+				}
+			});
+		}
+		if (eventName == "LineStyleListener") {
+			styledText.addLineStyleListener (new LineStyleListener() {
+				public void lineGetStyle(LineStyleEvent event) {
+					log (eventName, event);
+				}
+			});
+		}
+		if (eventName == "PaintObjectListener") {
+			styledText.addPaintObjectListener (new PaintObjectListener() {
+				public void paintObject(PaintObjectEvent event) {
+					log (eventName, event);
+				}
+			});
+		}
+		if (eventName == "TextChangeListener") {
+			styledText.getContent().addTextChangeListener (new TextChangeListener() {
+				public void textChanged(TextChangedEvent event) {
+					log (eventName + ".textChanged", event);
+				}
+				public void textChanging(TextChangingEvent event) {
+					log (eventName + ".textChanging", event);
+				}
+				public void textSet(TextChangedEvent event) {
+					log (eventName + ".textSet", event);
+				}
+			});
+		}
+		if (eventName == "VerifyKeyListener") {
+			styledText.addVerifyKeyListener (new VerifyKeyListener() {
+				public void verifyKey(VerifyEvent event) {
+					log (eventName, event);
+				}
+			});
+		}
+		if (eventName == "WordMovementListener") {
+			styledText.addWordMovementListener (new MovementListener() {
+				public void getNextOffset(MovementEvent event) {
+					log (eventName + ".getNextOffset", event);
+				}
+				public void getPreviousOffset(MovementEvent event) {
+					log (eventName + ".getPreviousOffset", event);
+				}
+			});
+		}
+	}
+
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
