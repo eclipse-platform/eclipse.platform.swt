@@ -2429,10 +2429,8 @@ public boolean post(Event event) {
 				if (vKey != 0) {
 					return OS.CGPostKeyboardEvent (0, vKey, type == SWT.KeyDown) == 0;
 				} else {
-					vKey = -1;
 					int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
 					int key = -1;
-					int [] state = new int [1];
 					int [] encoding = new int [1];
 					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
 					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
@@ -2451,12 +2449,22 @@ public boolean post(Event event) {
 						key = buffer [1] & 0x7f;
 					}
 					if (key == -1) return false;				
+					int [] state = new int [1];
+					vKey = -1;
 					for (int i = 0 ; i <= 0x7F ; i++) {
-						int result1 = OS.KeyTranslate (kchrPtr, (short) (i | 512), state);
-						int result2 = OS.KeyTranslate (kchrPtr, (short) i, state);
-						if ((result1 & 0x7f) == key || (result2 & 0x7f) == key) {
+						int result = OS.KeyTranslate (kchrPtr, (short) i, state) & 0x7F;
+						if (result == key) {
 							vKey = i;
 							break;
+						}
+					}
+					if ((vKey == -1)) {
+						for (int i = 0 ; i <= 0x7F ; i++) {
+							int resultShift = OS.KeyTranslate (kchrPtr, (short) (i | OS.shiftKey), state) & 0x7F;
+							if (resultShift == key) {
+								vKey = i;
+								break;
+							}
 						}
 					}
 					if (vKey == -1) return false;
