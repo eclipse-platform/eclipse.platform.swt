@@ -121,7 +121,6 @@ public class Shell extends Decorations {
 	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	int invalRgn;
 	Control lastActive;
-	Region region;
 	Rect rgnRect;
 	Rectangle normalBounds;
 	int imHandle;

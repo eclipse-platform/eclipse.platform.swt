@@ -113,7 +113,6 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	Region region;
 	Control lastActive;
 	boolean closing;
 	boolean moved, resized, opened, fullScreen;

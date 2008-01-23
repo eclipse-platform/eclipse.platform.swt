@@ -124,7 +124,6 @@ public class Shell extends Decorations {
 	int /*long*/ windowProc;
 	Control lastActive;
 	SHACTIVATEINFO psai;
-	Region region;
 	static /*final*/ int /*long*/ ToolTipProc;
 	static final int /*long*/ DialogProc;
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
