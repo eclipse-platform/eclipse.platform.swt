@@ -33,8 +33,8 @@ class IE extends WebBrowser {
 	String html;
 	int style;
 
-	static boolean silenceInternalNavigate;
-	static String progId = "Shell.Explorer";	//$NON-NLS-1$
+	static boolean SilenceInternalNavigate;
+	static String ProgId = "Shell.Explorer";	//$NON-NLS-1$
 
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
@@ -127,7 +127,7 @@ class IE extends WebBrowser {
 							/* just continue, version-specific features will not be enabled */
 						}
 						if (major >= 7) {
-							silenceInternalNavigate = true;
+							SilenceInternalNavigate = true;
 						}
 					}
 				}
@@ -163,7 +163,7 @@ class IE extends WebBrowser {
 						if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
 							/* specify that Shell.Explorer.2 is to be used */
 							OS.RegCloseKey (phkResult2 [0]);
-							progId = "Shell.Explorer.2";	//$NON-NLS-1$
+							ProgId = "Shell.Explorer.2";	//$NON-NLS-1$
 						}
 					}
 				}
@@ -177,7 +177,7 @@ public void create(Composite parent, int style) {
 	frame = new OleFrame(browser, SWT.NONE);
 
 	try {
-		site = new WebSite(frame, SWT.NONE, progId); //$NON-NLS-1$
+		site = new WebSite(frame, SWT.NONE, ProgId); //$NON-NLS-1$
 	} catch (SWTException e) {
 		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -804,13 +804,13 @@ public boolean setText(String html) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	boolean oldValue = false;
-	if (!OS.IsWinCE && silenceInternalNavigate) {
+	if (!OS.IsWinCE && SilenceInternalNavigate) {
 		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	if (!OS.IsWinCE && silenceInternalNavigate) {
+	if (!OS.IsWinCE && SilenceInternalNavigate) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
 	rgvarg[0].dispose();
@@ -844,13 +844,13 @@ public boolean setUrl(String url) {
 			int[] rgdispidNamedArgs = new int[1];
 			rgdispidNamedArgs[0] = rgdispid[1];
 			boolean oldValue = false;
-			if (!OS.IsWinCE && silenceInternalNavigate) {
+			if (!OS.IsWinCE && SilenceInternalNavigate) {
 				int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
 				oldValue = hResult == COM.S_OK;
 				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 			}
 			auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-			if (!OS.IsWinCE && silenceInternalNavigate) {
+			if (!OS.IsWinCE && SilenceInternalNavigate) {
 				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 			}
 			rgvarg[0].dispose();
