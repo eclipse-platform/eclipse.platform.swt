@@ -2735,6 +2735,9 @@ int HandleEvent (int /*long*/ event) {
 					keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 					keyEvent.stateMask &= ~keyCode;		/* remove current keydown if it's a state key */
 					browser.notifyListeners (keyEvent.type, keyEvent);
+					if (!keyEvent.doit) {
+						domEvent.PreventDefault ();
+					}
 					break;
 				}
 				default: {
@@ -2764,6 +2767,9 @@ int HandleEvent (int /*long*/ event) {
 							keyEvent.keyCode = lastKeyCode;
 							keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 							browser.notifyListeners (keyEvent.type, keyEvent);
+							if (!keyEvent.doit) {
+								domEvent.PreventDefault ();
+							}
 						}
 					}
 				}
@@ -2835,6 +2841,9 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.character = (char)lastCharCode;
 		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			domEvent.PreventDefault ();
+		}
 		return XPCOM.NS_OK;
 	}
 
@@ -2887,6 +2896,9 @@ int HandleEvent (int /*long*/ event) {
 			}
 		}
 		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			domEvent.PreventDefault ();
+		}
 		lastKeyCode = lastCharCode = 0;
 		return XPCOM.NS_OK;
 	}
