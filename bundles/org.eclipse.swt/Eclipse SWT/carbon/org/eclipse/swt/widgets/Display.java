@@ -2452,16 +2452,16 @@ public boolean post(Event event) {
 					int [] state = new int [1];
 					vKey = -1;
 					for (int i = 0 ; i <= 0x7F ; i++) {
-						int result = OS.KeyTranslate (kchrPtr, (short) i, state) & 0x7F;
-						if (result == key) {
+						int result = OS.KeyTranslate (kchrPtr, (short) i, state);
+						if ((result & 0x7F) == key) {
 							vKey = i;
 							break;
 						}
 					}
-					if ((vKey == -1)) {
+					if (vKey == -1) {
 						for (int i = 0 ; i <= 0x7F ; i++) {
-							int resultShift = OS.KeyTranslate (kchrPtr, (short) (i | OS.shiftKey), state) & 0x7F;
-							if (resultShift == key) {
+							int result = OS.KeyTranslate (kchrPtr, (short) (i | OS.shiftKey), state);
+							if ((result & 0x7F) == key) {
 								vKey = i;
 								break;
 							}
