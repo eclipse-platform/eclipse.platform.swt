@@ -85,13 +85,15 @@ public abstract class Widget {
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
 
+	static final int SAFARI_EVENTS_FIX = 1<<19;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	
 	static final Rect EMPTY_RECT = new Rect ();
 
-	static final String SUPPRESS_KEY_EVENTS_KEY = "org.eclipse.swt.internal.suppressKeyEvents"; //$NON-NLS-1$
+	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 
 Widget () {
 	/* Do nothing */
@@ -1551,7 +1553,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
-	if (getData (SUPPRESS_KEY_EVENTS_KEY) != null) return true;
+	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
 	int [] length = new int [1];
 	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 	if (status == OS.noErr && length [0] > 2) {
@@ -1682,6 +1684,10 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
  */
 public void setData (Object data) {
 	checkWidget();
+	if (SAFARI_EVENTS_FIX_KEY.equals(data)) {
+		state |= SAFARI_EVENTS_FIX;
+		return;
+	}
 	if ((state & KEYED_DATA) != 0) {
 		((Object []) this.data) [0] = data;
 	} else {

@@ -154,6 +154,7 @@ public static final int S_detail = Cocoa.sel_registerName("detail"); //$NON-NLS-
 public static final int S_DOMDocument = Cocoa.sel_registerName("DOMDocument"); //$NON-NLS-1$
 public static final int S_keyCode = Cocoa.sel_registerName("keyCode"); //$NON-NLS-1$
 public static final int S_metaKey = Cocoa.sel_registerName("metaKey"); //$NON-NLS-1$
+public static final int S_preventDefault = Cocoa.sel_registerName("preventDefault"); //$NON-NLS-1$
 public static final int S_relatedTarget = Cocoa.sel_registerName("relatedTarget"); //$NON-NLS-1$;
 public static final int S_shiftKey = Cocoa.sel_registerName("shiftKey"); //$NON-NLS-1$
 public static final int S_type = Cocoa.sel_registerName("type"); //$NON-NLS-1$

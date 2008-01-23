@@ -69,7 +69,8 @@ public abstract class Control extends Widget implements Drawable {
 	GCData gcs[];
 	Accessible accessible;
 
-	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
+	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion"; //$NON-NLS-1$
+
 
 Control () {
 	/* Do nothing */
@@ -2792,6 +2793,20 @@ boolean sendMouseEvent (int type, short button, int count, boolean send, int cho
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+	if ((state & SAFARI_EVENTS_FIX) != 0) {
+		switch (type) {
+			case SWT.MouseUp:
+			case SWT.MouseMove:
+			case SWT.MouseDoubleClick: {
+				return true;
+			}
+			case SWT.MouseDown: {
+				if (button == 1) return true;
+				break;
+			}
+		}
+	}
+
 	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	switch (button) {

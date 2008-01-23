@@ -32,6 +32,7 @@ class Safari extends WebBrowser {
 	String html;
 	int identifier;
 	int resourceCount;
+	int lastMouseMoveX, lastMouseMoveY;
 	String url = ""; //$NON-NLS-1$
 	Point location;
 	Point size;
@@ -49,11 +50,14 @@ class Safari extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
-	static final String SUPPRESS_KEY_EVENTS_KEY = "org.eclipse.swt.internal.suppressKeyEvents"; //$NON-NLS-1$
+	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 
 	/* event strings */
 	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
 	static final String DOMEVENT_KEYDOWN = "keydown"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -103,7 +107,7 @@ public void create (Composite parent, int style) {
 	* so that the browser can send them by listening to the DOM instead.
 	*/
 	if (!(OS.VERSION < 0x1040)) {
-		browser.setData(SUPPRESS_KEY_EVENTS_KEY, SUPPRESS_KEY_EVENTS_KEY);
+		browser.setData(SAFARI_EVENTS_FIX_KEY);
 	}
 
 	/*
@@ -197,7 +201,6 @@ public void create (Composite parent, int style) {
 					windowBoundsHandler = 0;
 
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
-					browser.setData(SUPPRESS_KEY_EVENTS_KEY, null);
 
 					Cocoa.objc_msgSend(webView, Cocoa.S_setFrameLoadDelegate, 0);
 					Cocoa.objc_msgSend(webView, Cocoa.S_setResourceLoadDelegate, 0);
@@ -731,8 +734,9 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 
 void didFinishLoadForFrame(int frame) {
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
+	hookDOMMouseListeners(frame);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
-		hookDOMListeners(frame);
+		hookDOMKeyListeners(frame);
 
 		final Display display = browser.getDisplay();
 		/*
@@ -813,7 +817,7 @@ void didFinishLoadForFrame(int frame) {
 	}
 }
 
-void hookDOMListeners(int frame) {
+void hookDOMKeyListeners(int frame) {
 	/*
 	* WebKit's DOM listener apis were introduced on OSX 10.4, so if an earlier version
 	* than this is detected then do not attempt to hook the DOM listeners.
@@ -831,6 +835,40 @@ void hookDOMListeners(int frame) {
 	OS.CFRelease(ptr);
 
 	string = DOMEVENT_KEYUP;
+	length = string.length();
+	chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	OS.CFRelease(ptr);
+}
+
+void hookDOMMouseListeners(int frame) {
+	/*
+	* WebKit's DOM listener apis were introduced on OSX 10.4, so if an earlier version
+	* than this is detected then do not attempt to hook the DOM listeners.
+	*/
+	if (OS.VERSION < 0x1040) return;
+
+	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
+
+	String string = DOMEVENT_MOUSEDOWN;
+	int length = string.length();
+	char[] chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	OS.CFRelease(ptr);
+
+	string = DOMEVENT_MOUSEUP;
+	length = string.length();
+	chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	OS.CFRelease(ptr);
+
+	string = DOMEVENT_MOUSEMOVE;
 	length = string.length();
 	chars = new char[length];
 	string.getChars(0, length, chars, 0);
@@ -1377,11 +1415,12 @@ void handleEvent(int evt) {
 	OS.CFStringGetCharacters(type, range, buffer);
 	String typeString = new String(buffer);
 
+	boolean ctrl = Cocoa.objc_msgSend(evt, Cocoa.S_ctrlKey) != 0;
+	boolean shift = Cocoa.objc_msgSend(evt, Cocoa.S_shiftKey) != 0;
+	boolean alt = Cocoa.objc_msgSend(evt, Cocoa.S_altKey) != 0;
+	boolean meta = Cocoa.objc_msgSend(evt, Cocoa.S_metaKey) != 0;
+
 	if (DOMEVENT_KEYDOWN.equals(typeString) || DOMEVENT_KEYUP.equals(typeString)) {
-		boolean ctrl = Cocoa.objc_msgSend(evt, Cocoa.S_ctrlKey) != 0;
-		boolean shift = Cocoa.objc_msgSend(evt, Cocoa.S_shiftKey) != 0;
-		boolean alt = Cocoa.objc_msgSend(evt, Cocoa.S_altKey) != 0;
-		boolean meta = Cocoa.objc_msgSend(evt, Cocoa.S_metaKey) != 0;
 		int keyCode = Cocoa.objc_msgSend(evt, Cocoa.S_keyCode);
 		int charCode = Cocoa.objc_msgSend(evt, Cocoa.S_charCode);
 
@@ -1396,7 +1435,60 @@ void handleEvent(int evt) {
 		keyEvent.character = (char)charCode;
 		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		browser.notifyListeners(keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			Cocoa.objc_msgSend(evt, Cocoa.S_preventDefault);
+		}
 		return;
+	}
+
+	/* mouse event */
+
+	int clientX = Cocoa.objc_msgSend(evt, Cocoa.S_clientX);
+	int clientY = Cocoa.objc_msgSend(evt, Cocoa.S_clientY);
+	int detail = Cocoa.objc_msgSend(evt, Cocoa.S_detail);
+	int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
+
+	Event mouseEvent = new Event ();
+	mouseEvent.widget = browser;
+	mouseEvent.x = clientX; mouseEvent.y = clientY;
+	mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+
+	if (DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		mouseEvent.type = SWT.MouseDown;
+		mouseEvent.button = button + 1;
+		mouseEvent.count = detail;
+	} else if (DOMEVENT_MOUSEUP.equals (typeString)) {
+		mouseEvent.type = SWT.MouseUp;
+		mouseEvent.button = button + 1;
+		mouseEvent.count = detail;
+		switch (mouseEvent.button) {
+			case 1: mouseEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: mouseEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: mouseEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
+		}
+	} else if (DOMEVENT_MOUSEMOVE.equals (typeString)) {
+		/*
+		* Bug in Safari.  Spurious and redundant mousemove events are received in
+		* various contexts, including following every MouseUp.  The workaround is
+		* to not fire MouseMove events whose x and y values match the last MouseMove  
+		*/
+		if (mouseEvent.x == lastMouseMoveX && mouseEvent.y == lastMouseMoveY) return;
+		mouseEvent.type = SWT.MouseMove;
+		lastMouseMoveX = mouseEvent.x; lastMouseMoveY = mouseEvent.y;
+	}
+
+	browser.notifyListeners (mouseEvent.type, mouseEvent);
+	if (detail == 2 && DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		mouseEvent = new Event ();
+		mouseEvent.widget = browser;
+		mouseEvent.x = clientX; mouseEvent.y = clientY;
+		mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		mouseEvent.type = SWT.MouseDoubleClick;
+		mouseEvent.button = button + 1;
+		mouseEvent.count = detail;
+		browser.notifyListeners (mouseEvent.type, mouseEvent);
 	}
 }
 
