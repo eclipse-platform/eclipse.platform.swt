@@ -893,8 +893,8 @@ public boolean getVisible () {
  *
  */
 public Region getRegion () {
-	checkWidget ();
 	/* This method is needed for @since 3.0 Javadoc */
+	checkWidget ();
 	return region;
 }
 
