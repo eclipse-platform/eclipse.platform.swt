@@ -91,6 +91,8 @@ public abstract class Widget {
 	
 	static final Rect EMPTY_RECT = new Rect ();
 
+	static final String SUPPRESS_KEY_EVENTS_KEY = "org.eclipse.swt.internal.suppressKeyEvents"; //$NON-NLS-1$
+
 Widget () {
 	/* Do nothing */
 }
@@ -1549,6 +1551,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
+	if (getData (SUPPRESS_KEY_EVENTS_KEY) != null) return true;
 	int [] length = new int [1];
 	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 	if (status == OS.noErr && length [0] > 2) {

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
 abstract class WebBrowser {
@@ -21,9 +22,145 @@ abstract class WebBrowser {
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
-	
+
 	static Runnable MozillaClearSessions;
 	static Runnable NativeClearSessions;
+
+	/* Key Mappings */
+	static final int [][] KeyTable = {
+		/* Keyboard and Mouse Masks */
+		{18,	SWT.ALT},
+		{16,	SWT.SHIFT},
+		{17,	SWT.CONTROL},
+		{224,	SWT.COMMAND},
+
+		/* Literal Keys */
+		{65,	'a'},
+		{66,	'b'},
+		{67,	'c'},
+		{68,	'd'},
+		{69,	'e'},
+		{70,	'f'},
+		{71,	'g'},
+		{72,	'h'},
+		{73,	'i'},
+		{74,	'j'},
+		{75,	'k'},
+		{76,	'l'},
+		{77,	'm'},
+		{78,	'n'},
+		{79,	'o'},
+		{80,	'p'},
+		{81,	'q'},
+		{82,	'r'},
+		{83,	's'},
+		{84,	't'},
+		{85,	'u'},
+		{86,	'v'},
+		{87,	'w'},
+		{88,	'x'},
+		{89,	'y'},
+		{90,	'z'},
+		{48,	'0'},
+		{49,	'1'},
+		{50,	'2'},
+		{51,	'3'},
+		{52,	'4'},
+		{53,	'5'},
+		{54,	'6'},
+		{55,	'7'},
+		{56,	'8'},
+		{57,	'9'},
+		{32,	' '},
+		{59,	';'},
+		{61,	'='},
+		{188,	','},
+		{190,	'.'},
+		{191,	'/'},
+		{219,	'['},
+		{221,	']'},
+		{222,	'\''},
+		{192,	'`'},
+		{220,	'\\'},
+		{108,	'|'},
+
+		/* Non-Numeric Keypad Keys */
+		{37,	SWT.ARROW_LEFT},
+		{39,	SWT.ARROW_RIGHT},
+		{38,	SWT.ARROW_UP},
+		{40,	SWT.ARROW_DOWN},
+		{45,	SWT.INSERT},
+		{36,	SWT.HOME},
+		{35,	SWT.END},
+		{46,	SWT.DEL},
+		{33,	SWT.PAGE_UP},
+		{34,	SWT.PAGE_DOWN},
+
+		/* Virtual and Ascii Keys */
+		{8,		SWT.BS},
+		{13,	SWT.CR},
+		{9,		SWT.TAB},
+		{27,	SWT.ESC},
+		{12,	SWT.DEL},
+
+		/* Functions Keys */
+		{112,	SWT.F1},
+		{113,	SWT.F2},
+		{114,	SWT.F3},
+		{115,	SWT.F4},
+		{116,	SWT.F5},
+		{117,	SWT.F6},
+		{118,	SWT.F7},
+		{119,	SWT.F8},
+		{120,	SWT.F9},
+		{121,	SWT.F10},
+		{122,	SWT.F11},
+		{123,	SWT.F12},
+		{124,	SWT.F13},
+		{125,	SWT.F14},
+		{126,	SWT.F15},
+		{127,	0},
+		{128,	0},
+		{129,	0},
+		{130,	0},
+		{131,	0},
+		{132,	0},
+		{133,	0},
+		{134,	0},
+		{135,	0},
+
+		/* Numeric Keypad Keys */
+		{96,	SWT.KEYPAD_0},
+		{97,	SWT.KEYPAD_1},
+		{98,	SWT.KEYPAD_2},
+		{99,	SWT.KEYPAD_3},
+		{100,	SWT.KEYPAD_4},
+		{101,	SWT.KEYPAD_5},
+		{102,	SWT.KEYPAD_6},
+		{103,	SWT.KEYPAD_7},
+		{104,	SWT.KEYPAD_8},
+		{105,	SWT.KEYPAD_9},
+		{14,	SWT.KEYPAD_CR},
+		{107,	SWT.KEYPAD_ADD},
+		{109,	SWT.KEYPAD_SUBTRACT},
+		{106,	SWT.KEYPAD_MULTIPLY},
+		{111,	SWT.KEYPAD_DIVIDE},
+		{110,	SWT.KEYPAD_DECIMAL},
+
+		/* Other keys */
+		{20,	SWT.CAPS_LOCK},
+		{144,	SWT.NUM_LOCK},
+		{145,	SWT.SCROLL_LOCK},
+		{44,	SWT.PRINT_SCREEN},
+		{6,		SWT.HELP},
+		{19,	SWT.PAUSE},
+		{3,		SWT.BREAK},
+
+		/* Safari-specific */
+		{186,	';'},
+		{187,	'='},
+		{189,	'-'},
+	};
 
 public void addCloseWindowListener (CloseWindowListener listener) {
 	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
@@ -254,4 +391,11 @@ public abstract boolean setText (String html);
 public abstract boolean setUrl (String url);
 
 public abstract void stop ();
+
+int translateKey (int key) {
+	for (int i = 0; i < KeyTable.length; i++) {
+		if (KeyTable[i][0] == key) return KeyTable[i][1];
+	}
+	return 0;
+}
 }

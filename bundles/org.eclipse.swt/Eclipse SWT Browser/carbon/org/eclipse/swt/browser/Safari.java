@@ -32,7 +32,7 @@ class Safari extends WebBrowser {
 	String html;
 	int identifier;
 	int resourceCount;
-	String url = "";
+	String url = ""; //$NON-NLS-1$
 	Point location;
 	Point size;
 	boolean statusBar = true, toolBar = true, ignoreDispose;
@@ -49,6 +49,11 @@ class Safari extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
+	static final String SUPPRESS_KEY_EVENTS_KEY = "org.eclipse.swt.internal.suppressKeyEvents"; //$NON-NLS-1$
+
+	/* event strings */
+	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
+	static final String DOMEVENT_KEYDOWN = "keydown"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -91,7 +96,16 @@ public void create (Composite parent, int style) {
 	}
 	Display display = browser.getDisplay();
 	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), browser});
-	
+
+	/*
+	* WebKit's DOM listener apis were introduced on OSX 10.4.  If a version that has these 
+	* apis is detected then override the default event mechanism to not send key events
+	* so that the browser can send them by listening to the DOM instead.
+	*/
+	if (!(OS.VERSION < 0x1040)) {
+		browser.setData(SUPPRESS_KEY_EVENTS_KEY, SUPPRESS_KEY_EVENTS_KEY);
+	}
+
 	/*
 	* Bug in Safari.  For some reason, every application must contain
 	* a visible window that has never had a WebView or mouse move events
@@ -183,6 +197,7 @@ public void create (Composite parent, int style) {
 					windowBoundsHandler = 0;
 
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
+					browser.setData(SUPPRESS_KEY_EVENTS_KEY, null);
 
 					Cocoa.objc_msgSend(webView, Cocoa.S_setFrameLoadDelegate, 0);
 					Cocoa.objc_msgSend(webView, Cocoa.S_setResourceLoadDelegate, 0);
@@ -544,6 +559,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 29: decideDestinationWithSuggestedFilename(arg0, arg1); break;
 		case 30: mouseDidMoveOverElement(arg0, arg1); break;
 		case 31: didChangeLocationWithinPageForFrame(arg0); break;
+		case 32: handleEvent(arg0); break;
 	}
 	return ret;
 }
@@ -716,6 +732,8 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 void didFinishLoadForFrame(int frame) {
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
+		hookDOMListeners(frame);
+
 		final Display display = browser.getDisplay();
 		/*
 		* To be consistent with other platforms a title event should be fired when a
@@ -793,6 +811,32 @@ void didFinishLoadForFrame(int frame) {
 		*/
 		identifier = 0;
 	}
+}
+
+void hookDOMListeners(int frame) {
+	/*
+	* WebKit's DOM listener apis were introduced on OSX 10.4, so if an earlier version
+	* than this is detected then do not attempt to hook the DOM listeners.
+	*/
+	if (OS.VERSION < 0x1040) return;
+
+	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
+
+	String string = DOMEVENT_KEYDOWN;
+	int length = string.length();
+	char[] chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	OS.CFRelease(ptr);
+
+	string = DOMEVENT_KEYUP;
+	length = string.length();
+	chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	OS.CFRelease(ptr);
 }
 
 void didReceiveTitle(int title, int frame) {
@@ -1321,4 +1365,39 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 	Cocoa.objc_msgSend(download, Cocoa.S_setDestinationAllowOverwrite, result, 1);
 	OS.CFRelease(result);
 }
+
+/* DOMEventListener */
+
+void handleEvent(int evt) {
+	int type = Cocoa.objc_msgSend(evt, Cocoa.S_type);
+	int length = OS.CFStringGetLength(type);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(type, range, buffer);
+	String typeString = new String(buffer);
+
+	if (DOMEVENT_KEYDOWN.equals(typeString) || DOMEVENT_KEYUP.equals(typeString)) {
+		boolean ctrl = Cocoa.objc_msgSend(evt, Cocoa.S_ctrlKey) != 0;
+		boolean shift = Cocoa.objc_msgSend(evt, Cocoa.S_shiftKey) != 0;
+		boolean alt = Cocoa.objc_msgSend(evt, Cocoa.S_altKey) != 0;
+		boolean meta = Cocoa.objc_msgSend(evt, Cocoa.S_metaKey) != 0;
+		int keyCode = Cocoa.objc_msgSend(evt, Cocoa.S_keyCode);
+		int charCode = Cocoa.objc_msgSend(evt, Cocoa.S_charCode);
+
+		Event keyEvent = new Event();
+		keyEvent.widget = browser;
+		if (DOMEVENT_KEYDOWN.equals(typeString)) {
+			keyEvent.type = SWT.KeyDown;
+		} else {
+			keyEvent.type = SWT.KeyUp;
+		}
+		keyEvent.keyCode = translateKey(keyCode);
+		keyEvent.character = (char)charCode;
+		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		browser.notifyListeners(keyEvent.type, keyEvent);
+		return;
+	}
+}
+
 }

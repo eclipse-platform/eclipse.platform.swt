@@ -258,5 +258,12 @@ fail:
 	proc((int)download, user_data, 29, (int)download, (int)filename, 0, 0);
 }
 
+/* DOMEventListener */
+
+- (void)handleEvent:(DOMEvent *)evt
+{
+	proc((int)evt, user_data, 32, (int)evt, 0, 0, 0);
+}
+
 @end
 
