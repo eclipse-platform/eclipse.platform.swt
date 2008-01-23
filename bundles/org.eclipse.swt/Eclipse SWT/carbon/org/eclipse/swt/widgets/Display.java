@@ -3638,8 +3638,11 @@ public void setData (String key, Object value) {
 		Object [] data = (Object [])value;
 		int handle = ((Integer)data [0]).intValue ();
 		Widget widget = (Widget)data [1];
-		if (widget == null) removeWidget (handle);
-		else addWidget (handle, widget);
+		if (widget == null) {
+			removeWidget (handle);
+		} else {
+			addWidget (handle, widget);
+		}
 	}
 	
 	/* Remove the key/value pair */
