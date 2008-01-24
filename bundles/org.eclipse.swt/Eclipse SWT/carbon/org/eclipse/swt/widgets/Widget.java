@@ -85,7 +85,9 @@ public abstract class Widget {
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
 
+	/* Safari fixes */
 	static final int SAFARI_EVENTS_FIX = 1<<19;
+	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -93,7 +95,6 @@ public abstract class Widget {
 	
 	static final Rect EMPTY_RECT = new Rect ();
 
-	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 
 Widget () {
 	/* Do nothing */

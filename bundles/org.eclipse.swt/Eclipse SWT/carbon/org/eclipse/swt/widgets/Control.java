@@ -2793,6 +2793,7 @@ boolean sendMouseEvent (int type, short button, int count, boolean send, int cho
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+	if (!hooks (type) && !filters (type)) return true;
 	if ((state & SAFARI_EVENTS_FIX) != 0) {
 		switch (type) {
 			case SWT.MouseUp:
@@ -2806,8 +2807,6 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			}
 		}
 	}
-
-	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	switch (button) {
 		case 1: event.button = 1; break;
