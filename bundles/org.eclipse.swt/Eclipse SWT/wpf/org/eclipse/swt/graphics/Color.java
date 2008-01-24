@@ -46,7 +46,8 @@ public final class Color extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Color() {	
+Color(Device device) {
+	super(device);
 }
 
 /**	 
@@ -74,10 +75,9 @@ Color() {
  * @see #dispose
  */
 public Color (Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, red, green, blue);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(red, green, blue);
+	init();
 }
 
 /**	 
@@ -103,25 +103,15 @@ public Color (Device device, int red, int green, int blue) {
  * @see #dispose
  */
 public Color (Device device, RGB rgb) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, rgb.red, rgb.green, rgb.blue);
-	if (device.tracking) device.new_Object(this);
+	init(rgb.red, rgb.green, rgb.blue);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the color. Applications must dispose of all colors which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.GCHandle_Free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -226,11 +216,10 @@ public int hashCode () {
  *
  * @see #dispose
  */
-void init(Device device, int red, int green, int blue) {
+void init(int red, int green, int blue) {
 	if (red > 255 || red < 0 || green > 255 || green < 0 || blue > 255 || blue < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	handle = OS.Color_FromArgb((byte)0xFF, (byte)red, (byte)green, (byte)blue);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
@@ -275,10 +264,8 @@ public String toString () {
  * @return a new color object containing the specified device and handle
  */
 public static Color wpf_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Color color = new Color();
+	Color color = new Color(device);
 	color.handle = handle;
-	color.device = device;
 	return color;
 }
 

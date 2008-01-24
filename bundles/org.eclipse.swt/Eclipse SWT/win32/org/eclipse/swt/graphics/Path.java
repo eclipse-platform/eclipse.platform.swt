@@ -70,13 +70,11 @@ public class Path extends Resource {
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-	device.checkGDIP();
+	super(device);
+	this.device.checkGDIP();
 	handle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -111,16 +109,14 @@ public Path (Device device) {
  * @since 3.4
  */
 public Path (Device device, Path path, float flatness) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	flatness = Math.max(0, flatness);
 	handle = Gdip.GraphicsPath_Clone(path.handle);
 	if (flatness != 0) Gdip.GraphicsPath_Flatten(handle, 0, flatness);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -152,7 +148,6 @@ public Path (Device device, PathData data) {
 	this(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
-	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -380,18 +375,9 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	Gdip.GraphicsPath_delete(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

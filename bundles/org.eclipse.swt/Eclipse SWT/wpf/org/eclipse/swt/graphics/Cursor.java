@@ -58,7 +58,8 @@ public final class Cursor extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Cursor() {
+Cursor(Device device) {
+	super(device);
 }
 
 /**	 
@@ -103,9 +104,7 @@ Cursor() {
  * @see SWT#CURSOR_HAND
  */
 public Cursor(Device device, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	switch (style) {
 		case SWT.CURSOR_HAND: 		handle = OS.Cursors_Hand(); break;
 		case SWT.CURSOR_ARROW: 		handle = OS.Cursors_Arrow(); break;
@@ -133,7 +132,7 @@ public Cursor(Device device, int style) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**	 
@@ -168,9 +167,7 @@ public Cursor(Device device, int style) {
  * </ul>
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -204,7 +201,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	handle = OS.CursorInteropHelper_Create(safeHandle);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.GCHandle_Free(safeHandle);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**	 
@@ -235,9 +232,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * @since 3.0
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
@@ -248,7 +243,6 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	if (!(((source.depth == 1 || source.depth == 2 || source.depth == 4 || source.depth == 8) && !palette.isDirect) ||
 		((source.depth == 8) || (source.depth == 16 || source.depth == 24 || source.depth == 32) && palette.isDirect)))
 			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
-	this.device = device;
 	int width = source.width;
 	int height = source.height;
 	int redMask = palette.redMask;
@@ -382,21 +376,12 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.GCHandle_Free(safeHandle);
 	OS.GCHandle_Free(bitmap);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the cursor. Applications must dispose of all cursors which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.GCHandle_Free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -470,10 +455,8 @@ public String toString () {
  * @return a new cursor object containing the specified device and handle
  */
 public static Cursor wpf_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Cursor cursor = new Cursor();
+	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
-	cursor.device = device;
 	return cursor;
 }
 

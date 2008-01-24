@@ -41,12 +41,30 @@ public abstract class Resource {
 	 */
 	Device device;
 
+Resource() {
+}
+
+Resource(Device device) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+}
+
+void destroy() {
+}
+
 /**
  * Disposes of the operating system resources associated with
  * this resource. Applications must dispose of all resources
  * which they allocate.
  */
-public abstract void dispose();
+public void dispose() {
+	if (device == null) return;
+	if (device.isDisposed()) return;
+	destroy();
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
+}
 
 /**
  * Returns the <code>Device</code> where this resource was
@@ -60,6 +78,10 @@ public Device getDevice() {
 	Device device = this.device;
 	if (device == null || isDisposed ()) SWT.error (SWT.ERROR_GRAPHIC_DISPOSED);
 	return device;
+}
+
+void init() {
+	if (device.tracking) device.new_Object(this);
 }
 
 /**

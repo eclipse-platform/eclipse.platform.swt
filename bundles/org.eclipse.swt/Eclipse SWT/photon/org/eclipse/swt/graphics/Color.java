@@ -41,7 +41,8 @@ public final class Color extends Resource {
 	 */
 	public int handle;
 
-Color() {	
+Color(Device device) {
+	super(device);
 }
 
 /**	 
@@ -69,10 +70,9 @@ Color() {
  * @see #dispose
  */
 public Color (Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, red, green, blue);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(red, green, blue);
+	init();
 }
 
 /**	 
@@ -98,25 +98,14 @@ public Color (Device device, int red, int green, int blue) {
  * @see #dispose
  */
 public Color (Device device, RGB rgb) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, rgb.red, rgb.green, rgb.blue);
-	if (device.tracking) device.new_Object(this);
+	init(rgb.red, rgb.green, rgb.blue);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the color. Applications must dispose of all colors which
- * they allocate.
- */
-public void dispose() {
-	if (handle == -1) return;
-	if (device.isDisposed()) return;
-
+void destroy() {
 	handle = -1;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -206,11 +195,10 @@ public int hashCode () {
 	return handle;
 }
 
-void init(Device device, int red, int green, int blue) {
+void init(int red, int green, int blue) {
 	if (red > 255 || red < 0 || green > 255 || green < 0 || blue > 255 || blue < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	handle = (blue & 0xFF) | ((green & 0xFF) << 8) | ((red & 0xFF) << 16);
 }
 
@@ -240,10 +228,8 @@ public String toString () {
 }
 
 public static Color photon_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Color color = new Color();
+	Color color = new Color(device);
 	color.handle = handle;
-	color.device = device;
 	return color;
 }
 }

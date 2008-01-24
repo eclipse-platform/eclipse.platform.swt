@@ -77,7 +77,8 @@ public final class Cursor extends Resource {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-Cursor () {
+Cursor (Device device) {
+	super(device);
 }
 
 /**	 
@@ -122,9 +123,7 @@ Cursor () {
  * @see SWT#CURSOR_HAND
  */
 public Cursor(Device device, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	int shape = 0;
 	switch (style) {
 		case SWT.CURSOR_APPSTARTING:	break;
@@ -158,7 +157,7 @@ public Cursor(Device device, int style) {
 		handle = OS.gdk_cursor_new(shape);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**	 
@@ -193,9 +192,7 @@ public Cursor(Device device, int style) {
  * </ul>
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (!(source.getTransparencyType() == SWT.TRANSPARENCY_MASK)) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -247,7 +244,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 	handle = createCursor(maskData, sourceData, source.width, source.height, hotspotX, hotspotY, true);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**	 
@@ -278,9 +275,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  * @since 3.0
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
@@ -425,7 +420,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, false);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
@@ -444,18 +439,9 @@ int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 	return cursor;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the cursor. Applications must dispose of all cursors which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.gdk_cursor_destroy(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -491,10 +477,8 @@ public boolean equals(Object object) {
  * @private
  */
 public static Cursor gtk_new(Device device, int /*long*/ handle) {
-	if (device == null) device = Device.getDevice();
-	Cursor cursor = new Cursor();
+	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
-	cursor.device = device;
 	return cursor;
 }
 

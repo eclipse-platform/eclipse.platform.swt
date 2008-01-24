@@ -68,15 +68,14 @@ public Region() {
  * @since 3.0
  */
 public Region(Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	handle = OS.NewRgn();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	init();
 }
 
 Region(Device device, int handle) {
-	this.device = device;
+	super(device);
 	this.handle = handle;
 }
 
@@ -223,16 +222,10 @@ public boolean contains(Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return contains(pt.x, pt.y);
 }
-/**
- * Disposes of the operating system resources associated with
- * the region. Applications must dispose of all regions which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
+
+void destroy() {
 	OS.DisposeRgn(handle);
 	handle = 0;
-	device = null;
 }
 
 /**

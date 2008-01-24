@@ -41,7 +41,8 @@ public final class Color extends Resource {
 	 */
 	public XColor handle;
 
-Color() {
+Color(Device device) {
+	super(device);
 }
 /**	 
  * Constructs a new instance of this class given a device and the
@@ -68,10 +69,9 @@ Color() {
  * @see #dispose
  */
 public Color (Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, red, green, blue);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(red, green, blue);
+	init();
 }
 /**	 
  * Constructs a new instance of this class given a device and an
@@ -96,20 +96,12 @@ public Color (Device device, int red, int green, int blue) {
  * @see #dispose
  */
 public Color (Device device, RGB rgb) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, rgb.red, rgb.green, rgb.blue);
-	if (device.tracking) device.new_Object(this);
+	init(rgb.red, rgb.green, rgb.blue);
+	init();
 }
-/**
- * Disposes of the operating system resources associated with
- * the color. Applications must dispose of all colors which
- * they allocate.
- */
-public void dispose() {
-	if (handle == null) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	int xDisplay = device.xDisplay;
 	int pixel = handle.pixel;
 	if (device.colorRefCount != null) {
@@ -121,8 +113,6 @@ public void dispose() {
 	int colormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen(xDisplay));
 	OS.XFreeColors(xDisplay, colormap, new int[] { pixel }, 1, 0);
 	handle = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -209,8 +199,7 @@ public int hashCode () {
 	if (isDisposed()) return 0;
 	return handle.red ^ handle.green ^ handle.blue;
 }
-void init(Device device, int red, int green, int blue) {
-	this.device = device;
+void init(int red, int green, int blue) {
 	if ((red > 255) || (red < 0) ||
 		(green > 255) || (green < 0) ||
 		(blue > 255) || (blue < 0)) {
@@ -330,10 +319,8 @@ public boolean isDisposed() {
 	return handle == null;
 }
 public static Color motif_new(Device device, XColor xColor) {
-	if (device == null) device = Device.getDevice();
-	Color color = new Color();
+	Color color = new Color(device);
 	color.handle = xColor;
-	color.device = device;
 	return color;
 }
 /**

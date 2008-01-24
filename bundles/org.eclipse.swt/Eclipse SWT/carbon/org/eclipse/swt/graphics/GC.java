@@ -149,6 +149,7 @@ public GC(Drawable drawable, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = data.device = device;
 	init(drawable, data, gdkGC);
+	init();
 }
 
 static int checkStyle (int style) {
@@ -672,19 +673,7 @@ void createTabs () {
 	data.tabs = ptr;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the graphics context. Applications must dispose of all GCs
- * which they allocate.
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
- * </ul>
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (data.device.isDisposed()) return;
-
+void destroy() {
 	/* Free resources */
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.DisposeRgn(clipRgn);

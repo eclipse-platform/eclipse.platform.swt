@@ -62,15 +62,13 @@ public class Pattern extends Resource {
  * @see #dispose()
  */
 public Pattern(Device device, Image image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	this.image = image;
 	color = NSColor.colorWithPatternImage(image.handle);
 	color.retain();
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -145,13 +143,11 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * @since 3.2
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	pt1 = new NSPoint();
 	pt2 = new NSPoint();
 	pt1.x = x1;
@@ -165,25 +161,16 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	NSColor start = NSColor.colorWithDeviceRed(color1.handle[0], color1.handle[1], color1.handle[2], alpha1 / 255f);
 	NSColor end = NSColor.colorWithDeviceRed(color2.handle[0], color2.handle[1], color2.handle[2], alpha2 / 255f);
 	gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(start, end);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Pattern. Applications must dispose of all Patterns that
- * they allocate.
- */
-public void dispose() {
-	if (device == null) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (color != null) color.release();
 	color = null;
 	if (gradient != null) gradient.release();
 	gradient = null;
 	image = null;
 	color1 = color2 = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

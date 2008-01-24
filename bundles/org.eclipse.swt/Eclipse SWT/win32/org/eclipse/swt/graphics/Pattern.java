@@ -69,12 +69,10 @@ public class Pattern extends Resource {
  * @see #dispose()
  */
 public Pattern(Device device, Image image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
-	device.checkGDIP();
+	this.device.checkGDIP();
 	int /*long*/[] gdipImage = image.createGdipImage();
 	int /*long*/ img = gdipImage[0];
 	int width = Gdip.Image_GetWidth(img);
@@ -86,7 +84,7 @@ public Pattern(Device device, Image image) {
 		OS.HeapFree(hHeap, 0, gdipImage[1]);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -162,14 +160,12 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * @since 3.2
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
-	device.checkGDIP();
+	this.device.checkGDIP();
 	int colorRef1 = color1.handle;
 	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
 	int /*long*/ foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
@@ -200,17 +196,10 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 		Gdip.Color_delete(backColor);
 	}
 	Gdip.Color_delete(foreColor);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 	
-/**
- * Disposes of the operating system resources associated with
- * the Pattern. Applications must dispose of all Patterns that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	int type = Gdip.Brush_GetType(handle);
 	switch (type) {
 		case Gdip.BrushTypeSolidColor:
@@ -227,8 +216,6 @@ public void dispose() {
 			break;
 	}
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

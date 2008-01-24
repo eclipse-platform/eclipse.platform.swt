@@ -70,24 +70,20 @@ public class Path extends Resource {
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-	device.checkCairo();
+	super(device);
+	this.device.checkCairo();
 	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 public Path (Device device, Path path, float flatness) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
@@ -109,14 +105,13 @@ public Path (Device device, Path path, float flatness) {
 	}
 	Cairo.cairo_append_path(handle, copy);
 	Cairo.cairo_path_destroy(copy);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 public Path (Device device, PathData data) {
 	this(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
-	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -585,17 +580,9 @@ public void quadTo(float cx, float cy, float x, float y) {
 	closed = false;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
+void destroy() {
 	Cairo.cairo_destroy(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 void init(PathData data) {

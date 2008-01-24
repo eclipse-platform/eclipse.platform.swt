@@ -57,7 +57,8 @@ public final class Font extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -79,10 +80,9 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd);
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(fd);
+	init();
 }
 
 /**	 
@@ -109,15 +109,14 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	init(device, fds[0]);
-	if (device.tracking) device.new_Object(this);	
+	init(fds[0]);
+	init();
 }
 
 /**	 
@@ -143,25 +142,15 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData (name, height, style));
-	if (device.tracking) device.new_Object(this);	
+	init(new FontData (name, height, style));
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.GCHandle_Free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -231,9 +220,8 @@ public int hashCode () {
 	return handle;
 }
 
-void init (Device device, FontData fd) {
+void init (FontData fd) {
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	int length = fd.fontFamily.length();
 	char[] chars = new char[length + 1];
 	fd.fontFamily.getChars(0, length, chars, 0);
@@ -291,11 +279,9 @@ public String toString () {
  * @return a new font object containing the specified device and handle
  */
 public static Font wpf_new(Device device, int handle, double size) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
+	Font font = new Font(device);
 	font.handle = handle;
 	font.size = size;
-	font.device = device;
 	return font;
 }
 

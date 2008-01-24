@@ -41,7 +41,8 @@ public final class Color extends Resource {
 	 */
 	public GdkColor handle;
 
-Color() {
+Color(Device device) {
+	super(device);
 }
 
 /**	 
@@ -69,10 +70,9 @@ Color() {
  * @see #dispose
  */
 public Color(Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, red, green, blue);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(red, green, blue);
+	init();
 }
 
 /**	 
@@ -98,21 +98,13 @@ public Color(Device device, int red, int green, int blue) {
  * @see #dispose
  */
 public Color(Device device, RGB rgb) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, rgb.red, rgb.green, rgb.blue);
-	if (device.tracking) device.new_Object(this);
+	init(rgb.red, rgb.green, rgb.blue);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the color. Applications must dispose of all colors which
- * they allocate.
- */
-public void dispose() {
-	if (handle == null) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	int pixel = handle.pixel;
 	if (device.colorRefCount != null) {
 		/* If this was the last reference, remove the color from the list */
@@ -123,8 +115,6 @@ public void dispose() {
 	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_free_colors(colormap, handle, 1);
 	handle = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -234,15 +224,12 @@ public RGB getRGB () {
  * @private
  */
 public static Color gtk_new(Device device, GdkColor gdkColor) {
-	if (device == null) device = Device.getDevice();
-	Color color = new Color();
+	Color color = new Color(device);
 	color.handle = gdkColor;
-	color.device = device;
 	return color;
 }
 
-void init(Device device, int red, int green, int blue) {
-	this.device = device;
+void init(int red, int green, int blue) {
 	if ((red > 255) || (red < 0) ||
 		(green > 255) || (green < 0) ||
 		(blue > 255) || (blue < 0)) {

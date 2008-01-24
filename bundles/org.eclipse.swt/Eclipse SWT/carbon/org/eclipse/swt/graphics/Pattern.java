@@ -63,16 +63,15 @@ public class Pattern extends Resource {
  * @see #dispose()
  */
 public Pattern(Device device, Image image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
+	device = this.device;
 	this.image = image;
 	device.createPatternCallbacks();
 	jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -147,13 +146,12 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * @since 3.2
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
+	device = this.device;
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x2 = x2;
@@ -178,7 +176,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	shading = OS.CGShadingCreateAxial(device.colorspace, start, end, function, true, true);	
 	OS.CGFunctionRelease(function);
 	if (shading == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 int axialShadingProc (int ref, int in, int out) {
@@ -218,21 +216,12 @@ int createPattern(int context) {
 	return pattern;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Pattern. Applications must dispose of all Patterns that
- * they allocate.
- */
-public void dispose() {
-	if (jniRef == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 	if (shading != 0) OS.CGShadingRelease(shading);
 	jniRef = shading = 0;
 	image = null;
 	color1 = color2 = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 int drawPatternProc (int ref, int context) {

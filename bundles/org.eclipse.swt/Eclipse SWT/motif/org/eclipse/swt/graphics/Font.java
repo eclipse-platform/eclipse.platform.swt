@@ -55,7 +55,8 @@ public final class Font extends Resource {
 	 */
 	public String codePage;
 
-Font () {
+Font (Device device) {
+	super(device);
 }
 
 /**	 
@@ -77,11 +78,10 @@ Font () {
  * </ul>
  */
 public Font (Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData[] {fd});
-	if (device.tracking) device.new_Object(this);
+	init(new FontData[] {fd});
+	init();
 }
 
 /**	 
@@ -108,15 +108,14 @@ public Font (Device device, FontData fd) {
  * @since 2.1
  */
 public Font (Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	init(device, fds);
-	if (device.tracking) device.new_Object(this);
+	init(fds);
+	init();
 }
 
 /**	 
@@ -142,34 +141,23 @@ public Font (Device device, FontData[] fds) {
  * </ul>
  */
 public Font (Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData[]{new FontData(name, height, style)});
-	if (device.tracking) device.new_Object(this);
+	init(new FontData[]{new FontData(name, height, style)});
+	init();
 }
 
 /*public*/ Font (Device device, String name, float height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData[]{new FontData(name, height, style)});
-	if (device.tracking) device.new_Object(this);
+	init(new FontData[]{new FontData(name, height, style)});
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (handle == device.systemFont.handle) return;
 	OS.XmFontListFree (handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -410,9 +398,7 @@ public int hashCode () {
 	return handle;
 }
 
-void init (Device device, FontData[] fds) {
-	this.device = device;
-	
+void init (FontData[] fds) {
 	/* Change current locale if needed. Note: only the first font data is used */
 	FontData firstFd = fds[0];
 	if (firstFd.lang != null) {
@@ -528,9 +514,7 @@ public boolean isDisposed() {
 }
 
 public static Font motif_new(Device device, int handle) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
-	font.device = device;
+	Font font = new Font(device);
 	font.handle = handle;
 	font.codePage = getCodePage(device.xDisplay, handle);
 	return font;

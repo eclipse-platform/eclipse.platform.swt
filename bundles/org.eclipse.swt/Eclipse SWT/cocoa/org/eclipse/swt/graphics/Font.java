@@ -41,7 +41,8 @@ public final class Font extends Resource {
 	 */
 	public NSFont handle;
 	
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -63,10 +64,10 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
+	init();
 }
 
 /**	 
@@ -93,15 +94,15 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	FontData fd = fds[0];
-	init(device,fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
+	init();
 }
 
 /**	 
@@ -127,27 +128,20 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
 /*public*/ Font(Device device, String name, float height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
-	if (handle == null) return;
+void destroy() {
 	handle.release();
 	handle = null;
-	device = null;
 }
 
 /**
@@ -215,10 +209,8 @@ public FontData[] getFontData() {
  * @private
  */
 public static Font cocoa_new(Device device, NSFont handle) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
+	Font font = new Font(device);
 	font.handle = handle;
-	font.device = device;
 	return font;
 }
 
@@ -236,10 +228,9 @@ public int hashCode() {
 	return handle != null ? handle.id : 0;
 }
 
-void init(Device device, String name, float height, int style, String nsName) {
+void init(String name, float height, int style, String nsName) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	if (nsName != null) {
 		handle = NSFont.static_fontWithName_size_(NSString.stringWith(nsName), height);
 	} else {

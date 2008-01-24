@@ -78,9 +78,7 @@ public final class TextLayout extends Resource {
  * @see #dispose()
  */
 public TextLayout (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;	
+	super(device);
 	wrapWidth = ascent = descent = -1;
 	alignment = SWT.LEFT;
 	orientation = SWT.LEFT_TO_RIGHT;
@@ -88,6 +86,7 @@ public TextLayout (Device device) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
+	init();
 }
 
 void checkLayout() {
@@ -219,17 +218,11 @@ void computeRuns() {
 	this.lineBounds = bounds;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all allocated text layouts.
- */
-public void dispose() {
-	if (device == null) return;
+void destroy() {
 	freeRuns();
 	font = null;
 	text = null;
 	styles = null;
-	device = null;
 }
 
 /**

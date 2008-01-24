@@ -77,7 +77,8 @@ public final class Font extends Resource {
 	 */
 	public int atsuiStyle;
 	
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -99,10 +100,10 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeightF(), fd.getStyle(), fd.atsName);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.atsName);
+	init();
 }
 
 /**	 
@@ -129,15 +130,15 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	FontData fd = fds[0];
-	init(device,fd.getName(), fd.getHeightF(), fd.getStyle(), fd.atsName);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.atsName);
+	init();
 }
 
 /**	 
@@ -163,15 +164,15 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
 /*public*/ Font(Device device, String name, float height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
 int createStyle () {
@@ -224,17 +225,11 @@ int createStyle () {
 	return atsuStyle;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
+void destroy() {
 	if (handle == 0) return;
 	handle = 0;
 	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
 	atsuiStyle = 0;
-	device = null;
 }
 
 /**
@@ -323,12 +318,10 @@ public FontData[] getFontData() {
  * @private
  */
 public static Font carbon_new(Device device, int handle, short style, float size) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
+	Font font = new Font(device);
 	font.handle = handle;
 	font.style = style;
 	font.size = size;
-	font.device = device;
 	return font;
 }
 
@@ -346,10 +339,9 @@ public int hashCode() {
 	return handle;
 }
 
-void init(Device device, String name, float height, int style, String atsName) {
+void init(String name, float height, int style, String atsName) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	int font = 0;
 	if (atsName != null) {		
 		int ptr = createCFString(atsName);

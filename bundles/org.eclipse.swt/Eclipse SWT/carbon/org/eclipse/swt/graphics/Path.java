@@ -71,20 +71,16 @@ public class Path extends Resource {
  * @see #dispose()
  */
 public Path (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	handle = OS.CGPathCreateMutable();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 public Path (Device device, Path path, float flatness) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	flatness = Math.max(0, flatness);
 	if (flatness == 0) {
 		handle = OS.CGPathCreateMutableCopy(path.handle);
@@ -174,14 +170,13 @@ public Path (Device device, Path path, float flatness) {
 		}
 		OS.free(pointsPtr);
 	}
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 public Path (Device device, PathData data) {
 	this(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(data);
-	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -540,17 +535,9 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	OS.CGPathAddCurveToPoint(handle, null, cx1, cy1, cx2, cy2, x, y);
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the Path. Applications must dispose of all Paths that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
+void destroy() {
 	OS.CGPathRelease(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

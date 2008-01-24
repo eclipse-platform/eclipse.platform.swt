@@ -150,7 +150,7 @@ public GC(Drawable drawable, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = data.device = device;
 	init (drawable, data, hDC);
-	if (device.tracking) device.new_Object(this);	
+	init();
 }
 
 static int checkStyle(int style) {
@@ -378,19 +378,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 //	}
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the graphics context. Applications must dispose of all GCs
- * which they allocate.
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
- * </ul>
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (data.device.isDisposed()) return;
-
+void destroy() {
 	int brush = data.brush;
 	if (brush != 0) OS.GCHandle_Free(brush);
 	data.brush = 0;
@@ -407,13 +395,10 @@ public void dispose() {
 	Image image = data.image;
 	if (image != null) image.memGC = null;
 	
-	Device device = data.device;
 	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 	drawable = null;
 	handle = 0;
 	data.image = null;
-	if (device.tracking) device.dispose_Object(this);
-	data.device = null;
 	data = null;
 }
 

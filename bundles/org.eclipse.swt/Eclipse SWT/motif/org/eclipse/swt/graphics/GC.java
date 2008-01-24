@@ -149,7 +149,7 @@ public GC(Drawable drawable, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = data.device = device;
 	init(drawable, data, xGC);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 static void addCairoString(int cairo, String string, float x, float y, Font font) {
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
@@ -458,19 +458,7 @@ public void copyArea(Image image, int x, int y) {
 	OS.XCopyArea(xDisplay, data.drawable, image.pixmap, xGC, x, y, rect.width, rect.height, 0, 0);
 	OS.XFreeGC(xDisplay, xGC);
 }
-/**
- * Disposes of the operating system resources associated with
- * the graphics context. Applications must dispose of all GCs
- * which they allocate.
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
- * </ul>
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (data.device.isDisposed()) return;
-
+void destroy() {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) Cairo.cairo_destroy(cairo);
 	data.cairo = 0;
@@ -494,7 +482,6 @@ public void dispose () {
 	if (xmMnemonic != 0) OS.XmStringFree (xmMnemonic);
 
 	/* Dispose the GC */
-	Device device = data.device;
 	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 
 	data.display = data.drawable = data.colormap = 
@@ -504,8 +491,6 @@ public void dispose () {
 	drawable = null;
 	handle = 0;
 	data.image = null;
-	if (device.tracking) device.dispose_Object(this);
-	data.device = null;
 	data = null;
 }
 /**

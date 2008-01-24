@@ -68,11 +68,9 @@ public class Pattern extends Resource {
  * @see #dispose()
  */
 public Pattern(Device device, Image image) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	handle = OS.gcnew_ImageBrush(image.handle);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.TileBrush_TileMode(handle, OS.TileMode_Tile);
@@ -81,7 +79,7 @@ public Pattern(Device device, Image image) {
 	int rect = OS.gcnew_Rect(0, 0, OS.BitmapSource_PixelWidth(image.handle), OS.BitmapSource_PixelHeight(image.handle));
 	OS.TileBrush_Viewport(handle, rect);
 	OS.GCHandle_Free(rect);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 /**
@@ -157,13 +155,11 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * @since 3.2
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	int startColor = OS.Color_FromArgb((byte)(alpha1 & 0xFF), OS.Color_R(color1.handle), OS.Color_G(color1.handle), OS.Color_B(color1.handle));
 	if (x1 == x2 && y1 == y2) {
 		handle = OS.gcnew_SolidColorBrush(startColor);
@@ -181,21 +177,12 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 		OS.GCHandle_Free(startPoint);
 	}
 	OS.GCHandle_Free(startColor);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 	
-/**
- * Disposes of the operating system resources associated with
- * the Pattern. Applications must dispose of all Patterns that
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.GCHandle_Free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

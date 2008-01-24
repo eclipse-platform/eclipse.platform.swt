@@ -277,9 +277,7 @@ public final class TextLayout extends Resource {
  * @see #dispose()
  */
 public TextLayout (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;	
+	super(device);
 	int[] buffer = new int[1];
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -293,6 +291,7 @@ public TextLayout (Device device) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
+	init();
 }
 
 void checkLayout() {
@@ -437,12 +436,7 @@ float[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all allocated text layouts.
- */
-public void dispose() {
-	if (layout == 0) return;
+void destroy() {
 	freeRuns();
 	font = null;
 	text = null;
@@ -455,7 +449,6 @@ public void dispose() {
 	tabsPtr = 0;
 	if (indentStyle != 0) OS.ATSUDisposeStyle(indentStyle);
 	indentStyle = 0;
-	device = null;
 }
 
 /**

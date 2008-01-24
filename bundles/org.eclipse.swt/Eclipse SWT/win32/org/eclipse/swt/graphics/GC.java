@@ -156,7 +156,7 @@ public GC(Drawable drawable, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = data.device = device;
 	init (drawable, data, hDC);
-	if (device.tracking) device.new_Object(this);	
+	init();
 }
 
 static int checkStyle(int style) {
@@ -593,10 +593,7 @@ static void destroyGdipBrush(int /*long*/ brush) {
  *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
  */
-public void dispose() {
-	if (handle == 0) return;
-	if (data.device.isDisposed()) return;
-	
+void destroy() {
 	disposeGdip();
 
 	/* Select stock pen and brush objects and free resources */
@@ -627,14 +624,11 @@ public void dispose() {
 	/*
 	* Dispose the HDC.
 	*/
-	Device device = data.device;
 	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 	drawable = null;
 	handle = 0;
 	data.image = null;
 	data.ps = null;
-	if (device.tracking) device.dispose_Object(this);
-	data.device = null;
 	data = null;
 }
 

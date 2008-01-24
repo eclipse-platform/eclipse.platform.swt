@@ -140,7 +140,8 @@ public final class Image extends Resource implements Drawable {
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
-Image() {
+Image(Device device) {
+	super(device);
 }
 
 /**
@@ -174,10 +175,9 @@ Image() {
  * </ul>
  */
 public Image(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, width, height);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(width, height);
+	init();
 }
 
 /**
@@ -212,8 +212,7 @@ public Image(Device device, int width, int height) {
  * </ul>
  */
 public Image(Device device, Image srcImage, int flag) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
@@ -224,7 +223,7 @@ public Image(Device device, Image srcImage, int flag) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
+	device = this.device;
 	this.type = srcImage.type;
 
 	/* Get source image size */
@@ -267,79 +266,78 @@ public Image(Device device, Image srcImage, int flag) {
 	if (flag == SWT.IMAGE_COPY) {
 		OS.gdk_draw_drawable(pixmap, gdkGC, srcImage.pixmap, 0, 0, 0, 0, width, height);
 		OS.g_object_unref(gdkGC);
-		if (device.tracking) device.new_Object(this);
-		return;
-	}
+	} else {
+		
+		/* Retrieve the source pixmap data */
+		int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
+		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ colormap = OS.gdk_colormap_get_system();
+		OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, 0, 0, 0, 0, width, height);
+		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 	
-	/* Retrieve the source pixmap data */
-	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
-	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int /*long*/ colormap = OS.gdk_colormap_get_system();
-	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, 0, 0, 0, 0, width, height);
-	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-	int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-
-	/* Apply transformation */
-	switch (flag) {
-		case SWT.IMAGE_DISABLE: {
-			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			RGB zeroRGB = zeroColor.getRGB();
-			byte zeroRed = (byte)zeroRGB.red;
-			byte zeroGreen = (byte)zeroRGB.green;
-			byte zeroBlue = (byte)zeroRGB.blue;
-			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-			RGB oneRGB = oneColor.getRGB();
-			byte oneRed = (byte)oneRGB.red;
-			byte oneGreen = (byte)oneRGB.green;
-			byte oneBlue = (byte)oneRGB.blue;
-			byte[] line = new byte[stride];
-			for (int y=0; y<height; y++) {
-				OS.memmove(line, pixels + (y * stride), stride);
-				for (int x=0; x<width; x++) {
-					int offset = x*3;
-					int red = line[offset] & 0xFF;
-					int green = line[offset+1] & 0xFF;
-					int blue = line[offset+2] & 0xFF;
-					int intensity = red * red + green * green + blue * blue;
-					if (intensity < 98304) {
-						line[offset] = zeroRed;
-						line[offset+1] = zeroGreen;
-						line[offset+2] = zeroBlue;
-					} else {
-						line[offset] = oneRed;
-						line[offset+1] = oneGreen;
-						line[offset+2] = oneBlue;
+		/* Apply transformation */
+		switch (flag) {
+			case SWT.IMAGE_DISABLE: {
+				Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+				RGB zeroRGB = zeroColor.getRGB();
+				byte zeroRed = (byte)zeroRGB.red;
+				byte zeroGreen = (byte)zeroRGB.green;
+				byte zeroBlue = (byte)zeroRGB.blue;
+				Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+				RGB oneRGB = oneColor.getRGB();
+				byte oneRed = (byte)oneRGB.red;
+				byte oneGreen = (byte)oneRGB.green;
+				byte oneBlue = (byte)oneRGB.blue;
+				byte[] line = new byte[stride];
+				for (int y=0; y<height; y++) {
+					OS.memmove(line, pixels + (y * stride), stride);
+					for (int x=0; x<width; x++) {
+						int offset = x*3;
+						int red = line[offset] & 0xFF;
+						int green = line[offset+1] & 0xFF;
+						int blue = line[offset+2] & 0xFF;
+						int intensity = red * red + green * green + blue * blue;
+						if (intensity < 98304) {
+							line[offset] = zeroRed;
+							line[offset+1] = zeroGreen;
+							line[offset+2] = zeroBlue;
+						} else {
+							line[offset] = oneRed;
+							line[offset+1] = oneGreen;
+							line[offset+2] = oneBlue;
+						}
 					}
+					OS.memmove(pixels + (y * stride), line, stride);
 				}
-				OS.memmove(pixels + (y * stride), line, stride);
+				break;
 			}
-			break;
-		}
-		case SWT.IMAGE_GRAY: {			
-			byte[] line = new byte[stride];
-			for (int y=0; y<height; y++) {
-				OS.memmove(line, pixels + (y * stride), stride);
-				for (int x=0; x<width; x++) {
-					int offset = x*3;
-					int red = line[offset] & 0xFF;
-					int green = line[offset+1] & 0xFF;
-					int blue = line[offset+2] & 0xFF;
-					byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
-					line[offset] = line[offset+1] = line[offset+2] = intensity;
+			case SWT.IMAGE_GRAY: {			
+				byte[] line = new byte[stride];
+				for (int y=0; y<height; y++) {
+					OS.memmove(line, pixels + (y * stride), stride);
+					for (int x=0; x<width; x++) {
+						int offset = x*3;
+						int red = line[offset] & 0xFF;
+						int green = line[offset+1] & 0xFF;
+						int blue = line[offset+2] & 0xFF;
+						byte intensity = (byte)((red+red+green+green+green+green+green+blue) >> 3);
+						line[offset] = line[offset+1] = line[offset+2] = intensity;
+					}
+					OS.memmove(pixels + (y * stride), line, stride);
 				}
-				OS.memmove(pixels + (y * stride), line, stride);
+				break;
 			}
-			break;
 		}
-	}
-
-	/* Copy data back to destination pixmap */
-	OS.gdk_pixbuf_render_to_drawable(pixbuf, pixmap, gdkGC, 0, 0, 0, 0, width, height, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
 	
-	/* Free resources */
-	OS.g_object_unref(pixbuf);
-	OS.g_object_unref(gdkGC);
-	if (device.tracking) device.new_Object(this);
+		/* Copy data back to destination pixmap */
+		OS.gdk_pixbuf_render_to_drawable(pixbuf, pixmap, gdkGC, 0, 0, 0, 0, width, height, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+		
+		/* Free resources */
+		OS.g_object_unref(pixbuf);
+		OS.g_object_unref(gdkGC);
+	}
+	init();
 }
 
 /**
@@ -373,11 +371,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, bounds.width, bounds.height);
-	if (device.tracking) device.new_Object(this);
+	init(bounds.width, bounds.height);
+	init();
 }
 
 /**
@@ -399,10 +396,9 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData data) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, data);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(data);
+	init();
 }
 
 /**
@@ -431,8 +427,7 @@ public Image(Device device, ImageData data) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -442,8 +437,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
-	init(device, image);
-	if (device.tracking) device.new_Object(this);
+	init(image);
+	init();
 }
 
 /**
@@ -495,10 +490,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  * </ul>
  */
 public Image(Device device, InputStream stream) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(stream));
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(new ImageData(stream));
+	init();
 }
 
 /**
@@ -529,10 +523,8 @@ public Image(Device device, InputStream stream) {
  * </ul>
  */
 public Image(Device device, String filename) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	try {
 		int length = filename.length ();
 		char [] chars = new char [length];
@@ -574,8 +566,8 @@ public Image(Device device, String filename) {
 			return;
 		}
 	} catch (SWTException e) {}
-	init(device, new ImageData(filename));
-	if (device.tracking) device.new_Object(this);
+	init(new ImageData(filename));
+	init();
 }
 
 void createAlphaMask (int width, int height) {
@@ -749,14 +741,7 @@ void destroyMask() {
 	mask = 0;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the image. Applications must dispose of all images which
- * they allocate.
- */
-public void dispose () {
-	if (pixmap == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (memGC != null) memGC.dispose();
 	if (pixmap != 0) OS.g_object_unref(pixmap);
 	if (mask != 0) OS.g_object_unref(mask);
@@ -764,8 +749,6 @@ public void dispose () {
 	if (surfaceData != 0) OS.g_free(surfaceData);
 	surfaceData = surface = pixmap = mask = 0;
 	memGC = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -922,12 +905,10 @@ public ImageData getImageData() {
  * @private
  */
 public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*long*/ mask) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
+	Image image = new Image(device);
 	image.type = type;
 	image.pixmap = pixmap;
 	image.mask = mask;
-	image.device = device;
 	return image;
 }
 
@@ -945,11 +926,10 @@ public int hashCode () {
 	return (int)/*64*/pixmap;
 }
 
-void init(Device device, int width, int height) {
+void init(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	this.type = SWT.BITMAP;
 
 	/* Create the pixmap */
@@ -969,9 +949,8 @@ void init(Device device, int width, int height) {
 	OS.gdk_colormap_free_colors(colormap, white, 1);
 }
 
-void init(Device device, ImageData image) {
+void init(ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	int width = image.width;
 	int height = image.height;
 	PaletteData palette = image.palette;

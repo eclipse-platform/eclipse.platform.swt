@@ -41,7 +41,8 @@ public final class Font extends Resource {
 	 */
 	public int /*long*/ handle;
 	
-Font() {
+Font(Device device) {
+	super(device);
 }
 
 /**	 
@@ -63,11 +64,10 @@ Font() {
  * </ul>
  */
 public Font(Device device, FontData fd) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
-	if (device.tracking) device.new_Object(this);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
+	init();
 }
 
 /**	 
@@ -94,16 +94,15 @@ public Font(Device device, FontData fd) {
  * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	FontData fd = fds[0];
-	init(device,fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
-	if (device.tracking) device.new_Object(this);
+	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
+	init();
 }
 
 /**	 
@@ -129,31 +128,20 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
 /*public*/ Font(Device device, String name, float height, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, name, height, style, null);
-	if (device.tracking) device.new_Object(this);
+	super(device);
+	init(name, height, style, null);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the font. Applications must dispose of all fonts which
- * they allocate.
- */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.pango_font_description_free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -225,10 +213,8 @@ public FontData[] getFontData() {
  * @private
  */
 public static Font gtk_new(Device device, int /*long*/ handle) {
-	if (device == null) device = Device.getDevice();
-	Font font = new Font();
+	Font font = new Font(device);
 	font.handle = handle;
-	font.device = device;
 	return font;
 }
 
@@ -246,10 +232,9 @@ public int hashCode() {
 	return (int)/*64*/handle;
 }
 
-void init(Device device, String name, float height, int style, byte[] fontString) {
+void init(String name, float height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.device = device;
 	if (fontString != null) {
 		handle = OS.pango_font_description_from_string (fontString);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);

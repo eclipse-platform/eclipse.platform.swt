@@ -66,9 +66,7 @@ public final class TextLayout extends Resource {
  * @see #dispose()
  */
 public TextLayout (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	context = OS.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_context_set_language(context, OS.gtk_get_default_language());
@@ -77,7 +75,7 @@ public TextLayout (Device device) {
 	layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_layout_set_wrap(layout, OS.PANGO_WRAP_WORD_CHAR);
-	OS.pango_layout_set_tabs(layout, device.emptyTab);
+	OS.pango_layout_set_tabs(layout, this.device.emptyTab);
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
 		OS.pango_layout_set_auto_dir(layout, false);
 	}
@@ -86,7 +84,7 @@ public TextLayout (Device device) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 void checkLayout() {
@@ -282,12 +280,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all allocated text layouts.
- */
-public void dispose() {
-	if (layout == 0) return;
+void destroy() {
 	font = null;
 	text = null;
 	styles = null;
@@ -296,8 +289,6 @@ public void dispose() {
 	layout = 0;
 	if (context != 0) OS.g_object_unref(context);
 	context = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

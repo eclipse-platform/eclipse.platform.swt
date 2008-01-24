@@ -56,7 +56,8 @@ public final class Cursor extends Resource {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Cursor() {
+Cursor(Device device) {
+	super(device);
 }
 
 /**	 
@@ -101,9 +102,7 @@ Cursor() {
  * @see SWT#CURSOR_HAND
  */
 public Cursor(Device device, int style) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	switch (style) {
 		case SWT.CURSOR_HAND: 			handle = NSCursor.pointingHandCursor(); break;
 		case SWT.CURSOR_ARROW: 			handle = NSCursor.arrowCursor(); break;
@@ -132,6 +131,7 @@ public Cursor(Device device, int style) {
 	}
 	handle.retain();
 	handle.setOnMouseEntered(true);
+	init();
 }
 
 /**	 
@@ -166,9 +166,7 @@ public Cursor(Device device, int style) {
  * </ul>
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
@@ -210,10 +208,11 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			offset += 4;
 		}
 	}
-	createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
+	createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
+	init();
 }
 
-void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
+void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
 	NSImage nsImage = (NSImage)new NSImage().alloc();
 	NSBitmapImageRep nsImageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 	handle = (NSCursor)new NSCursor().alloc();
@@ -262,9 +261,7 @@ void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, in
  * @since 3.0
  */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
@@ -320,20 +317,13 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			data[i] = alphaData[i/4];
 		}
 	}
-	createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
+	createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the cursor. Applications must dispose of all cursors which
- * they allocate.
- */
-public void dispose () {
-	if (handle == null) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	handle.release();
 	handle = null;
-	device = null;
 }
 
 /**
@@ -408,10 +398,8 @@ public String toString () {
  * @private
  */
 public static Cursor cocoa_new(Device device, NSCursor handle) {
-	if (device == null) device = Device.getDevice();
-	Cursor cursor = new Cursor();
+	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
-	cursor.device = device;
 	return cursor;
 }
 

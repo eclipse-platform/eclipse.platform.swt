@@ -134,7 +134,8 @@ public final class Image extends Resource implements Drawable {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Image () {
+Image (Device device) {
+	super(device);
 }
 
 /**
@@ -168,10 +169,9 @@ Image () {
  * </ul>
  */
 public Image(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, width, height);
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(width, height);
+	init();
 }
 
 /**
@@ -206,9 +206,8 @@ public Image(Device device, int width, int height) {
  * </ul>
  */
 public Image(Device device, Image srcImage, int flag) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
+	device = this.device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = srcImage.getBounds();
@@ -222,8 +221,7 @@ public Image(Device device, Image srcImage, int flag) {
 				alphaData = new byte[srcImage.alphaData.length];
 				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 			}
-			if (device.tracking) device.new_Object(this);	
-			return;
+			break;
 		}
 		case SWT.IMAGE_DISABLE: {
 			ImageData data = srcImage.getImageData();
@@ -281,9 +279,8 @@ public Image(Device device, Image srcImage, int flag) {
 					offset++;
 				}
 			}
-			init (device, newData);
-			if (device.tracking) device.new_Object(this);
-			return;
+			init (newData);
+			break;
 		}
 		case SWT.IMAGE_GRAY: {
 			ImageData data = srcImage.getImageData();
@@ -346,13 +343,13 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 				}
 			}
-			init (device, newData);
-			if (device.tracking) device.new_Object(this);	
-			return;
+			init (newData);
+			break;
 		}
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	init();
 }
 
 /**
@@ -386,11 +383,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, bounds.width, bounds.height);
-	if (device.tracking) device.new_Object(this);	
+	init(bounds.width, bounds.height);
+	init();
 }
 
 /**
@@ -412,10 +408,9 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData data) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, data);
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(data);
+	init();
 }
 
 /**
@@ -444,8 +439,7 @@ public Image(Device device, ImageData data) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -455,8 +449,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 	ImageData image = new ImageData(source.width, source.height, source.depth, source.palette, source.scanlinePad, source.data);
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
-	init(device, image);
-	if (device.tracking) device.new_Object(this);	
+	init(image);
+	init();
 }
 
 /**
@@ -508,10 +502,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  * </ul>
  */
 public Image (Device device, InputStream stream) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(stream));
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(new ImageData(stream));
+	init();
 }
 
 /**
@@ -542,10 +535,8 @@ public Image (Device device, InputStream stream) {
  * </ul>
  */
 public Image (Device device, String filename) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	try {
 		handle = OS.gcnew_BitmapImage();
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -566,24 +557,15 @@ public Image (Device device, String filename) {
 		OS.GCHandle_Free(str);
 		return;
 	} catch (SWTException e) {}
-	init(device, new ImageData(filename));
-	if(device.tracking) device.new_Object(this);
+	init(new ImageData(filename));
+	init();
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the image. Applications must dispose of all images which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	if (memGC != null) memGC.dispose();
 	OS.GCHandle_Free(handle);
 	handle = 0;
 	memGC = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -771,11 +753,10 @@ public int hashCode () {
 	return handle;
 }
 
-void init(Device device, int width, int height) {
+void init(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	type = SWT.BITMAP;
 	Point dpi = getDPI();
 	int pixelFormat = OS.PixelFormats_Bgr24();
@@ -790,12 +771,11 @@ void init(Device device, int width, int height) {
 	if (OS.Freezable_CanFreeze(handle)) OS.Freezable_Freeze(handle);
 }
 
-void init(Device device, ImageData data) {
+void init(ImageData data) {
 	PaletteData palette = data.palette;
 	if (!(((data.depth == 1 || data.depth == 2 || data.depth == 4 || data.depth == 8) && !palette.isDirect) ||
 		((data.depth == 8) || (data.depth == 16 || data.depth == 24 || data.depth == 32) && palette.isDirect)))
 			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
-	this.device = device;
 	int width = data.width;
 	int height = data.height;
 	int redMask = palette.redMask;
@@ -1135,11 +1115,9 @@ public String toString () {
  * @return a new image object containing the specified device, type and handle
  */
 public static Image wpf_new(Device device, int type, int handle) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
+	Image image = new Image(device);
 	image.type = type;
 	image.handle = handle;
-	image.device = device;
 	return image;
 }
 

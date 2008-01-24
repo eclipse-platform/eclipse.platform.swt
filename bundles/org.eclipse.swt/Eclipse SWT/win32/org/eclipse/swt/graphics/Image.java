@@ -135,7 +135,8 @@ public final class Image extends Resource implements Drawable {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Image () {
+Image (Device device) {
+	super(device);
 }
 
 /**
@@ -169,10 +170,9 @@ Image () {
  * </ul>
  */
 public Image(Device device, int width, int height) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, width, height);
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(width, height);
+	init();
 }
 
 /**
@@ -207,9 +207,8 @@ public Image(Device device, int width, int height) {
  * </ul>
  */
 public Image(Device device, Image srcImage, int flag) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
+	device = this.device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = srcImage.getBounds();
@@ -248,7 +247,7 @@ public Image(Device device, Image srcImage, int flag) {
 					break;
 				case SWT.ICON:
 					if (OS.IsWinCE) {
-						init(device, srcImage.data);
+						init(srcImage.data);
 					} else {
 						handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, rect.width, rect.height, 0);
 						if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -257,8 +256,7 @@ public Image(Device device, Image srcImage, int flag) {
 				default:
 					SWT.error(SWT.ERROR_INVALID_IMAGE);
 			}
-			if (device.tracking) device.new_Object(this);	
-			return;
+			break;
 		}
 		case SWT.IMAGE_DISABLE: {
 			ImageData data = srcImage.getImageData();
@@ -316,9 +314,8 @@ public Image(Device device, Image srcImage, int flag) {
 					offset++;
 				}
 			}
-			init (device, newData);
-			if (device.tracking) device.new_Object(this);
-			return;
+			init (newData);
+			break;
 		}
 		case SWT.IMAGE_GRAY: {
 			ImageData data = srcImage.getImageData();
@@ -381,13 +378,13 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 				}
 			}
-			init (device, newData);
-			if (device.tracking) device.new_Object(this);	
-			return;
+			init (newData);
+			break;
 		}
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	init();
 }
 
 /**
@@ -421,11 +418,10 @@ public Image(Device device, Image srcImage, int flag) {
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, bounds.width, bounds.height);
-	if (device.tracking) device.new_Object(this);	
+	init(bounds.width, bounds.height);
+	init();	
 }
 
 /**
@@ -447,10 +443,9 @@ public Image(Device device, Rectangle bounds) {
  * </ul>
  */
 public Image(Device device, ImageData data) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, data);
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(data);
+	init();	
 }
 
 /**
@@ -479,8 +474,7 @@ public Image(Device device, ImageData data) {
  * </ul>
  */
 public Image(Device device, ImageData source, ImageData mask) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -488,7 +482,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 	}
 	mask = ImageData.convertMask(mask);
 	init(device, this, source, mask);
-	if (device.tracking) device.new_Object(this);	
+	init();
 }
 
 /**
@@ -540,10 +534,9 @@ public Image(Device device, ImageData source, ImageData mask) {
  * </ul>
  */
 public Image (Device device, InputStream stream) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new ImageData(stream));
-	if (device.tracking) device.new_Object(this);	
+	super(device);
+	init(new ImageData(stream));
+	init();	
 }
 
 /**
@@ -574,10 +567,9 @@ public Image (Device device, InputStream stream) {
  * </ul>
  */
 public Image (Device device, String filename) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
+	device = this.device;
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
 	boolean gdip = true;
 	try {
 		device.checkGDIP();
@@ -724,7 +716,7 @@ public Image (Device device, String filename) {
 								ImageData img = new ImageData(width, height, depth, paletteData, scanlinePad, data);
 								img.transparentPixel = transparentPixel;
 								img.alphaData = alphaData;
-								init(device, img);
+								init(img);
 							}
 						}
 					}
@@ -737,8 +729,8 @@ public Image (Device device, String filename) {
 			}
 		}
 	}
-	init(device, new ImageData(filename));
-	if(device.tracking) device.new_Object(this);
+	init(new ImageData(filename));
+	init();
 }
 
 /** 
@@ -1027,14 +1019,7 @@ int /*long*/ [] createGdipImage() {
 	return null;
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the image. Applications must dispose of all images which
- * they allocate.
- */
-public void dispose () {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy () {
 	if (memGC != null) memGC.dispose();
 	if (type == SWT.ICON) {
 		if (OS.IsWinCE) data = null;
@@ -1044,8 +1029,6 @@ public void dispose () {
 	}
 	handle = 0;
 	memGC = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
@@ -1565,11 +1548,10 @@ public int hashCode () {
 	return (int)/*64*/handle;
 }
 
-void init(Device device, int width, int height) {
+void init(int width, int height) {
 	if (width <= 0 || height <= 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.device = device;
 	type = SWT.BITMAP;
 	int /*long*/ hDC = device.internal_new_GC(null);
 	handle = OS.CreateCompatibleBitmap(hDC, width, height);
@@ -1651,9 +1633,7 @@ static void GetIconInfo(Image image, ICONINFO info) {
 	info.hbmMask = result[1];
 }
 
-static int /*long*/ [] init(Device device, Image image, ImageData i) {
-	if (image != null) image.device = device;
-	
+static int /*long*/ [] init(Device device, Image image, ImageData i) {	
 	/*
 	 * BUG in Windows 98:
 	 * A monochrome DIBSection will display as solid black
@@ -1955,7 +1935,7 @@ static int /*long*/ [] init(Device device, Image image, ImageData source, ImageD
 	imageData.maskData = mask.data;	
 	return init(device, image, imageData);
 }
-void init(Device device, ImageData i) {
+void init(ImageData i) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, this, i);
 }
@@ -2130,11 +2110,9 @@ public String toString () {
  * @return a new image object containing the specified device, type and handle
  */
 public static Image win32_new(Device device, int type, int /*long*/ handle) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
+	Image image = new Image(device);
 	image.type = type;
 	image.handle = handle;
-	image.device = device;
 	return image;
 }
 

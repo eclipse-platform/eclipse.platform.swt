@@ -165,9 +165,7 @@ public final class TextLayout extends Resource {
  * @see #dispose()
  */
 public TextLayout (Device device) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	wrapWidth = ascent = descent = -1;
 	lineSpacing = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
@@ -181,7 +179,7 @@ public TextLayout (Device device) {
 	if (OS.CoCreateInstance(CLSID_CMultiLanguage, 0, OS.CLSCTX_INPROC_SERVER, IID_IMLangFontLink2, ppv) == OS.S_OK) {
 		mLangFontLink2 = ppv[0];
 	}
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 void breakRun(StyleItem run) {
@@ -448,12 +446,7 @@ void computeRuns (GC gc) {
 	if (gc == null) device.internal_dispose_GC(hDC, null);	
 }
 
-/**
- * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all allocated text layouts.
- */
-public void dispose () {
-	if (device == null) return;
+void destroy () {
 	freeRuns();
 	font = null;	
 	text = null;
@@ -470,8 +463,6 @@ public void dispose () {
 		mLangFontLink2 = 0;
 	}
 	OS.OleUninitialize();
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**

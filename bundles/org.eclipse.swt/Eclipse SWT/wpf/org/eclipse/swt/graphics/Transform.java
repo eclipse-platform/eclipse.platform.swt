@@ -127,12 +127,10 @@ public Transform(Device device, float[] elements) {
  * @see #dispose()
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+	super(device);
 	handle = OS.gcnew_Matrix(m11, m12, m21, m22, dx, dy);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	init();
 }
 
 static float[] checkTransform(float[] elements) {
@@ -146,13 +144,9 @@ static float[] checkTransform(float[] elements) {
  * the Transform. Applications must dispose of all Transforms that
  * they allocate.
  */
-public void dispose() {
-	if (handle == 0) return;
-	if (device.isDisposed()) return;
+void destroy() {
 	OS.GCHandle_Free(handle);
 	handle = 0;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
 }
 
 /**
