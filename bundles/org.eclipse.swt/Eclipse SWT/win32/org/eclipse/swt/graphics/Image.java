@@ -481,7 +481,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	mask = ImageData.convertMask(mask);
-	init(device, this, source, mask);
+	init(this.device, this, source, mask);
 	init();
 }
 
