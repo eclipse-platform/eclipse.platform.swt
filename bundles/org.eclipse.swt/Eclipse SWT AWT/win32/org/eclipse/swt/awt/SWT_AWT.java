@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 /* SWT Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
@@ -135,40 +136,96 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ handle = parent.handle;
-	/*
-	 * Some JREs have implemented the embedded frame constructor to take an integer
-	 * and other JREs take a long.  To handle this binary incompatibility, use
-	 * reflection to create the embedded frame.
-	 */
-	Class clazz = null;
-	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-		clazz = Class.forName(className);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
-	}
-	initializeSwing ();
-	Object value = null;
-	Constructor constructor = null;
-	try {
-		constructor = clazz.getConstructor (new Class [] {int.class});
-		value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle)});
-	} catch (Throwable e1) {
-		try {
-			constructor = clazz.getConstructor (new Class [] {long.class});
-			value = constructor.newInstance (new Object [] {new Long (handle)});
-		} catch (Throwable e2) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
+	final int /*long*/ handle = parent.handle;
+	final Frame[] result = new Frame[1];
+	final Throwable[] exception = new Throwable[1];
+	Runnable runnable = new Runnable () {
+		public void run () {
+			try {
+				/*
+				 * Some JREs have implemented the embedded frame constructor to take an integer
+				 * and other JREs take a long.  To handle this binary incompatibility, use
+				 * reflection to create the embedded frame.
+				 */
+				Class clazz = null;
+				try {
+					String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
+					clazz = Class.forName(className);
+				} catch (Throwable e) {
+					exception[0] = e;
+					return;
+				}
+				initializeSwing ();
+				Object value = null;
+				Constructor constructor = null;
+				try {
+					constructor = clazz.getConstructor (new Class [] {int.class});
+					value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle)});
+				} catch (Throwable e1) {
+					try {
+						constructor = clazz.getConstructor (new Class [] {long.class});
+						value = constructor.newInstance (new Object [] {new Long (handle)});
+					} catch (Throwable e2) {
+						exception[0] = e2;
+						return;
+					}
+				}
+				final Frame frame = (Frame) value;
+				/*
+				 * This is necessary to make lightweight components
+				 * directly added to the frame receive mouse events
+				 * properly.
+				 */
+				frame.addNotify();
+				
+				/*
+				* TEMPORARY CODE
+				* 
+				* For some reason, the graphics configuration of the embedded
+				* frame is not initialized properly. This causes an exception
+				* when the depth of the screen is changed.
+				*/
+				try {
+					clazz = Class.forName("sun.awt.windows.WComponentPeer");
+					Field field = clazz.getDeclaredField("winGraphicsConfig");
+					field.setAccessible(true);
+					field.set(frame.getPeer(), frame.getGraphicsConfiguration());
+				} catch (Throwable e) {}
+				
+				result[0] = frame;
+			} finally {
+				synchronized(result) {
+					result.notify();
+				}
+			}
+		}
+	};
+	if (EventQueue.isDispatchThread() || parent.getDisplay().getSyncThread() != null) {
+		runnable.run();
+	} else {
+		EventQueue.invokeLater(runnable);
+		OS.ReplyMessage(0);
+		boolean interrupted = false;
+		MSG msg = new MSG ();
+		int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
+		while (result[0] == null && exception[0] == null) {
+			OS.PeekMessage (msg, 0, 0, 0, flags);
+			try {
+				synchronized (result) {
+					result.wait(50);
+				}
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		}
+		if (interrupted) {
+			Compatibility.interrupt();
 		}
 	}
-	final Frame frame = (Frame) value;
-	/*
-	 * This is necessary to make lightweight components
-	 * directly added to the frame receive mouse events
-	 * properly.
-	 */
-	frame.addNotify();
+	if (exception[0] != null) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);
+	}
+	final Frame frame = result[0];
 
 	parent.setData(EMBEDDED_FRAME_KEY, frame);	
 	
@@ -212,7 +269,9 @@ public static Frame new_Frame (final Composite parent) {
 					parent.setVisible(false);
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
-							frame.dispose ();
+							try {
+								frame.dispose ();
+							} catch (Throwable e) {}
 						}
 					});
 					break;
@@ -259,23 +318,6 @@ public static Frame new_Frame (final Composite parent) {
 					frame.validate ();
 				}
 			});
-		}
-	});
-	/*
-	* TEMPORARY CODE
-	* 
-	* For some reason, the graphics configuration of the embedded
-	* frame is not initialized properly. This causes an exception
-	* when the depth of the screen is changed.
-	*/
-	EventQueue.invokeLater(new Runnable () {
-		public void run () {
-			try {
-				Class clazz = Class.forName("sun.awt.windows.WComponentPeer");
-				Field field = clazz.getDeclaredField("winGraphicsConfig");
-				field.setAccessible(true);
-				field.set(frame.getPeer(), frame.getGraphicsConfiguration());
-			} catch (Throwable e) {}
 		}
 	});
 	return frame;
