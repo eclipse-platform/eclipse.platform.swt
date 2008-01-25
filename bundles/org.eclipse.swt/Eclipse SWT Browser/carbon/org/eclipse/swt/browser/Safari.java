@@ -102,9 +102,10 @@ public void create (Composite parent, int style) {
 	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), browser});
 
 	/*
-	* WebKit's DOM listener apis were introduced on OSX 10.4.  If a version that has these 
-	* apis is detected then override the default event mechanism to not send key events
-	* so that the browser can send them by listening to the DOM instead.
+	* WebKit's DOM listener api became functional in OSX 10.4.  If OSX 10.4 or 
+	* later is detected then override the default event mechanism to not send key
+	* events and some mouse events so that the browser can send them by listening
+	* to the DOM instead.
 	*/
 	if (!(OS.VERSION < 0x1040)) {
 		browser.setData(SAFARI_EVENTS_FIX_KEY);
@@ -819,8 +820,8 @@ void didFinishLoadForFrame(int frame) {
 
 void hookDOMKeyListeners(int frame) {
 	/*
-	* WebKit's DOM listener apis were introduced on OSX 10.4, so if an earlier version
-	* than this is detected then do not attempt to hook the DOM listeners.
+	* WebKit's DOM listener api became functional in OSX 10.4, so if an earlier
+	* version than this is detected then do not hook the DOM listeners.
 	*/
 	if (OS.VERSION < 0x1040) return;
 
@@ -831,7 +832,7 @@ void hookDOMKeyListeners(int frame) {
 	char[] chars = new char[length];
 	string.getChars(0, length, chars, 0);
 	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
-	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
 	string = DOMEVENT_KEYUP;
@@ -839,14 +840,14 @@ void hookDOMKeyListeners(int frame) {
 	chars = new char[length];
 	string.getChars(0, length, chars, 0);
 	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
-	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 }
 
 void hookDOMMouseListeners(int frame) {
 	/*
-	* WebKit's DOM listener apis were introduced on OSX 10.4, so if an earlier version
-	* than this is detected then do not attempt to hook the DOM listeners.
+	* WebKit's DOM listener api became functional in OSX 10.4, so if an earlier
+	* version than this is detected then do not hook the DOM listeners.
 	*/
 	if (OS.VERSION < 0x1040) return;
 
@@ -857,7 +858,7 @@ void hookDOMMouseListeners(int frame) {
 	char[] chars = new char[length];
 	string.getChars(0, length, chars, 0);
 	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
-	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
 	string = DOMEVENT_MOUSEUP;
@@ -865,7 +866,7 @@ void hookDOMMouseListeners(int frame) {
 	chars = new char[length];
 	string.getChars(0, length, chars, 0);
 	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
-	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 
 	string = DOMEVENT_MOUSEMOVE;
@@ -873,7 +874,7 @@ void hookDOMMouseListeners(int frame) {
 	chars = new char[length];
 	string.getChars(0, length, chars, 0);
 	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
-	Cocoa.objc_msgSend(document, Cocoa.S_addEventListenerListenerUseCapture, ptr, delegate, 0);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
 }
 
