@@ -3586,6 +3586,7 @@ public static final native boolean ImmSetConversionStatus (int /*long*/ hIMC, in
 public static final native boolean ImmSetOpenStatus (int /*long*/ hIMC, boolean fOpen);
 public static final native void InitCommonControls ();
 public static final native boolean InitCommonControlsEx (INITCOMMONCONTROLSEX lpInitCtrls);
+public static final native boolean InSendMessage ();
 public static final native boolean InsertMenuW (int /*long*/ hMenu, int uPosition, int uFlags, int /*long*/ uIDNewItem, char [] lpNewItem);
 public static final native boolean InsertMenuA (int /*long*/ hMenu, int uPosition, int uFlags, int /*long*/ uIDNewItem, byte [] lpNewItem);
 public static final native boolean InsertMenuItemW (int /*long*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
@@ -3779,6 +3780,7 @@ public static final native int ReleaseDC (int /*long*/ hWnd, int /*long*/ hDC);
 public static final native boolean RemoveMenu (int /*long*/ hMenu, int uPosition, int uFlags);
 public static final native int /*long*/ RemovePropA (int /*long*/ hWnd, int /*long*/ lpString);
 public static final native int /*long*/ RemovePropW (int /*long*/ hWnd, int /*long*/ lpString);
+public static final native boolean ReplyMessage (int /*long*/ lResult);
 public static final native boolean RestoreDC (int /*long*/ hdc, int nSavedDC);
 public static final native boolean RoundRect (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
 public static final native int SaveDC (int /*long*/ hdc);

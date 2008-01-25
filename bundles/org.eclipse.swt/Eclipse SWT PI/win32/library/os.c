@@ -7138,6 +7138,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmSetOpenStatus)
 }
 #endif
 
+#ifndef NO_InSendMessage
+JNIEXPORT jboolean JNICALL OS_NATIVE(InSendMessage)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, InSendMessage_FUNC);
+	rc = (jboolean)InSendMessage();
+	OS_NATIVE_EXIT(env, that, InSendMessage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_InitCommonControls
 JNIEXPORT void JNICALL OS_NATIVE(InitCommonControls)
 	(JNIEnv *env, jclass that)
@@ -11038,6 +11050,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(RemovePropW)
 	OS_NATIVE_ENTER(env, that, RemovePropW_FUNC);
 	rc = (jint)RemovePropW((HWND)arg0, (LPCWSTR)arg1);
 	OS_NATIVE_EXIT(env, that, RemovePropW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ReplyMessage
+JNIEXPORT jboolean JNICALL OS_NATIVE(ReplyMessage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ReplyMessage_FUNC);
+	rc = (jboolean)ReplyMessage(arg0);
+	OS_NATIVE_EXIT(env, that, ReplyMessage_FUNC);
 	return rc;
 }
 #endif

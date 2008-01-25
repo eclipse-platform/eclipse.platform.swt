@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 928;
-int OS_nativeFunctionCallCount[928];
+int OS_nativeFunctionCount = 930;
+int OS_nativeFunctionCallCount[930];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -437,6 +437,7 @@ char * OS_nativeFunctionNames[] = {
 	"ImmSetCompositionWindow",
 	"ImmSetConversionStatus",
 	"ImmSetOpenStatus",
+	"InSendMessage",
 	"InitCommonControls",
 	"InitCommonControlsEx",
 	"InsertMenuA",
@@ -690,6 +691,7 @@ char * OS_nativeFunctionNames[] = {
 	"RemoveMenu",
 	"RemovePropA",
 	"RemovePropW",
+	"ReplyMessage",
 	"RestoreDC",
 	"RoundRect",
 	"SCRIPT_1ANALYSIS_1sizeof",
