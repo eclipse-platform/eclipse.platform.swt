@@ -187,20 +187,23 @@ static int checkStyle (int style) {
 
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	if (!visible) return;
-	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-	if (hasLocation) {
-		where.h = (short) x;
-		where.v = (short) y;
+	if (visible) {
+		org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+		if (hasLocation) {
+			where.h = (short) x;
+			where.v = (short) y;
+		} else {
+			OS.GetGlobalMouse (where);
+		}
+		/*
+		* Feature in the Macintosh.  When the application FruitMenu is installed,
+		* the output parameters cannot be NULL or ContextualMenuSelect() crashes.
+		* The fix is to ensure they are not NULL.
+		*/
+		OS.ContextualMenuSelect (handle, where, false, OS.kCMHelpItemRemoveHelp, null, null, new int [1], new short [1], new short [1]);
 	} else {
-		OS.GetGlobalMouse (where);
+		OS.CancelMenuTracking (handle, true, 0);
 	}
-	/*
-	* Feature in the Macintosh.  When the application FruitMenu is installed,
-	* the output parameters cannot be NULL or ContextualMenuSelect() crashes.
-	* The fix is to ensure they are not NULL.
-	*/
-	OS.ContextualMenuSelect (handle, where, false, OS.kCMHelpItemRemoveHelp, null, null, new int [1], new short [1], new short [1]);
 }
 
 /**
