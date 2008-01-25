@@ -281,9 +281,16 @@ public static Frame new_Frame (final Composite parent) {
 							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-							} else {
+							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 								frame.dispatchEvent (new WindowEvent (frame, 207 /*WindowEvent.WINDOW_GAINED_FOCUS*/));
+							} else {
+								try {
+									/* Initialize the default focus traversal policy */
+									Class clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
+									if (method != null) method.invoke(frame, new Object[]{new Boolean(true)});
+								} catch (Throwable e) {}
 							}
 						}
 					});
@@ -294,9 +301,16 @@ public static Frame new_Frame (final Composite parent) {
 							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-							} else {
+							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, 208 /*WindowEvent.WINDOW_LOST_FOCUS*/));
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+							} else {
+								try {
+									/* Initialize the default focus traversal policy */
+									Class clazz = frame.getClass();
+									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
+									if (method != null) method.invoke(frame, new Object[]{new Boolean(false)});
+								} catch (Throwable e) {}
 							}
 						}
 					});
