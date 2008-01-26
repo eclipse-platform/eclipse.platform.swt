@@ -1220,7 +1220,7 @@ void createHandle () {
 	
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
 			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 		}

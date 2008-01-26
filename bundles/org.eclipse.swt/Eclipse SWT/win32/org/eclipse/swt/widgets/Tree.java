@@ -1566,7 +1566,7 @@ void checkBuffered () {
 		OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 	}
 	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
 			int exStyle = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
 			if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) style |= SWT.DOUBLE_BUFFERED;
 		}
@@ -1792,7 +1792,7 @@ void createHandle () {
 
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
 			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
@@ -5422,7 +5422,7 @@ void unsubclass () {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS | OS.TVS_NONEVENHEIGHT;
-	if (EXPLORER_THEME && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+	if (EXPLORER_THEME && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
 		bits |= OS.TVS_TRACKSELECT;
 		if ((style & SWT.FULL_SELECTION) != 0) bits |= OS.TVS_FULLROWSELECT;
 	} else {
