@@ -269,7 +269,7 @@ public ImageData(int width, int height, int depth, PaletteData palette) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the width or height is negative, or if the depth is not
- *        	one of 1, 2, 4, 8, 16, 24 or 32</li>
+ *        	one of 1, 2, 4, 8, 16, 24 or 32, or the data array is too small to contain the image data</li>
  *    <li>ERROR_NULL_ARGUMENT - if the palette or data is null</li>
  *    <li>ERROR_CANNOT_BE_ZERO - if the scanlinePad is zero</li>
  * </ul>
@@ -425,6 +425,10 @@ ImageData(
 
 	int bytesPerLine = (((width * depth + 7) / 8) + (scanlinePad - 1))
 		/ scanlinePad * scanlinePad;
+	
+	if (data != null && data.length < bytesPerLine * height) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	setAllFields(
 		width,
 		height,
