@@ -25,7 +25,6 @@ class MozillaDelegate {
 	boolean hasFocus;
 	static Callback Callback3;
 	static Hashtable handles = new Hashtable ();
-	static final boolean USE_COCOA_VIEW_CREATE = false;
 	
 MozillaDelegate (Browser browser) {
 	super ();
@@ -95,9 +94,9 @@ int getHandle () {
 	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
 	int rc;
 	int[] outControl = new int[1];
-	if (USE_COCOA_VIEW_CREATE && OS.VERSION >= 0x1050) {
-		rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl);
-	} else {
+	rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl); /* OSX >= 10.5 */
+	if (outControl[0] == 0) {
+		/* will succeed on OSX 10.4 with an updated vm containing HIJavaViewCreateWithCocoaView */
 		try {
 			System.loadLibrary ("frameembedding"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {}
