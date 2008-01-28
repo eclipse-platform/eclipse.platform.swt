@@ -397,6 +397,7 @@
 #define NO_RemoveFontResourceExW
 #define NO_RemovePropA
 #define NO_RemovePropW
+#define NO_ReplyMessage
 #define NO_SetLayeredWindowAttributes
 #define NO_SetLayout
 #define NO_SetProcessDPIAware
