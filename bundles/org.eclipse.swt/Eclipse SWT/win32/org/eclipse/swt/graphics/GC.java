@@ -1986,29 +1986,33 @@ void drawRoundRectangleGdip (int /*long*/ gdipGraphics, int /*long*/ pen, int x,
 		nah = 0 - nah;
 	
 	Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
-	int /*long*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
-	if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (nw > naw) {
-		if (nh > nah) {
-			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nah, 0, -90);
-			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nah, -90, -90);
-			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, naw, nah, -180, -90);
-			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
-		} else {
-			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nh, -270, -180);
-			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nh, -90, -180);
-		}
+	if (naw == 0 || nah == 0) {
+		Gdip.Graphics_DrawRectangle(gdipGraphics, data.gdipPen, x, y, width, height);
 	} else {
-		if (nh > nah) {
-			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nah, 0, -180);
-			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, nw, nah, -180, -180);
+		int /*long*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+		if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (nw > naw) {
+			if (nh > nah) {
+				Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nah, 0, -90);
+				Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nah, -90, -90);
+				Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, naw, nah, -180, -90);
+				Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
+			} else {
+				Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nh, -270, -180);
+				Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nh, -90, -180);
+			}
 		} else {
-			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nh, 0, 360);
+			if (nh > nah) {
+				Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nah, 0, -180);
+				Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, nw, nah, -180, -180);
+			} else {
+				Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nh, 0, 360);
+			}
 		}
+		Gdip.GraphicsPath_CloseFigure(path);
+		Gdip.Graphics_DrawPath(gdipGraphics, pen, path);
+		Gdip.GraphicsPath_delete(path);
 	}
-	Gdip.GraphicsPath_CloseFigure(path);
-	Gdip.Graphics_DrawPath(gdipGraphics, pen, path);
-	Gdip.GraphicsPath_delete(path);
 	Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 }
 
@@ -2841,29 +2845,33 @@ void fillRoundRectangleGdip (int /*long*/ gdipGraphics, int /*long*/ brush, int 
 	if (nah < 0)
 		nah = 0 - nah;
 
-	int /*long*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
-	if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (nw > naw) {
-		if (nh > nah) {
-			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nah, 0, -90);
-			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nah, -90, -90);
-			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, naw, nah, -180, -90);
-			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
-		} else {
-			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nh, -270, -180);
-			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nh, -90, -180);
-		}
+	if (naw == 0 || nah == 0) {
+		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
 	} else {
-		if (nh > nah) {
-			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nah, 0, -180);
-			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, nw, nah, -180, -180);
+		int /*long*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+		if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (nw > naw) {
+			if (nh > nah) {
+				Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nah, 0, -90);
+				Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nah, -90, -90);
+				Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, naw, nah, -180, -90);
+				Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
+			} else {
+				Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nh, -270, -180);
+				Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nh, -90, -180);
+			}
 		} else {
-			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nh, 0, 360);
+			if (nh > nah) {
+				Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nah, 0, -180);
+				Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, nw, nah, -180, -180);
+			} else {
+				Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nh, 0, 360);
+			}
 		}
+		Gdip.GraphicsPath_CloseFigure(path);
+		Gdip.Graphics_FillPath(gdipGraphics, brush, path);
+		Gdip.GraphicsPath_delete(path);
 	}
-	Gdip.GraphicsPath_CloseFigure(path);
-	Gdip.Graphics_FillPath(gdipGraphics, brush, path);
-	Gdip.GraphicsPath_delete(path);
 }
 
 void flush () {

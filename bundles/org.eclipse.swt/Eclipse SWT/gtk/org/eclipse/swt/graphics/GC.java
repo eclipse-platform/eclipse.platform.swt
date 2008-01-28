@@ -1417,21 +1417,25 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	if (nah < 0) nah = 0 - nah;
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		float naw2 = naw / 2f;
-		float nah2 = nah / 2f;
-		float fw = nw / naw2;
-		float fh = nh / nah2;
-		Cairo.cairo_save(cairo);
 		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
-		Cairo.cairo_translate(cairo, nx + xOffset, ny + yOffset);
-		Cairo.cairo_scale(cairo, naw2, nah2);
-		Cairo.cairo_move_to(cairo, fw - 1, 0);
-	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
-	    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
-	    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
-	    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);
-		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_restore(cairo);
+		if (naw == 0 || nah == 0) {
+			Cairo.cairo_rectangle(cairo, x + xOffset, y + yOffset, width, height);
+		} else {
+			float naw2 = naw / 2f;
+			float nah2 = nah / 2f;
+			float fw = nw / naw2;
+			float fh = nh / nah2;
+			Cairo.cairo_save(cairo);
+			Cairo.cairo_translate(cairo, nx + xOffset, ny + yOffset);
+			Cairo.cairo_scale(cairo, naw2, nah2);
+			Cairo.cairo_move_to(cairo, fw - 1, 0);
+		    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
+		    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
+		    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
+		    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);
+			Cairo.cairo_close_path(cairo);
+			Cairo.cairo_restore(cairo);
+		}
 		Cairo.cairo_stroke(cairo);
 		return;
 	}
@@ -2031,20 +2035,24 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	if (nah < 0) nah = 0 - nah;
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		float naw2 = naw / 2f;
-		float nah2 = nah / 2f;
-		float fw = nw / naw2;
-		float fh = nh / nah2;
-		Cairo.cairo_save(cairo);
-		Cairo.cairo_translate(cairo, nx, ny);
-		Cairo.cairo_scale(cairo, naw2, nah2);
-		Cairo.cairo_move_to(cairo, fw - 1, 0);
-	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
-	    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
-	    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
-	    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);		
-		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_restore(cairo);
+		if (naw == 0 || nah == 0) {
+			Cairo.cairo_rectangle(cairo, x, y, width, height);
+		} else {
+			float naw2 = naw / 2f;
+			float nah2 = nah / 2f;
+			float fw = nw / naw2;
+			float fh = nh / nah2;
+			Cairo.cairo_save(cairo);
+			Cairo.cairo_translate(cairo, nx, ny);
+			Cairo.cairo_scale(cairo, naw2, nah2);
+			Cairo.cairo_move_to(cairo, fw - 1, 0);
+		    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
+		    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
+		    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
+		    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);		
+			Cairo.cairo_close_path(cairo);
+			Cairo.cairo_restore(cairo);
+		}
 		Cairo.cairo_fill(cairo);
 		return;
 	}
