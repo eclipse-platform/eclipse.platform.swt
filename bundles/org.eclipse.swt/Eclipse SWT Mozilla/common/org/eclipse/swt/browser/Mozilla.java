@@ -51,7 +51,7 @@ class Mozilla extends WebBrowser {
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
-	static int BrowserCount;
+	static int BrowserCount, GlueStartupCount;
 	static boolean Initialized, IsXULRunner, Is_1_8;
 
 	/* XULRunner detect constants */
@@ -64,6 +64,7 @@ class Mozilla extends WebBrowser {
 	static final int MAX_PORT = 65535;
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String DISPOSE_LISTENER_HOOKED = "org.eclipse.swt.browser.Mozilla.disposeListenerHooked"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEWINDOWSTATUSCHANGE = "dom.disable_window_status_change"; //$NON-NLS-1$
@@ -88,7 +89,7 @@ class Mozilla extends WebBrowser {
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
-	static final String XULRUNNER_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
+	static final String GRE_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
 
 	static {
@@ -155,6 +156,15 @@ public void create (Composite parent, int style) {
 	if (!Initialized) {
 		boolean initLoaded = false;
 		IsXULRunner = false;
+
+		String greInitialized = System.getProperty (GRE_INITIALIZED); 
+		if ("true".equals (greInitialized)) { //$NON-NLS-1$
+			/* 
+			 * Another browser has already initialized xulrunner in this process,
+			 * so just bind to it instead of trying to initialize a new one.
+			 */
+			Initialized = true;
+		}
 		String mozillaPath = System.getProperty (XULRUNNER_PATH);
 		if (mozillaPath == null) {
 			try {
@@ -170,14 +180,6 @@ public void create (Composite parent, int style) {
 			}
 		} else {
 			mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
-			String xulrunnerInitialized = System.getProperty (XULRUNNER_INITIALIZED); 
-			if ("true".equals (xulrunnerInitialized)) {
-				/* 
-				 * Another browser has already initialized xulrunner in this process,
-				 * so just bind to it instead of trying to initialize a new one.
-				 */
-				Initialized = true;
-			}
 			IsXULRunner = true;
 		}
 
@@ -241,7 +243,7 @@ public void create (Composite parent, int style) {
 						mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 						if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
 					} else {
-						XPCOMInit.XPCOMGlueShutdown ();
+						GlueStartupCount++;
 					}
 				}
 			}
@@ -261,6 +263,7 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				error (rc);
 			}
+			GlueStartupCount++;
 
 			/*
 			 * Remove the trailing xpcom lib name from mozillaPath because the
@@ -345,8 +348,10 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				SWT.error (SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
-			System.setProperty (XULRUNNER_PATH, mozillaPath);
-			System.setProperty (XULRUNNER_INITIALIZED, "true"); //$NON-NLS-1$
+			System.setProperty (GRE_INITIALIZED, "true"); //$NON-NLS-1$
+			if (IsXULRunner) {
+				System.setProperty (XULRUNNER_PATH, mozillaPath);
+			}
 		}
 
 		/* If JavaXPCOM is detected then attempt to initialize it with the XULRunner being used */
@@ -539,33 +544,6 @@ public void create (Composite parent, int style) {
 				error (rc);
 			}
 			observerService.Release ();
-
-			display.addListener (SWT.Dispose, new Listener () {
-				public void handleEvent (Event event) {
-					int /*long*/[] result = new int /*long*/[1];
-					int rc = XPCOM.NS_GetServiceManager (result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-					result[0] = 0;		
-					byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-					serviceManager.Release ();
-
-					nsIObserverService observerService = new nsIObserverService (result[0]);
-					result[0] = 0;
-					buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_BEFORE_CHANGE, true);
-					int length = SHUTDOWN_PERSIST.length ();
-					char[] chars = new char [length + 1];
-					SHUTDOWN_PERSIST.getChars (0, length, chars, 0);
-					rc = observerService.NotifyObservers (0, buffer, chars);
-					if (rc != XPCOM.NS_OK) error (rc);
-					observerService.Release ();
-				}
-			});
 		}
 
 		/*
@@ -917,6 +895,47 @@ public void create (Composite parent, int style) {
 
 		Is_1_8 = IsXULRunner;
 		Initialized = true;
+	}
+
+	if (display.getData (DISPOSE_LISTENER_HOOKED) == null) {
+		display.setData (DISPOSE_LISTENER_HOOKED, DISPOSE_LISTENER_HOOKED);
+		display.addListener (SWT.Dispose, new Listener () {
+			public void handleEvent (Event event) {
+				if (BrowserCount > 0) return; /* another display is still active */
+
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;		
+				byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release ();
+
+				nsIObserverService observerService = new nsIObserverService (result[0]);
+				result[0] = 0;
+				buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_BEFORE_CHANGE, true);
+				int length = SHUTDOWN_PERSIST.length ();
+				char[] chars = new char [length + 1];
+				SHUTDOWN_PERSIST.getChars (0, length, chars, 0);
+				rc = observerService.NotifyObservers (0, buffer, chars);
+				if (rc != XPCOM.NS_OK) error (rc);
+				observerService.Release ();
+
+				if (GlueStartupCount > 0) {
+					XPCOM.XPCOMGlueShutdown ();
+					if (GlueStartupCount > 1) {
+						XPCOMInit.XPCOMGlueShutdown ();
+					}
+					GlueStartupCount = 0;
+				}
+				Initialized = false;
+			}
+		});
 	}
 
 	BrowserCount++;
