@@ -89,7 +89,10 @@ static int eventProc3 (int nextHandler, int theEvent, int userData) {
 
 int getHandle () {
     int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
-	if (embedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (embedHandle == 0) {
+		browser.dispose ();
+		SWT.error (SWT.ERROR_NO_HANDLES);
+	}
 	NSRect r = new NSRect ();
 	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
 	int rc;
@@ -102,7 +105,10 @@ int getHandle () {
 		} catch (UnsatisfiedLinkError e) {}
 		rc = Cocoa.HIJavaViewCreateWithCocoaView (outControl, embedHandle);
 	}
-	if (rc != OS.noErr || outControl[0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (rc != OS.noErr || outControl[0] == 0) {
+		browser.dispose ();
+		SWT.error (SWT.ERROR_NO_HANDLES);
+	}
 	int subHIView = outControl[0];
 	HILayoutInfo newLayoutInfo = new HILayoutInfo ();
 	newLayoutInfo.version = 0;
@@ -136,7 +142,10 @@ int getHandle () {
 
 	if (Callback3 == null) Callback3 = new Callback (this.getClass (), "eventProc3", 3); //$NON-NLS-1$
 	int callback3Address = Callback3.getAddress ();
-	if (callback3Address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (callback3Address == 0) {
+		browser.dispose ();
+		SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
 	int [] mask = new int [] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
 	};
