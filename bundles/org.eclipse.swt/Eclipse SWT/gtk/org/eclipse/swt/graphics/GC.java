@@ -2266,10 +2266,15 @@ public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/* Calculate visible bounds in device space */
 	int x = 0, y = 0, width = 0, height = 0;
-	int[] w = new int[1], h = new int[1];
-	OS.gdk_drawable_get_size(data.drawable, w, h);
-	width = w[0];
-	height = h[0];
+	if (data.width != -1 && data.height != -1) {
+		width = data.width;
+		height = data.height;
+	} else {
+		int[] w = new int[1], h = new int[1];
+		OS.gdk_drawable_get_size(data.drawable, w, h);
+		width = w[0];
+		height = h[0];
+	}
 	/* Intersect visible bounds with clipping in device space and then convert then to user space */
 	int /*long*/ cairo = data.cairo;
 	int /*long*/ clipRgn = data.clipRgn;
@@ -2336,11 +2341,16 @@ public void getClipping(Region region) {
 	int /*long*/ cairo = data.cairo;
 	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
-		int[] width = new int[1], height = new int[1];
-		OS.gdk_drawable_get_size(data.drawable, width, height);
 		GdkRectangle rect = new GdkRectangle();
-		rect.width = width[0];
-		rect.height = height[0];
+		if (data.width != -1 && data.height != -1) {
+			rect.width = data.width;
+			rect.height = data.height;
+		} else {
+			int[] width = new int[1], height = new int[1];
+			OS.gdk_drawable_get_size(data.drawable, width, height);
+			rect.width = width[0];
+			rect.height = height[0];
+		}
 		OS.gdk_region_union_with_rect(clipping, rect);
 	} else {
 		/* Convert clipping to device space if needed */

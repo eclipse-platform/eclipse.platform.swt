@@ -346,6 +346,9 @@ public int /*long*/ internal_new_GC(GCData data) {
 		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
+		//TODO: We are supposed to return this in pixels, but GTK_UNIT_PIXELS is currently not implemented (gtk bug 346245)
+		data.width = (int)OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS);
+		data.height = (int)OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		data.cairo = cairo;
 		isGCCreated = true;
