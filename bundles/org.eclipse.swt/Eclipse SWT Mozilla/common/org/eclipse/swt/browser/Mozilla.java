@@ -231,8 +231,6 @@ public void create (Composite parent, int style) {
 						IsXULRunner = false;	/* failed */
 						mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 						if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
-					} else {
-						XPCOMInit.XPCOMGlueShutdown ();
 					}
 				}
 			}
