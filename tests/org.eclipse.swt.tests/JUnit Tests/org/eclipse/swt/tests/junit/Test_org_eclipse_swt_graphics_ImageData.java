@@ -56,7 +56,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	}
 
 	try {
-		new ImageData(1, 1, 1, null, 0, new byte[] {});
+		new ImageData(1, 1, 1, null, 0, new byte[] {0, 0x4f, 0x4f, 0});
 		fail("No exception thrown for paletteData == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -74,20 +74,22 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
+	byte[] validData = new byte[] {0, 0x4f, 0x4f, 0};
+	
 	try {
-		new ImageData(-1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(-1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 		fail("No exception thrown for width < 0");
 	} catch (IllegalArgumentException e) {
 	}
 
 	try {
-		new ImageData(1, -1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(1, -1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
 
 	try {
-		new ImageData(1, 1, 1, null, 0, new byte[] {});
+		new ImageData(1, 1, 1, null, 0, validData);
 		fail("No exception thrown for paletteData == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -99,26 +101,44 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	}
 
 	try {
-		new ImageData(1, 1, 3, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(1, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(1, 1, 16, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {0x4f});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(1, 1, 32, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {0x4f, 0x4f});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(2, 2, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {0x4f, 0x4f, 0x4f});
+		fail("No exception thrown for data array too small");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		new ImageData(1, 1, 3, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 		fail("No exception thrown for unsupported depth");
 	} catch (IllegalArgumentException e) {
 	}
 	
+	// verify all valid depths
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
-		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
+		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, validData);
 	}
 	
-	// illegal argument, data is null
+	// verify no divide by zero exception if scanlinePad == 0
 	try {
-		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 4, null);
-		fail("No exception thrown for null data");
-	} catch (IllegalArgumentException e) {
-	}
-	
-	// divide by zero exception if scanlinePad == 0
-	try {
-		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 0, new byte[] {});
+		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 0, validData);
 		fail("No exception thrown for scanlinePad == 0");
 	} catch (IllegalArgumentException e) {
 	}
