@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Combo example snippet: add an item to a combo on the fly
+ * Combo example snippet: add an item to a combo box
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
