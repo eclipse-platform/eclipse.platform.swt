@@ -143,7 +143,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
-	public String getShortTabText() {
+	String getShortTabText() {
 		return "TF";
 	}
 
