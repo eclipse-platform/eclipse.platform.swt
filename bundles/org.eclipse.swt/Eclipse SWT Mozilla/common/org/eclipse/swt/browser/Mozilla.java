@@ -51,8 +51,8 @@ class Mozilla extends WebBrowser {
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
-	static int BrowserCount, GlueStartupCount;
-	static boolean Initialized, IsXULRunner, Is_1_8;
+	static int BrowserCount;
+	static boolean Initialized, IsXULRunner, Is_1_8, XPCOMWasGlued, XPCOMInitWasGlued;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
@@ -243,7 +243,7 @@ public void create (Composite parent, int style) {
 						mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 						if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
 					} else {
-						GlueStartupCount++;
+						XPCOMInitWasGlued = true;
 					}
 				}
 			}
@@ -263,7 +263,7 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				error (rc);
 			}
-			GlueStartupCount++;
+			XPCOMWasGlued = true;
 
 			/*
 			 * Remove the trailing xpcom lib name from mozillaPath because the
@@ -926,12 +926,13 @@ public void create (Composite parent, int style) {
 				if (rc != XPCOM.NS_OK) error (rc);
 				observerService.Release ();
 
-				if (GlueStartupCount > 0) {
+				if (XPCOMWasGlued) {
 					XPCOM.XPCOMGlueShutdown ();
-					if (GlueStartupCount > 1) {
-						XPCOMInit.XPCOMGlueShutdown ();
-					}
-					GlueStartupCount = 0;
+					XPCOMWasGlued = false;
+				}
+				if (XPCOMInitWasGlued) {
+					XPCOMInit.XPCOMGlueShutdown ();
+					XPCOMInitWasGlued = false;
 				}
 				Initialized = false;
 			}
