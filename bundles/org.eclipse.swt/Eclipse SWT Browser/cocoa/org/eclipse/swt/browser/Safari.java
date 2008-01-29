@@ -85,6 +85,7 @@ public void create (Composite parent, int style) {
 		OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 		OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+		OS.class_addMethod(cls, OS.sel_webView_1didChangeLocationWithinPageForFrame_1, proc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1, proc5, "@:@@@");
 		OS.class_addMethod(cls, OS.sel_webView_1didFinishLoadForFrame_1, proc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_webView_1didReceiveTitle_1forFrame_1, proc5, "@:@@@");
@@ -226,7 +227,9 @@ static int browserProc(int id, int sel, int arg0, int arg1) {
 	if (jniRef == 0 || jniRef == -1) return 0;
 	Safari widget = (Safari)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
-	if (sel == OS.sel_webView_1didFinishLoadForFrame_1) {
+	if (sel == OS.sel_webView_1didChangeLocationWithinPageForFrame_1) {
+		widget.webView_didChangeLocationWithinPageForFrame(arg0, arg1);
+	} else if (sel == OS.sel_webView_1didFinishLoadForFrame_1) {
 		widget.webView_didFinishLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_1didStartProvisionalLoadForFrame_1) {
 		widget.webView_didStartProvisionalLoadForFrame(arg0, arg1);
@@ -390,7 +393,46 @@ public void stop() {
 }
 
 /* WebFrameLoadDelegate */
-  
+
+void webView_didChangeLocationWithinPageForFrame(int sender, int frameID) {
+	WebFrame frame = new WebFrame(frameID);
+	WebDataSource dataSource = frame.dataSource();
+	NSURLRequest request = dataSource.request();
+	NSURL url = request.URL();
+	NSString s = url.absoluteString();
+	int length = s.length();
+	if (length == 0) return;
+	char[] buffer = new char[length];
+	s.getCharacters_(buffer);
+	String url2 = new String(buffer);
+	/*
+	 * If the URI indicates that the page is being rendered from memory
+	 * (via setText()) then set it to about:blank to be consistent with IE.
+	 */
+	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
+
+	final Display display = browser.getDisplay();
+	boolean top = frameID == webView.mainFrame().id;
+	if (top) {
+		StatusTextEvent statusText = new StatusTextEvent(browser);
+		statusText.display = display;
+		statusText.widget = browser;
+		statusText.text = url2;
+		for (int i = 0; i < statusTextListeners.length; i++) {
+			statusTextListeners[i].changed(statusText);
+		}
+	}
+
+	LocationEvent location = new LocationEvent(browser);
+	location.display = display;
+	location.widget = browser;
+	location.location = url2;
+	location.top = top;
+	for (int i = 0; i < locationListeners.length; i++) {
+		locationListeners[i].changed(location);
+	}
+}
+
 void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int frame) {
 	if (frame == webView.mainFrame().id) {
 		/*
@@ -398,7 +440,7 @@ void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  Howeever, Safari fires
+		* the identifierForInitialRequest event is received.  However, Safari fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted
@@ -480,7 +522,7 @@ void webView_didFinishLoadForFrame(int sender, int frameID) {
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  Howeever, Safari fires
+		* the identifierForInitialRequest event is received.  However, Safari fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted
@@ -597,7 +639,7 @@ void webView_resource_didFinishLoadingFromDataSource(int sender, int identifier,
 	* related to the top frame and the URL changes related to that top frame as 
 	* they should appear on the location bar of a browser.  It is expected to reset
 	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-	* the identifierForInitialRequest event is received.  Howeever, Safari fires
+	* the identifierForInitialRequest event is received.  However, Safari fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
 	* top frame is loaded.  It is possible to receive multiple willSendRequest 
 	* events in this interval, causing the Browser widget to send unwanted
@@ -615,7 +657,7 @@ void webView_resource_didFailLoadingWithError_fromDataSource(int sender, int ide
 	* related to the top frame and the URL changes related to that top frame as 
 	* they should appear on the location bar of a browser.  It is expected to reset
 	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-	* the identifierForInitialRequest event is received.  Howeever, Safari fires
+	* the identifierForInitialRequest event is received.  However, Safari fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
 	* top frame is loaded.  It is possible to receive multiple willSendRequest 
 	* events in this interval, causing the Browser widget to send unwanted

@@ -10126,6 +10126,7 @@ public static final int sel_loadRequest_1 = sel_registerName("loadRequest:");
 public static final int sel_parentFrame = sel_registerName("parentFrame");
 public static final int sel_representation = sel_registerName("representation");
 public static final int sel_documentSource = sel_registerName("documentSource");
+public static final int sel_webView_1didChangeLocationWithinPageForFrame_1 = sel_registerName("webView:didChangeLocationWithinPageForFrame:");
 public static final int sel_webView_1didFailProvisionalLoadWithError_1forFrame_1 = sel_registerName("webView:didFailProvisionalLoadWithError:forFrame:");
 public static final int sel_webView_1didFinishLoadForFrame_1 = sel_registerName("webView:didFinishLoadForFrame:");
 public static final int sel_webView_1didReceiveTitle_1forFrame_1 = sel_registerName("webView:didReceiveTitle:forFrame:");
