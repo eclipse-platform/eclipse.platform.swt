@@ -52,7 +52,7 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount;
-	static boolean Initialized, IsXULRunner, Is_1_8, XPCOMWasGlued, XPCOMInitWasGlued;
+	static boolean Initialized, IsPre_1_8, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
@@ -155,7 +155,7 @@ public void create (Composite parent, int style) {
 	int /*long*/[] result = new int /*long*/[1];
 	if (!Initialized) {
 		boolean initLoaded = false;
-		IsXULRunner = false;
+		boolean IsXULRunner = false;
 
 		String greInitialized = System.getProperty (GRE_INITIALIZED); 
 		if ("true".equals (greInitialized)) { //$NON-NLS-1$
@@ -822,7 +822,7 @@ public void create (Composite parent, int style) {
 
 		prefBranch.Release ();
 
-		PromptServiceFactory factory = new PromptServiceFactory ();
+		PromptService2Factory factory = new PromptService2Factory ();
 		factory.AddRef ();
 
 		rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
@@ -857,6 +857,13 @@ public void create (Composite parent, int style) {
 		}
 		dialogFactory.Release ();
 
+		/*
+		* This Download factory will be used if the GRE version is < 1.8.
+		* If the GRE version is 1.8.x then the Download factory that is registered later for
+		*   contract "Transfer" will be used.
+		* If the GRE version is >= 1.9 then no Download factory is registered because this
+		*   functionality is provided by the GRE.
+		*/
 		DownloadFactory downloadFactory = new DownloadFactory ();
 		downloadFactory.AddRef ();
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DOWNLOAD_CONTRACTID, true);
@@ -867,17 +874,6 @@ public void create (Composite parent, int style) {
 			error (rc);
 		}
 		downloadFactory.Release ();
-
-		DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
-		downloadFactory_1_8.AddRef ();
-		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
-		aClassName = MozillaDelegate.wcsToMbcs (null, "Transfer", true); //$NON-NLS-1$
-		rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
-		}
-		downloadFactory_1_8.Release ();
 
 		FilePickerFactory pickerFactory = IsXULRunner ? new FilePickerFactory_1_8 () : new FilePickerFactory ();
 		pickerFactory.AddRef ();
@@ -893,7 +889,6 @@ public void create (Composite parent, int style) {
 		componentRegistrar.Release ();
 		componentManager.Release ();
 
-		Is_1_8 = IsXULRunner;
 		Initialized = true;
 	}
 
@@ -962,7 +957,6 @@ public void create (Composite parent, int style) {
 		browser.dispose ();
 		error (XPCOM.NS_NOINTERFACE);	
 	}
-	componentManager.Release ();
 	
 	webBrowser = new nsIWebBrowser (result[0]);
 	result[0] = 0;
@@ -1013,25 +1007,74 @@ public void create (Composite parent, int style) {
 	}
 	baseWindow.Release ();
 
-	if (!Is_1_8) {
+	if (!PerformedVersionCheck) {
+		PerformedVersionCheck = true;
+
 		/*
-		* Check for the availability of the 1.8 implementation of nsIDocShell to determine
-		* if the GRE's version is >= 1.8. 
+		* Check for the availability of the pre-1.8 implementation of nsIDocShell
+		* to determine if the GRE's version is < 1.8.
 		*/
 		rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (XPCOM.NS_ERROR_FAILURE);
+		}
+		if (result[0] == 0) {
+			browser.dispose ();
+			error (XPCOM.NS_ERROR_NO_INTERFACE);
+		}
 		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 		result[0] = 0;
 
-		rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
+		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			Is_1_8 = true;
+			IsPre_1_8 = true;
 			new nsISupports (result[0]).Release ();
+		}
+		result[0] = 0;
+
+		/*
+		* A Download factory for contract "Transfer" must be registered iff the GRE's version is 1.8.x.
+		*   Check for the availability of the 1.8 implementation of nsIDocShell to determine if the
+		*   GRE's version is 1.8.x.
+		* If the GRE version is < 1.8 then the previously-registered Download factory for contract
+		*   "Download" will be used.
+		* If the GRE version is >= 1.9 then no Download factory is registered because this
+		*   functionality is provided by the GRE.
+		*/
+		if (!IsPre_1_8) {
+			rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
+			if (rc == XPCOM.NS_OK && result[0] != 0) { /* 1.8 */
+				new nsISupports (result[0]).Release ();
+				result[0] = 0;
+				rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
+				if (rc != XPCOM.NS_OK) {
+					browser.dispose ();
+					error (rc);
+				}
+				if (result[0] == 0) {
+					browser.dispose ();
+					error (XPCOM.NS_NOINTERFACE);
+				}
+
+				nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
+				DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
+				downloadFactory_1_8.AddRef ();
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
+				byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "Transfer", true); //$NON-NLS-1$
+				rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
+				if (rc != XPCOM.NS_OK) {
+					browser.dispose ();
+					error (rc);
+				}
+				downloadFactory_1_8.Release ();
+				componentRegistrar.Release ();
+			}
 		}
 		result[0] = 0;
 		interfaceRequestor.Release ();
 	}
+	componentManager.Release ();
 
 	rc = webBrowser.AddWebBrowserListener (weakReference.getAddress (), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) {
@@ -1658,20 +1701,29 @@ public boolean setText (String html) {
 	InputStream inputStream = new InputStream (data);
 	inputStream.AddRef ();
 
-	if (Is_1_8) {
-		rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
+	rc = interfaceRequestor.GetInterface (nsIDocShell_1_9.NS_IDOCSHELL_IID, result);
+	if (rc == XPCOM.NS_OK) {
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-		nsIDocShell_1_8 docShell = new nsIDocShell_1_8 (result[0]);
+		nsIDocShell_1_9 docShell = new nsIDocShell_1_9 (result[0]);
 		rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
 		docShell.Release ();
 	} else {
-		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-		nsIDocShell docShell = new nsIDocShell (result[0]);
-		rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
-		docShell.Release ();
+		result[0] = 0;
+		rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
+		if (rc == XPCOM.NS_OK) {	
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+			nsIDocShell_1_8 docShell = new nsIDocShell_1_8 (result[0]);
+			rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
+			docShell.Release ();
+		} else {
+			result[0] = 0;
+			rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+			nsIDocShell docShell = new nsIDocShell (result[0]);
+			rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
+			docShell.Release ();
+		}
 	}
 	if (rc != XPCOM.NS_OK) error (rc);
 	result[0] = 0;
@@ -2193,7 +2245,7 @@ int OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*lo
 	 * to about:blank and fires the corresponding navigation events.  Do not send
 	 * this event on to the user since it is not expected.
 	 */
-	if (Is_1_8 && aRequest == 0 && url.startsWith (ABOUT_BLANK)) return XPCOM.NS_OK;
+	if (!IsPre_1_8 && aRequest == 0 && url.startsWith (ABOUT_BLANK)) return XPCOM.NS_OK;
 
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();

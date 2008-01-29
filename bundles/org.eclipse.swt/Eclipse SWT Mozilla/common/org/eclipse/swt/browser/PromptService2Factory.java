@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,12 +13,12 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 
-class PromptServiceFactory {
+class PromptService2Factory {
 	XPCOMObject supports;
 	XPCOMObject factory;
 	int refCount = 0;
 
-PromptServiceFactory () {
+PromptService2Factory () {
 	createCOMInterfaces ();
 }
 
@@ -88,7 +88,7 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	PromptService promptService = new PromptService ();
+	PromptService2 promptService = new PromptService2 ();
 	promptService.AddRef ();
 	XPCOM.memmove (result, new int /*long*/[] {promptService.getAddress ()}, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
