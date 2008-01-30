@@ -106,7 +106,7 @@ public class DND {
 	
 	/**
 	 * DropTarget Event: the cursor has left the drop target boundaries OR the drop
-	 * operation has been canceled (such as by hitting ECS) OR the drop is about to 
+	 * operation has been cancelled (such as by hitting ECS) OR the drop is about to 
 	 * happen (user has released the mouse button over this target) (value is 2003).
 	 */
 	public static final int DragLeave	= 2003;
