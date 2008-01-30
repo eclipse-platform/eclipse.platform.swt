@@ -365,8 +365,8 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	//FIXME: should not return 0 when there are no items
-	int result = 0;
+	//FIXME: How to find default row height?
+	int result = 15; 
 	if (OS.ItemsControl_HasItems (handle)) {
 		int items = OS.ItemsControl_Items (handle);
 		int item = OS.ItemCollection_GetItemAt (items, 0);
