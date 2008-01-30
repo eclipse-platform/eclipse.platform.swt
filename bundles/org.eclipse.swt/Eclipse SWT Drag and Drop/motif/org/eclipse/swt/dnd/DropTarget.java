@@ -102,7 +102,6 @@ public class DropTarget extends Widget {
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
 	static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback DropProc;
@@ -155,10 +154,10 @@ public DropTarget(Control control, int style) {
 	if (DropProc == null || DragProc == null || TransferProc == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	if (control.getData(DROPTARGETID) != null) {
+	if (control.getData(DND.DROP_TARGET_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -301,7 +300,7 @@ static DropTarget FindDropTarget(int handle) {
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
-	return (DropTarget)widget.getData(DROPTARGETID);
+	return (DropTarget)widget.getData(DND.DROP_TARGET_KEY);
 }
 
 static int TransferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
@@ -554,7 +553,7 @@ void onDispose() {
 		control.removeListener(SWT.Dispose, controlListener);
 	}
 	controlListener = null;
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	control = null;
 	transferAgents = null;
 }

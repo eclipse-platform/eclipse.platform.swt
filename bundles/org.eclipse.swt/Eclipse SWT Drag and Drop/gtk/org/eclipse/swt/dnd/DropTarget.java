@@ -93,7 +93,6 @@ public class DropTarget extends Widget {
 	int drag_drop_handler;
 	
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback Drag_Motion;
@@ -149,10 +148,10 @@ public DropTarget(Control control, int style) {
 	if (Drag_Motion == null || Drag_Leave == null || Drag_Data_Received == null || Drag_Drop == null) {
 		 DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	if (control.getData(DROPTARGETID) != null) {
+	if (control.getData(DND.DROP_TARGET_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
 	
 	drag_motion_handler = OS.g_signal_connect(control.handle, OS.drag_motion, Drag_Motion.getAddress(), 0);
 	drag_leave_handler = OS.g_signal_connect(control.handle, OS.drag_leave, Drag_Leave.getAddress(), 0);
@@ -271,7 +270,7 @@ static DropTarget FindDropTarget(int /*long*/ handle) {
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
-	return (DropTarget)widget.getData(DROPTARGETID);
+	return (DropTarget)widget.getData(DND.DROP_TARGET_KEY);
 }
 
 /**
@@ -549,7 +548,7 @@ void onDispose(){
 	transferAgents = null;
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	control = null;
 	controlListener = null;
 }

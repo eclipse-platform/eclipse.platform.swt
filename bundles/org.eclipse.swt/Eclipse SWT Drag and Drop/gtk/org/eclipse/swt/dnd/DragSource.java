@@ -107,7 +107,6 @@ public class DragSource extends Widget {
 	boolean moveData = false;
 	
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
-	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 		
 	static Callback DragGetData;
 	static Callback DragEnd;
@@ -156,10 +155,10 @@ public DragSource(Control control, int style) {
 	if (DragGetData == null || DragEnd == null || DragDataDelete == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
-	if (control.getData(DRAGSOURCEID) != null) {
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 
 	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);	
 	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
@@ -229,7 +228,7 @@ static DragSource FindDragSource(int /*long*/ handle) {
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
-	return (DragSource)widget.getData(DRAGSOURCEID);
+	return (DragSource)widget.getData(DND.DRAG_SOURCE_KEY);
 }
 
 /**
@@ -416,7 +415,7 @@ void onDispose() {
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }
