@@ -106,8 +106,8 @@ public class DND {
 	
 	/**
 	 * DropTarget Event: the cursor has left the drop target boundaries OR the drop
-	 * operation has been cancelled (such as by hitting ECS) OR the drop is about to 
-	 * happen (user has released the mous ebutotn over this target) (value is 2003).
+	 * operation has been canceled (such as by hitting ECS) OR the drop is about to 
+	 * happen (user has released the mouse button over this target) (value is 2003).
 	 */
 	public static final int DragLeave	= 2003;
 	
@@ -193,6 +193,21 @@ public class DND {
 	 */
 	public static final int ERROR_INVALID_DATA = 2003;
 	
+	/**
+	 * DropTarget Key: The string constant for looking up the drop target 
+	 * for a control using <code>getData(String)</code>. When a drop target 
+	 * is created for a control, it is stored as a property in the control 
+	 * using <code>setData(String, Object)</code>.
+	 */
+	public final static String DROP_TARGET_KEY = "DropTarget"; //$NON-NLS-1$
+	
+	/**
+	 * DragSource Key: The string constant for looking up the drag source 
+	 * for a control using <code>getData(String)</code>. When a drag source 
+	 * is created for a control, it is stored as a property in the control 
+	 * using <code>setData(String, Object)</code>.
+	 */
+	public final static String DRAG_SOURCE_KEY = "DragSource"; //$NON-NLS-1$
 
 	static final String INIT_DRAG_MESSAGE = "Cannot initialize Drag"; //$NON-NLS-1$
 	static final String INIT_DROP_MESSAGE = "Cannot initialize Drop"; //$NON-NLS-1$
