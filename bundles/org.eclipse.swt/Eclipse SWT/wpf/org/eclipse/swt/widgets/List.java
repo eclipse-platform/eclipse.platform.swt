@@ -365,16 +365,14 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	//FIXME: How to find default row height?
-	int result = 15; 
-	if (OS.ItemsControl_HasItems (handle)) {
-		int items = OS.ItemsControl_Items (handle);
-		int item = OS.ItemCollection_GetItemAt (items, 0);
-		OS.GCHandle_Free (items);
-		result = (int) OS.FrameworkElement_ActualHeight (item);
-		OS.GCHandle_Free (item);
-	}
-	return result;
+	//FIXME what is the default size?
+	if (!OS.ItemsControl_HasItems (handle)) return 16;
+	int items = OS.ItemsControl_Items (handle);
+	int item = OS.ItemCollection_GetItemAt (items, 0);
+	double height = OS.FrameworkElement_ActualHeight (item);
+	OS.GCHandle_Free (item);
+	OS.GCHandle_Free (items);
+	return height != 0 ? (int) height : 16;
 }
 
 /**
