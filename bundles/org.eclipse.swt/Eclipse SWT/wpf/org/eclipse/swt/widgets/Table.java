@@ -13,7 +13,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.wpf.OS;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -539,6 +539,14 @@ void createItem (TableItem item, int index) {
 	OS.GCHandle_Free (items);
 	if (itemCount == count) error (SWT.ERROR_ITEM_NOT_ADDED);
 	itemCount++;
+}
+
+int defaultBackground () {
+	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND).handle;
+}
+
+int defaultForeground () {
+	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND).handle;
 }
 
 void deregister () {

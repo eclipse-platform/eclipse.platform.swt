@@ -594,7 +594,11 @@ void createWidget() {
 }
 
 int defaultBackground () {
-	return OS.Colors_White;
+	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND).handle;
+}
+
+int defaultForeground () {
+	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND).handle;
 }
 
 void deregister () {
