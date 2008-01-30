@@ -332,10 +332,25 @@ public int getWidth () {
 	return (int) OS.GridViewColumn_ActualWidth (handle);
 }
 
+void HandleClick (int sender, int e) {
+	if (!checkEvent (e)) return;
+	postEvent (SWT.Selection);
+}
+
 void HandleLoaded (int sender, int e) {
 	if (isDisposed ()) return;
 	updateImage ();
-	updateText ();	
+	updateText ();
+}
+
+void HandleMouseDoubleClick (int sender, int e) {
+	if (!checkEvent (e)) return;
+	postEvent (SWT.DefaultSelection);
+}
+
+void HandleSizeChanged (int sender, int e) {
+	if (!checkEvent(e)) return;
+	sendEvent (SWT.Resize);
 }
 
 void hookEvents() {
@@ -343,6 +358,24 @@ void hookEvents() {
 	int handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleLoaded");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.FrameworkElement_Loaded (headerHandle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleClick");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	int event = OS.ButtonBase_ClickEvent ();
+	OS.UIElement_AddHandler (headerHandle, event, handler, false);
+	OS.GCHandle_Free (event);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleMouseDoubleClick");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	event = OS.Control_MouseDoubleClickEvent ();
+	OS.UIElement_AddHandler (headerHandle, event, handler, false);
+	OS.GCHandle_Free (event);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleSizeChanged");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	event = OS.FrameworkElement_SizeChangedEvent ();
+	OS.UIElement_AddHandler (headerHandle, event, handler, false);
+	OS.GCHandle_Free (event);
 	OS.GCHandle_Free (handler);
 }
 
