@@ -1112,9 +1112,6 @@ public void removeAll () {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	
-	System.out.println("setBackground: " + color);
-	
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
