@@ -29,6 +29,7 @@ class Safari extends WebBrowser {
 	Point location;
 	Point size;
 	boolean statusBar = true, toolBar = true, ignoreDispose;
+	int lastMouseMoveX, lastMouseMoveY;
 	//TEMPORARY CODE
 //	boolean doit;
 
@@ -40,6 +41,14 @@ class Safari extends WebBrowser {
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+
+	/* event strings */
+	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
+	static final String DOMEVENT_KEYDOWN = "keydown"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -116,9 +125,16 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1, proc7, "@:@@@@@");
 		OS.class_addMethod(cls, OS.sel_webView_1unableToImplementPolicyWithError_1frame_1, proc5, "@:@@@");
 		OS.class_addMethod(cls, OS.sel_download_1decideDestinationWithSuggestedFilename_1, proc4, "@:@@");
+		OS.class_addMethod(cls, OS.sel_handleEvent_1, proc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}
-	
+
+	/*
+	* Override the default event mechanism to not send key events so
+	* that the browser can send them by listening to the DOM instead.
+	*/
+	browser.setData(SAFARI_EVENTS_FIX_KEY);
+
 	WebView webView = (WebView)new WebView().alloc();
 	if (webView == null) SWT.error(SWT.ERROR_NO_HANDLES);
 	webView.initWithFrame(browser.view.frame(), null, null);
@@ -214,6 +230,8 @@ static int browserProc(int id, int sel, int arg0) {
 		widget.webViewFocus(arg0);
 	} else if (sel == OS.sel_webViewUnfocus_1) {
 		widget.webViewUnfocus(arg0);
+	} else if (sel == OS.sel_handleEvent_1) {
+		widget.handleEvent(arg0);
 	}
 	return 0;
 }
@@ -453,7 +471,10 @@ void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int
 }
 
 void webView_didFinishLoadForFrame(int sender, int frameID) {
+	hookDOMMouseListeners(frameID);
 	if (frameID == webView.mainFrame().id) {
+		hookDOMKeyListeners(frameID);
+
 		final Display display = browser.getDisplay();
 		/*
 		* To be consistent with other platforms a title event should be fired when a
@@ -532,6 +553,31 @@ void webView_didFinishLoadForFrame(int sender, int frameID) {
 		*/
 		identifier = 0;
 	}
+}
+
+void hookDOMKeyListeners(int frameID) {
+	WebFrame frame = new WebFrame(frameID);
+	DOMDocument document = frame.DOMDocument();
+
+	NSString type = NSString.stringWith(DOMEVENT_KEYDOWN);
+	document.addEventListener_listener_useCapture(type, delegate, false);
+
+	type = NSString.stringWith(DOMEVENT_KEYUP);
+	document.addEventListener_listener_useCapture(type, delegate, false);
+}
+
+void hookDOMMouseListeners(int frameID) {
+	WebFrame frame = new WebFrame(frameID);
+	DOMDocument document = frame.DOMDocument();
+
+	NSString type = NSString.stringWith(DOMEVENT_MOUSEDOWN);
+	document.addEventListener_listener_useCapture(type, delegate, false);
+
+	type = NSString.stringWith(DOMEVENT_MOUSEUP);
+	document.addEventListener_listener_useCapture(type, delegate, false);
+
+	type = NSString.stringWith(DOMEVENT_MOUSEMOVE);
+	document.addEventListener_listener_useCapture(type, delegate, false);
 }
 
 void webView_didReceiveTitle_forFrame(int sender, int titleID, int frameID) {
@@ -1024,5 +1070,97 @@ void download_decideDestinationWithSuggestedFilename(int downloadId, int filenam
 		return;
 	}
 	download.setDestination(NSString.stringWith(path), true);
+}
+
+/* DOMEventListener */
+
+void handleEvent(int evtId) {
+	DOMEvent evt = new DOMEvent(evtId);
+	NSString string = evt.type();
+	char[] buffer = new char[string.length()];
+	string.getCharacters_(buffer);
+	String type = new String(buffer);
+
+	if (DOMEVENT_KEYDOWN.equals(type) || DOMEVENT_KEYUP.equals(type)) {
+		DOMKeyboardEvent event = new DOMKeyboardEvent(evtId);
+
+		boolean ctrl = event.ctrlKey();
+		boolean shift = event.shiftKey();
+		boolean alt = event.altKey();
+		boolean meta = event.metaKey();
+		int keyCode = event.keyCode();
+		int charCode = event.charCode();
+
+		Event keyEvent = new Event();
+		keyEvent.widget = browser;
+		if (DOMEVENT_KEYDOWN.equals(type)) {
+			keyEvent.type = SWT.KeyDown;
+		} else {
+			keyEvent.type = SWT.KeyUp;
+		}
+		keyEvent.keyCode = translateKey(keyCode);
+		keyEvent.character = (char)charCode;
+		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		browser.notifyListeners(keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			event.preventDefault();
+		}
+		return;
+	}
+
+	/* mouse event */
+
+	DOMMouseEvent event = new DOMMouseEvent(evtId);
+
+	int clientX = event.clientX();
+	int clientY = event.clientY();
+	int detail = event.detail();
+	int button = event.button();
+	boolean ctrl = event.ctrlKey();
+	boolean shift = event.shiftKey();
+	boolean alt = event.altKey();
+	boolean meta = event.metaKey();
+
+	Event mouseEvent = new Event ();
+	mouseEvent.widget = browser;
+	mouseEvent.x = clientX; mouseEvent.y = clientY;
+	mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+	if (DOMEVENT_MOUSEDOWN.equals (type)) {
+		mouseEvent.type = SWT.MouseDown;
+		mouseEvent.button = button + 1;
+		mouseEvent.count = detail;
+	} else if (DOMEVENT_MOUSEUP.equals (type)) {
+		mouseEvent.type = SWT.MouseUp;
+		mouseEvent.button = button + 1;
+		mouseEvent.count = detail;
+		switch (mouseEvent.button) {
+			case 1: mouseEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: mouseEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: mouseEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
+		}
+	} else if (DOMEVENT_MOUSEMOVE.equals (type)) {
+		/*
+		* Bug in Safari.  Spurious and redundant mousemove events are received in
+		* various contexts, including following every MouseUp.  The workaround is
+		* to not fire MouseMove events whose x and y values match the last MouseMove  
+		*/
+		if (mouseEvent.x == lastMouseMoveX && mouseEvent.y == lastMouseMoveY) return;
+		mouseEvent.type = SWT.MouseMove;
+		lastMouseMoveX = mouseEvent.x; lastMouseMoveY = mouseEvent.y;
+	}
+
+	browser.notifyListeners (mouseEvent.type, mouseEvent);
+	if (detail == 2 && DOMEVENT_MOUSEDOWN.equals (type)) {
+		mouseEvent = new Event ();
+		mouseEvent.widget = browser;
+		mouseEvent.x = clientX; mouseEvent.y = clientY;
+		mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		mouseEvent.type = SWT.MouseDoubleClick;
+		mouseEvent.button = button + 1;
+		mouseEvent.count = detail;
+		browser.notifyListeners (mouseEvent.type, mouseEvent);
+	}
 }
 }

@@ -1570,6 +1570,7 @@ boolean sendKeyEvent (Event event) {
 
 //TODO - missing modifier keys (see flagsChanged:)
 void sendKeyEvent (NSEvent nsEvent, int type) {
+	if ((state & SAFARI_EVENTS_FIX) != 0) return;
 	int count = 0;
 	NSString keys = nsEvent.characters();
 	//TODO - check lowercase doesn't mangle char codes

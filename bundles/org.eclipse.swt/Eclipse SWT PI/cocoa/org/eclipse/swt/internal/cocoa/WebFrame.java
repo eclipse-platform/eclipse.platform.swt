@@ -20,10 +20,10 @@ public WebFrame(int id) {
 	super(id);
 }
 
-//public DOMDocument DOMDocument() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_DOMDocument);
-//	return result != 0 ? new DOMDocument(result) : null;
-//}
+public DOMDocument DOMDocument() {
+	int result = OS.objc_msgSend(this.id, OS.sel_DOMDocument);
+	return result != 0 ? new DOMDocument(result) : null;
+}
 
 public NSArray childFrames() {
 	int result = OS.objc_msgSend(this.id, OS.sel_childFrames);

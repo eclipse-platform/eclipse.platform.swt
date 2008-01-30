@@ -80,6 +80,10 @@ public abstract class Widget {
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
 
+	/* Safari fixes */
+	static final int SAFARI_EVENTS_FIX = 1<<19;
+	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -906,6 +910,10 @@ void sendVerticalSelection () {
  */
 public void setData (Object data) {
 	checkWidget();
+	if (SAFARI_EVENTS_FIX_KEY.equals (data)) {
+		state |= SAFARI_EVENTS_FIX;
+		return;
+	}
 	if ((state & KEYED_DATA) != 0) {
 		((Object []) this.data) [0] = data;
 	} else {
