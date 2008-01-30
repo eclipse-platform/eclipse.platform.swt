@@ -120,6 +120,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptConfirmPanelWithMessage_1, proc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_webView_1runOpenPanelForFileButtonWithResultListener_1, proc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_webView_1mouseDidMoveOverElement_1modifierFlags_1, proc5, "@:@@I");
+		OS.class_addMethod(cls, OS.sel_webView_1printFrameView_1, proc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1, proc7, "@:@@@@@");
 		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNavigationAction_1request_1frame_1decisionListener_1, proc7, "@:@@@@@");
 		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1, proc7, "@:@@@@@");
@@ -273,7 +274,9 @@ static int browserProc(int id, int sel, int arg0, int arg1) {
 		widget.webView_runOpenPanelForFileButtonWithResultListener(arg0, arg1);
 	} else if (sel == OS.sel_download_1decideDestinationWithSuggestedFilename_1) {
 		widget.download_decideDestinationWithSuggestedFilename(arg0, arg1);
-	} 
+	} else if (sel == OS.sel_webView_1printFrameView_1) {
+		widget.webView_printFrameView(arg0, arg1);
+	}
 	return 0;
 }
 
@@ -988,6 +991,18 @@ void webView_mouseDidMoveOverElement_modifierFlags (int sender, int elementInfor
 	for (int i = 0; i < statusTextListeners.length; i++) {
 		statusTextListeners[i].changed(statusText);
 	}
+}
+
+void webView_printFrameView (int sender, int frameViewID) {
+	WebFrameView view = new WebFrameView(frameViewID);
+	boolean viewPrint = view.documentViewShouldHandlePrint();
+	if (viewPrint) {
+		view.printDocumentView();
+		return;
+	}
+	NSPrintInfo info = NSPrintInfo.sharedPrintInfo();
+	NSPrintOperation operation = view.printOperationWithPrintInfo(info);
+	if (operation != null) operation.runOperation();
 }
 
 /* PolicyDelegate */

@@ -689,6 +689,7 @@ public static final int class_NSColorList = objc_getClass("NSColorList");
 public static final int class_DOMEvent = objc_getClass("DOMEvent");
 public static final int class_WebView = objc_getClass("WebView");
 public static final int class_WebPreferences = objc_getClass("WebPreferences");
+public static final int class_WebFrameView = objc_getClass("WebFrameView");
 
 /** Selectors */
 public static final int sel_inputClientEnabled_1 = sel_registerName("inputClientEnabled:");
@@ -7212,6 +7213,7 @@ public static final int sel_webView_1runJavaScriptAlertPanelWithMessage_1 = sel_
 public static final int sel_webView_1runJavaScriptConfirmPanelWithMessage_1 = sel_registerName("webView:runJavaScriptConfirmPanelWithMessage:");
 public static final int sel_webView_1runOpenPanelForFileButtonWithResultListener_1 = sel_registerName("webView:runOpenPanelForFileButtonWithResultListener:");
 public static final int sel_webView_1mouseDidMoveOverElement_1modifierFlags_1 = sel_registerName("webView:mouseDidMoveOverElement:modifierFlags:");
+public static final int sel_webView_1printFrameView_1 = sel_registerName("webView:printFrameView:");
 public static final int sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1 = sel_registerName("webView:decidePolicyForMIMEType:request:frame:decisionListener:");
 public static final int sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1 = sel_registerName("webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:");
 public static final int sel_webView_1unableToImplementPolicyWithError_1frame_1 = sel_registerName("webView:unableToImplementPolicyWithError:frame:");
@@ -7252,6 +7254,12 @@ public static final int sel_getModifierState_1 = sel_registerName("getModifierSt
 public static final int sel_screenY = sel_registerName("screenY");
 public static final int sel_detail = sel_registerName("detail");
 public static final int sel_handleNotification_1 = sel_registerName("handleNotification:");
+public static final int sel_setAllowsScrolling_1 = sel_registerName("setAllowsScrolling:");
+public static final int sel_allowsScrolling = sel_registerName("allowsScrolling");
+public static final int sel_printDocumentView = sel_registerName("printDocumentView");
+public static final int sel_documentViewShouldHandlePrint = sel_registerName("documentViewShouldHandlePrint");
+public static final int sel_printOperationWithPrintInfo_1 = sel_registerName("printOperationWithPrintInfo:");
+public static final int sel_canPrintHeadersAndFooters = sel_registerName("canPrintHeadersAndFooters");
 
 /** Constants */
 public static final int NSAWTEventType = 16;
@@ -10100,6 +10108,51 @@ public static final native int NSDefaultRunLoopMode();
 //public static final native int NSZeroRect();
 //public static final native int NSZeroSize();
 //public static final native int NSZombieEnabled();
+//public static final native int DOMEventException();
+//public static final native int DOMException();
+//public static final native int DOMRangeException();
+//public static final native int DOMXPathException();
+//public static final native int WebActionButtonKey();
+//public static final native int WebActionElementKey();
+//public static final native int WebActionModifierFlagsKey();
+//public static final native int WebActionNavigationTypeKey();
+//public static final native int WebActionOriginalURLKey();
+//public static final native int WebArchivePboardType();
+//public static final native int WebElementDOMNodeKey();
+//public static final native int WebElementFrameKey();
+//public static final native int WebElementImageAltStringKey();
+//public static final native int WebElementImageKey();
+//public static final native int WebElementImageRectKey();
+//public static final native int WebElementImageURLKey();
+//public static final native int WebElementIsSelectedKey();
+//public static final native int WebElementLinkLabelKey();
+//public static final native int WebElementLinkTargetFrameKey();
+//public static final native int WebElementLinkTitleKey();
+//public static final native int WebElementLinkURLKey();
+//public static final native int WebHistoryAllItemsRemovedNotification();
+//public static final native int WebHistoryItemChangedNotification();
+//public static final native int WebHistoryItemsAddedNotification();
+//public static final native int WebHistoryItemsKey();
+//public static final native int WebHistoryItemsRemovedNotification();
+//public static final native int WebHistoryLoadedNotification();
+//public static final native int WebHistorySavedNotification();
+//public static final native int WebKitErrorDomain();
+//public static final native int WebKitErrorMIMETypeKey();
+//public static final native int WebKitErrorPlugInNameKey();
+//public static final native int WebKitErrorPlugInPageURLStringKey();
+//public static final native int WebPlugInAttributesKey();
+//public static final native int WebPlugInBaseURLKey();
+//public static final native int WebPlugInContainerKey();
+//public static final native int WebPlugInContainingElementKey();
+//public static final native int WebPreferencesChangedNotification();
+//public static final native int WebViewDidBeginEditingNotification();
+//public static final native int WebViewDidChangeNotification();
+//public static final native int WebViewDidChangeSelectionNotification();
+//public static final native int WebViewDidChangeTypingStyleNotification();
+//public static final native int WebViewDidEndEditingNotification();
+//public static final native int WebViewProgressEstimateChangedNotification();
+//public static final native int WebViewProgressFinishedNotification();
+//public static final native int WebViewProgressStartedNotification();
 
 /** Functions */
 //public static final native int NSAccessibilityActionDescription(int action);
