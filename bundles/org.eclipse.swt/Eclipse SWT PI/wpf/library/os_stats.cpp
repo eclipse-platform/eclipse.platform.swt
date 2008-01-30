@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1293;
-int OS_nativeFunctionCallCount[1293];
+int OS_nativeFunctionCount = 1298;
+int OS_nativeFunctionCallCount[1298];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -72,6 +72,7 @@ char * OS_nativeFunctionNames[] = {
 	"Brushes_1Transparent",
 	"Brushes_1White",
 	"ButtonBase_1Click",
+	"ButtonBase_1ClickEvent",
 	"Button_1IsDefault__I",
 	"Button_1IsDefault__IZ",
 	"Byte_1typeid",
@@ -169,6 +170,7 @@ char * OS_nativeFunctionNames[] = {
 	"Control_1HorizontalContentAlignment__I",
 	"Control_1HorizontalContentAlignment__II",
 	"Control_1MouseDoubleClick",
+	"Control_1MouseDoubleClickEvent",
 	"Control_1Padding__I",
 	"Control_1Padding__II",
 	"Control_1PreviewMouseDoubleClick",
@@ -393,6 +395,7 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1Resources__I",
 	"FrameworkElement_1Resources__II",
 	"FrameworkElement_1SizeChanged",
+	"FrameworkElement_1SizeChangedEvent",
 	"FrameworkElement_1Style__I",
 	"FrameworkElement_1Style__II",
 	"FrameworkElement_1StyleProperty",
@@ -517,6 +520,8 @@ char * OS_nativeFunctionNames[] = {
 	"ItemCollection_1RemoveAt",
 	"ItemsControl_1HasItems",
 	"ItemsControl_1IsTextSearchEnabled",
+	"ItemsControl_1ItemTemplate__I",
+	"ItemsControl_1ItemTemplate__II",
 	"ItemsControl_1Items",
 	"ItemsControl_1ItemsSource",
 	"ItemsPresenter_1typeid",

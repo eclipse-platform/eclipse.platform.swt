@@ -683,6 +683,19 @@ JNIEXPORT void JNICALL OS_NATIVE(ButtonBase_1Click)
 }
 #endif
 
+#ifndef NO_ButtonBase_1ClickEvent
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ButtonBase_1ClickEvent)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ButtonBase_1ClickEvent)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ButtonBase_1ClickEvent_FUNC);
+	rc = (jint)TO_HANDLE(ButtonBase::ClickEvent);
+	OS_NATIVE_EXIT(env, that, ButtonBase_1ClickEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Button_1IsDefault__I
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Button_1IsDefault__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(Button_1IsDefault__I)
@@ -1865,6 +1878,19 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1MouseDoubleClick)
 	OS_NATIVE_ENTER(env, that, Control_1MouseDoubleClick_FUNC);
 	((Control^)TO_OBJECT(arg0))->MouseDoubleClick += ((MouseButtonEventHandler^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, Control_1MouseDoubleClick_FUNC);
+}
+#endif
+
+#ifndef NO_Control_1MouseDoubleClickEvent
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1MouseDoubleClickEvent)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Control_1MouseDoubleClickEvent)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1MouseDoubleClickEvent_FUNC);
+	rc = (jint)TO_HANDLE(Control::MouseDoubleClickEvent);
+	OS_NATIVE_EXIT(env, that, Control_1MouseDoubleClickEvent_FUNC);
+	return rc;
 }
 #endif
 
@@ -4610,6 +4636,19 @@ JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1SizeChanged)
 }
 #endif
 
+#ifndef NO_FrameworkElement_1SizeChangedEvent
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1SizeChangedEvent)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1SizeChangedEvent)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1SizeChangedEvent_FUNC);
+	rc = (jint)TO_HANDLE(FrameworkElement::SizeChangedEvent);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1SizeChangedEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FrameworkElement_1Style__I
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Style__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Style__I)
@@ -6066,6 +6105,30 @@ JNIEXPORT void JNICALL OS_NATIVE(ItemsControl_1IsTextSearchEnabled)
 	OS_NATIVE_ENTER(env, that, ItemsControl_1IsTextSearchEnabled_FUNC);
 	((ItemsControl^)TO_OBJECT(arg0))->IsTextSearchEnabled = (arg1);
 	OS_NATIVE_EXIT(env, that, ItemsControl_1IsTextSearchEnabled_FUNC);
+}
+#endif
+
+#ifndef NO_ItemsControl_1ItemTemplate__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ItemsControl_1ItemTemplate__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(ItemsControl_1ItemTemplate__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ItemsControl_1ItemTemplate__I_FUNC);
+	rc = (jint)TO_HANDLE(((ItemsControl^)TO_OBJECT(arg0))->ItemTemplate);
+	OS_NATIVE_EXIT(env, that, ItemsControl_1ItemTemplate__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ItemsControl_1ItemTemplate__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ItemsControl_1ItemTemplate__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ItemsControl_1ItemTemplate__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ItemsControl_1ItemTemplate__II_FUNC);
+	((ItemsControl^)TO_OBJECT(arg0))->ItemTemplate = ((DataTemplate^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, ItemsControl_1ItemTemplate__II_FUNC);
 }
 #endif
 
