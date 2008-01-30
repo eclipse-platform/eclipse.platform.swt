@@ -199,7 +199,7 @@ public class DND {
 	 * is created for a control, it is stored as a property in the control 
 	 * using <code>setData(String, Object)</code>.
 	 */
-	public final static String DROP_TARGET_KEY = "DropTarget"; //$NON-NLS-1$
+	public static final String DROP_TARGET_KEY = "DropTarget"; //$NON-NLS-1$
 	
 	/**
 	 * DragSource Key: The string constant for looking up the drag source 
@@ -207,7 +207,7 @@ public class DND {
 	 * is created for a control, it is stored as a property in the control 
 	 * using <code>setData(String, Object)</code>.
 	 */
-	public final static String DRAG_SOURCE_KEY = "DragSource"; //$NON-NLS-1$
+	public static final String DRAG_SOURCE_KEY = "DragSource"; //$NON-NLS-1$
 
 	static final String INIT_DRAG_MESSAGE = "Cannot initialize Drag"; //$NON-NLS-1$
 	static final String INIT_DROP_MESSAGE = "Cannot initialize Drop"; //$NON-NLS-1$
