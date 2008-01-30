@@ -315,6 +315,7 @@ public Color getBackground () {
  * @since 3.0
  */
 public Color getBackground (int index) {
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count -1) return getBackground ();
