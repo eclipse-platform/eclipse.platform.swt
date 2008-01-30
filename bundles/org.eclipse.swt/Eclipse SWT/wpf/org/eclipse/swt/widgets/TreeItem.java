@@ -545,7 +545,7 @@ void fixStyle () {
 public Color getBackground () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getBackground ();
+	return background != null ? background : parent.getBackground ();
 }
 
 /**
@@ -564,7 +564,10 @@ public Color getBackground () {
 public Color getBackground (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getBackground ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getBackground ();
+	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
+	return cellBackground [index];
 }
 
 /**
@@ -668,7 +671,7 @@ public boolean getExpanded () {
 public Font getFont () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getFont ();
+	return font != null ? font : parent.getFont ();
 }
 
 /**
@@ -688,7 +691,10 @@ public Font getFont () {
 public Font getFont (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getFont ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getFont ();
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -707,7 +713,7 @@ public Font getFont (int index) {
 public Color getForeground () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getForeground ();
+	return foreground != null ? foreground : parent.getForeground ();
 }
 
 /**
@@ -727,7 +733,10 @@ public Color getForeground () {
 public Color getForeground (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getForeground ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getForeground ();
+	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
+	return cellForeground [index];
 }
 
 /**
@@ -1103,6 +1112,9 @@ public void removeAll () {
  */
 public void setBackground (Color color) {
 	checkWidget ();
+	
+	System.out.println("setBackground: " + color);
+	
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
