@@ -26,6 +26,24 @@ class EventTable {
 	Listener [] listeners;
 	int level;
 	
+public Listener[] getListeners(int eventType) {
+	if (types == null) return new Listener[0];
+	int size = 0;
+	for (int i=0; i<types.length; i++) {
+		if (types [i] == eventType) size++;
+	}
+	Listener[] result = new Listener[size];
+	if (size == 0) return result;
+	int count = 0;
+	for (int i=0; i<types.length; i++) {
+		if (types [i] == eventType) {
+			result[count] = listeners[i];
+			count++;
+		}
+	}	
+	return result;
+}
+
 public void hook (int eventType, Listener listener) {
 	if (types == null) types = new int [4];
 	if (listeners == null) listeners = new Listener [4];

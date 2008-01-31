@@ -198,6 +198,8 @@ public class DND {
 	 * for a control using <code>getData(String)</code>. When a drop target 
 	 * is created for a control, it is stored as a property in the control 
 	 * using <code>setData(String, Object)</code>.
+	 * 
+	 * @since 3.4
 	 */
 	public static final String DROP_TARGET_KEY = "DropTarget"; //$NON-NLS-1$
 	
@@ -206,6 +208,8 @@ public class DND {
 	 * for a control using <code>getData(String)</code>. When a drag source 
 	 * is created for a control, it is stored as a property in the control 
 	 * using <code>setData(String, Object)</code>.
+	 * 
+	 * @since 3.4
 	 */
 	public static final String DRAG_SOURCE_KEY = "DragSource"; //$NON-NLS-1$
 

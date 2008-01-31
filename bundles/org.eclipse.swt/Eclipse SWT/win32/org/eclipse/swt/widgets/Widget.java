@@ -172,6 +172,7 @@ void _addListener (int eventType, Listener listener) {
  *
  * @see Listener
  * @see SWT
+ * @see #getListeners(int)
  * @see #removeListener(int, Listener)
  * @see #notifyListeners
  */
@@ -557,6 +558,32 @@ public Display getDisplay () {
 	return display;
 }
 
+/**
+ * Returns an array of listeners who will be notified when an event 
+ * of the given type occurs. The event type is one of the event constants 
+ * defined in class <code>SWT</code>.
+ *
+ * @param eventType the type of event to listen for
+ * @return an array of listeners that will be notified when the event occurs
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see SWT
+ * @see #addListener(int, Listener)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
+ * 
+ * @since 3.4
+ */
+public Listener[] getListeners (int eventType) {
+	checkWidget();
+	return eventTable.getListeners(eventType);
+}
+
 Menu getMenu () {
 	return null;
 }
@@ -712,6 +739,7 @@ GC new_GC (GCData data) {
  * 
  * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
  * @see #removeListener(int, Listener)
  */
 public void notifyListeners (int eventType, Event event) {
@@ -860,6 +888,7 @@ void releaseWidget () {
  * @see Listener
  * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
  * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener listener) {
