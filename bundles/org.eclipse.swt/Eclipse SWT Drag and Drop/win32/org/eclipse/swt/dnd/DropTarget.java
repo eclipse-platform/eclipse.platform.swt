@@ -497,8 +497,7 @@ public DropTargetListener[] getDropListeners() {
 	for (int i = 0; i < length; i++) {
 		Listener listener = listeners[i];
 		if (listener instanceof DNDListener) {
-			SWTEventListener eventListener = ((DNDListener) listener).getEventListener();
-			dropListeners[count] = (DropTargetListener) eventListener;
+			dropListeners[count] = (DropTargetListener) ((DNDListener) listener).getEventListener();
 			count++;
 		}
 	}

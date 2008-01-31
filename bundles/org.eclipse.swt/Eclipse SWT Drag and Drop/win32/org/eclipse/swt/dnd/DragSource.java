@@ -493,8 +493,7 @@ public DragSourceListener[] getDragListeners() {
 	for (int i = 0; i < length; i++) {
 		Listener listener = listeners[i];
 		if (listener instanceof DNDListener) {
-			SWTEventListener eventListener = ((DNDListener) listener).getEventListener();
-			dragListeners[count] = (DragSourceListener) eventListener;
+			dragListeners[count] = (DragSourceListener) ((DNDListener) listener).getEventListener();
 			count++;
 		}
 	}
