@@ -505,6 +505,41 @@ public Control getControl () {
 }
 
 /**
+ * Returns an array of listeners who will be notified when a drag and drop 
+ * operation is in progress, by sending it one of the messages defined in 
+ * the <code>DropTargetListener</code> interface.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DropTargetListener
+ * @see #addDropListener
+ * @see #removeDropListener
+ * @see DropTargetEvent
+ * 
+ * @since 3.4
+ */
+public DropTargetListener[] getDropListeners() {
+	Listener[] listeners = getListeners(DND.DragEnter);
+	int length = listeners.length;
+	DropTargetListener[] dropListeners = new DropTargetListener[length];
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		Listener listener = listeners[i];
+		if (listener instanceof DNDListener) {
+			dropListeners[count] = (DropTargetListener) ((DNDListener) listener).getEventListener();
+			count++;
+		}
+	}
+	if (count == length) return dropListeners;
+	DropTargetListener[] result = new DropTargetListener[count];
+	System.arraycopy(dropListeners, 0, result, 0, count);
+	return result;
+}
+
+/**
  * Returns the drop effect for this DropTarget.  This drop effect will be 
  * used during a drag and drop to display the drag under effect on the 
  * target widget.
