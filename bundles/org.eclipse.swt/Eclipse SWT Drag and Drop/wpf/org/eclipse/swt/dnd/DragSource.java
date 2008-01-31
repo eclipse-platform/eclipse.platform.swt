@@ -94,7 +94,6 @@ import org.eclipse.swt.widgets.*;
 public class DragSource extends Widget {
 
 	private static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static int checkStyle (int style) {
 		if (style == SWT.NONE) return DND.DROP_MOVE;
 		return style;
@@ -140,9 +139,9 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null)
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 
 	jniRef = OS.NewGlobalRef (this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -320,7 +319,7 @@ void onDispose() {
 	jniRef = 0;
 
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }

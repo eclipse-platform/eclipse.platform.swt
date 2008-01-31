@@ -70,7 +70,6 @@ import org.eclipse.swt.widgets.*;
 public class DropTarget extends Widget {
 
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	static int checkStyle (int style) {
 		if (style == SWT.NONE) return DND.DROP_MOVE;
 		return style;
@@ -128,9 +127,9 @@ public class DropTarget extends Widget {
 public DropTarget(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DROPTARGETID) != null)
+	if (control.getData(DND.DROP_TARGET_KEY) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
 
 	jniRef = OS.NewGlobalRef (this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -509,7 +508,7 @@ void onDispose () {
 	if (jniRef != 0) OS.DeleteGlobalRef (jniRef);
 	jniRef = 0;
 	controlListener = null;
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	transferAgents = null;
 	control = null;
 }
