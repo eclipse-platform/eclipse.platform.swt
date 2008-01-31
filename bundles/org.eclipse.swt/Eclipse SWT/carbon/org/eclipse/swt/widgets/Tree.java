@@ -2932,8 +2932,10 @@ void setItemCount (TreeItem parentItem, int count) {
 	callbacks.v1_itemNotificationCallback = 0;
 	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
-	int[] ids = parentItem == null ? childIds : parentItem.childIds;
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
 	if (count < itemCount) {
+		int [] removeIds = new int [itemCount - count];
+		int removeCount = 0;
 		for (int index = ids.length - 1; index >= count; index--) {
 			int id = ids [index];
 			if (id != 0) {
@@ -2942,14 +2944,20 @@ void setItemCount (TreeItem parentItem, int count) {
 					item.dispose ();
 				} else {
 					if (parentItem == null || parentItem.getExpanded ()) {
-						if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
-							error (SWT.ERROR_ITEM_NOT_REMOVED);
-							break;
-						}
+						removeIds [removeIds.length - removeCount] = id;
+						removeCount++;
 						visibleCount--;
 					}
 				}
 			}
+		}
+		if (removeCount != 0 && removeCount != removeIds.length) {
+			int [] tmp = new int [removeCount];
+			System.arraycopy(removeIds, removeIds.length - removeCount, tmp, 0, removeCount);
+			removeIds = tmp;
+		}
+		if (removeCount != 0 && OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, removeCount, removeIds, 0) != OS.noErr) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
 		//TODO - move shrink to paint event
 		// shrink items array
