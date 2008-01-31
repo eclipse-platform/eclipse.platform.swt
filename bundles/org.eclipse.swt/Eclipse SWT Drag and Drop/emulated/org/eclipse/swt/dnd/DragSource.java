@@ -99,7 +99,6 @@ public class DragSource extends Widget {
 	private DragSourceEffect dragEffect;
 
 	private static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -133,9 +132,9 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null)
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -260,7 +259,7 @@ private void onDispose() {
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }

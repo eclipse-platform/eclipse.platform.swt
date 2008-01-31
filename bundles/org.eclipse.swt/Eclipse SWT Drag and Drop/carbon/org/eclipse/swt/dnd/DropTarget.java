@@ -93,7 +93,6 @@ public class DropTarget extends Widget {
 	static DropTarget CurrentDropTarget = null;
 	
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	static final int DRAGOVER_HYSTERESIS = 50;
 	
 	static Callback DragTrackingHandler;
@@ -147,10 +146,10 @@ public DropTarget(Control control, int style) {
 	if (DragTrackingHandler == null || DragTrackingHandler == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	if (control.getData(DROPTARGETID) != null) {
+	if (control.getData(DND.DROP_TARGET_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -274,7 +273,7 @@ static DropTarget FindDropTarget(int theWindow, int theDrag) {
 	if (!OS.IsControlEnabled(theControl[0])) return null;				
 	Widget widget = display.findWidget(theControl[0]);
 	if (widget == null) return null;
-	return (DropTarget)widget.getData(DROPTARGETID);
+	return (DropTarget)widget.getData(DND.DROP_TARGET_KEY);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -559,7 +558,7 @@ void onDispose () {
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
 	controlListener = null;
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	transferAgents = null;
 	control = null;
 }

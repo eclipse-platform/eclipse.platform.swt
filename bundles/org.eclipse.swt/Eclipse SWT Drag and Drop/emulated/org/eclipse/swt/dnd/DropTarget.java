@@ -74,7 +74,6 @@ public class DropTarget extends Widget {
 	DropTargetEffect dropEffect;
 
 	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -110,9 +109,9 @@ public class DropTarget extends Widget {
 public DropTarget(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DROPTARGETID) != null)
+	if (control.getData(DND.DROP_TARGET_KEY) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
-	control.setData(DROPTARGETID, this);
+	control.setData(DND.DROP_TARGET_KEY, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -234,7 +233,7 @@ void onDispose () {
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
 	controlListener = null;
-	control.setData(DROPTARGETID, null);
+	control.setData(DND.DROP_TARGET_KEY, null);
 	transferAgents = null;
 	control = null;
 }

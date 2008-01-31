@@ -113,7 +113,6 @@ public class DragSource extends Widget {
 	int dataEffect = DND.DROP_NONE;	
 	
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
-	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 	static final TCHAR WindowClass = new TCHAR (0, "#32770", true);
 
@@ -149,10 +148,10 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super(control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null) {
+	if (control.getData(DND.DRAG_SOURCE_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
-	control.setData(DRAGSOURCEID, this);
+	control.setData(DND.DRAG_SOURCE_KEY, this);
 	createCOMInterfaces();
 	this.AddRef();
 
@@ -530,7 +529,7 @@ private void onDispose() {
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
-	control.setData(DRAGSOURCEID, null);
+	control.setData(DND.DRAG_SOURCE_KEY, null);
 	control = null;
 	transferAgents = null;
 }

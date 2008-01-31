@@ -72,7 +72,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		if (display == null || display.isDisposed()) return null;
 		Widget widget = display.findWidget(theControl);
 		if (widget == null) return null;
-		return (DropTarget)widget.getData(DropTarget.DROPTARGETID); 
+		return (DropTarget)widget.getData(DND.DROP_TARGET_KEY); 
 	}
 	
 	/**
