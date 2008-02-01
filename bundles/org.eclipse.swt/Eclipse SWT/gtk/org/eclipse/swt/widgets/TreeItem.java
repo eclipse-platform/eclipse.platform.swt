@@ -431,7 +431,6 @@ public Rectangle getBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	
 	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
@@ -443,6 +442,18 @@ public Rectangle getBounds (int index) {
 		rect.x += buffer [0];
 		//rect.width -= buffer [0]; // TODO Is this required for some versions?
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
+	}
+	OS.gtk_tree_path_free (path);
 	
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
@@ -495,7 +506,6 @@ public Rectangle getBounds () {
 	
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	int right = rect.x + rect.width;
 
@@ -509,6 +519,19 @@ public Rectangle getBounds () {
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING); 
+	}
+	OS.gtk_tree_path_free (path);
+	
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
@@ -733,7 +756,6 @@ public Rectangle getImageBounds (int index) {
 	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
@@ -744,6 +766,18 @@ public Rectangle getImageBounds (int index) {
 		//int horizontalSeparator = buffer[0];
 		//rect.x += horizontalSeparator;
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
+	}
+	OS.gtk_tree_path_free (path);
 	
 	/*
 	* The OS call gtk_cell_renderer_get_size() provides the width of image to be drawn
@@ -954,7 +988,6 @@ public Rectangle getTextBounds (int index) {
 	
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
-	OS.gtk_tree_path_free (path);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	int right = rect.x + rect.width;
 
@@ -967,6 +1000,19 @@ public Rectangle getTextBounds (int index) {
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
+	/*
+	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
+	* when the widget is mirrored. The fix is to sum up the indentation
+	* of the expanders. 
+	*/
+	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
+		int depth = OS.gtk_tree_path_get_depth (path);
+		int [] expanderSize = new int [1];
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
+		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
+	}
+	OS.gtk_tree_path_free (path);
+	
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
