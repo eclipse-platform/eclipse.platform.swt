@@ -2113,8 +2113,10 @@ int _indexOf (TreeItem parentItem, TreeItem item) {
 }
 
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	TreeItem item1 = _getItem (itemOne, false);
-	TreeItem item2 = _getItem (itemTwo, false);
+	boolean create = (style & SWT.VIRTUAL) != 0 && sortColumn != null  
+					&& !sortColumn.isDisposed () && sortDirection == SWT.DOWN; 
+	TreeItem item1 = _getItem (itemOne, create);
+	TreeItem item2 = _getItem (itemTwo, create);
 	if (item1 == null || item2 == null) return OS.noErr;
 	int index1 = _indexOf (item1.parentItem, item1);
 	int index2 = _indexOf (item2.parentItem , item2);
@@ -3013,6 +3015,10 @@ void setItemCount (TreeItem parentItem, int count) {
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
+	if ((style & SWT.VIRTUAL) != 0 && sortColumn != null  
+			&& !sortColumn.isDisposed () && sortDirection == SWT.DOWN) {
+		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	}
 	setRedraw (true);
 	if (itemCount == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
 }

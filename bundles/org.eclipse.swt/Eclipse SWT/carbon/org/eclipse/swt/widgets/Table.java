@@ -2848,6 +2848,9 @@ public void setItemCount (int count) {
 	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	fixScrollBar ();
+	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection == SWT.DOWN) {
+		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	}
 	setRedraw (true);
 }
 
