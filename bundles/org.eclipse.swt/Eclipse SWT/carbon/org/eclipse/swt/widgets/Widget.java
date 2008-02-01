@@ -865,6 +865,7 @@ Rect getInset () {
  */
 public Listener[] getListeners (int eventType) {
 	checkWidget();
+	if (eventTable == null) return new Listener[0];
 	return eventTable.getListeners(eventType);
 }
 
