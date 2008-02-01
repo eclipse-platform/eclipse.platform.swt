@@ -350,7 +350,11 @@ void comboEvent (Event event) {
 		case SWT.FocusIn:
 			Control focusControl = getDisplay ().getFocusControl ();
 			if (focusControl == arrow || focusControl == list) return;
-			text.setFocus();
+			if (isDropped()) {
+				list.setFocus();
+			} else {
+				text.setFocus();
+			}
 			break;
 		case SWT.Move:
 			dropDown (false);
@@ -474,13 +478,10 @@ public void deselectAll () {
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
-	dropDown(drop, true);
-}
-void dropDown (boolean drop, boolean focus) {
 	if (drop == isDropped ()) return;
 	if (!drop) {
 		popup.setVisible (false);
-		if (!isDisposed ()&& arrow.isFocusControl() && focus) {
+		if (!isDisposed () && isFocusControl()) {
 			text.setFocus();
 		}
 		return;
@@ -518,7 +519,7 @@ void dropDown (boolean drop, boolean focus) {
 	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
 	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
-	if (focus) list.setFocus ();
+	if (isFocusControl()) list.setFocus ();
 }
 /*
  * Return the lowercase of the first non-'&' character following
@@ -1422,7 +1423,7 @@ public void setLayout (Layout layout) {
  */
 public void setListVisible (boolean visible) {
 	checkWidget ();
-	dropDown(visible, false);
+	dropDown(visible);
 }
 public void setMenu(Menu menu) {
 	text.setMenu(menu);
