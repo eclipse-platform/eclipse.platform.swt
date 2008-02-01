@@ -625,10 +625,10 @@ class TableTab extends ScrollableTab {
 	 * Sets the sort indicator state of the "Example" widgets.
 	 */
 	void setWidgetSortIndicator () {
+		TableColumn [] columns = table1.getColumns();
 		if (sortIndicatorButton.getSelection ()) {
 			/* Reset to known state: 'down' on column 0. */
 			table1.setSortDirection (SWT.DOWN);
-			TableColumn [] columns = table1.getColumns();
 			for (int i = 0; i < columns.length; i++) {
 				TableColumn column = columns[i];
 				if (i == 0) table1.setSortColumn(column);
@@ -652,10 +652,9 @@ class TableTab extends ScrollableTab {
 			}
 		} else {
 			table1.setSortDirection (SWT.NONE);
-			TableColumn [] columns = table1.getColumns();
-			for (int i = 0; i < columns.length; i++) {
-				SelectionListener listener = (SelectionListener)columns[i].getData("SortListener");	//$NON-NLS-1$
-				if (listener != null) columns[i].removeSelectionListener(listener);
+			for (int j = 0; j < columns.length; j++) {
+				SelectionListener listener = (SelectionListener)columns[j].getData("SortListener");	//$NON-NLS-1$
+				if (listener != null) columns[j].removeSelectionListener(listener);
 			}
 		}
 	}
