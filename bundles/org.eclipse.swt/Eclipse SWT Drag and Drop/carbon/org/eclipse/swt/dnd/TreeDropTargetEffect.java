@@ -54,7 +54,6 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	static final int EXPAND_HYSTERESIS = 1000; // milli seconds
 
 	int currentEffect = DND.FEEDBACK_NONE;
-	TreeItem currentItem;
 
 	TreeItem insertItem = null;
 	boolean insertBefore = false;
@@ -242,12 +241,12 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 		
 		if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
 			(effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-			if (currentItem != item || 
+			if (insertItem != item || 
 				 ((effect & DND.FEEDBACK_INSERT_AFTER) != (currentEffect & DND.FEEDBACK_INSERT_AFTER)) ||
 				 ((effect & DND.FEEDBACK_INSERT_BEFORE) != (currentEffect & DND.FEEDBACK_INSERT_BEFORE))) { 
 				setInsertMark(tree, item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
 				currentEffect = effect;
-				currentItem = item;
+				insertItem = item;
 			}
 		} else {
 			setInsertMark(tree, null, false);

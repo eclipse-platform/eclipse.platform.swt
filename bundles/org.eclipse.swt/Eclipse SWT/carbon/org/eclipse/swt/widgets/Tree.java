@@ -88,6 +88,8 @@ public class Tree extends Composite {
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll, drawBackground;
 	Rectangle imageBounds;
 	TreeItem showItem;
+	TreeItem insertItem;
+	boolean insertBefore;
 	int lastHittest, lastHittestColumn, visibleCount;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
@@ -352,6 +354,13 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		rect.y += headerHeight;
 		rect.height -= headerHeight;
 		fillBackground (handle, paintGC.handle, rect);
+	}
+	if (insertItem != null && !insertItem.isDisposed()) {
+		Rectangle itemRect = insertItem.getImageBounds(0).union(insertItem.getBounds());
+		Rectangle clientRect = getClientArea();
+		int x = clientRect.x + clientRect.width;
+		int posY = insertBefore ? itemRect.y : itemRect.y + itemRect.height - 1;
+		paintGC.drawLine(itemRect.x, posY, x, posY);
 	}
 	if (currentGC == null) {
 		paintGC.dispose ();
@@ -2708,8 +2717,15 @@ void resetVisibleRegion (int control) {
  */
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
+	TreeItem oldMark = insertItem;
+	insertItem = item;
+	insertBefore = before;
+	if (oldMark != null && !oldMark.isDisposed()) {
+		oldMark.redraw (OS.kDataBrowserNoItem);
+	}
 	if (item != null) {
 		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		item.redraw (OS.kDataBrowserNoItem);
 	}
 }
 
