@@ -115,7 +115,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
-	boolean mapped, moved, resized, opened, fullScreen;
+	boolean mapped, moved, resized, opened, fullScreen, showWithParent;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
@@ -1021,7 +1021,13 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = false;
-	sendEvent (SWT.Deiconify);
+	/*
+	* Feature in GTK. When an ancestor of an override redirect shell is
+	* minimized or restored, the override redirect shell is not minimized
+	* or restored. The fix is to explicitly hide and show all override 
+	* redirect shells. 
+	*/
+	updateShells ();
 	return 0;
 }
 
@@ -1066,7 +1072,13 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 
 int /*long*/ gtk_unmap_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = true;
-	sendEvent (SWT.Iconify);
+	/*
+	* Feature in GTK. When an ancestor of an override redirect shell is
+	* minimized or restored, the override redirect shell is not minimized
+	* or restored. The fix is to explicitly hide and show all override 
+	* redirect shells. 
+	*/
+	updateShells ();
 	return 0;
 }
 
@@ -1076,6 +1088,13 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_ICONIFIED) != 0;
 	maximized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_MAXIMIZED) != 0;
 	fullScreen = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_FULLSCREEN) != 0;
+	if ((gdkEvent.changed_mask & OS.GDK_WINDOW_STATE_ICONIFIED) != 0) {
+		if (minimized) {
+			sendEvent (SWT.Iconify);
+		} else {
+			sendEvent (SWT.Deiconify);
+		}
+	}
 	return 0;
 }
 
@@ -1752,6 +1771,30 @@ void updateModal () {
 		fixModal (group, modalGroup);
 	}
 	modalGroup = group;
+}
+
+void updateShells () {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		boolean update = false;
+		Shell shell = shells [i];
+		if (shell.isUndecorated ()) {
+			update = true;
+		} else {
+			do {
+				shell = (Shell) shell.getParent ();
+			} while (shell != null && shell != this && !shell.isUndecorated ());
+			if (shell != null && shell != this) update = true;
+		}
+		if (update) {
+			if (minimized) {
+				OS.gtk_widget_hide (shells [i].shellHandle);
+			} else if (showWithParent) {
+				OS.gtk_widget_show (shells [i].shellHandle);
+			}
+		}
+	}
+	showWithParent = minimized;
 }
 
 void deregister () {
