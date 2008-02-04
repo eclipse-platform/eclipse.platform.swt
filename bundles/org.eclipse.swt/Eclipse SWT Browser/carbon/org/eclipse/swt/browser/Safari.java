@@ -125,6 +125,7 @@ public void create (Composite parent, int style) {
 		final int[] outWindow = new int[1];
 		OS.CreateNewWindow(OS.kOverlayWindowClass, 0, bounds, outWindow);
 		OS.ShowWindow(outWindow[0]);
+		OS.HIObjectSetAccessibilityIgnored (outWindow[0], true);
 		display.disposeExec(new Runnable() {
 			public void run() {
 				if (outWindow[0] != 0) {
