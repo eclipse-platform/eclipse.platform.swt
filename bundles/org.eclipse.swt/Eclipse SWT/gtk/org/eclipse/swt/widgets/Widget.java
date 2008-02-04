@@ -295,6 +295,11 @@ void checkOrientation (Widget parent) {
 		}
 	}
 	style = checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
+	/* Versions of GTK prior to 2.8 do not render RTL text properly */
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
+		style &= ~SWT.RIGHT_TO_LEFT;
+		style |= SWT.LEFT_TO_RIGHT;			
+	}
 }
 
 /**
