@@ -45,8 +45,10 @@ public class Snippet291 {
 				if (e.childID == ACC.CHILDID_SELF) {
 					e.result = "This is the Accessible Name for the Tree";
 				} else {
-					TreeItem item = (TreeItem)display.findWidget(tree.handle, e.childID);
-					e.result = "This is the Accessible Name for the TreeItem: " + item.getText();
+					TreeItem item = (TreeItem)display.findWidget(tree, e.childID);
+					if (item != null) {
+						e.result = "This is the Accessible Name for the TreeItem: " + item.getText();
+					}
 				}
 			}
 		});
