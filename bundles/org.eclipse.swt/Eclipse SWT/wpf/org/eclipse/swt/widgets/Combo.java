@@ -166,6 +166,11 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (index < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	int items = OS.ItemsControl_Items (handle);
+	int count = OS.ItemCollection_Count (items);
+	OS.GCHandle_Free (items);
+	if (index > count) error (SWT.ERROR_INVALID_ARGUMENT);
 	int itemHandle = OS.gcnew_ComboBoxItem ();
 	int strPtr = createDotNetString (string, false);
 	OS.ContentControl_Content (itemHandle, strPtr);
@@ -175,6 +180,9 @@ public void add (String string, int index) {
 	OS.GCHandle_Free (itemCollection);
 	OS.GCHandle_Free (itemHandle);
 }
+
+void addChild (Control control) {
+}	
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -449,7 +457,8 @@ public void cut () {
 public void deselect (int index) {
 	checkWidget ();
 	ignoreSelection = true;	
-	OS.Selector_SelectedIndex (handle, -1);
+	int selected = OS.Selector_SelectedIndex (handle);
+	if (selected == index) OS.Selector_SelectedIndex (handle, -1);
 	ignoreSelection = false;
 //	FIXME: May need to send modify event here. 
 //	if ((style & SWT.READ_ONLY) == 0) {
@@ -900,7 +909,7 @@ public int indexOf (String string, int start) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = getItemCount ();
-	if (start >= count) return -1;
+	if (start < 0 || start >= count) return -1;
 	start = Math.max (start, 0);
 	int strPtr = createDotNetString (string, false);
 	int itemCollection = OS.ItemsControl_Items (handle);
@@ -1033,6 +1042,9 @@ public void removeAll () {
 	OS.ItemCollection_Clear (itemCollection);
 	ignoreSelection = false;
 	OS.GCHandle_Free (itemCollection);
+}
+
+void removeChild(Control control) {
 }
 
 /**
