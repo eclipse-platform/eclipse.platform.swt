@@ -532,6 +532,7 @@ void createItem (TableColumn column, int index) {
 	if (columns.length == columnCount) {
 		TableColumn [] newColumns = new TableColumn [columnCount + 4];
 		System.arraycopy(columns, 0, newColumns, 0, columnCount);
+		columns = newColumns;
 	}
 	columns [columnCount] = column;
 	columnCount++;
