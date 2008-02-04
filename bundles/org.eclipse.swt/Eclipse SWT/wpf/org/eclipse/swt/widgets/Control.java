@@ -1682,6 +1682,7 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
+	if (parent == null) return; //TODO
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
@@ -1724,6 +1725,7 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
+	if (parent == null) return; //TODO
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;

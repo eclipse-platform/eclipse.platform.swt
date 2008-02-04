@@ -64,6 +64,8 @@ public class Table extends Composite {
 	int gridViewHandle, parentingHandle;
 	int columnCount, itemCount;
 	boolean ignoreSelection;
+	TableColumn [] columns;
+	boolean linesVisible;
 	
 	static final String CHECKBOX_PART_NAME = "SWT_PART_CHECKBOX";
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
@@ -510,10 +512,10 @@ void createItem (TableColumn column, int index) {
 	template = createCellTemplate (index);
 	OS.GridViewColumn_CellTemplate (column.handle, template);
 	OS.GCHandle_Free (template);
-	int columns = OS.GridView_Columns (gridViewHandle);
-	if (columnCount == 0) OS.GridViewColumnCollection_Clear (columns);
-	OS.GridViewColumnCollection_Insert (columns, index, column.handle);
-	OS.GCHandle_Free (columns);
+	int gvColumns = OS.GridView_Columns (gridViewHandle);
+	if (columnCount == 0) OS.GridViewColumnCollection_Clear (gvColumns);
+	OS.GridViewColumnCollection_Insert (gvColumns, index, column.handle);
+	OS.GCHandle_Free (gvColumns);
 	// When columnCount is 0, a "default column" is created in
 	// the WPF control, therefore there is no need to manipulate 
 	// the item's array the first time a TableColumn is created
@@ -526,6 +528,12 @@ void createItem (TableColumn column, int index) {
 		}
 		OS.GCHandle_Free (items);
 	}
+	if (columns == null) columns = new TableColumn [4];
+	if (columns.length == columnCount) {
+		TableColumn [] newColumns = new TableColumn [columnCount + 4];
+		System.arraycopy(columns, 0, newColumns, 0, columnCount);
+	}
+	columns [columnCount] = column;
 	columnCount++;
 }
 
@@ -578,8 +586,9 @@ public void deselect (int [] indices) {
 	int items = OS.ItemsControl_Items (handle);
 	ignoreSelection = true;
 	for (int i=0; i<indices.length; i++) {
-		if (!(0 <= indices[i] && indices[i] < itemCount)) continue;
-		int item = OS.ItemCollection_GetItemAt (items, i);
+		int index = indices [i];
+		if (!(0 <= index && index < itemCount)) continue;
+		int item = OS.ItemCollection_GetItemAt (items, index);
 		OS.ListBoxItem_IsSelected (item, false);
 		OS.GCHandle_Free (item);
 	}
@@ -661,15 +670,25 @@ public void deselectAll () {
 }
 
 void destroyItem (TableColumn column) {
-	int columns = OS.GridView_Columns (gridViewHandle);
-	int index = OS.GridViewColumnCollection_IndexOf (columns, column.handle);
-    boolean removed = OS.GridViewColumnCollection_Remove (columns, column.handle);
-    OS.GCHandle_Free (columns);
+	int gvColumns = OS.GridView_Columns (gridViewHandle);
+	int index = OS.GridViewColumnCollection_IndexOf (gvColumns, column.handle);
+    boolean removed = OS.GridViewColumnCollection_Remove (gvColumns, column.handle);
+    OS.GCHandle_Free (gvColumns);
     if (!removed) error (SWT.ERROR_ITEM_NOT_REMOVED);
+    int arrayIndex = -1;
+    for (int i = 0; i < columnCount; i++) {
+    	TableColumn tc = columns [i];
+    	if (tc.equals(column)) {
+    		arrayIndex = i;
+    		break;
+    	}
+    }
 	columnCount--;
+	columns [arrayIndex] = null;
+	if (arrayIndex < columnCount) System.arraycopy (columns, arrayIndex+1, columns, arrayIndex, columnCount - arrayIndex);
 	if (columnCount == 0) {
 		createDefaultColumn ();
-	} 
+	}
 	int items = OS.ItemsControl_Items (handle);
     for (int i=0; i<itemCount; i++) {
 		TableItem item = getItem (items, i, false);
@@ -728,10 +747,7 @@ int findPartByType (int source, int type) {
 public TableColumn getColumn (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
-	int columns = OS.GridView_Columns (gridViewHandle);
-	TableColumn column = getColumn (columns, index);
-	OS.GCHandle_Free (columns);
-	return column;
+	return columns [index];
 }
 
 TableColumn getColumn (int columns, int index) {
@@ -795,6 +811,13 @@ public int[] getColumnOrder () {
 	//TODO
 	int [] order = new int [columnCount];
 	for (int i=0; i<order.length; i++) order [i] = i;
+	int gvColumns = OS.GridView_Columns (gridViewHandle);
+	for (int i = 0; i < order.length; i++) {
+		TableColumn column = columns [i];
+		int index = OS.IList_IndexOf (gvColumns, column.handle);
+		order [index] = i;	
+	}
+	OS.GCHandle_Free (gvColumns);
 	return order;
 }
 
@@ -828,11 +851,9 @@ public int[] getColumnOrder () {
 public TableColumn [] getColumns () {
 	checkWidget ();
 	TableColumn [] result = new TableColumn [columnCount];
-	int columns = OS.GridView_Columns (gridViewHandle);
 	for (int i = 0; i < result.length; i++) {
-		result[i] = getColumn (columns, i);
+		result [i] = columns [i];
 	}
-	OS.GCHandle_Free (columns);
 	return result;
 }
 
@@ -871,6 +892,10 @@ public int getHeaderHeight () {
 	int header = OS.GridViewColumn_Header (column);
 	if (header != 0) {
 		height = (int) OS.FrameworkElement_ActualHeight (header);
+		if (height == 0) { 
+			updateLayout (header);
+			height = (int) OS.FrameworkElement_ActualHeight (header);
+		}
 		OS.GCHandle_Free (header);
 	}
 	OS.GCHandle_Free (column);
@@ -897,7 +922,6 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
-	if (columnCount == 0) return false;
 	int columns = OS.GridView_Columns (gridViewHandle);
 	int column = OS.GridViewColumnCollection_default (columns, 0);
 	int header = OS.GridViewColumn_Header (column);
@@ -1076,7 +1100,7 @@ public TableItem [] getItems () {
 public boolean getLinesVisible () {
 	checkWidget ();
 	//TODO
-	return false; 
+	return linesVisible; 
 }
 
 /**
@@ -1526,6 +1550,11 @@ void releaseHandle () {
 	parentingHandle = 0;
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	columns = null;
+}
+
 /**
  * Removes the items from the receiver's list at the given
  * zero-relative indices.
@@ -1554,10 +1583,15 @@ public void remove (int [] indices) {
 	}
 	int items = OS.ItemsControl_Items (handle);
 	ignoreSelection = true;
+	int lastIndex = -1;
 	for (int i = newIndices.length-1; i >= 0; i--) {
-		TableItem item = getItem (items, i, false);
-		if (item != null && !item.isDisposed ()) item.release (false);
-		OS.ItemCollection_RemoveAt (items, newIndices [i]);
+		int index = newIndices [i];
+		if (index != lastIndex) {
+			TableItem item = getItem (items, index, false);
+			if (item != null && !item.isDisposed ()) item.release (false);
+			OS.ItemCollection_RemoveAt (items, index);
+			lastIndex = index;
+		}
 	}
 	ignoreSelection = false;
 	itemCount = OS.ItemCollection_Count (items);
@@ -1764,8 +1798,9 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget ();
+	if ((style & SWT.SINGLE) != 0 && start != end) return;
 	if (start <= 0 && end >= itemCount - 1) {
-		deselectAll ();
+		selectAll ();
 	} else {
 		start = Math.max (0, start);
 		end = Math.min (end, itemCount - 1);
@@ -1853,7 +1888,25 @@ int setBounds (int x, int y, int width, int height, int flags) {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//TODO
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = getColumnOrder ();
+	boolean reorder = false;
+	boolean [] seen = new boolean [columnCount];
+	for (int i=0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (order [i] != oldOrder [i]) reorder = true;
+	}
+	if (!reorder) return;
+	int gvColumns = OS.GridView_Columns (gridViewHandle);
+	for (int i = 0; i < order.length; i++) {
+		TableColumn column = columns [order [i]];
+		int index = OS.IList_IndexOf (gvColumns, column.handle);
+		if (index != i) OS.ObservableCollectionGridViewColumn_Move (gvColumns, index, i);	
+	}
+	OS.GCHandle_Free (gvColumns);
 }
 
 void setFont (int font, double size) {
@@ -2018,7 +2071,7 @@ public void setItemCount (int count) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-	//TODO
+	linesVisible = show;
 }
 
 /**
@@ -2112,7 +2165,7 @@ public void setSelection (TableItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	for (int i=length-1; i>=0; --i) {
+	for (int i=0; i<length; i++) {
 		int index = indexOf (items [i]);
 		if (index != -1) {
 			select (index);

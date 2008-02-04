@@ -1003,6 +1003,7 @@ public static final native void NotifyIcon_Visible(int sender, boolean value);
 public static final native boolean Object_Equals(int sender, int o);
 public static final native int Object_GetType(int sender);
 public static final native int Object_ToString(int sender);
+public static final native void ObservableCollectionGridViewColumn_Move(int sender, int oldIndex, int newIndex);
 public static final native void OpenFileDialog_Multiselect (int sender, boolean value);
 public static final native void RowDefinition_Height(int sender, int height);
 public static final native void RowDefinitionCollection_Add(int sender, int row);

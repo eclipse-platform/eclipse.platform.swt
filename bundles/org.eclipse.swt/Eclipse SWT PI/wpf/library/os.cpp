@@ -7241,6 +7241,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(Object_1ToString)
 }
 #endif
 
+#ifndef NO_ObservableCollectionGridViewColumn_1Move
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ObservableCollectionGridViewColumn_1Move)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(ObservableCollectionGridViewColumn_1Move)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, ObservableCollectionGridViewColumn_1Move_FUNC);
+	((ObservableCollection<GridViewColumn^>^)TO_OBJECT(arg0))->Move(arg1, arg2);
+	OS_NATIVE_EXIT(env, that, ObservableCollectionGridViewColumn_1Move_FUNC);
+}
+#endif
+
 #ifndef NO_OpenFileDialog_1Multiselect
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(OpenFileDialog_1Multiselect)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
 JNIEXPORT void JNICALL OS_NATIVE(OpenFileDialog_1Multiselect)

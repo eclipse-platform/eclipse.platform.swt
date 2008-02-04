@@ -17,6 +17,7 @@
 using namespace System;
 using namespace System::ComponentModel;
 using namespace System::Collections;
+using namespace System::Collections::ObjectModel;
 using namespace System::Globalization;
 using namespace System::Reflection;
 using namespace System::Windows;

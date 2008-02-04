@@ -270,14 +270,19 @@ int findPart (int column, String partName) {
 	updateLayout (rowHandle);
 	int contentPresenter = OS.VisualTreeHelper_GetChild (rowHandle, column);
 	if (contentPresenter == 0) return 0;
-	int columns = OS.GridView_Columns (parent.gridViewHandle);
-	int columnHandle = OS.GridViewColumnCollection_default (columns, column);
+	int columnHandle;
+	if (parent.columnCount == 0) {
+		int columns = OS.GridView_Columns (parent.gridViewHandle);
+		columnHandle = OS.GridViewColumnCollection_default (columns, column);
+		OS.GCHandle_Free (columns);
+	} else {
+		columnHandle = parent.columns [column].handle;
+	}
 	int cellTemplate = OS.GridViewColumn_CellTemplate (columnHandle);
 	int name = createDotNetString (partName, false);
 	int result = OS.FrameworkTemplate_FindName (cellTemplate, name, contentPresenter);
 	OS.GCHandle_Free (contentPresenter);
-	OS.GCHandle_Free (columns);
-	OS.GCHandle_Free (columnHandle);
+	if (parent.columnCount == 0) OS.GCHandle_Free (columnHandle);
 	OS.GCHandle_Free (cellTemplate);
 	OS.GCHandle_Free (name);
 	return result;

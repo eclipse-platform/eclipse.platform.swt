@@ -622,6 +622,7 @@ typedef enum {
 	Object_1Equals_FUNC,
 	Object_1GetType_FUNC,
 	Object_1ToString_FUNC,
+	ObservableCollectionGridViewColumn_1Move_FUNC,
 	OpenFileDialog_1Multiselect_FUNC,
 	Panel_1Background__I_FUNC,
 	Panel_1Background__II_FUNC,
