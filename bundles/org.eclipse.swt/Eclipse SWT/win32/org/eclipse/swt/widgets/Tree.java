@@ -3085,10 +3085,15 @@ public TreeItem getItem (Point point) {
 		int flags = OS.TVHT_ONITEM;
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			flags |= OS.TVHT_ONITEMRIGHT | OS.TVHT_ONITEMINDENT;
+		} else {
+			if (hooks (SWT.MeasureItem)) {
+				lpht.flags &= ~(OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL);
+				if (hitTestSelection (lpht.hItem, lpht.x, lpht.y)) {
+					lpht.flags |= OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
+				}
+			}
 		}
-		if ((lpht.flags & flags) != 0) {
-			return _getItem (lpht.hItem);
-		}
+		if ((lpht.flags & flags) != 0) return _getItem (lpht.hItem);
 	}
 	return null;
 }
@@ -3517,6 +3522,30 @@ public TreeItem getTopItem () {
 	checkWidget ();
 	int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	return hItem != 0 ? _getItem (hItem) : null;
+}
+
+boolean hitTestSelection (int /*long*/ hItem, int x, int y) {
+	if (hItem == 0) return false;
+	TreeItem item = _getItem (hItem);
+	if (item == null) return false;
+	if (!hooks (SWT.MeasureItem)) return false;
+	boolean result = false;
+	
+	//BUG? - moved columns, only hittest first column
+	//BUG? - check drag detect
+	int [] order = new int [1], index = new int [1];
+	
+	int /*long*/ hDC = OS.GetDC (handle);
+	int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+	int /*long*/ hFont = item.fontHandle (order [index [0]]);
+	if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+	Event event = sendMeasureItemEvent (item, order [index [0]], hDC);
+	if (event.getBounds ().contains (x, y)) result = true;
+	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+	OS.ReleaseDC (handle, hDC);
+//	if (isDisposed () || item.isDisposed ()) return false;
+	return result;
 }
 
 int imageIndex (Image image, int index) {
@@ -5992,6 +6021,13 @@ LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 		int flags = OS.TVHT_ONITEM;
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			flags |= OS.TVHT_ONITEMRIGHT | OS.TVHT_ONITEMINDENT;
+		} else {
+			if (hooks (SWT.MeasureItem)) {
+				lpht.flags &= ~(OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL);
+				if (hitTestSelection (lpht.hItem, lpht.x, lpht.y)) {
+					lpht.flags |= OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
+				}
+			}
 		}
 		if ((lpht.flags & flags) != 0) {
 			Event event = new Event ();
@@ -6115,7 +6151,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/* Process the mouse when an item is not selected */
 	if ((style & SWT.FULL_SELECTION) == 0) {
-		if ((lpht.flags & OS.TVHT_ONITEM) == 0) {
+		if ((lpht.flags & OS.TVHT_ONITEM) == 0 && !hooks (SWT.MeasureItem)) {
 			Display display = this.display;
 			display.captureChanged = false;
 			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
@@ -6210,18 +6246,24 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	* drawing on top of any custom drawing.  The fix
 	* is to emulate TVS_FULLROWSELECT.
 	*/
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-			if (lpht.hItem != 0) {
-				if (hOldItem == 0 || (hNewItem == hOldItem && lpht.hItem != hOldItem)) {
-					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
-					hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-				}
-				if (!dragStarted && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
-					dragStarted = dragDetect (handle, lpht.x, lpht.y, false, null, null);
-				}
+	boolean fakeSelection = false;
+	if (lpht.hItem != 0) {
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_FULLROWSELECT) == 0) fakeSelection = true;
+		} else {
+			if (hooks (SWT.MeasureItem)) {
+				if (hitTestSelection (lpht.hItem, lpht.x, lpht.y)) fakeSelection = true;
 			}
+		}
+	}
+	if (fakeSelection) {
+		if (hOldItem == 0 || (hNewItem == hOldItem && lpht.hItem != hOldItem)) {
+			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+			hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		}
+		if (!dragStarted && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			dragStarted = dragDetect (handle, lpht.x, lpht.y, false, null, null);
 		}
 	}
 	ignoreDeselect = ignoreSelect = false;
@@ -6459,8 +6501,16 @@ LRESULT WM_RBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	lpht.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem != 0) {
-		int flags = OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
-		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & flags) != 0) {
+		boolean fakeSelection = (style & SWT.FULL_SELECTION) != 0;
+		if (!fakeSelection) {
+			if (hooks (SWT.MeasureItem)) {
+				fakeSelection = hitTestSelection (lpht.hItem, lpht.x, lpht.y);
+			} else {
+				int flags = OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
+				fakeSelection = (lpht.flags & flags) != 0;
+			}
+		}
+		if (fakeSelection) {
 			if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
@@ -6922,6 +6972,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			* avoid the operation by testing to see whether
 			* the mouse was inside a tree item.
 			*/
+			if (hooks (SWT.MeasureItem)) return LRESULT.ONE;
 			if (hooks (SWT.DefaultSelection)) {
 				POINT pt = new POINT ();
 				int pos = OS.GetMessagePos ();

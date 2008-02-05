@@ -74,7 +74,7 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect;
 	int /*long*/ headerToolTipHandle;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ int /*long*/ HeaderProc;
@@ -2206,8 +2206,33 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (count == 0) return null;
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-	pinfo.x = point.x;  pinfo.y = point.y;
+	pinfo.x = point.x;
+	pinfo.y = point.y;
+	if ((style & SWT.FULL_SELECTION) == 0) {
+		if (hooks (SWT.MeasureItem)) {
+			OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+			if (pinfo.iItem == -1) {
+				RECT rect = new RECT ();
+				rect.left = OS.LVIR_ICON;
+				ignoreCustomDraw = true;
+				int /*long*/ code = OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
+				ignoreCustomDraw = false;
+				if (code != 0) {
+					pinfo.x = rect.left;
+					OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+				}
+			}
+			if (pinfo.iItem != -1 && pinfo.iSubItem == 0) {
+				if (hitTestSelection (pinfo.iItem, pinfo.x, pinfo.y)) {
+					return _getItem (pinfo.iItem);
+				}
+			}
+			return null;
+		}
+	}
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	if (pinfo.iItem != -1) {
 		/*
@@ -2504,6 +2529,28 @@ boolean hasChildren () {
 		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
 	}
 	return false;
+}
+
+boolean hitTestSelection (int index, int x, int y) {
+	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (count == 0) return false;
+	if (!hooks (SWT.MeasureItem)) return false;
+	boolean result = false;
+	if (0 <= index && index < count) {
+		TableItem item = _getItem (index);
+		int /*long*/ hDC = OS.GetDC (handle);
+		int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		int /*long*/ hFont = item.fontHandle (0);
+		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+		Event event = sendMeasureItemEvent (item, index, 0, hDC);
+		if (event.getBounds ().contains (x, y)) result = true;
+		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+//		if (isDisposed () || item.isDisposed ()) return false;
+	}
+	return result;
 }
 
 int imageIndex (Image image, int column) {
@@ -3326,6 +3373,15 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hD
 }
 
 LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+	Display display = this.display;
+	display.captureChanged = false;
+	if (!sendMouseEvent (type, button, handle, msg, wParam, lParam)) {
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
+		return LRESULT.ZERO;
+	}
+	
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
 	* the widget starts a modal loop to determine if the user wants
@@ -3342,15 +3398,28 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 	pinfo.x = OS.GET_X_LPARAM (lParam);
 	pinfo.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	Display display = this.display;
-	display.captureChanged = false;
-	if (!sendMouseEvent (type, button, handle, msg, wParam, lParam)) {
-		if (!display.captureChanged && !isDisposed ()) {
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if ((style & SWT.FULL_SELECTION) == 0) {
+		if (hooks (SWT.MeasureItem)) {
+			OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+			if (pinfo.iItem == -1) {
+				int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+				if (count != 0) {
+					RECT rect = new RECT ();
+					rect.left = OS.LVIR_ICON;
+					ignoreCustomDraw = true;
+					int /*long*/ code = OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
+					ignoreCustomDraw = false;
+					if (code != 0) {
+						pinfo.x = rect.left;
+						OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+					}
+				}
+			} else {
+				if (pinfo.iSubItem != 0) pinfo.iItem = -1;
+			}
 		}
-		return LRESULT.ZERO;
 	}
-
+	
 	/*
 	* Force the table to have focus so that when the user
 	* reselects the focus item, the LVIS_FOCUSED state bits
@@ -3398,6 +3467,17 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 			forceSelect = true;
 		}
 	}
+	
+	/* Determine whether the user has selected an item based on SWT.MeasureItem */
+	fullRowSelect = false;
+	if (pinfo.iItem != -1) {
+		if ((style & SWT.FULL_SELECTION) == 0) {
+			if (hooks (SWT.MeasureItem)) {
+				fullRowSelect = hitTestSelection (pinfo.iItem, pinfo.x, pinfo.y);
+			}
+		}
+	}
+
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
 	* the widget starts a modal loop to determine if the user wants
@@ -3410,10 +3490,28 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 	if (!dragDetect) {
 		int flags = OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL;
 		dragDetect = pinfo.iItem == -1 || (pinfo.flags & flags) == 0;
+		if (fullRowSelect) dragDetect = true;
+	}
+	
+	/*
+	* Temporarily set LVS_EX_FULLROWSELECT to allow drag and drop
+	* and the mouse to manipulate items based on the results of
+	* the SWT.MeasureItem event.
+	*/
+	if (fullRowSelect) {
+		OS.UpdateWindow (handle);
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, OS.LVS_EX_FULLROWSELECT);
 	}
 	if (!dragDetect) display.runDragDrop = false;
 	int /*long*/ code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (!dragDetect) display.runDragDrop = true;
+	if (fullRowSelect) {
+		fullRowSelect = false;
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, 0);
+	}
+	
 	if (dragStarted || !dragDetect) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -5079,6 +5177,22 @@ int /*long*/ windowProc () {
 }
 
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+	
+//	//#define WM_STYLECHANGING 0x007C #define WM_STYLECHANGED  
+//	if (msg == 0x007C) {
+//		System.out.println("WM_STYLECHANGING");
+//	}
+//	if (msg == 0x007D) {
+//		System.out.println("WM_STYLECHANGED");
+//	}
+	
+//	if (F) {
+//		System.out.println("0x" + Integer.toHexString(msg));
+//		if (msg == OS.LVM_GETITEMRECT) {
+//			System.out.println("LVM_GETITEMRECT");
+//		}
+//	}
+	
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
 		switch (msg) {
@@ -6107,6 +6221,11 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			break;
 		}
 		case OS.LVN_ITEMCHANGED: {
+			if (fullRowSelect) {
+				fullRowSelect = false;
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, 0);
+			}
 			if (!ignoreSelect) {
 				NMLISTVIEW pnmlv = new NMLISTVIEW ();
 				OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);
