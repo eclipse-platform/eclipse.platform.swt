@@ -105,15 +105,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	} 
-	assertTrue("null data element 1",exceptionThrown);
-	
-	// test that FontData is set correctly
-	
-	FontData data = new FontData();
-	Font font = new Font(display,data);
-	FontData[] returnedData = font.getFontData();
-	assertEquals(data,returnedData[0]);
-	font.dispose();
+	assertTrue("null data element 1",exceptionThrown);	
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
