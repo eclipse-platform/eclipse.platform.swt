@@ -4920,8 +4920,8 @@ public static final int /*long*/ gtk_file_filter_new() {
 		lock.unlock();
 	}
 }
-public static final native int _gtk_file_filter_get_name(int /*long*/ filter);
-public static final int gtk_file_filter_get_name(int /*long*/ filter) {
+public static final native int /*long*/ _gtk_file_filter_get_name(int /*long*/ filter);
+public static final int /*long*/ gtk_file_filter_get_name(int /*long*/ filter) {
 	lock.lock();
 	try {
 		return _gtk_file_filter_get_name(filter);
