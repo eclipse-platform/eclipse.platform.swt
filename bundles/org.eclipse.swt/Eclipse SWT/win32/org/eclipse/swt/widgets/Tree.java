@@ -6253,7 +6253,9 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			if ((bits & OS.TVS_FULLROWSELECT) == 0) fakeSelection = true;
 		} else {
 			if (hooks (SWT.MeasureItem)) {
-				if (hitTestSelection (lpht.hItem, lpht.x, lpht.y)) fakeSelection = true;
+				if (hitTestSelection (lpht.hItem, lpht.x, lpht.y)) {
+					if ((lpht.flags & OS.TVHT_ONITEM) == 0) fakeSelection = true;
+				}
 			}
 		}
 	}

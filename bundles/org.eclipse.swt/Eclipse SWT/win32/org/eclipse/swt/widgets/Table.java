@@ -3412,6 +3412,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 					if (code != 0) {
 						pinfo.x = rect.left;
 						OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+						pinfo.flags &= ~(OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL);
 					}
 				}
 			} else {
@@ -3474,6 +3475,10 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 		if ((style & SWT.FULL_SELECTION) == 0) {
 			if (hooks (SWT.MeasureItem)) {
 				fullRowSelect = hitTestSelection (pinfo.iItem, pinfo.x, pinfo.y);
+				if (fullRowSelect) {
+					int flags = OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL;
+					if ((pinfo.flags & flags) != 0) fullRowSelect = false;
+				}
 			}
 		}
 	}
