@@ -5177,22 +5177,6 @@ int /*long*/ windowProc () {
 }
 
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
-	
-//	//#define WM_STYLECHANGING 0x007C #define WM_STYLECHANGED  
-//	if (msg == 0x007C) {
-//		System.out.println("WM_STYLECHANGING");
-//	}
-//	if (msg == 0x007D) {
-//		System.out.println("WM_STYLECHANGED");
-//	}
-	
-//	if (F) {
-//		System.out.println("0x" + Integer.toHexString(msg));
-//		if (msg == OS.LVM_GETITEMRECT) {
-//			System.out.println("LVM_GETITEMRECT");
-//		}
-//	}
-	
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
 		switch (msg) {
