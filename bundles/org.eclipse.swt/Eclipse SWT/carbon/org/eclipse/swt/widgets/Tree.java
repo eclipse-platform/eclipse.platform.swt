@@ -2717,16 +2717,12 @@ void resetVisibleRegion (int control) {
  */
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
+	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	TreeItem oldMark = insertItem;
 	insertItem = item;
 	insertBefore = before;
-	if (oldMark != null && !oldMark.isDisposed()) {
-		oldMark.redraw (OS.kDataBrowserNoItem);
-	}
-	if (item != null) {
-		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		item.redraw (OS.kDataBrowserNoItem);
-	}
+	if (oldMark != null && !oldMark.isDisposed()) oldMark.redraw (OS.kDataBrowserNoItem);
+	if (item != null) item.redraw (OS.kDataBrowserNoItem);
 }
 
 /**
