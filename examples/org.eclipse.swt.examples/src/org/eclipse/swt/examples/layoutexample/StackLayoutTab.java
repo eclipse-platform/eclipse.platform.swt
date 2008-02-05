@@ -162,7 +162,7 @@ class StackLayoutTab extends Tab {
 			Control control = children[i];
 			code.append (getChildCode(control, i));
 		}
-		if (children.length > 0) {
+		if (children.length > 0 && currentLayer != -1) {
 			code.append("\n\t\tstackLayout.topControl = " + names[currentLayer] + ";\n");
 		}
 		return code;
@@ -215,7 +215,7 @@ class StackLayoutTab extends Tab {
 		}
 		setLayoutState ();
 		refreshLayoutComposite ();
-		setTopControl (-1);
+		setTopControl (currentLayer);
 		layoutGroup.layout (true);
 	}	
 
