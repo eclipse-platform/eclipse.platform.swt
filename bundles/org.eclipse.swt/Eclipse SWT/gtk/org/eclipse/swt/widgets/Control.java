@@ -281,6 +281,8 @@ int /*long*/ paintWindow () {
 
 public boolean print (GC gc) {
 	checkWidget ();
+	//TEMPORARY CODE
+	if (true) return false;
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ topHandle = topHandle ();
