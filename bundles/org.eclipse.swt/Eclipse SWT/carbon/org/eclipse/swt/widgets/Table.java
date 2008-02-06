@@ -2144,6 +2144,27 @@ int itemNotificationProc (int browser, int id, int message) {
 	return OS.noErr;
 }
 
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] arrayRef = new int[1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+	int stringArrayRef = arrayRef[0];
+	if (stringArrayRef != 0) {
+		String string = OS.kAXTitleAttribute;
+		char [] buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (stringRef != 0) {
+			OS.CFArrayAppendValue(stringArrayRef, stringRef);
+			OS.CFRelease(stringRef);
+		}
+	}
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+	}
+	return OS.noErr;
+}
+
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 	int code = OS.CallNextEventHandler (nextHandler, theEvent);
 	int [] ref = new int [1];
