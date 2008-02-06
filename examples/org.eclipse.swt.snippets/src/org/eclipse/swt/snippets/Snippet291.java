@@ -22,16 +22,11 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.accessibility.*;
 
 public class Snippet291 {
-	static Display display;
-	static Shell shell;
-	static Tree tree;
-		
 	public static void main(String[] args) {
-		display = new Display();
-		shell = new Shell(display);
+		final Display display = new Display();
+		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		
-		tree = new Tree(shell, SWT.BORDER);
+		final Tree tree = new Tree(shell, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
 			TreeItem treeItem = new TreeItem (tree, SWT.NULL);
 			treeItem.setText ("item" + i);
@@ -52,7 +47,6 @@ public class Snippet291 {
 				}
 			}
 		});
-
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
