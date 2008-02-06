@@ -58,8 +58,8 @@ class Mozilla extends WebBrowser {
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
 	static final String GRERANGE_LOWER_FALLBACK = "1.8"; //$NON-NLS-1$
 	static final boolean LowerRangeInclusive = true;
-	static final String GRERANGE_UPPER = "1.9"; //$NON-NLS-1$
-	static final boolean UpperRangeInclusive = false;
+	static final String GRERANGE_UPPER = "1.9.*"; //$NON-NLS-1$
+	static final boolean UpperRangeInclusive = true;
 
 	static final int MAX_PORT = 65535;
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
