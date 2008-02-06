@@ -1021,13 +1021,6 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = false;
-	/*
-	* Feature in GTK. When an ancestor of an override redirect shell is
-	* minimized or restored, the override redirect shell is not minimized
-	* or restored. The fix is to explicitly hide and show all override 
-	* redirect shells. 
-	*/
-	updateShells ();
 	return 0;
 }
 
@@ -1072,13 +1065,6 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 
 int /*long*/ gtk_unmap_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = true;
-	/*
-	* Feature in GTK. When an ancestor of an override redirect shell is
-	* minimized or restored, the override redirect shell is not minimized
-	* or restored. The fix is to explicitly hide and show all override 
-	* redirect shells. 
-	*/
-	updateShells ();
 	return 0;
 }
 
