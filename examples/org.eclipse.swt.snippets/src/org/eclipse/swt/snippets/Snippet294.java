@@ -16,7 +16,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /*
- * Region on control example: create a non-rectangular button
+ * Region on a control: create a non-rectangular button
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
