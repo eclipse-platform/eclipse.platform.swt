@@ -1377,7 +1377,17 @@ void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, 
 
 void outlineViewSelectionDidChange(int notification) {
 	if (ignoreSelect) return;
-	postEvent(SWT.Selection);
+	NSOutlineView widget = (NSOutlineView)view;
+	int row = widget.selectedRow();
+	if(row == -1)
+		postEvent(SWT.Selection);
+	else {
+		id _id = widget.itemAtRow(row);
+		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(_id.id, OS.sel_tag));
+		Event event = new Event();
+		event.item = item;
+		postEvent(SWT.Selection, event);
+	}
 }
 
 boolean outlineView_shouldCollapseItem(int outlineView, int ref) {

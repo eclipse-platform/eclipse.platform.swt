@@ -2274,7 +2274,16 @@ void sendDoubleSelection() {
 
 void tableViewSelectionDidChange (int aNotification) {
 	if (ignoreSelect) return;
-	postEvent (SWT.Selection);
+	NSTableView widget = (NSTableView)view;
+	int row = widget.selectedRow();
+	if(row == -1)
+		postEvent(SWT.Selection);
+	else {
+		TableItem item = _getItem(row);
+		Event event = new Event();
+		event.item = item;
+		postEvent(SWT.Selection, event);
+	}
 }
 
 boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
