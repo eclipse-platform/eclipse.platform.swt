@@ -2282,6 +2282,7 @@ void tableViewSelectionDidChange (int aNotification) {
 		TableItem item = _getItem(row);
 		Event event = new Event();
 		event.item = item;
+		event.index = row;
 		postEvent(SWT.Selection, event);
 	}
 }

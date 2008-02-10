@@ -1386,6 +1386,7 @@ void outlineViewSelectionDidChange(int notification) {
 		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(_id.id, OS.sel_tag));
 		Event event = new Event();
 		event.item = item;
+		event.index = row;
 		postEvent(SWT.Selection, event);
 	}
 }
