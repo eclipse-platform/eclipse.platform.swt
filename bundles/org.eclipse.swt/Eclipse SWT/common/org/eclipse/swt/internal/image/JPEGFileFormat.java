@@ -146,11 +146,69 @@ final class JPEGFileFormat extends FileFormat {
 		53, 60, 61, 54, 47, 55, 62, 63
 	};
 
-	public static int[] CrRTable, CbBTable, CrGTable, CbGTable;
-	public static int[] RYTable, GYTable, BYTable,
+	public static final int[] CrRTable, CbBTable, CrGTable, CbGTable;
+	public static final int[] RYTable, GYTable, BYTable,
 		RCbTable, GCbTable, BCbTable, RCrTable, GCrTable, BCrTable, NBitsTable;
 	static {
-		initialize();
+		/* Initialize RGB-YCbCr Tables */
+		int [] rYTable = new int[256];
+		int [] gYTable = new int[256];
+		int [] bYTable = new int[256];
+		int [] rCbTable = new int[256];
+		int [] gCbTable = new int[256];
+		int [] bCbTable = new int[256];
+		int [] gCrTable = new int[256];
+		int [] bCrTable = new int[256];
+		for (int i = 0; i < 256; i++) {
+			rYTable[i] = i * 19595;
+			gYTable[i] = i * 38470;
+			bYTable[i] = i * 7471 + 32768;
+			rCbTable[i] = i * -11059;
+			gCbTable[i] = i * -21709;
+			bCbTable[i] = i * 32768 + 8388608;
+			gCrTable[i] = i * -27439;
+			bCrTable[i] = i * -5329;
+		}
+		RYTable = rYTable;
+		GYTable = gYTable;
+		BYTable = bYTable;
+		RCbTable = rCbTable;
+		GCbTable = gCbTable;
+		BCbTable = bCbTable;
+		RCrTable = bCbTable;
+		GCrTable = gCrTable;
+		BCrTable = bCrTable;
+
+		/* Initialize YCbCr-RGB Tables */
+		int [] crRTable = new int[256];
+		int [] cbBTable = new int[256];
+		int [] crGTable = new int[256];
+		int [] cbGTable = new int[256];
+		for (int i = 0; i < 256; i++) {
+			int x2 = 2 * i - 255;
+			crRTable[i] = (45941 * x2 + 32768) >> 16;
+			cbBTable[i] = (58065 * x2 + 32768) >> 16;
+			crGTable[i] = -23401 * x2;
+			cbGTable[i] = -11277 * x2 + 32768;
+		}
+		CrRTable = crRTable;
+		CbBTable = cbBTable;
+		CrGTable = crGTable;
+		CbGTable = cbGTable;
+
+		/* Initialize BitCount Table */
+		int nBits = 1;
+		int power2 = 2;
+		int [] nBitsTable = new int[2048];
+		nBitsTable[0] = 0;
+		for (int i = 1; i < nBitsTable.length; i++) {
+			if (!(i < power2)) {
+				nBits++;
+				power2 *= 2;
+			}
+			nBitsTable[i] = nBits;
+		}
+		NBitsTable = nBitsTable;
 	}
 void compress(ImageData image, byte[] dataYComp, byte[] dataCbComp, byte[] dataCrComp) {
 	int srcWidth = image.width;
@@ -1139,58 +1197,6 @@ void getDRI() {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	restartInterval = dri.getRestartInterval();
-}
-static void initialize() {
-	initializeRGBYCbCrTables();
-	initializeYCbCrRGBTables();
-	initializeBitCountTable();
-}
-static void initializeBitCountTable() {
-	int nBits = 1;
-	int power2 = 2;
-	NBitsTable = new int[2048];
-	NBitsTable[0] = 0;
-	for (int i = 1; i < NBitsTable.length; i++) {
-		if (!(i < power2)) {
-			nBits++;
-			power2 *= 2;
-		}
-		NBitsTable[i] = nBits;
-	}
-}
-static void initializeRGBYCbCrTables() {
-	RYTable = new int[256];
-	GYTable = new int[256];
-	BYTable = new int[256];
-	RCbTable = new int[256];
-	GCbTable = new int[256];
-	BCbTable = new int[256];
-	RCrTable = BCbTable;
-	GCrTable = new int[256];
-	BCrTable = new int[256];
-	for (int i = 0; i < 256; i++) {
-		RYTable[i] = i * 19595;
-		GYTable[i] = i * 38470;
-		BYTable[i] = i * 7471 + 32768;
-		RCbTable[i] = i * -11059;
-		GCbTable[i] = i * -21709;
-		BCbTable[i] = i * 32768 + 8388608;
-		GCrTable[i] = i * -27439;
-		BCrTable[i] = i * -5329;
-	}
-}
-static void initializeYCbCrRGBTables() {
-	CrRTable = new int[256];
-	CbBTable = new int[256];
-	CrGTable = new int[256];
-	CbGTable = new int[256];
-	for (int i = 0; i < 256; i++) {
-		int x2 = 2 * i - 255;
-		CrRTable[i] = (45941 * x2 + 32768) >> 16;
-		CbBTable[i] = (58065 * x2 + 32768) >> 16;
-		CrGTable[i] = -23401 * x2;
-		CbGTable[i] = -11277 * x2 + 32768;
-	}
 }
 void inverseDCT(int[] dataUnit) {
 	for (int row = 0; row < 8; row++) {
