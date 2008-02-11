@@ -1062,7 +1062,6 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if ((parent.style & SWT.MULTI) != 0) parent.removeSelectedItem (this);
 	strings = null;
 	images = null;
 	cellBackground = cellForeground = null;

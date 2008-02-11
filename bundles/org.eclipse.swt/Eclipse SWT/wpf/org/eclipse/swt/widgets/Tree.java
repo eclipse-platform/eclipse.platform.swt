@@ -68,9 +68,8 @@ import org.eclipse.swt.events.*;
  */
 public class Tree extends Composite {
 	int columns, parentingHandle, headerTemplate;
-	int columnCount, itemCount, selectedItemCount;
-	TreeItem [] selectedItems;
-	TreeItem anchor;
+	int columnCount, itemCount;
+	TreeItem anchor, lastSelection, unselect, reselect;
 	byte headerVisibility = OS.Visibility_Collapsed;
 	boolean ignoreSelection, shiftDown, ctrlDown;
 
@@ -583,10 +582,6 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 
 void createWidget() {
 	super.createWidget ();
-	if ((style & SWT.MULTI) != 0) {
-		selectedItemCount = 0;
-		selectedItems = new TreeItem [4];
-	}
 	headerTemplate = createCellTemplate (0);
 	int brush = OS.Brushes_Transparent ();
 	OS.Control_Background (handle, brush);
@@ -615,17 +610,11 @@ public void deselect (TreeItem item) {
 		ignoreSelection = false;
 		return;
 	}
-	int treeType = OS.Object_GetType (handle);
-    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
-    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
-    OS.GCHandle_Free (treeType);
-    OS.GCHandle_Free (propertyName);
 	ignoreSelection = true;
-    OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
+	setIsSelectionActiveProperty(true);
 	OS.TreeViewItem_IsSelected (item.handle, false);	
-	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
+	setIsSelectionActiveProperty(false);
 	ignoreSelection = false;
-	OS.GCHandle_Free (property);
 }
 
 /**
@@ -638,20 +627,24 @@ public void deselect (TreeItem item) {
  */
 public void deselectAll () {
 	checkWidget ();
-	int itemRef = OS.TreeView_SelectedItem (handle);
-	if (itemRef != 0) {
+	if ((style & SWT.SINGLE) != 0) {
+	int tvItem = OS.TreeView_SelectedItem (handle);
+	if (tvItem != 0) {
 		ignoreSelection = true;
-		OS.TreeViewItem_IsSelected (itemRef, false);
+		OS.TreeViewItem_IsSelected (tvItem, false);
 		ignoreSelection = false;
-		OS.GCHandle_Free (itemRef);
+		OS.GCHandle_Free (tvItem);
 	}
-	if ((style & SWT.MULTI) != 0) {
-		for (int i = 0; i < selectedItemCount; i++) {
-	    	TreeItem item = selectedItems [i];
-	    	OS.TreeViewItem_IsSelected (item.handle, false);
-	    }
-	    selectedItems = new TreeItem [4];
-	    selectedItemCount = 0;
+	} else {
+	    int items = OS.ItemsControl_Items (handle);
+	    int itemCount = OS.ItemCollection_Count (items);
+	    boolean[] selecting = new boolean[] {false};
+	    for (int i = 0; i < itemCount; i++) {
+			int item = OS.ItemCollection_GetItemAt (items, i);
+			fixSelection (item, null, null, selecting);
+			OS.GCHandle_Free (item);
+		}
+	    OS.GCHandle_Free (items);
 	}
 }
 
@@ -1142,16 +1135,44 @@ public TreeItem getParentItem () {
  */
 public TreeItem [] getSelection () {
 	checkWidget ();
+	TreeItem [] result;
 	if ((style & SWT.SINGLE) != 0) {
 		int item = OS.TreeView_SelectedItem (handle);
 		if (item == 0) return new TreeItem [0];
-		TreeItem result = (TreeItem) display.getWidget (item);
+		result = new TreeItem [] { (TreeItem) display.getWidget (item) };
 		OS.GCHandle_Free (item);
-		return new TreeItem [] {result};
+	} else {
+		result = getSelectedItems (handle, new TreeItem [4], new int [1]);
 	}
-	TreeItem[] result = new TreeItem [selectedItemCount];
-	System.arraycopy (selectedItems, 0, result, 0, selectedItemCount);
 	return result;
+}
+
+TreeItem[] getSelectedItems(int itemsControl, TreeItem [] selectedItems, int [] nextIndex) {
+	int items = OS.ItemsControl_Items (itemsControl);
+	int count = OS.ItemCollection_Count (items);
+	for (int i = 0; i < count; i++) {
+		int item = OS.ItemCollection_GetItemAt (items, i);
+		boolean selected = OS.TreeViewItem_IsSelected (item);
+		if (selected) {
+			if (nextIndex [0] == selectedItems.length) {
+				TreeItem [] newArray = new TreeItem [selectedItems.length + 4];
+				System.arraycopy (selectedItems, 0, newArray, 0, selectedItems.length);
+				selectedItems = newArray;
+			}
+			selectedItems [nextIndex[0]++] = getItem (item, true);
+		}
+		if (OS.TreeViewItem_IsExpanded (item)) {
+			selectedItems = getSelectedItems (item, selectedItems, nextIndex);
+		}
+		OS.GCHandle_Free (item);
+	}
+	OS.GCHandle_Free (items);
+	if (selectedItems.length != nextIndex [0]) {
+		TreeItem[] newArray = new TreeItem [nextIndex[0]];
+		System.arraycopy (selectedItems, 0, newArray, 0, nextIndex [0]);
+		selectedItems = newArray;
+	}
+	return selectedItems;
 }
 
 /**
@@ -1166,13 +1187,15 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
+	int result;
 	if ((style & SWT.SINGLE) != 0) {
 		int item = OS.TreeView_SelectedItem (handle);
-		int result = item == 0 ? 0 : 1;
+		result = item == 0 ? 0 : 1;
 		OS.GCHandle_Free (item);
-		return result;
+	} else {
+		result = 0;
 	}
-	return selectedItemCount;
+	return result;
 }
 
 /**
@@ -1275,8 +1298,18 @@ void HandleCollapsed (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	if (OS.ItemsControl_HasItems (source)) {
+		TreeItem item = (TreeItem) display.getWidget (source);
+		int items = OS.ItemsControl_Items (item.handle);
+		int count = OS.ItemCollection_Count (items);
+		boolean[] selecting = new boolean [] {false};
+		for (int i = 0; i < count; i++) {
+			int child = OS.ItemCollection_GetItemAt (items, i);
+			fixSelection (child, null, null, selecting);
+			OS.GCHandle_Free (child);
+		}
+		OS.GCHandle_Free (items);
 		Event event = new Event ();
-		event.item = (TreeItem) display.getWidget (source);;
+		event.item = item;
 		sendEvent (SWT.Collapse, event);
 	}
 	OS.GCHandle_Free (source);
@@ -1356,32 +1389,21 @@ void HandlePreviewMouseDown (int sender, int e) {
 			if (rightClick && (ctrlDown || shiftDown)) return;
 			if (ctrlDown) {
 				boolean selected = OS.TreeViewItem_IsSelected (item.handle);
-				if (item == anchor) OS.TreeViewItem_IsSelected (item.handle, !selected);
-				if (selected) {
-					int selectedItem = OS.TreeView_SelectedItem (handle);
-					if (selectedItem != 0) {
-						if (OS.Object_Equals (item.handle, selectedItem)) {
-							OS.TreeViewItem_IsSelected (selectedItem, false);
-						}
-						OS.GCHandle_Free (selectedItem);
-					}
+				if (widget.equals (lastSelection)) {
+					OS.TreeViewItem_IsSelected (item.handle, !selected);
+				} else {
+					if (selected) unselect = item;
+					if (lastSelection != null && OS.TreeViewItem_IsSelected (lastSelection.handle)) reselect = lastSelection;
 				}
 			}
-			if (!shiftDown || anchor == null) anchor = item;
 			if (!shiftDown && !ctrlDown) {
-				boolean selected = false;
-	    		for (int i = 0; i < selectedItemCount; i++) {
-	    			if (selectedItems [i] == item) {
-	    				selected = true;
-	    				break;
-	    			}
-	    		}
+				boolean selected = OS.TreeViewItem_IsSelected (item.handle);
 	    		if (selected && rightClick) return;
 	   			deselectAll ();
-	   			insertSelectedItem (item, 0);
 	   			OS.TreeViewItem_IsSelected (item.handle, true);
 			}
 		}
+		lastSelection = item;
 	}
 }
 
@@ -1518,70 +1540,6 @@ public int indexOf (TreeItem item) {
 	return index;
 }
 
-void insertSelectedItem (TreeItem item, int index) {
-	if (selectedItemCount == selectedItems.length) {
-		TreeItem [] newItems = new TreeItem [selectedItemCount + 4];
-		System.arraycopy (selectedItems, 0, newItems, 0, selectedItemCount);
-		selectedItems = newItems;
-	}
-	System.arraycopy (selectedItems, index, selectedItems, index+1, selectedItemCount - index);
-	selectedItems [index] = item;
-	selectedItemCount++;
-}
-
-void insertSelectedItems (TreeItem from, TreeItem to) {
-	int zero = OS.gcnew_Point (0, 0);
-	int point = OS.UIElement_TranslatePoint (to.handle, zero, from.handle);
-    boolean ascending = OS.Point_Y (point) > 0;
-    OS.GCHandle_Free (zero);
-    OS.GCHandle_Free (point);
-    if (!ascending) {
-    	TreeItem temp = from;
-    	from = to;
-    	to = temp;
-    }
-    TreeItem currentItem = from;
-    while (currentItem != to) {
-    	insertSelectedItem (currentItem, selectedItemCount);
-        if (OS.TreeViewItem_IsExpanded (currentItem.handle) && OS.ItemsControl_HasItems(currentItem.handle)) {
-            currentItem = currentItem.getItem (0);
-        } else {
-        	int parent = OS.FrameworkElement_Parent (currentItem.handle);
-        	int items = OS.ItemsControl_Items (parent);
-        	int index = OS.ItemCollection_IndexOf (items, currentItem.handle) + 1;
-            while (index >= OS.ItemCollection_Count (items)) {
-                int newParent = OS.FrameworkElement_Parent (parent);
-                int newItems = OS.ItemsControl_Items (newParent);
-                index = OS.ItemCollection_IndexOf (newItems, parent) + 1;
-                OS.GCHandle_Free (parent);
-                OS.GCHandle_Free (items);
-                parent = newParent;
-                items = newItems;
-            }
-            int itemRef = OS.ItemCollection_GetItemAt (items, index); 
-            currentItem = getItem (itemRef, false);
-            OS.GCHandle_Free (itemRef);
-            OS.GCHandle_Free (parent);
-            OS.GCHandle_Free (items);
-        }
-    }
-    insertSelectedItem (currentItem, selectedItemCount);
-}
-
-void removeSelectedItem (TreeItem item) {
-	int index = -1;
-	for (int i = 0; i < selectedItemCount; i++) {
-		if (selectedItems [i] == item) {
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	System.arraycopy (selectedItems, index + 1, selectedItems, index, selectedItemCount - index - 1);
-	selectedItems [selectedItemCount - 1] = null;
-	selectedItemCount--;
-}
-
 void OnRender (int source, int dc) {
 	int type =  OS.TreeViewItem_typeid ();
 	int itemHandle = findPartOfType (source, type);
@@ -1613,72 +1571,69 @@ void OnSelectedItemChanged (int args) {
 		OS.GCHandle_Free (newItemRef);
 		OS.GCHandle_Free (unsetValue);
 		newItemRef = 0;
-	} 	
-    int treeType = OS.Object_GetType (handle);
-    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
-    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
-    OS.GCHandle_Free (treeType);
-    OS.GCHandle_Free (propertyName);
-    OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
+	}
+    setIsSelectionActiveProperty (true);
     if (!shiftDown && !ctrlDown) {
-    	for (int i = 0; i < selectedItemCount; i++) {
-    		if (newItemRef == 0 || !OS.Object_Equals (newItemRef, selectedItems [i].handle)) {
-    			OS.TreeViewItem_IsSelected (selectedItems [i].handle, false);
-    		}
-    	}
-    	if (newItem != null) {
-    		OS.TreeViewItem_IsSelected (newItem.handle, true);
-    		selectedItems = new TreeItem [] { newItem };
-    		selectedItemCount = 1;
-    	} else {
-    		selectedItems = new TreeItem [0];
-    		selectedItemCount = 0;
-    	}
+    	deselectAll ();
+    	if (newItem != null) OS.TreeViewItem_IsSelected (newItem.handle, true);
     	anchor = newItem;
     } else {
     	if (shiftDown) {
     		deselectAll ();
     		if (anchor == null || anchor == newItem) {
-    			insertSelectedItem (newItem, selectedItemCount);
+    	    	if (newItem != null) OS.TreeViewItem_IsSelected (newItem.handle, true);
+    	    	anchor = newItem;
     		} else {
-    			insertSelectedItems (anchor, newItem);
-    		}
-    		for (int i = 0; i < selectedItemCount; i++) {
-    			OS.TreeViewItem_IsSelected (selectedItems[i].handle, true);
+    			int zero = OS.gcnew_Point (0, 0);
+    			int point = OS.UIElement_TranslatePoint (anchor.handle, zero, newItem.handle);
+    			OS.GCHandle_Free (zero);
+    		    boolean down = OS.Point_Y (point) < 0;
+    		    OS.GCHandle_Free (point);
+    		    TreeItem from = down ? anchor : newItem;
+    		    TreeItem to = down ? newItem : anchor;
+    		    int items = OS.ItemsControl_Items (handle);
+    		    int itemCount = OS.ItemCollection_Count (items);
+    		    boolean[] selecting = new boolean[] {false};
+    		    for (int i = 0; i < itemCount; i++) {
+					int item = OS.ItemCollection_GetItemAt(items, i);
+					fixSelection (item, from, to, selecting);
+					OS.GCHandle_Free (item);
+				}
+    		    OS.GCHandle_Free (items);
     		}
     	} else {
-    		if (newItem != null) {
-    			boolean selected = false;
-    			for (int i = 0; i < selectedItemCount; i++) {
-    				if (selectedItems [i] == newItem) {
-    					selected = true;
-    					break;
-    				}
-    			}
-    			if (!selected) {
-    				insertSelectedItem (newItem, selectedItemCount);
-    				OS.TreeViewItem_IsSelected (newItem.handle, true);
-    			} else {
-    				removeSelectedItem (newItem);
-    				OS.TreeViewItem_IsSelected (newItem.handle, false);
-    			}
-    		} else {
-    			if (anchor != null) removeSelectedItem (anchor);
+			if (unselect != null) {
+    			OS.TreeViewItem_IsSelected (unselect.handle, false);
+    			unselect = null;
     		}
-    		int oldItemRef = OS.RoutedPropertyChangedEventArgs_OldValue (args);
-    		if (oldItemRef != 0) {
-    			for (int i = 0; i < selectedItemCount; i++) {
-    				if (OS.Object_Equals (oldItemRef, selectedItems [i].handle)) {
-    					OS.TreeViewItem_IsSelected (oldItemRef, true);
-    					break;
-    				}
-    			}
-    			OS.GCHandle_Free (oldItemRef);
+    		if (reselect != null) {
+    			OS.TreeViewItem_IsSelected (reselect.handle, true);
+    			reselect = null;
     		}
+    		anchor = newItem;
     	}
     } 
-	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
-	OS.GCHandle_Free (property);
+    setIsSelectionActiveProperty (false);
+}
+
+private void fixSelection (int tvItem, TreeItem from, TreeItem to, boolean [] selecting) {
+    if (selecting [0]) {
+    	OS.TreeViewItem_IsSelected (tvItem, true);
+    	if (to != null && OS.Object_Equals (tvItem, to.handle)) selecting [0] = false;
+    } else {
+    	if (from != null && OS.Object_Equals (tvItem, from.handle)) selecting [0] = true;
+        OS.TreeViewItem_IsSelected(tvItem, selecting [0]);
+    }
+    if (OS.TreeViewItem_IsExpanded (tvItem)) {
+    	int items = OS.ItemsControl_Items (tvItem);
+    	int itemCount = OS.ItemCollection_Count (items);
+    	for (int i = 0; i < itemCount; i++) {
+    		int tvChild = OS.ItemCollection_GetItemAt (items, i);
+			fixSelection (tvChild, from, to, selecting);
+			OS.GCHandle_Free (tvChild);
+		}
+    	OS.GCHandle_Free (items);
+    }
 }
 
 int parentingHandle () {
@@ -1718,7 +1673,6 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	selectedItems = null;
 }
 
 /**
@@ -1940,17 +1894,12 @@ public void select (TreeItem item) {
 		ignoreSelection = false;
 		return;
 	}
-	int treeType = OS.Object_GetType (handle);
-    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
-    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
-    OS.GCHandle_Free (treeType);
-    OS.GCHandle_Free (propertyName);
+	
 	ignoreSelection = true;
-    OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
+	setIsSelectionActiveProperty(true);
 	OS.TreeViewItem_IsSelected (item.handle, true);	
-	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
+	setIsSelectionActiveProperty(false);
 	ignoreSelection = false;
-	OS.GCHandle_Free (property);
 }
 
 /**
@@ -1967,7 +1916,17 @@ public void select (TreeItem item) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	//TODO
+	int items = OS.ItemsControl_Items (handle);
+    int itemCount = OS.ItemCollection_Count (items);
+    boolean[] selecting = new boolean[] {true};
+    setIsSelectionActiveProperty(true);
+    for (int i = 0; i < itemCount; i++) {
+		int item = OS.ItemCollection_GetItemAt(items, i);
+		fixSelection(item, null, null, selecting);
+		OS.GCHandle_Free(item);
+	}
+    setIsSelectionActiveProperty(false);
+    OS.GCHandle_Free(items);
 }
 
 /**
@@ -2073,6 +2032,16 @@ public void setHeaderVisible (boolean show) {
 	}
 }
 
+void setIsSelectionActiveProperty(boolean active) {
+	int treeType = OS.Object_GetType (handle);
+    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
+    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
+    OS.GCHandle_Free (treeType);
+    OS.GCHandle_Free (propertyName);
+    OS.PropertyInfo_SetValueBoolean (property, handle, active, 0);
+	OS.GCHandle_Free (property);
+}
+
 /**
  * Sets the receiver's selection to the given item.
  * The current selection is cleared before the new item is selected.
@@ -2140,22 +2109,15 @@ public void setSelection (TreeItem [] items) {
 		ignoreSelection = false;
 		return;
 	}
-	int treeType = OS.Object_GetType (handle);
-    int propertyName = createDotNetString ("IsSelectionChangeActive", false);
-    int property = OS.Type_GetProperty (treeType, propertyName, OS.BindingFlags_Instance | OS.BindingFlags_NonPublic);
-    OS.GCHandle_Free (treeType);
-    OS.GCHandle_Free (propertyName);
     deselectAll ();
 	ignoreSelection = true;
-    OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
+    setIsSelectionActiveProperty(true);
 	for (int i = 0; i < length; i++) {
 		TreeItem item = items [i];
-		insertSelectedItem (item, i);
 		OS.TreeViewItem_IsSelected (item.handle, true);	
 	}
-	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
+	setIsSelectionActiveProperty(false);
 	ignoreSelection = false;
-	OS.GCHandle_Free (property);
 }
 
 /**
