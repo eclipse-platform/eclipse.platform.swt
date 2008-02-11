@@ -90,10 +90,10 @@ class ShellTab extends Tab {
 		final Shell currentShell = shells [shellCount];
 		Button button = new Button(currentShell, SWT.PUSH);
 		button.setBounds(20, 20, 120, 30);
-		Button closeButton = new Button(currentShell, SWT.PUSH);
-		closeButton.setBounds(160, 20, 120, 30);
-		closeButton.setText(ControlExample.getResourceString("Close"));
-		closeButton.addListener(SWT.Selection, new Listener() {
+		Button close = new Button(currentShell, SWT.PUSH);
+		close.setBounds(160, 20, 120, 30);
+		close.setText(ControlExample.getResourceString("Close"));
+		close.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				currentShell.dispose();
 			}
