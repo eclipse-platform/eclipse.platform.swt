@@ -869,7 +869,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
 				int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 				if (hItem == item.handle) {
-					if (!ignoreDrawFocus /*&& findImageControl () != null*/) {
+					if (!ignoreDrawFocus && findImageControl () != null) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							RECT focusRect = new RECT ();
 							OS.SetRect (focusRect, 0, nmcd.top, clientRect.right + 1, nmcd.bottom);
