@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1299;
-int OS_nativeFunctionCallCount[1299];
+int OS_nativeFunctionCount = 1304;
+int OS_nativeFunctionCallCount[1304];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -155,9 +155,11 @@ char * OS_nativeFunctionNames[] = {
 	"Control_1BorderBrushProperty",
 	"Control_1BorderThickness",
 	"Control_1BorderThicknessProperty",
-	"Control_1FontFamily",
+	"Control_1FontFamily__I",
+	"Control_1FontFamily__II",
 	"Control_1FontFamilyProperty",
-	"Control_1FontSize",
+	"Control_1FontSize__I",
+	"Control_1FontSize__ID",
 	"Control_1FontSizeProperty",
 	"Control_1FontStretch",
 	"Control_1FontStretchProperty",
@@ -307,6 +309,7 @@ char * OS_nativeFunctionNames[] = {
 	"FontDialog_1Font__II",
 	"FontDialog_1ShowColor",
 	"FontFamily_1GetTypefaces",
+	"FontFamily_1LineSpacing",
 	"FontFamily_1Source",
 	"FontStretch_1FromOpenTypeStretch",
 	"FontStretch_1ToOpenTypeStretch",
@@ -758,8 +761,10 @@ char * OS_nativeFunctionNames[] = {
 	"ScrollBar_1ViewportSize__ID",
 	"ScrollBar_1typeid",
 	"ScrollEventArgs_1ScrollEventType",
+	"ScrollViewer_1ScrollToVerticalOffset",
 	"ScrollViewer_1SetHorizontalScrollBarVisibility",
 	"ScrollViewer_1SetVerticalScrollBarVisibility",
+	"ScrollViewer_1VerticalOffset",
 	"ScrollViewer_1typeid",
 	"SelectionChangedEventArgs_1AddedItems",
 	"SelectionChangedEventArgs_1RemovedItems",

@@ -1702,14 +1702,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(Control_1BorderThicknessProperty)
 }
 #endif
 
-#ifndef NO_Control_1FontFamily
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1FontFamily)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Control_1FontFamily)
+#ifndef NO_Control_1FontFamily__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1FontFamily__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Control_1FontFamily__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1FontFamily__I_FUNC);
+	rc = (jint)TO_HANDLE(((Control^)TO_OBJECT(arg0))->FontFamily);
+	OS_NATIVE_EXIT(env, that, Control_1FontFamily__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Control_1FontFamily__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1FontFamily__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1FontFamily__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, Control_1FontFamily_FUNC);
+	OS_NATIVE_ENTER(env, that, Control_1FontFamily__II_FUNC);
 	((Control^)TO_OBJECT(arg0))->FontFamily = ((FontFamily^)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, Control_1FontFamily_FUNC);
+	OS_NATIVE_EXIT(env, that, Control_1FontFamily__II_FUNC);
 }
 #endif
 
@@ -1726,14 +1739,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(Control_1FontFamilyProperty)
 }
 #endif
 
-#ifndef NO_Control_1FontSize
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1FontSize)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Control_1FontSize)
+#ifndef NO_Control_1FontSize__I
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Control_1FontSize__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Control_1FontSize__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1FontSize__I_FUNC);
+	rc = (jdouble)((Control^)TO_OBJECT(arg0))->FontSize;
+	OS_NATIVE_EXIT(env, that, Control_1FontSize__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Control_1FontSize__ID
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1FontSize__ID)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1FontSize__ID)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
 {
-	OS_NATIVE_ENTER(env, that, Control_1FontSize_FUNC);
+	OS_NATIVE_ENTER(env, that, Control_1FontSize__ID_FUNC);
 	((Control^)TO_OBJECT(arg0))->FontSize = (arg1);
-	OS_NATIVE_EXIT(env, that, Control_1FontSize_FUNC);
+	OS_NATIVE_EXIT(env, that, Control_1FontSize__ID_FUNC);
 }
 #endif
 
@@ -3560,6 +3586,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(FontFamily_1GetTypefaces)
 	OS_NATIVE_ENTER(env, that, FontFamily_1GetTypefaces_FUNC);
 	rc = (jint)TO_HANDLE(((FontFamily^)TO_OBJECT(arg0))->GetTypefaces());
 	OS_NATIVE_EXIT(env, that, FontFamily_1GetTypefaces_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FontFamily_1LineSpacing
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(FontFamily_1LineSpacing)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(FontFamily_1LineSpacing)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, FontFamily_1LineSpacing_FUNC);
+	rc = (jdouble)((FontFamily^)TO_OBJECT(arg0))->LineSpacing;
+	OS_NATIVE_EXIT(env, that, FontFamily_1LineSpacing_FUNC);
 	return rc;
 }
 #endif
@@ -8920,6 +8959,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScrollEventArgs_1ScrollEventType)
 }
 #endif
 
+#ifndef NO_ScrollViewer_1ScrollToVerticalOffset
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1ScrollToVerticalOffset)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1ScrollToVerticalOffset)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, ScrollViewer_1ScrollToVerticalOffset_FUNC);
+	((ScrollViewer^)TO_OBJECT(arg0))->ScrollToVerticalOffset(arg1);
+	OS_NATIVE_EXIT(env, that, ScrollViewer_1ScrollToVerticalOffset_FUNC);
+}
+#endif
+
 #ifndef NO_ScrollViewer_1SetHorizontalScrollBarVisibility
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetHorizontalScrollBarVisibility)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetHorizontalScrollBarVisibility)
@@ -8939,6 +8989,19 @@ JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetVerticalScrollBarVisibility)
 	OS_NATIVE_ENTER(env, that, ScrollViewer_1SetVerticalScrollBarVisibility_FUNC);
 	ScrollViewer::SetVerticalScrollBarVisibility((DependencyObject^)TO_OBJECT(arg0), (ScrollBarVisibility)arg1);
 	OS_NATIVE_EXIT(env, that, ScrollViewer_1SetVerticalScrollBarVisibility_FUNC);
+}
+#endif
+
+#ifndef NO_ScrollViewer_1VerticalOffset
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(ScrollViewer_1VerticalOffset)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(ScrollViewer_1VerticalOffset)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, ScrollViewer_1VerticalOffset_FUNC);
+	rc = (jdouble)((ScrollViewer^)TO_OBJECT(arg0))->VerticalOffset;
+	OS_NATIVE_EXIT(env, that, ScrollViewer_1VerticalOffset_FUNC);
+	return rc;
 }
 #endif
 
