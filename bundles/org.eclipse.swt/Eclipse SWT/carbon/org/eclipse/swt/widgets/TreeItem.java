@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -884,6 +885,10 @@ void redraw (int propertyID) {
 	* much slower than updating the items array for a specific column.  The fix
 	* is to give the specific column ids instead.
 	*/
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (parent.handle, callbacks);
+	callbacks.v1_itemCompareCallback = 0;
+	OS.SetDataBrowserCallbacks (parent.handle, callbacks);
 	int [] ids = new int [] {id};
 	if (propertyID == OS.kDataBrowserNoItem) {
 		if ((parent.style & SWT.CHECK) != 0) {
@@ -899,6 +904,8 @@ void redraw (int propertyID) {
 	} else {
 		OS.UpdateDataBrowserItems (parentHandle, parentID, ids.length, ids, OS.kDataBrowserItemNoProperty, propertyID);
 	}
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	OS.SetDataBrowserCallbacks (parent.handle, callbacks);
 	/*
 	* Bug in the Macintosh. When the height of the row is smaller than the
 	* check box, the tail of the check mark draws outside of the item part
@@ -1027,7 +1034,8 @@ public void setBackground (int index, Color color) {
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true; 
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 /**
@@ -1145,7 +1153,8 @@ public void setFont (int index, Font font) {
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 /**
@@ -1216,7 +1225,8 @@ public void setForeground (int index, Color color){
 	cellForeground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 /**
@@ -1304,7 +1314,8 @@ public void setImage (int index, Image image) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 public void setImage (Image image) {
@@ -1386,7 +1397,8 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	redraw (OS.kDataBrowserNoItem);
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	redraw (columnId);
 }
 
 public void setText (String string) {
