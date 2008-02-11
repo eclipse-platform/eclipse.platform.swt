@@ -4194,6 +4194,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1event_1handler_1set)
 }
 #endif
 
+#ifndef NO__1gdk_1event_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1event_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1event_1new_FUNC);
+	rc = (jint)gdk_event_new(arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1event_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1event_1peek
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1event_1peek)
 	(JNIEnv *env, jclass that)
@@ -15156,6 +15168,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1reparent)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1send_1expose
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1send_1expose)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1send_1expose_FUNC);
+	rc = (jint)gtk_widget_send_expose((GtkWidget *)arg0, (GdkEvent *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1send_1expose_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1app_1paintable
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1app_1paintable)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -17532,6 +17556,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEven
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	GdkEventExpose _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I_FUNC);
+	if (arg1) if ((lparg1 = getGdkEventExposeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I_FUNC);
 }
 #endif
 

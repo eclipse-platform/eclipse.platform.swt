@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1251;
-int OS_nativeFunctionCallCount[1251];
+int OS_nativeFunctionCount = 1254;
+int OS_nativeFunctionCallCount[1254];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -320,6 +320,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1event_1get_1state",
 	"_1gdk_1event_1get_1time",
 	"_1gdk_1event_1handler_1set",
+	"_1gdk_1event_1new",
 	"_1gdk_1event_1peek",
 	"_1gdk_1event_1put",
 	"_1gdk_1flush",
@@ -1052,6 +1053,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1realize",
 	"_1gtk_1widget_1remove_1accelerator",
 	"_1gtk_1widget_1reparent",
+	"_1gtk_1widget_1send_1expose",
 	"_1gtk_1widget_1set_1app_1paintable",
 	"_1gtk_1widget_1set_1default_1direction",
 	"_1gtk_1widget_1set_1direction",
@@ -1220,6 +1222,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I",
+	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2",

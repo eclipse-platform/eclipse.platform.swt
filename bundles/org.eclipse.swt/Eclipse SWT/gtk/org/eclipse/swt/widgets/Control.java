@@ -281,8 +281,6 @@ int /*long*/ paintWindow () {
 
 public boolean print (GC gc) {
 	checkWidget ();
-	//TEMPORARY CODE
-	if (true) return false;
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ topHandle = topHandle ();
@@ -302,7 +300,7 @@ void printWidget (GC gc, int /*long*/ drawable, int depth, int x, int y) {
 	printWindow (true, this, gc.handle, drawable, depth, window, x, y);
 	if (obscured) state |= OBSCURED;
 }
-	
+
 void printWindow (boolean first, Control control, int /*long*/ gc, int /*long*/ drawable, int depth, int /*long*/ window, int x, int y) {
 	if (OS.gdk_drawable_get_depth (window) != depth) return;
 	GdkRectangle rect = new GdkRectangle ();
@@ -310,44 +308,23 @@ void printWindow (boolean first, Control control, int /*long*/ gc, int /*long*/ 
 	OS.gdk_drawable_get_size (window, width, height);
 	rect.width = width [0];
 	rect.height = height [0];
-	OS.gdk_window_invalidate_rect (window, rect, false);
 	OS.gdk_window_begin_paint_rect (window, rect);
-	OS.gdk_window_process_updates (window, false);
 	int /*long*/ [] real_drawable = new int /*long*/ [1];
 	int [] x_offset = new int [1], y_offset = new int [1];
-	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);
-	if (window == paintWindow ()) {
-		if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-			GCData data = new GCData ();
-			int /*long*/ gdkGC = OS.gdk_gc_new (real_drawable [0]);
-			if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
-			if (data != null) {
-				int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-				if ((data.style & mask) == 0) {
-					data.style |= style & (mask | SWT.MIRRORED);
-				} else {
-					if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
-						data.style |= SWT.MIRRORED;
-					}
-				}
-				data.realDrawable = true;
-				data.drawable = real_drawable [0];
-				data.device = display;
-				data.foreground = getForegroundColor ();
-				Control backgroundControl = findBackgroundControl ();
-				if (backgroundControl == null) backgroundControl = this;
-				data.background = backgroundControl.getBackgroundColor ();
-				data.font = font != null ? font : defaultFont (); 
-			}
-			Event event = new Event ();
-			event.width = width [0];
-			event.height = height [0];
-			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
-			GC paintGC = event.gc = GC.gtk_new (gdkGC, data);
-			sendEvent (SWT.Paint, event);
-			paintGC.dispose ();
-			OS.g_object_unref (gdkGC);
-		}
+	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);	
+	int /*long*/ [] userData = new int /*long*/ [1];
+	OS.gdk_window_get_user_data (window, userData);
+	if (userData [0] != 0) {
+		int /*long*/ eventPtr = OS.gdk_event_new (OS.GDK_EXPOSE);
+		GdkEventExpose event = new GdkEventExpose ();
+		event.type = OS.GDK_EXPOSE;
+		event.window = OS.g_object_ref (window);
+		event.area_width = rect.width;
+		event.area_height = rect.height;
+		event.region = OS.gdk_region_rectangle (rect);
+		OS.memmove (eventPtr, event, GdkEventExpose.sizeof);
+		OS.gtk_widget_send_expose (userData [0], eventPtr);
+		OS.gdk_event_free (eventPtr);
 	}
 	int srcX = x_offset [0], srcY = y_offset [0];
 	int destX = x, destY = y, destWidth = width [0], destHeight = height [0];

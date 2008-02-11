@@ -2633,6 +2633,15 @@ public static final void gdk_event_handler_set(int /*long*/ func, int /*long*/ d
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_event_new(int type);
+public static final int /*long*/ gdk_event_new(int type) {
+	lock.lock();
+	try {
+		return _gdk_event_new(type);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_event_peek();
 public static final int /*long*/ gdk_event_peek() {
 	lock.lock();
@@ -9152,6 +9161,15 @@ public static final void gtk_widget_reparent(int /*long*/ widget, int /*long*/ n
 		lock.unlock();
 	}
 }
+public static final native int _gtk_widget_send_expose(int /*long*/ widget, int /*long*/ event);
+public static final int gtk_widget_send_expose(int /*long*/ widget, int /*long*/ event) {
+	lock.lock();
+	try {
+		return _gtk_widget_send_expose(widget, event);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_widget_set_app_paintable(int /*long*/ widget, boolean app_paintable);
 public static final void gtk_widget_set_app_paintable(int /*long*/ widget, boolean app_paintable) {
 	lock.lock();
@@ -9671,6 +9689,7 @@ public static final native void memmove(int /*long*/ dest, GTypeInfo src, int si
 public static final native void memmove(int /*long*/ dest, GtkTargetEntry src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, GtkAdjustment src);
 public static final native void memmove(int /*long*/ dest, GdkEventButton src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, GdkEventExpose src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, GtkWidgetClass src);
 public static final native void memmove(int /*long*/ dest, PangoAttribute src, int /*long*/ size);
 public static final native void memmove(GObjectClass  dest, int /*long*/ src);
