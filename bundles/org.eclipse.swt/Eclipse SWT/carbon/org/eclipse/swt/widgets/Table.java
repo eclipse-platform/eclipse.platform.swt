@@ -238,7 +238,6 @@ void checkItems (boolean setScrollWidth) {
 		DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 		OS.GetDataBrowserCallbacks (handle, callbacks);
 		callbacks.v1_itemNotificationCallback = 0;
-		callbacks.v1_itemCompareCallback = 0;
 		OS.SetDataBrowserCallbacks (handle, callbacks);
 		int delta = itemCount - count [0];
 		if (delta < 1024) {
@@ -256,7 +255,6 @@ void checkItems (boolean setScrollWidth) {
 			}
 		}
 		callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-		callbacks.v1_itemCompareCallback = itemCompareProc ();
 		OS.SetDataBrowserCallbacks (handle, callbacks);
 	}
 	if (setScrollWidth) setScrollWidth (items, true);
@@ -306,7 +304,7 @@ public void clear (int index) {
 	if (item != null) {
 		if (currentItem != item) item.clear ();
 		if (currentItem == null && drawCount == 0) {
-			int [] id = new int [] {index + 1};
+			int [] id = new int [] {getId (index)};
 			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 		}
 		setScrollWidth (item);
@@ -690,7 +688,7 @@ int defaultThemeFont () {
 public void deselect (int index) {
 	checkWidget();
 	if (0 <= index && index < itemCount) {
-		int [] ids = new int [] {index + 1};
+		int [] ids = new int [] {getId (index)};
 		deselect (ids, ids.length);
 	}
 }
@@ -719,7 +717,7 @@ public void deselect (int start, int end) {
 		int length = end - start + 1;
 		if (length <= 0) return;
 		int [] ids = new int [length];
-		for (int i=0; i<length; i++) ids [i] = end - i + 1;
+		for (int i=0; i<length; i++) ids [i] = getId (end - i);
 		deselect (ids, length);
 	}
 }
@@ -747,7 +745,7 @@ public void deselect (int [] indices) {
 	//TODO - check range
 	int length = indices.length;
 	int [] ids = new int [length];
-	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
+	for (int i=0; i<length; i++) ids [i] = getId (indices [length - i - 1]);
 	deselect (ids, length);
 }
 
@@ -895,7 +893,7 @@ void destroyItem (TableItem item) {
 }
 
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
-	int index = id - 1;
+	int index = getIndex (id);
 	if (!(0 <= index && index < itemCount)) return OS.noErr;
 	int columnIndex = 0;
 	if (columnCount > 0) {
@@ -1130,16 +1128,17 @@ void fixScrollBar () {
 void fixSelection (int index, boolean add) {
 	int [] selection = getSelectionIndices ();
 	if (selection.length == 0) return;
-	int newCount = 0;
-	boolean fix = false;
+	int newCount = 0, offset = add ? 1 : -1;
+	boolean fix = false, down = sortDirection == SWT.DOWN && sortColumn != null;
 	for (int i = 0; i < selection.length; i++) {
 		if (!add && selection [i] == index) {
 			fix = true;
 		} else {
 			int newIndex = newCount++;
-			selection [newIndex] = selection [i] + 1;
-			if (selection [newIndex] - 1 >= index) {
-				selection [newIndex] += add ? 1 : -1;
+			int sel = selection [i];
+			selection [newIndex] = getId (sel);
+			if ((down && sel < index) || (!down && sel >= index)) {
+				selection [newIndex] += offset;
 				fix = true;
 			}
 		}
@@ -1378,6 +1377,20 @@ public boolean getHeaderVisible () {
 	return height [0] != 0;
 }
 
+int getId (int index) {
+	if (sortDirection == SWT.DOWN && sortColumn != null) {
+		return itemCount - index;
+	}
+	return index + 1;
+}
+
+int getIndex (int id) {
+	if (sortDirection == SWT.DOWN && sortColumn != null) {
+		return itemCount - id;
+	}
+	return id - 1;
+}
+
 int getInsetWidth () {
 	if (OS.VERSION >= 0x1040) {
 		float [] metric = new float [1];
@@ -1440,15 +1453,16 @@ public TableItem getItem (Point point) {
 	Rect rect = new Rect ();
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) point.x, (short) point.y);
-	if (0 < lastHittest && lastHittest <= itemCount && lastHittestColumn != 0) {
+	int lastHittestIndex = getIndex (lastHittest);
+	if (0 <= lastHittestIndex && lastHittestIndex < itemCount && lastHittestColumn != 0) {
 		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			rect.bottom = (short)(rect.top + height [0]);
-			if (OS.PtInRect (pt, rect)) return _getItem (lastHittest - 1);
+			if (OS.PtInRect (pt, rect)) return _getItem (lastHittestIndex);
 			if (rect.top <= pt.v && pt.v < rect.bottom) {
 				for (int j = 0; j < columnCount; j++) {
 					if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 						rect.bottom = (short)(rect.top + height [0]);
-						if (OS.PtInRect (pt, rect)) return _getItem (lastHittest - 1);
+						if (OS.PtInRect (pt, rect)) return _getItem (lastHittestIndex);
 					}
 				}						
 				return null;
@@ -1456,7 +1470,7 @@ public TableItem getItem (Point point) {
 		}
 	}
 	int [] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition(handle, top, left);
+    OS.GetDataBrowserScrollPosition (handle, top, left);
 	short [] header = new short [1];
 	OS.GetDataBrowserListViewHeaderBtnHeight (handle, header);
 	int [] offsets = new int [] {0, 1, -1};
@@ -1464,14 +1478,14 @@ public TableItem getItem (Point point) {
 		int index = (top[0] - header [0] + point.y) / height [0] + offsets [i];
 		if (0 <= index && index < itemCount) {
 			int columnId = columnCount == 0 ? column_id : columns [0].id;
-			if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			if (OS.GetDataBrowserItemPartBounds (handle, getId (index), columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 				rect.bottom = (short)(rect.top + height [0]);
 				if (rect.top <= pt.v && pt.v < rect.bottom) {
 					if (columnCount == 0) {
 						if (OS.PtInRect (pt, rect)) return _getItem (index);
 					} else {
 						for (int j = 0; j < columnCount; j++) {
-							if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+							if (OS.GetDataBrowserItemPartBounds (handle, getId (index), columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 								rect.bottom = (short)(rect.top + height [0]);
 								if (OS.PtInRect (pt, rect)) return _getItem (index);
 							}
@@ -1485,14 +1499,14 @@ public TableItem getItem (Point point) {
 	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
 		int columnId = columnCount == 0 ? column_id : columns [0].id;
-		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+		if (OS.GetDataBrowserItemPartBounds (handle, getId (i), columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			rect.bottom = (short)(rect.top + height [0]);
 			if (rect.top <= pt.v && pt.v < rect.bottom) {
 				if (columnCount == 0) {
 					if (OS.PtInRect (pt, rect)) return _getItem (i);
 				} else {
 					for (int j = 0; j < columnCount; j++) {
-						if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+						if (OS.GetDataBrowserItemPartBounds (handle, getId (i), columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 							rect.bottom = (short)(rect.top + height [0]);
 							if (OS.PtInRect (pt, rect)) return _getItem (i);
 						}
@@ -1624,10 +1638,18 @@ public TableItem [] getSelection () {
 		OS.HLock (ptr);
 		int [] id = new int [1];
 		OS.memmove (id, ptr, 4);
-		int offset = id [0] + (count - 1) * 4;
-		for (int i=0; i<count; i++, offset -= 4) {
-			OS.memmove (id, offset, 4);
-			result [i] = _getItem (id [0] - 1);
+		if (sortDirection == SWT.DOWN && sortColumn != null) {
+			int offset = id [0];
+			for (int i=0; i<count; i++, offset += 4) {
+				OS.memmove (id, offset, 4);
+				result [i] = _getItem (getIndex (id [0]));
+			}
+		} else {
+			int offset = id [0] + (count - 1) * 4;
+			for (int i=0; i<count; i++, offset -= 4) {
+				OS.memmove (id, offset, 4);
+				result [i] = _getItem (getIndex (id [0]));
+			}
 		}
 		OS.HUnlock (ptr);
 	}
@@ -1668,7 +1690,7 @@ public int getSelectionIndex () {
 	checkWidget();
 	int [] first = new int [1], last = new int [1];
 	if (OS.GetDataBrowserSelectionAnchor (handle, first, last) != OS.noErr) return -1;
-    return first [0] - 1;
+    return getIndex (first [0]);
 }
 
 /**
@@ -1700,10 +1722,16 @@ public int [] getSelectionIndices () {
 		OS.memmove (result, ptr, 4);
 		OS.memmove (result, result [0], count * 4);
 		OS.HUnlock (ptr);
-		for (int start=0, end=count - 1; start<=end; start++, end--) {
-			int temp = result [start];
-			result [start] = result [end] - 1;
-			result [end] = temp - 1;
+		if (sortDirection == SWT.DOWN && sortColumn != null) {
+			for (int i=0; i<count; i++) {
+				result [i] = getIndex (result [i]);
+			}
+		} else {
+			for (int start=0, end=count - 1; start<=end; start++, end--) {
+				int temp = result [start];
+				result [start] = getIndex (result [end]);
+				result [end] = getIndex (temp);
+			}
 		}
 	}
 	OS.DisposeHandle (ptr);
@@ -1820,7 +1848,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 						int rc = OS.noErr;
 						for (int i=getTopIndex (); i<itemCount && item == null && rc == OS.noErr; i++) {
 							if (columnCount == 0) {
-								if ((rc = OS.GetDataBrowserItemPartBounds (handle, i + 1, column_id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
+								if ((rc = OS.GetDataBrowserItemPartBounds (handle, getId (i), column_id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
 									if (OS.PtInRect (pt, rect)) {
 										item = _getItem (i);
 										break;
@@ -1829,7 +1857,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 							} else {
 								for (int j = 0; j < columnCount; j++) {
 									column = columns [j];
-									if ((rc = OS.GetDataBrowserItemPartBounds (handle, i + 1, column.id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
+									if ((rc = OS.GetDataBrowserItemPartBounds (handle, getId (i), column.id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
 										if (OS.PtInRect (pt, rect)) {
 											item = _getItem (i);
 											columnIndex = j;
@@ -1908,7 +1936,6 @@ void hookEvents () {
 	OS.InitDataBrowserCallbacks (callbacks);
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
 	custom.version = OS.kDataBrowserLatestCustomCallbacks;
@@ -1997,26 +2024,15 @@ public int indexOf (TableItem item) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	return OS.IsDataBrowserItemSelected (handle, index + 1);
-}
-
-int itemCompareProc () {
-	return sortDirection == SWT.DOWN && sortColumn != null ? display.itemCompareProc : 0;
-}
-
-int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	if (sortDirection == SWT.DOWN && sortColumn != null) {
-		return itemOne > itemTwo ? 1 : 0;
-	}
-	return itemOne < itemTwo ? 1 : 0;
+	return OS.IsDataBrowserItemSelected (handle, getId (index));
 }
 
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
-	int row = id - 1;
-	if (!(0 <= row && row < items.length)) return OS.noErr;
+	int index = getIndex (id);
+	if (!(0 <= index && index < items.length)) return OS.noErr;
 	switch (property) {
 		case CHECK_COLUMN_ID: {
-			TableItem item = _getItem (row);
+			TableItem item = _getItem (index);
 			if (!checkData (item, false)) return OS.noErr;
 			if (setValue != 0) {
 				item.checked = !item.checked;
@@ -2093,7 +2109,7 @@ int itemNotificationProc (int browser, int id, int message) {
 		}
 		return OS.noErr;
 	}
-	int index = id - 1;
+	int index = getIndex (id);
 	if (!(0 <= index && index < items.length)) return OS.noErr;
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
@@ -2178,7 +2194,7 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			if (columns [columnIndex].id == itemInfo.v0_columnProperty) break;
 		}
 		if (columnIndex != columnCount || columnCount == 0) {
-			int index = itemInfo.v0_item - 1;
+			int index = getIndex (itemInfo.v0_item);
 			if (0 <= index && index < itemCount) {
 				TableItem tableItem = _getItem (index);
 				int [] stringRef = new int [1];
@@ -2242,7 +2258,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (isDisposed ()) return OS.noErr;
 	if (!wasSelected) {
 		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
-			int index = lastHittest - 1;
+			int index = getIndex (lastHittest);
 			if (0 <= index && index < itemCount) {
 				Event event = new Event ();
 				event.item = _getItem (index);
@@ -2340,7 +2356,6 @@ void releaseWidget () {
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
-	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 }
 
@@ -2493,11 +2508,9 @@ public void removeAll () {
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
-	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	setTableEmpty ();
 }
@@ -2550,7 +2563,7 @@ public void select (int index) {
 	checkWidget();
 	checkItems (false);
 	if (0 <= index && index < itemCount) {
-		int [] ids = new int [] {index + 1};
+		int [] ids = new int [] {getId (index)};
 		select (ids, ids.length, false);
 	}
 }
@@ -2590,7 +2603,7 @@ public void select (int start, int end) {
 		end = Math.min (end, itemCount - 1);
 		int length = end - start + 1;
 		int [] ids = new int [length];
-		for (int i=0; i<length; i++) ids [i] = end - i + 1;
+		for (int i=0; i<length; i++) ids [i] = getId (end - i);
 		select (ids, length, false);
 	}
 }
@@ -2629,10 +2642,17 @@ public void select (int [] indices) {
 	for (int i=0; i<length; i++) {
 		int index = indices [length - i - 1];
 		if (index >= 0 && index < itemCount) {
-			ids [count++] = index + 1;
+			ids [count++] = getId (index);
 		}
 	}
 	if (count > 0) select (ids, count, false);
+}
+
+void selectIndices (int [] indices, int count, boolean clear) {
+	for (int i = 0; i < count; i++) {
+		indices [i] = getId (indices [i]);
+	}
+	select(indices, count, clear);
 }
 
 void select (int [] ids, int count, boolean clear) {
@@ -2839,7 +2859,6 @@ public void setItemCount (int count) {
     DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
-	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (count < itemCount) {
 		int index = count;
@@ -2866,7 +2885,6 @@ public void setItemCount (int count) {
 	itemCount = count;
 	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	fixScrollBar ();
 	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection == SWT.DOWN) {
@@ -3007,7 +3025,7 @@ public void setSelection (int index) {
 void setSelection (int index, boolean notify) {
 //	checkWidget();
 	if (0 <= index && index < itemCount) {
-		int [] ids = new int [] {index + 1};
+		int [] ids = new int [] {getId (index)};
 		select (ids, ids.length, true);
 		showIndex (index);
 		if (notify) {
@@ -3050,9 +3068,9 @@ public void setSelection (int start, int end) {
 	end = Math.min (end, itemCount - 1);
 	int length = end - start + 1;
 	int [] ids = new int [length];
-	for (int i=0; i<length; i++) ids [i] = end - i + 1;
+	for (int i=0; i<length; i++) ids [i] = getId (end - i);
 	select (ids, length, true);
-	showIndex (ids [0] - 1);
+	showIndex (getIndex (ids [0]));
 }
 
 /**
@@ -3089,12 +3107,12 @@ public void setSelection (int [] indices) {
 	for (int i=0; i<length; i++) {
 		int index = indices [length - i - 1];
 		if (index >= 0 && index < itemCount) {
-			ids [count++] = index + 1;
+			ids [count++] = getId (index);
 		}
 	}
 	if (count > 0) {
 		select (ids, count, true);
-		showIndex (ids [0] - 1);
+		showIndex (getIndex (ids [0]));
 	}
 }
 
@@ -3160,12 +3178,12 @@ public void setSelection (TableItem [] items) {
 	for (int i=0; i<length; i++) {
 		int index = indexOf (items [length - i - 1]);
 		if (index != -1) {
-			ids [count++] = index + 1;
+			ids [count++] = getId (index);
 		}
 	}
 	if (count > 0) {
 		select (ids, count, true);
-		showIndex (ids [0] - 1);
+		showIndex (getIndex (ids [0]));
 	}
 }
 
@@ -3190,25 +3208,16 @@ public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	if (column == null) {
-		if (sortColumn != null  && !sortColumn.isDisposed ()  && sortDirection != SWT.NONE) {
-			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
-			sortColumn = null; 
-			OS.SetDataBrowserSortProperty (handle, 0);
-		}
-	}
+	int [] indices = getSelectionIndices ();
 	sortColumn = column;
+	int id = 0, order = OS.kDataBrowserOrderIncreasing;
 	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
-		OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-		int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-		OS.SetDataBrowserSortOrder (handle, (short) order);
+		id = sortColumn.id;
+		if (sortDirection == SWT.DOWN) order = OS.kDataBrowserOrderDecreasing;
 	}
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
+	OS.SetDataBrowserSortProperty (handle, id);
+	OS.SetDataBrowserSortOrder (handle, (short) order);
+	selectIndices (indices, indices.length, true);
 }
 
 /**
@@ -3228,27 +3237,16 @@ public void setSortDirection  (int direction) {
 	checkWidget ();
 	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	if (direction == sortDirection) return;
+	int [] indices = getSelectionIndices ();
 	sortDirection = direction;
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-	OS.GetDataBrowserCallbacks (handle, callbacks);
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-	OS.SetDataBrowserCallbacks (handle, callbacks);
-	if (sortColumn != null && !sortColumn.isDisposed ()) {
-		if (sortDirection == SWT.NONE) {
-			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
-			TableColumn column = sortColumn;
-			sortColumn = null; 
-			OS.SetDataBrowserSortProperty (handle, 0);
-			sortColumn = column;
-		} else {
-			OS.SetDataBrowserSortProperty (handle, 0);
-			OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-			int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-			OS.SetDataBrowserSortOrder (handle, (short) order);
-		}
+	int id = 0, order = OS.kDataBrowserOrderIncreasing;
+	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
+		id = sortColumn.id;
+		if (sortDirection == SWT.DOWN) order = OS.kDataBrowserOrderDecreasing;
 	}
-	callbacks.v1_itemCompareCallback = itemCompareProc ();
-	OS.SetDataBrowserCallbacks (handle, callbacks);
+	OS.SetDataBrowserSortProperty (handle, id);
+	OS.SetDataBrowserSortOrder (handle, (short) order);
+	selectIndices (indices, indices.length, true);
 }
 
 void setTableEmpty () {
@@ -3367,7 +3365,7 @@ void showIndex (int index) {
 		}
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
-		OS.RevealDataBrowserItem (handle, index + 1, OS.kDataBrowserNoItem, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		OS.RevealDataBrowserItem (handle, getId (index), OS.kDataBrowserNoItem, (byte) OS.kDataBrowserRevealWithoutSelecting);
 
 		/*
 		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
