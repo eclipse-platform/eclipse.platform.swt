@@ -336,6 +336,7 @@ public class OS extends C {
     public static final int PlacementMode_AbsolutePoint = 5;
     public static final int PlacementMode_MousePoint = 8;
     
+    public static final int DispatcherPriority_Inactive = 0;
     public static final int DispatcherPriority_Normal = 9;
     public static final int DispatcherPriority_Send = 10;
     
