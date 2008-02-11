@@ -96,7 +96,7 @@ public class Display extends Device {
 	
 	int application, dispatcher, frame, jniRef;
 	boolean idle;
-	int sleep, operation;
+	int sleepOperation, operation;
 	int operationCount;
 	
 	/* Windows and Events */
@@ -1752,7 +1752,7 @@ void HandleOperationCompleted (int sender, int e) {
 }
 
 void HandleOperationPosted (int sender, int e) {
-	if (sleep != 0) OS.DispatcherOperation_Priority(sleep, 10);
+	if (sleepOperation != 0) OS.DispatcherOperation_Priority(sleepOperation, OS.DispatcherPriority_Send);
 }
 
 /**	 
@@ -2805,11 +2805,11 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	int handler = OS.gcnew_NoArgsDelegate (jniRef, "sleep_noop");
-	sleep = OS.Dispatcher_BeginInvoke(dispatcher, 0, handler);
-	OS.DispatcherOperation_Wait(sleep);
+	sleepOperation = OS.Dispatcher_BeginInvoke(dispatcher, OS.DispatcherPriority_Inactive, handler);
+	OS.DispatcherOperation_Wait(sleepOperation);
 	OS.GCHandle_Free(handler);
-	OS.GCHandle_Free(sleep);
-	sleep = 0;
+	OS.GCHandle_Free(sleepOperation);
+	sleepOperation = 0;
 	return true;
 }
 
