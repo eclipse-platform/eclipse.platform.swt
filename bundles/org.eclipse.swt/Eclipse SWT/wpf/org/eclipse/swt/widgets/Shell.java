@@ -480,7 +480,7 @@ void createHandle () {
 	OS.FrameworkElement_Height (shellHandle, 0);
 	OS.Window_Show (shellHandle);
 	OS.Window_Hide (shellHandle);
-	Rectangle bounds = display.getBounds();
+	Rectangle bounds = getMonitor ().getBounds ();
 	OS.FrameworkElement_Width (shellHandle, bounds.width * 5 / 8);
 	OS.FrameworkElement_Height (shellHandle, bounds.height * 5 / 8);
 
