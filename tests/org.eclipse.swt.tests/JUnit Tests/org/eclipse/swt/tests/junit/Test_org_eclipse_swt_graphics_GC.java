@@ -66,35 +66,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	} catch (IllegalArgumentException e) {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
-
-	if (Printer.getDefaultPrinterData() == null) {
-		// No printer installed. Skip test.
-		return;
-	}
-	Class printerClass = null;
-	try {
-		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
-	} catch (ClassNotFoundException e) {
-		// Printer class not present (eSWT). Skip test.
-		return;
-	}
-	try {
-		// Direct instantiation results in a NoClassDefFoundError during class 
-		// loading/initialization. Casting seems to be ok.
-		Object printer = printerClass.newInstance();
-		GC gc1 = new GC((Printer) printer);
-		GC gc2 = new GC((Printer) printer);
-		gc1.dispose();
-		gc2.dispose();
-		((Printer) printer).dispose();
-		fail("No exception thrown for more than one GC on one printer");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
-	} catch (InstantiationException e) {
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		e.printStackTrace();
-	}
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
@@ -140,10 +111,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		// Direct instantiation results in a NoClassDefFoundError during class 
 		// loading/initialization. Casting seems to be ok.
 		Object printer = printerClass.newInstance();
+		((Printer) printer).startJob("Test_org_eclipse_swt_graphics_GC");
 		GC gc1 = new GC((Printer)printer, SWT.RIGHT_TO_LEFT);
 		GC gc2 = new GC((Printer)printer, SWT.LEFT_TO_RIGHT);
 		gc1.dispose();
 		gc2.dispose();
+		((Printer) printer).endJob();
 		((Printer) printer).dispose();
 		fail("No exception thrown for more than one GC on one printer");
 	} catch (IllegalArgumentException e) {
