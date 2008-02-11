@@ -210,9 +210,16 @@ public void append (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.PASSWORD) != 0) return;
+	OS.TextBox_SelectionStart (handle, getCharCount ());
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int start = OS.TextBox_SelectionStart (handle);
+		int end = start + OS.TextBox_SelectionLength (handle);
+		string = verifyText (string, start, end, false);
+		if (string == null) return;
+	}
 	int strPtr = createDotNetString (string, false);
 	OS.TextBoxBase_AppendText (handle, strPtr);
-	OS.TextBoxBase_ScrollToEnd (handle); 
+	OS.TextBox_SelectionLength (handle, 0);
 	OS.GCHandle_Free (strPtr);
 }
 
@@ -247,7 +254,10 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget ();
-	if ((style & SWT.PASSWORD) != 0)
+	if ((style & SWT.PASSWORD) != 0) return;
+	int start = OS.TextBox_SelectionStart (handle);
+	int len = OS.TextBox_SelectionLength (handle);
+	OS.TextBox_SelectionStart (handle, start + len);
 	OS.TextBox_SelectionLength (handle, 0); 
 }
 
@@ -264,7 +274,7 @@ public void clearSelection () {
  */
 public void copy () {
 	checkWidget ();
-	if ((style & SWT.PASSWORD) != 0)
+	if ((style & SWT.PASSWORD) != 0) return;
 	OS.TextBoxBase_Copy (handle);
 }
 
@@ -463,7 +473,7 @@ public char getEchoChar () {
 public boolean getEditable () {
 	checkWidget ();
 	if ((style & SWT.PASSWORD) != 0) return true;
-	return OS.TextBoxBase_IsReadOnly (handle);
+	return !OS.TextBoxBase_IsReadOnly (handle);
 }
 
 /**
@@ -478,8 +488,14 @@ public boolean getEditable () {
  */
 public int getLineCount () {
 	checkWidget ();
+	if ((style & SWT.SINGLE) != 0) return 1;
 	if ((style & SWT.PASSWORD) != 0) return 1;
-	return OS.TextBox_LineCount (handle);
+	int lines = OS.TextBox_LineCount (handle);
+	if (lines == -1) {
+		updateLayout (handle);
+		lines = OS.TextBox_LineCount (handle);
+	}
+	return lines;
 }
 
 /**
@@ -511,8 +527,11 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	//FIXME
-	return 10;
+	int family = OS.Control_FontFamily (handle);
+	double lineSpacing = OS.FontFamily_LineSpacing (family);
+	OS.GCHandle_Free (family);
+	double size = OS.Control_FontSize (handle);
+	return (int) (lineSpacing * size);
 }
 
 /**
@@ -764,8 +783,19 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	//FIXME
-	return 0;
+	int name = createDotNetString ("PART_ContentHost", false);
+	int template = OS.Control_Template (handle);
+	int scroller = OS.FrameworkTemplate_FindName (template, name, handle);
+	if (scroller == 0) {
+		updateLayout (handle);
+		scroller = OS.FrameworkTemplate_FindName (template, name, handle);
+	}
+	OS.GCHandle_Free (name);
+	OS.GCHandle_Free (template);
+	if (scroller == 0) return 0;
+	double vertOffset = OS.ScrollViewer_VerticalOffset (scroller);
+	OS.GCHandle_Free (scroller);
+	return (int) vertOffset;
 }
 
 void HandlePreviewKeyDown (int sender, int e) {
@@ -923,11 +953,11 @@ public void insert (String string) {
 	if ((style & SWT.PASSWORD) != 0) return;
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int start = OS.TextBox_SelectionStart (handle);
-		int end = start + OS.TextBox_SelectionLength (handle);
-		string = verifyText (string, start, end, false);
+		string = verifyText (string, start, start, false);
 		if (string == null) return;
 	}
 	int strPtr = createDotNetString (string, false);
+	OS.TextBox_SelectionLength (handle, 0);
 	OS.TextBox_SelectedText (handle, strPtr);
 	OS.GCHandle_Free (strPtr);
 	int end = OS.TextBox_SelectionStart (handle) + OS.TextBox_SelectionLength (handle);
@@ -948,7 +978,7 @@ public void insert (String string) {
  */
 public void paste () {
 	checkWidget ();
-	if ((style & SWT.READ_ONLY) != 0) {
+	if ((style & SWT.PASSWORD) != 0) {
 		OS.PasswordBox_Paste (handle);
 		return;
 	}
@@ -1286,7 +1316,7 @@ public void setSelection (Point selection) {
 public void setTabs (int tabs) {
 	checkWidget ();
 	if (tabs < 0) return;
-	//FIXME
+	//FIXME - no equivalent API in WPF TextBox
 //	setTabStops (this.tabs = tabs);
 }
 
@@ -1373,12 +1403,27 @@ public void setTopIndex (int index) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	if ((style & SWT.PASSWORD) != 0) return;
-	//FIXME: LineCount returns -1 until widget is realized
 	int count = OS.TextBox_LineCount (handle);
-	index = Math.min (Math.max (index, 0), count - 1);
-	int topIndex = OS.TextBox_GetFirstVisibleLineIndex (handle);
-	//FIXME ScrollToLine != top index
-	OS.TextBox_ScrollToLine (handle, index - topIndex);
+	if (count == -1) {
+		updateLayout (handle);
+		count = OS.TextBox_LineCount (handle);
+	}
+	index = Math.max(0, Math.min (index, count-1));
+	int family = OS.Control_FontFamily (handle);
+	double lineSpacing = OS.FontFamily_LineSpacing (family);
+	OS.GCHandle_Free (family);
+	double size = OS.Control_FontSize (handle);
+	double lineHeight = lineSpacing * size;
+	int name = createDotNetString ("PART_ContentHost", false);
+	int template = OS.Control_Template (handle);
+	int scroller = OS.FrameworkTemplate_FindName (template, name, handle);
+	OS.GCHandle_Free (name);
+	OS.GCHandle_Free (template);
+	if (scroller == 0) return;
+	double vertOffset = index*lineHeight;
+	OS.ScrollViewer_ScrollToVerticalOffset (scroller, vertOffset);
+	OS.GCHandle_Free (scroller);
+	updateLayout(handle);
 }
 
 /**
