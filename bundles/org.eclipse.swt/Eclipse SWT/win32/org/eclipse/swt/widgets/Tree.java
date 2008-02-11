@@ -869,23 +869,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
 				int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 				if (hItem == item.handle) {
-					if (!ignoreDrawFocus && findImageControl () != null) {
+					if (!ignoreDrawFocus /*&& findImageControl () != null*/) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							RECT focusRect = new RECT ();
-							OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-							if (count > 0 && hwndHeader != 0) {
-								int width = 0;
-								HDITEM hdItem = new HDITEM ();
-								hdItem.mask = OS.HDI_WIDTH;
-								for (int j=0; j<count; j++) {
-									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-									width += hdItem.cxy;
-								}
-								focusRect.left = 0;
-								RECT rect = new RECT ();
-								OS.GetClientRect (handle, rect);
-								focusRect.right = Math.max (width, rect.right - OS.GetSystemMetrics (OS.SM_CXVSCROLL));
-							}
+							OS.SetRect (focusRect, 0, nmcd.top, clientRect.right + 1, nmcd.bottom);
 							OS.DrawFocusRect (hDC, focusRect);
 						} else {
 							int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
@@ -6172,16 +6159,14 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
-	boolean hittestSelected = false, focused = false;
+	boolean hittestSelected = false;
 	if ((style & SWT.MULTI) != 0) {
 		tvItem.hItem = lpht.hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		hittestSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
-		focused = OS.GetFocus () == handle;
 	}
 	
 	/* Get the selected state of the last selected item */
-	boolean redraw = false;
 	int /*long*/ hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if ((style & SWT.MULTI) != 0) {
 		tvItem.hItem = hOldItem;
@@ -6191,8 +6176,8 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		if (hittestSelected || (wParam & OS.MK_CONTROL) != 0) {
 			/*
 			* Feature in Windows.  When the tree is not drawing focus
-			* and the user selects a tree item using while the CONTROL
-			* key is down, the tree window proc sends WM_UPDATEUISTATE
+			* and the user selects a tree item while the CONTROL key
+			* is down, the tree window proc sends WM_UPDATEUISTATE
 			* to the top level window, causing controls within the shell
 			* to redraw.  When drag detect is enabled, the tree window
 			* proc runs a modal loop that allows WM_PAINT messages to be
@@ -6203,23 +6188,21 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			* on without redrawing the entire tree, pixel corruption occurs.
 			* This case only seems to happen when the tree has been given
 			* focus from WM_MOUSEACTIVATE of the shell.  The fix is to
-			* detect that WM_UPDATEUISTATE will be sent and avoid using
-			* WM_SETREDRAW to disable drawing.
+			* force the WM_UPDATEUISTATE to be sent before disabling
+			* the drawing.
 			* 
 			* NOTE:  Any redraw of a parent (or sibling) will be dispatched
 			* during the modal drag detect loop.  This code only fixes the
 			* case where the tree causes a redraw from WM_UPDATEUISTATE.
-			* In SWT, the InvalidateRect() that causes the pixel corruption
+			* In SWT, the InvalidateRect() that caused the pixel corruption
 			* is found in Composite.WM_UPDATEUISTATE().
 			*/
 			int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-				redraw = focused && drawCount == 0 && OS.IsWindowVisible (handle);
+			if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+				OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 			}
-			if (redraw) {
-				OS.UpdateWindow (handle);
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-			}
+			OS.UpdateWindow (handle);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		} else {
 			deselectAll ();
 		}
@@ -6318,18 +6301,16 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 					}
 				}
 			}
-			if (redraw) {
-				RECT rect1 = new RECT (), rect2 = new RECT ();
-				boolean fItemRect = (style & SWT.FULL_SELECTION) == 0;
-				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = false;
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = false;
-				OS.TreeView_GetItemRect (handle, hOldItem, rect1, fItemRect);
-				OS.TreeView_GetItemRect (handle, hNewItem, rect2, fItemRect);
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.InvalidateRect (handle, rect1, true);
-				OS.InvalidateRect (handle, rect2, true);
-				OS.UpdateWindow (handle);
-			}
+			RECT rect1 = new RECT (), rect2 = new RECT ();
+			boolean fItemRect = (style & SWT.FULL_SELECTION) == 0;
+			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = false;
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = false;
+			OS.TreeView_GetItemRect (handle, hOldItem, rect1, fItemRect);
+			OS.TreeView_GetItemRect (handle, hNewItem, rect2, fItemRect);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.InvalidateRect (handle, rect1, true);
+			OS.InvalidateRect (handle, rect2, true);
+			OS.UpdateWindow (handle);
 		}
 
 		/* Check for SHIFT or normal select and deselect/reselect items */
