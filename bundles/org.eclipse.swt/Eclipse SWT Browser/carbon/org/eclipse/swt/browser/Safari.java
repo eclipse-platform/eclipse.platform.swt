@@ -1482,9 +1482,9 @@ void handleEvent(int evt) {
 		}
 	} else if (DOMEVENT_MOUSEMOVE.equals (typeString)) {
 		/*
-		* Bug in Safari.  Spurious and redundant mousemove events are received in
-		* various contexts, including following every MouseUp.  The workaround is
-		* to not fire MouseMove events whose x and y values match the last MouseMove  
+		* Feature in Safari.  Spurious and redundant mousemove events are received in
+		* various contexts, including following every MouseUp.  The workaround is to
+		* not fire MouseMove events whose x and y values match the last MouseMove.  
 		*/
 		if (mouseEvent.x == lastMouseMoveX && mouseEvent.y == lastMouseMoveY) return;
 		mouseEvent.type = SWT.MouseMove;

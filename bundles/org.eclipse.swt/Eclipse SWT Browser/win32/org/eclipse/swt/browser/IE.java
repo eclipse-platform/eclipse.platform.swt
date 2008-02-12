@@ -32,6 +32,7 @@ class IE extends WebBrowser {
 	int /*long*/ globalDispatch;
 	String html;
 	int style;
+	int lastMouseMoveX, lastMouseMoveY;
 
 	static boolean SilenceInternalNavigate;
 	static String ProgId = "Shell.Explorer";	//$NON-NLS-1$
@@ -92,13 +93,32 @@ class IE extends WebBrowser {
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
-	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}";
-	static final String URL_DIRECTOR = "http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab"; //$NON-NLS-1$
+	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
+	static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
+	static final String EVENT_DRAGSTART = "dragstart";	//$NON-NLS-1$
+	static final String EVENT_MOUSEMOVE = "mousemove";	//$NON-NLS-1$
+	static final String EVENT_MOUSEWHEEL = "mousewheel";	//$NON-NLS-1$
+	static final String EVENT_DRAGEND = "dragend";	//$NON-NLS-1$
+	static final String EVENT_MOUSEUP = "mouseup";	//$NON-NLS-1$
+	static final String EVENT_MOUSEDOWN = "mousedown";	//$NON-NLS-1$
+	static final String EVENT_MOUSEOUT = "mouseout";	//$NON-NLS-1$
+	static final String EVENT_MOUSEOVER = "mouseover";	//$NON-NLS-1$
+	static final String PROPERTY_ALTKEY = "altKey"; //$NON-NLS-1$
+	static final String PROPERTY_BUTTON = "button"; //$NON-NLS-1$
+	static final String PROPERTY_CLIENTX = "clientX"; //$NON-NLS-1$
+	static final String PROPERTY_CLIENTY = "clientY"; //$NON-NLS-1$
+	static final String PROPERTY_CTRLKEY = "ctrlKey"; //$NON-NLS-1$
+	static final String PROPERTY_FROMELEMENT = "fromElement"; //$NON-NLS-1$
+	static final String PROPERTY_SHIFTKEY = "shiftKey"; //$NON-NLS-1$
+	static final String PROPERTY_TOELEMENT = "toElement"; //$NON-NLS-1$
+	static final String PROPERTY_TYPE = "type"; //$NON-NLS-1$
+	static final String PROPERTY_WHEELDELTA = "wheelDelta"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
 			public void run() {
-				OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);			}
+				OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
+			}
 		};
 
 		/*
@@ -881,7 +901,7 @@ public void stop() {
 void handleMouseEvent (OleEvent e) {
 	Variant arg = e.arguments[0];
 	OleAutomation event = arg.getAutomation();
-	int[] rgdispid = event.getIDsOfNames(new String[]{ "type" }); //$NON-NLS-1$
+	int[] rgdispid = event.getIDsOfNames(new String[]{ PROPERTY_TYPE });
 	int dispIdMember = rgdispid[0];
 	Variant pVarResult = event.getProperty(dispIdMember);
 	String eventType = pVarResult.getString();
@@ -894,8 +914,8 @@ void handleMouseEvent (OleEvent e) {
 	 * the element being exited (on MouseOver) or entered (on MouseExit) is within
 	 * the Browser.
 	 */
-	if (eventType.equals("mouseover")) { //$NON-NLS-1$
-		rgdispid = event.getIDsOfNames(new String[] { "fromElement" }); //$NON-NLS-1$
+	if (eventType.equals(EVENT_MOUSEOVER)) {
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_FROMELEMENT });
 		dispIdMember = rgdispid[0];
 		pVarResult = event.getProperty(dispIdMember);
 		boolean isInternal = pVarResult.getType() != COM.VT_EMPTY;
@@ -905,8 +925,8 @@ void handleMouseEvent (OleEvent e) {
 			return;
 		}
 	}
-	if (eventType.equals("mouseout")) { //$NON-NLS-1$
-		rgdispid = event.getIDsOfNames(new String[] { "toElement" }); //$NON-NLS-1$
+	if (eventType.equals(EVENT_MOUSEOUT)) {
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_TOELEMENT });
 		dispIdMember = rgdispid[0];
 		pVarResult = event.getProperty(dispIdMember);
 		boolean isInternal = pVarResult.getType() != COM.VT_EMPTY;
@@ -921,33 +941,33 @@ void handleMouseEvent (OleEvent e) {
 	Event newEvent = new Event();
 	newEvent.widget = browser;
 
-	rgdispid = event.getIDsOfNames(new String[] { "clientX" }); //$NON-NLS-1$
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CLIENTX });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
 	x = pVarResult.getInt();
 	newEvent.x = x;
 	pVarResult.dispose();
 
-	rgdispid = event.getIDsOfNames(new String[] { "clientY" }); //$NON-NLS-1$
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CLIENTY });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
 	y = pVarResult.getInt();
 	newEvent.y = y;
 	pVarResult.dispose();
 
-	rgdispid = event.getIDsOfNames(new String[] { "ctrlKey" }); //$NON-NLS-1$
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CTRLKEY });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
 	if (pVarResult.getBoolean()) mask |= SWT.CTRL;
 	pVarResult.dispose();
 
-	rgdispid = event.getIDsOfNames(new String[] { "altKey" }); //$NON-NLS-1$
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_ALTKEY });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
 	if (pVarResult.getBoolean()) mask |= SWT.ALT;
 	pVarResult.dispose();
 
-	rgdispid = event.getIDsOfNames(new String[] { "shiftKey" }); //$NON-NLS-1$
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_SHIFTKEY });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
 	if (pVarResult.getBoolean()) mask |= SWT.SHIFT;
@@ -955,7 +975,7 @@ void handleMouseEvent (OleEvent e) {
 
 	newEvent.stateMask = mask;
 
-	rgdispid = event.getIDsOfNames(new String[] { "button" }); //$NON-NLS-1$
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_BUTTON });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
 	int button = pVarResult.getInt();
@@ -966,11 +986,11 @@ void handleMouseEvent (OleEvent e) {
 		case 4: button = 2; break;
 	};
 
-	if (eventType.equals("mousedown")) { //$NON-NLS-1$
+	if (eventType.equals(EVENT_MOUSEDOWN)) {
 		newEvent.type = SWT.MouseDown;
 		newEvent.button = button;
 		newEvent.count = 1;
-	} else if (eventType.equals("mouseup") || eventType.equals("dragend")) { //$NON-NLS-1$ //$NON-NLS-2$
+	} else if (eventType.equals(EVENT_MOUSEUP) || eventType.equals(EVENT_DRAGEND)) {
 		newEvent.type = SWT.MouseUp;
 		newEvent.button = button != 0 ? button : 1;	/* button assumed to be 1 for dragends */
 		newEvent.count = 1;
@@ -981,20 +1001,26 @@ void handleMouseEvent (OleEvent e) {
 			case 4: newEvent.stateMask |= SWT.BUTTON4; break;
 			case 5: newEvent.stateMask |= SWT.BUTTON5; break;
 		}
-	} else if (eventType.equals("mousewheel")) { //$NON-NLS-1$
+	} else if (eventType.equals(EVENT_MOUSEWHEEL)) {
 		newEvent.type = SWT.MouseWheel;
-		rgdispid = event.getIDsOfNames(new String[] { "wheelDelta" }); //$NON-NLS-1$
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_WHEELDELTA });
 		dispIdMember = rgdispid[0];
 		pVarResult = event.getProperty(dispIdMember);
 		newEvent.count = pVarResult.getInt () / 120 * 3;
 		pVarResult.dispose();
-	} else if (eventType.equals("mousemove")) { //$NON-NLS-1$
+	} else if (eventType.equals(EVENT_MOUSEMOVE)) {
+		/*
+		* Feature in IE.  Spurious and redundant mousemove events are often received.  The workaround
+		* is to not fire MouseMove events whose x and y values match the last MouseMove.  
+		*/
+		if (newEvent.x == lastMouseMoveX && newEvent.y == lastMouseMoveY) return;
 		newEvent.type = SWT.MouseMove;
-	} else if (eventType.equals("mouseover")) { //$NON-NLS-1$
+		lastMouseMoveX = newEvent.x; lastMouseMoveY = newEvent.y;
+	} else if (eventType.equals(EVENT_MOUSEOVER)) {
 		newEvent.type = SWT.MouseEnter;
-	} else if (eventType.equals("mouseout")) { //$NON-NLS-1$
+	} else if (eventType.equals(EVENT_MOUSEOUT)) {
 		newEvent.type = SWT.MouseExit;
-	} else if (eventType.equals("dragstart")) { //$NON-NLS-1$
+	} else if (eventType.equals(EVENT_DRAGSTART)) {
 		newEvent.type = SWT.DragDetect;
 		newEvent.button = 1;	/* button assumed to be 1 for dragstarts */
 		newEvent.stateMask |= SWT.BUTTON1;
@@ -1003,7 +1029,7 @@ void handleMouseEvent (OleEvent e) {
 	event.dispose();
 	browser.notifyListeners(newEvent.type, newEvent);
 
-	if (eventType.equals("dblclick")) { //$NON-NLS-1$
+	if (eventType.equals(EVENT_DOUBLECLICK)) {
 		newEvent = new Event ();
 		newEvent.widget = browser;
 		newEvent.type = SWT.MouseDoubleClick;
