@@ -49,6 +49,7 @@ class Safari extends WebBrowser {
 	static final String DOMEVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -580,6 +581,9 @@ void hookDOMMouseListeners(int frameID) {
 	document.addEventListener_listener_useCapture(type, delegate, false);
 
 	type = NSString.stringWith(DOMEVENT_MOUSEMOVE);
+	document.addEventListener_listener_useCapture(type, delegate, false);
+
+	type = NSString.stringWith(DOMEVENT_MOUSEWHEEL);
 	document.addEventListener_listener_useCapture(type, delegate, false);
 }
 
@@ -1120,6 +1124,25 @@ void handleEvent(int evtId) {
 		if (!keyEvent.doit) {
 			event.preventDefault();
 		}
+		return;
+	}
+
+	if (DOMEVENT_MOUSEWHEEL.equals(type)) {
+		DOMWheelEvent event = new DOMWheelEvent(evtId);
+		int clientX = event.clientX();
+		int clientY = event.clientY();
+		int delta = event.wheelDelta();
+		boolean ctrl = event.ctrlKey();
+		boolean shift = event.shiftKey();
+		boolean alt = event.altKey();
+		boolean meta = event.metaKey();
+		Event mouseEvent = new Event();
+		mouseEvent.type = SWT.MouseWheel;
+		mouseEvent.widget = browser;
+		mouseEvent.x = clientX; mouseEvent.y = clientY;
+		mouseEvent.count = delta / 120;
+		mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
+		browser.notifyListeners (mouseEvent.type, mouseEvent);
 		return;
 	}
 

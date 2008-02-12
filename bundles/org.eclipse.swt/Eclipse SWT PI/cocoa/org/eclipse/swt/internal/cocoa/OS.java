@@ -687,6 +687,7 @@ public static final int class_NSTokenField = objc_getClass("NSTokenField");
 public static final int class_NSCollectionView = objc_getClass("NSCollectionView");
 public static final int class_NSColorList = objc_getClass("NSColorList");
 public static final int class_DOMEvent = objc_getClass("DOMEvent");
+public static final int class_DOMWheelEvent = objc_getClass("DOMWheelEvent");
 public static final int class_WebView = objc_getClass("WebView");
 public static final int class_WebPreferences = objc_getClass("WebPreferences");
 public static final int class_WebFrameView = objc_getClass("WebFrameView");
@@ -7260,6 +7261,7 @@ public static final int sel_printDocumentView = sel_registerName("printDocumentV
 public static final int sel_documentViewShouldHandlePrint = sel_registerName("documentViewShouldHandlePrint");
 public static final int sel_printOperationWithPrintInfo_1 = sel_registerName("printOperationWithPrintInfo:");
 public static final int sel_canPrintHeadersAndFooters = sel_registerName("canPrintHeadersAndFooters");
+public static final int sel_wheelDelta = sel_registerName("wheelDelta");
 
 /** Constants */
 public static final int NSAWTEventType = 16;

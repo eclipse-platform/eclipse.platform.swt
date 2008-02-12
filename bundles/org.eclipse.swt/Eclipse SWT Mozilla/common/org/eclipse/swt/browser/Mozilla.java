@@ -1847,6 +1847,9 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
 	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEWHEEL);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
 	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
@@ -1940,6 +1943,9 @@ void unhookDOMListeners (nsIDOMEventTarget target) {
 	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEWHEEL);
 	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
@@ -3063,6 +3069,9 @@ int HandleEvent (int /*long*/ event) {
 		mouseEvent.count = count;
 	} else if (XPCOM.DOMEVENT_MOUSEMOVE.equals (typeString)) {
 		mouseEvent.type = SWT.MouseMove;
+	} else if (XPCOM.DOMEVENT_MOUSEWHEEL.equals (typeString)) {
+		mouseEvent.type = SWT.MouseWheel;
+		mouseEvent.count = -aDetail[0];
 	} else if (XPCOM.DOMEVENT_MOUSEOVER.equals (typeString)) {
 		mouseEvent.type = SWT.MouseEnter;
 	} else if (XPCOM.DOMEVENT_MOUSEOUT.equals (typeString)) {

@@ -58,6 +58,7 @@ class Safari extends WebBrowser {
 	static final String DOMEVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
+	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -877,6 +878,14 @@ void hookDOMMouseListeners(int frame) {
 	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
 	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
 	OS.CFRelease(ptr);
+
+	string = DOMEVENT_MOUSEWHEEL;
+	length = string.length();
+	chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
+	OS.CFRelease(ptr);
 }
 
 void didReceiveTitle(int title, int frame) {
@@ -1448,7 +1457,6 @@ void handleEvent(int evt) {
 	int clientX = Cocoa.objc_msgSend(evt, Cocoa.S_clientX);
 	int clientY = Cocoa.objc_msgSend(evt, Cocoa.S_clientY);
 	int detail = Cocoa.objc_msgSend(evt, Cocoa.S_detail);
-	int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
@@ -1457,10 +1465,12 @@ void handleEvent(int evt) {
 
 	if (DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		mouseEvent.type = SWT.MouseDown;
+		int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
 		mouseEvent.button = button + 1;
 		mouseEvent.count = detail;
 	} else if (DOMEVENT_MOUSEUP.equals (typeString)) {
 		mouseEvent.type = SWT.MouseUp;
+		int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
 		mouseEvent.button = button + 1;
 		mouseEvent.count = detail;
 		switch (mouseEvent.button) {
@@ -1479,10 +1489,15 @@ void handleEvent(int evt) {
 		if (mouseEvent.x == lastMouseMoveX && mouseEvent.y == lastMouseMoveY) return;
 		mouseEvent.type = SWT.MouseMove;
 		lastMouseMoveX = mouseEvent.x; lastMouseMoveY = mouseEvent.y;
+	} else if (DOMEVENT_MOUSEWHEEL.equals (typeString)) {
+		mouseEvent.type = SWT.MouseWheel;
+		int delta = Cocoa.objc_msgSend(evt, Cocoa.S_wheelDelta);
+		mouseEvent.count = delta / 120;
 	}
 
 	browser.notifyListeners (mouseEvent.type, mouseEvent);
 	if (detail == 2 && DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
 		mouseEvent.x = clientX; mouseEvent.y = clientY;

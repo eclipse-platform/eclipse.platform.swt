@@ -158,6 +158,7 @@ public static final int S_preventDefault = Cocoa.sel_registerName("preventDefaul
 public static final int S_relatedTarget = Cocoa.sel_registerName("relatedTarget"); //$NON-NLS-1$;
 public static final int S_shiftKey = Cocoa.sel_registerName("shiftKey"); //$NON-NLS-1$
 public static final int S_type = Cocoa.sel_registerName("type"); //$NON-NLS-1$
+public static final int S_wheelDelta = Cocoa.sel_registerName("wheelDelta"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;

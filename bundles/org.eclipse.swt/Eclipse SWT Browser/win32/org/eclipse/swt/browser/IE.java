@@ -966,8 +966,6 @@ void handleMouseEvent (OleEvent e) {
 		case 4: button = 2; break;
 	};
 
-	event.dispose();
-
 	if (eventType.equals("mousedown")) { //$NON-NLS-1$
 		newEvent.type = SWT.MouseDown;
 		newEvent.button = button;
@@ -983,6 +981,13 @@ void handleMouseEvent (OleEvent e) {
 			case 4: newEvent.stateMask |= SWT.BUTTON4; break;
 			case 5: newEvent.stateMask |= SWT.BUTTON5; break;
 		}
+	} else if (eventType.equals("mousewheel")) { //$NON-NLS-1$
+		newEvent.type = SWT.MouseWheel;
+		rgdispid = event.getIDsOfNames(new String[] { "wheelDelta" }); //$NON-NLS-1$
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		newEvent.count = pVarResult.getInt () / 120 * 3;
+		pVarResult.dispose();
 	} else if (eventType.equals("mousemove")) { //$NON-NLS-1$
 		newEvent.type = SWT.MouseMove;
 	} else if (eventType.equals("mouseover")) { //$NON-NLS-1$
@@ -995,6 +1000,7 @@ void handleMouseEvent (OleEvent e) {
 		newEvent.stateMask |= SWT.BUTTON1;
 	}
 
+	event.dispose();
 	browser.notifyListeners(newEvent.type, newEvent);
 
 	if (eventType.equals("dblclick")) { //$NON-NLS-1$
@@ -1033,6 +1039,7 @@ void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
 
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEWHEEL, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
 	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
@@ -1057,6 +1064,7 @@ void unhookMouseListeners(OleAutomation[] documents) {
 			OleAutomation document = documents[i];
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEWHEEL, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
