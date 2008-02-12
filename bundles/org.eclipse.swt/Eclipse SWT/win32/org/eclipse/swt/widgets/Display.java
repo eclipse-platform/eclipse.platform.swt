@@ -186,7 +186,7 @@ public class Display extends Device {
 	boolean ignoreNextKey;
 	Callback getMsgCallback, embeddedCallback;
 	int /*long*/ getMsgProc, msgHook, embeddedHwnd, embeddedProc;
-	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
+	static final String AWT_WINDOW_CLASS = "SunAwtWindow"; //$NON-NLS-1$
 	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
 	/* Sync/Async Widget Communication */
@@ -686,7 +686,7 @@ static void checkDisplay (Thread thread, boolean multiple) {
 	synchronized (Device.class) {
 		for (int i=0; i<Displays.length; i++) {
 			if (Displays [i] != null) {
-				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]"); //$NON-NLS-1$
 				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 			}
 		}
@@ -2542,8 +2542,8 @@ protected void init () {
 	}
 	
 	/* Register custom messages message */
-	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
-	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
+	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
+	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true)); //$NON-NLS-1$
 
 	/* Initialize OLE */
 	if (!OS.IsWinCE) OS.OleInitialize (0);
@@ -3538,7 +3538,7 @@ void releaseDisplay () {
 	
 	/* Release references */
 	thread = null;
-	msg = null;
+	msg = hookMsg = null;
 	keyboard = null;
 	modalDialog = null;
 	modalShells = null;
@@ -3546,10 +3546,18 @@ void releaseDisplay () {
 	keys = null;
 	values = null;
 	bars = popups = null;
-	indexTable = null;
+	indexTable = timerIds = null;
 	controlTable = null;
 	lastControl = lastGetControl = lastHittestControl = null;
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
+	timerList = null;
+	tableBuffer = null;
+	columnVisible = null;
+	eventTable = filterTable = null;
+	items = null;
+	clickRect = null;
+	hdr = null;
+	plvfi = null;
 }
 
 void releaseImageList (ImageList list) {
