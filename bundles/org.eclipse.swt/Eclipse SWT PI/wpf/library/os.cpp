@@ -3029,6 +3029,17 @@ JNIEXPORT void JNICALL OS_NATIVE(DrawingContext_1Close)
 }
 #endif
 
+#ifndef NO_DrawingContext_1DrawDrawing
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(DrawingContext_1DrawDrawing)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(DrawingContext_1DrawDrawing)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, DrawingContext_1DrawDrawing_FUNC);
+	((DrawingContext^)TO_OBJECT(arg0))->DrawDrawing((System::Windows::Media::Drawing^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, DrawingContext_1DrawDrawing_FUNC);
+}
+#endif
+
 #ifndef NO_DrawingContext_1DrawEllipse
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(DrawingContext_1DrawEllipse)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jdouble arg4, jdouble arg5);
 JNIEXPORT void JNICALL OS_NATIVE(DrawingContext_1DrawEllipse)
@@ -3159,6 +3170,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawingFontFamily_1Name)
 	OS_NATIVE_ENTER(env, that, DrawingFontFamily_1Name_FUNC);
 	rc = (jint)TO_HANDLE(((System::Drawing::FontFamily^)TO_OBJECT(arg0))->Name);
 	OS_NATIVE_EXIT(env, that, DrawingFontFamily_1Name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DrawingVisual_1Drawing
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DrawingVisual_1Drawing)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DrawingVisual_1Drawing)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawingVisual_1Drawing_FUNC);
+	rc = (jint)TO_HANDLE(((DrawingVisual^)TO_OBJECT(arg0))->Drawing);
+	OS_NATIVE_EXIT(env, that, DrawingVisual_1Drawing_FUNC);
 	return rc;
 }
 #endif

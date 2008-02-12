@@ -656,6 +656,7 @@ public static final native int DragEventArgs_KeyStates (int sender);
 public static final native int DrawingColor_FromArgb(int a, int r, int g, int b);
 public static final native int DrawingColor_ToArgb(int sender);
 public static final native void DrawingContext_Close(int sender);
+public static final native void DrawingContext_DrawDrawing(int sender, int Drawing);
 public static final native void DrawingContext_DrawEllipse(int sender, int brush, int pen, int center, double radiusX, double radiusY);
 public static final native void DrawingContext_DrawImage(int sender, int imagesource, int rect);
 public static final native void DrawingContext_DrawLine(int sender, int pen, int point0, int point1);
@@ -668,6 +669,7 @@ public static final native void DrawingContext_PushTransform(int sender, int tra
 public static final native void DrawingContext_PushClip(int sender, int clipGeometry);
 public static final native void DrawingContext_PushOpacity(int sender, double opacity);
 public static final native void DrawingContext_Pop(int sender);
+public static final native int DrawingVisual_Drawing(int sender);
 public static final native int DrawingVisual_RenderOpen(int sender);
 public static final native int DrawingVisual_typeid();
 public static final native int EditingCommands_Backspace();

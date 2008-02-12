@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1304;
-int OS_nativeFunctionCallCount[1304];
+int OS_nativeFunctionCount = 1306;
+int OS_nativeFunctionCallCount[1306];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -262,6 +262,7 @@ char * OS_nativeFunctionNames[] = {
 	"DrawingColor_1FromArgb",
 	"DrawingColor_1ToArgb",
 	"DrawingContext_1Close",
+	"DrawingContext_1DrawDrawing",
 	"DrawingContext_1DrawEllipse",
 	"DrawingContext_1DrawGeometry",
 	"DrawingContext_1DrawImage",
@@ -274,6 +275,7 @@ char * OS_nativeFunctionNames[] = {
 	"DrawingContext_1PushOpacity",
 	"DrawingContext_1PushTransform",
 	"DrawingFontFamily_1Name",
+	"DrawingVisual_1Drawing",
 	"DrawingVisual_1RenderOpen",
 	"DrawingVisual_1typeid",
 	"EditingCommands_1Backspace",

@@ -1431,15 +1431,23 @@ public int internal_new_GC (GCData data) {
 	if (drawingContext != 0) {
 		OS.DrawingContext_PushClip(drawingContext, clip);
 	} else {
-		visual = OS.gcnew_DrawingVisual();
-		if (visual == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if ((state & CANVAS) != 0) {
+			visual = OS.SWTCanvas_Visual (handle);
+		} 
+		if (visual == 0) {
+			visual = OS.gcnew_DrawingVisual();
+			if (visual == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			if ((state & CANVAS) != 0) {
+				OS.SWTCanvas_Visual (handle, visual);
+			} 
+		}
 		OS.ContainerVisual_Clip (visual, clip);
 		int dc = OS.DrawingVisual_RenderOpen (visual);
-		if (dc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		if ((state & CANVAS) != 0) {
-			OS.SWTCanvas_Visual (handle, visual);
-		}
+		if (dc == 0) SWT.error (SWT.ERROR_NO_HANDLES);		
 		drawingContext = dc;
+		int drawing = OS.DrawingVisual_Drawing(visual);
+		OS.DrawingContext_DrawDrawing(drawingContext, drawing);
+		OS.GCHandle_Free(drawing);
 	}
 	OS.GCHandle_Free (rect);
 	OS.GCHandle_Free (clip);
