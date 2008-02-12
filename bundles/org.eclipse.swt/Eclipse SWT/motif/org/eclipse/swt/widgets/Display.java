@@ -100,8 +100,8 @@ public class Display extends Device {
 	/* Windows, Events and Callbacks */
 	Callback windowCallback;
 	int windowProc, shellHandle;
-	static String APP_NAME = "SWT";
-	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle";
+	static String APP_NAME = "SWT"; //$NON-NLS-1$
+	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle"; //$NON-NLS-1$
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
 	XKeyEvent keyEvent = new XKeyEvent ();
@@ -289,7 +289,7 @@ public class Display extends Device {
 	static boolean DisplayDisposed;
 
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
 	* This code is intentionally commented.  In order
 	* to support CLDC, .class cannot be used because
@@ -625,7 +625,7 @@ static void checkDisplay (Thread thread, boolean multiple) {
 	synchronized (Device.class) {
 		for (int i=0; i<Displays.length; i++) {
 			if (Displays [i] != null) {
-				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]"); //$NON-NLS-1$
 				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 			}
 		}
@@ -745,7 +745,7 @@ void createDisplay (DeviceData data) {
 		*/
 		int ptr1 = 0, ptr2 = 0; 
 		if (OS.IsLinux && OS.IsDBLocale) {
-			String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:";
+			String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:"; //$NON-NLS-1$
 			byte [] buffer = Converter.wcsToMbcs (null, resource, true);
 			ptr1 = OS.XtMalloc (buffer.length);
 			if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
@@ -801,11 +801,11 @@ int createPixmap (String name) {
 	byte[] buffer = Converter.wcsToMbcs (null, name, true);
 	int pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
 	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
-		buffer = Converter.wcsToMbcs (null, "default_" + name, true);
+		buffer = Converter.wcsToMbcs (null, "default_" + name, true); //$NON-NLS-1$
 		pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
 		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
 			if (OS.IsSunOS) {
-				buffer = Converter.wcsToMbcs (null, "/usr/dt/share/include/bitmaps/" + name, true);
+				buffer = Converter.wcsToMbcs (null, "/usr/dt/share/include/bitmaps/" + name, true); //$NON-NLS-1$
 				pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
 				if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
 			} else {
@@ -1871,7 +1871,7 @@ public Image getSystemImage (int style) {
 	switch (style) {
 		case SWT.ICON_ERROR:
 			if (errorPixmap == 0) {
-				errorPixmap = createPixmap ("xm_error");
+				errorPixmap = createPixmap ("xm_error"); //$NON-NLS-1$
 				errorMask = createMask (errorPixmap);
 			}
 			imagePixmap = errorPixmap;
@@ -1879,7 +1879,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_INFORMATION:
 			if (infoPixmap == 0) {
-				infoPixmap = createPixmap ("xm_information");
+				infoPixmap = createPixmap ("xm_information"); //$NON-NLS-1$
 				infoMask = createMask (infoPixmap);
 			}
 			imagePixmap = infoPixmap;
@@ -1887,7 +1887,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_QUESTION:
 			if (questionPixmap == 0) {
-				questionPixmap = createPixmap ("xm_question");
+				questionPixmap = createPixmap ("xm_question"); //$NON-NLS-1$
 				questionMask = createMask (questionPixmap);
 			}
 			imagePixmap = questionPixmap;
@@ -1895,7 +1895,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_WARNING:
 			if (warningPixmap == 0) {
-				warningPixmap = createPixmap ("xm_warning");
+				warningPixmap = createPixmap ("xm_warning"); //$NON-NLS-1$
 				warningMask = createMask (warningPixmap);
 			}
 			imagePixmap = warningPixmap;
@@ -1903,7 +1903,7 @@ public Image getSystemImage (int style) {
 			break;
 		case SWT.ICON_WORKING:
 			if (workingPixmap == 0) {
-				workingPixmap = createPixmap ("xm_working");
+				workingPixmap = createPixmap ("xm_working"); //$NON-NLS-1$
 				workingMask = createMask (workingPixmap);
 			}
 			imagePixmap = workingPixmap;
@@ -2006,7 +2006,7 @@ void initializeButton () {
 	* GP's some time later  when a button widget is created with empty
 	* text. The fix is to create the button with a non-empty string.
 	*/
-	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
+	byte [] buffer = Converter.wcsToMbcs(null, "string", true); //$NON-NLS-1$
 	widgetHandle = OS.XmCreatePushButton (shellHandle, buffer, null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
@@ -2108,31 +2108,31 @@ void initializeDialog () {
 void initializeDisplay () {
 	
 	/* Create the callbacks */
-	focusCallback = new Callback (this, "focusProc", 4);
+	focusCallback = new Callback (this, "focusProc", 4); //$NON-NLS-1$
 	focusProc = focusCallback.getAddress ();
 	if (focusProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowCallback = new Callback (this, "windowProc", 4);
+	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
+	windowTimerCallback = new Callback (this, "windowTimerProc", 2); //$NON-NLS-1$
 	windowTimerProc = windowTimerCallback.getAddress ();
 	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	timerCallback = new Callback (this, "timerProc", 2);
+	timerCallback = new Callback (this, "timerProc", 2); //$NON-NLS-1$
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	caretCallback = new Callback (this, "caretProc", 2);
+	caretCallback = new Callback (this, "caretProc", 2); //$NON-NLS-1$
 	caretProc = caretCallback.getAddress ();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2); //$NON-NLS-1$
 	mouseHoverProc = mouseHoverCallback.getAddress ();
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	checkExposeCallback = new Callback (this, "checkExposeProc", 3);
+	checkExposeCallback = new Callback (this, "checkExposeProc", 3); //$NON-NLS-1$
 	checkExposeProc = checkExposeCallback.getAddress ();
 	if (checkExposeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	checkResizeCallback = new Callback (this, "checkResizeProc", 3);
+	checkResizeCallback = new Callback (this, "checkResizeProc", 3); //$NON-NLS-1$
 	checkResizeProc = checkResizeCallback.getAddress ();
 	if (checkResizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	wakeCallback = new Callback (this, "wakeProc", 3);
+	wakeCallback = new Callback (this, "wakeProc", 3); //$NON-NLS-1$
 	wakeProc = wakeCallback.getAddress ();
 	if (wakeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
@@ -2175,7 +2175,7 @@ void initializeLabel () {
 	* GP's some time later  when a label widget is created with empty
 	* text. The fix is to create the label with a non-empty string.
 	*/
-	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
+	byte [] buffer = Converter.wcsToMbcs(null, "string", true); //$NON-NLS-1$
 	widgetHandle = OS.XmCreateLabel (shellHandle, buffer, null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
@@ -2250,12 +2250,12 @@ void initializeNumLock () {
 		if (keymapCode [0] == numLockCode) {
 			int modIndex = i / keymap.max_keypermod;
 			switch (modIndex) {
-				case OS.Mod1MapIndex: numLock = "Mod1"; break;
-				case OS.Mod2MapIndex: numLock = "Mod2"; break;
-				case OS.Mod3MapIndex: numLock = "Mod3"; break;
-				case OS.Mod4MapIndex: numLock = "Mod4"; break;
-				case OS.Mod5MapIndex: numLock = "Mod5"; break;
-				default: numLock = "Mod2";
+				case OS.Mod1MapIndex: numLock = "Mod1"; break; //$NON-NLS-1$
+				case OS.Mod2MapIndex: numLock = "Mod2"; break; //$NON-NLS-1$
+				case OS.Mod3MapIndex: numLock = "Mod3"; break; //$NON-NLS-1$
+				case OS.Mod4MapIndex: numLock = "Mod4"; break; //$NON-NLS-1$
+				case OS.Mod5MapIndex: numLock = "Mod5"; break; //$NON-NLS-1$
+				default: numLock = "Mod2"; //$NON-NLS-1$
 			}
 			break;
 		}
@@ -2361,11 +2361,11 @@ void initializeText () {
 
 }
 void initializeTranslations () {
-	byte [] buffer1 = Converter.wcsToMbcs (null, "<Key>osfUp:\n<Key>osfDown:\n<Key>osfLeft:\n<Key>osfRight:\0");
+	byte [] buffer1 = Converter.wcsToMbcs (null, "<Key>osfUp:\n<Key>osfDown:\n<Key>osfLeft:\n<Key>osfRight:\0"); //$NON-NLS-1$
 	arrowTranslations = OS.XtParseTranslationTable (buffer1);
-	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0");
+	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0"); //$NON-NLS-1$
 	tabTranslations = OS.XtParseTranslationTable (buffer2);
-	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
+	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0"); //$NON-NLS-1$
 	dragTranslations = OS.XtParseTranslationTable (buffer3);
 }
 void initializeWidgetTable () {
@@ -2997,6 +2997,15 @@ void releaseDisplay () {
 
 	popups = null;
 	focusedCombo = null;
+	displayName = appName = appClass = wake_buffer = fd_set = null;
+	keyEvent = null;
+	eventTable = filterTable = null;
+	indexTable = userData = timeout = null;
+	widgetTable = shellTable = null;
+	xExposeEvent = null;
+	xConfigureEvent = null;
+	data = null;
+	values = keys = null;
 }
 void releaseToolTipHandle (int handle) {
 	if (mouseHoverHandle == handle) removeMouseHoverTimeOut ();
@@ -3409,7 +3418,7 @@ void setToolTipText (int handle, String toolTipText) {
 }
 void showToolTip (int handle, String toolTipText) {
 	int shellHandle = 0;
-	if (toolTipText == null) toolTipText = "";
+	if (toolTipText == null) toolTipText = ""; //$NON-NLS-1$
 	char [] text = new char [toolTipText.length ()];
 	toolTipText.getChars (0, text.length, text, 0);
 	Widget.fixMnemonic (text);
@@ -3740,7 +3749,7 @@ int windowProc (int w, int client_data, int call_data, int continue_to_dispatch)
 	return widget.windowProc (w, client_data, call_data, continue_to_dispatch);
 }
 String wrapText (String text, Font font, int width) {
-	String Lf = "\n";
+	String Lf = "\n"; //$NON-NLS-1$
 	text = convertToLf (text);
 	int length = text.length ();
 	if (width <= 0 || length == 0 || length == 1) return text;
