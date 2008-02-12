@@ -2113,23 +2113,23 @@ public void setSelection (TreeItem [] items) {
 	}
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
-		if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (item.isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+		if (item != null && item.isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	}
-	if ((style & SWT.SINGLE) != 0) {
-		ignoreSelection = true;
-		OS.TreeViewItem_IsSelected (items [0].handle, true);
-		ignoreSelection = false;
-		return;
-	}
-    deselectAll ();
+	deselectAll ();
 	ignoreSelection = true;
-    setIsSelectionActiveProperty(true);
-	for (int i = 0; i < length; i++) {
-		TreeItem item = items [i];
-		OS.TreeViewItem_IsSelected (item.handle, true);	
+	if ((style & SWT.SINGLE) != 0) {
+		TreeItem select = items [0];
+		if (select != null) {
+			OS.TreeViewItem_IsSelected (items [0].handle, true);
+		}
+	} else {
+		setIsSelectionActiveProperty (true);
+		for (int i = 0; i < length; i++) {
+			TreeItem item = items [i];
+			if (item != null) OS.TreeViewItem_IsSelected (item.handle, true);	
+		}
+		setIsSelectionActiveProperty (false);
 	}
-	setIsSelectionActiveProperty(false);
 	ignoreSelection = false;
 }
 
