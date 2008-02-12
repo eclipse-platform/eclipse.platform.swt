@@ -286,15 +286,15 @@ public class Display extends Device {
 		
 	};
 
-	static String APP_NAME = "SWT";
-	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
+	static String APP_NAME = "SWT"; //$NON-NLS-1$
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 
 	/* Multiple Displays. */
 	static Display Default;
 	static Display [] Displays = new Display [4];
 				
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 			
 	/* Display Data */
 	Object data;
@@ -755,7 +755,7 @@ static void checkDisplay (Thread thread, boolean multiple) {
 	synchronized (Device.class) {
 		for (int i=0; i<Displays.length; i++) {
 			if (Displays [i] != null) {
-				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]"); //$NON-NLS-1$
 				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 			}
 		}
@@ -968,7 +968,7 @@ void createDisplay (DeviceData data) {
 	if (OS.GetCurrentProcess (psn) == OS.noErr) {
 		int pid = OS.getpid ();
 		byte [] buffer = null;
-		int ptr = OS.getenv (ascii ("APP_NAME_" + pid));
+		int ptr = OS.getenv (ascii ("APP_NAME_" + pid)); //$NON-NLS-1$
 		if (ptr != 0) {
 			buffer = new byte [OS.strlen (ptr) + 1];
 			OS.memmove (buffer, ptr, buffer.length);
@@ -994,7 +994,7 @@ void createDisplay (DeviceData data) {
 		if (buffer != null) OS.CPSSetProcessName (psn, buffer);	
 		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
 		OS.SetFrontProcess (psn);
-		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
+		ptr = OS.getenv (ascii ("APP_ICON_" + pid)); //$NON-NLS-1$
 		if (ptr != 0) {
 			int image = readImageRef (ptr);
 			if (image != 0) {
@@ -2024,91 +2024,91 @@ protected void init () {
 	
 void initializeCallbacks () {
 	/* Create Callbacks */
-	actionCallback = new Callback (this, "actionProc", 2);
+	actionCallback = new Callback (this, "actionProc", 2); //$NON-NLS-1$
 	actionProc = actionCallback.getAddress ();
 	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	appleEventCallback = new Callback (this, "appleEventProc", 3);
+	appleEventCallback = new Callback (this, "appleEventProc", 3); //$NON-NLS-1$
 	appleEventProc = appleEventCallback.getAddress ();
 	if (appleEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	caretCallback = new Callback(this, "caretProc", 2);
+	caretCallback = new Callback(this, "caretProc", 2); //$NON-NLS-1$
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	clockCallback = new Callback (this, "clockProc", 3);
+	clockCallback = new Callback (this, "clockProc", 3); //$NON-NLS-1$
 	clockProc = clockCallback.getAddress ();
 	if (clockProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	commandCallback = new Callback (this, "commandProc", 3);
+	commandCallback = new Callback (this, "commandProc", 3); //$NON-NLS-1$
 	commandProc = commandCallback.getAddress ();
 	if (commandProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	controlCallback = new Callback (this, "controlProc", 3);
+	controlCallback = new Callback (this, "controlProc", 3); //$NON-NLS-1$
 	controlProc = controlCallback.getAddress ();
 	if (controlProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	accessibilityCallback = new Callback (this, "accessibilityProc", 3);
+	accessibilityCallback = new Callback (this, "accessibilityProc", 3); //$NON-NLS-1$
 	accessibilityProc = accessibilityCallback.getAddress ();
 	if (accessibilityProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	drawItemCallback = new Callback (this, "drawItemProc", 7);
+	drawItemCallback = new Callback (this, "drawItemProc", 7); //$NON-NLS-1$
 	drawItemProc = drawItemCallback.getAddress ();
 	if (drawItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	itemCompareCallback = new Callback (this, "itemCompareProc", 4);
+	itemCompareCallback = new Callback (this, "itemCompareProc", 4); //$NON-NLS-1$
 	itemCompareProc = itemCompareCallback.getAddress ();
 	if (itemCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	itemDataCallback = new Callback (this, "itemDataProc", 5);
+	itemDataCallback = new Callback (this, "itemDataProc", 5); //$NON-NLS-1$
 	itemDataProc = itemDataCallback.getAddress ();
 	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	itemNotificationCallback = new Callback (this, "itemNotificationProc", 3);
+	itemNotificationCallback = new Callback (this, "itemNotificationProc", 3); //$NON-NLS-1$
 	itemNotificationProc = itemNotificationCallback.getAddress ();
 	if (itemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	helpCallback = new Callback (this, "helpProc", 5);
+	helpCallback = new Callback (this, "helpProc", 5); //$NON-NLS-1$
 	helpProc = helpCallback.getAddress ();
 	if (helpProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	hitTestCallback = new Callback (this, "hitTestProc", 5);
+	hitTestCallback = new Callback (this, "hitTestProc", 5); //$NON-NLS-1$
 	hitTestProc = hitTestCallback.getAddress ();
 	if (hitTestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	keyboardCallback = new Callback (this, "keyboardProc", 3);
+	keyboardCallback = new Callback (this, "keyboardProc", 3); //$NON-NLS-1$
 	keyboardProc = keyboardCallback.getAddress ();
 	if (keyboardProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	menuCallback = new Callback (this, "menuProc", 3);
+	menuCallback = new Callback (this, "menuProc", 3); //$NON-NLS-1$
 	menuProc = menuCallback.getAddress ();
 	if (menuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2); //$NON-NLS-1$
 	mouseHoverProc = mouseHoverCallback.getAddress ();
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	mouseCallback = new Callback (this, "mouseProc", 3);
+	mouseCallback = new Callback (this, "mouseProc", 3); //$NON-NLS-1$
 	mouseProc = mouseCallback.getAddress ();
 	if (mouseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	timerCallback = new Callback (this, "timerProc", 2);
+	timerCallback = new Callback (this, "timerProc", 2); //$NON-NLS-1$
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	trackingCallback = new Callback (this, "trackingProc", 6);
+	trackingCallback = new Callback (this, "trackingProc", 6); //$NON-NLS-1$
 	trackingProc = trackingCallback.getAddress ();
 	if (trackingProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowCallback = new Callback (this, "windowProc", 3);
+	windowCallback = new Callback (this, "windowProc", 3); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	colorCallback = new Callback (this, "colorProc", 4);
+	colorCallback = new Callback (this, "colorProc", 4); //$NON-NLS-1$
 	colorProc = colorCallback.getAddress ();
 	if (colorProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	textInputCallback = new Callback (this, "textInputProc", 3);
+	textInputCallback = new Callback (this, "textInputProc", 3); //$NON-NLS-1$
 	textInputProc = textInputCallback.getAddress ();
 	if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	appearanceCallback = new Callback (this, "appearanceProc", 3);
+	appearanceCallback = new Callback (this, "appearanceProc", 3); //$NON-NLS-1$
 	appearanceProc = appearanceCallback.getAddress ();
 	if (appearanceProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	trayItemCallback = new Callback (this, "trayItemProc", 4);
+	trayItemCallback = new Callback (this, "trayItemProc", 4); //$NON-NLS-1$
 	trayItemProc = trayItemCallback.getAddress ();
 	if (trayItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	observerCallback = new Callback (this, "observerProc", 3);
+	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
 	observerProc = observerCallback.getAddress ();
 	if (observerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	sourceCallback = new Callback (this, "sourceProc", 1);
+	sourceCallback = new Callback (this, "sourceProc", 1); //$NON-NLS-1$
 	sourceProc = sourceCallback.getAddress ();
 	if (sourceProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	searchCallback = new Callback (this, "searchProc", 3);
+	searchCallback = new Callback (this, "searchProc", 3); //$NON-NLS-1$
 	searchProc = searchCallback.getAddress ();
 	if (searchProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	releaseCallback = new Callback (this, "releaseDataProc", 3);
+	releaseCallback = new Callback (this, "releaseDataProc", 3); //$NON-NLS-1$
 	releaseProc = releaseCallback.getAddress ();
 	if (releaseProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	coreEventCallback = new Callback (this, "coreEventProc", 3);
+	coreEventCallback = new Callback (this, "coreEventProc", 3); //$NON-NLS-1$
 	coreEventProc = coreEventCallback.getAddress ();
 	if (coreEventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
@@ -2171,7 +2171,7 @@ void initializeCallbacks () {
 
 void initializeFonts () {
 	//TEMPORARY CODE
-	smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
+	smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null; //$NON-NLS-1$
 }
 
 void initializeInsets () {
@@ -2917,19 +2917,19 @@ int readImageRef(int path) {
 			range.length = length;
 			OS.CFStringGetCharacters(extention, range, buffer);
 			String ext = new String(buffer);
-			if (ext.equalsIgnoreCase("png")) {
+			if (ext.equalsIgnoreCase("png")) { //$NON-NLS-1$
 				int provider = OS.CGDataProviderCreateWithURL(url);
 				if (provider != 0) {
 					image = OS.CGImageCreateWithPNGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault);
 					OS.CGDataProviderRelease(provider);
 				}
-			} else if (ext.equalsIgnoreCase("jpeg") || ext.equals("jpg")) {
+			} else if (ext.equalsIgnoreCase("jpeg") || ext.equals("jpg")) { //$NON-NLS-1$ //$NON-NLS-2$
 				int provider = OS.CGDataProviderCreateWithURL(url);
 				if (provider != 0) {
 					image = OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault);
 					OS.CGDataProviderRelease(provider);
 				}
-			} else if (ext.equalsIgnoreCase("icns")) {
+			} else if (ext.equalsIgnoreCase("icns")) { //$NON-NLS-1$
 				byte[] fsRef = new byte[80];
 				if (OS.CFURLGetFSRef(url, fsRef)) {
 					byte[] fsSpec = new byte[70];
@@ -3150,7 +3150,7 @@ void releaseDisplay () {
 	accessibilityCallback = clockCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = searchCallback = trayItemCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = observerCallback = sourceCallback = null;
-	textInputCallback = coreEventCallback = null;
+	textInputCallback = coreEventCallback = releaseCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = searchProc = trayItemProc = 0;
 	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = observerProc = sourceProc = releaseProc = 0;
@@ -3158,14 +3158,21 @@ void releaseDisplay () {
 	textInputProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
+	timerList = null;
 	timerProc = 0;
 	currentControl = focusControl = focusCombo = null;
 	activeShell = null;
 	helpWidget = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
-	menus = popups = null;
+	widgetTable = menus = popups = null;
 	menuBar = null;
+	eventTable = filterTable = null;
+	thread = null;
+	indexTable = property = kchrState = null;
+	buttonInset = tabFolderNorthInset = tabFolderSouthInset = comboInset = editTextInset = searchTextInset = null;
+	data = highlightColor = null;
+	values = keys = null;
 
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
