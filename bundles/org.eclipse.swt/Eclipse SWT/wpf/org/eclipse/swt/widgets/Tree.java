@@ -748,8 +748,21 @@ public int getGridLineWidth () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	//TODO
-	return 0;
+	if (columns == 0) return 0;
+	int column = OS.GridViewColumnCollection_default (columns, 0);
+	int height = 0;
+	int header = OS.GridViewColumn_Header (column);
+	if (header != 0) {
+		height = (int) OS.FrameworkElement_ActualHeight (header);
+		if (height == 0) { 
+			updateLayout (header);
+			height = (int) OS.FrameworkElement_ActualHeight (header);
+		}
+		OS.GCHandle_Free (header);
+	}
+	OS.GCHandle_Free (column);
+	OS.GCHandle_Free (columns);
+	return height;
 }
 
 /**
