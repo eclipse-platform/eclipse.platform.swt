@@ -1433,13 +1433,14 @@ public int internal_new_GC (GCData data) {
 	} else {
 		if ((state & CANVAS) != 0) {
 			visual = OS.SWTCanvas_Visual (handle);
-		} 
-		if (visual == 0) {
+			if (visual == 0) {
+				visual = OS.gcnew_DrawingVisual();
+				if (visual == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				OS.SWTCanvas_Visual (handle, visual);
+			}
+		} else {
 			visual = OS.gcnew_DrawingVisual();
 			if (visual == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			if ((state & CANVAS) != 0) {
-				OS.SWTCanvas_Visual (handle, visual);
-			} 
 		}
 		OS.ContainerVisual_Clip (visual, clip);
 		int dc = OS.DrawingVisual_RenderOpen (visual);
