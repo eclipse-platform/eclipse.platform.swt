@@ -1206,7 +1206,8 @@ public int getSelectionCount () {
 		result = item == 0 ? 0 : 1;
 		OS.GCHandle_Free (item);
 	} else {
-		result = 0;
+		TreeItem[] selectedItems = getSelectedItems(handle, new TreeItem[4], new int[] {0});
+		result = selectedItems.length;
 	}
 	return result;
 }
