@@ -2344,7 +2344,8 @@ void releaseDisplay () {
 	popups = null;
 	mouseControl = null;
 	shells = null;
-	
+	eventTable = filterTable = null;
+
 	/* Uninitialize OLE */
 	Win32.OleUninitialize ();
 }
