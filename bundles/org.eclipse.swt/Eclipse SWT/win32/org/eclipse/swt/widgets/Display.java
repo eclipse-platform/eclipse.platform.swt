@@ -3546,7 +3546,8 @@ void releaseDisplay () {
 	keys = null;
 	values = null;
 	bars = popups = null;
-	indexTable = timerIds = null;
+	indexTable = null; 
+	timerIds = null;
 	controlTable = null;
 	lastControl = lastGetControl = lastHittestControl = null;
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
