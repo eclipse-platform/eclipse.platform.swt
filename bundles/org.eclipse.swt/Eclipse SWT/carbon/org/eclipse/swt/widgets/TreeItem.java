@@ -1033,7 +1033,7 @@ public void setBackground (int index, Color color) {
 	if (oldColor == color) return;
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
-	cached = true; 
+	cached = true;
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	redraw (columnId);
 }
@@ -1314,8 +1314,10 @@ public void setImage (int index, Image image) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
-	redraw (columnId);
+	if (0 <= index && index < count) {
+		int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+		redraw (columnId);
+	}
 }
 
 public void setImage (Image image) {
@@ -1397,8 +1399,10 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
-	redraw (columnId);
+	if (0 <= index && index < count) {
+		int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+		redraw (columnId);
+	}
 }
 
 public void setText (String string) {
