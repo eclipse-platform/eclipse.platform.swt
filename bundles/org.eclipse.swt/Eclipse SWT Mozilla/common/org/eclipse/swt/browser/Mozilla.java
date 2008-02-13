@@ -1213,7 +1213,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return SetDimensions ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return GetDimensions (args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return GetDimensions ((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
 		public int /*long*/ method5 (int /*long*/[] args) {return SetFocus ();}
 		public int /*long*/ method6 (int /*long*/[] args) {return GetVisibility (args[0]);}
 		public int /*long*/ method7 (int /*long*/[] args) {return SetVisibility ((int)/*64*/args[0]);}
@@ -2421,13 +2421,36 @@ int ExitModalEventLoop (int aStatus) {
 /* nsIEmbeddingSiteWindow */ 
 
 int SetDimensions (int flags, int x, int y, int cx, int cy) {
-	if (flags == nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) location = new Point (x, y);
-	return XPCOM.NS_OK;   	
-}	
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) != 0) {
+		browser.getShell ().setLocation (x, y);
+	}
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_INNER) != 0) {
+		browser.setSize (cx, cy);
+	}
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_OUTER) != 0) {
+		browser.getShell ().setSize (cx, cy);
+	}
+	return XPCOM.NS_OK;
+}
 
-int GetDimensions (int /*long*/ flags, int /*long*/ x, int /*long*/ y, int /*long*/ cx, int /*long*/ cy) {
-	return XPCOM.NS_OK;     	
-}	
+int GetDimensions (int flags, int /*long*/ x, int /*long*/ y, int /*long*/ cx, int /*long*/ cy) {
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) != 0) {
+		Point location = browser.getShell ().getLocation ();
+		if (x != 0) C.memmove (x, new int[] {location.x}, 4); /* PRInt32 */
+		if (y != 0) C.memmove (y, new int[] {location.y}, 4); /* PRInt32 */
+	}
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_INNER) != 0) {
+		Point size = browser.getSize ();
+		if (cx != 0) C.memmove (cx, new int[] {size.x}, 4); /* PRInt32 */
+		if (cy != 0) C.memmove (cy, new int[] {size.y}, 4); /* PRInt32 */
+	}
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_OUTER) != 0) {
+		Point size = browser.getShell().getSize ();
+		if (cx != 0) C.memmove (cx, new int[] {size.x}, 4); /* PRInt32 */
+		if (cy != 0) C.memmove (cy, new int[] {size.y}, 4); /* PRInt32 */
+	}
+	return XPCOM.NS_OK;
+}
 
 int SetFocus () {
 	int /*long*/[] result = new int /*long*/[1];
