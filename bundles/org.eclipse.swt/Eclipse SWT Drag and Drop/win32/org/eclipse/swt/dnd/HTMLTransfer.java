@@ -66,7 +66,7 @@ public void javaToNative (Object object, TransferData transferData){
 	int count = string.length();
 	char[] chars = new char[count + 1];
 	string.getChars(0, count, chars, 0);
-	int codePage = OS.GetACP();
+	int codePage = OS.CP_UTF8;
 	int cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
 	if (cchMultiByte == 0) {
 		transferData.stgmedium = new STGMEDIUM();
@@ -141,11 +141,11 @@ public Object nativeToJava(TransferData transferData){
 		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
-			int codePage = OS.GetACP();
-			int cchWideChar  = OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+			int codePage = OS.CP_UTF8;
+			int cchWideChar  = OS.MultiByteToWideChar (codePage, 0, lpMultiByteStr, -1, null, 0);
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
-			OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+			OS.MultiByteToWideChar (codePage, 0, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
 			String string = new String(lpWideCharStr);
 			int fragmentStart = 0, fragmentEnd = 0;
 			int start = string.indexOf(StartFragment) + StartFragment.length();
@@ -170,12 +170,10 @@ public Object nativeToJava(TransferData transferData){
 					break;
 				}
 			}
-			if (fragmentEnd <= fragmentStart || fragmentEnd > lpWideCharStr.length) return null;
-			/* TO DO:
-			 * FragmentStart and FragmentEnd are offsets in original byte stream, not
-			 * the wide char version of the byte stream.
-			 */
-			String s = string.substring(fragmentStart, fragmentEnd);
+			if (fragmentEnd <= fragmentStart || fragmentEnd > OS.strlen(lpMultiByteStr)) return null;
+			cchWideChar = OS.MultiByteToWideChar (codePage, 0, lpMultiByteStr+fragmentStart, fragmentEnd - fragmentStart, lpWideCharStr, lpWideCharStr.length);
+			if (cchWideChar == 0) return null;
+			String s = new String(lpWideCharStr, 0, cchWideChar);
 			/*
 			 * Firefox includes <!--StartFragment --> in the fragment, so remove it.
 			 */
