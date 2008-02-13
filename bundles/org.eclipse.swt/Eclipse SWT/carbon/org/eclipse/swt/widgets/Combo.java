@@ -184,7 +184,9 @@ public void add (String string, int index) {
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	if (ptr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	int result;
+	int selectionIndex = -1;
 	if ((style & SWT.READ_ONLY) != 0) {
+		selectionIndex = OS.GetControlValue (handle) - 1;
 		result = OS.InsertMenuItemTextWithCFString (menuHandle, ptr, (short)index, 0, 0);
 		/*
 		* Feature in the Macintosh.  Setting text that starts with "-" makes the
@@ -198,6 +200,13 @@ public void add (String string, int index) {
 	}
 	OS.CFRelease (ptr);
 	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
+	/*
+	* When inserting an item into a READ_ONLY combo at or above the selected
+	* index neither the selection index nor the text get updated. Fix is to
+	* update the selection index to be sure the displayed item matches the 
+	* selected index.
+	*/
+	if (selectionIndex >= index) OS.SetControl32BitValue (handle, selectionIndex + 2);
 }
 
 /**
