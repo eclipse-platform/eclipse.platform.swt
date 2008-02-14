@@ -250,6 +250,10 @@ public void create(Composite parent, int style) {
 					browser.notifyListeners(e.type, e);
 					break;
 				}
+				case SWT.MouseWheel: {
+					/* MouseWheel events come from the DOM */
+					e.doit = false;
+				}
 			}
 		}
 	};
@@ -257,6 +261,7 @@ public void create(Composite parent, int style) {
 	browser.addListener(SWT.Resize, listener);
 	site.addListener(SWT.KeyDown, listener);
 	site.addListener(SWT.KeyUp, listener);
+	site.addListener(SWT.MouseWheel, listener);
 	
 	OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
