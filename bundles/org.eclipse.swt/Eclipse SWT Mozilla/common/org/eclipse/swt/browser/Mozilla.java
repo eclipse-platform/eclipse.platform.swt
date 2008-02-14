@@ -2422,6 +2422,7 @@ int ExitModalEventLoop (int aStatus) {
 
 int SetDimensions (int flags, int x, int y, int cx, int cy) {
 	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) != 0) {
+		location = new Point (x, y);
 		browser.getShell ().setLocation (x, y);
 	}
 	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_INNER) != 0) {
