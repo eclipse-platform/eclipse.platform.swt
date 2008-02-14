@@ -177,7 +177,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.DrawText (hDC, buffer, -1, rect, flags);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6);
+		int offsetY = OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed () ? 0 : 1;
+		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6 + offsetY);
 	}
 	return size;
 }
@@ -193,8 +194,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
+	int offsetY = OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed () ? 0 : 1;
 	trim.x -= CLIENT_INSET;
-	trim.y -= tm.tmHeight;
+	trim.y -= tm.tmHeight + offsetY;
 	trim.width += CLIENT_INSET * 2;
 	trim.height += tm.tmHeight + CLIENT_INSET;
 	return trim;
@@ -246,7 +248,8 @@ public Rectangle getClientArea () {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int x = CLIENT_INSET, y = tm.tmHeight;
+	int offsetY = OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed () ? 0 : 1;
+	int x = CLIENT_INSET, y = tm.tmHeight + offsetY;
 	int width = Math.max (0, rect.right - CLIENT_INSET * 2);
 	int height = Math.max (0, rect.bottom - y - CLIENT_INSET);
 	return new Rectangle (x, y, width, height);
