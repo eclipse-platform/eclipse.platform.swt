@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * ScrolledComposite snippet: Use a ScrolledComposite to scroll a Tree vertically.
+ * ScrolledComposite snippet: use a ScrolledComposite to scroll a Tree vertically
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
