@@ -229,6 +229,7 @@ public void create (Composite parent, int style) {
 	int[] mask = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlGetClickActivation,
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 	};
@@ -346,6 +347,10 @@ int handleCallback(int nextHandler, int theEvent) {
 	switch (OS.GetEventClass(theEvent)) {
 		case OS.kEventClassControl:
 			switch (eventKind) {
+				case OS.kEventControlGetClickActivation: {
+					OS.SetEventParameter (theEvent, OS.kEventParamClickActivation, OS.typeClickActivationResult, 4, new int [] {OS.kActivateAndHandleClick});
+					return OS.noErr;
+				}
 				case OS.kEventControlSetCursor: {
 					return OS.noErr;
 				}
