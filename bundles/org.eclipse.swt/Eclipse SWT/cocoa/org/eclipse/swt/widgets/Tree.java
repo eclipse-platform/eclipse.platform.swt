@@ -712,10 +712,20 @@ void destroyItem (TreeItem item) {
 	items [count] = null;
 	if (parentItem != null) {
 		parentItem.itemCount = count;
+		((NSOutlineView)view).reloadItem_reloadChildren_(parentItem.handle, true);
 	} else {
 		this.itemCount = count;
+		((NSOutlineView)view).reloadItem_(null);
 	}
-	((NSTableView)view).noteNumberOfRowsChanged();
+	
+	//noteNumberOfRowsChanged was causing crashes whenever
+	//a TreeItem was disposed. 
+	//Using reloadItem avoids the crashes.
+	//Not sure that this NSTableView function 
+	//makes sense in an NSOutlineView.
+	
+	//((NSTableView)view).noteNumberOfRowsChanged();
+	
 //	setScrollWidth (true);
 //	fixScrollBar ();
 }
@@ -1487,7 +1497,8 @@ public void removeAll () {
 	}
 	items = new TreeItem [4];
 	itemCount = 0;
-	((NSTableView)view).noteNumberOfRowsChanged();
+	((NSOutlineView)view).reloadItem_(null);
+	//((NSTableView)view).noteNumberOfRowsChanged();
 //	setScrollWidth (true);
 }
 

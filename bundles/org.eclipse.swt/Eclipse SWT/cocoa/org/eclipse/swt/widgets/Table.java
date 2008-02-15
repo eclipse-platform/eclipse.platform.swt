@@ -1500,8 +1500,8 @@ public void removeAll () {
 		TableItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
-	((NSTableView)view).noteNumberOfRowsChanged();
 	setTableEmpty ();
+	((NSTableView)view).noteNumberOfRowsChanged();
 }
 
 /**
