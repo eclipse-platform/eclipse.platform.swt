@@ -47,6 +47,7 @@ class Safari extends WebBrowser {
 	static final int MAX_PROGRESS = 100;
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
@@ -1365,20 +1366,24 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	 */
 	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
 
-	LocationEvent newEvent = new LocationEvent(browser);
-	newEvent.display = browser.getDisplay();
-	newEvent.widget = browser;
-	newEvent.location = url2;
-	newEvent.doit = true;
-	if (locationListeners != null) {
-		changingLocation = true;
-		for (int i = 0; i < locationListeners.length; i++) {
-			locationListeners[i].changing(newEvent);
+	if (url2.startsWith (URI_APPLEWEBDATA)) {
+		/* listeners should not be notified of internal transitions like this */
+		Cocoa.objc_msgSend(listener, Cocoa.S_use);
+	} else {
+		LocationEvent newEvent = new LocationEvent(browser);
+		newEvent.display = browser.getDisplay();
+		newEvent.widget = browser;
+		newEvent.location = url2;
+		newEvent.doit = true;
+		if (locationListeners != null) {
+			changingLocation = true;
+			for (int i = 0; i < locationListeners.length; i++) {
+				locationListeners[i].changing(newEvent);
+			}
+			changingLocation = false;
 		}
-		changingLocation = false;
+		Cocoa.objc_msgSend(listener, newEvent.doit ? Cocoa.S_use : Cocoa.S_ignore);
 	}
-
-	Cocoa.objc_msgSend(listener, newEvent.doit ? Cocoa.S_use : Cocoa.S_ignore);
 
 	if (html != null && !browser.isDisposed()) {
 		String html = this.html;
