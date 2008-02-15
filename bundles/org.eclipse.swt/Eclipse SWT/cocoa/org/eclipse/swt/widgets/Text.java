@@ -351,7 +351,7 @@ void createHandle () {
 		scrollWidget.initWithFrame(new NSRect());
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
 		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
-		scrollWidget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+		scrollWidget.setAutoresizesSubviews(true);
 		scrollWidget.setTag(jniRef);
 		
 		SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
@@ -359,23 +359,11 @@ void createHandle () {
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.BORDER) == 0) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 		
-		NSSize size = new NSSize ();
+		NSSize size = new NSSize();
 		size.width = size.height = Float.MAX_VALUE;
-		widget.setMaxSize (size);
-		widget.setVerticallyResizable ((style & SWT.VERTICAL) != 0);
-		widget.setHorizontallyResizable ((style & SWT.HORIZONTAL) != 0);
-		int mask = 0;
-		if ((style & SWT.VERTICAL) != 0) mask |= OS.NSViewWidthSizable;
-		if ((style & SWT.HORIZONTAL) != 0) mask |= OS.NSViewHeightSizable;
-		widget.setAutoresizingMask (mask);
-		
-		widget.textContainer().setContainerSize (size);
-		if ((style & SWT.VERTICAL) != 0 && (style & SWT.HORIZONTAL) == 0) {
-			widget.textContainer().setWidthTracksTextView (true);
-		}
-		if ((style & SWT.VERTICAL) != 0 && (style & SWT.HORIZONTAL) != 0) {
-			widget.textContainer().setWidthTracksTextView (false);
-		}
+		widget.setMaxSize(size);
+		widget.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
