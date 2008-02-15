@@ -128,6 +128,9 @@ void handleFocus () {
 	};
 	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
 	browser.getShell ().addListener (SWT.Deactivate, listener);
+}
+
+void handleMouseDown () {
 	int shellStyle = browser.getShell ().getStyle (); 
 	if ((shellStyle & SWT.ON_TOP) != 0 && (((shellStyle & SWT.NO_FOCUS) == 0) || ((browser.getStyle () & SWT.NO_FOCUS) == 0))) {
 		browser.getDisplay ().asyncExec (new Runnable () {
