@@ -103,6 +103,9 @@ void handleFocus () {
 	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
+void handleMouseDown () {
+}
+
 boolean hookEnterExit () {
 	return true;
 }
