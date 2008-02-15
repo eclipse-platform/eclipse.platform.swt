@@ -3074,6 +3074,7 @@ int HandleEvent (int /*long*/ event) {
 	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
 
 	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		delegate.handleMouseDown ();
 		mouseEvent.type = SWT.MouseDown;
 		mouseEvent.button = aButton[0] + 1;
 		mouseEvent.count = aDetail[0];

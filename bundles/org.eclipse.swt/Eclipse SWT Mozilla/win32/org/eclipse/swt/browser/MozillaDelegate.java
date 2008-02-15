@@ -69,6 +69,9 @@ String getSWTInitLibraryName () {
 void handleFocus () {
 }
 
+void handleMouseDown () {
+}
+
 boolean hookEnterExit () {
 	return true;
 }
