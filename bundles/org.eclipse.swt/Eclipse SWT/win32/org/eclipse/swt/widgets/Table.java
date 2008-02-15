@@ -2680,6 +2680,10 @@ public int indexOf (TableItem item) {
 	return -1;
 }
 
+boolean isCustomToolTip () {
+	return hooks (SWT.MeasureItem);
+}
+
 /**
  * Returns <code>true</code> if the item is selected,
  * and <code>false</code> otherwise.  Indices out of
@@ -6467,7 +6471,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
 		case OS.NM_CUSTOMDRAW: {
 			if (toolTipText != null) break;
-			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			if (isCustomToolTip ()) {
 				NMTTCUSTOMDRAW nmcd = new NMTTCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMTTCUSTOMDRAW.sizeof);
 				return wmNotifyToolTip (nmcd, lParam);
@@ -6483,7 +6487,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			int /*long*/ code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
 			if (hdr.code != OS.TTN_SHOW) tipRequested = false;
 			if (toolTipText != null) break;
-			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			if (isCustomToolTip ()) {
 				LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 				int pos = OS.GetMessagePos ();
 				POINT pt = new POINT();
@@ -6569,7 +6573,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 	if (OS.IsWinCE) return null;
 	switch (nmcd.dwDrawStage) {
 		case OS.CDDS_PREPAINT: {
-			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			if (isCustomToolTip ()) {
 				//TEMPORARY CODE
 //				nmcd.uDrawFlags |= OS.DT_CALCRECT;
 //				OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);

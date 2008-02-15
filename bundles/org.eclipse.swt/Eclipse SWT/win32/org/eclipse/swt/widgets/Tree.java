@@ -172,9 +172,9 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.PaintItem: {
 			customDraw = true;
 			style |= SWT.DOUBLE_BUFFERED;
+			if (isCustomToolTip ()) createItemToolTips ();
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			bits |= OS.TVS_NOTOOLTIPS;
 			if (eventType == SWT.MeasureItem) bits |= OS.TVS_NOHSCROLL;
 			/*
 			* Feature in Windows.  When the tree has the style
@@ -1955,6 +1955,7 @@ void createItem (TreeColumn column, int index) {
 		if (count != 0) {
 			if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
 		}
+		createItemToolTips ();
 		if (itemToolTipHandle != 0) {
 			OS.SendMessage (itemToolTipHandle, OS.TTM_SETDELAYTIME, OS.TTDT_AUTOMATIC, -1);
 		}
@@ -2215,7 +2216,6 @@ void createParent () {
 	if (hwndFocus == handle) OS.SetFocus (handle);
 	register ();
 	subclass ();
-	createItemToolTips ();
 }
 
 void createWidget () {
@@ -2631,7 +2631,7 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 			} else {
 				cellRect [0].right = Math.min (cellRect [0].right, rect.right);
 				if (OS.PtInRect (cellRect [0], pt)) {
-					if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+					if (isCustomToolTip ()) {
 						Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC);
 						if (isDisposed () || item [0].isDisposed ()) break;
 						itemRect [0] = new RECT ();
@@ -3630,6 +3630,10 @@ public int indexOf (TreeItem item) {
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	return hItem == 0 ? -1 : findIndex (hItem, item.handle);
+}
+
+boolean isCustomToolTip () {
+	return hooks (SWT.MeasureItem);
 }
 
 boolean isItemSelected (NMTVCUSTOMDRAW nmcd) {
@@ -5302,9 +5306,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 				if (strings != null) text = strings [index [0]];
 			}
 			//TEMPORARY CODE
-			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-				text = " ";
-			}
+			if (isCustomToolTip ()) text = " ";
 			if (text != null) return text;
 		}
 	}
@@ -6922,10 +6924,6 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (hdr.hwndFrom == hwndHeader) break;
 			if (hooks (SWT.MeasureItem)) {
 				if (hwndHeader == 0) createParent ();
-			} else {
-				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-					createItemToolTips ();
-				}
 			}
 			if (!customDraw && findImageControl () == null) {
 				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
@@ -7444,9 +7442,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				int width = toolRect.right - toolRect.left;
 				int height = toolRect.bottom - toolRect.top;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOZORDER | OS.SWP_NOSIZE;
-				if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-					flags &= ~OS.SWP_NOSIZE;
-				}
+				if (isCustomToolTip ()) flags &= ~OS.SWP_NOSIZE;
 				SetWindowPos (itemToolTipHandle, 0, toolRect.left, toolRect.top, width, height, flags);
 				return LRESULT.ONE;
 			}
@@ -7460,7 +7456,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 	if (OS.IsWinCE) return null;
 	switch (nmcd.dwDrawStage) {
 		case OS.CDDS_PREPAINT: {
-			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			if (isCustomToolTip ()) {
 				//TEMPORARY CODE
 //				nmcd.uDrawFlags |= OS.DT_CALCRECT;
 //				OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
