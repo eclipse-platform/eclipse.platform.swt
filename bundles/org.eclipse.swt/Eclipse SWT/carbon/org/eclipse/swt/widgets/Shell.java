@@ -467,7 +467,9 @@ void createHandle () {
 			*/
 			if ((style & SWT.TITLE) == 0) attributes |= OS.kWindowLiveResizeAttribute;
 			if (!OS.__BIG_ENDIAN__()) attributes |= OS.kWindowLiveResizeAttribute;
-		}
+		} 
+	} else {
+		if ((style & SWT.TOOL) == 0) attributes |= OS.kWindowNoShadowAttribute;
 	}
 	int windowClass = OS.kDocumentWindowClass;
 	if ((style & (SWT.CLOSE | SWT.TITLE)) == 0) windowClass = OS.kSheetWindowClass;
