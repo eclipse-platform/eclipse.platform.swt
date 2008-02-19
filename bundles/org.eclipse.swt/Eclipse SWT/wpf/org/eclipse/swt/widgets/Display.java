@@ -1665,6 +1665,7 @@ public int internal_new_GC (GCData data) {
 	int dc = OS.DrawingVisual_RenderOpen (visual);
 	if (dc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	data.visual = visual;
+	data.font = getSystemFont ();
 	return dc;
 }
 
