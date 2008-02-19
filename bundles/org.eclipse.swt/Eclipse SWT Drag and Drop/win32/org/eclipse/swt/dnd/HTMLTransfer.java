@@ -66,8 +66,8 @@ public void javaToNative (Object object, TransferData transferData){
 	int count = string.length();
 	char[] chars = new char[count + 1];
 	string.getChars(0, count, chars, 0);
-	int codePage = OS.CP_UTF8;
-	int cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
+	/* NOTE: CF_HTML uses UTF-8 encoding. */
+	int cchMultiByte = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, null, 0, null, null);
 	if (cchMultiByte == 0) {
 		transferData.stgmedium = new STGMEDIUM();
 		transferData.result = COM.DV_E_STGMEDIUM;
@@ -104,9 +104,9 @@ public void javaToNative (Object object, TransferData transferData){
 	count = buffer.length();
 	chars = new char[count + 1];
 	buffer.getChars(0, count, chars, 0);
-	cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
+	cchMultiByte = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, null, 0, null, null);
 	int /*long*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
-	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
+	OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.stgmedium.unionField = lpMultiByteStr;
@@ -141,11 +141,13 @@ public Object nativeToJava(TransferData transferData){
 		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
-			int codePage = OS.CP_UTF8;
-			int cchWideChar  = OS.MultiByteToWideChar (codePage, 0, lpMultiByteStr, -1, null, 0);
+			/* NOTE: CF_HTML uses UTF-8 encoding. 
+			 * The MSDN documentation for MultiByteToWideChar states that dwFlags must be set to 0 for UTF-8.
+			 * Otherwise, the function fails with ERROR_INVALID_FLAGS. */
+			int cchWideChar  = OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr, -1, null, 0);
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
-			OS.MultiByteToWideChar (codePage, 0, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+			OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
 			String string = new String(lpWideCharStr);
 			int fragmentStart = 0, fragmentEnd = 0;
 			int start = string.indexOf(StartFragment) + StartFragment.length();
@@ -171,7 +173,7 @@ public Object nativeToJava(TransferData transferData){
 				}
 			}
 			if (fragmentEnd <= fragmentStart || fragmentEnd > OS.strlen(lpMultiByteStr)) return null;
-			cchWideChar = OS.MultiByteToWideChar (codePage, 0, lpMultiByteStr+fragmentStart, fragmentEnd - fragmentStart, lpWideCharStr, lpWideCharStr.length);
+			cchWideChar = OS.MultiByteToWideChar (OS.CP_UTF8, 0, lpMultiByteStr+fragmentStart, fragmentEnd - fragmentStart, lpWideCharStr, lpWideCharStr.length);
 			if (cchWideChar == 0) return null;
 			String s = new String(lpWideCharStr, 0, cchWideChar);
 			/*
