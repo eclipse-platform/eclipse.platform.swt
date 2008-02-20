@@ -338,34 +338,6 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_NCPAINT (int /*long*/ wParam, int /*long*/ lParam) {
-	LRESULT result = super.WM_NCPAINT (wParam, lParam);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits1 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
-			int /*long*/ hDC = OS.GetWindowDC (handle);
-			RECT rect = new RECT ();
-			OS.GetWindowRect (handle, rect);
-			int border = 0;
-			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-			if ((bits2 & OS.WS_EX_CLIENTEDGE) != 0) {
-				border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-			}
-			//CHECK MATH
-			//NOT FOR SHELL (trim is wrong)?
-			rect.right -= rect.left + border;
-			rect.bottom -= rect.top + border;
-			RECT clientRect = new RECT ();
-			OS.GetClientRect (handle, clientRect);
-			rect.left = clientRect.right + border;
-			rect.top = clientRect.bottom + border;
-			OS.FillRect (hDC, rect, OS.COLOR_HIGHLIGHT + 1);
-			OS.ReleaseDC (handle, hDC);
-		}
-	}
-	return result;
-}
-
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	int /*long*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 	super.WM_SIZE (wParam, lParam);
