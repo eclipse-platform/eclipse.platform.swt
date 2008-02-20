@@ -161,6 +161,7 @@ void createHandle () {
 	if (textHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.Grid_SetRowSpan (textHandle, 2);
 	OS.UIElementCollection_Add (gridChildren, textHandle);
+	if ((style & SWT.READ_ONLY) != 0) OS.TextBoxBase_IsReadOnly (textHandle, true);
 	upHandle = OS.gcnew_RepeatButton ();
 	if (upHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int upArrow = createArrow (SWT.UP);
