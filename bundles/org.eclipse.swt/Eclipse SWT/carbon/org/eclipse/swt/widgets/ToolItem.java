@@ -362,7 +362,7 @@ Point computeSize () {
 void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
-	int features = OS.kControlSupportsEmbedding | 1 << 4;
+	int features = OS.kControlSupportsEmbedding | OS.kControlWantsActivate;
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
@@ -691,6 +691,7 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlTrack,
+		OS.kEventClassControl, OS.kEventControlGetClickActivation,
 	};
 	int accessibilityProc = display.accessibilityProc;
 	int [] mask3 = new int [] {
@@ -825,6 +826,10 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		return OS.noErr;
 	}
 	return code;
+}
+
+int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
+	return parent.kEventControlGetClickActivation (nextHandler, theEvent, userData);
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {

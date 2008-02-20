@@ -285,6 +285,7 @@ public class OS extends C {
 	public static final int kControlUseSizeMask = 0x4;
 	public static final int kControlUseThemeFontIDMask = 0x80;
 	public static final int kControlUseFaceMask = 0x2;
+	public static final int kControlWantsActivate = 1 << 4;
 	public static final int kCurrentProcess = 2;
 	public static final int kDataBrowserAttributeListViewAlternatingRowColors = (1 << 1);
 	public static final int kDataBrowserAttributeListViewDrawColumnDividers = (1 << 2);

@@ -1906,6 +1906,14 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
+	if ((getShell ().style & SWT.ON_TOP) != 0) {
+		OS.SetEventParameter (theEvent, OS.kEventParamClickActivation, OS.typeClickActivationResult, 4, new int [] {OS.kActivateAndHandleClick});
+		return OS.noErr;
+	}
+	return super.kEventControlGetClickActivation (nextHandler, theEvent, userData);
+}
+
 int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlGetPartRegion (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
