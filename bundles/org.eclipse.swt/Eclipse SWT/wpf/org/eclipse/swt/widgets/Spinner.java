@@ -198,7 +198,9 @@ void createWidget () {
 	digits = 0;
 	max = 100;
 	value = 0;
-	updateText ();
+	int ptr = createDotNetString ("0", false);
+	OS.TextBox_Text (textHandle, ptr);
+	OS.GCHandle_Free (ptr);
 }
 
 /**
@@ -334,6 +336,10 @@ public int getDigits () {
 	return digits;
 }
 
+String getDecimalSeparator () {
+	return ".";
+}
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down arrows are pressed.
@@ -411,39 +417,135 @@ public int getSelection () {
 	return value;
 }
 
+int getSelectionText (boolean [] parseFail) {
+	int textPtr = OS.TextBox_Text (textHandle);
+	String string = createJavaString (textPtr);
+	OS.GCHandle_Free (textPtr);
+	try {
+		int value;
+		if (digits > 0) {
+			String decimalSeparator = getDecimalSeparator ();
+			int index = string.indexOf (decimalSeparator);
+			if (index != -1)  {
+				int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
+				String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
+				String decimalPart = string.substring (index + 1);
+				if (decimalPart.length () > digits) {
+					decimalPart = decimalPart.substring (0, digits);
+				} else {
+					int i = digits - decimalPart.length ();
+					for (int j = 0; j < i; j++) {
+						decimalPart = decimalPart + "0";
+					}
+				}
+				int wholeValue = Integer.parseInt (wholePart);
+				int decimalValue = Integer.parseInt (decimalPart);
+				for (int i = 0; i < digits; i++) wholeValue *= 10;
+				value = wholeValue + decimalValue;
+				if (string.startsWith ("-")) value = -value;
+			} else {
+				value = Integer.parseInt (string);
+				for (int i = 0; i < digits; i++) value *= 10;
+			}
+		} else {
+			value = Integer.parseInt (string);
+		}
+		if (min <= value && value <= max) return value;
+	} catch (NumberFormatException e) {
+	}
+	parseFail [0] = true;
+	return -1;
+}
+
 void HandleDownClick (int sender, int e) {
 	if (!checkEvent (e)) return;
-	value -= increment;
-	value = Math.max (value, min);
-	updateText ();
-	postEvent (SWT.Selection);
+	updateSelection (-increment);
+}
+
+void HandleLostKeyboardFocus (int sender, int e) {
+	if (!checkEvent (e)) return;
+	boolean [] parseFail = new boolean [1];
+	getSelectionText (parseFail);
+	if (parseFail [0]) {
+		setSelection (value, false, true, false);
+	}
+	super.HandleLostKeyboardFocus (sender, e);
+}
+
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
+	if (!checkEvent (e)) return;
+	int key = OS.KeyEventArgs_Key (e);
+	int delta = 0;
+	switch (key) {
+		case OS.Key_Return:
+			postEvent (SWT.DefaultSelection);
+			break;
+		case OS.Key_Down: delta -= increment; break;
+		case OS.Key_Up: delta += increment; break;
+		case OS.Key_PageDown: delta -= pageIncrement; break;
+		case OS.Key_PageUp: delta += pageIncrement; break;
+	}
+	if (delta != 0) {
+		updateSelection (delta);
+	}
+}
+
+void HandlePreviewTextInput (int sender, int e) {
+	super.HandlePreviewTextInput (sender, e);
+	if (!checkEvent (e)) return;
+	int textPtr = OS.TextCompositionEventArgs_Text (e);
+	String input = createJavaString(textPtr);
+	OS.GCHandle_Free (textPtr);
+	int start = OS.TextBox_SelectionStart (textHandle);
+	int end = start + OS.TextBox_SelectionLength (textHandle);
+	String text = verifyText (input, start, end);
+	if (text != null && !text.equals (input)) {
+		textPtr = createDotNetString (text, false);
+		OS.TextBox_SelectedText (textHandle, textPtr);
+		OS.GCHandle_Free (textPtr);
+		start = OS.TextBox_SelectionStart (textHandle);
+		int length = OS.TextBox_SelectionLength (textHandle);
+		OS.TextBox_Select (textHandle, start+length, 0);
+		OS.TextBox_SelectionLength (textHandle, 0);
+		text = null;
+	}
+	if (text == null) OS.TextCompositionEventArgs_Handled (e, true);
+}
+
+void HandleTextChanged (int sender, int e) {
+	if (!checkEvent (e)) return;
+	boolean [] parseFail = new boolean [1];
+	int value = getSelectionText (parseFail);
+	if (!parseFail [0]) {
+		if (this.value != value) setSelection(value, true, false, true);
+	}
+	sendEvent (SWT.Modify);
 }
 
 void HandleUpClick (int sender, int e) {
 	if (!checkEvent (e)) return;
-	value += increment;
-	value = Math.min (value, max);
-	updateText ();
-	postEvent (SWT.Selection);
+	updateSelection (increment);
 }
 
 void hookEvents () {
 	super.hookEvents();	
 	//TEXT
-//	int handler = OS.gcnew_TextCompositionEventHandler (jniRef, "HandlePreviewTextInput");
-//	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
-//	OS.UIElement_PreviewTextInput (handle, handler);
-//	OS.GCHandle_Free (handler);
+	int handler = OS.gcnew_TextCompositionEventHandler (jniRef, "HandlePreviewTextInput");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.UIElement_PreviewTextInput (textHandle, handler);
+	OS.GCHandle_Free (handler);
 //	handler = OS.gcnew_ExecutedRoutedEventHandler(jniRef, "HandlePreviewExecutedRoutedEvent");
 //	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 //	OS.CommandManager_AddPreviewExecutedHandler(handle, handler);
 //	OS.GCHandle_Free(handler);
-//	handler = OS.gcnew_TextChangedEventHandler (jniRef, "HandleTextChanged");
-//	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
-//	OS.TextBoxBase_TextChanged (handle, handler);
-//	OS.GCHandle_Free(handler);
+	handler = OS.gcnew_TextChangedEventHandler (jniRef, "HandleTextChanged");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.TextBoxBase_TextChanged (textHandle, handler);
+	OS.GCHandle_Free (handler);
+	
 	//BUTTON
-	int handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleDownClick");
+	handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleDownClick");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.ButtonBase_Click (downHandle, handler);
 	OS.GCHandle_Free (handler);
@@ -574,6 +676,7 @@ public void setDigits (int value) {
 	checkWidget ();
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	digits = value;
+	setSelection (this.value, false, true, false);
 }
 
 /**
@@ -609,7 +712,9 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
+	if (value <= min) return;
 	max = value;
+	if (this.value > value) setSelection (value, true, true, false);
 }
 
 /**
@@ -627,7 +732,9 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
+	if (value >= max) return;
 	min = value;
+	if (this.value < value) setSelection (value, true, true, false);
 }
 
 /**
@@ -663,8 +770,47 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	this.value = value;
-	updateText();
+	value = Math.min (Math.max (min, value), max);
+	setSelection (value, true, true, false);
+}
+
+void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
+	if (setPos) {
+		this.value = value;
+	}
+	if (setText) {
+		String string;
+		if (digits == 0) {
+			string = String.valueOf (value);
+		} else {
+			string = String.valueOf (Math.abs (value));
+			String decimalSeparator = getDecimalSeparator ();
+			int index = string.length () - digits;
+			StringBuffer buffer = new StringBuffer ();
+			if (value < 0) buffer.append ("-");
+			if (index > 0) {
+				buffer.append (string.substring (0, index));
+				buffer.append (decimalSeparator);
+				buffer.append (string.substring (index));
+			} else {
+				buffer.append ("0");
+				buffer.append (decimalSeparator);
+				while (index++ < 0) buffer.append ("0");
+				buffer.append (string);
+			}
+			string = buffer.toString ();
+		}
+//		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+//			int length = OS.GetWindowTextLength (hwndText);
+//			string = verifyText (string, 0, length, null);
+//			if (string == null) return;
+//		}
+		int ptr = createDotNetString (string, false);
+		OS.TextBox_Text (textHandle, ptr);
+		OS.GCHandle_Free (ptr);
+		OS.TextBoxBase_SelectAll (textHandle);
+	}
+	if (notify) postEvent (SWT.Selection);
 }
 
 /**
@@ -696,53 +842,54 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	if (digits < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
-	value = Math.min (Math.max (minimum, selection), maximum);
-	setIncrement (increment);
+	selection = Math.min (Math.max (minimum, selection), maximum);
 	this.pageIncrement = pageIncrement;
+	this.increment = increment;
 	this.digits = digits;
 	this.min = minimum;
 	this.max = maximum;
-	this.increment = increment;
-	this.pageIncrement = pageIncrement;
-	updateText();
+	setSelection (selection, true, true, false);
 }
 
-void updateText () {
-	String valStr = digits == 0 ? value+"" : new Double (value/Math.pow(10, digits)).toString();
-	int strPtr = createDotNetString (valStr, false);
-	OS.TextBox_Text (textHandle, strPtr);
-	OS.GCHandle_Free (strPtr);
+void updateSelection (int delta) { 
+	boolean [] parseFail = new boolean [1];
+	int value = getSelectionText (parseFail);
+	if (parseFail [0]) value = this.value;
+	int newValue = value + delta;
+	if ((style & SWT.WRAP) != 0) {
+		if (newValue < min) newValue = max;
+		if (newValue > max) newValue = min;
+	}
+	newValue = Math.min (Math.max (min, newValue), max);
+	if (value != newValue) setSelection (newValue, true, true, true);
 }
 
-String verifyText (String string, int start, int end, Event keyEvent) {
+String verifyText (String string, int start, int end) {
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	if (keyEvent != null) {
-		event.character = keyEvent.character;
-		event.keyCode = keyEvent.keyCode;
-		event.stateMask = keyEvent.stateMask;
+	if (string.length () == 1) {
+		event.character = string.charAt (0);
+		setInputState (event, SWT.KeyDown, 0, 0);
 	}
-//	int index = 0;
-//	if (digits > 0) {
-//		String decimalSeparator = getDecimalSeparator ();
-//		index = string.indexOf (decimalSeparator);
-//		if (index != -1) {
-//			string = string.substring (0, index) + string.substring (index + 1);
-//		}
-//		index = 0;
-//	}
-//	while (index < string.length ()) {
-//		if (!Character.isDigit (string.charAt (index))) break;
-//		index++;
-//	}
-//	event.doit = index == string.length ();
-//	if (!OS.IsUnicode && OS.IsDBLocale) {
-//		event.start = mbcsToWcsPos (start);
-//		event.end = mbcsToWcsPos (end);
-//	}
-	//TODO
+	int index = 0;
+	if (digits > 0) {
+		String decimalSeparator = getDecimalSeparator ();
+		index = string.indexOf (decimalSeparator);
+		if (index != -1) {
+			string = string.substring (0, index) + string.substring (index + 1);
+		}
+		index = 0;
+	}
+	if (string.length() > 0) {
+		if (min < 0 && string.charAt (0) == '-') index++;
+	}
+	while (index < string.length ()) {
+		if (!Character.isDigit (string.charAt (index))) break;
+		index++;
+	}
+	event.doit = index == string.length ();
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
