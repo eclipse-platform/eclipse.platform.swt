@@ -287,7 +287,7 @@ void columnAdded (int index) {
 		OS.GCHandle_Free (headerTemplate);
 		int header = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
 		if (header == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.GridViewRowPresenterBase_Columns (header, parent.columns);
+		OS.GridViewRowPresenterBase_Columns (header, parent.gvColumns);
 		OS.HeaderedItemsControl_Header (handle, header);
 		OS.GCHandle_Free (header);
 	} else {
@@ -385,7 +385,7 @@ void createHandle () {
 		if (parent.columnCount != 0) {
 			int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
 			if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.GridViewRowPresenterBase_Columns (headerHandle, parent.columns);
+			OS.GridViewRowPresenterBase_Columns (headerHandle, parent.gvColumns);
 			OS.HeaderedItemsControl_Header (handle, headerHandle);
 			OS.GCHandle_Free (headerHandle);
 		} else {
@@ -430,7 +430,7 @@ int findPart (int column, String partName) {
 		int rowPresenter = OS.HeaderedItemsControl_Header (handle);
 		int contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, column);
 		OS.GCHandle_Free (rowPresenter);
-		int columnHandle = OS.GridViewColumnCollection_default (parent.columns, column);
+		int columnHandle = OS.GridViewColumnCollection_default (parent.gvColumns, column);
 		int template = OS.GridViewColumn_CellTemplate (columnHandle);
 		OS.GCHandle_Free (columnHandle);
 		result = OS.FrameworkTemplate_FindName (template, name, contentPresenter);

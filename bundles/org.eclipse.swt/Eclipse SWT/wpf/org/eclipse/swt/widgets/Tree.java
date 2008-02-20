@@ -67,9 +67,10 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tree extends Composite {
-	int columns, parentingHandle, headerTemplate;
+	int gvColumns, parentingHandle, headerTemplate;
 	int columnCount, itemCount;
 	TreeItem anchor, lastSelection, unselect, reselect;
+	TreeColumn [] columns;
 	byte headerVisibility = OS.Visibility_Collapsed;
 	boolean ignoreSelection, shiftDown, ctrlDown;
 
@@ -456,7 +457,7 @@ int createControlTemplate () {
 	int styleProperty = OS.FrameworkElement_StyleProperty();
 	OS.FrameworkElementFactory_SetValue (scrollViewerNode, styleProperty, xamlStyle);
 	int columnsProperty = OS.GridViewRowPresenterBase_ColumnsProperty ();
-	OS.FrameworkElementFactory_SetValue (scrollViewerNode, columnsProperty, columns);
+	OS.FrameworkElementFactory_SetValue (scrollViewerNode, columnsProperty, gvColumns);
 	OS.FrameworkTemplate_VisualTree (template, borderNode);
 	OS.GCHandle_Free (brushProperty);
 	OS.GCHandle_Free (thicknessProperty);
@@ -534,8 +535,8 @@ int createHeaderTemplate (int columnJniRef) {
 void createItem (TreeColumn column, int index) {
     if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
     if (columnCount == 0) {
-    	columns = OS.gcnew_GridViewColumnCollection ();
-    	if (columns == 0) error (SWT.ERROR_NO_HANDLES);
+    	gvColumns = OS.gcnew_GridViewColumnCollection ();
+    	if (gvColumns == 0) error (SWT.ERROR_NO_HANDLES);
     	int template = createControlTemplate ();
     	OS.Control_Template (handle, template);   	
     	OS.GCHandle_Free (template);
@@ -549,9 +550,9 @@ void createItem (TreeColumn column, int index) {
 	OS.GridViewColumn_CellTemplate (column.handle, template);
 	OS.GCHandle_Free (template);
 	if (columnCount == 0) { 
-		OS.GridViewColumnCollection_Clear (columns);
+		OS.GridViewColumnCollection_Clear (gvColumns);
 	}
-    OS.GridViewColumnCollection_Insert (columns, index, column.handle);
+    OS.GridViewColumnCollection_Insert (gvColumns, index, column.handle);
     int items = OS.ItemsControl_Items (handle);
     for (int i=0; i<itemCount; i++) {
     	TreeItem item = getItem (items, i, false);
@@ -560,6 +561,13 @@ void createItem (TreeColumn column, int index) {
     	}
     }
     OS.GCHandle_Free (items);
+	if (columns == null) columns = new TreeColumn [4];
+	if (columns.length == columnCount) {
+		TreeColumn [] newColumns = new TreeColumn [columnCount + 4];
+		System.arraycopy(columns, 0, newColumns, 0, columnCount);
+		columns = newColumns;
+	}
+	columns [columnCount] = column;
     columnCount++;
 }
 
@@ -649,13 +657,23 @@ public void deselectAll () {
 }
 
 void destroyItem (TreeColumn column) {
-	int index = OS.GridViewColumnCollection_IndexOf (columns, column.handle);
-    boolean removed = OS.GridViewColumnCollection_Remove (columns, column.handle);
+	int index = OS.GridViewColumnCollection_IndexOf (gvColumns, column.handle);
+    boolean removed = OS.GridViewColumnCollection_Remove (gvColumns, column.handle);
     if (!removed) error (SWT.ERROR_ITEM_NOT_REMOVED);
+    int arrayIndex = -1;
+    for (int i = 0; i < columnCount; i++) {
+    	TreeColumn tc = columns [i];
+    	if (tc.equals(column)) {
+    		arrayIndex = i;
+    		break;
+    	}
+    }
 	columnCount--;
+	columns [arrayIndex] = null;
+	if (arrayIndex < columnCount) System.arraycopy (columns, arrayIndex+1, columns, arrayIndex, columnCount - arrayIndex);
 	if (columnCount == 0) {
-		OS.GCHandle_Free (columns);
-		columns = 0;
+		OS.GCHandle_Free (gvColumns);
+		gvColumns = 0;
 		int templateProperty = OS.Control_TemplateProperty ();
 		OS.DependencyObject_ClearValue(handle, templateProperty);
 		OS.GCHandle_Free(templateProperty);
@@ -748,8 +766,8 @@ public int getGridLineWidth () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	if (columns == 0) return 0;
-	int column = OS.GridViewColumnCollection_default (columns, 0);
+	if (gvColumns == 0) return 0;
+	int column = OS.GridViewColumnCollection_default (gvColumns, 0);
 	int height = 0;
 	int header = OS.GridViewColumn_Header (column);
 	if (header != 0) {
@@ -761,7 +779,7 @@ public int getHeaderHeight () {
 		OS.GCHandle_Free (header);
 	}
 	OS.GCHandle_Free (column);
-	OS.GCHandle_Free (columns);
+	OS.GCHandle_Free (gvColumns);
 	return height;
 }
 
@@ -786,8 +804,12 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
-	//TODO
-	return false;
+	int column = OS.GridViewColumnCollection_default (gvColumns, 0);
+	int header = OS.GridViewColumn_Header (column);
+	boolean visible = OS.UIElement_Visibility (header) == OS.Visibility_Visible;
+	OS.GCHandle_Free (header);
+	OS.GCHandle_Free (column);
+	return visible;
 }
 
 /**
@@ -822,18 +844,18 @@ public boolean getHeaderVisible () {
 public TreeColumn getColumn (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
-	return _getColumn (index);
+	return columns [index];
 }
 
-TreeColumn _getColumn (int index) {
-	if (columnCount == 0) return null;
-	int gridColumn = OS.GridViewColumnCollection_default (columns, index);
-	int header = OS.GridViewColumn_Header (gridColumn);
-	TreeColumn column = (TreeColumn) display.getWidget (header);
-	OS.GCHandle_Free (gridColumn);
-	OS.GCHandle_Free (header);
-	return column;
-}
+//TreeColumn _getColumn (int index) {
+//	if (columnCount == 0) return null;
+//	int gridColumn = OS.GridViewColumnCollection_default (gvColumns, index);
+//	int header = OS.GridViewColumn_Header (gridColumn);
+//	TreeColumn column = (TreeColumn) display.getWidget (header);
+//	OS.GCHandle_Free (gridColumn);
+//	OS.GCHandle_Free (header);
+//	return column;
+//}
 
 /**
  * Returns the number of columns contained in the receiver.
@@ -886,9 +908,13 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	//TODO
 	int [] order = new int [columnCount];
 	for (int i=0; i<order.length; i++) order [i] = i;
+	for (int i = 0; i < order.length; i++) {
+		TreeColumn column = columns [i];
+		int index = OS.IList_IndexOf (gvColumns, column.handle);
+		order [index] = i;	
+	}
 	return order;
 }
 
@@ -923,11 +949,11 @@ public int[] getColumnOrder () {
  */
 public TreeColumn [] getColumns () {
 	checkWidget ();
-	TreeColumn [] treeColumns = new TreeColumn [columnCount];
-	for (int i = 0; i < treeColumns.length; i++) {
-		treeColumns [i] = _getColumn (i); 
+	TreeColumn [] result = new TreeColumn [columnCount];
+	for (int i = 0; i < result.length; i++) {
+		result [i] = columns [i];
 	}
-	return treeColumns;
+	return result;
 }
 
 /**
@@ -1519,8 +1545,8 @@ void hookEvents () {
 public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (columns == 0) return -1; 
-	int index = OS.GridViewColumnCollection_IndexOf (columns, column.handle);
+	if (gvColumns == 0) return -1; 
+	int index = OS.GridViewColumnCollection_IndexOf (gvColumns, column.handle);
 	return index;
 }
 
@@ -1667,7 +1693,7 @@ void releaseChildren (boolean destroy) {
 	}
 	OS.GCHandle_Free (items);
 	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = _getColumn(i);
+		TreeColumn column = columns [i];
 		if (column != null && !column.isDisposed ()) {
 			column.release (false);
 		}
@@ -1677,8 +1703,8 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (columns != 0) OS.GCHandle_Free (columns);
-	columns = 0;
+	if (gvColumns != 0) OS.GCHandle_Free (gvColumns);
+	gvColumns = 0;
 	if (headerTemplate != 0) OS.GCHandle_Free (headerTemplate);
 	headerTemplate = 0;
 	OS.GCHandle_Free (parentingHandle);
@@ -1687,6 +1713,7 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	columns = null;
 }
 
 /**
@@ -1833,7 +1860,7 @@ void setItemCount (TreeItem parentItem, int count) {
 			if (columnCount != 0) {
 				int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (handle);
 				if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				OS.GridViewRowPresenterBase_Columns (headerHandle, columns);
+				OS.GridViewRowPresenterBase_Columns (headerHandle, gvColumns);
 				OS.HeaderedItemsControl_Header (item, headerHandle);
 				OS.GCHandle_Free (headerHandle);
 			} else {
@@ -1970,7 +1997,23 @@ public void selectAll () {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//TODO
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = getColumnOrder ();
+	boolean reorder = false;
+	boolean [] seen = new boolean [columnCount];
+	for (int i=0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (order [i] != oldOrder [i]) reorder = true;
+	}
+	if (!reorder) return;
+	for (int i = 0; i < order.length; i++) {
+		TreeColumn column = columns [order [i]];
+		int index = OS.IList_IndexOf (gvColumns, column.handle);
+		if (index != i) OS.ObservableCollectionGridViewColumn_Move (gvColumns, index, i);	
+	}
 }
 
 void setFont (int font, double size) {
