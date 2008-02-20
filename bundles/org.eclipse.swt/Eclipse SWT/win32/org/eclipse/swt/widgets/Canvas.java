@@ -341,6 +341,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 		switch ((int)/*64*/wParam) {
 			case SWT.DEL:
 			case SWT.BS:
+			case SWT.ESC:
 				break;
 			default: {
 				if (OS.GetKeyState (OS.VK_CONTROL) >= 0) {
