@@ -446,11 +446,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 							}
 						}
 						draw = false;
-						int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-						OS.CloseThemeData (hTheme);
+						OS.DrawThemeBackground (display.hTreeViewTheme (), hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
 				}
@@ -463,11 +461,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 						pRect.right += EXPLORER_EXTRA;
 						pClipRect.left -= EXPLORER_EXTRA;
 						pClipRect.right += EXPLORER_EXTRA;
-						int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-						OS.CloseThemeData (hTheme);
+						OS.DrawThemeBackground (display.hTreeViewTheme (), hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
 					}
 				}
 			}
@@ -677,11 +673,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 												backgroundRect = selectionRect;
 											}
 										}
-										int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 										int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 										if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);	
-										OS.CloseThemeData (hTheme);
+										OS.DrawThemeBackground (display.hTreeViewTheme (), hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);	
 									}
 								}
 							} else {
