@@ -809,7 +809,6 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	//TODO
 	int [] order = new int [columnCount];
 	for (int i=0; i<order.length; i++) order [i] = i;
 	int gvColumns = OS.GridView_Columns (gridViewHandle);
