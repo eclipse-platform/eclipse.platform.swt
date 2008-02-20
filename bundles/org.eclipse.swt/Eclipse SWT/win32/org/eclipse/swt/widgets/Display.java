@@ -3559,6 +3559,9 @@ void releaseDisplay () {
 	clickRect = null;
 	hdr = null;
 	plvfi = null;
+	
+	/* Release handles */
+	threadId = 0;
 }
 
 void releaseImageList (ImageList list) {

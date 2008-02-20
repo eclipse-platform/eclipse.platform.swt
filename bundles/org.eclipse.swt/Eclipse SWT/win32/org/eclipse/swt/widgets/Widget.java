@@ -333,7 +333,27 @@ protected void checkSubclass () {
 protected void checkWidget () {
 	Display display = this.display;
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (display.thread != Thread.currentThread ()) {
+		/*
+		* Bug in IBM JVM 1.6.  For some reason, under
+		* conditions that are yet to be full understood,
+		* Thread.currentThread() is either returning null
+		* or a different instance from the one that was
+		* saved when the Display was created.  This is
+		* possibly a JIT problem because modifying this
+		* method to print logging information when the
+		* error happens seems to fix the problem.  The
+		* fix is to use operating system calls to verify
+		* that the current thread is not the Display thread.
+		* 
+		* NOTE: Despite the fact that Thread.currentThread()
+		* is used in other places, the failure has only been
+		* observed here.
+		*/
+		if (display.threadId != OS.GetCurrentThreadId ()) {
+			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		}
+	}
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
