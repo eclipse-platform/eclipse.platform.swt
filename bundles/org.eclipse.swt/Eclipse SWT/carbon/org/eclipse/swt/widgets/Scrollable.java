@@ -163,6 +163,16 @@ void deregister () {
 	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 
+public int getBorderWidth () {
+	checkWidget();
+	if ((state & CANVAS) != 0 && hasBorder ()) {
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+		return outMetric [0];
+	}
+	return 0;
+}
+
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,

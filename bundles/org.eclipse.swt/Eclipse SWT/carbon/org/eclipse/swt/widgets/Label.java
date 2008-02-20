@@ -191,11 +191,6 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
-public int getBorderWidth () {
-	checkWidget();
-	return (style & SWT.BORDER) != 0 ? 1 : 0;
-}
-
 /**
  * Returns the receiver's image if it has one, or null
  * if it does not.

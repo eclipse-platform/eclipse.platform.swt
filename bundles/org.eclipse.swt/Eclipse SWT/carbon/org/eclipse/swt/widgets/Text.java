@@ -665,6 +665,16 @@ int focusPart () {
 	return super.focusPart ();
 }
 
+public int getBorderWidth () {
+	checkWidget();
+	if (hasBorder ()) {
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+		return outMetric [0];
+	}
+	return 0;
+}
+
 /**
  * Returns the line number of the caret.
  * <p>

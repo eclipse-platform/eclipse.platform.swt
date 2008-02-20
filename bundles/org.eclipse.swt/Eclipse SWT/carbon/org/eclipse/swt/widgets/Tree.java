@@ -532,7 +532,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int border = getBorder ();
+	int border = getBorderWidth ();
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
 	x -= rect.left + border;
@@ -1198,7 +1198,8 @@ void fixScrollBar () {
 	}
 }
 
-int getBorder () {
+public int getBorderWidth () {
+	checkWidget ();
 	int border = 0;
 	byte [] hasBorder = new byte [1];
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, hasBorder, null);
@@ -1226,7 +1227,7 @@ int getCheckColumnWidth () {
 
 public Rectangle getClientArea () {
 	checkWidget();
-	int border = getBorder ();
+	int border = getBorderWidth ();
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
@@ -1890,7 +1891,7 @@ public TreeItem getTopItem () {
 	checkWidget();
 	//TODO - optimize
 	Rect rect = new Rect ();
-	int y = getBorder () + getHeaderHeight ();
+	int y = getBorderWidth () + getHeaderHeight ();
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
@@ -3346,7 +3347,7 @@ public void setTopItem (TreeItem item) {
 	OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) OS.kDataBrowserRevealWithoutSelecting);
 	Rect rect = new Rect ();
 	if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-		int border = getBorder ();
+		int border = getBorderWidth ();
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
 		OS.SetDataBrowserScrollPosition (handle, Math.max (0, top [0] + rect.top - border - getHeaderHeight ()), left [0]);

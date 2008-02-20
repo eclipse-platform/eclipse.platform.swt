@@ -451,7 +451,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int border = getBorder ();
+	int border = getBorderWidth ();
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
 	x -= rect.left + border;
@@ -1146,7 +1146,8 @@ void fixSelection (int index, boolean add) {
 	if (fix) select (selection, newCount, true);
 }
 
-int getBorder () {
+public int getBorderWidth () {
+	checkWidget ();
 	int border = 0;
 	byte [] hasBorder = new byte [1];
 	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, hasBorder, null);
@@ -1174,7 +1175,7 @@ int getCheckColumnWidth () {
 
 public Rectangle getClientArea () {
 	checkWidget();
-	int border = getBorder ();
+	int border = getBorderWidth ();
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
