@@ -26,21 +26,20 @@ class EventTable {
 	Listener [] listeners;
 	int level;
 	
-public Listener[] getListeners(int eventType) {
-	if (types == null) return new Listener[0];
-	int size = 0;
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == eventType) size++;
-	}
-	Listener[] result = new Listener[size];
-	if (size == 0) return result;
+public Listener [] getListeners (int eventType) {
+	if (types == null) return new Listener [0];
 	int count = 0;
 	for (int i=0; i<types.length; i++) {
+		if (types [i] == eventType) count++;
+	}
+	if (count == 0) return new Listener [0];
+	Listener [] result = new Listener [count];
+	count = 0;
+	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
-			result[count] = listeners[i];
-			count++;
+			result [count++] = listeners [i];
 		}
-	}	
+	}
 	return result;
 }
 
