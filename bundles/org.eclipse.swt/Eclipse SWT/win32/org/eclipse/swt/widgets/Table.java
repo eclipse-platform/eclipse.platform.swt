@@ -3298,9 +3298,11 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 				rect.right += EXPLORER_EXTRA;
 				pClipRect.right += EXPLORER_EXTRA;
 			}
+			int /*long*/ hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
 			int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
 			if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
-			OS.DrawThemeBackground (display.hListViewTheme (), hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
+			OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
+			OS.CloseThemeData (hTheme);
 		} else {
 			boolean fullText = ((style & SWT.FULL_SELECTION) != 0 || !firstColumn);
 			RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);

@@ -145,13 +145,13 @@ public class Display extends Device {
 	}
 	
 	/* XP Themes */
-	int /*long*/ hButtonTheme, hEditTheme, hExplorerBarTheme, hListViewTheme, hScrollBarTheme, hTabTheme, hTreeViewTheme;
+	int /*long*/ hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
-	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
 	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
+	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
 	
@@ -2396,11 +2396,6 @@ int /*long*/ hExplorerBarTheme () {
 	return hExplorerBarTheme = OS.OpenThemeData (hwndMessage, EXPLORERBAR);
 }
 
-int /*long*/ hListViewTheme () {
-	if (hListViewTheme != 0) return hListViewTheme;
-	return hListViewTheme = OS.OpenThemeData (hwndMessage, LISTVIEW);
-}
-
 int /*long*/ hScrollBarTheme () {
 	if (hScrollBarTheme != 0) return hScrollBarTheme;
 	return hScrollBarTheme = OS.OpenThemeData (hwndMessage, SCROLLBAR);
@@ -2409,11 +2404,6 @@ int /*long*/ hScrollBarTheme () {
 int /*long*/ hTabTheme () {
 	if (hTabTheme != 0) return hTabTheme;
 	return hTabTheme = OS.OpenThemeData (hwndMessage, TAB);
-}
-
-int /*long*/ hTreeViewTheme () {
-	if (hTreeViewTheme != 0) return hTreeViewTheme;
-	return hTreeViewTheme = OS.OpenThemeData (hwndMessage, TREEVIEW);
 }
 
 /**	 
@@ -3033,7 +3023,14 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			break;
 		}
 		case OS.WM_THEMECHANGED: {
-			if (OS.COMCTL32_MAJOR >= 6) releaseThemes ();
+			if (OS.COMCTL32_MAJOR >= 6) {
+				if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
+				if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
+				if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
+				if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
+				if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
+				hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+			}
 			break;
 		}
 		case OS.WM_TIMER: {
@@ -3444,7 +3441,14 @@ void releaseDisplay () {
 	}
 	
 	/* Release XP Themes */
-	if (OS.COMCTL32_MAJOR >= 6) releaseThemes ();
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
+		if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
+		if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
+		if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
+		if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
+		hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+	}
 	
 	/* Unhook the message hook */
 	if (!OS.IsWinCE) {
@@ -3615,17 +3619,6 @@ void releaseToolHotImageList (ImageList list) {
 		}
 		i++;
 	}
-}
-
-void releaseThemes () {
-	if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
-	if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
-	if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
-	if (hListViewTheme != 0) OS.CloseThemeData (hListViewTheme);
-	if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
-	if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
-	if (hTreeViewTheme != 0) OS.CloseThemeData (hTreeViewTheme);
-	hButtonTheme = hEditTheme = hExplorerBarTheme = hListViewTheme = hScrollBarTheme = hTabTheme = hTreeViewTheme = 0;
 }
 
 void releaseToolDisabledImageList (ImageList list) {
