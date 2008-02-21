@@ -41,10 +41,12 @@ public final class Program {
 	
 	static int /*long*/ cdeShell;
 
-	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" };
-	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" };
-	static final String DESKTOP_DATA = "Program_DESKTOP";
-	static final String ICON_THEME_DATA = "Program_GNOME_ICON_THEME";
+	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	static final String DESKTOP_DATA = "Program_DESKTOP"; //$NON-NLS-1$
+	static final String ICON_THEME_DATA = "Program_GNOME_ICON_THEME"; //$NON-NLS-1$
+	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
+	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GNOME = 1;
 	static final int DESKTOP_GNOME_24 = 2;
@@ -681,9 +683,9 @@ public static boolean launch(String fileName) {
  *  API: When support for multiple displays is added, this method will
  *       become public and the original method above can be deprecated.
  */
-static boolean launch(Display display, String fileName) {
+static boolean launch (Display display, String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	switch(getDesktop(display)) {
+	switch (getDesktop (display)) {
 		case DESKTOP_GNOME_24:
 			if (gnome_24_launch (fileName)) return true;
 		default:
@@ -691,6 +693,14 @@ static boolean launch(Display display, String fileName) {
 			if (index != -1) {
 				String extension = fileName.substring (index);
 				Program program = Program.findProgram (display, extension); 
+				if (program != null && program.execute (fileName)) return true;
+			}
+			String lowercaseName = fileName.toLowerCase ();
+			if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+				Program program = Program.findProgram (display, ".html"); //$NON-NLS-1$
+				if (program == null) {
+					program = Program.findProgram (display, ".htm"); //$NON-NLS-1$
+				}
 				if (program != null && program.execute (fileName)) return true;
 			}
 			break;
