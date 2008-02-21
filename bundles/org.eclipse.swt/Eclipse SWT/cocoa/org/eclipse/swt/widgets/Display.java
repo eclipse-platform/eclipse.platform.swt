@@ -114,6 +114,7 @@ public class Display extends Device {
 
 	NSPoint cascade = new NSPoint();
 
+	Callback applicationDelegateCallback3;
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	Callback windowDelegateCallback6;
 	Callback dialogCallback3;
@@ -227,6 +228,7 @@ public class Display extends Device {
 	Runnable timerList [];
 	NSTimer nsTimers [];
 	SWTWindowDelegate timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	SWTApplicationDelegate applicationDelegate;
 	
 	/* Display Data */
 	Object data;
@@ -1517,6 +1519,29 @@ public Thread getThread () {
 protected void init () {
 	super.init ();
 	initClasses ();
+	initApplicationDelegate();	
+	application.finishLaunching();
+}
+
+void initApplicationDelegate() {
+	applicationDelegateCallback3 = new Callback(this, "applicationDelegateProc", 3);
+	int appProc3 = applicationDelegateCallback3.getAddress();
+	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	String className = "SWTApplicationDelegate";
+	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_terminate_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_hideOtherApplications_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_hide_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_unhideAllApplications_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_applicationWillTerminate_1, appProc3, "@:@");
+	OS.objc_registerClassPair(cls);
+	
+	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
+	application.setDelegate(applicationDelegate);
 }
 
 void initClasses () {
@@ -2939,6 +2964,53 @@ void wakeThread () {
 	NSObject object = new NSObject().alloc().init();
 	object.performSelectorOnMainThread_withObject_waitUntilDone_(OS.sel_release, null, false);
 }
+
+int applicationDelegateProc(int id, int sel, int arg0) {
+	if (sel == OS.sel_applicationWillFinishLaunching_1) {
+		id dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
+		NSString nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
+		if (!NSBundle.loadNibFile(nibFile, dict, null)) {
+			nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
+			NSBundle.loadNibFile(nibFile, dict, null);	
+		}
+		//replace %@ with application name
+		NSMenu mainmenu = application.mainMenu();
+		NSMenuItem appitem = mainmenu.itemAtIndex(0);
+		if (appitem != null) {
+			NSMenu sm = appitem.submenu();
+			NSArray ia = sm.itemArray();
+			for(int i = 0; i < ia.count(); i++) {
+				NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
+				NSString title = ni.title().stringByReplacingOccurrencesOfString_withString_(NSString.stringWith("%@"), NSString.stringWith(APP_NAME));
+				ni.setTitle(title);
+			}
+		}
+	} else if (sel == OS.sel_terminate_1) {
+		application.terminate(application);
+	} else if (sel == OS.sel_orderFrontStandardAboutPanel_1) {
+		Event event = new Event ();
+		sendEvent (SWT.ABORT, event);
+	} else if (sel == OS.sel_hideOtherApplications_1) {
+		application.hideOtherApplications(application);
+	} else if (sel == OS.sel_hide_1) {
+		application.hide(application);
+	} else if (sel == OS.sel_unhideAllApplications_1) {
+		application.unhideAllApplications(application);
+	} else if (sel == OS.sel_applicationShouldTerminate_1) {
+		if (!disposing) {
+			Event event = new Event ();
+			sendEvent (SWT.Close, event);
+			if (event.doit) {
+				return OS.NSTerminateNow;
+			}
+		}
+		return OS.NSTerminateCancel;
+	} else if (sel == OS.sel_applicationWillTerminate_1) {
+		dispose();
+	} 
+	return 0;
+}
+
 
 int dialogProc(int id, int sel, int arg0) {
 	int jniRef = OS.objc_msgSend(id, OS.sel_tag);

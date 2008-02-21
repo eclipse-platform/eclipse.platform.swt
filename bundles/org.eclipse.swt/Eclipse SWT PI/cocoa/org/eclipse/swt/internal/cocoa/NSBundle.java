@@ -213,4 +213,8 @@ public boolean unload() {
 	return OS.objc_msgSend(this.id, OS.sel_unload) != 0;
 }
 
+public static boolean loadNibFile(id fileName, id dict, id zone) {
+	return OS.objc_msgSend(OS.class_NSBundle, OS.sel_loadNibFile_1externalNameTable_1withZone_1, fileName.id, dict.id, 0) != 0;
+}
+
 }
