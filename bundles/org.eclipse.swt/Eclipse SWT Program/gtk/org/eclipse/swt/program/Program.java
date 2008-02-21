@@ -689,7 +689,7 @@ static boolean launch (Display display, String fileName) {
 		case DESKTOP_GNOME_24:
 			if (gnome_24_launch (fileName)) return true;
 		default:
-			int index = fileName.lastIndexOf('.');
+			int index = fileName.lastIndexOf ('.');
 			if (index != -1) {
 				String extension = fileName.substring (index);
 				Program program = Program.findProgram (display, extension); 
