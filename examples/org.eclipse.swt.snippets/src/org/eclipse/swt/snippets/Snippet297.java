@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Table example snippet: create a table with columns and header images
+ * Table example snippet: create a table with columns header images
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
