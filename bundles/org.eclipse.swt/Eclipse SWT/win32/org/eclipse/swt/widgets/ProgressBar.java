@@ -199,9 +199,17 @@ public int getSelection () {
  * 
  * @since 3.4
  */
-public int getState () {
+/*public*/ int getState () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		int state = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+		switch (state) {
+			case OS.PBST_NORMAL: return SWT.NORMAL;
+			case OS.PBST_ERROR: return SWT.ERROR;
+			case OS.PBST_PAUSED: return SWT.PAUSED;
+		}
+	}
+	return SWT.NORMAL;
 }
 
 void releaseWidget () {
@@ -297,7 +305,15 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
+	int state = 0;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+		OS.SendMessage (handle, OS.PBM_SETSTATE, OS.PBST_NORMAL, 0);
+	}
 	OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		OS.SendMessage (handle, OS.PBM_SETSTATE, state, 0);
+	}
 }
 
 /**
@@ -313,13 +329,20 @@ public void setSelection (int value) {
  * 
  * @since 3.4
  */
-public void setState (int state) {
+/*public*/ void setState (int state) {
 	checkWidget ();
-	switch (state) {
-		case SWT.NORMAL:
-		case SWT.ERROR:
-		case SWT.PAUSED:
-			OS.SendMessage (handle, OS.PBM_SETSTATE, state, 0);
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		switch (state) {
+			case SWT.NORMAL:
+				OS.SendMessage (handle, OS.PBM_SETSTATE, OS.PBST_NORMAL, 0);
+				break;
+			case SWT.ERROR:
+				OS.SendMessage (handle, OS.PBM_SETSTATE, OS.PBST_ERROR, 0);
+				break;
+			case SWT.PAUSED:
+				OS.SendMessage (handle, OS.PBM_SETSTATE, OS.PBST_PAUSED, 0);
+				break;
+		}
 	}
 }
 
