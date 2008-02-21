@@ -922,23 +922,21 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 		display.setMenuBar (menuBar);
 		if (menuBar != null) OS.DrawMenuBar ();
 		sendEvent (SWT.Activate);
-		if (!isDisposed ()) {
-			if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+		if (isDisposed ()) return result;
+		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+		if (isDisposed ()) return result;
+		display.activeShell = null;
+		Shell parentShell = this;
+		while (parentShell.parent != null) {
+			parentShell = (Shell) parentShell.parent;
+			if (parentShell.fullScreen) {
+				break;
+			}
 		}
-		if (!isDisposed ()) {
-			display.activeShell = null;
-			Shell parentShell = this;
-			while (parentShell.parent != null) {
-				parentShell = (Shell) parentShell.parent;
-				if (parentShell.fullScreen) {
-					break;
-				}
-			}
-			if (!parentShell.fullScreen || menuBar != null) {
-				updateSystemUIMode ();
-			} else {
-				parentShell.updateSystemUIMode ();
-			}
+		if (!parentShell.fullScreen || menuBar != null) {
+			updateSystemUIMode ();
+		} else {
+			parentShell.updateSystemUIMode ();
 		}
 		deferDispose = false;
 	}
@@ -995,8 +993,12 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		active = false;
 		deferDispose = true;
 		Display display = this.display;
+		display.activeShell = this;
 		sendEvent (SWT.Deactivate);
 		if (isDisposed ()) return result;
+		setActiveControl (null);
+		if (isDisposed ()) return result;
+		display.activeShell = null;
 		saveFocus ();
 		if (savedFocus != null) {
 			/*
