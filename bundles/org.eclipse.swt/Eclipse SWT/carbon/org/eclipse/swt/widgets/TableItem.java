@@ -143,6 +143,7 @@ int calculateWidth (int index, GC gc) {
 		if (parent.itemHeight < event.height) {
 			parent.itemHeight = event.height;
 			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
+			redrawWidget (parent.handle, false);
 		}
 		width = event.width;
 	}
