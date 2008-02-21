@@ -3078,8 +3078,32 @@ public class SWT {
 	public static final int IMAGE_GRAY = 2;
 	
 	/**
+	 * Constant to indicate an error state (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int ERROR = 1;
+	
+	/**
+	 * Constant to a indicate a paused state (value is 2).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.4
+	 */
+	public static final int PAUSED = 2;
+	
+	/**
 	 * The font style constant indicating a normal weight, non-italic font
-	 * (value is 0).
+	 * (value is 0). This constant is also used with <code>ProgressBar</code>
+	 * to indicate a normal state.
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
 	 */
 	public static final int NORMAL = 0;
 	

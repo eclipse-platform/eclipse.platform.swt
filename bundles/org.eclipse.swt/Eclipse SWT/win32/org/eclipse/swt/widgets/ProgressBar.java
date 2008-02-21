@@ -186,6 +186,24 @@ public int getSelection () {
 	return (int)/*64*/OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
 }
 
+/**
+ * Returns the state of the receiver. The value will be one of
+ * <code>NORMAL</code>, <code>ERROR</code> or <code>PAUSED</code>.
+ *
+ * @return the state 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getState () {
+	checkWidget ();
+	return (int)/*64*/OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	stopTimer ();
@@ -280,6 +298,29 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
+}
+
+/**
+ * Sets the state of the receiver. The state is be one of
+ * <code>NORMAL</code>, <code>ERROR</code> or <code>PAUSED</code>.
+ *
+ * @param state the new state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setState (int state) {
+	checkWidget ();
+	switch (state) {
+		case SWT.NORMAL:
+		case SWT.ERROR:
+		case SWT.PAUSED:
+			OS.SendMessage (handle, OS.PBM_SETSTATE, state, 0);
+	}
 }
 
 int widgetStyle () {
