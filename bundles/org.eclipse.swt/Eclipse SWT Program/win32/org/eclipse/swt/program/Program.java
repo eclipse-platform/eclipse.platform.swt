@@ -246,13 +246,12 @@ public static Program [] getPrograms () {
 }
 
 /**
- * Launches the executable associated with the file in
- * the operating system.  If the file is an executable,
- * then the executable is launched.  Note that a <code>Display</code>
- * must already exist to guarantee that this method returns
- * an appropriate result.
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched.  Note that a <code>Display</code> must already
+ * exist to guarantee that this method returns an appropriate result.
  *
- * @param fileName the file or program name
+ * @param fileName the file or program name or URL (http:// or https://)
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
  * @exception IllegalArgumentException <ul>
