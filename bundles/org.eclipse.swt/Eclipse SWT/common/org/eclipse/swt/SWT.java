@@ -1468,6 +1468,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code> with <code>ARROW</code> style</li>
 	 * <li><code>Tracker</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
 	 * </ul></p>
 	 */
 	public static final int UP = 1 << 7;
@@ -1557,6 +1559,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code> with <code>ARROW</code> style</li>
 	 * <li><code>Tracker</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
 	 * </ul></p>
 	 */
 	public static final int DOWN               = 1 << 10;
