@@ -2065,6 +2065,10 @@ LRESULT wmMouseWheel (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPara
 	return null;
 }
 
+LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	return null;
+}
+
 LRESULT wmPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Exit early - don't draw the background */

@@ -362,6 +362,55 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  On XP only (not Vista), Windows sometimes
+	* does not redraw the bottom right corner of a window that
+	* has scroll bars, causing pixel corruption.  The fix is to
+	* always draw the corner.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits1 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
+				RECT windowRect = new RECT ();
+				OS.GetWindowRect (hwnd, windowRect);
+				RECT trimRect = new RECT ();
+				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+				OS.AdjustWindowRectEx (trimRect, bits1, false, bits2);
+				RECT clientRect = new RECT ();
+				OS.GetClientRect (hwnd, clientRect);
+				OS.MapWindowPoints (hwnd, 0, clientRect, 2);
+				RECT cornerRect = new RECT ();
+				cornerRect.left = Math.max (0, clientRect.right - windowRect.left);
+				cornerRect.top = Math.max (0, clientRect.bottom - windowRect.top);
+				cornerRect.right = Math.max (cornerRect.left, windowRect.right - windowRect.left - trimRect.right);
+				cornerRect.bottom = Math.max (cornerRect.top, windowRect.bottom - windowRect.top - trimRect.bottom);
+				if (cornerRect.left != cornerRect.right && cornerRect.top != cornerRect.bottom) {
+					int /*long*/ hDC = OS.GetWindowDC (hwnd);
+					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
+					Decorations shell = menuShell ();
+					int hwndScroll = shell.scrolledHandle ();
+					boolean drawGripper = hwnd == hwndScroll;
+					if (!drawGripper) {
+						RECT shellRect = new RECT ();
+						OS.GetClientRect (hwndScroll, shellRect);
+						OS.MapWindowPoints (hwndScroll, 0, shellRect, 2);
+						drawGripper = shellRect.right == windowRect.right && shellRect.bottom == windowRect.bottom;
+					}
+					if (drawGripper) {
+						OS.DrawThemeBackground (display.hScrollBarTheme(), hDC, OS.SBP_SIZEBOX, 0, cornerRect, null);
+					}
+					OS.ReleaseDC (handle, hDC);
+				}
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
 	if (update) {

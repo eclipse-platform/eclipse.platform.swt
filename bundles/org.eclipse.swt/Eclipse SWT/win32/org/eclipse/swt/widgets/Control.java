@@ -4328,7 +4328,7 @@ LRESULT WM_NCLBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_NCPAINT (int /*long*/ wParam, int /*long*/ lParam) {
-	return null;
+	return wmNCPaint (handle, wParam, lParam);
 }
 
 LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
@@ -4338,7 +4338,7 @@ LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
-	return super.wmPaint (handle, wParam, lParam);
+	return wmPaint (handle, wParam, lParam);
 }
 
 LRESULT WM_PALETTECHANGED (int /*long*/ wParam, int /*long*/ lParam) {

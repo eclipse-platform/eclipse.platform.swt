@@ -1214,15 +1214,6 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_NCPAINT (int /*long*/ wParam, int /*long*/ lParam) {
-	LRESULT result = super.WM_NCPAINT (wParam, lParam);
-	if (result != null) return result;
-	if ((state & CANVAS) != 0) {
-		result = wmNCPaint (handle, wParam, lParam);
-	}
-	return result;
-}
-
 LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		if (OS.LOWORD (wParam) == OS.WM_CREATE) {
@@ -1597,28 +1588,33 @@ LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
-		if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
-			int /*long*/ code = 0;
-			int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
-			if ((bits2 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
-				code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
+	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
+	if (result != null) return result;
+	int scrolledHandle = scrolledHandle ();
+	if ((state & CANVAS) != 0 || (hwnd == scrolledHandle && handle != scrolledHandle)) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+			if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
+				int /*long*/ code = 0;
+				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+				if ((bits2 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
+					code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
+				}
+				int /*long*/ hDC = OS.GetWindowDC (hwnd);
+				RECT rect = new RECT ();
+				OS.GetWindowRect (hwnd, rect);
+				rect.right -= rect.left;
+				rect.bottom -= rect.top;
+				rect.left = rect.top = 0;
+				int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+				OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
+				OS.DrawThemeBackground (display.hEditTheme (), hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
+				OS.ReleaseDC (hwnd, hDC);
+				return new LRESULT (code);
 			}
-			int /*long*/ hDC = OS.GetWindowDC (hwnd);
-			RECT rect = new RECT ();
-			OS.GetWindowRect (hwnd, rect);
-			rect.right -= rect.left;
-			rect.bottom -= rect.top;
-			rect.left = rect.top = 0;
-			int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-			OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
-			OS.DrawThemeBackground (display.hEditTheme (), hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
-			OS.ReleaseDC (hwnd, hDC);
-			return new LRESULT (code);
 		}
 	}
-	return null;
+	return result;
 }
 
 LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
