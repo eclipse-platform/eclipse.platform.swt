@@ -305,6 +305,13 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
+	/*
+	* Feature in Vista.  When the progress bar is not in
+	* a normal state, PBM_SETPOS does not set the position.
+	* This is undocumented.  The fix is to temporarily
+	* set the state to PBST_NORMAL, set the position, then
+	* reset the state.
+	*/
 	int state = 0;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
