@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1306;
-int OS_nativeFunctionCallCount[1306];
+int OS_nativeFunctionCount = 1308;
+int OS_nativeFunctionCallCount[1308];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -1090,7 +1090,8 @@ char * OS_nativeFunctionNames[] = {
 	"WebBrowser_1CanGoForward",
 	"WebBrowser_1Document",
 	"WebBrowser_1DocumentCompleted",
-	"WebBrowser_1DocumentText",
+	"WebBrowser_1DocumentText__I",
+	"WebBrowser_1DocumentText__II",
 	"WebBrowser_1DocumentTitle",
 	"WebBrowser_1DocumentTitleChanged",
 	"WebBrowser_1GoBack",
@@ -1134,6 +1135,7 @@ char * OS_nativeFunctionNames[] = {
 	"Window_1WindowState__II",
 	"Window_1WindowStyle__I",
 	"Window_1WindowStyle__II",
+	"WindowsFormsHost_1Background",
 	"WindowsFormsHost_1Child",
 	"WriteableBitmap_1WritePixels",
 	"XamlReader_1Load",

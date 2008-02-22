@@ -1473,6 +1473,7 @@ public static final native int VisualTreeHelper_GetParent(int sender);
 public static final native boolean WebBrowser_CanGoBack(int sender);
 public static final native boolean WebBrowser_CanGoForward(int sender);
 public static final native int WebBrowser_Document(int sender);
+public static final native int WebBrowser_DocumentText(int sender);
 public static final native void WebBrowser_DocumentText(int sender, int string);
 public static final native int WebBrowser_DocumentTitle(int sender);
 public static final native void WebBrowser_DocumentCompleted(int sender, int handler);

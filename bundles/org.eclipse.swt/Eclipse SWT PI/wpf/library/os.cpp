@@ -12973,14 +12973,27 @@ JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentCompleted)
 }
 #endif
 
-#ifndef NO_WebBrowser_1DocumentText
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentText)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentText)
+#ifndef NO_WebBrowser_1DocumentText__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1DocumentText__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1DocumentText__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentText__I_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->DocumentText);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentText__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1DocumentText__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentText__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentText__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentText_FUNC);
+	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentText__II_FUNC);
 	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->DocumentText = ((String^)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentText_FUNC);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentText__II_FUNC);
 }
 #endif
 
@@ -13486,6 +13499,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowStyle__II)
 	OS_NATIVE_ENTER(env, that, Window_1WindowStyle__II_FUNC);
 	((Window^)TO_OBJECT(arg0))->WindowStyle = ((WindowStyle)arg1);
 	OS_NATIVE_EXIT(env, that, Window_1WindowStyle__II_FUNC);
+}
+#endif
+
+#ifndef NO_WindowsFormsHost_1Background
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WindowsFormsHost_1Background)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WindowsFormsHost_1Background)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WindowsFormsHost_1Background_FUNC);
+	((System::Windows::Forms::Integration::WindowsFormsHost^)TO_OBJECT(arg0))->Background = ((Brush^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WindowsFormsHost_1Background_FUNC);
 }
 #endif
 
