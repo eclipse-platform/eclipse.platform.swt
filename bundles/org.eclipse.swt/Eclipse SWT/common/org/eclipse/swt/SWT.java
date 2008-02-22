@@ -3088,14 +3088,14 @@ public class SWT {
 	public static final int ERROR = 1;
 	
 	/**
-	 * Constant to a indicate a paused state (value is 2).
+	 * Constant to a indicate a paused state (value is 4).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
 	 * </ul></p>
 	 * 
 	 * @since 3.4
 	 */
-	public static final int PAUSED = 2;
+	public static final int PAUSED = 4;
 	
 	/**
 	 * The font style constant indicating a normal weight, non-italic font
