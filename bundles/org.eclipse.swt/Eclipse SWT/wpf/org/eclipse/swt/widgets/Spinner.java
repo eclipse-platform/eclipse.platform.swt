@@ -809,7 +809,6 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		int ptr = createDotNetString (string, false);
 		OS.TextBox_Text (textHandle, ptr);
 		OS.GCHandle_Free (ptr);
-		OS.TextBoxBase_SelectAll (textHandle);
 	}
 	if (notify) postEvent (SWT.Selection);
 }
