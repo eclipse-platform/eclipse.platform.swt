@@ -3095,7 +3095,7 @@ public class SWT {
 	 * 
 	 * @since 3.4
 	 */
-	public static final int PAUSED = 4;
+	public static final int PAUSED = 1 << 2;
 	
 	/**
 	 * The font style constant indicating a normal weight, non-italic font
