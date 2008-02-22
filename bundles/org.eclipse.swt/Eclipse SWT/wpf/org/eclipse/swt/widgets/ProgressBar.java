@@ -143,6 +143,11 @@ public int getSelection () {
 	return (int) OS.RangeBase_Value (handle);
 }
 
+public int getState () {
+	checkWidget ();
+	return SWT.NORMAL;
+}
+
 /**
  * Sets the maximum value that the receiver will allow.  This new
  * value will be ignored if it is not greater than the receiver's current
@@ -208,4 +213,10 @@ public void setSelection (int value) {
 	if (value < 0) return;
 	OS.RangeBase_Value (handle, value);
 }
+
+public void setState (int state) {
+	checkWidget ();
+	//NOT IMPLEMENTED
+}
+
 }

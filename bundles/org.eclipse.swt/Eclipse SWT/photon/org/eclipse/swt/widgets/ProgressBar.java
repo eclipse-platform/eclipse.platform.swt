@@ -172,6 +172,11 @@ public int getSelection () {
 	return args [1];
 }
 
+public int getState () {
+	checkWidget ();
+	return SWT.NORMAL;
+}
+
 /**
  * Sets the maximum value that the receiver will allow.  This new
  * value will be ignored if it is not greater than the receiver's current
@@ -229,6 +234,11 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	OS.PtSetResource (handle, OS.Pt_ARG_GAUGE_VALUE, value, 0);
+}
+
+public void setState (int state) {
+	checkWidget ();
+	//NOT IMPLEMENTED
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {

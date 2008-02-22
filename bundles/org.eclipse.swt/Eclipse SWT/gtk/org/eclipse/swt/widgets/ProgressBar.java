@@ -134,6 +134,11 @@ public int getSelection () {
 	return selection;
 }
 
+public int getState () {
+	checkWidget ();
+	return SWT.NORMAL;
+}
+
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	int /*long*/ result = super.gtk_realize (widget);
 	if (result != 0) return result;
@@ -220,6 +225,11 @@ public void setSelection (int value) {
 	checkWidget ();
 	selection = Math.max (minimum, Math.min (maximum, value));
 	updateBar (selection, minimum, maximum);
+}
+
+public void setState (int state) {
+	checkWidget ();
+	//NOT IMPLEMENTED
 }
 
 int /*long*/ timerProc (int /*long*/ widget) {

@@ -199,7 +199,7 @@ public int getSelection () {
  * 
  * @since 3.4
  */
-/*public*/ int getState () {
+public int getState () {
 	checkWidget ();
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		int state = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
@@ -329,7 +329,7 @@ public void setSelection (int value) {
  * 
  * @since 3.4
  */
-/*public*/ void setState (int state) {
+public void setState (int state) {
 	checkWidget ();
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		switch (state) {

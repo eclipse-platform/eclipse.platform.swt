@@ -191,6 +191,10 @@ public int getSelection () {
 	int minimum = argList [1], sliderSize = argList [3];
 	return minimum + (foreground != -1 ? 0 : sliderSize);
 }
+public int getState () {
+	checkWidget ();
+	return SWT.NORMAL;
+}
 void releaseWidget () {
 	super.releaseWidget ();
 	destroyTimer ();
@@ -295,6 +299,10 @@ public void setSelection (int value) {
 	if (selection > maximum) selection = maximum;
 	setThumb(selection - minimum);
 	update ();
+}
+public void setState (int state) {
+	checkWidget ();
+	//NOT IMPLEMENTED
 }
 void setThumb (int sliderSize) {
 	int [] argList1 = new int [] {
