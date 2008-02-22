@@ -392,7 +392,7 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 					int /*long*/ hDC = OS.GetWindowDC (hwnd);
 					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
 					Decorations shell = menuShell ();
-					int hwndScroll = shell.scrolledHandle ();
+					int /*long*/ hwndScroll = shell.scrolledHandle ();
 					boolean drawGripper = hwnd == hwndScroll;
 					if (!drawGripper) {
 						RECT shellRect = new RECT ();

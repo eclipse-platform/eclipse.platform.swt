@@ -312,7 +312,7 @@ public void setSelection (int value) {
 	* set the state to PBST_NORMAL, set the position, then
 	* reset the state.
 	*/
-	int state = 0;
+	int /*long*/ state = 0;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
 		OS.SendMessage (handle, OS.PBM_SETSTATE, OS.PBST_NORMAL, 0);
