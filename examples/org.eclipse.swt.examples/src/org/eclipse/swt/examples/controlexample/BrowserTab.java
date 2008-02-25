@@ -301,6 +301,6 @@ class BrowserTab extends Tab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		mozillaButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.MOZILLA) != 0);
-		borderButton.setSelection ((browser.getStyle () & SWT.BORDER) != 0);
+		borderButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.BORDER) != 0);
 	}
 }
