@@ -2706,10 +2706,21 @@ void setMenuBar (Menu menu) {
 	*/
 	if (menu == menuBar) return;
 	menuBar = menu;
-//	NSMenu.setMenuBarVisible(true);
-//	application.setMenu(menu.nsMenu);
-//	application.setWindowsMenu(menu.nsMenu);
-//	application.setServicesMenu(menu.nsMenu);
+	//remove all existing menu items except the application menu
+	NSMenu menubar = application.mainMenu();
+	int count = menubar.numberOfItems();
+	while (count > 1) {
+		menubar.removeItemAtIndex(count - 1);
+		count--;
+	}
+	//set parent of each item to NULL and add them to menubar
+	if (menu != null) {
+		MenuItem[] items = menu.getItems();
+		for (int i = 0; i < items.length; i++) {
+			items[i].nsItem.setMenu(null);
+			menubar.addItem(items[i].nsItem);
+		}
+	}
 }
 
 /**

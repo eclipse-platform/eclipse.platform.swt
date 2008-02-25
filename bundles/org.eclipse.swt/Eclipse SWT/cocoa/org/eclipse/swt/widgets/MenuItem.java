@@ -637,6 +637,11 @@ public void setMenu (Menu menu) {
 		if (menu.parent != parent.parent) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
+		menu.cascade = this;
+	} else {
+		if ((parent.style & SWT.BAR) != 0) {
+			menu = new Menu (parent.parent, SWT.DROP_DOWN);
+		}	
 	}
 	
 	/* Assign the new menu */
@@ -646,8 +651,12 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 	
 	/* Update the menu in the OS */
-	((NSMenuItem)nsItem).setSubmenu(menu.nsMenu);
-
+	NSMenuItem menuItem = (NSMenuItem) nsItem;
+	if (menu != null) menuItem.setSubmenu (menu.nsMenu);
+	else menuItem.setSubmenu (null);
+	
+	/* Update menu title with parent item title */
+	updateText ();
 }
 
 boolean setRadioSelection (boolean value) {
@@ -721,7 +730,7 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (text.equals (string)) return;
 	super.setText (string);
-	updateText();
+	updateText ();
 }
 	
 void updateText() {
@@ -736,7 +745,12 @@ void updateText() {
 			j--;
 		}
 	}
-	((NSMenuItem)nsItem).setTitle(NSString.stringWithCharacters(buffer, j));
+	String text = new String (buffer, 0, j);
+	if(menu != null && ((parent.getStyle () | SWT.BAR) != 0)) {
+		menu.nsMenu.setTitle (NSString.stringWith (text));
+	} else {
+		((NSMenuItem) nsItem).setTitle (NSString.stringWith (text));
+	}
 }
 
 }
