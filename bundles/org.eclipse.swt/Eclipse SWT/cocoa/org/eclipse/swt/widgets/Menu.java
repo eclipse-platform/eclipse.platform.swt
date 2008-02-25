@@ -291,15 +291,10 @@ void createItem (MenuItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	
-	/* 
-	* Feature in Cocoa.  If the NSMenuItem has NSMenu, it will not be shown in 
-	* the menu bar.  The fix is to create an empty menu then add it to the MenuItem.
-	*/
-	if (((style & SWT.BAR) != 0) && item.getMenu () == null) {
-		Menu emptyMenu = new Menu (parent, SWT.DROP_DOWN);
-		item.setMenu (emptyMenu);
+	NSMenu emptyMenu = item.createEmptyMenu ();
+	if (emptyMenu != null) {
+		item.nsItem.setSubmenu (emptyMenu);
 	}
-	
 }
 
 void createWidget () {

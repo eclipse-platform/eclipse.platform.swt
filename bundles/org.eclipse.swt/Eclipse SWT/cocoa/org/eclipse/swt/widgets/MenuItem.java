@@ -637,13 +637,7 @@ public void setMenu (Menu menu) {
 		if (menu.parent != parent.parent) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
-		menu.cascade = this;
-	} else {
-		if ((parent.style & SWT.BAR) != 0) {
-			menu = new Menu (parent.parent, SWT.DROP_DOWN);
-		}	
-	}
-	
+	} 
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
@@ -651,9 +645,14 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 	
 	/* Update the menu in the OS */
-	NSMenuItem menuItem = (NSMenuItem) nsItem;
-	if (menu != null) menuItem.setSubmenu (menu.nsMenu);
-	else menuItem.setSubmenu (null);
+	NSMenu menuHandle;
+	if (menu == null) {
+		menuHandle = createEmptyMenu ();
+	} else {
+		menu.cascade = this;
+		menuHandle = menu.nsMenu;
+	}
+	nsItem.setSubmenu (menuHandle);
 	
 	/* Update menu title with parent item title */
 	updateText ();
@@ -746,11 +745,19 @@ void updateText() {
 		}
 	}
 	String text = new String (buffer, 0, j);
-	if(menu != null && ((parent.getStyle () | SWT.BAR) != 0)) {
-		menu.nsMenu.setTitle (NSString.stringWith (text));
+	NSMenu submenu = nsItem.submenu ();
+	if(submenu != null && (parent.getStyle () | SWT.BAR) != 0) {
+		submenu.setTitle (NSString.stringWith (text));
 	} else {
 		((NSMenuItem) nsItem).setTitle (NSString.stringWith (text));
 	}
+}
+
+public NSMenu createEmptyMenu() {
+	if ((parent.style & SWT.BAR) != 0) {
+		return (NSMenu) new SWTMenu ().alloc ().init ();
+	}
+	return null;
 }
 
 }
