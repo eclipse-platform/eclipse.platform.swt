@@ -753,10 +753,11 @@ void updateText() {
 	}
 	String text = new String (buffer, 0, j);
 	NSMenu submenu = nsItem.submenu ();
-	if(submenu != null && (parent.getStyle () | SWT.BAR) != 0) {
-		submenu.setTitle (NSString.stringWith (text));
+	NSString label = NSString.stringWith (text);
+	if(submenu != null && (parent.getStyle () & SWT.BAR) != 0) {
+		submenu.setTitle (label);
 	} else {
-		((NSMenuItem) nsItem).setTitle (NSString.stringWith (text));
+		nsItem.setTitle (label);
 	}
 }
 
