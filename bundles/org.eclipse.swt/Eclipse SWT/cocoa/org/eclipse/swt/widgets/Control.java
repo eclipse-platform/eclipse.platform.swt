@@ -2711,8 +2711,6 @@ public void setMenu (Menu menu) {
 		}
 	}
 	this.menu = menu;
-	NSMenu nsMenu = menu != null ? menu.nsMenu : null;
-	((NSView)view).setMenu(nsMenu);
 }
 
 /**
