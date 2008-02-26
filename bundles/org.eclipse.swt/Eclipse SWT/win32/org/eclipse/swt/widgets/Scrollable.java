@@ -392,16 +392,18 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 					int /*long*/ hDC = OS.GetWindowDC (hwnd);
 					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
 					Decorations shell = menuShell ();
-					int /*long*/ hwndScroll = shell.scrolledHandle ();
-					boolean drawGripper = hwnd == hwndScroll;
-					if (!drawGripper) {
-						RECT shellRect = new RECT ();
-						OS.GetClientRect (hwndScroll, shellRect);
-						OS.MapWindowPoints (hwndScroll, 0, shellRect, 2);
-						drawGripper = shellRect.right == windowRect.right && shellRect.bottom == windowRect.bottom;
-					}
-					if (drawGripper) {
-						OS.DrawThemeBackground (display.hScrollBarTheme(), hDC, OS.SBP_SIZEBOX, 0, cornerRect, null);
+					if ((shell.style & SWT.RESIZE) != 0) {
+						int /*long*/ hwndScroll = shell.scrolledHandle ();
+						boolean drawGripper = hwnd == hwndScroll;
+						if (!drawGripper) {
+							RECT shellRect = new RECT ();
+							OS.GetClientRect (hwndScroll, shellRect);
+							OS.MapWindowPoints (hwndScroll, 0, shellRect, 2);
+							drawGripper = shellRect.right == windowRect.right && shellRect.bottom == windowRect.bottom;
+						}
+						if (drawGripper) {
+							OS.DrawThemeBackground (display.hScrollBarTheme(), hDC, OS.SBP_SIZEBOX, 0, cornerRect, null);
+						}
 					}
 					OS.ReleaseDC (handle, hDC);
 				}
