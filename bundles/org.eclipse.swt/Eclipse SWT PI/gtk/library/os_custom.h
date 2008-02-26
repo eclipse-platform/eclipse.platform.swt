@@ -95,6 +95,7 @@
 #define gdk_screen_get_monitor_geometry_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_n_monitors_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_number_LIB "libgdk-x11-2.0.so.0"
+#define gtk_window_get_group_LIB "libgtk-x11-2.0.so.0"
 #define gtk_window_get_opacity_LIB "libgtk-x11-2.0.so.0"
 #define gdk_window_set_keep_above_LIB "libgdk-x11-2.0.so.0"
 #define gdk_window_set_accept_focus_LIB "libgdk-x11-2.0.so.0"

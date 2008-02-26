@@ -9377,6 +9377,15 @@ public static final int /*long*/ gtk_window_get_focus(int /*long*/ window) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_window_get_group(int /*long*/ window);
+public static final int /*long*/ gtk_window_get_group(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gtk_window_get_group(window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_window_get_icon_list(int /*long*/ window);
 public static final int /*long*/ gtk_window_get_icon_list(int /*long*/ window) {
 	lock.lock();

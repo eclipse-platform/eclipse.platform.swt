@@ -15498,6 +15498,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1focus)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1get_1group
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1group)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1get_1group_FUNC);
+/*
+	rc = (jint)gtk_window_get_group((GtkWindow *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(GtkWindow *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_window_get_group_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_window_get_group");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GtkWindow *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1get_1group_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1window_1get_1icon_1list
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1icon_1list)
 	(JNIEnv *env, jclass that, jint arg0)

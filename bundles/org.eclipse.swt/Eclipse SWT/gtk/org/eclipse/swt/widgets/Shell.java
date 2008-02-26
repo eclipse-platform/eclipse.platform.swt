@@ -1746,6 +1746,15 @@ void updateModal () {
 			shell = shell.parent;
 		}
 	}
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0) && group == 0) { 
+		/*
+		* Feature in GTK. Starting with GTK version 2.10, GTK
+		* doesn't assign windows to a default group. The fix is to
+		* get the handle of the default group and add windows to the
+		* group.
+		*/
+		group = OS.gtk_window_get_group(0);
+	}
 	if (group != 0) {
 		OS.gtk_window_group_add_window (group, shellHandle);
 	} else {
