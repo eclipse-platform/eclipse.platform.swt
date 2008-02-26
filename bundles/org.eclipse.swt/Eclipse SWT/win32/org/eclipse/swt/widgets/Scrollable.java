@@ -380,14 +380,20 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 				RECT trimRect = new RECT ();
 				int bits2 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 				OS.AdjustWindowRectEx (trimRect, bits1, false, bits2);
-				RECT clientRect = new RECT ();
-				OS.GetClientRect (hwnd, clientRect);
-				OS.MapWindowPoints (hwnd, 0, clientRect, 2);
+				boolean hVisible = false, vVisible = false;
+				SCROLLBARINFO psbi = new SCROLLBARINFO ();
+				psbi.cbSize = SCROLLBARINFO.sizeof;
+				if (OS.GetScrollBarInfo (hwnd, OS.OBJID_HSCROLL, psbi)) {
+					hVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+				}
+				if (OS.GetScrollBarInfo (hwnd, OS.OBJID_VSCROLL, psbi)) {
+					vVisible = (psbi.rgstate [0] & OS.STATE_SYSTEM_INVISIBLE) == 0;
+				}
 				RECT cornerRect = new RECT ();
-				cornerRect.left = Math.max (0, clientRect.right - windowRect.left);
-				cornerRect.top = Math.max (0, clientRect.bottom - windowRect.top);
-				cornerRect.right = Math.max (cornerRect.left, windowRect.right - windowRect.left - trimRect.right);
-				cornerRect.bottom = Math.max (cornerRect.top, windowRect.bottom - windowRect.top - trimRect.bottom);
+				cornerRect.right = windowRect.right - windowRect.left - trimRect.right;
+				cornerRect.bottom = windowRect.bottom - windowRect.top - trimRect.bottom;
+				cornerRect.left = cornerRect.right - (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
+				cornerRect.top = cornerRect.bottom - (vVisible ? OS.GetSystemMetrics (OS.SM_CYHSCROLL) : 0);
 				if (cornerRect.left != cornerRect.right && cornerRect.top != cornerRect.bottom) {
 					int /*long*/ hDC = OS.GetWindowDC (hwnd);
 					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
