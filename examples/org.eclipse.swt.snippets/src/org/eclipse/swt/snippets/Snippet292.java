@@ -24,7 +24,7 @@ import org.eclipse.swt.layout.*;
 public class Snippet292 {
 	public static void main(String[] args) {
 		final Display display = new Display();
-		Shell shell = new Shell(display);
+		final Shell shell = new Shell(display);
 		final Tree tree = new Tree(shell, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
 			TreeItem treeItem = new TreeItem (tree, SWT.NULL);
@@ -50,9 +50,14 @@ public class Snippet292 {
 				if (image != null) image.dispose ();
 				image = new Image (display, tree.getBounds ());
 				GC gc = new GC (image);
-				tree.print (gc);
+				boolean success = tree.print (gc);
 				gc.dispose ();
 				label.setImage (image);
+				if (!success) {
+					MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.PRIMARY_MODAL);
+					messageBox.setMessage ("Sorry, taking a snapshot is not supported on your platform");
+					messageBox.open ();
+				}
 			}
 		});
 		GridLayout layout = new GridLayout (2, true);
