@@ -213,6 +213,13 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
+NSMenu createEmptyMenu () {
+	if ((parent.style & SWT.BAR) != 0) {
+		return (NSMenu) new SWTMenu ().alloc ().init ();
+	}
+	return null;
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -751,13 +758,6 @@ void updateText() {
 	} else {
 		((NSMenuItem) nsItem).setTitle (NSString.stringWith (text));
 	}
-}
-
-public NSMenu createEmptyMenu() {
-	if ((parent.style & SWT.BAR) != 0) {
-		return (NSMenu) new SWTMenu ().alloc ().init ();
-	}
-	return null;
 }
 
 }
