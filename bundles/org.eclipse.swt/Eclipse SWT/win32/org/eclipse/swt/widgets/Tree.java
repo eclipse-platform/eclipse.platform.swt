@@ -589,7 +589,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 							if (clrText != -1) data.foreground = clrText;
 							if (clrTextBk != -1) data.background = clrTextBk;
 						}
-						data.font = Font.win32_new (display, hFont);
+						data.font = item.getFont (index);
 						data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 						GC gc = GC.win32_new (hDC, data);
 						Event event = new Event ();
@@ -796,7 +796,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 				int nSavedDC = OS.SaveDC (hDC);
 				GCData data = new GCData ();
 				data.device = display;
-				data.font = Font.win32_new (display, hFont);
+				data.font = item.getFont (index);
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = OS.GetBkColor (hDC);
 				if (selected && (style & SWT.FULL_SELECTION) != 0) {
@@ -994,7 +994,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 				if (clrTextBk != -1) data.background = clrTextBk;
 			}
 			data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-			if (hFont != -1) data.font = Font.win32_new (display, hFont);
+			data.font = item.getFont (index);
 			GC gc = GC.win32_new (hDC, data);
 			Event event = new Event ();
 			event.index = index;
@@ -4223,7 +4223,7 @@ public void selectAll () {
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
 }
 
-Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
+Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect) {
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
 	RECT insetRect = toolTipInset (cellRect);
 	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
@@ -4231,7 +4231,7 @@ Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT c
 	data.device = display;
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
-	data.font = Font.win32_new (display, hFont);
+	data.font = item.getFont (column);
 	GC gc = GC.win32_new (nmcd.hdc, data);
 	Event event = new Event ();
 	event.item = item;
@@ -4283,13 +4283,13 @@ Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
 	return event;
 }
 
-Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
+Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect) {
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
 	RECT insetRect = toolTipInset (itemRect);
 	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
-	data.font = Font.win32_new (display, hFont);
+	data.font = item.getFont (column);
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
 	GC gc = GC.win32_new (nmcd.hdc, data);
@@ -7485,7 +7485,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 						boolean drawForeground = true;
 						cellRect [0] = item [0].getBounds (index [0], true, true, false, false, false, hDC);
 						if (hooks (SWT.EraseItem)) {
-							Event event = sendEraseItemEvent (item [0], nmcd, index [0], cellRect [0], hFont);
+							Event event = sendEraseItemEvent (item [0], nmcd, index [0], cellRect [0]);
 							if (isDisposed () || item [0].isDisposed ()) break;
 							if (event.doit) {
 								drawForeground = (event.detail & SWT.FOREGROUND) != 0;
@@ -7538,7 +7538,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 						}
 						if (hooks (SWT.PaintItem)) {
 							itemRect [0] = item [0].getBounds (index [0], true, true, false, false, false, hDC);
-							sendPaintItemEvent (item [0], nmcd, index[0], itemRect [0], hFont);
+							sendPaintItemEvent (item [0], nmcd, index[0], itemRect [0]);
 						}
 						OS.SelectObject (hDC, oldFont);
 						OS.ReleaseDC (handle, hDC);

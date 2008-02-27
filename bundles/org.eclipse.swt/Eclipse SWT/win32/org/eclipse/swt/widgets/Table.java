@@ -3317,7 +3317,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	}
 }
 
-Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect, int /*long*/ hFont) {
+Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT cellRect) {
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
 	RECT insetRect = toolTipInset (cellRect);
 	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
@@ -3325,7 +3325,7 @@ Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	data.device = display;
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
-	data.font = Font.win32_new (display, hFont);
+	data.font = item.getFont (column);
 	GC gc = GC.win32_new (nmcd.hdc, data);
 	Event event = new Event ();
 	event.item = item;
@@ -3639,13 +3639,13 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	OS.RestoreDC (hDC, nSavedDC);
 }
 
-Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect, int /*long*/ hFont) {
+Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT itemRect) {
 	int nSavedDC = OS.SaveDC (nmcd.hdc);
 	RECT insetRect = toolTipInset (itemRect);
 	OS.SetWindowOrgEx (nmcd.hdc, insetRect.left, insetRect.top, null);
 	GCData data = new GCData ();
 	data.device = display;
-	data.font = Font.win32_new (display, hFont);
+	data.font = item.getFont (column);
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
 	GC gc = GC.win32_new (nmcd.hdc, data);
@@ -6598,7 +6598,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 				boolean drawForeground = true;
 				RECT cellRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, false, false, hDC);
 				if (hooks (SWT.EraseItem)) {
-					Event event = sendEraseItemEvent (item, nmcd, pinfo.iSubItem, cellRect, hFont);
+					Event event = sendEraseItemEvent (item, nmcd, pinfo.iSubItem, cellRect);
 					if (isDisposed () || item.isDisposed ()) break;
 					if (event.doit) {
 						drawForeground = (event.detail & SWT.FOREGROUND) != 0;
@@ -6651,7 +6651,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 				}
 				if (hooks (SWT.PaintItem)) {
 					RECT itemRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, true, true, false, false, hDC);
-					sendPaintItemEvent (item, nmcd, pinfo.iSubItem, itemRect, hFont);
+					sendPaintItemEvent (item, nmcd, pinfo.iSubItem, itemRect);
 				}
 				OS.SelectObject (hDC, oldFont);
 				OS.ReleaseDC (handle, hDC);
