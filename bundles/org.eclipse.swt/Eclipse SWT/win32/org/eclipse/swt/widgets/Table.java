@@ -3208,7 +3208,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 		if (selected) clrSelectionBk = data.background;
 	}
-	data.font = Font.win32_new (display, item.fontHandle (nmcd.iSubItem));
+	data.font = item.getFont (nmcd.iSubItem);
 	data.uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
@@ -3348,7 +3348,7 @@ Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hDC) {
 	GCData data = new GCData ();
 	data.device = display;
-	data.font = Font.win32_new (display, item.fontHandle (column));
+	data.font = item.getFont (column);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
 	RECT itemRect = item.getBounds (row, column, true, true, false, false, hDC);
@@ -3543,7 +3543,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	int /*long*/ hDC = nmcd.hdc;
 	GCData data = new GCData ();
 	data.device = display;
-	data.font = Font.win32_new (display, item.fontHandle (nmcd.iSubItem));
+	data.font = item.getFont (nmcd.iSubItem);
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
 	* even for items that are not selected.  The fix is to get

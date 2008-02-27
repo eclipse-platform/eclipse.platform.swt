@@ -4256,7 +4256,7 @@ Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
 	int nSavedDC = OS.SaveDC (hDC);
 	GCData data = new GCData ();
 	data.device = display;
-	data.font = Font.win32_new (display, item.fontHandle (index));
+	data.font = item.getFont (index);
 	GC gc = GC.win32_new (hDC, data);
 	Event event = new Event ();
 	event.item = item;
