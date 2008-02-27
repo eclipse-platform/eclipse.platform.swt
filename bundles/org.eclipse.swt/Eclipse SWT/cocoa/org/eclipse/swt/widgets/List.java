@@ -915,6 +915,7 @@ public void select (int [] indices) {
 		int index = indices [length - i - 1];
 		if (index >= 0 && index < itemCount) {
 			indexes.addIndex (indices [i]);
+			count++;
 		}
 	}
 	if (count > 0) {
