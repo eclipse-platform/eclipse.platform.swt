@@ -1653,6 +1653,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1, proc6, "@:@@@i");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTOutlineView";
@@ -3178,10 +3179,10 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_1objectValueForTableColumn_1row_1) {
-		return widget.tableViewobjectValueForTableColumnrow(arg0, arg1, arg2);
+		return widget.tableView_objectValueForTableColumn_row(arg0, arg1, arg2);
 	}
 	if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
-		return widget.tableViewshouldEditTableColumnrow(arg0, arg1, arg2) ? 1 : 0;
+		return widget.tableView_shouldEditTableColumn_row(arg0, arg1, arg2) ? 1 : 0;
 	} else  if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
 		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;
 	} else  if (sel == OS.sel_outlineView_1child_1ofItem_1) {
@@ -3198,11 +3199,13 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2, int 
 	Widget widget = (Widget)OS.JNIGetObject(jniRef);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1) {
-		widget.tableViewwillDisplayCellforTableColumnrow(arg0, arg1, arg2, arg3);
+		widget.tableView_willDisplayCell_forTableColumn_row(arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1) {
 		widget.outlineView_willDisplayCell_forTableColumn_item(arg0, arg1, arg2, arg3);
 	} else  if (sel == OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1) {
 		widget.outlineView_setObjectValue_forTableColumn_byItem(arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1) {
+		widget.tableView_setObjectValue_forTableColumn_row(arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }

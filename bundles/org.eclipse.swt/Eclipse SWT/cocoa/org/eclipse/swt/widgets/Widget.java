@@ -1199,15 +1199,18 @@ boolean setKeyState (Event event, int type, int theEvent) {
 void tableViewSelectionDidChange (int aNotification) {
 }
 
-boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+void tableView_setObjectValue_forTableColumn_row(int aTableView, int anObject, int aTableColumn, int rowIndex) {	
+}
+
+boolean tableView_shouldEditTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
 	return true;
 }
 
-int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
 	return 0;
 }
 
-void tableViewwillDisplayCellforTableColumnrow(int aTableView, int aCell, int aTableColumn, int rowIndex) {
+void tableView_willDisplayCell_forTableColumn_row(int aTableView, int aCell, int aTableColumn, int rowIndex) {
 }
 
 /**

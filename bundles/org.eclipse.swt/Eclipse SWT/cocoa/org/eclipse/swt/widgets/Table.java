@@ -67,7 +67,7 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	TableItem currentItem;
 	NSTableHeaderView headerView;
-	NSTableColumn firstColumn;
+	NSTableColumn firstColumn, checkColumn;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
 	boolean ignoreSelect;
 
@@ -341,7 +341,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			gc.dispose ();
 			width += columnWidth + getInsetWidth ();
 		}
-//		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
+		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
 	} else {
 		width = wHint;
 	}
@@ -380,8 +380,25 @@ void createHandle () {
 	headerView.retain();
 	widget.setHeaderView(null);
 	
+	NSString str = NSString.stringWith("");
+	if ((style & SWT.CHECK) != 0) {
+		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
+		checkColumn.initWithIdentifier(str);
+		checkColumn.headerCell().setTitle(str);
+		widget.addTableColumn (checkColumn);
+		NSButtonCell cell = (NSButtonCell)new NSButtonCell().alloc().init();
+		checkColumn.setDataCell(cell);
+		cell.setButtonType(OS.NSSwitchButton);
+		cell.setImagePosition(OS.NSImageOnly);
+		cell.setAllowsMixedState(true);
+		cell.release();
+		checkColumn.setWidth(getCheckColumnWidth());
+		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
+		checkColumn.setEditable(false);
+	}
+
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
-	firstColumn.initWithIdentifier(NSString.stringWith(""));
+	firstColumn.initWithIdentifier(str);
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
 	NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
 	firstColumn.setDataCell(cell);
@@ -411,7 +428,8 @@ void createItem (TableColumn column, int index) {
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
 		nsColumn.initWithIdentifier(NSString.stringWith(""));
 		((NSTableView)view).addTableColumn (nsColumn);
-		((NSTableView)view).moveColumn (columnCount, index);
+		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
+		((NSTableView)view).moveColumn (columnCount + checkColumn, index + checkColumn);
 		NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
 		nsColumn.setDataCell(cell);
 		cell.release();
@@ -705,6 +723,10 @@ void fixSelection (int index, boolean add) {
 		}
 	}
 	if (fix) select (selection, newCount, true);
+}
+
+int getCheckColumnWidth () {
+	return 20; //TODO - compute width
 }
 
 /**
@@ -1382,6 +1404,8 @@ void releaseHandle () {
 	headerView = null;
 	if (firstColumn != null) firstColumn.release();
 	firstColumn = null;
+	if (checkColumn != null) checkColumn.release();
+	checkColumn = null;
 }
 
 void releaseWidget () {	
@@ -2215,7 +2239,7 @@ public void showColumn (TableColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (columnCount <= 1 || !(0 <= index && index < columnCount)) return;
-	((NSTableView)view).scrollColumnToVisible(index);
+	((NSTableView)view).scrollColumnToVisible(index + ((style & SWT.CHECK) != 0 ? 1 : 0));
 }
 
 void showIndex (int index) {
@@ -2287,11 +2311,43 @@ void tableViewSelectionDidChange (int aNotification) {
 	}
 }
 
-boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
+	TableItem item = items [rowIndex];
+	if (checkColumn != null && aTableColumn == checkColumn.id) {
+		NSNumber value;
+		if (item.checked && item.grayed) {
+			value = NSNumber.numberWithInt(OS.NSMixedState);
+		} else {
+			value = NSNumber.numberWithInt(item.checked ? OS.NSOnState : OS.NSOffState);
+		}
+		return value.id;
+	}
+	for (int i=0; i<columnCount; i++) {
+		if (columns [i].nsColumn.id == aTableColumn) {
+			return NSString.stringWith(item.getText(i)).id;
+		}
+	}
+	return NSString.stringWith(item.text).id;
+}
+
+void tableView_setObjectValue_forTableColumn_row(int aTableView, int anObject, int aTableColumn, int rowIndex) {
+	TableItem item = items [rowIndex];
+	if (checkColumn != null && aTableColumn == checkColumn.id)  {
+		item.checked = !item.checked;
+		Event event = new Event();
+		event.detail = SWT.CHECK;
+		event.item = item;
+		event.index = rowIndex;
+		postEvent(SWT.Selection, event);
+	}
+}
+
+boolean tableView_shouldEditTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
 	return false;
 }
 
-void tableViewwillDisplayCellforTableColumnrow(int aTableView, int aCell, int aTableColumn, int rowIndex) {
+void tableView_willDisplayCell_forTableColumn_row(int aTableView, int aCell, int aTableColumn, int rowIndex) {
+	if (checkColumn != null && aTableColumn == checkColumn.id) return;
 	TableItem item = items [rowIndex];
 	Image image = item.image;
 	for (int i=0; i<columnCount; i++) {
@@ -2303,15 +2359,4 @@ void tableViewwillDisplayCellforTableColumnrow(int aTableView, int aCell, int aT
 	cell.setImage(image != null ? image.handle : null);
 	cell.setLeaf(true);
 }
-
-int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
-	TableItem item = items [rowIndex];
-	for (int i=0; i<columnCount; i++) {
-		if (columns [i].nsColumn.id == aTableColumn) {
-			return NSString.stringWith(item.getText(i)).id;
-		}
-	}
-	return NSString.stringWith(item.text).id;
-}
-
 }

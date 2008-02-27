@@ -1216,11 +1216,11 @@ void tableViewSelectionDidChange (int aNotification) {
 	postEvent (SWT.Selection);
 }
 
-boolean tableViewshouldEditTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+boolean tableView_shouldEditTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
 	return false;
 }
 
-int tableViewobjectValueForTableColumnrow(int aTableView, int aTableColumn, int rowIndex) {
+int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
 	return NSString.stringWith(items[rowIndex]).id;
 }
 

@@ -345,6 +345,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //			gc.dispose ();
 //			width += getInsetWidth (column_id, true);
 		}
+		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
 	} else {
 		width = wHint;
 	}
@@ -395,8 +396,7 @@ void createHandle () {
 		cell.setButtonType(OS.NSSwitchButton);
 		cell.setImagePosition(OS.NSImageOnly);
 		cell.setAllowsMixedState(true);
-		//TODO - compute width
-		checkColumn.setWidth(20);
+		checkColumn.setWidth(getCheckColumnWidth());
 		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
 		checkColumn.setEditable(false);
 		cell.release();
@@ -442,7 +442,8 @@ void createItem (TreeColumn column, int index) {
 		nsColumn.initWithIdentifier(str);
 		nsColumn.headerCell().setTitle(str);
 		((NSTableView)view).addTableColumn (nsColumn);
-		((NSTableView)view).moveColumn (columnCount, index);
+		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
+		((NSTableView)view).moveColumn (columnCount + checkColumn, index + checkColumn);
 		NSBrowserCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
 		cell.setLeaf(true);
 		nsColumn.setDataCell(cell);
@@ -744,6 +745,10 @@ void fixScrollBar () {
 //	if (top [0] > maximum) {
 //		OS.SetDataBrowserScrollPosition (handle, maximum, left [0]);
 //	}
+}
+
+int getCheckColumnWidth () {
+	return 20; //TODO - compute width
 }
 
 /**
@@ -1424,23 +1429,10 @@ boolean outlineView_shouldExpandItem(int outlineView, int ref) {
 void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int ref) {
 	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
 	if (checkColumn != null && tableColumn == checkColumn.id)  {
-		int value = new NSNumber(object).intValue();
-		switch (value) {
-			case OS.NSMixedState:
-				item.checked = true;
-				item.grayed = true;
-				break;
-			case OS.NSOnState:
-				item.checked = true;
-				item.grayed = false;
-				break;
-			case OS.NSOffState:
-				item.checked = false;
-				item.grayed = false;
-				break;
-		}
+		item.checked = !item.checked;
 		Event event = new Event();
 		event.detail = SWT.CHECK;
+		event.item = item;
 		postEvent(SWT.Selection, event);
 	}
 }
@@ -2161,7 +2153,7 @@ public void showColumn (TreeColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (columnCount <= 1 || !(0 <= index && index < columnCount)) return;
-	((NSTableView)view).scrollColumnToVisible(index);
+	((NSTableView)view).scrollColumnToVisible(index + ((style & SWT.CHECK) != 0 ? 1 : 0));
 }
 
 /**
