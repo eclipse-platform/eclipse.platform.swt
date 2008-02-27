@@ -1590,8 +1590,8 @@ LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
 	if (result != null) return result;
-	int /*long*/ scrolledHandle = scrolledHandle ();
-	if ((state & CANVAS) != 0 || (hwnd == scrolledHandle && handle != scrolledHandle)) {
+	int /*long*/ borderHandle = borderHandle ();
+	if ((state & CANVAS) != 0 || (hwnd == borderHandle && handle != borderHandle)) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 			if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) {
