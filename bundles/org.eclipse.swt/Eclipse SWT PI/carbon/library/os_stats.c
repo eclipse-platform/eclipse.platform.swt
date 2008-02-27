@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 945;
-int OS_nativeFunctionCallCount[945];
+int OS_nativeFunctionCount = 947;
+int OS_nativeFunctionCallCount[947];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -448,6 +448,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetFlavorData",
 	"GetFlavorDataSize",
 	"GetFlavorType",
+	"GetFrontProcess",
 	"GetGWorld",
 	"GetGlobalMouse",
 	"GetHandleSize",
@@ -775,6 +776,7 @@ char * OS_nativeFunctionNames[] = {
 	"RetainWindow",
 	"RevealDataBrowserItem",
 	"RunStandardAlert",
+	"SameProcess",
 	"ScrollRect",
 	"SectRect",
 	"SectRgn",

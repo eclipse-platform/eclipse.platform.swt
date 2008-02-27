@@ -1221,6 +1221,26 @@ public static Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
+	/*
+	* Feature in the Macintosh.  When SetWindowActivationScope()
+	* is used with kWindowActivationScopeNone to stop a window from
+	* becoming active and taking focus when shown, for some reason,
+	* when focus is lost to the desktop or another application,
+	* the window becomes active.  Specifically, IsWindowActive()
+	* starts to return true for the window, even though is has
+	* never been made active.  The fix is to check that the current
+	* and front process are the same before calling IsWindowActive().
+	*/
+	int [] psn1 = new int [2];
+	if (OS.GetCurrentProcess (psn1) == OS.noErr) {
+		int [] psn2 = new int [2];
+		if (OS.GetFrontProcess (psn2) == OS.noErr) {
+			boolean [] result = new boolean [1];
+			if (OS.SameProcess (psn1, psn2, result) == OS.noErr) {
+				if (!result [0]) return null;
+			}
+		}
+	}
 	if (activeShell != null && !activeShell.isDisposed ()) {
 		return activeShell;
 	}

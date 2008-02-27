@@ -6188,6 +6188,22 @@ fail:
 }
 #endif
 
+#ifndef NO_GetFrontProcess
+JNIEXPORT jint JNICALL OS_NATIVE(GetFrontProcess)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetFrontProcess_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)GetFrontProcess((ProcessSerialNumber *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GetFrontProcess_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetGWorld
 JNIEXPORT void JNICALL OS_NATIVE(GetGWorld)
 	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1)
@@ -11094,6 +11110,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(RunStandardAlert)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, RunStandardAlert_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SameProcess
+JNIEXPORT jint JNICALL OS_NATIVE(SameProcess)
+	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1, jbooleanArray arg2)
+{
+	jint *lparg0=NULL;
+	jint *lparg1=NULL;
+	jboolean *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SameProcess_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)SameProcess((ProcessSerialNumber *)lparg0, (ProcessSerialNumber *)lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SameProcess_FUNC);
 	return rc;
 }
 #endif
