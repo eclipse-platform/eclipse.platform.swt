@@ -137,7 +137,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 	
 	TreeItem nextItem(Tree tree, TreeItem item) {
 		if (item == null) return null;
-		if (item.getExpanded()) return item.getItem(0);
+		if (item.getExpanded() && item.getItemCount() > 0) return item.getItem(0);
 		TreeItem childItem = item;
 		TreeItem parentItem = childItem.getParentItem();
 		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
