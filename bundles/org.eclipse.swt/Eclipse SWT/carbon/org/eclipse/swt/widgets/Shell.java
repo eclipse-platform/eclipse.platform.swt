@@ -527,7 +527,7 @@ void createHandle () {
 		if (parent != null) {
 			parentGroup = parent.getShell ().windowGroup;
 		} else {
-			parentGroup = OS.GetWindowGroupOfClass (windowClass);
+			parentGroup = OS.GetWindowGroupOfClass (OS.kDocumentWindowClass);
 		}
 	}
 	OS.SetWindowGroup (shellHandle, parentGroup);
