@@ -184,15 +184,14 @@ static int checkStyle (int style) {
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
-		//TODO - not tested
 		Shell shell = getShell ();
 		NSWindow window = shell.window;
 		NSPoint location = null;
 		if (hasLocation) {
+			Point shellCoord = display.map(null, shell, new Point(x,y));
 			location = new NSPoint ();
-			location.x = x;
-			location.y = y;
-//			location.y = window.screen().frame().height - location.y;
+			location.x = shellCoord.x;
+			location.y = window.frame().height - shellCoord.y;
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
