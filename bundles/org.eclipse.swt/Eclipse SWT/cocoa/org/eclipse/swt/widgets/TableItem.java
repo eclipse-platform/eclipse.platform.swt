@@ -727,7 +727,8 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	cached = true;
-//	redraw (Table.CHECK_COLUMN_ID);
+	NSRect rect = ((NSTableView)parent.view).frameOfCellAtColumn(0, parent.indexOf(this));
+	((NSTableView)parent.view).setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -882,7 +883,8 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	cached = true;
-//	redraw (Table.CHECK_COLUMN_ID);
+	NSRect rect = ((NSTableView)parent.view).frameOfCellAtColumn(0, parent.indexOf(this));
+	((NSTableView)parent.view).setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -1028,7 +1030,9 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-//	redraw (OS.kDataBrowserNoItem);
+	if ((parent.style & SWT.CHECK) != 0) index++;
+	NSRect rect = ((NSTableView)parent.view).frameOfCellAtColumn(index, parent.indexOf(this));
+	((NSTableView)parent.view).setNeedsDisplayInRect(rect);
 }
 
 public void setText (String string) {

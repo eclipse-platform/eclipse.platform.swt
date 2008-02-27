@@ -1044,7 +1044,7 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	cached = true;
-//	redraw (Tree.CHECK_COLUMN_ID);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
@@ -1233,7 +1233,7 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	cached = true;
-//	redraw (Tree.CHECK_COLUMN_ID);
+	((NSOutlineView)parent.view).reloadItem_(handle);
 }
 
 /**
