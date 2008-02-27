@@ -1327,7 +1327,15 @@ public class SWT {
 
 	/**
 	 * Style constant for no focus from the mouse behavior (value is 1&lt;&lt;19).
+	 * <p>
+	 * Normally, when the user clicks on a control, focus is assigned to that
+	 * control, providing the control has no children.  Some controls, such as
+	 * tool bars and sashes, don't normally take focus when the mouse is clicked
+	 * or accept focus when assigned from within the program.  This style allows
+	 * Composites to implement "no focus" mouse behavior.
+	 * 
 	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
@@ -1342,6 +1350,8 @@ public class SWT {
 	 * the SWT.Paint event is not sent. When it gets bigger, an SWT.Paint event is
 	 * sent with a GC clipped to only the new areas to be painted. Without this
 	 * style, the entire client area will be repainted.
+	 * 
+	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
@@ -1350,6 +1360,8 @@ public class SWT {
 
 	/**
 	 * Style constant for no paint event merging behavior (value is 1&lt;&lt;21).
+	 * 
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
