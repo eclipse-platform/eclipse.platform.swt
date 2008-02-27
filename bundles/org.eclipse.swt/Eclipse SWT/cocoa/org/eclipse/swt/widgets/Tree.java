@@ -1372,6 +1372,22 @@ boolean outlineView_isItemExpandable(int outlineView, int ref) {
 	return ((TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag))).itemCount != 0;
 }
 
+void outlineViewItemDidCollapse(int notification) {
+	NSNotification nsNotification = new NSNotification(notification);
+	NSDictionary info = nsNotification.userInfo();
+	id id = info.objectForKey(NSString.stringWith("NSObject"));
+	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(id.id, OS.sel_tag));
+	item.expanded = false;
+}
+
+void outlineViewItemDidExpand(int notification) {
+	NSNotification nsNotification = new NSNotification(notification);
+	NSDictionary info = nsNotification.userInfo();
+	id id = info.objectForKey(NSString.stringWith("NSObject"));
+	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(id.id, OS.sel_tag));
+	item.expanded = true;
+}
+
 int outlineView_numberOfChildrenOfItem(int outlineView, int ref) {
 	if (ref == 0) return itemCount;
 	return ((TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag))).itemCount;

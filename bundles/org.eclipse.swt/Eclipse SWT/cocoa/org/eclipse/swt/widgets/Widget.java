@@ -647,6 +647,12 @@ boolean outlineView_isItemExpandable(int outlineView, int item) {
 	return false;
 }
 
+void outlineViewItemDidCollapse(int notification) {
+}
+
+void outlineViewItemDidExpand(int notification) {
+}
+
 int outlineView_numberOfChildrenOfItem(int outlineView, int item) {
 	return 0;
 }

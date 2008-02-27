@@ -1668,6 +1668,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_1objectValueForTableColumn_1byItem_1, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineViewItemDidCollapse_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineViewItemDidExpand_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
@@ -3147,6 +3149,10 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.menuNeedsUpdate(arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_1) {
 		widget.outlineViewSelectionDidChange(arg0);
+	} else if (sel == OS.sel_outlineViewItemDidCollapse_1) {
+		widget.outlineViewItemDidCollapse(arg0);
+	} else if (sel == OS.sel_outlineViewItemDidExpand_1) {
+		widget.outlineViewItemDidExpand(arg0);
 	}
 	return 0;
 }
