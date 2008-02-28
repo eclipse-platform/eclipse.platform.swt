@@ -133,6 +133,7 @@ public RGB open() {
 	OS.DeleteGlobalRef(jniRef);
 	NSColor color = panel.color();
 	if (color != null) {
+		color = color.colorUsingColorSpaceName_(NSString.stringWith("NSCalibratedRGBColorSpace"));
 		rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
 	}
 	return rgb;
