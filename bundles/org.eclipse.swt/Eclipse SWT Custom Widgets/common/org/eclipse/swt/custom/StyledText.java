@@ -4540,12 +4540,15 @@ public Rectangle getTextBounds(int start, int end) {
 	for (int i = lineStart; i <= lineEnd; i++) {
 		int lineOffset = content.getOffsetAtLine(i);		
 		TextLayout layout = renderer.getTextLayout(i);
-		if (layout.getText().length() > 0) {
-			if (i == lineStart && i == lineEnd) {
-				rect = layout.getBounds(start - lineOffset, end - lineOffset);
-			} else if (i == lineStart) {
-				String line = content.getLine(i);
-				rect = layout.getBounds(start - lineOffset, line.length());
+		int length = layout.getText().length();
+		if (length > 0) {
+			if (i == lineStart) {
+				if (i == lineEnd) {
+					rect = layout.getBounds(start - lineOffset, end - lineOffset);
+				} else {
+					rect = layout.getBounds(start - lineOffset, length);
+				}
+				y += rect.y;
 			} else if (i == lineEnd) {
 				rect = layout.getBounds(0, end - lineOffset);
 			} else {
