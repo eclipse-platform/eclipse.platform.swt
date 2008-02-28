@@ -575,15 +575,15 @@ public void setMinWidth(int width) {
 }
 
 /**
- * Shows the item.  If the item is already showing in the receiver,
- * this method simply returns.  Otherwise, the items are scrolled
- * so that the item is visible.
+ * Shows the control.  If the control is already showing in the receiver,
+ * this method simply returns.  Otherwise, the receiver is scrolled
+ * so that the control is visible.
  *
- * @param item the item to be shown
+ * @param control the control to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the control is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -592,20 +592,20 @@ public void setMinWidth(int width) {
  *
  * @since 3.4
  */
-public void show(Control item) {
+public void showControl(Control control) {
 	checkWidget ();
-	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (control.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
-	Composite parent = item.getParent();
+	Composite parent = control.getParent();
 	while (parent != null) {
 		if (this == parent) break;
 		parent = parent.getParent();
 	}
 	if (this != parent) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	
-	Point itemSize = item.getSize();
-	Rectangle itemRect = getDisplay().map(item, this, new Rectangle(0, 0, itemSize.x, itemSize.y));
+	Point itemSize = control.getSize();
+	Rectangle itemRect = getDisplay().map(control, this, new Rectangle(0, 0, itemSize.x, itemSize.y));
 	Rectangle area = getClientArea();
 	Point origin = getOrigin();
 	if (itemRect.x < 0) origin.x = Math.max(0, origin.x + itemRect.x);
