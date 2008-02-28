@@ -52,6 +52,23 @@ public class Spinner extends Composite {
 		UpDownProc = lpWndClass.lpfnWndProc;
 	}
 	
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 * 
+	 * @since 3.4
+	 */
+	public static final int LIMIT;
+	
+	/*
+	 * These values can be different on different platforms.
+	 * Therefore they are not initialized in the declaration
+	 * to stop the compiler from inlining.
+	 */
+	static {
+		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;	
+	}
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -550,6 +567,51 @@ int getSelectionText (boolean [] parseFail) {
 	return -1;
 }
 
+/**
+ * Returns a string containing a copy of the contents of the
+ * receiver's text field, or an empty string if there are no
+ * contents.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public String getText () {
+	checkWidget ();
+	int length = OS.GetWindowTextLength (hwndText);
+	if (length == 0) return "";
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (hwndText, buffer, length + 1);
+	return buffer.toString (0, length);
+}
+
+/**
+ * Returns the maximum number of characters that the receiver's
+ * text field is capable of holding. If this has not been changed
+ * by <code>setTextLimit()</code>, it will be the constant
+ * <code>Spinner.LIMIT</code>.
+ * 
+ * @return the text limit
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #LIMIT
+ * 
+ * @since 3.4
+ */
+public int getTextLimit () {
+	checkWidget ();
+	return (int)/*64*/OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+}
+
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
 	if (OS.IsUnicode) return mbcsPos;
@@ -961,6 +1023,34 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		}
 	}
 	if (notify) postEvent (SWT.Selection);
+}
+
+/**
+ * Sets the maximum number of characters that the receiver's
+ * text field is capable of holding to be the argument.
+ * <p>
+ * To reset this value to the default, use <code>setTextLimit(Spinner.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Spinner.LIMIT</code> sets the
+ * receiver's limit to <code>Spinner.LIMIT</code>.
+ * </p>
+ * @param limit new text limit
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_CANNOT_BE_ZERO - if the limit is zero</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #LIMIT
+ * 
+ * @since 3.4
+ */
+public void setTextLimit (int limit) {
+	checkWidget ();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	OS.SendMessage (hwndText, OS.EM_SETLIMITTEXT, limit, 0);
 }
 
 void setToolTipText (Shell shell, String string) {
