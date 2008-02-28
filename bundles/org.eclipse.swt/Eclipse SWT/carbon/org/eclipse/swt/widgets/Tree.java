@@ -2502,6 +2502,18 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	switch (keyCode [0]) {
+		case 49: { /* Space */
+			int [] first = new int [1], last = new int [1];
+			if (OS.GetDataBrowserSelectionAnchor (handle, first, last) == OS.noErr) {
+				if (first [0] != 0) {
+					TreeItem item = _getItem (first [0], true);
+					if ((style & SWT.CHECK) != 0) {
+						item.setChecked (!item.getChecked (), true);
+					}
+				}
+			}
+			break;
+		}
 		case 76: /* KP Enter */
 		case 36: { /* Return */
 			postEvent (SWT.DefaultSelection);

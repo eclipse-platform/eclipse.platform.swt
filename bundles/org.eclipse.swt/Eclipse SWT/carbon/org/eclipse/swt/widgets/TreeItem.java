@@ -1054,9 +1054,19 @@ public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.checked == checked) return;
+	setChecked (checked, false);
+}
+
+void setChecked (boolean checked, boolean notify) {
 	this.checked = checked;
 	cached = true;
 	redraw (Tree.CHECK_COLUMN_ID);
+	if (notify) {
+		Event event = new Event ();
+		event.item = this;
+		event.detail = SWT.CHECK;
+		parent.postEvent (SWT.Selection, event);
+	}
 }
 
 /**
