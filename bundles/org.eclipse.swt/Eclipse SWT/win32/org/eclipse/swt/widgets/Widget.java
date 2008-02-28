@@ -1461,7 +1461,22 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 			case OS.VK_TAB: mapKey = SWT.TAB; break;
 		}
 	} else {
-		mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
+		/*
+		* Feature in Windows.  For numbers in Marathi and Bengali,
+		* MapVirtualKey() returns the localized number instead of 
+		* the ASCII equivalent.  For example, MapVirtualKey()
+		* maps VK_1 on the Marathi keyboard to \u2407, which is
+		* a valid Unicode Marathi '1' character, but not ASCII.
+		* The fix is to test for VK_0 to VK_9 and map these
+		* explicitly.
+		* 
+		* NOTE: VK_0 to VK_9 are the same as ASCII.
+		*/
+		if ('0' <= wParam && wParam <= '9') {
+			mapKey = (int)/*64*/wParam;
+		} else {
+			mapKey = OS.MapVirtualKey ((int)/*64*/wParam, 2);
+		}
 	}
 
 	/*
