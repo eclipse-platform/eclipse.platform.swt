@@ -574,6 +574,47 @@ public void setMinWidth(int width) {
 	setMinSize(width, minHeight);
 }
 
+/**
+ * Shows the item.  If the item is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled
+ * so that the item is visible.
+ *
+ * @param item the item to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void show(Control item) {
+	checkWidget ();
+	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+
+	Composite parent = item.getParent();
+	while (parent != null) {
+		if (this == parent) break;
+		parent = parent.getParent();
+	}
+	if (this != parent) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	
+	Point itemSize = item.getSize();
+	Rectangle itemRect = getDisplay().map(item, this, new Rectangle(0, 0, itemSize.x, itemSize.y));
+	Rectangle area = getClientArea();
+	Point origin = getOrigin();
+	if (itemRect.x < 0) origin.x = Math.max(0, origin.x + itemRect.x);
+	if (itemRect.y < 0) origin.y = Math.max(0, origin.y + itemRect.y);
+	if (area.width < itemRect.x + itemRect.width) origin.x = Math.max(0, origin.x + itemRect.x + itemRect.width - area.width);
+	if (area.height < itemRect.y + itemRect.height) origin.y = Math.max(0, origin.y + itemRect.y + itemRect.height - area.height);
+	setOrigin(origin);
+}
+
 void vScroll() {
 	if (content == null) return;
 	Point location = content.getLocation ();
