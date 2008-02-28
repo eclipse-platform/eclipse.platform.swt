@@ -38,7 +38,21 @@ import org.eclipse.swt.events.*;
  * @since 3.1
  */
 public class Spinner extends Composite {
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 */
+	public static final int LIMIT;
 	
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
+	static {
+		LIMIT = 0x7FFFFFFF;
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -422,6 +436,25 @@ public int getSelection () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+public String getText () {
+	checkWidget();
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	
+	int ptr = OS.XmTextGetString (argList[1]);
+	if (ptr == 0) return "";
+	int length = OS.strlen (ptr);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, ptr, length);
+	OS.XtFree (ptr);
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
+}
+public int getTextLimit () {
+	checkWidget();
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	return OS.XmTextGetMaxLength (argList[1]);
+}
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
@@ -707,7 +740,13 @@ public void setSelection (int value) {
 	int [] argList1 = {OS.XmNposition, value};
 	OS.XtSetValues (handle, argList1, argList1.length / 2);
 }
-
+public void setTextLimit (int limit) {
+	checkWidget();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	OS.XmTextSetMaxLength (argList[1], limit);
+}
 /**
  * Sets the receiver's selection, minimum value, maximum
  * value, digits, increment and page increment all at once.

@@ -36,6 +36,16 @@ import org.eclipse.swt.*;
  * @since 3.1
  */
 public class Spinner extends Composite {
+	public static final int LIMIT;
+	
+	/*
+	 * These values can be different on different platforms.
+	 * Therefore they are not initialized in the declaration
+	 * to stop the compiler from inlining.
+	 */
+	static {
+		LIMIT = 0x7FFF;	
+	}
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -425,6 +435,16 @@ public int getSelection () {
 	return args [1];
 }
 
+public String getText () {
+	checkWidget ();
+	return "";
+}
+
+public int getTextLimit () {
+	checkWidget ();
+	return 0;
+}
+
 boolean hasFocus () {
 	return OS.PtIsFocused (handle) != 0;
 }
@@ -677,6 +697,11 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_VALUE, value, 0);
+}
+
+public void setTextLimit (int limit) {
+	checkWidget ();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 }
 
 /**

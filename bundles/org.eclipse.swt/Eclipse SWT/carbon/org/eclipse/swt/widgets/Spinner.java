@@ -45,9 +45,28 @@ public class Spinner extends Composite {
 	int increment = 1;
 	int pageIncrement = 10;
 	int digits = 0;
-	
+	int textLimit = LIMIT;
 	static int GAP = 3;
-
+	
+	/**
+	* The maximum number of characters that can be entered
+	* into a text widget.
+	* <p>
+	* Note that this value is platform dependent, based upon
+	* the native widget implementation.
+	* </p>
+	*/
+	public static final int LIMIT;
+	
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
+	static {
+		LIMIT = 0x7FFFFFFF;
+	}
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -507,6 +526,24 @@ int getSelectionText (boolean [] parseFail) {
 	return -1;
 }
 
+public String getText() {
+	int [] ptr = new int [1];
+	int [] actualSize = new int [1];
+	int result = OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+	if (result != OS.noErr) return "";
+	CFRange range = new CFRange ();
+	range.length = OS.CFStringGetLength (ptr [0]);
+	char [] buffer= new char [range.length];
+	OS.CFStringGetCharacters (ptr [0], range, buffer);
+	OS.CFRelease (ptr [0]);
+	return new String (buffer);
+}
+
+public int getTextLimit () {
+	checkWidget();
+    return textLimit;
+}
+
 int getVisibleRegion (int control, boolean clipChildren) {
 	if (control == textHandle) {
 		if (!clipChildren) return super.getVisibleRegion (control, clipChildren);
@@ -613,20 +650,21 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//		int [] modifiers = new int [1];
-//		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//		if (modifiers [0] == OS.cmdKey) {
-//			switch (keyCode [0]) {
-//				case 7: /* X */
-//					cut ();
-//					return OS.noErr;
-//				case 9: /* V */
-//					paste ();
-//					return OS.noErr;
-//			}
-//		}
-//	}
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	if (modifiers [0] == OS.cmdKey) {
+		switch (keyCode [0]) {
+			case 7: /* X */
+				cut ();
+				return OS.noErr;
+			case 8: /* C */
+				copy ();
+				return OS.noErr;
+			case 9: /* V */
+				paste ();
+				return OS.noErr;
+		}
+	}
 	int delta = 0;
 	switch (keyCode [0]) {
 		case 76: /* KP Enter */
@@ -842,10 +880,13 @@ boolean sendKeyEvent (int type, Event event) {
 	}
 	newText = verifyText (oldText, start, end, event);
 	if (newText == null) return false;
+	if (charCount - (end - start) + newText.length () > textLimit) {
+		return false;
+	}
 	if (newText != oldText) {
 		setText (newText, start, end, false);
 		start += newText.length ();
-		selection = new short [] {(short)start, (short)start };
+		selection = new short [] {(short)start, (short)start};
 		OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
 	}
 	/*
@@ -1063,21 +1104,26 @@ char [] setText (String string, int start, int end, boolean notify) {
 	int [] actualSize = new int [1];
 	int [] ptr = new int [1];
 	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) != OS.noErr) return null;
-	int length = OS.CFStringGetLength (ptr [0]);
-	
-	char [] text = new char [length - (end - start) + string.length ()];
+	int charCount = OS.CFStringGetLength (ptr [0]);
+	int length = string.length ();
+	if (textLimit != LIMIT) {
+		if (charCount - (end - start) + length > textLimit) {
+			length = textLimit - charCount + (end - start);
+		}
+	}
+	char [] text = new char [charCount - (end - start) + length];
 	CFRange range = new CFRange ();
 	range.location = 0;
 	range.length = start;
 	char [] buffer = new char [range.length];
 	OS.CFStringGetCharacters (ptr [0], range, buffer);
 	System.arraycopy (buffer, 0, text, 0, range.length);
-	string.getChars (0, string.length (), text, start);
+	string.getChars (0, length, text, start);
 	range.location = end;
-	range.length = length - end;
+	range.length = charCount - end;
 	buffer = new char [range.length];
 	OS.CFStringGetCharacters (ptr [0], range, buffer);
-	System.arraycopy (buffer, 0, text, start + string.length (), range.length);
+	System.arraycopy (buffer, 0, text, start + length, range.length);
 	
 	/* Copying the return value to buffer */
 	range.location = start;
@@ -1092,6 +1138,12 @@ char [] setText (String string, int start, int end, boolean notify) {
 	OS.CFRelease (ptr [0]);
 	if (notify) sendEvent (SWT.Modify);
 	return buffer;
+}
+
+public void setTextLimit (int limit) {
+	checkWidget();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	textLimit = limit;
 }
 
 /**

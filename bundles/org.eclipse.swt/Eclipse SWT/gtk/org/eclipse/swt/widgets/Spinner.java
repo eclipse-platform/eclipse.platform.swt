@@ -44,6 +44,24 @@ public class Spinner extends Composite {
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	
+	/**
+	* The maximum number of characters that can be entered
+	* into a text widget.
+	* <p>
+	* Note that this value is platform dependent, based upon
+	* the native widget implementation.
+	* </p>
+	*/
+	public final static int LIMIT;
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
+	static {
+		LIMIT = 0x7FFFFFFF;
+	}
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -463,6 +481,22 @@ public int getSelection () {
 	double value = adjustment.value;
 	for (int i = 0; i < digits; i++) value *= 10;
 	return (int) (value > 0 ? value + 0.5 : value - 0.5);
+}
+
+public String getText () {
+	checkWidget ();
+	int /*long*/ str = OS.gtk_entry_get_text (handle);
+	if (str == 0) return "";
+	int length = OS.strlen (str);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	return new String (Converter.mbcsToWcs (null, buffer));
+}
+
+public int getTextLimit () {
+	checkWidget ();
+	int limit = OS.gtk_entry_get_max_length (handle);
+	return limit == 0 ? 0xFFFF : limit;
 }
 
 /**
@@ -931,6 +965,12 @@ public void setSelection (int value) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_spin_button_set_value (handle, newValue);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+}
+
+public void setTextLimit (int limit) {
+	checkWidget ();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	OS.gtk_entry_set_max_length (handle, limit);
 }
 
 /**
