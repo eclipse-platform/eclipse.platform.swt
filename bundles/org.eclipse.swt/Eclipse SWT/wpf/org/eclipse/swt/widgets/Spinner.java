@@ -40,6 +40,20 @@ public class Spinner extends Composite {
 	int textHandle, upHandle, downHandle;
 	int increment, pageIncrement, digits, max, min, value;
 	
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 */
+	public static final int LIMIT;
+	
+	/*
+	 * These values can be different on different platforms.
+	 * Therefore they are not initialized in the declaration
+	 * to stop the compiler from inlining.
+	 */
+	static {
+		LIMIT = 0x7FFFFFFF;	
+	}
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -458,6 +472,19 @@ int getSelectionText (boolean [] parseFail) {
 	return -1;
 }
 
+public String getText () {
+	checkWidget ();
+	int text = OS.TextBox_Text (textHandle);
+	String string = createJavaString (text);
+	OS.GCHandle_Free (text);
+	return string;
+}
+
+public int getTextLimit () {
+	checkWidget ();
+	return OS.TextBox_MaxLength (textHandle);
+}
+
 void HandleDownClick (int sender, int e) {
 	if (!checkEvent (e)) return;
 	updateSelection (-increment);
@@ -811,6 +838,12 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		OS.GCHandle_Free (ptr);
 	}
 	if (notify) postEvent (SWT.Selection);
+}
+
+public void setTextLimit (int limit) {
+	checkWidget ();
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	OS.TextBox_MaxLength (textHandle, limit);
 }
 
 /**
