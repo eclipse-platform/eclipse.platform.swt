@@ -666,8 +666,7 @@ public void showControl(Control control) {
 	if (control.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (!contains(control)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	
-	Point itemSize = control.getSize();
-	Rectangle itemRect = getDisplay().map(control, this, new Rectangle(0, 0, itemSize.x, itemSize.y));
+	Rectangle itemRect = getDisplay().map(control.getParent(), this, control.getBounds());
 	Rectangle area = getClientArea();
 	Point origin = getOrigin();
 	if (itemRect.x < 0) origin.x = Math.max(0, origin.x + itemRect.x);
