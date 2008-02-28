@@ -11,6 +11,7 @@
 package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -101,12 +102,14 @@ public class ScrolledComposite extends Composite {
 
 	Control content;
 	Listener contentListener;
+	Listener filter;
 	
 	int minHeight = 0;
 	int minWidth = 0;
 	boolean expandHorizontal = false;
 	boolean expandVertical = false;
 	boolean alwaysShowScroll = false;
+	boolean autoScroll = false;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -164,11 +167,37 @@ public ScrolledComposite(Composite parent, int style) {
 			layout(false);
 		}
 	};
+	
+	filter = new Listener() {
+		public void handleEvent(Event event) {
+			if (event.widget instanceof Control) {
+				Control control = (Control) event.widget;
+				if (contains(control)) showControl(control);
+			}
+		}
+	};
+	
+	addDisposeListener(new DisposeListener() {
+		public void widgetDisposed(DisposeEvent e) {
+			getDisplay().removeFilter(SWT.FocusIn, filter);
+		}
+	});
 }
 
 static int checkStyle (int style) {
 	int mask = SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
+}
+
+boolean contains(Control control) {
+	if (control == null || control.isDisposed()) return false;
+	
+	Composite parent = control.getParent();
+	while (parent != null) {
+		if (this == parent) return true;
+		parent = parent.getParent();
+	}
+	return false;
 }
 
 /**
@@ -183,6 +212,20 @@ static int checkStyle (int style) {
 public boolean getAlwaysShowScrollBars() {
 	//checkWidget();
 	return alwaysShowScroll;
+}
+
+/**
+ * Returns <code>true</code> if the receiver automatically scrolls to a focused child control 
+ * to make it visible. Otherwise, returns <code>false</code>.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getAutoScroll() {
+	checkWidget();
+	return autoScroll;
 }
 
 /**
@@ -405,6 +448,33 @@ public void setAlwaysShowScrollBars(boolean show) {
 }
 
 /**
+ * Configure the receiver to automatically scroll to a focused child control
+ * to make it visible.
+ * 
+ * If scroll is <code>false</code>, auto-scroll is off.  
+ * By default, auto-scroll is off.
+ * 
+ * @param scroll true to automatically scroll to a focused child, 
+ * 		false to turn off auto-scroll.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setAutoScroll(boolean scroll) {
+	checkWidget();
+	if (autoScroll == scroll) return;
+	Display display = getDisplay();
+	display.removeFilter(SWT.FocusIn, filter);
+	autoScroll = scroll;
+	if (!autoScroll) return;
+	display.addFilter(SWT.FocusIn, filter);
+	Control control = display.getFocusControl();
+	if (contains(control)) showControl(control);
+}
+
+/**
  * Set the content that will be scrolled.
  * 
  * @param content the control to be displayed in the content area
@@ -575,9 +645,7 @@ public void setMinWidth(int width) {
 }
 
 /**
- * Shows the control.  If the control is already showing in the receiver,
- * this method simply returns.  Otherwise, the receiver is scrolled
- * so that the control is visible.
+ * Scrolls the content of the receiver so that the control is visible.
  *
  * @param control the control to be shown
  *
@@ -596,13 +664,7 @@ public void showControl(Control control) {
 	checkWidget ();
 	if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (control.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-
-	Composite parent = control.getParent();
-	while (parent != null) {
-		if (this == parent) break;
-		parent = parent.getParent();
-	}
-	if (this != parent) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!contains(control)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	
 	Point itemSize = control.getSize();
 	Rectangle itemRect = getDisplay().map(control, this, new Rectangle(0, 0, itemSize.x, itemSize.y));
