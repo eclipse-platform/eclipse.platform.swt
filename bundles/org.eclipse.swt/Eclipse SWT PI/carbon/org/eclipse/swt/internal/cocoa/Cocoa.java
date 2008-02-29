@@ -83,6 +83,7 @@ public static final int S_representation = Cocoa.sel_registerName("representatio
 public static final int S_requestWithURL = Cocoa.sel_registerName("requestWithURL:"); //$NON-NLS-1$
 public static final int S_request = Cocoa.sel_registerName("request"); //$NON-NLS-1$
 public static final int S_retainCount = Cocoa.sel_registerName("retainCount"); //$NON-NLS-1$
+public static final int S_setApplicationNameForUserAgent = Cocoa.sel_registerName("setApplicationNameForUserAgent:"); //$NON-NLS-1$
 public static final int S_setDestinationAllowOverwrite = Cocoa.sel_registerName("setDestination:allowOverwrite:"); //$NON-NLS-1$
 public static final int S_setDownloadDelegate = Cocoa.sel_registerName("setDownloadDelegate:"); //$NON-NLS-1$
 public static final int S_setFrameLoadDelegate = Cocoa.sel_registerName("setFrameLoadDelegate:"); //$NON-NLS-1$

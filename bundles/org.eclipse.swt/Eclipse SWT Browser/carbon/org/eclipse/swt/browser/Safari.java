@@ -46,6 +46,7 @@ class Safari extends WebBrowser {
 	static final int MIN_SIZE = 16;
 	static final int MAX_PROGRESS = 100;
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
+	static final String AGENT_STRING = "Safari/unknown"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
@@ -273,6 +274,14 @@ public void create (Composite parent, int style) {
 
 	// [webView setDownloadDelegate:delegate];
 	Cocoa.objc_msgSend(webView, Cocoa.S_setDownloadDelegate, delegate);
+
+	// [webView setApplicationNameForUserAgent:applicationName];
+	int length = AGENT_STRING.length();
+	char[] chars = new char[length];
+	AGENT_STRING.getChars(0, length, chars, 0);
+	int sHandle = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(webView, Cocoa.S_setApplicationNameForUserAgent, sHandle);
+	OS.CFRelease(sHandle);
 
 	if (!Initialized) {
 		Initialized = true;
