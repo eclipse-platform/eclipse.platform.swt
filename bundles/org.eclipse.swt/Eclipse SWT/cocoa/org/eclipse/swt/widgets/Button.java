@@ -144,6 +144,18 @@ NSAttributedString createString() {
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName());
 	}
+	int alignment;
+	if ((style & SWT.CENTER) != 0) {
+		alignment = OS.NSCenterTextAlignment;
+	} else if ((style & SWT.LEFT) != 0) {
+		alignment = OS.NSLeftTextAlignment;
+	} else {
+		alignment = OS.NSRightTextAlignment;
+	}
+	NSMutableParagraphStyle pStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
+	pStyle.autorelease();
+	pStyle.setAlignment(alignment);
+	dict.setObject(pStyle, OS.NSParagraphStyleAttributeName());
 	char [] chars = new char [text.length ()];
 	text.getChars (0, chars.length, chars, 0);
 	int length = fixMnemonic (chars);
