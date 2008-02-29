@@ -13,7 +13,6 @@ package org.eclipse.swt.internal;
  
 import org.eclipse.swt.SWT;
 import java.io.*;
-import java.util.zip.DeflaterOutputStream;
 
 /**
  * This class is a placeholder for utility methods commonly
