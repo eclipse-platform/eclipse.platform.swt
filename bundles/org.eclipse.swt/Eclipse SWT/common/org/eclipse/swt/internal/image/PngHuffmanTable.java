@@ -115,7 +115,7 @@ int getNextValue(PngDecodingDataStream stream) throws IOException {
 	return codeValues[index];
 }	
 	
-class CodeLengthInfo {
+static class CodeLengthInfo {
 	int length;
 	int max;
 	int min;

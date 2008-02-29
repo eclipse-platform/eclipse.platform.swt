@@ -33,7 +33,7 @@ public class PngDeflater {
 	Link[] window = new Link[WINDOW];
 	int nextWindow;
 
-class Link {
+static class Link {
 
 	int hash, value;
 	Link previous, next;
@@ -49,7 +49,7 @@ class Link {
 
 }
 
-class Match {
+static class Match {
 
 	int length, distance;
 	
