@@ -52,7 +52,7 @@ final class GIFFileFormat extends FileFormat {
 			byte[] signature = new byte[3];
 			stream.read(signature);
 			stream.unread(signature);
-			return new String(signature).equals("GIF"); //$NON-NLS-1$
+			return signature[0] == 'G' && signature[1] == 'I' && signature[2] == 'F';
 		} catch (Exception e) {
 			return false;
 		}
@@ -63,13 +63,12 @@ final class GIFFileFormat extends FileFormat {
 	 * Return an array of ImageData representing the image(s).
 	 */
 	ImageData[] loadFromByteStream() {
-		byte[] signatureBytes = new byte[3];
+		byte[] signature = new byte[3];
 		byte[] versionBytes = new byte[3];
 		byte[] block = new byte[7];
 		try {
-			inputStream.read(signatureBytes);
-			signature = new String(signatureBytes);
-			if (!signature.equals("GIF")) //$NON-NLS-1$
+			inputStream.read(signature);
+			if (!(signature[0] == 'G' && signature[1] == 'I' && signature[2] == 'F'))
 				SWT.error(SWT.ERROR_INVALID_IMAGE);
 
 			inputStream.read(versionBytes);
@@ -296,13 +295,11 @@ final class GIFFileFormat extends FileFormat {
 			// Read size of block = 0x0B.
 			inputStream.read();
 			// Read application identifier.
-			byte[] applicationBytes = new byte[8];
-			inputStream.read(applicationBytes);
-			String application = new String(applicationBytes);
+			byte[] application = new byte[8];
+			inputStream.read(application);
 			// Read authentication code.
-			byte[] authenticationBytes = new byte[3];
-			inputStream.read(authenticationBytes);
-			String authentication = new String(authenticationBytes);
+			byte[] authentication = new byte[3];
+			inputStream.read(authentication);
 			// Read application data.
 			byte[] data = new byte[0];
 			byte[] block = new byte[255];
@@ -315,7 +312,20 @@ final class GIFFileFormat extends FileFormat {
 				size = inputStream.read();
 			}
 			// Look for the NETSCAPE 'repeat count' field for an animated GIF.
-			if (application.equals("NETSCAPE") && authentication.equals("2.0") && data[0] == 01) { //$NON-NLS-1$ //$NON-NLS-2$
+			boolean netscape =
+				application[0] == 'N' &&
+				application[1] == 'E' &&
+				application[2] == 'T' &&
+				application[3] == 'S' &&
+				application[4] == 'C' &&
+				application[5] == 'A' &&
+				application[6] == 'P' &&
+				application[7] == 'E';
+			boolean authentic =
+				authentication[0] == '2' &&
+				authentication[1] == '.' &&
+				authentication[7] == '0';
+			if (netscape && authentic && data[0] == 01) { //$NON-NLS-1$ //$NON-NLS-2$
 				repeatCount = (data[1] & 0xFF) | ((data[2] & 0xFF) << 8);
 				loader.repeatCount = repeatCount;
 			}
