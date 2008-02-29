@@ -39,6 +39,7 @@ class Safari extends WebBrowser {
 	static final int MIN_SIZE = 16;
 	static final int MAX_PROGRESS = 100;
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
+	static final String AGENT_STRING = "Safari/unknown"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
@@ -191,6 +192,7 @@ public void create (Composite parent, int style) {
 	notificationCenter.addObserver(delegate, OS.sel_handleNotification_1, null, webView);
 	webView.setPolicyDelegate(delegate);
 	webView.setDownloadDelegate(delegate);
+	webView.setApplicationNameForUserAgent(NSString.stringWith(AGENT_STRING));
 
 	if (!Initialized) {
 		Initialized = true;
