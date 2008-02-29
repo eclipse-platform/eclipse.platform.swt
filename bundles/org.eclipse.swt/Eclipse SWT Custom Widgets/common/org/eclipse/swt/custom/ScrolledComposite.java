@@ -191,9 +191,9 @@ static int checkStyle (int style) {
 
 boolean contains(Control control) {
 	if (control == null || control.isDisposed()) return false;
-	
+
 	Composite parent = control.getParent();
-	while (parent != null) {
+	while (parent != null && !(parent instanceof Shell)) {
 		if (this == parent) return true;
 		parent = parent.getParent();
 	}
@@ -212,20 +212,6 @@ boolean contains(Control control) {
 public boolean getAlwaysShowScrollBars() {
 	//checkWidget();
 	return alwaysShowScroll;
-}
-
-/**
- * Returns <code>true</code> if the receiver automatically scrolls to a focused child control 
- * to make it visible. Otherwise, returns <code>false</code>.
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public boolean getAutoScroll() {
-	checkWidget();
-	return autoScroll;
 }
 
 /**
@@ -306,6 +292,22 @@ public int getMinHeight() {
 public Control getContent() {
 	//checkWidget();
 	return content;
+}
+
+/**
+ * Returns <code>true</code> if the receiver automatically scrolls to a focused child control 
+ * to make it visible. Otherwise, returns <code>false</code>.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getShowFocusedControl() {
+	checkWidget();
+	return autoScroll;
 }
 
 void hScroll() {
@@ -445,33 +447,6 @@ public void setAlwaysShowScrollBars(boolean show) {
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null && alwaysShowScroll) vBar.setVisible(true);
 	layout(false);
-}
-
-/**
- * Configure the receiver to automatically scroll to a focused child control
- * to make it visible.
- * 
- * If scroll is <code>false</code>, auto-scroll is off.  
- * By default, auto-scroll is off.
- * 
- * @param scroll true to automatically scroll to a focused child, 
- * 		false to turn off auto-scroll.
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setAutoScroll(boolean scroll) {
-	checkWidget();
-	if (autoScroll == scroll) return;
-	Display display = getDisplay();
-	display.removeFilter(SWT.FocusIn, filter);
-	autoScroll = scroll;
-	if (!autoScroll) return;
-	display.addFilter(SWT.FocusIn, filter);
-	Control control = display.getFocusControl();
-	if (contains(control)) showControl(control);
 }
 
 /**
@@ -642,6 +617,34 @@ public void setMinSize(int width, int height) {
  */
 public void setMinWidth(int width) {
 	setMinSize(width, minHeight);
+}
+
+/**
+ * Configure the receiver to automatically scroll to a focused child control
+ * to make it visible.
+ * 
+ * If show is <code>false</code>, show a focused control is off.  
+ * By default, show a focused control is off.
+ * 
+ * @param show <code>true</code> to show a focused control.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ *  @since 3.4
+ */
+public void setShowFocusedControl(boolean show) {
+	checkWidget();
+	if (autoScroll == show) return;
+	Display display = getDisplay();
+	display.removeFilter(SWT.FocusIn, filter);
+	autoScroll = show;
+	if (!autoScroll) return;
+	display.addFilter(SWT.FocusIn, filter);
+	Control control = display.getFocusControl();
+	if (contains(control)) showControl(control);
 }
 
 /**
