@@ -442,7 +442,7 @@ public String getText () {
 
 public int getTextLimit () {
 	checkWidget ();
-	return 0;
+	return LIMIT;
 }
 
 boolean hasFocus () {
