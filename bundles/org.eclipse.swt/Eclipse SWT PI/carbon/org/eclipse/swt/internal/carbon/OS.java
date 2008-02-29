@@ -113,6 +113,7 @@ public class OS extends C {
 	public static final int kATSULineWidthTag = 1;
 	public static final int kATSULeftToRightBaseDirection = 0;
 	public static final int kATSURightToLeftBaseDirection = 1;
+	public static final int kATSURGBAlphaColorTag = 288;
 	public static final int kATSUQDBoldfaceTag = 256;
 	public static final int kATSUQDItalicTag = 257;
 	public static final int kATSUQDUnderlineTag = 258;

@@ -45,9 +45,11 @@ public final class TextLayout extends Resource {
 			int length = 0, ptrLength = 0, index = 0;
 			Font font = null;
 			Color foreground = null;
+			GlyphMetrics metrics = null;
 			if (style != null) {
 				font = style.font;
 				foreground = style.foreground;
+				metrics = style.metrics;
 				if (style.underline && (style.underlineStyle == SWT.UNDERLINE_SINGLE || style.underlineStyle == SWT.UNDERLINE_DOUBLE)) {
 					length += 1;
 					ptrLength += 1;
@@ -68,9 +70,9 @@ public final class TextLayout extends Resource {
 						ptrLength += 4;
 					}
 				}
-				if (style.metrics != null) {
-					length += 3;
-					ptrLength += 12;
+				if (metrics != null) {
+					length += 4;
+					ptrLength += 28;
 				}
 				if (style.rise != 0) {
 					length += 1;
@@ -88,7 +90,7 @@ public final class TextLayout extends Resource {
 					ptrLength += 2;
 				}
 			}
-			if (foreground != null) {
+			if (foreground != null && metrics == null) {
 				length += 1;
 				ptrLength += RGBColor.sizeof;
 			}
@@ -178,8 +180,7 @@ public final class TextLayout extends Resource {
 					index++;
 				}
 			}
-			if (style != null && style.metrics != null) {
-				GlyphMetrics metrics = style.metrics; 
+			if (metrics != null) {
 				buffer[0] = OS.Long2Fix(metrics.ascent);
 				tags[index] = OS.kATSUAscentTag;
 				sizes[index] = 4;
@@ -203,6 +204,14 @@ public final class TextLayout extends Resource {
 				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
+				
+				float[] ATSURGBAlphaColor = {0, 0, 0, 0};
+				tags[index] = OS.kATSURGBAlphaColorTag;
+				sizes[index] = 16;
+				values[index] = ptr1;
+				OS.memmove(values[index], ATSURGBAlphaColor, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
 			}
 			if (style != null && style.rise != 0) {
 				buffer[0] = OS.Long2Fix(style.rise);
@@ -213,7 +222,7 @@ public final class TextLayout extends Resource {
 				ptr1 += sizes[index];
 				index++;
 			}
-			if (foreground != null) {
+			if (foreground != null && metrics == null) {
 				RGBColor rgb = new RGBColor ();
 				float[] color = foreground.handle;
 				rgb.red = (short) (color [0] * 0xffff);
