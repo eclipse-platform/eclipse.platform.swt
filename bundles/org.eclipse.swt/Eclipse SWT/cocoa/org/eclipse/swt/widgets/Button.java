@@ -144,8 +144,6 @@ NSAttributedString createString() {
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName());
 	}
-	// TODO NSButtonCell.setAlignment() seems like a better approach than
-	// using the paragraph style below but it doesn't seem to work (?)
 	int alignment;
 	if ((style & SWT.CENTER) != 0) {
 		alignment = OS.NSCenterTextAlignment;
@@ -400,9 +398,13 @@ void _setAlignment (int alignment) {
 //		OS.SetControl32BitValue (handle, orientation);
 		return;
 	}
-//	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-//	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-//	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	/* text is still null when this is called from createHandle() */
+	if (text != null) {
+		((NSButton)view).setAttributedTitle(createString());
+	}
 //	/* Alignment not honoured when image and text is visible */
 //	boolean bothVisible = text != null && text.length () > 0 && image != null;
 //	if (bothVisible) {
