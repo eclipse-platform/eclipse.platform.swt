@@ -227,29 +227,11 @@ public Color getBackground (int index) {
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-//	Rect rect = new Rect();
-//	int itemIndex = parent.indexOf (this);
-//	int id = itemIndex + 1;
-//	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [0].id;
-//	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
-//		return new Rectangle (0, 0, 0, 0);
-//	}
-//	int x = rect.left, y = rect.top;
-//	int width = 0;
-//	if (image != null) {
-//		Rectangle bounds = image.getBounds ();
-//		x += bounds.width + parent.getGap ();
-//	}
-//	GC gc = new GC (parent);
-//	Point extent = gc.stringExtent (text);
-//	gc.dispose ();
-//	width += extent.x;
-//	if (parent.columnCount > 0) {
-//		width = Math.min (width, rect.right - x);
-//	}
-//	int height = rect.bottom - rect.top;
-//	return new Rectangle (x, y, width, height);
-	return null;
+	NSTableView tableView = (NSTableView) parent.view;
+	NSRect rect = tableView.rectOfRow (parent.indexOf (this));
+	rect = tableView.convertRect_toView_ (rect, parent.scrollView);
+	Rectangle result = new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
+	return result;
 }
 
 /**
@@ -267,37 +249,12 @@ public Rectangle getBounds () {
 public Rectangle getBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-//	parent.checkItems (true);
-//	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
-//	Rect rect = new Rect();
-//	int itemIndex = parent.indexOf (this);
-//	int id = itemIndex + 1;
-//	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
-//	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
-//		return new Rectangle (0, 0, 0, 0);
-//	}
-//	int x, y, width, height;
-//	if (OS.VERSION >= 0x1040) {
-//		if (parent.getLinesVisible ()) {
-//			rect.left += Table.GRID_WIDTH;
-//			rect.top += Table.GRID_WIDTH;
-//		}
-//		x = rect.left;
-//		y = rect.top;
-//		width = rect.right - rect.left;
-//		height = rect.bottom - rect.top;
-//	} else {
-//		Rect rect2 = new Rect();
-//		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
-//			return new Rectangle (0, 0, 0, 0);
-//		}
-//		x = rect2.left;
-//		y = rect2.top;
-//		width = rect.right - rect2.left + 1;
-//		height = rect2.bottom - rect2.top + 1;
-//	}
-//	return new Rectangle (x, y, width, height);
-	return null;
+	NSTableView tableView = (NSTableView) parent.view;
+	if ((parent.style & SWT.CHECK) != 0) index ++;
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	rect = tableView.convertRect_toView_ (rect, parent.scrollView);
+	Rectangle result = new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
+	return result;
 }
 
 /**
