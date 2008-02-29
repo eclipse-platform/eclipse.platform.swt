@@ -42,7 +42,7 @@ public static void main (String [] args) {
 	sc.setExpandHorizontal(true);
 	sc.setExpandVertical(true);
 	sc.setMinSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	sc.setAutoScroll(true);
+	sc.setShowFocusedControl(true);
 	
 	shell.setSize(300, 500);
 	shell.open ();
