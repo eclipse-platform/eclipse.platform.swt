@@ -835,7 +835,6 @@ public String getText () {
 	NSString str;
 	if ((style & SWT.SINGLE) != 0) {
 		str = new NSTextFieldCell(((NSTextField)view).cell()).title();
-		 
 	} else {
 		str = ((NSTextView)view).textStorage().string();
 	}
@@ -1191,6 +1190,20 @@ boolean sendKeyEvent (int type, Event event) {
 	return result;
 }
 
+void setBackground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	if ((style & SWT.SINGLE) != 0) {
+		((NSTextField)view).setBackgroundColor(nsColor);
+	} else {
+		((NSTextView)view).setBackgroundColor(nsColor);
+	}
+}
+
 /**
  * Sets the double click enabled flag.
  * <p>
@@ -1273,6 +1286,20 @@ public void setEditable (boolean editable) {
 		((NSTextField)view).setEditable(editable);
 	} else {
 		((NSTextView)view).setEditable(editable);
+	}
+}
+
+void setForeground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	if ((style & SWT.SINGLE) != 0) {
+		((NSTextField)view).setTextColor(nsColor);
+	} else {
+		((NSTextView)view).setTextColor_(nsColor);
 	}
 }
 

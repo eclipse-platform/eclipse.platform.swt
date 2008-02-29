@@ -135,6 +135,24 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
+NSAttributedString createString() {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	if (foreground != null) {
+		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
+		dict.setObject(color, OS.NSForegroundColorAttributeName());
+	}
+	if (font != null) {
+		dict.setObject(font.handle, OS.NSFontAttributeName());
+	}
+	char [] chars = new char [text.length ()];
+	text.getChars (0, chars.length, chars, 0);
+	int length = fixMnemonic (chars);
+	NSString str = NSString.stringWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	attribStr.autorelease();
+	return attribStr;
+}
+
 void createHandle () {
 	NSButton widget = (NSButton)new SWTButton().alloc();
 	widget.initWithFrame(new NSRect());
@@ -355,7 +373,7 @@ public void setAlignment (int alignment) {
 	_setAlignment (alignment);
 	redraw ();
 }
-	
+
 void _setAlignment (int alignment) {
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
@@ -398,10 +416,25 @@ void _setAlignment (int alignment) {
 //	}
 }
 
+void setBackground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO set to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	NSButtonCell cell = new NSButtonCell(((NSButton)view).cell());
+	cell.setBackgroundColor(nsColor);
+}
+
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 //	int window = OS.GetControlOwner (handle);
 //	OS.SetWindowDefaultButton (window, value ? handle : 0);
+}
+
+void setForeground (float [] color) {
+	((NSButton)view).setAttributedTitle(createString());
 }
 
 public void setGrayed(boolean grayed) {
@@ -518,10 +551,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	((NSButton)view).setTitle(NSString.stringWithCharacters(buffer, length));
+	((NSButton)view).setAttributedTitle(createString());
 }
 
 int traversalCode (int key, int theEvent) {

@@ -145,8 +145,8 @@ void createHandle () {
 	parent.contentView().addSubview_(view);
 }
 
-void keyDown(int theEvent) {
-	super.keyDown(theEvent);
+void keyDown(int id, int theEvent) {
+	super.keyDown(id, theEvent);
 	//TODO consumed
 	NSEvent nsEvent = new NSEvent(theEvent);
 	int keyCode = nsEvent.keyCode();

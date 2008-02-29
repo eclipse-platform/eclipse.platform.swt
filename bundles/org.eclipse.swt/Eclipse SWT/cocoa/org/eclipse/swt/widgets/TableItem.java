@@ -166,6 +166,37 @@ void clear () {
 	width = -1;
 }
 
+NSAttributedString createString(int index) {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	Color foreground = cellForeground != null ? cellForeground [index] : null;
+	if (foreground == null) foreground = this.foreground;
+	if (foreground == null) foreground = parent.foreground;
+	if (foreground != null) {
+		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
+		dict.setObject(color, OS.NSForegroundColorAttributeName());
+	}
+	Font font = cellFont != null ? cellFont [index] : null;
+	if (font == null) font = this.font;
+//	if (font == null) font = parent.font;
+	if (font != null) {
+		dict.setObject(font.handle, OS.NSFontAttributeName());
+	}
+	Color background = cellBackground != null ? cellBackground [index] : null;
+	if (background == null) background = this.background;
+	if (background != null) {
+		NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
+		dict.setObject(color, OS.NSBackgroundColorAttributeName());
+	}
+	String text = getText (index);
+	int length = text.length();
+	char[] chars = new char[length];
+	text.getChars(0, length, chars, 0);
+	NSString str = NSString.stringWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	attribStr.autorelease();
+	return attribStr;
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -627,7 +658,9 @@ public void setBackground (Color color) {
 	background = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.rectOfRow(parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -664,7 +697,9 @@ public void setBackground (int index, Color color) {
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.frameOfCellAtColumn(index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -684,8 +719,9 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	cached = true;
-	NSRect rect = ((NSTableView)parent.view).frameOfCellAtColumn(0, parent.indexOf(this));
-	((NSTableView)parent.view).setNeedsDisplayInRect(rect);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.rectOfRow(parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -715,7 +751,9 @@ public void setFont (Font font) {
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.rectOfRow(parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -753,7 +791,9 @@ public void setFont (int index, Font font) {
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.frameOfCellAtColumn(index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -783,7 +823,9 @@ public void setForeground (Color color) {
 	foreground = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.rectOfRow(parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -820,7 +862,9 @@ public void setForeground (int index, Color color){
 	cellForeground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.frameOfCellAtColumn(index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -840,8 +884,9 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	cached = true;
-	NSRect rect = ((NSTableView)parent.view).frameOfCellAtColumn(0, parent.indexOf(this));
-	((NSTableView)parent.view).setNeedsDisplayInRect(rect);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.rectOfRow(parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 /**
@@ -907,7 +952,9 @@ public void setImage (int index, Image image) {
 	}
 //	cached = true;
 //	if (index == 0) parent.setScrollWidth (this);
-//	redraw (OS.kDataBrowserNoItem);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.frameOfCellAtColumn(index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 public void setImage (Image image) {
@@ -987,9 +1034,9 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	if ((parent.style & SWT.CHECK) != 0) index++;
-	NSRect rect = ((NSTableView)parent.view).frameOfCellAtColumn(index, parent.indexOf(this));
-	((NSTableView)parent.view).setNeedsDisplayInRect(rect);
+	NSTableView view = (NSTableView)parent.view;
+	NSRect rect = view.frameOfCellAtColumn(index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf(this));
+	view.setNeedsDisplayInRect(rect);
 }
 
 public void setText (String string) {

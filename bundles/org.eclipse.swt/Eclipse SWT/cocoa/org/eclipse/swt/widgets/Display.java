@@ -1637,7 +1637,8 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
-//	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
@@ -1668,8 +1669,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_1objectValueForTableColumn_1byItem_1, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
-	OS.class_addMethod(cls, OS.sel_outlineViewItemDidCollapse_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_outlineViewItemDidExpand_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
@@ -3120,9 +3119,9 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_mouseEntered_1) {
 		widget.mouseEntered(arg0);
 	} else if (sel == OS.sel_keyDown_1) {
-		widget.keyDown(arg0);
+		widget.keyDown(id, arg0);
 	} else if (sel == OS.sel_keyUp_1) {
-		widget.keyUp(arg0);
+		widget.keyUp(id, arg0);
 	} else if (sel == OS.sel_flagsChanged_1) {
 		widget.flagsChanged(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
@@ -3149,10 +3148,6 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.menuNeedsUpdate(arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_1) {
 		widget.outlineViewSelectionDidChange(arg0);
-	} else if (sel == OS.sel_outlineViewItemDidCollapse_1) {
-		widget.outlineViewItemDidCollapse(arg0);
-	} else if (sel == OS.sel_outlineViewItemDidExpand_1) {
-		widget.outlineViewItemDidExpand(arg0);
 	}
 	return 0;
 }

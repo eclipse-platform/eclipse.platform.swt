@@ -158,6 +158,7 @@ void createHandle () {
 			elementFlags = (style & SWT.SHORT) != 0 ? OS.NSYearMonthDatePickerElementFlag : OS.NSYearMonthDayDatePickerElementFlag;
 		}
 	}
+	widget.setDrawsBackground(true);
 	widget.setDatePickerStyle(pickerStyle);
 	widget.setDatePickerElements(elementFlags);
 	NSDate date = NSCalendarDate.calendarDate();
@@ -311,6 +312,16 @@ void sendSelection () {
 	postEvent (SWT.Selection);
 }
 
+void setBackground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	((NSDatePicker)view).setBackgroundColor(nsColor);
+}
+
 /**
  * Sets the receiver's date, or day of the month, to the specified day.
  * <p>
@@ -330,6 +341,16 @@ public void setDay (int day) {
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), date.monthOfYear(), day,
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
 	((NSDatePicker)view).setDateValue(newDate);
+}
+
+void setForeground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	((NSDatePicker)view).setTextColor(nsColor);
 }
 
 /**

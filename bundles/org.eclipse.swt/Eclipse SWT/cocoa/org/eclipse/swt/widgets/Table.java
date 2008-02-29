@@ -2325,10 +2325,10 @@ int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, in
 	}
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == aTableColumn) {
-			return NSString.stringWith(item.getText(i)).id;
+			return item.createString(i).id;
 		}
 	}
-	return NSString.stringWith(item.text).id;
+	return item.createString(0).id;
 }
 
 void tableView_setObjectValue_forTableColumn_row(int aTableView, int anObject, int aTableColumn, int rowIndex) {

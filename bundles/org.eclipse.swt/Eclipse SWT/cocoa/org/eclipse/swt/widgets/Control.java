@@ -1597,12 +1597,16 @@ void sendKeyEvent (NSEvent nsEvent, int type) {
 	}
 }
 
-void keyDown(int theEvent) {
+void keyDown(int id, int theEvent) {
+	super.keyDown(id, theEvent);
+	if (!hasFocus()) return;
 	NSEvent nsEvent = new NSEvent (theEvent);
 	sendKeyEvent (nsEvent, SWT.KeyDown);
 }
 
-void keyUp(int theEvent) {
+void keyUp(int id, int theEvent) {
+	super.keyUp (id, theEvent);
+	if (!hasFocus()) return;
 	NSEvent nsEvent = new NSEvent (theEvent);
 	sendKeyEvent (nsEvent, SWT.KeyUp);
 }
@@ -2278,7 +2282,7 @@ public void setBackground (Color color) {
 //	if (equals (background, this.background)) return;
 	this.background = color;
 	setBackground (color != null ? color.handle : null);
-//	redrawWidget (handle, false);
+	view.setNeedsDisplay(true);
 }
 
 /**
@@ -2599,7 +2603,7 @@ public void setForeground (Color color) {
 //	if (equals (foreground, this.foreground)) return;
 	this.foreground = color;
 	setForeground (color != null ? color.handle : null);
-//	redrawWidget (handle, false);
+	view.setNeedsDisplay(true);
 }
 
 void setForeground (float [] color) {

@@ -128,6 +128,13 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+void callSuper(int id, int selector, int arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, selector, arg0);
+}
+
 boolean acceptsFirstResponder () {
 	return false;
 }
@@ -591,10 +598,12 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-void keyDown(int event) {
+void keyDown(int id, int event) {
+	callSuper(id, OS.sel_keyDown_1, event);
 }
 
-void keyUp(int event) {
+void keyUp(int id, int event) {
+	callSuper(id, OS.sel_keyUp_1, event);
 }
 
 void flagsChanged(int event) {
@@ -645,12 +654,6 @@ int outlineView_objectValueForTableColumn_byItem(int outlineView, int tableColum
 
 boolean outlineView_isItemExpandable(int outlineView, int item) {
 	return false;
-}
-
-void outlineViewItemDidCollapse(int notification) {
-}
-
-void outlineViewItemDidExpand(int notification) {
 }
 
 int outlineView_numberOfChildrenOfItem(int outlineView, int item) {

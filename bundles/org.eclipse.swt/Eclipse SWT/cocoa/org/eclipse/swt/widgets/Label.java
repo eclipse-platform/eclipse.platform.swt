@@ -162,6 +162,25 @@ void createHandle () {
 	parent.contentView().addSubview_(widget);
 }
 
+NSAttributedString createString() {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	if (foreground != null) {
+		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
+		dict.setObject(color, OS.NSForegroundColorAttributeName());
+	}
+	if (font != null) {
+		dict.setObject(font.handle, OS.NSFontAttributeName());
+	}
+	char [] chars = new char [text.length ()];
+	text.getChars (0, chars.length, chars, 0);
+	int length = fixMnemonic (chars);
+
+	NSString str = NSString.stringWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	attribStr.autorelease();
+	return attribStr;
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -244,6 +263,15 @@ public void setAlignment (int alignment) {
 	_setAlignment();
 }
 
+void setBackground (float [] color) {
+	if ((style & SWT.SEPARATOR) != 0) return;
+	textView.setDrawsBackground(color != null);
+	if (color == null) return;
+	NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	NSTextFieldCell cell = new NSTextFieldCell(textView.cell());
+	cell.setBackgroundColor(nsColor);
+}
+
 void _setAlignment() {
 	if ((style & SWT.RIGHT) != 0) {
 		textView.setAlignment(OS.NSRightTextAlignment);
@@ -269,6 +297,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	}
 	return result;
+}
+
+void setForeground (float [] color) {
+	if ((style & SWT.SEPARATOR) != 0) return;
+	NSCell cell = new NSCell(textView.cell());
+	cell.setAttributedStringValue(createString());
 }
 
 /**
@@ -330,10 +364,8 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	isImage = false;
 	text = string;
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int length = fixMnemonic (buffer);
-	new NSCell(textView.cell()).setTitle(NSString.stringWithCharacters(buffer, length));
+	NSCell cell = new NSCell(textView.cell());
+	cell.setAttributedStringValue(createString());
 	((NSBox)view).setContentView(textView);
 }
 

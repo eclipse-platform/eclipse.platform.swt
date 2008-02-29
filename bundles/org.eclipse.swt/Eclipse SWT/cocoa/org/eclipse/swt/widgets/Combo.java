@@ -1098,6 +1098,26 @@ void sendSelection () {
 	postEvent(SWT.Selection);
 }
 
+void setBackground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	((NSTextField)view).setBackgroundColor(nsColor);
+}
+
+void setForeground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		return;	// TODO reset to OS default
+	} else {
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+	}
+	((NSTextField)view).setTextColor(nsColor);
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument.
