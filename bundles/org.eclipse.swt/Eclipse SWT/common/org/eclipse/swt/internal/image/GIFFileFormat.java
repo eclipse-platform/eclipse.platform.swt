@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-final class GIFFileFormat extends FileFormat {
+public final class GIFFileFormat extends FileFormat {
 	String signature;
 	int screenWidth, screenHeight, backgroundPixel, bitsPerPixel, defaultDepth;
 	int disposalMethod = 0;

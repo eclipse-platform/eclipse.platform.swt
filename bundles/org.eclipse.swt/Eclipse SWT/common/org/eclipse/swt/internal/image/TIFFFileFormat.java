@@ -19,7 +19,7 @@ import java.io.*;
  * Baseline TIFF decoder revision 6.0
  * Extension T4-encoding CCITT T.4 1D
  */
-final class TIFFFileFormat extends FileFormat {
+public final class TIFFFileFormat extends FileFormat {
 
 boolean isFileFormat(LEDataInputStream stream) {
 	try {

@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-final class WinICOFileFormat extends FileFormat {
+public final class WinICOFileFormat extends FileFormat {
 	
 byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
 	// Destructively bit invert data in the given byte array.

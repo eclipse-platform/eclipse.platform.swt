@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-final class WinBMPFileFormat extends FileFormat {
+public final class WinBMPFileFormat extends FileFormat {
 	static final int BMPFileHeaderSize = 14;
 	static final int BMPHeaderFixedSize = 40;
 	int importantColors;

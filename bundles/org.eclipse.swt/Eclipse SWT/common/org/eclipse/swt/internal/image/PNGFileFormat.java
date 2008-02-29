@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 
-final class PNGFileFormat extends FileFormat {
+public final class PNGFileFormat extends FileFormat {
 	static final int SIGNATURE_LENGTH = 8;
 	static final int PRIME = 65521;
 	PngIhdrChunk headerChunk;

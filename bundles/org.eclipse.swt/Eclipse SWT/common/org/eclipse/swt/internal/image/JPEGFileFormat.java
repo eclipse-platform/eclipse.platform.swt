@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 
-final class JPEGFileFormat extends FileFormat {
+public final class JPEGFileFormat extends FileFormat {
 	int restartInterval;
 	JPEGFrameHeader frameHeader;
 	int imageWidth, imageHeight;
