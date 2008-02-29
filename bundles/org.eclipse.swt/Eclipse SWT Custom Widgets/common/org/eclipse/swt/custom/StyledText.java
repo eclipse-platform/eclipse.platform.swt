@@ -2150,10 +2150,6 @@ void doBackspace() {
  * @param key the character typed by the user
  */
 void doContent(char key) {
-	if (textLimit > 0 && 
-		content.getCharCount() - (selection.y - selection.x) >= textLimit) {
-		return;
-	}
 	Event event = new Event();
 	event.start = selection.x;
 	event.end = selection.y;
@@ -2180,6 +2176,9 @@ void doContent(char key) {
 		event.text = new String(new char[] {key});
 	}
 	if (event.text != null) {
+		if (textLimit > 0 && content.getCharCount() - (event.end - event.start) >= textLimit) {
+			return;
+		}
 		sendKeyEvent(event);
 	}
 }
