@@ -144,6 +144,8 @@ NSAttributedString createString() {
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName());
 	}
+	// TODO NSButtonCell.setAlignment() seems like a better approach than
+	// using the paragraph style below but it doesn't seem to work (?)
 	int alignment;
 	if ((style & SWT.CENTER) != 0) {
 		alignment = OS.NSCenterTextAlignment;
