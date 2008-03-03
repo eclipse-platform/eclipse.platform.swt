@@ -1559,6 +1559,7 @@ public void fillPath(Path path) {
 	} else {
 		drawPath.fill();
 	}
+	drawPath.removeAllPoints();
 }
 
 /** 
