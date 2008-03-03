@@ -319,7 +319,7 @@ public void create (Composite parent, int style) {
 					 * Print the error from the first failed attempt since at this point it's
 					 * known that the failure was not due to the libstdc++.so.6 dependency.
 					 */
-					SWT.error (SWT.ERROR_NO_HANDLES, e);
+					SWT.error (SWT.ERROR_NO_HANDLES, e, " [MOZILLA_FIVE_HOME='" + mozillaPath + "']"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
