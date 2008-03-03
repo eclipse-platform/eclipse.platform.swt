@@ -175,7 +175,14 @@ void _addListener (int eventType, Listener listener) {
 			if (isCustomToolTip ()) createItemToolTips ();
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if (eventType == SWT.MeasureItem) bits |= OS.TVS_NOHSCROLL;
+			if (eventType == SWT.MeasureItem) {
+				if (explorerTheme) {
+					int bits1 = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+					bits1 &= ~OS.TVS_EX_AUTOHSCROLL;
+					OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits1);
+				}
+				bits |= OS.TVS_NOHSCROLL;
+			}
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
