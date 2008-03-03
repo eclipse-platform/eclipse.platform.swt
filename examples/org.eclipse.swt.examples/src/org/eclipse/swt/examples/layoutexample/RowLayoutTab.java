@@ -21,7 +21,7 @@ import org.eclipse.swt.custom.*;
 class RowLayoutTab extends Tab {
 	/* Controls for setting layout parameters */
 	Button horizontal, vertical;
-	Button wrap, pack, fill, justify;
+	Button wrap, pack, fill, justify, center;
 	Spinner marginWidth, marginHeight, marginLeft, marginRight, marginTop, marginBottom, spacing;
 	/* The example layout instance */
 	RowLayout rowLayout;
@@ -202,6 +202,10 @@ class RowLayoutTab extends Tab {
 		justify.setText ("Justify");
 		justify.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
 		justify.addSelectionListener (selectionListener);
+		center = new Button (specGroup, SWT.CHECK);
+		center.setText ("Center");
+		center.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false)); 
+		center.addSelectionListener (selectionListener);
 		
 		/* Add common controls */
 		super.createControlWidgets ();
@@ -248,6 +252,9 @@ class RowLayoutTab extends Tab {
 		}
 		if (rowLayout.justify == true) {
 			code.append ("\t\trowLayout.justify = true;\n");
+		}
+		if (rowLayout.center == true) {
+			code.append ("\t\trowLayout.center = true;\n");
 		}
 		if (rowLayout.marginWidth != 0) {
 			code.append("\t\trowLayout.marginWidth = " + rowLayout.marginWidth + ";\n");
@@ -409,5 +416,6 @@ class RowLayoutTab extends Tab {
 		rowLayout.pack = pack.getSelection ();
 		rowLayout.fill = fill.getSelection ();
 		rowLayout.justify = justify.getSelection ();
+		rowLayout.center = center.getSelection ();
 	}
 }
