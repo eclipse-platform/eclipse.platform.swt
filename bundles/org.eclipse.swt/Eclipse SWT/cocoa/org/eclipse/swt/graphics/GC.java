@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
@@ -722,11 +721,10 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 	transform.scaleXBy(width / 2f, height / 2f);
 	NSBezierPath path = data.path;
-	if (arcAngle < 0) {
-		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(new NSPoint(), 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180);
-	} else {
-		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(new NSPoint(), 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
-	}
+	NSPoint center = new NSPoint();
+	float sAngle = -startAngle;
+	float eAngle = -(startAngle + arcAngle);
+	path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_(center, 1, sAngle,  eAngle, arcAngle>0);
 	path.transformUsingAffineTransform(transform);
 	path.stroke();
 	path.removeAllPoints();
@@ -1403,14 +1401,12 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	NSBezierPath path = data.path;
 	NSPoint center = new NSPoint();
 	path.moveToPoint(center);
-	if (arcAngle < 0) {
-		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(center, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180);
-	} else {
-		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(center, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
-	}
+	float sAngle = -startAngle;
+	float eAngle = -(startAngle + arcAngle);
+	path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_(center, 1, sAngle,  eAngle, arcAngle>0);
 	path.closePath();
 	path.transformUsingAffineTransform(transform);
-	path.stroke();
+	path.fill();
 	path.removeAllPoints();
 	handle.restoreGraphicsState();
 }
@@ -2367,6 +2363,7 @@ void init(Drawable drawable, GCData data, int context) {
 	handle = new NSGraphicsContext(context);
 	handle.saveGraphicsState();
 	data.path = NSBezierPath.bezierPath();
+	data.path.setWindingRule(data.fillRule == SWT.FILL_WINDING ? OS.NSNonZeroWindingRule : OS.NSEvenOddWindingRule);
 	data.path.retain();
 }
 

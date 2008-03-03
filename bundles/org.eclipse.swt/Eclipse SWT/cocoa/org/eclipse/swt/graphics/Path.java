@@ -11,7 +11,6 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -134,11 +133,10 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	transform.translateXBy(x + width / 2f, y + height / 2f);
 	transform.scaleXBy(width / 2f, height / 2f);
 	NSBezierPath path = NSBezierPath.bezierPath();
-	if (arcAngle < 0) {
-		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(new NSPoint(), 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180);
-	} else {
-		path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_(new NSPoint(), 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
-	}
+	NSPoint center = new NSPoint();
+	float sAngle = -startAngle;
+	float eAngle = -(startAngle + arcAngle);
+	path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_(center, 1, sAngle,  eAngle, arcAngle>0);
 	path.transformUsingAffineTransform(transform);
 	handle.appendBezierPath(path);
 }
