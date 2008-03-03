@@ -65,6 +65,7 @@ class Mozilla extends WebBrowser {
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String DISPOSE_LISTENER_HOOKED = "org.eclipse.swt.browser.Mozilla.disposeListenerHooked"; //$NON-NLS-1$
+	static final String PREFIX_JAVASCRIPT = "javascript:"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEWINDOWSTATUSCHANGE = "dom.disable_window_status_change"; //$NON-NLS-1$
@@ -1343,7 +1344,7 @@ public boolean execute (String script) {
 		index = script.indexOf (LINE_COMMENT, index);
 	}
 
-	String url = "javascript:" + script + ";void(0);";	//$NON-NLS-1$ //$NON-NLS-2$
+	String url = PREFIX_JAVASCRIPT + script + ";void(0);";	//$NON-NLS-1$
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -2621,6 +2622,10 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 /* nsIURIContentListener */
 
 int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
+	if (locationListeners.length == 0) {
+		XPCOM.memmove (retval, new int[] {0}, 4); /* PRBool */
+		return XPCOM.NS_OK;
+	}
 	nsIURI location = new nsIURI (aURI);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
 	location.GetSpec (aSpec);
@@ -2631,26 +2636,28 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	XPCOM.memmove (dest, buffer, length);
 	XPCOM.nsEmbedCString_delete (aSpec);
 	String value = new String (dest);
-	if (locationListeners.length == 0) {
-		XPCOM.memmove (retval, new int[] {0}, 4); /* PRBool */
-		return XPCOM.NS_OK;
-	}
 	boolean doit = true;
 	if (request == 0) {
-		LocationEvent event = new LocationEvent (browser);
-		event.display = browser.getDisplay();
-		event.widget = browser;
-		event.location = value;
-		/*
-		 * If the URI indicates that the page is being rendered from memory
-		 * (via setText()) then set it to about:blank to be consistent with IE.
+		/* 
+		 * listeners should not be notified of internal transitions like "javascipt:..."
+		 * because this is an implementation side-effect, not a true navigate
 		 */
-		if (event.location.equals (URI_FROMMEMORY)) event.location = ABOUT_BLANK;
-		event.doit = doit;
-		for (int i = 0; i < locationListeners.length; i++) {
-			locationListeners[i].changing (event);
+		if (!value.startsWith (PREFIX_JAVASCRIPT)) {
+			LocationEvent event = new LocationEvent (browser);
+			event.display = browser.getDisplay();
+			event.widget = browser;
+			event.location = value;
+			/*
+			 * If the URI indicates that the page is being rendered from memory
+			 * (via setText()) then set it to about:blank to be consistent with IE.
+			 */
+			if (event.location.equals (URI_FROMMEMORY)) event.location = ABOUT_BLANK;
+			event.doit = doit;
+			for (int i = 0; i < locationListeners.length; i++) {
+				locationListeners[i].changing (event);
+			}
+			doit = event.doit;
 		}
-		doit = event.doit;
 	}
 	XPCOM.memmove (retval, new int[] {doit ? 0 : 1}, 4); /* PRBool */
 	return XPCOM.NS_OK;
