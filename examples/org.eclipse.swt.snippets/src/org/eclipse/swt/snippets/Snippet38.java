@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet38 {
@@ -24,9 +25,13 @@ public class Snippet38 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setLayout(new GridLayout());
 	Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 	table.setLinesVisible (true);
 	table.setHeaderVisible (true);
+	GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+	data.heightHint = 200;
+	table.setLayoutData(data);
 	String[] titles = {" ", "C", "!", "Description", "Resource", "In Folder", "Location"};
 	for (int i=0; i<titles.length; i++) {
 		TableColumn column = new TableColumn (table, SWT.NONE);
@@ -46,7 +51,6 @@ public static void main (String [] args) {
 	for (int i=0; i<titles.length; i++) {
 		table.getColumn (i).pack ();
 	}	
-	table.setSize (table.computeSize (SWT.DEFAULT, 200));
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {
