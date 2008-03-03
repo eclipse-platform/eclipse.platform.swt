@@ -50,7 +50,7 @@ public class MozillaGenerator {
 	static String NO_SUPER_CLASS = "SWT_NO_SUPER_CLASS";
 	
 	static String[][] TYPES_C2JAVA = { 
-		{ "PRBool *", "boolean[]" },
+		{ "PRBool *", "int[]" },
 		{ "nsIID &", "nsID" },
 		{ "nsCID &", "nsID" },
 		{ "nsCID * *", "int /*long*/" }, // nsID[] not supported by jnigen
@@ -75,7 +75,7 @@ public class MozillaGenerator {
 		{ "PRInt32", "int" }, 
 		{ "PRInt64", "long" }, 
 		{ "nsresult", "int" },
-		{ "PRBool", "boolean" },
+		{ "PRBool", "int" },
 		{ "float", "float" },
 		{ "PRUint16", "short" },
 		{ "size_t", "int" },
