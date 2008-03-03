@@ -1146,9 +1146,10 @@ public void setFullScreen (boolean fullScreen) {
 	if(fullScreen) {
 		oldWindowStyle = OS.Window_WindowStyle (shellHandle);
 		oldWindowState = OS.Window_WindowState (shellHandle);
+		boolean visible = getVisible ();
 		OS.Window_Hide (shellHandle);
 		OS.Window_WindowStyle (shellHandle, OS.WindowStyle_None);
-		if (getVisible ()) OS.Window_Show (shellHandle);
+		if (visible) OS.Window_Show (shellHandle);
 		OS.Window_WindowState (shellHandle, OS.WindowState_Maximized);
 	} else {
 		OS.Window_WindowStyle (shellHandle, oldWindowStyle);
