@@ -6165,6 +6165,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	}
 
 	/* Get the selected state of the item under the mouse */
+	boolean selected = true;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
@@ -6245,7 +6246,8 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			if ((bits & OS.TVS_FULLROWSELECT) == 0) fakeSelection = true;
 		} else {
 			if (hooks (SWT.MeasureItem)) {
-				if (hitTestSelection (lpht.hItem, lpht.x, lpht.y)) {
+				selected = hitTestSelection (lpht.hItem, lpht.x, lpht.y);
+				if (selected) {
 					if ((lpht.flags & OS.TVHT_ONITEM) == 0) fakeSelection = true;
 				}
 			}
@@ -6368,7 +6370,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((wParam & OS.MK_SHIFT) == 0) hAnchor = hNewItem;
 			
 	/* Issue notification */
-	if (!gestureCompleted) {
+	if (selected && !gestureCompleted) {
 		tvItem.hItem = hNewItem;
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
