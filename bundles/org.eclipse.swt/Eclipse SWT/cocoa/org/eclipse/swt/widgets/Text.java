@@ -372,6 +372,7 @@ void createHandle () {
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
+		widget.setRichText(false);
 		
 		view = widget;
 		scrollView = scrollWidget;
