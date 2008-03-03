@@ -207,7 +207,7 @@ class SpinnerTab extends RangeTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Selection", "ToolTipText"};
+		return new String[] {"Selection", "TextLimit", "ToolTipText"};
 	}
 
 	/**
