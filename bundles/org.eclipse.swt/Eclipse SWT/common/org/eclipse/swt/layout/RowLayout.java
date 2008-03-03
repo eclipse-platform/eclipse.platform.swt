@@ -129,8 +129,8 @@ public final class RowLayout extends Layout {
 
 	/**
 	 * center specifies whether the controls in a row should be
-	 * centered in each cell for horizontal layouts, or centered
-	 * in each cell for vertical layouts.
+	 * centered vertically in each cell for horizontal layouts,
+	 * or centered horizontally in each cell for vertical layouts.
 	 *
 	 * The default value is false.
 	 * 
