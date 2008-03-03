@@ -6145,9 +6145,32 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	
+	/*
+	* Feature in Windows.  When the tree has the style
+	* TVS_FULLROWSELECT, the background color for the
+	* entire row is filled when an item is painted,
+	* drawing on top of any custom drawing.  The fix
+	* is to emulate TVS_FULLROWSELECT.
+	*/
+	boolean selected = false;
+	boolean fakeSelection = false;
+	if (lpht.hItem != 0) {
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_FULLROWSELECT) == 0) fakeSelection = true;
+		} else {
+			if (hooks (SWT.MeasureItem)) {
+				selected = hitTestSelection (lpht.hItem, lpht.x, lpht.y);
+				if (selected) {
+					if ((lpht.flags & OS.TVHT_ONITEM) == 0) fakeSelection = true;
+				}
+			}
+		}
+	}
+	
 	/* Process the mouse when an item is not selected */
-	if ((style & SWT.FULL_SELECTION) == 0) {
-		if ((lpht.flags & OS.TVHT_ONITEM) == 0 && !hooks (SWT.MeasureItem)) {
+	if (!selected && (style & SWT.FULL_SELECTION) == 0) {
+		if ((lpht.flags & OS.TVHT_ONITEM) == 0) {
 			Display display = this.display;
 			display.captureChanged = false;
 			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
@@ -6165,7 +6188,6 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	}
 
 	/* Get the selected state of the item under the mouse */
-	boolean selected = true;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
@@ -6173,7 +6195,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.MULTI) != 0) {
 		tvItem.hItem = lpht.hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		hittestSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+		hittestSelected = selected || (tvItem.state & OS.TVIS_SELECTED) != 0;
 	}
 	
 	/* Get the selected state of the last selected item */
@@ -6232,27 +6254,6 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	ignoreDeselect = ignoreSelect = true;
 	int /*long*/ code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int /*long*/ hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	/*
-	* Feature in Windows.  When the tree has the style
-	* TVS_FULLROWSELECT, the background color for the
-	* entire row is filled when an item is painted,
-	* drawing on top of any custom drawing.  The fix
-	* is to emulate TVS_FULLROWSELECT.
-	*/
-	boolean fakeSelection = false;
-	if (lpht.hItem != 0) {
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_FULLROWSELECT) == 0) fakeSelection = true;
-		} else {
-			if (hooks (SWT.MeasureItem)) {
-				selected = hitTestSelection (lpht.hItem, lpht.x, lpht.y);
-				if (selected) {
-					if ((lpht.flags & OS.TVHT_ONITEM) == 0) fakeSelection = true;
-				}
-			}
-		}
-	}
 	if (fakeSelection) {
 		if (hOldItem == 0 || (hNewItem == hOldItem && lpht.hItem != hOldItem)) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
@@ -6370,7 +6371,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((wParam & OS.MK_SHIFT) == 0) hAnchor = hNewItem;
 			
 	/* Issue notification */
-	if (selected && !gestureCompleted) {
+	if (!gestureCompleted) {
 		tvItem.hItem = hNewItem;
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
