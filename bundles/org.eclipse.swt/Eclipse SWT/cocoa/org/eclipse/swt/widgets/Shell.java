@@ -446,7 +446,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	state |= CANVAS;// | GRAB | HIDDEN;
 	if (window != null) {
-		
+		view = window.contentView();
+		return;
 	} else {
 		window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
