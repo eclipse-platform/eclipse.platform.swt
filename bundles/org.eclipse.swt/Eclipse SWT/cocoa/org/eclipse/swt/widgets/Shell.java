@@ -471,7 +471,7 @@ void createHandle () {
 	
 	createHandle (null);
 	
-	window.setContentView (view);
+	window.setContentView (topView());
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	windowDelegate.setTag(jniRef);
 	window.setDelegate(windowDelegate);
