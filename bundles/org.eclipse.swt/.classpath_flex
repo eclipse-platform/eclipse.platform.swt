@@ -25,7 +25,5 @@
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
 	<classpathentry kind="lib" path="extra_jars/exceptions.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.e4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.jcl"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.flex"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
