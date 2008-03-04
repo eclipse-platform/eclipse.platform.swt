@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,7 +41,7 @@ public class nsIObserverService extends nsISupports {
 		super(address);
 	}
 
-	public int AddObserver(int /*long*/ anObserver, byte[] aTopic, boolean ownsWeak) {
+	public int AddObserver(int /*long*/ anObserver, byte[] aTopic, int ownsWeak) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), anObserver, aTopic, ownsWeak);
 	}
 

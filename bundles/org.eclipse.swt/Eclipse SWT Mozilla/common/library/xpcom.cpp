@@ -203,25 +203,51 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIII)
 }
 #endif
 
-#ifndef NO_VtblCall__IIIIIIII_3C_3Z_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIII_3C_3Z_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jcharArray arg8, jbooleanArray arg9, jintArray arg10);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIII_3C_3Z_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jcharArray arg8, jbooleanArray arg9, jintArray arg10)
+#ifndef NO_VtblCall__IIIIIIIIIIII
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIIIIIII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIIIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIIIIIIII_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIIIIIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIIIIIIIIIIIIIISI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIIIIIIIIIISI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jint arg16);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIIIIIIIIIISI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jint arg16)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIIIIIIIIIIISI_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jshort, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIIIIIIIIIIISI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIIIIIII_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIII_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jcharArray arg8, jintArray arg9, jintArray arg10);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIII_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jcharArray arg8, jintArray arg9, jintArray arg10)
 {
 	jchar *lparg8=NULL;
-	jboolean *lparg9=NULL;
+	jint *lparg9=NULL;
 	jint *lparg10=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIIII_3C_3Z_3I_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIIII_3C_3I_3I_FUNC);
 	if (arg8) if ((lparg8 = env->GetCharArrayElements(arg8, NULL)) == NULL) goto fail;
-	if (arg9) if ((lparg9 = env->GetBooleanArrayElements(arg9, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = env->GetIntArrayElements(arg9, NULL)) == NULL) goto fail;
 	if (arg10) if ((lparg10 = env->GetIntArrayElements(arg10, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jint, jint, jchar *, jboolean *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, lparg8, lparg9, lparg10);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jint, jint, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, lparg8, lparg9, lparg10);
 fail:
 	if (arg10 && lparg10) env->ReleaseIntArrayElements(arg10, lparg10, 0);
-	if (arg9 && lparg9) env->ReleaseBooleanArrayElements(arg9, lparg9, 0);
+	if (arg9 && lparg9) env->ReleaseIntArrayElements(arg9, lparg9, 0);
 	if (arg8 && lparg8) env->ReleaseCharArrayElements(arg8, lparg8, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIIII_3C_3Z_3I_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIIII_3C_3I_3I_FUNC);
 	return rc;
 }
 #endif
@@ -239,120 +265,94 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIJII)
 }
 #endif
 
-#ifndef NO_VtblCall__IIIIIIZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jboolean arg6);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIIZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jboolean arg6)
+#ifndef NO_VtblCall__IIIIII_3CIIIII_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3CIIIII_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jintArray arg12, jintArray arg13);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3CIIIII_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jintArray arg12, jintArray arg13)
 {
+	jchar *lparg6=NULL;
+	jint *lparg12=NULL;
+	jint *lparg13=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIIZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIIZ_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3CIIIII_3I_3I_FUNC);
+	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg12) if ((lparg12 = env->GetIntArrayElements(arg12, NULL)) == NULL) goto fail;
+	if (arg13) if ((lparg13 = env->GetIntArrayElements(arg13, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jchar *, jint, jint, jint, jint, jint, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, arg7, arg8, arg9, arg10, arg11, lparg12, lparg13);
+fail:
+	if (arg13 && lparg13) env->ReleaseIntArrayElements(arg13, lparg13, 0);
+	if (arg12 && lparg12) env->ReleaseIntArrayElements(arg12, lparg12, 0);
+	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3CIIIII_3I_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__IIIIII_3C_3BIIIIZ_3I_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3BIIIIZ_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jbyteArray arg7, jint arg8, jint arg9, jint arg10, jint arg11, jboolean arg12, jintArray arg13, jintArray arg14);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3BIIIIZ_3I_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jbyteArray arg7, jint arg8, jint arg9, jint arg10, jint arg11, jboolean arg12, jintArray arg13, jintArray arg14)
+#ifndef NO_VtblCall__IIIIII_3C_3BIIIII_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3BIIIII_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jbyteArray arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jintArray arg13, jintArray arg14);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3BIIIII_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jbyteArray arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jintArray arg13, jintArray arg14)
 {
 	jchar *lparg6=NULL;
 	jbyte *lparg7=NULL;
 	jint *lparg13=NULL;
 	jint *lparg14=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3C_3BIIIIZ_3I_3I_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3C_3BIIIII_3I_3I_FUNC);
 	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetByteArrayElements(arg7, NULL)) == NULL) goto fail;
 	if (arg13) if ((lparg13 = env->GetIntArrayElements(arg13, NULL)) == NULL) goto fail;
 	if (arg14) if ((lparg14 = env->GetIntArrayElements(arg14, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jchar *, jbyte *, jint, jint, jint, jint, jboolean, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7, arg8, arg9, arg10, arg11, arg12, lparg13, lparg14);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jchar *, jbyte *, jint, jint, jint, jint, jint, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7, arg8, arg9, arg10, arg11, arg12, lparg13, lparg14);
 fail:
 	if (arg14 && lparg14) env->ReleaseIntArrayElements(arg14, lparg14, 0);
 	if (arg13 && lparg13) env->ReleaseIntArrayElements(arg13, lparg13, 0);
 	if (arg7 && lparg7) env->ReleaseByteArrayElements(arg7, lparg7, 0);
 	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3C_3BIIIIZ_3I_3I_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3C_3BIIIII_3I_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__IIIIII_3C_3Z_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3Z_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jbooleanArray arg7, jbooleanArray arg8);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3Z_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jbooleanArray arg7, jbooleanArray arg8)
+#ifndef NO_VtblCall__IIIIII_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jintArray arg7, jintArray arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jcharArray arg6, jintArray arg7, jintArray arg8)
 {
 	jchar *lparg6=NULL;
-	jboolean *lparg7=NULL;
-	jboolean *lparg8=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3C_3I_3I_FUNC);
 	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = env->GetBooleanArrayElements(arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = env->GetBooleanArrayElements(arg8, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jchar *, jboolean *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7, lparg8);
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7, lparg8);
 fail:
-	if (arg8 && lparg8) env->ReleaseBooleanArrayElements(arg8, lparg8, 0);
-	if (arg7 && lparg7) env->ReleaseBooleanArrayElements(arg7, lparg7, 0);
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
 	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3C_3I_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__IIIIII_3Z_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3Z_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jbooleanArray arg6, jintArray arg7);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3Z_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jbooleanArray arg6, jintArray arg7)
+#ifndef NO_VtblCall__IIIIII_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jintArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIII_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jintArray arg7)
 {
-	jboolean *lparg6=NULL;
+	jint *lparg6=NULL;
 	jint *lparg7=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3Z_3I_FUNC);
-	if (arg6) if ((lparg6 = env->GetBooleanArrayElements(arg6, NULL)) == NULL) goto fail;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIII_3I_3I_FUNC);
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jboolean *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7);
 fail:
 	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
-	if (arg6 && lparg6) env->ReleaseBooleanArrayElements(arg6, lparg6, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3Z_3I_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIIIZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIIIZ_3CIIIIZ_3I_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIZ_3CIIIIZ_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5, jcharArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jboolean arg11, jintArray arg12, jintArray arg13);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIIZ_3CIIIIZ_3I_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5, jcharArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jboolean arg11, jintArray arg12, jintArray arg13)
-{
-	jchar *lparg6=NULL;
-	jint *lparg12=NULL;
-	jint *lparg13=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIIZ_3CIIIIZ_3I_3I_FUNC);
-	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
-	if (arg12) if ((lparg12 = env->GetIntArrayElements(arg12, NULL)) == NULL) goto fail;
-	if (arg13) if ((lparg13 = env->GetIntArrayElements(arg13, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jboolean, jchar *, jint, jint, jint, jint, jboolean, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, arg7, arg8, arg9, arg10, arg11, lparg12, lparg13);
-fail:
-	if (arg13 && lparg13) env->ReleaseIntArrayElements(arg13, lparg13, 0);
-	if (arg12 && lparg12) env->ReleaseIntArrayElements(arg12, lparg12, 0);
-	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIIZ_3CIIIIZ_3I_3I_FUNC);
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIII_3I_3I_FUNC);
 	return rc;
 }
 #endif
@@ -404,32 +404,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIJJJJ)
 }
 #endif
 
-#ifndef NO_VtblCall__IIIIJZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIJZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jlong arg4, jboolean arg5);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIJZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jlong arg4, jboolean arg5)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIJZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jlong, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIJZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIIZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIZ_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__IIII_3B
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII_3B)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII_3B)
@@ -477,6 +451,23 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII_3CIJI)
 fail:
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIII_3CIJI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIII_3CJJJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII_3CJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4, jlong arg5, jlong arg6, jlong arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII_3CJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4, jlong arg5, jlong arg6, jlong arg7)
+{
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIII_3CJJJ_FUNC);
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jchar *, jlong, jlong, jlong))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5, arg6, arg7);
+fail:
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIII_3CJJJ_FUNC);
 	return rc;
 }
 #endif
@@ -565,88 +556,6 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__IIIZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIZZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIZZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIZZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIZZII
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4, jint arg5, jint arg6);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZII)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4, jint arg5, jint arg6)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIZZII_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean, jboolean, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIZZII_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIZZIIIIIIZZZZSI
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZIIIIIIZZZZSI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jboolean arg11, jboolean arg12, jboolean arg13, jboolean arg14, jshort arg15, jint arg16);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZIIIIIIZZZZSI)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jboolean arg11, jboolean arg12, jboolean arg13, jboolean arg14, jshort arg15, jint arg16)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIZZIIIIIIZZZZSI_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean, jboolean, jint, jint, jint, jint, jint, jint, jboolean, jboolean, jboolean, jboolean, jshort, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIZZIIIIIIZZZZSI_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIZZIZZZZII
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZIZZZZII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4, jint arg5, jboolean arg6, jboolean arg7, jboolean arg8, jboolean arg9, jint arg10, jint arg11);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZZIZZZZII)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4, jint arg5, jboolean arg6, jboolean arg7, jboolean arg8, jboolean arg9, jint arg10, jint arg11)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIZZIZZZZII_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean, jboolean, jint, jboolean, jboolean, jboolean, jboolean, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIZZIZZZZII_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIIZ_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZ_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jbooleanArray arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIZ_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jbooleanArray arg4)
-{
-	jboolean *lparg4=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIZ_3Z_FUNC);
-	if (arg4) if ((lparg4 = env->GetBooleanArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
-fail:
-	if (arg4 && lparg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIZ_3Z_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__III_3B
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B)
@@ -660,6 +569,23 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B)
 fail:
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__III_3BI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3BI_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *, jint))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3BI_FUNC);
 	return rc;
 }
 #endif
@@ -680,23 +606,6 @@ fail:
 	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3BI_3I_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__III_3BZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jboolean arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jboolean arg4)
-{
-	jbyte *lparg3=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3BZ_FUNC);
-	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
-fail:
-	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3BZ_FUNC);
 	return rc;
 }
 #endif
@@ -747,22 +656,22 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__III_3B_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jbooleanArray arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jbooleanArray arg4)
+#ifndef NO_VtblCall__III_3B_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jintArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jintArray arg4)
 {
 	jbyte *lparg3=NULL;
-	jboolean *lparg4=NULL;
+	jint *lparg4=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3B_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3B_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetBooleanArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
+	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
 fail:
-	if (arg4 && lparg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
+	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3B_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3B_3I_FUNC);
 	return rc;
 }
 #endif
@@ -821,10 +730,10 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__III_3C_3CI_3C_3C_3C_3C_3Z_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3C_3C_3C_3C_3Z_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jcharArray arg6, jcharArray arg7, jcharArray arg8, jcharArray arg9, jbooleanArray arg10, jintArray arg11);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3C_3C_3C_3C_3Z_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jcharArray arg6, jcharArray arg7, jcharArray arg8, jcharArray arg9, jbooleanArray arg10, jintArray arg11)
+#ifndef NO_VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jcharArray arg6, jcharArray arg7, jcharArray arg8, jcharArray arg9, jintArray arg10, jintArray arg11);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jcharArray arg6, jcharArray arg7, jcharArray arg8, jcharArray arg9, jintArray arg10, jintArray arg11)
 {
 	jchar *lparg3=NULL;
 	jchar *lparg4=NULL;
@@ -832,113 +741,113 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3C_3C_3C_3C_3Z_3I)
 	jchar *lparg7=NULL;
 	jchar *lparg8=NULL;
 	jchar *lparg9=NULL;
-	jboolean *lparg10=NULL;
+	jint *lparg10=NULL;
 	jint *lparg11=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3CI_3C_3C_3C_3C_3Z_3I_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetCharArrayElements(arg7, NULL)) == NULL) goto fail;
 	if (arg8) if ((lparg8 = env->GetCharArrayElements(arg8, NULL)) == NULL) goto fail;
 	if (arg9) if ((lparg9 = env->GetCharArrayElements(arg9, NULL)) == NULL) goto fail;
-	if (arg10) if ((lparg10 = env->GetBooleanArrayElements(arg10, NULL)) == NULL) goto fail;
+	if (arg10) if ((lparg10 = env->GetIntArrayElements(arg10, NULL)) == NULL) goto fail;
 	if (arg11) if ((lparg11 = env->GetIntArrayElements(arg11, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint, jchar *, jchar *, jchar *, jchar *, jboolean *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, arg5, lparg6, lparg7, lparg8, lparg9, lparg10, lparg11);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint, jchar *, jchar *, jchar *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, arg5, lparg6, lparg7, lparg8, lparg9, lparg10, lparg11);
 fail:
 	if (arg11 && lparg11) env->ReleaseIntArrayElements(arg11, lparg11, 0);
-	if (arg10 && lparg10) env->ReleaseBooleanArrayElements(arg10, lparg10, 0);
+	if (arg10 && lparg10) env->ReleaseIntArrayElements(arg10, lparg10, 0);
 	if (arg9 && lparg9) env->ReleaseCharArrayElements(arg9, lparg9, 0);
 	if (arg8 && lparg8) env->ReleaseCharArrayElements(arg8, lparg8, 0);
 	if (arg7 && lparg7) env->ReleaseCharArrayElements(arg7, lparg7, 0);
 	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3CI_3C_3C_3C_3C_3Z_3I_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__III_3C_3CI_3I_3I_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3I_3I_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jintArray arg6, jintArray arg7, jbooleanArray arg8);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3I_3I_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jintArray arg6, jintArray arg7, jbooleanArray arg8)
+#ifndef NO_VtblCall__III_3C_3CI_3I_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3I_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jintArray arg6, jintArray arg7, jintArray arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3CI_3I_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jint arg5, jintArray arg6, jintArray arg7, jintArray arg8)
 {
 	jchar *lparg3=NULL;
 	jchar *lparg4=NULL;
 	jint *lparg6=NULL;
 	jint *lparg7=NULL;
-	jboolean *lparg8=NULL;
+	jint *lparg8=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3CI_3I_3I_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3CI_3I_3I_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = env->GetBooleanArrayElements(arg8, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint, jint *, jint *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, arg5, lparg6, lparg7, lparg8);
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint, jint *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, arg5, lparg6, lparg7, lparg8);
 fail:
-	if (arg8 && lparg8) env->ReleaseBooleanArrayElements(arg8, lparg8, 0);
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
 	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
 	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3CI_3I_3I_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3CI_3I_3I_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__III_3C_3C_3C_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jbooleanArray arg6);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jbooleanArray arg6)
+#ifndef NO_VtblCall__III_3C_3C_3C_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6)
 {
 	jchar *lparg3=NULL;
 	jchar *lparg4=NULL;
 	jchar *lparg5=NULL;
-	jboolean *lparg6=NULL;
+	jint *lparg6=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3C_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3C_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = env->GetCharArrayElements(arg5, NULL)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = env->GetBooleanArrayElements(arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jchar *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6);
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jchar *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6);
 fail:
-	if (arg6 && lparg6) env->ReleaseBooleanArrayElements(arg6, lparg6, 0);
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
 	if (arg5 && lparg5) env->ReleaseCharArrayElements(arg5, lparg5, 0);
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3C_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3C_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__III_3C_3C_3C_3Z_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3Z_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jbooleanArray arg6, jbooleanArray arg7);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3Z_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jbooleanArray arg6, jbooleanArray arg7)
+#ifndef NO_VtblCall__III_3C_3C_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6, jintArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6, jintArray arg7)
 {
 	jchar *lparg3=NULL;
 	jchar *lparg4=NULL;
 	jchar *lparg5=NULL;
-	jboolean *lparg6=NULL;
-	jboolean *lparg7=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3C_3I_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = env->GetCharArrayElements(arg5, NULL)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = env->GetBooleanArrayElements(arg6, NULL)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = env->GetBooleanArrayElements(arg7, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jchar *, jboolean *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7);
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7);
 fail:
-	if (arg7 && lparg7) env->ReleaseBooleanArrayElements(arg7, lparg7, 0);
-	if (arg6 && lparg6) env->ReleaseBooleanArrayElements(arg6, lparg6, 0);
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
 	if (arg5 && lparg5) env->ReleaseCharArrayElements(arg5, lparg5, 0);
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3C_3I_3I_FUNC);
 	return rc;
 }
 #endif
@@ -966,92 +875,69 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__III_3C_3C_3I_3C_3Z_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3C_3Z_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jcharArray arg6, jbooleanArray arg7, jbooleanArray arg8);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3C_3Z_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jcharArray arg6, jbooleanArray arg7, jbooleanArray arg8)
+#ifndef NO_VtblCall__III_3C_3C_3I_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jcharArray arg6, jintArray arg7, jintArray arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jcharArray arg6, jintArray arg7, jintArray arg8)
 {
 	jchar *lparg3=NULL;
 	jchar *lparg4=NULL;
 	jint *lparg5=NULL;
 	jchar *lparg6=NULL;
-	jboolean *lparg7=NULL;
-	jboolean *lparg8=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3I_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3I_3C_3I_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = env->GetBooleanArrayElements(arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = env->GetBooleanArrayElements(arg8, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint *, jchar *, jboolean *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7, lparg8);
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7, lparg8);
 fail:
-	if (arg8 && lparg8) env->ReleaseBooleanArrayElements(arg8, lparg8, 0);
-	if (arg7 && lparg7) env->ReleaseBooleanArrayElements(arg7, lparg7, 0);
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
 	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
 	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3I_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3I_3C_3I_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__III_3C_3C_3I_3I_3C_3Z_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3I_3C_3Z_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jintArray arg6, jcharArray arg7, jbooleanArray arg8, jbooleanArray arg9);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3I_3C_3Z_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jintArray arg6, jcharArray arg7, jbooleanArray arg8, jbooleanArray arg9)
+#ifndef NO_VtblCall__III_3C_3C_3I_3I_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3I_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jintArray arg6, jcharArray arg7, jintArray arg8, jintArray arg9);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3I_3I_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jintArray arg5, jintArray arg6, jcharArray arg7, jintArray arg8, jintArray arg9)
 {
 	jchar *lparg3=NULL;
 	jchar *lparg4=NULL;
 	jint *lparg5=NULL;
 	jint *lparg6=NULL;
 	jchar *lparg7=NULL;
-	jboolean *lparg8=NULL;
-	jboolean *lparg9=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3I_3I_3C_3Z_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3I_3I_3C_3I_3I_FUNC);
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetCharArrayElements(arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = env->GetBooleanArrayElements(arg8, NULL)) == NULL) goto fail;
-	if (arg9) if ((lparg9 = env->GetBooleanArrayElements(arg9, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint *, jint *, jchar *, jboolean *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9);
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = env->GetIntArrayElements(arg9, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jint *, jint *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9);
 fail:
-	if (arg9 && lparg9) env->ReleaseBooleanArrayElements(arg9, lparg9, 0);
-	if (arg8 && lparg8) env->ReleaseBooleanArrayElements(arg8, lparg8, 0);
+	if (arg9 && lparg9) env->ReleaseIntArrayElements(arg9, lparg9, 0);
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
 	if (arg7 && lparg7) env->ReleaseCharArrayElements(arg7, lparg7, 0);
 	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
 	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
 	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3I_3I_3C_3Z_3Z_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__III_3C_3C_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jbooleanArray arg5);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3C_3C_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3, jcharArray arg4, jbooleanArray arg5)
-{
-	jchar *lparg3=NULL;
-	jchar *lparg4=NULL;
-	jboolean *lparg5=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3C_3C_3Z_FUNC);
-	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = env->GetBooleanArrayElements(arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jchar *, jchar *, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5);
-fail:
-	if (arg5 && lparg5) env->ReleaseBooleanArrayElements(arg5, lparg5, 0);
-	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
-	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3C_3C_3I_3I_3C_3I_3I_FUNC);
 	return rc;
 }
 #endif
@@ -1099,23 +985,6 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__III_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbooleanArray arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbooleanArray arg3)
-{
-	jboolean *lparg3=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3Z_FUNC);
-	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
-fail:
-	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3Z_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__IIJ
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ)
@@ -1138,6 +1007,69 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJI)
 	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJI_FUNC);
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJIIJIIIIII
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJIIJIIIIII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJIIJIIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJIIJIIIIII_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint, jint, jlong, jint, jint, jint, jint, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJIIJIIIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJIIJIIIIIIIIISJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJIIJIIIIIIIIISJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jlong arg16);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJIIJIIIIIIIIISJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jlong arg16)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJIIJIIIIIIIIISJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint, jint, jlong, jint, jint, jint, jint, jint, jint, jint, jint, jint, jshort, jlong))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJIIJIIIIIIIIISJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJIIJ_3I_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJIIJ_3I_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jintArray arg6, jlongArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJIIJ_3I_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jintArray arg6, jlongArray arg7)
+{
+	jint *lparg6=NULL;
+	jlong *lparg7=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJIIJ_3I_3J_FUNC);
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetLongArrayElements(arg7, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint, jint, jlong, jint *, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7);
+fail:
+	if (arg7 && lparg7) env->ReleaseLongArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJIIJ_3I_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJI_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJI_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJI_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jlongArray arg4)
+{
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJI_3J_FUNC);
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJI_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1168,6 +1100,187 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJI)
 }
 #endif
 
+#ifndef NO_VtblCall__IIJJII
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jint arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jint arg5)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJII_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJIIII
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJIIII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jint arg5, jint arg6, jint arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJIIII_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jint, jint, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJIJ_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJIJ_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jlong arg5, jcharArray arg6, jintArray arg7, jintArray arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJIJ_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jlong arg5, jcharArray arg6, jintArray arg7, jintArray arg8)
+{
+	jchar *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJIJ_3C_3I_3I_FUNC);
+	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jint, jlong, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7, lparg8);
+fail:
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJIJ_3C_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJI_3C
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJI_3C)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jcharArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJI_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jcharArray arg5)
+{
+	jchar *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJI_3C_FUNC);
+	if (arg5) if ((lparg5 = env->GetCharArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jint, jchar *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseCharArrayElements(arg5, lparg5, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJI_3C_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJI_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJI_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jintArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJI_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJI_3I_FUNC);
+	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jint, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJI_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJJI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJI_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJJI_3CJJIJI_3J_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJI_3CJJIJI_3J_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5, jcharArray arg6, jlong arg7, jlong arg8, jint arg9, jlong arg10, jint arg11, jlongArray arg12, jlongArray arg13);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJI_3CJJIJI_3J_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5, jcharArray arg6, jlong arg7, jlong arg8, jint arg9, jlong arg10, jint arg11, jlongArray arg12, jlongArray arg13)
+{
+	jchar *lparg6=NULL;
+	jlong *lparg12=NULL;
+	jlong *lparg13=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJI_3CJJIJI_3J_3J_FUNC);
+	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg12) if ((lparg12 = env->GetLongArrayElements(arg12, NULL)) == NULL) goto fail;
+	if (arg13) if ((lparg13 = env->GetLongArrayElements(arg13, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong, jint, jchar *, jlong, jlong, jint, jlong, jint, jlong *, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, arg7, arg8, arg9, arg10, arg11, lparg12, lparg13);
+fail:
+	if (arg13 && lparg13) env->ReleaseLongArrayElements(arg13, lparg13, 0);
+	if (arg12 && lparg12) env->ReleaseLongArrayElements(arg12, lparg12, 0);
+	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJI_3CJJIJI_3J_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJJI_3C_3BJJIJI_3J_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJI_3C_3BJJIJI_3J_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5, jcharArray arg6, jbyteArray arg7, jlong arg8, jlong arg9, jint arg10, jlong arg11, jint arg12, jlongArray arg13, jlongArray arg14);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJI_3C_3BJJIJI_3J_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5, jcharArray arg6, jbyteArray arg7, jlong arg8, jlong arg9, jint arg10, jlong arg11, jint arg12, jlongArray arg13, jlongArray arg14)
+{
+	jchar *lparg6=NULL;
+	jbyte *lparg7=NULL;
+	jlong *lparg13=NULL;
+	jlong *lparg14=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJI_3C_3BJJIJI_3J_3J_FUNC);
+	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetByteArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg13) if ((lparg13 = env->GetLongArrayElements(arg13, NULL)) == NULL) goto fail;
+	if (arg14) if ((lparg14 = env->GetLongArrayElements(arg14, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong, jint, jchar *, jbyte *, jlong, jlong, jint, jlong, jint, jlong *, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, lparg6, lparg7, arg8, arg9, arg10, arg11, arg12, lparg13, lparg14);
+fail:
+	if (arg14 && lparg14) env->ReleaseLongArrayElements(arg14, lparg14, 0);
+	if (arg13 && lparg13) env->ReleaseLongArrayElements(arg13, lparg13, 0);
+	if (arg7 && lparg7) env->ReleaseByteArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJI_3C_3BJJIJI_3J_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJJJIJ_3C_3I_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJIJ_3C_3I_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jint arg6, jlong arg7, jcharArray arg8, jintArray arg9, jlongArray arg10);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJIJ_3C_3I_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jint arg6, jlong arg7, jcharArray arg8, jintArray arg9, jlongArray arg10)
+{
+	jchar *lparg8=NULL;
+	jint *lparg9=NULL;
+	jlong *lparg10=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJJIJ_3C_3I_3J_FUNC);
+	if (arg8) if ((lparg8 = env->GetCharArrayElements(arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = env->GetIntArrayElements(arg9, NULL)) == NULL) goto fail;
+	if (arg10) if ((lparg10 = env->GetLongArrayElements(arg10, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong, jlong, jint, jlong, jchar *, jint *, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, lparg8, lparg9, lparg10);
+fail:
+	if (arg10 && lparg10) env->ReleaseLongArrayElements(arg10, lparg10, 0);
+	if (arg9 && lparg9) env->ReleaseIntArrayElements(arg9, lparg9, 0);
+	if (arg8 && lparg8) env->ReleaseCharArrayElements(arg8, lparg8, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJJIJ_3C_3I_3J_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IIJJJJJ
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJ)
@@ -1181,15 +1294,79 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJ)
 }
 #endif
 
-#ifndef NO_VtblCall__IIJJZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jboolean arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jboolean arg4)
+#ifndef NO_VtblCall__IIJJJJJJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6, jlong arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6, jlong arg7)
 {
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJZ_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJJJJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong, jlong, jlong, jlong))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJJJJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJJJJJJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6, jlong arg7, jlong arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6, jlong arg7, jlong arg8)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJJJJJJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jlong, jlong, jlong, jlong, jlong))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJJJJJJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJ_3B
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3B)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jbyteArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3B)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jbyteArray arg4)
+{
+	jbyte *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJ_3B_FUNC);
+	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jbyte *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJ_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJ_3CIJI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3CIJI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jcharArray arg4, jint arg5, jlong arg6, jint arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3CIJI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jcharArray arg4, jint arg5, jlong arg6, jint arg7)
+{
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJ_3CIJI_FUNC);
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jchar *, jint, jlong, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5, arg6, arg7);
+fail:
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJ_3CIJI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJJ_3CJJJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3CJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jcharArray arg4, jlong arg5, jlong arg6, jlong arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3CJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jcharArray arg4, jlong arg5, jlong arg6, jlong arg7)
+{
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJ_3CJJJ_FUNC);
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jchar *, jlong, jlong, jlong))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5, arg6, arg7);
+fail:
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJ_3CJJJ_FUNC);
 	return rc;
 }
 #endif
@@ -1207,6 +1384,449 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJ_3I)
 fail:
 	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJ_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jobject arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jobject arg3)
+{
+	nsID _arg3, *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_FUNC);
+	if (arg3) if ((lparg3 = getnsIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, nsID *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setnsIDFields(env, arg3, lparg3);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jobject arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jobject arg3, jlongArray arg4)
+{
+	nsID _arg3, *lparg3=NULL;
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
+	if (arg3) if ((lparg3 = getnsIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, nsID *, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) setnsIDFields(env, arg3, lparg3);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3B
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3B)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3B)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3B_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jbyte *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3BI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3BI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jint arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3BI_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jbyte *, jint))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3BI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3BJ_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3BJ_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jlong arg4, jlongArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3BJ_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jlong arg4, jlongArray arg5)
+{
+	jbyte *lparg3=NULL;
+	jlong *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3BJ_3J_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jbyte *, jlong, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3BJ_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3B_3B_3BJ_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3B_3B_3BJ_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5, jlong arg6, jlongArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3B_3B_3BJ_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5, jlong arg6, jlongArray arg7)
+{
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jlong *lparg7=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3B_3B_3BJ_3J_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetByteArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetLongArrayElements(arg7, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jbyte *, jbyte *, jbyte *, jlong, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, arg6, lparg7);
+fail:
+	if (arg7 && lparg7) env->ReleaseLongArrayElements(arg7, lparg7, 0);
+	if (arg5 && lparg5) env->ReleaseByteArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3B_3B_3BJ_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3B_3C
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3B_3C)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jcharArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3B_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jbyteArray arg3, jcharArray arg4)
+{
+	jbyte *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3B_3C_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jbyte *, jchar *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3B_3C_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3CI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3CI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jint arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3CI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jint arg4)
+{
+	jchar *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3CI_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jint))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3CI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jint arg5, jcharArray arg6, jcharArray arg7, jcharArray arg8, jcharArray arg9, jintArray arg10, jintArray arg11);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jint arg5, jcharArray arg6, jcharArray arg7, jcharArray arg8, jcharArray arg9, jintArray arg10, jintArray arg11)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jchar *lparg6=NULL;
+	jchar *lparg7=NULL;
+	jchar *lparg8=NULL;
+	jchar *lparg9=NULL;
+	jint *lparg10=NULL;
+	jint *lparg11=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetCharArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetCharArrayElements(arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = env->GetCharArrayElements(arg9, NULL)) == NULL) goto fail;
+	if (arg10) if ((lparg10 = env->GetIntArrayElements(arg10, NULL)) == NULL) goto fail;
+	if (arg11) if ((lparg11 = env->GetIntArrayElements(arg11, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jint, jchar *, jchar *, jchar *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, arg5, lparg6, lparg7, lparg8, lparg9, lparg10, lparg11);
+fail:
+	if (arg11 && lparg11) env->ReleaseIntArrayElements(arg11, lparg11, 0);
+	if (arg10 && lparg10) env->ReleaseIntArrayElements(arg10, lparg10, 0);
+	if (arg9 && lparg9) env->ReleaseCharArrayElements(arg9, lparg9, 0);
+	if (arg8 && lparg8) env->ReleaseCharArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseCharArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3CI_3J_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3CI_3J_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jint arg5, jlongArray arg6, jintArray arg7, jintArray arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3CI_3J_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jint arg5, jlongArray arg6, jintArray arg7, jintArray arg8)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jlong *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3CI_3J_3I_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetLongArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jint, jlong *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, arg5, lparg6, lparg7, lparg8);
+fail:
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseLongArrayElements(arg6, lparg6, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3CI_3J_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C_3C_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3C_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3C_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jchar *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_3C_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetCharArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jchar *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6);
+fail:
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	if (arg5 && lparg5) env->ReleaseCharArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_3C_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6, jintArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jcharArray arg5, jintArray arg6, jintArray arg7)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jchar *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_3C_3I_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetCharArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7);
+fail:
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	if (arg5 && lparg5) env->ReleaseCharArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_3C_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jintArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jintArray arg5)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jlongArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jlongArray arg5)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jlong *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_3J_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C_3J_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3J_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jlongArray arg5, jcharArray arg6, jintArray arg7, jintArray arg8);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3J_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jlongArray arg5, jcharArray arg6, jintArray arg7, jintArray arg8)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jlong *lparg5=NULL;
+	jchar *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_3J_3C_3I_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetCharArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jlong *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7, lparg8);
+fail:
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseCharArrayElements(arg6, lparg6, 0);
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_3J_3C_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jlongArray arg5, jlongArray arg6, jcharArray arg7, jintArray arg8, jintArray arg9);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jcharArray arg3, jcharArray arg4, jlongArray arg5, jlongArray arg6, jcharArray arg7, jintArray arg8, jintArray arg9)
+{
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jlong *lparg5=NULL;
+	jlong *lparg6=NULL;
+	jchar *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetLongArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetCharArrayElements(arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = env->GetIntArrayElements(arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = env->GetIntArrayElements(arg9, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jchar *, jchar *, jlong *, jlong *, jchar *, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9);
+fail:
+	if (arg9 && lparg9) env->ReleaseIntArrayElements(arg9, lparg9, 0);
+	if (arg8 && lparg8) env->ReleaseIntArrayElements(arg8, lparg8, 0);
+	if (arg7 && lparg7) env->ReleaseCharArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseLongArrayElements(arg6, lparg6, 0);
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jintArray arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3I_FUNC);
+	if (arg3) if ((lparg3 = env->GetIntArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlongArray arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJ_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlongArray arg3)
+{
+	jlong *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJ_3J_FUNC);
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJ_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1251,6 +1871,46 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jlong arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jlong arg3)
+{
+	nsID _arg2, *lparg2=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J_FUNC);
+	if (arg2) if ((lparg2 = getnsIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, jlong))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setnsIDFields(env, arg2, lparg2);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jlong arg3, jobject arg4, jlongArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jlong arg3, jobject arg4, jlongArray arg5)
+{
+	nsID _arg2, *lparg2=NULL;
+	nsID _arg4, *lparg4=NULL;
+	jlong *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
+	if (arg2) if ((lparg2 = getnsIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getnsIDFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, jlong, nsID *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) setnsIDFields(env, arg4, lparg4);
+	if (arg2 && lparg2) setnsIDFields(env, arg2, lparg2);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jintArray arg4);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I)
@@ -1274,25 +1934,25 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jbooleanArray arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jbooleanArray arg4)
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jlongArray arg4)
 {
 	nsID _arg2, *lparg2=NULL;
 	nsID _arg3, *lparg3=NULL;
-	jboolean *lparg4=NULL;
+	jlong *lparg4=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	if (arg2) if ((lparg2 = getnsIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getnsIDFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetBooleanArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, nsID *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, nsID *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
 fail:
-	if (arg4 && lparg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) setnsIDFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setnsIDFields(env, arg2, lparg2);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1349,6 +2009,58 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbyteArray arg3, jbyteArray arg4, jlong arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbyteArray arg3, jbyteArray arg4, jlong arg5)
+{
+	nsID _arg2, *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_FUNC);
+	if (arg2) if ((lparg2 = getnsIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, jbyte *, jbyte *, jlong))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4, arg5);
+fail:
+	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) setnsIDFields(env, arg2, lparg2);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbyteArray arg3, jbyteArray arg4, jlong arg5, jbyteArray arg6, jbyteArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbyteArray arg3, jbyteArray arg4, jlong arg5, jbyteArray arg6, jbyteArray arg7)
+{
+	nsID _arg2, *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	jbyte *lparg7=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B_FUNC);
+	if (arg2) if ((lparg2 = getnsIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetByteArrayElements(arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetByteArrayElements(arg7, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, jbyte *, jbyte *, jlong, jbyte *, jbyte *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4, arg5, lparg6, lparg7);
+fail:
+	if (arg7 && lparg7) env->ReleaseByteArrayElements(arg7, lparg7, 0);
+	if (arg6 && lparg6) env->ReleaseByteArrayElements(arg6, lparg6, 0);
+	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) setnsIDFields(env, arg2, lparg2);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3I
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3I)
@@ -1369,65 +2081,22 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbooleanArray arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbooleanArray arg3)
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jlongArray arg3);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jlongArray arg3)
 {
 	nsID _arg2, *lparg2=NULL;
-	jboolean *lparg3=NULL;
+	jlong *lparg3=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	if (arg2) if ((lparg2 = getnsIDFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3);
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, nsID *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3);
 fail:
-	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) setnsIDFields(env, arg2, lparg2);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3Z_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIZ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIZI
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZI)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIZI_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jboolean, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIZI_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IIZ_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZ_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jbooleanArray arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZ_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jbooleanArray arg3)
-{
-	jboolean *lparg3=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIZ_3Z_FUNC);
-	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jboolean, jboolean *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
-fail:
-	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIZ_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1462,6 +2131,52 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BI)
 fail:
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BI_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3BII_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BII_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BII_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6)
+{
+	jbyte *lparg2=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BII_3I_3I_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint, jint, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
+fail:
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BII_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3BIJ_3J_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BIJ_3J_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jlong arg4, jlongArray arg5, jintArray arg6);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BIJ_3J_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jlong arg4, jlongArray arg5, jintArray arg6)
+{
+	jbyte *lparg2=NULL;
+	jlong *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BIJ_3J_3I_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = env->GetIntArrayElements(arg6, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint, jlong, jlong *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
+fail:
+	if (arg6 && lparg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BIJ_3J_3I_FUNC);
 	return rc;
 }
 #endif
@@ -1509,6 +2224,52 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3BI_3I_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BI_3I_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jintArray arg4, jintArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BI_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jbyte *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BI_3I_3I_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BI_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3BI_3J_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BI_3J_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jlongArray arg4, jintArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BI_3J_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jlongArray arg4, jintArray arg5)
+{
+	jbyte *lparg2=NULL;
+	jlong *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BI_3J_3I_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint, jlong *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BI_3J_3I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3BJ
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jlong arg3);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BJ)
@@ -1522,6 +2283,29 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BJ)
 fail:
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jlong arg3, jobject arg4, jlongArray arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jlong arg3, jobject arg4, jlongArray arg5)
+{
+	jbyte *lparg2=NULL;
+	nsID _arg4, *lparg4=NULL;
+	jlong *lparg5=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getnsIDFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jlong, nsID *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
+	if (arg4 && lparg4) setnsIDFields(env, arg4, lparg4);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1542,6 +2326,26 @@ fail:
 	if (arg3 && lparg3) setnsIDFields(env, arg3, lparg3);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jobject arg3, jlong arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jobject arg3, jlong arg4)
+{
+	jbyte *lparg2=NULL;
+	nsID _arg3, *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getnsIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, nsID *, jlong))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) setnsIDFields(env, arg3, lparg3);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J_FUNC);
 	return rc;
 }
 #endif
@@ -1569,71 +2373,25 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jobject arg3, jbooleanArray arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jobject arg3, jbooleanArray arg4)
+#ifndef NO_VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jobject arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jobject arg3, jlongArray arg4)
 {
 	jbyte *lparg2=NULL;
 	nsID _arg3, *lparg3=NULL;
-	jboolean *lparg4=NULL;
+	jlong *lparg4=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getnsIDFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetBooleanArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, nsID *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, nsID *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
 fail:
-	if (arg4 && lparg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) setnsIDFields(env, arg3, lparg3);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3Z_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__II_3BZI_3I_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BZI_3I_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jboolean arg3, jint arg4, jintArray arg5, jbooleanArray arg6);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BZI_3I_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jboolean arg3, jint arg4, jintArray arg5, jbooleanArray arg6)
-{
-	jbyte *lparg2=NULL;
-	jint *lparg5=NULL;
-	jboolean *lparg6=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BZI_3I_3Z_FUNC);
-	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = env->GetIntArrayElements(arg5, NULL)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = env->GetBooleanArrayElements(arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jboolean, jint, jint *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
-fail:
-	if (arg6 && lparg6) env->ReleaseBooleanArrayElements(arg6, lparg6, 0);
-	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
-	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BZI_3I_3Z_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__II_3BZ_3I_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BZ_3I_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jboolean arg3, jintArray arg4, jbooleanArray arg5);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BZ_3I_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jboolean arg3, jintArray arg4, jbooleanArray arg5)
-{
-	jbyte *lparg2=NULL;
-	jint *lparg4=NULL;
-	jboolean *lparg5=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3BZ_3I_3Z_FUNC);
-	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = env->GetBooleanArrayElements(arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jboolean, jint *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, lparg5);
-fail:
-	if (arg5 && lparg5) env->ReleaseBooleanArrayElements(arg5, lparg5, 0);
-	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
-	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BZ_3I_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1658,48 +2416,74 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__II_3B_3BZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3BZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jboolean arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3BZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jboolean arg4)
+#ifndef NO_VtblCall__II_3B_3BI
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3BI)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
 {
 	jbyte *lparg2=NULL;
 	jbyte *lparg3=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3BZ_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3BI_FUNC);
 	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jbyte *, jboolean))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jbyte *, jint))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, arg4);
 fail:
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3BZ_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3BI_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_VtblCall__II_3B_3B_3BZZ_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3BZZ_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jboolean arg5, jboolean arg6, jintArray arg7);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3BZZ_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jboolean arg5, jboolean arg6, jintArray arg7)
+#ifndef NO_VtblCall__II_3B_3B_3BII_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3BII_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6, jintArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3BII_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6, jintArray arg7)
 {
 	jbyte *lparg2=NULL;
 	jbyte *lparg3=NULL;
 	jbyte *lparg4=NULL;
 	jint *lparg7=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3B_3BZZ_3I_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3B_3BII_3I_FUNC);
 	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetIntArrayElements(arg7, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jbyte *, jbyte *, jboolean, jboolean, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4, arg5, arg6, lparg7);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jbyte *, jbyte *, jint, jint, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4, arg5, arg6, lparg7);
 fail:
 	if (arg7 && lparg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
 	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3B_3BZZ_3I_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3B_3BII_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3B_3B_3BII_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3BII_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6, jlongArray arg7);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3BII_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6, jlongArray arg7)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jlong *lparg7=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3B_3BII_3J_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = env->GetLongArrayElements(arg7, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jbyte *, jbyte *, jint, jint, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4, arg5, arg6, lparg7);
+fail:
+	if (arg7 && lparg7) env->ReleaseLongArrayElements(arg7, lparg7, 0);
+	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3B_3BII_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1723,6 +2507,29 @@ fail:
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3B_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3B_3B_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jlongArray arg4)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3B_3J_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jbyte *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3B_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1770,25 +2577,25 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__II_3B_3I_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3I_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3, jbooleanArray arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3I_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3, jbooleanArray arg4)
+#ifndef NO_VtblCall__II_3B_3I_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3I_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3I_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3, jlongArray arg4)
 {
 	jbyte *lparg2=NULL;
 	jint *lparg3=NULL;
-	jboolean *lparg4=NULL;
+	jlong *lparg4=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3I_3Z_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3I_3J_FUNC);
 	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = env->GetIntArrayElements(arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetBooleanArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jint *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
 fail:
-	if (arg4 && lparg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3I_3Z_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3I_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1813,45 +2620,25 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__II_3B_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbooleanArray arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbooleanArray arg3)
+#ifndef NO_VtblCall__II_3B_3J_3I
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3J_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jlongArray arg3, jintArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3J_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jlongArray arg3, jintArray arg4)
 {
 	jbyte *lparg2=NULL;
-	jboolean *lparg3=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3Z_FUNC);
-	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3);
-fail:
-	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
-	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3Z_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__II_3B_3Z_3I
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3Z_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbooleanArray arg3, jintArray arg4);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3Z_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbooleanArray arg3, jintArray arg4)
-{
-	jbyte *lparg2=NULL;
-	jboolean *lparg3=NULL;
+	jlong *lparg3=NULL;
 	jint *lparg4=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3Z_3I_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3J_3I_FUNC);
 	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jboolean *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jlong *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
-	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3Z_3I_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3J_3I_FUNC);
 	return rc;
 }
 #endif
@@ -1890,6 +2677,23 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3CIJJJ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CIJJJ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jlong arg4, jlong arg5, jlong arg6);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CIJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jlong arg4, jlong arg5, jlong arg6)
+{
+	jchar *lparg2=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3CIJJJ_FUNC);
+	if (arg2) if ((lparg2 = env->GetCharArrayElements(arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint, jlong, jlong, jlong))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6);
+fail:
+	if (arg2 && lparg2) env->ReleaseCharArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3CIJJJ_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3CI_3I
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CI_3I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jintArray arg4);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CI_3I)
@@ -1910,19 +2714,22 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__II_3CZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jboolean arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jboolean arg3)
+#ifndef NO_VtblCall__II_3CJ_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CJ_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jlong arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3CJ_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jlong arg3, jlongArray arg4)
 {
 	jchar *lparg2=NULL;
+	jlong *lparg4=NULL;
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3CZ_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3CJ_3J_FUNC);
 	if (arg2) if ((lparg2 = env->GetCharArrayElements(arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jboolean))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3);
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jlong, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, lparg4);
 fail:
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
 	if (arg2 && lparg2) env->ReleaseCharArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3CZ_FUNC);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3CJ_3J_FUNC);
 	return rc;
 }
 #endif
@@ -1943,49 +2750,6 @@ fail:
 	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseCharArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3C_3C_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__II_3C_3C_3CZ
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3C_3C_3CZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jcharArray arg3, jcharArray arg4, jboolean arg5);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3C_3C_3CZ)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jcharArray arg3, jcharArray arg4, jboolean arg5)
-{
-	jchar *lparg2=NULL;
-	jchar *lparg3=NULL;
-	jchar *lparg4=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3C_3C_3CZ_FUNC);
-	if (arg2) if ((lparg2 = env->GetCharArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jchar *, jchar *, jboolean))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4, arg5);
-fail:
-	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
-	if (arg3 && lparg3) env->ReleaseCharArrayElements(arg3, lparg3, 0);
-	if (arg2 && lparg2) env->ReleaseCharArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3C_3C_3CZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__II_3C_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3C_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jbooleanArray arg3);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3C_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jbooleanArray arg3)
-{
-	jchar *lparg2=NULL;
-	jboolean *lparg3=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3C_3Z_FUNC);
-	if (arg2) if ((lparg2 = env->GetCharArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3);
-fail:
-	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
-	if (arg2 && lparg2) env->ReleaseCharArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3C_3Z_FUNC);
 	return rc;
 }
 #endif
@@ -2136,6 +2900,29 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3I_3J_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3I_3J_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jlongArray arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3I_3J_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jlongArray arg3, jlongArray arg4)
+{
+	jint *lparg2=NULL;
+	jlong *lparg3=NULL;
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3I_3J_3J_FUNC);
+	if (arg2) if ((lparg2 = env->GetIntArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint *, jlong *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3I_3J_3J_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3J
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3J)
@@ -2153,6 +2940,29 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3J_3J_3J
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3J_3J_3J)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2, jlongArray arg3, jlongArray arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3J_3J_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2, jlongArray arg3, jlongArray arg4)
+{
+	jlong *lparg2=NULL;
+	jlong *lparg3=NULL;
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3J_3J_3J_FUNC);
+	if (arg2) if ((lparg2 = env->GetLongArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetLongArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong *, jlong *, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseLongArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseLongArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3J_3J_3J_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3S
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3S)(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3S)
@@ -2166,23 +2976,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3S)
 fail:
 	if (arg2 && lparg2) env->ReleaseShortArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3S_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__II_3Z
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3Z)(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2);
-JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
-{
-	jboolean *lparg2=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3Z_FUNC);
-	if (arg2) if ((lparg2 = env->GetBooleanArrayElements(arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jboolean *))(*(jint **)arg1)[arg0])(arg1, lparg2);
-fail:
-	if (arg2 && lparg2) env->ReleaseBooleanArrayElements(arg2, lparg2, 0);
-	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3Z_FUNC);
 	return rc;
 }
 #endif

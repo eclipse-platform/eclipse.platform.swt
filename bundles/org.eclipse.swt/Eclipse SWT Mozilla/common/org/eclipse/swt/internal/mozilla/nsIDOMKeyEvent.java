@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2004, 2005 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -277,23 +277,23 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 2, getAddress(), aKeyCode);
 	}
 
-	public int GetAltKey(boolean[] aAltKey) {
+	public int GetAltKey(int[] aAltKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 3, getAddress(), aAltKey);
 	}
 
-	public int GetCtrlKey(boolean[] aCtrlKey) {
+	public int GetCtrlKey(int[] aCtrlKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 4, getAddress(), aCtrlKey);
 	}
 
-	public int GetShiftKey(boolean[] aShiftKey) {
+	public int GetShiftKey(int[] aShiftKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 5, getAddress(), aShiftKey);
 	}
 
-	public int GetMetaKey(boolean[] aMetaKey) {
+	public int GetMetaKey(int[] aMetaKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aMetaKey);
 	}
 
-	public int InitKeyEvent(int /*long*/ typeArg, boolean canBubbleArg, boolean cancelableArg, int /*long*/ viewArg, boolean ctrlKeyArg, boolean altKeyArg, boolean shiftKeyArg, boolean metaKeyArg, int keyCodeArg, int charCodeArg) {
+	public int InitKeyEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, int keyCodeArg, int charCodeArg) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 7, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, keyCodeArg, charCodeArg);
 	}
 }

@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,11 +41,11 @@ public class nsIPromptService2 extends nsIPromptService {
 		super(address);
 	}
 
-	public int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*long*/ authInfo, char[] checkboxLabel, boolean[] checkValue, boolean[] _retval) {
+	public int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*long*/ authInfo, char[] checkboxLabel, int[] checkValue, int[] _retval) {
 		return XPCOM.VtblCall(nsIPromptService.LAST_METHOD_ID + 1, getAddress(), aParent, aChannel, level, authInfo, checkboxLabel, checkValue, _retval);
 	}
 
-	public int AsyncPromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int /*long*/ aCallback, int /*long*/ aContext, int level, int /*long*/ authInfo, char[] checkboxLabel, boolean[] checkValue, int /*long*/[] _retval) {
+	public int AsyncPromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int /*long*/ aCallback, int /*long*/ aContext, int level, int /*long*/ authInfo, char[] checkboxLabel, int[] checkValue, int /*long*/[] _retval) {
 		return XPCOM.VtblCall(nsIPromptService.LAST_METHOD_ID + 2, getAddress(), aParent, aChannel, aCallback, aContext, level, authInfo, checkboxLabel, checkValue, _retval);
 	}
 }

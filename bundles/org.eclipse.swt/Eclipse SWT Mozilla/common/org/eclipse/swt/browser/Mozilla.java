@@ -116,10 +116,10 @@ class Mozilla extends WebBrowser {
 				manager.Release ();
 
 				nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result[0]);
-				boolean[] moreElements = new boolean[1];
+				int[] moreElements = new int[1]; /* PRBool */
 				rc = enumerator.HasMoreElements (moreElements);
 				if (rc != XPCOM.NS_OK) error (rc);
-				while (moreElements[0]) {
+				while (moreElements[0] != 0) {
 					result[0] = 0;
 					rc = enumerator.GetNext (result);
 					if (rc != XPCOM.NS_OK) error (rc);
@@ -134,7 +134,7 @@ class Mozilla extends WebBrowser {
 						cookie.GetHost (domain);
 						cookie.GetName (name);
 						cookie.GetPath (path);
-						rc = manager.Remove (domain, name, path, false);
+						rc = manager.Remove (domain, name, path, 0);
 						XPCOM.nsEmbedCString_delete (domain);
 						XPCOM.nsEmbedCString_delete (name);
 						XPCOM.nsEmbedCString_delete (path);
@@ -1001,7 +1001,7 @@ public void create (Composite parent, int style) {
 		browser.dispose ();
 		error (XPCOM.NS_ERROR_FAILURE);
 	}
-	rc = baseWindow.SetVisibility (true);
+	rc = baseWindow.SetVisibility (1);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (XPCOM.NS_ERROR_FAILURE);
@@ -1498,10 +1498,10 @@ public boolean isBackEnabled () {
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
-	boolean[] aCanGoBack = new boolean[1];
+	int[] aCanGoBack = new int[1]; /* PRBool */
 	rc = webNavigation.GetCanGoBack (aCanGoBack);	
 	webNavigation.Release ();
-	return aCanGoBack[0];
+	return aCanGoBack[0] != 0;
 }
 
 public boolean isForwardEnabled () {
@@ -1511,10 +1511,10 @@ public boolean isForwardEnabled () {
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
-	boolean[] aCanGoForward = new boolean[1];
+	int[] aCanGoForward = new int[1]; /* PRBool */
 	rc = webNavigation.GetCanGoForward (aCanGoForward);
 	webNavigation.Release ();
-	return aCanGoForward[0];
+	return aCanGoForward[0] != 0;
 }
 
 static String error (int code) {
@@ -1614,7 +1614,7 @@ void onResize () {
 
 	delegate.setSize (embedHandle, width, height);
 	nsIBaseWindow baseWindow = new nsIBaseWindow (result[0]);
-	rc = baseWindow.SetPositionAndSize (0, 0, width, height, true);
+	rc = baseWindow.SetPositionAndSize (0, 0, width, height, 1);
 	if (rc != XPCOM.NS_OK) error (rc);
 	baseWindow.Release ();
 }
@@ -1834,25 +1834,25 @@ void hookDOMListeners () {
 
 void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEWHEEL);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 
 	/*
@@ -1861,21 +1861,21 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	*/
 	if (isTop && delegate.hookEnterExit ()) {
 		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
-		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 		string.dispose ();
 		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
-		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 		string.dispose ();
 	}
 
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
-	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 }
 
@@ -1932,40 +1932,40 @@ void unhookDOMListeners () {
 
 void unhookDOMListeners (nsIDOMEventTarget target) {
 	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEWHEEL);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
-	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 }
 
@@ -2844,7 +2844,7 @@ int HandleEvent (int /*long*/ event) {
 				case SWT.SCROLL_LOCK:
 				case SWT.COMMAND: {
 					/* keypress events will not be received for these keys, so send KeyDowns for them now */
-					boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+					int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
 					rc = domKeyEvent.GetAltKey (aAltKey);
 					if (rc != XPCOM.NS_OK) error (rc);
 					rc = domKeyEvent.GetCtrlKey (aCtrlKey);
@@ -2858,7 +2858,7 @@ int HandleEvent (int /*long*/ event) {
 					keyEvent.widget = browser;
 					keyEvent.type = SWT.KeyDown;
 					keyEvent.keyCode = keyCode;
-					keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+					keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 					keyEvent.stateMask &= ~keyCode;		/* remove current keydown if it's a state key */
 					browser.notifyListeners (keyEvent.type, keyEvent);
 					if (!keyEvent.doit) {
@@ -2873,15 +2873,15 @@ int HandleEvent (int /*long*/ event) {
 					* does not have Meta as a modifier, or has Meta+Ctrl as a modifier, then then do nothing here
 					* because its KeyDown event will be sent from the keypress listener.
 					*/
-					boolean[] aMetaKey = new boolean[1]; 
+					int[] aMetaKey = new int[1]; /* PRBool */
 					rc = domKeyEvent.GetMetaKey (aMetaKey);
 					if (rc != XPCOM.NS_OK) error (rc);
-					if (aMetaKey[0]) {
-						boolean[] aCtrlKey = new boolean[1];
+					if (aMetaKey[0] != 0) {
+						int[] aCtrlKey = new int[1]; /* PRBool */
 						rc = domKeyEvent.GetCtrlKey (aCtrlKey);
 						if (rc != XPCOM.NS_OK) error (rc);
-						if (!aCtrlKey[0]) {
-							boolean[] aAltKey = new boolean[1], aShiftKey = new boolean[1]; 
+						if (aCtrlKey[0] == 0) {
+							int[] aAltKey = new int[1], aShiftKey = new int[1]; /* PRBool */
 							rc = domKeyEvent.GetAltKey (aAltKey);
 							if (rc != XPCOM.NS_OK) error (rc);
 							rc = domKeyEvent.GetShiftKey (aShiftKey);
@@ -2891,7 +2891,7 @@ int HandleEvent (int /*long*/ event) {
 							keyEvent.widget = browser;
 							keyEvent.type = SWT.KeyDown;
 							keyEvent.keyCode = lastKeyCode;
-							keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+							keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0? SWT.CTRL : 0) | (aShiftKey[0] != 0? SWT.SHIFT : 0) | (aMetaKey[0] != 0? SWT.COMMAND : 0);
 							browser.notifyListeners (keyEvent.type, keyEvent);
 							if (!keyEvent.doit) {
 								domEvent.PreventDefault ();
@@ -2931,7 +2931,7 @@ int HandleEvent (int /*long*/ event) {
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
 		result[0] = 0;
 
-		boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+		int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
 		rc = domKeyEvent.GetAltKey (aAltKey);
 		if (rc != XPCOM.NS_OK) error (rc);
 		rc = domKeyEvent.GetCtrlKey (aCtrlKey);
@@ -2955,7 +2955,7 @@ int HandleEvent (int /*long*/ event) {
 				case SWT.DEL: lastCharCode = SWT.DEL; break;
 			}
 		}
-		if (aCtrlKey[0] && (0 <= lastCharCode && lastCharCode <= 0x7F)) {
+		if (aCtrlKey[0] != 0 && (0 <= lastCharCode && lastCharCode <= 0x7F)) {
 			if ('a'  <= lastCharCode && lastCharCode <= 'z') lastCharCode -= 'a' - 'A';
 			if (64 <= lastCharCode && lastCharCode <= 95) lastCharCode -= 64;
 		}
@@ -2965,7 +2965,7 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.type = SWT.KeyDown;
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.character = (char)lastCharCode;
-		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 		browser.notifyListeners (keyEvent.type, keyEvent);
 		if (!keyEvent.doit) {
 			domEvent.PreventDefault ();
@@ -2996,7 +2996,7 @@ int HandleEvent (int /*long*/ event) {
 			lastCharCode = 0;
 		}
 
-		boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+		int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
 		rc = domKeyEvent.GetAltKey (aAltKey);
 		if (rc != XPCOM.NS_OK) error (rc);
 		rc = domKeyEvent.GetCtrlKey (aCtrlKey);
@@ -3012,7 +3012,7 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.type = SWT.KeyUp;
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.character = (char)lastCharCode;
-		keyEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 		switch (lastKeyCode) {
 			case SWT.SHIFT:
 			case SWT.CONTROL:
@@ -3064,7 +3064,7 @@ int HandleEvent (int /*long*/ event) {
 	short[] aButton = new short[1]; /* PRUint16 */
 	rc = domMouseEvent.GetButton (aButton);
 	if (rc != XPCOM.NS_OK) error (rc);
-	boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
+	int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
 	rc = domMouseEvent.GetAltKey (aAltKey);
 	if (rc != XPCOM.NS_OK) error (rc);
 	rc = domMouseEvent.GetCtrlKey (aCtrlKey);
@@ -3078,7 +3078,7 @@ int HandleEvent (int /*long*/ event) {
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
 	mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
-	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+	mouseEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 
 	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		delegate.handleMouseDown ();
@@ -3125,7 +3125,7 @@ int HandleEvent (int /*long*/ event) {
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
 		mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
-		mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.COMMAND : 0);
+		mouseEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 		mouseEvent.type = SWT.MouseDoubleClick;
 		mouseEvent.button = aButton[0] + 1;
 		mouseEvent.count = aDetail[0];

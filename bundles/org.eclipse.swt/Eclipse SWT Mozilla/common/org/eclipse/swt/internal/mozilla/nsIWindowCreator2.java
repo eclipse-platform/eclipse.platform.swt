@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2005 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -43,7 +43,7 @@ public class nsIWindowCreator2 extends nsIWindowCreator {
 
 	public static final int PARENT_IS_LOADING_OR_RUNNING_TIMEOUT = 1;
 
-	public int CreateChromeWindow2(int /*long*/ parent, int chromeFlags, int contextFlags, int /*long*/ uri, boolean[] cancel, int /*long*/[] _retval) {
+	public int CreateChromeWindow2(int /*long*/ parent, int chromeFlags, int contextFlags, int /*long*/ uri, int[] cancel, int /*long*/[] _retval) {
 		return XPCOM.VtblCall(nsIWindowCreator.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, contextFlags, uri, cancel, _retval);
 	}
 }

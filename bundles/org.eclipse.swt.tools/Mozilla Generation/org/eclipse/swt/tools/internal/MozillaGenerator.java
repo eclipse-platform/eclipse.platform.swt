@@ -83,17 +83,17 @@ public class MozillaGenerator {
 
 	static String GECKO = "/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/include/";
 	static String TARGET_FOLDER = "/bluebird/teamswt/chrisx/amd64/workspace/org.eclipse.swt/Eclipse SWT Mozilla/common/org/eclipse/swt/internal/mozilla/";
-	static String[] XPCOM_HEADERS = { 
+	static String[] XPCOM_HEADERS = {
 		"profile/nsIProfile.h",
 		"widget/nsIAppShell.h",
-		"widget/nsIBaseWindow.h", 
+		"widget/nsIBaseWindow.h",
 		"xpcom/nsIComponentManager.h",
 		"xpcom/nsIComponentRegistrar.h",
 		"webbrwsr/nsIContextMenuListener.h", 
 		"docshell/nsIDocShell.h",
-		"dom/nsIDOMEvent.h", 
+		"dom/nsIDOMEvent.h",
 		"dom/nsIDOMMouseEvent.h",
-		"dom/nsIDOMUIEvent.h", 
+		"dom/nsIDOMUIEvent.h",
 		"dom/nsIDOMWindow.h",
 		"uriloader/nsIDownload.h", 
 		"webbrwsr/nsIEmbeddingSiteWindow.h",
@@ -673,7 +673,7 @@ public class MozillaGenerator {
 		+ " *\r\n" 
 		+ " * IBM\r\n"
 		+ " * -  Binding to permit interfacing between Mozilla and SWT\r\n"
-		+ " * -  Copyright (C) 2008 IBM Corp.  All Rights Reserved.\r\n"
+		+ " * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.\r\n"
 		+ " *\r\n" + " * ***** END LICENSE BLOCK ***** */";
 
 	static String PACKAGE_DECLARATION = "package org.eclipse.swt.internal.mozilla;";

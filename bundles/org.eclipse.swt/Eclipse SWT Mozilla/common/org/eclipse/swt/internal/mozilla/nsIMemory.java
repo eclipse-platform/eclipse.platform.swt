@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2005 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -53,11 +53,11 @@ public class nsIMemory extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), ptr);
 	}
 
-	public int HeapMinimize(boolean immediate) {
+	public int HeapMinimize(int immediate) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), immediate);
 	}
 
-	public int IsLowMemory(boolean[] _retval) {
+	public int IsLowMemory(int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 }

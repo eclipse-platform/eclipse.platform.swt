@@ -106,7 +106,7 @@ int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
 	int rc = supports.QueryInterface (nsIHelperAppLauncher_1_9.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc == 0) {
 		nsIHelperAppLauncher_1_9 helperAppLauncher = new nsIHelperAppLauncher_1_9 (aLauncher);
-		rc = helperAppLauncher.SaveToDisk (0, false);
+		rc = helperAppLauncher.SaveToDisk (0, 0);
 		helperAppLauncher.Release ();
 		return rc;
 	}
@@ -115,13 +115,13 @@ int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
 	rc = supports.QueryInterface (nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc == 0) {
 		nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8 (aLauncher);
-		rc = helperAppLauncher.SaveToDisk (0, false);
+		rc = helperAppLauncher.SaveToDisk (0, 0);
 		helperAppLauncher.Release ();
 		return rc;
 	}
 
 	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher (aLauncher);	/* < 1.8 */
-	return helperAppLauncher.SaveToDisk (0, false);
+	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
 int PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {

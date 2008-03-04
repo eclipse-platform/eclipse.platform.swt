@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,15 +41,15 @@ public class nsIDOMEventTarget extends nsISupports {
 		super(address);
 	}
 
-	public int AddEventListener(int /*long*/ type, int /*long*/ listener, boolean useCapture) {
+	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture);
 	}
 
-	public int RemoveEventListener(int /*long*/ type, int /*long*/ listener, boolean useCapture) {
+	public int RemoveEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), type, listener, useCapture);
 	}
 
-	public int DispatchEvent(int /*long*/ evt, boolean[] _retval) {
+	public int DispatchEvent(int /*long*/ evt, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), evt, _retval);
 	}
 }
