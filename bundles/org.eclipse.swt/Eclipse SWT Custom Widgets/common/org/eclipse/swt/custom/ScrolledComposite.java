@@ -109,7 +109,7 @@ public class ScrolledComposite extends Composite {
 	boolean expandHorizontal = false;
 	boolean expandVertical = false;
 	boolean alwaysShowScroll = false;
-	boolean autoScroll = false;
+	boolean showFocusedControl = false;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -307,7 +307,7 @@ public Control getContent() {
  */
 public boolean getShowFocusedControl() {
 	checkWidget();
-	return autoScroll;
+	return showFocusedControl;
 }
 
 void hScroll() {
@@ -637,11 +637,11 @@ public void setMinWidth(int width) {
  */
 public void setShowFocusedControl(boolean show) {
 	checkWidget();
-	if (autoScroll == show) return;
+	if (showFocusedControl == show) return;
 	Display display = getDisplay();
 	display.removeFilter(SWT.FocusIn, filter);
-	autoScroll = show;
-	if (!autoScroll) return;
+	showFocusedControl = show;
+	if (!showFocusedControl) return;
 	display.addFilter(SWT.FocusIn, filter);
 	Control control = display.getFocusControl();
 	if (contains(control)) showControl(control);
