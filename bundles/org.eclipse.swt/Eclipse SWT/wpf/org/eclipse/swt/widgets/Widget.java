@@ -385,6 +385,7 @@ void createWidget () {
 	addWidget ();
 	register ();
 	hookEvents ();
+	setNameScope ();
 }
 
 void deregister () {
@@ -1418,6 +1419,13 @@ boolean setKeyState (Event event, int type, int e) {
 	}
 	if (type == SWT.KeyUp) event.character = result [0];
 	return setInputState (event, type, 0, e);
+}
+
+void setNameScope() {
+//	Name Scope should most likely be on topHandle, but animation
+//	is using handle right now because topHandle isn't visible
+//	OS.NameScope_SetNameScope(topHandle(), display.nameScope);
+	OS.NameScope_SetNameScope(handle, display.nameScope);
 }
 
 boolean showMenu (int x, int y) {

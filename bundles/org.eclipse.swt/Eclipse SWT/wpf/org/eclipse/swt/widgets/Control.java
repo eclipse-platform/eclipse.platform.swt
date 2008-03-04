@@ -16,6 +16,9 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
 
+//TEMPORARY CODE
+import org.eclipse.swt.effects.*;
+
 /**
  * Control is the abstract superclass of all windowed user interface classes.
  * <p>
@@ -45,6 +48,7 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 //	int drawCount;
 	int foreground, background;
+	int x, y, width, height;
 	Font font;
 	Composite parent;
 
@@ -609,6 +613,14 @@ void createWidget () {
 	}
 }
 
+/**
+ * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+ */
+public void setAlpha(int alpha) {
+	checkWidget ();
+	OS.UIElement_Opacity (handle, (alpha & 0xFF) / (double)0xFF);
+}
+
 void setClipping () {
 	//accept default clipping
 }
@@ -847,6 +859,14 @@ public Accessible getAccessible () {
 	checkWidget ();
 	if (accessible == null) accessible = new_Accessible (this);
 	return accessible;
+}
+
+/**
+ * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+ */
+public int getAlpha () {
+	checkWidget ();
+	return (int) (0XFF * OS.UIElement_Opacity (handle));
 }
 
 /**
@@ -1194,6 +1214,24 @@ public String getToolTipText () {
 }
 
 /**
+ * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+ */
+public Transform getTransform () {
+	int transform = OS.FrameworkElement_RenderTransform (handle);
+	int matrix = OS.MatrixTransform_Matrix (transform);
+	OS.GCHandle_Free (transform);
+	float m11 = (float) OS.Matrix_M11 (matrix);
+	float m12 = (float) OS.Matrix_M12 (matrix);
+	float m21 = (float) OS.Matrix_M21 (matrix);
+	float m22 = (float) OS.Matrix_M22 (matrix);
+	float dx = (float) OS.Matrix_OffsetX (matrix);
+	float dy = (float) OS.Matrix_OffsetY (matrix);
+	OS.GCHandle_Free (matrix);
+	//TODO - leaking
+	return new Transform (display, m11, m12, m21, m22, dx, dy);
+}
+
+/**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
  * <p>
@@ -1260,6 +1298,49 @@ void hookEvents () {
 	handler = OS.gcnew_ContextMenuEventHandler (jniRef, "HandleContextMenuOpening");
 	OS.FrameworkElement_ContextMenuOpening (handle, handler);
 	OS.GCHandle_Free (handler);
+	
+	handler = OS.gcnew_SizeChangedEventHandler(jniRef, "HandleSizeChanged");
+	OS.FrameworkElement_SizeChanged (topHandle, handler);
+	OS.GCHandle_Free (handler);
+	
+	int typeid = OS.Canvas_typeid();
+	handler = OS.gcnew_EventHandler(jniRef, "HandleTopChanged");
+	int property = OS.Canvas_TopProperty();
+	int dpd = OS.DependencyPropertyDescriptor_FromProperty(property, typeid);
+	OS.DependencyPropertyDescriptor_AddValueChanged(dpd, topHandle, handler);
+	OS.GCHandle_Free(handler);
+	OS.GCHandle_Free(property);
+	OS.GCHandle_Free(dpd);
+	handler = OS.gcnew_EventHandler(jniRef, "HandleLeftChanged");
+	property = OS.Canvas_LeftProperty();
+	dpd = OS.DependencyPropertyDescriptor_FromProperty(property, typeid);
+	OS.DependencyPropertyDescriptor_AddValueChanged(dpd, topHandle, handler);
+	OS.GCHandle_Free(handler);
+	OS.GCHandle_Free(property);
+	OS.GCHandle_Free(dpd);
+	OS.GCHandle_Free(typeid);
+}
+
+void HandleLeftChanged (int sender, int e) {
+	int topHandle = topHandle();
+	int x = (int)OS.Canvas_GetLeft(topHandle);
+	int y = (int)OS.Canvas_GetTop(topHandle);
+	if (x != this.x || y != this.y) {
+		this.x = x;
+		this.y = y;
+		sendEvent(SWT.Move);
+	}
+}
+
+void HandleTopChanged (int sender, int e) {
+	int topHandle = topHandle();
+	int x = (int)OS.Canvas_GetLeft(topHandle);
+	int y = (int)OS.Canvas_GetTop(topHandle);
+	if (x != this.x || y != this.y) {
+		this.x = x;
+		this.y = y;
+		sendEvent(SWT.Move);
+	}
 }
 
 void HandleContextMenuOpening (int sender, int e) {
@@ -1399,6 +1480,22 @@ void HandlePreviewMouseWheel (int sender, int e) {
 void HandlePreviewTextInput(int sender, int e) {
 	if (!checkEvent (e)) return;
 	sendKeyEvent (SWT.KeyDown, e, true);
+}
+
+void HandleSizeChanged (int sender, int e) {
+	if (!checkEvent (e)) return;
+	int topHandle = topHandle();
+	int width = (int) OS.FrameworkElement_ActualWidth (topHandle);
+	int height = (int) OS.FrameworkElement_ActualHeight (topHandle);
+	if (this.width != width || this.height != height) {
+		this.width = width;
+		this.height = height; 
+		resized ();
+	}
+}
+
+void resized () {
+	sendEvent (SWT.Resize);
 }
 
 boolean hasFocus () {
@@ -2400,8 +2497,14 @@ int setBounds (int x, int y, int width, int height, int flags) {
 	if ((flags & MOVED) != 0) {
 		int oldX = (int) OS.Canvas_GetLeft (topHandle);
 		int oldY = (int) OS.Canvas_GetTop (topHandle);
-		if (oldX != x) OS.Canvas_SetLeft (topHandle, x);
-		if (oldY != y) OS.Canvas_SetTop (topHandle, y);
+		if (oldX != x) {
+			this.x = x;
+			OS.Canvas_SetLeft (topHandle, x);
+		}
+		if (oldY != y) {
+			this.y = y;
+			OS.Canvas_SetTop (topHandle, y);
+		}
 		if (oldX != x || oldY != y) {
 			sendEvent (SWT.Move);
 			if (isDisposed ()) return 0;
@@ -2411,8 +2514,14 @@ int setBounds (int x, int y, int width, int height, int flags) {
 	if ((flags & RESIZED) != 0) {
 		int oldWidth = (int) OS.FrameworkElement_Width (topHandle);
 		int oldHeight = (int) OS.FrameworkElement_Height (topHandle);
-		if (oldWidth != width) OS.FrameworkElement_Width (topHandle, width);
-		if (oldHeight != height) OS.FrameworkElement_Height (topHandle, height);
+		if (oldWidth != width) {
+			this.width = width;
+			OS.FrameworkElement_Width (topHandle, width);
+		}
+		if (oldHeight != height) {
+			this.height = height;
+			OS.FrameworkElement_Height (topHandle, height);
+		}
 		if (oldWidth != width || oldHeight != height) {
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return 0;
@@ -2520,6 +2629,22 @@ public void setDragDetect (boolean dragDetect) {
 	} else {
 		state &= ~DRAG_DETECT;
 	}
+}
+
+/**
+ * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+ */
+public void setEffect(Effect effect){
+	checkWidget ();
+	if (effect != null && effect.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (effect != null) {
+		OS.UIElement_BitmapEffect (handle, effect.handle);
+		OS.UIElement_ClipToBounds (topHandle (), false);
+	} else {
+		OS.UIElement_BitmapEffect (handle, 0);
+		setClipping();
+	}
+//	updateLayout(handle);
 }
 
 /**
@@ -2925,6 +3050,21 @@ public void setToolTipText (String string) {
 	int strPtr = createDotNetString (string, false);
 	OS.FrameworkElement_ToolTip (handle, strPtr);
 	if (strPtr != 0) OS.GCHandle_Free (strPtr);
+}
+
+/**
+ * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+ */
+public void setTransform (Transform t) {
+	checkWidget ();
+	if (t == null) {
+		OS.FrameworkElement_RenderTransform (handle, 0);
+		return;
+	}
+	int matrixTransform = OS.gcnew_MatrixTransform (t.handle);
+//	OS.FrameworkElement_LayoutTransform (handle, matrixTransform);
+	OS.FrameworkElement_RenderTransform (handle, matrixTransform);
+	OS.GCHandle_Free (matrixTransform);
 }
 
 /**

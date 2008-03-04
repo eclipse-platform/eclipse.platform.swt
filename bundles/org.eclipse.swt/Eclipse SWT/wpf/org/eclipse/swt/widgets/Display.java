@@ -93,8 +93,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Display extends Device {
 
-	
-	int application, dispatcher, frame, jniRef;
+	int application, dispatcher, frame, jniRef, nameScope;
 	boolean idle;
 	int sleepOperation, operation;
 	int operationCount;
@@ -672,6 +671,8 @@ void createDisplay (DeviceData data) {
 	application = OS.gcnew_Application();
 	if (application == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.Application_ShutdownMode (application, OS.ShutdownMode_OnExplicitShutdown);
+	nameScope = OS.gcnew_NameScope ();
+	if (nameScope == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 }
 
 static void deregister (Display display) {
@@ -2287,7 +2288,8 @@ void releaseDisplay () {
 	}
 	timerHandles = null;
 	timerList = null;
-	
+	if (nameScope != 0) OS.GCHandle_Free (nameScope);
+	nameScope = 0;
 	if (application != 0) {
 		OS.Application_Shutdown (application);
 		OS.GCHandle_Free (application);

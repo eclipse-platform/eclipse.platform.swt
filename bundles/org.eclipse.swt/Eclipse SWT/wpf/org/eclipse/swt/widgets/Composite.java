@@ -876,6 +876,34 @@ void removeControl (Control control) {
 	fixTabList (control);
 }
 
+void resized () {
+	super.resized();
+	if (isDisposed ()) return;
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false, false);
+	}
+}
+
+/**
+ * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
+ */
+public void setAlpha(int alpha) {
+	checkWidget ();
+	int backgroundHandle = backgroundHandle ();
+	int property = backgroundProperty ();
+	int brush = OS.DependencyObject_GetValue (backgroundHandle, property);
+	if (brush != 0) {
+		int newBrush = OS.Freezable_Clone(brush);
+		OS.Brush_Opacity (newBrush, (alpha & 0xFF) / (double)0xFF);
+		OS.DependencyObject_SetValue (backgroundHandle, property, newBrush);
+		OS.GCHandle_Free (brush);
+		OS.GCHandle_Free (newBrush);
+	}
+	OS.GCHandle_Free (property);
+//	OS.UIElement_Opacity (handle, (alpha & 0xFF) / (double)0xFF);
+}
+
 void setBackgroundBrush (int brush) {
 	if (brush != 0) {
 		OS.Panel_Background (handle, brush);

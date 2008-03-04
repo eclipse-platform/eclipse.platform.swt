@@ -126,7 +126,9 @@ void createHandle () {
 }
 
 int defaultBackground () {
-	return OS.SystemColors_ControlColor;
+	//TEMPORARY CODE
+//	return OS.SystemColors_ControlColor;
+	return 0;
 }
 
 /**
