@@ -1231,7 +1231,6 @@ LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((state & CANVAS)!= 0) {
-			System.out.println("HI");
 			int /*long*/ code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 			if (code == OS.HTCLIENT) {
 				RECT rect = new RECT ();
