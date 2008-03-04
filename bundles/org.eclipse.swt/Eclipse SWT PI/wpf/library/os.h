@@ -29,6 +29,7 @@ using namespace System::Windows::Interop;
 using namespace System::Windows::Shapes;
 using namespace System::Windows::Media;
 using namespace System::Windows::Media::Animation;
+using namespace System::Windows::Media::Effects;
 using namespace System::Windows::Media::Imaging;
 using namespace System::Windows::Media::TextFormatting;
 using namespace System::Windows::Controls;
