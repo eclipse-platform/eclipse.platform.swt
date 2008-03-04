@@ -1214,6 +1214,43 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  For some reason, under circumstances
+	* that are not understood, when one scrolled window is
+	* embedded in another and the outer window scrolls the
+	* inner horizontally by moving the location of the inner
+	* one, the vertical scroll bars of the inner window no
+	* longer function.  Specifically, WM_NCHITTEST returns
+	* HTCLIENT instead of HTVSCROLL.  The fix is to detect
+	* the case where the result of WM_NCHITTEST is HTCLIENT
+	* and the point is not in the client area, and redraw
+	* the trim, which somehow fixes the next WM_NCHITTEST.
+	*/
+	if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if ((state & CANVAS)!= 0) {
+			System.out.println("HI");
+			int /*long*/ code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+			if (code == OS.HTCLIENT) {
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				POINT pt = new POINT ();
+				pt.x = OS.GET_X_LPARAM (lParam); 
+				pt.y = OS.GET_Y_LPARAM (lParam);
+				OS.MapWindowPoints (0, handle, pt, 1);
+				if (!OS.PtInRect (rect, pt)) {
+					int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
+					OS.RedrawWindow (handle, null, 0, flags);
+				}
+			}
+			return new LRESULT (code);
+		}
+	}
+	return result;
+}
+
 LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		if (OS.LOWORD (wParam) == OS.WM_CREATE) {
