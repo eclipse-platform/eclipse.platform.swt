@@ -94,12 +94,10 @@ protected void checkSubclass () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
-	NSRect titleRect = widget.titleRect();
+	NSSize margins = widget.contentViewMargins();
 	NSRect frame = contentView.frame();
-	x -= frame.x;
-	y -= frame.y + titleRect.height;
-	width += frame.x * 2;
-	height += frame.y  * 2 + titleRect.height;
+	width += margins.width * 2;
+	height += margins.height * 2 + frame.y;
 	return super.computeTrim(x, y, width, height);
 }
 
