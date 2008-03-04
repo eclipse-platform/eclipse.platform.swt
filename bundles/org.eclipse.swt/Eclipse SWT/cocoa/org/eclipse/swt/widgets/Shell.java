@@ -445,7 +445,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle () {
 	state |= CANVAS;// | GRAB | HIDDEN;
-	if (window == null) {
+	if (window != null) {
+		
+	} else {
 		window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
 		Monitor monitor = getMonitor ();
@@ -465,11 +467,11 @@ void createHandle () {
 		if ((style & SWT.ON_TOP) != 0) {
 			window.setLevel(OS.NSFloatingWindowLevel);
 		}
-	} else {
-		view = window.contentView();
 	}
 	
-	if (window.contentView() == null) window.setContentView (topView());
+	createHandle (null);
+	
+	window.setContentView (topView());
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	windowDelegate.setTag(jniRef);
 	window.setDelegate(windowDelegate);
