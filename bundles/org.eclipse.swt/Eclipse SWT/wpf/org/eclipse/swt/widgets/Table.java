@@ -503,6 +503,7 @@ int createHeaderTemplate (int columnJniRef) {
 }
 
 void createItem (TableColumn column, int index) {
+    if (index == -1) index = columnCount;
     if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	column.createWidget ();
 	int template = createHeaderTemplate (column.jniRef);
