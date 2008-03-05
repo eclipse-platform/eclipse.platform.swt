@@ -373,7 +373,7 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
-			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits1 = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 			if ((bits1 & (OS.WS_HSCROLL | OS.WS_VSCROLL)) != 0) {
 				RECT windowRect = new RECT ();
 				OS.GetWindowRect (hwnd, windowRect);
@@ -411,7 +411,7 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 							OS.DrawThemeBackground (display.hScrollBarTheme(), hDC, OS.SBP_SIZEBOX, 0, cornerRect, null);
 						}
 					}
-					OS.ReleaseDC (handle, hDC);
+					OS.ReleaseDC (hwnd, hDC);
 				}
 			}
 		}
