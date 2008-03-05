@@ -71,7 +71,10 @@ public class TableColumn extends Item {
  * @see Widget#getStyle
  */
 public TableColumn (Table parent, int style) {
-	this (parent, checkStyle (style), -1);
+	super (parent, checkStyle (style));
+	resizable = true;
+	this.parent = parent;
+	parent.createItem (this, parent.getColumnCount ());
 }
 
 /**
@@ -110,7 +113,7 @@ public TableColumn (Table parent, int style) {
  */
 public TableColumn (Table parent, int style, int index) {
 	super (parent, checkStyle (style));
-//	resizable = true;
+	resizable = true;
 	this.parent = parent;
 	parent.createItem (this, index);
 }
