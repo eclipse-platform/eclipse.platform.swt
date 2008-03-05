@@ -125,7 +125,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 				while (item != null) {
 					Rectangle rect = item.getBounds();
 					int itemBottom = rect.y + rect.height;
-					if (rect.y <= point.y && point.y <= itemBottom) return item;
+					if (rect.y <= point.y && point.y < itemBottom) return item;
 					if (itemBottom > treeBottom) break;
 					item = nextItem(tree, item);
 				}
