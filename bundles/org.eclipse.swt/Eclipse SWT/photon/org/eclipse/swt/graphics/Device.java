@@ -102,9 +102,6 @@ public Device(DeviceData data) {
 		}
 		create (data);
 		init ();
-	
-		/* Initialize the system font slot */
-		systemFont = getSystemFont ();
 	}
 }
 
@@ -493,6 +490,8 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ();
 }
 
 /**	 

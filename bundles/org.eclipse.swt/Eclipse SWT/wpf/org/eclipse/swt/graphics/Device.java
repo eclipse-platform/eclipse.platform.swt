@@ -107,17 +107,6 @@ public Device(DeviceData data) {
 		}
 		create (data);
 		init ();
-		
-		/* Initialize the system font slot */
-		int fontFamily = OS.SystemFonts_MessageFontFamily();
-		int style = OS.SystemFonts_MessageFontStyle();
-		int weight = OS.SystemFonts_MessageFontWeight();
-		double size = OS.SystemFonts_MessageFontSize();
-		int typeface = OS.gcnew_Typeface(fontFamily, style, weight, OS.FontStretches_Normal);
-		OS.GCHandle_Free(fontFamily);
-		OS.GCHandle_Free(style);
-		OS.GCHandle_Free(weight);
-		systemFont = Font.wpf_new(this, typeface, size);
 	}
 }
 
@@ -487,6 +476,17 @@ protected void init () {
 	colors[SWT.COLOR_MAGENTA] = Color.wpf_new(this, OS.Colors_Magenta ());
 	colors[SWT.COLOR_CYAN] = Color.wpf_new(this, OS.Colors_Cyan ());
 	colors[SWT.COLOR_WHITE] = Color.wpf_new(this, OS.Colors_White ());
+
+	/* Initialize the system font slot */
+	int fontFamily = OS.SystemFonts_MessageFontFamily();
+	int style = OS.SystemFonts_MessageFontStyle();
+	int weight = OS.SystemFonts_MessageFontWeight();
+	double size = OS.SystemFonts_MessageFontSize();
+	int typeface = OS.gcnew_Typeface(fontFamily, style, weight, OS.FontStretches_Normal);
+	OS.GCHandle_Free(fontFamily);
+	OS.GCHandle_Free(style);
+	OS.GCHandle_Free(weight);
+	systemFont = Font.wpf_new(this, typeface, size);
 }
 
 /**	 
