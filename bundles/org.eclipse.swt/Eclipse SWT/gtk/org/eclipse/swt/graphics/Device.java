@@ -152,9 +152,6 @@ public Device(DeviceData data) {
 		create (data);
 		init ();
 		register (this);
-	
-		/* Initialize the system font slot */
-		systemFont = getSystemFont ();
 	}
 }
 
@@ -635,6 +632,9 @@ protected void init () {
 	shellHandle = OS.gtk_window_new(OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize(shellHandle);
+
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ();
 }
 
 /**	 
