@@ -758,7 +758,7 @@ void drawRect(int id, NSRect rect) {
 	/* Send paint event */
 	GCData data = new GCData ();
 	data.paintRect = rect;
-	GC gc = GC.carbon_new (this, data);
+	GC gc = GC.cocoa_new (this, data);
 	Event event = new Event ();
 	event.gc = gc;
 	event.x = (int)rect.x;

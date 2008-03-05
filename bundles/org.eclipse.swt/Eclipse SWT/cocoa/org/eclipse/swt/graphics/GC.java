@@ -175,7 +175,7 @@ static int checkStyle (int style) {
  *
  * @private
  */
-public static GC carbon_new(Drawable drawable, GCData data) {
+public static GC cocoa_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int context = drawable.internal_new_GC(data);
 	gc.device = data.device;
