@@ -22,6 +22,7 @@ class AppFileLocProvider {
 	int refCount = 0;
 	String mozillaPath, profilePath;
 	String[] pluginDirs;
+	boolean isXULRunner;
 	
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String CHROME_DIR = "chrome"; //$NON-NLS-1$
@@ -205,7 +206,7 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 				result[0] = 0;
 				rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 				localFile.Release ();
 
 				nsIFile file = new nsIFile (result[0]);
@@ -273,9 +274,17 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	} else if (propertyName.equals (XPCOM.NS_XPCOM_CURRENT_PROCESS_DIR)) {
 		propertyValue = mozillaPath;
 	} else if (propertyName.equals (XPCOM.NS_APP_PREF_DEFAULTS_50_DIR)) {
-		// the following line is intentionally commented because
-		// it causes problems for Mozilla < 1.7
-		//propertyValue = profilePath;
+		/*
+		* Answering a value for this property causes problems in Mozilla versions
+		* < 1.7.  Unfortunately this property is queried early enough in the
+		* Browser creation process that the Mozilla version being used is not
+		* yet determined.  However it is known if XULRunner is being used or not.
+		* 
+		* For now answer a value for this property iff XULRunner is the GRE.
+		* If the range of Mozilla versions supported by the Browser is changed
+		* in the future to be >= 1.7 then this value can always be answered.  
+		*/
+		if (isXULRunner) propertyValue = profilePath;
 	}
 
 	XPCOM.memmove (persistent, new int[] {1}, 4); /* PRBool */
@@ -292,7 +301,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 		result[0] = 0;
 	    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 		XPCOM.memmove (_retval, new int /*long*/[] {result[0]}, C.PTR_SIZEOF);
 		localFile.Release ();

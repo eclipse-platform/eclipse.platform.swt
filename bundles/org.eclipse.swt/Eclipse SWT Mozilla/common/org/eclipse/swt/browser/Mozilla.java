@@ -512,6 +512,7 @@ public void create (Composite parent, int style) {
 			XPCOM.memmove (buffer, ptr, length);
 			String profilePath = new String (MozillaDelegate.mbcsToWcs (null, buffer)) + PROFILE_DIR;
 			LocationProvider.setProfilePath (profilePath);
+			LocationProvider.isXULRunner = IsXULRunner;
 			XPCOM.nsEmbedCString_delete (path);
 			profileDir.Release ();
 
@@ -910,7 +911,6 @@ public void create (Composite parent, int style) {
 				rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-				serviceManager.Release ();
 
 				nsIObserverService observerService = new nsIObserverService (result[0]);
 				result[0] = 0;
@@ -921,6 +921,37 @@ public void create (Composite parent, int style) {
 				rc = observerService.NotifyObservers (0, buffer, chars);
 				if (rc != XPCOM.NS_OK) error (rc);
 				observerService.Release ();
+
+				if (LocationProvider != null) {
+					String prefsLocation = LocationProvider.profilePath + AppFileLocProvider.PREFERENCES_FILE;
+					nsEmbedString pathString = new nsEmbedString (prefsLocation);
+					rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+					pathString.dispose ();
+
+					nsILocalFile localFile = new nsILocalFile (result [0]);
+					result[0] = 0;
+				    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
+					localFile.Release ();
+
+					nsIFile prefFile = new nsIFile (result[0]);
+					result[0] = 0;
+
+					buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
+					rc = serviceManager.GetServiceByContractID (buffer, nsIPrefService.NS_IPREFSERVICE_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+					nsIPrefService prefService = new nsIPrefService (result[0]);
+					result[0] = 0;
+					rc = prefService.SavePrefFile(prefFile.getAddress ());
+					prefService.Release ();
+					prefFile.Release ();
+				}
+				serviceManager.Release ();
 
 				if (XPCOMWasGlued) {
 					XPCOM.XPCOMGlueShutdown ();
