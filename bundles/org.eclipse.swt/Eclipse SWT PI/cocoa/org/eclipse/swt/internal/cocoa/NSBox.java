@@ -132,9 +132,9 @@ public NSString title() {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public id titleCell() {
+public NSCell titleCell() {
 	int result = OS.objc_msgSend(this.id, OS.sel_titleCell);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSCell(result) : null;
 }
 
 public NSFont titleFont() {
