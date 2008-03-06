@@ -141,6 +141,9 @@ void createHandle () {
 	}
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	if ((style & SWT.WRAP) == 0) {
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlStaticTextIsMultilineTag, 1, new byte[] {0});
+	}
 }
 
 int defaultThemeFont () {

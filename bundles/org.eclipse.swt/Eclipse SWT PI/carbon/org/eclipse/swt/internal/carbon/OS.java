@@ -265,6 +265,7 @@ public class OS extends C {
 	public static final int kControlStructureMetaPart = -1;
 	public static final int kControlSupportsEmbedding = 1 << 1;
 	public static final int kControlSupportsFocus = 1 << 2;
+	public static final int kControlStaticTextIsMultilineTag = ('s'<<24) + ('t'<<16) + ('i'<<8) + 'm';
 	public static final int kControlStaticTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kControlTabContentRectTag = ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';
 	public static final int kControlTabDirectionNorth = 0;
