@@ -29,6 +29,10 @@ public final class Program {
 	String name;
 	byte[] fsRef;
 
+	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
+	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
+	static final String PREFIX_FILE = "file://"; //$NON-NLS-1$
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -356,13 +360,21 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int rc = -1;
-	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
+	char[] unescapedChars = new char[] {'%'};
+	if (fileName.indexOf(':') == -1) {
+		fileName = PREFIX_FILE + fileName;
+	} else {
+		String lowercaseName = fileName.toLowerCase ();
+		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+			unescapedChars = new char[] {'%', '#'};
+		}
+	}
 	char[] chars = new char[fileName.length()];
 	fileName.getChars(0, chars.length, chars, 0);
 	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 	if (str != 0) {
-		int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
+		int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
+		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unescapedStr, 0, OS.kCFStringEncodingUTF8);
 		if (escapedStr != 0) {
 			int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
 			if (url != 0) {
@@ -371,7 +383,7 @@ public static boolean launch (String fileName) {
 			}
 			OS.CFRelease(escapedStr);
 		}
-		if (unscapedStr != 0) OS.CFRelease(unscapedStr);
+		if (unescapedStr != 0) OS.CFRelease(unescapedStr);
 		OS.CFRelease(str);
 	}
 	return rc == OS.noErr;
@@ -404,13 +416,21 @@ public boolean execute (String fileName) {
 		if (fileName.length() == 0) {
 			rc = OS.LSOpenApplication(params, null);
 		} else {
-			if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
+			char[] unescapedChars = new char[] {'%'};
+			if (fileName.indexOf(':') == -1) {
+				fileName = PREFIX_FILE + fileName;
+			} else {
+				String lowercaseName = fileName.toLowerCase ();
+				if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+					unescapedChars = new char[] {'%', '#'};
+				}
+			}
 			char[] chars = new char[fileName.length()];
 			fileName.getChars(0, chars.length, chars, 0);
 			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 			if (str != 0) {
-				int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
+				int unescapedStr = OS.CFStringCreateWithCharacters(0, unescapedChars, unescapedChars.length);
+				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unescapedStr, 0, OS.kCFStringEncodingUTF8);
 				if (escapedStr != 0) {
 					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
 					if (urls != 0) {
@@ -423,7 +443,7 @@ public boolean execute (String fileName) {
 					}
 					OS.CFRelease(escapedStr);
 				}
-				if (unscapedStr != 0) OS.CFRelease(unscapedStr);
+				if (unescapedStr != 0) OS.CFRelease(unescapedStr);
 				OS.CFRelease(str);
 			}
 		}
