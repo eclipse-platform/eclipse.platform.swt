@@ -6195,7 +6195,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.MULTI) != 0) {
 		tvItem.hItem = lpht.hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		hittestSelected = selected || (tvItem.state & OS.TVIS_SELECTED) != 0;
+		hittestSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
 	}
 	
 	/* Get the selected state of the last selected item */
