@@ -649,6 +649,9 @@ protected void init () {
 		if (!OS.IsWinCE) OS.GdiSetBatchLimit(1);
 	}
 
+	/* Initialize the system font slot */
+	systemFont = getSystemFont();
+
 	/* Initialize scripts list */
 	if (!OS.IsWinCE) {
 		int /*long*/ [] ppSp = new int /*long*/ [1];
@@ -720,9 +723,6 @@ protected void init () {
 	}
 	internal_dispose_GC (hDC, null);
 	hPalette = OS.CreatePalette (logPalette);
-
-	/* Initialize the system font slot */
-	systemFont = getSystemFont();
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
