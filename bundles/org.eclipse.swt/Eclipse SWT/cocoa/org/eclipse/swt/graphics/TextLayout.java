@@ -204,6 +204,7 @@ void computeRuns() {
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    index = lineRange.location + lineRange.length;
 	}
+	if (numberOfLines == 0) numberOfLines++;
 	int[] offsets = new int[numberOfLines + 1];
 	NSRect[] bounds = new NSRect[numberOfLines];
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
@@ -211,7 +212,13 @@ void computeRuns() {
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    offsets[numberOfLines] = lineRange.location;
 	    index = lineRange.location + lineRange.length;
-	}	
+	}
+	if (numberOfLines == 0) {
+		Font font = this.font != null ? this.font : device.systemFont;
+		NSFont nsFont = font.handle;
+		bounds[0] = new NSRect();
+		bounds[0].height = Math.max(layoutManager.defaultLineHeightForFont(nsFont), ascent + descent);
+	}
 	OS.free(rangePtr);
 	offsets[numberOfLines] = textStorage.length();
 	this.lineOffsets = offsets;
@@ -395,6 +402,12 @@ public Rectangle getBounds() {
 	computeRuns();
 	NSRect rect = layoutManager.usedRectForTextContainer(textContainer);
 	if (wrapWidth != -1) rect.width = wrapWidth;
+	if (text.length() == 0) {
+		Font font = this.font != null ? this.font : device.systemFont;
+		NSFont nsFont = font.handle;
+		rect.height = Math.max(rect.height, layoutManager.defaultLineHeightForFont(nsFont));
+	}
+	rect.height = Math.max(rect.height, ascent + descent);
 	return new Rectangle(0, 0, (int)rect.width, (int)rect.height);
 }
 
