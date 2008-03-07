@@ -622,6 +622,37 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 /**
+ * Sets the receiver's year, month, and day in a single operation.
+ * <p>
+ * This is the recommended way to set the date, because setting the year,
+ * month, and day separately may result in invalid intermediate dates.
+ * </p>
+ *
+ * @param year an integer between 1752 and 9999
+ * @param month an integer between 0 and 11
+ * @param day a positive integer beginning with 1
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setDate (int year, int month, int day) {
+	checkWidget ();
+	SYSTEMTIME systime = new SYSTEMTIME ();
+	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
+	OS.SendMessage (handle, msg, 0, systime);
+	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
+	systime.wYear = (short)year;
+	systime.wMonth = (short)(month + 1);
+	systime.wDay = (short)day;
+	OS.SendMessage (handle, msg, 0, systime);
+	lastSystemTime = null;
+}
+
+/**
  * Sets the receiver's date, or day of the month, to the specified day.
  * <p>
  * The first day of the month is 1, and the last day depends on the month and year.
@@ -734,6 +765,32 @@ public void setSeconds (int seconds) {
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
+	systime.wSecond = (short)seconds;
+	OS.SendMessage (handle, msg, 0, systime);
+}
+
+/**
+ * Sets the receiver's hours, minutes, and seconds in a single operation.
+ *
+ * @param hours an integer between 0 and 23
+ * @param minutes an integer between 0 and 59
+ * @param seconds an integer between 0 and 59
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setTime (int hours, int minutes, int seconds) {
+	checkWidget ();
+	SYSTEMTIME systime = new SYSTEMTIME ();
+	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
+	OS.SendMessage (handle, msg, 0, systime);
+	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
+	systime.wHour = (short)hours;
+	systime.wMinute = (short)minutes;
 	systime.wSecond = (short)seconds;
 	OS.SendMessage (handle, msg, 0, systime);
 }

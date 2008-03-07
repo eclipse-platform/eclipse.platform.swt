@@ -891,6 +891,32 @@ public void setBackground(Color color) {
 }
 
 /**
+ * Sets the receiver's year, month, and day in a single operation.
+ * <p>
+ * This is the recommended way to set the date, because setting the year,
+ * month, and day separately may result in invalid intermediate dates.
+ * </p>
+ *
+ * @param year an integer between 1752 and 9999
+ * @param month an integer between 0 and 11
+ * @param day a positive integer beginning with 1
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setDate (int year, int month, int day) {
+	checkWidget ();
+	setYear (year);
+	setDay (1);
+	setMonth (month);
+	setDay (day);
+}
+
+/**
  * Sets the receiver's date, or day of the month, to the specified day.
  * <p>
  * The first day of the month is 1, and the last day depends on the month and year.
@@ -903,7 +929,7 @@ public void setBackground(Color color) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setDay(int day) {
+public void setDay (int day) {
 	checkWidget();
 	if (!isValid(Calendar.DAY_OF_MONTH, day)) return;
 	if ((style & SWT.CALENDAR) != 0) {
@@ -1027,7 +1053,7 @@ public void setMinutes (int minutes) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMonth(int month) {
+public void setMonth (int month) {
 	checkWidget();
 	if (!isValid(Calendar.MONTH, month)) return;
 	calendar.set(Calendar.MONTH, month);
@@ -1055,6 +1081,27 @@ public void setSeconds (int seconds) {
 }
 
 /**
+ * Sets the receiver's hours, minutes, and seconds in a single operation.
+ *
+ * @param hours an integer between 0 and 23
+ * @param minutes an integer between 0 and 59
+ * @param seconds an integer between 0 and 59
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setTime (int hours, int minutes, int seconds) {
+	checkWidget ();
+	setHours (hours);
+	setMinutes (minutes);
+	setSeconds (seconds);
+}
+
+/**
  * Sets the receiver's year.
  * <p>
  * The first year is 1752 and the last year is 9999.
@@ -1067,7 +1114,7 @@ public void setSeconds (int seconds) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setYear(int year) {
+public void setYear (int year) {
 	checkWidget();
 	//if (!isValid(Calendar.YEAR, year)) return;
 	if (year < MIN_YEAR || year > MAX_YEAR) return;
