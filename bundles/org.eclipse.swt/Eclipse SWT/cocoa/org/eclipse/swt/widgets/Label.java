@@ -139,7 +139,7 @@ void createHandle () {
 		imageWidget.initWithFrame(new NSRect());
 		imageWidget.setTag(jniRef);
 		
-		NSTextField textWidget = (NSTextField)new NSTextField().alloc();
+		SWTTextField textWidget = (SWTTextField)new SWTTextField().alloc();
 		textWidget.initWithFrame(new NSRect());
 		textWidget.setBordered(false);
 		textWidget.setEditable(false);

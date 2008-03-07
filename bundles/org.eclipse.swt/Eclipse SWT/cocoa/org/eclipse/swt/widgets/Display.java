@@ -1784,6 +1784,11 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_1clickedOnLink_1atIndex_1, proc5, "@:@@i");
 	OS.objc_registerClassPair(cls);
+	
+	className = "SWTTextField";
+	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
+	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
+	OS.objc_registerClassPair(cls);
 }
 
 /**	 
