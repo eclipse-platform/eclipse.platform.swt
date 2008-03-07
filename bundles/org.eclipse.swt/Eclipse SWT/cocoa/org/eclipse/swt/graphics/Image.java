@@ -674,6 +674,10 @@ public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	Image image = new Image(device);
 	image.type = type;
 	image.handle = nsImage;
+	NSImageRep rep = nsImage.bestRepresentationForDevice(null);
+	if (rep.isKindOfClass(NSBitmapImageRep.static_class())) { 
+		image.imageRep = new NSBitmapImageRep(rep.id);
+	}
 	return image;
 }
 
@@ -839,11 +843,20 @@ public int internal_new_GC (GCData data) {
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
-	handle.lockFocus();	
-//	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(new NSBitmapImageRep(handle.bestRepresentationForDevice(null).id));
-//	NSGraphicsContext.setCurrentContext(context);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
+	NSGraphicsContext.currentContext().saveGraphicsState();
+	NSBitmapImageRep rep = imageRep;
+	if (imageRep.hasAlpha()) {
+		int bpr = width * 4;
+		rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+		int bitmapData = imageRep.bitmapData();
+		if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
+		data.bitmapDataAddress = OS.malloc(4);
+		OS.memmove(data.bitmapDataAddress, new int[] {bitmapData}, 4);
+		rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(
+				data.bitmapDataAddress, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat , bpr, 32);
+		rep.autorelease();
+	}
+	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
 	NSAffineTransform transform = NSAffineTransform.transform();
 	NSSize size = handle.size();
 	transform.translateXBy(0, size.height);
@@ -860,6 +873,7 @@ public int internal_new_GC (GCData data) {
 		data.font = device.systemFont;
 		data.image = this;
 	}
+	NSGraphicsContext.currentContext().restoreGraphicsState();
 	return context.id;
 }
 
@@ -877,7 +891,8 @@ public int internal_new_GC (GCData data) {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
-	handle.unlockFocus();
+	if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
+	data.bitmapDataAddress = 0;
 }
 
 /**
