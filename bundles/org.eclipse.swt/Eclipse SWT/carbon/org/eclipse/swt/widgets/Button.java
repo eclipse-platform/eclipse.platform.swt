@@ -736,7 +736,7 @@ public void setImage (Image image) {
 		inContent.contentType = (short)OS.kControlContentTextOnly;
 	}
 	OS.SetBevelButtonContentInfo (handle, inContent);
-	setAlignment (style);
+	_setAlignment (style);
 	redraw ();
 }
 
@@ -837,7 +837,7 @@ public void setText (String string) {
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
-	setAlignment (style);
+	_setAlignment (style);
 	redraw ();
 }
 
