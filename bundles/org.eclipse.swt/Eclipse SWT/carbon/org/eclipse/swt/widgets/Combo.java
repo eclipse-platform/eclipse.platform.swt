@@ -1107,7 +1107,8 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)
+			|| hooks (SWT.Modify) || filters (SWT.Modify)) {
 		int [] modifiers = new int [1];
 		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 		if (modifiers [0] == OS.cmdKey) {
