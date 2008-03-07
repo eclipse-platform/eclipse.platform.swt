@@ -26,9 +26,9 @@ public class Snippet296 {
 public static void main (String[] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
-	shell.setBounds (10, 10, 200, 300);
+	shell.setBounds (10, 10, 300, 300);
 	final ScrolledComposite sc = new ScrolledComposite (shell, SWT.VERTICAL);
-	sc.setBounds (10, 10, 180, 200);
+	sc.setBounds (10, 10, 280, 200);
 	final int clientWidth = sc.getClientArea ().width;
 
 	final Tree tree = new Tree (sc, SWT.NONE);
@@ -56,7 +56,7 @@ public static void main (String[] args) {
 	});
 
 	Button downButton = new Button (shell, SWT.PUSH);
-	downButton.setBounds (10, 220, 80, 30);
+	downButton.setBounds (10, 220, 120, 30);
 	downButton.setText ("Down 10px");
 	downButton.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
@@ -64,7 +64,7 @@ public static void main (String[] args) {
 		}
 	});
 	Button upButton = new Button (shell, SWT.PUSH);
-	upButton.setBounds (100, 220, 80, 30);
+	upButton.setBounds (140, 220, 120, 30);
 	upButton.setText ("Up 10px");
 	upButton.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
