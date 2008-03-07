@@ -126,7 +126,6 @@ public DateTime (Composite parent, int style) {
 		monthDown.addListener(SWT.Selection, listener);
 		monthUp.addListener(SWT.Selection, listener);
 		yearUp.addListener(SWT.Selection, listener);
-	
 	}
 }
 
@@ -579,6 +578,16 @@ boolean isValid(int fieldName, int value) {
 	return value >= min && value <= max;
 }
 
+boolean isValidDate(int year, int month, int day) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.set(Calendar.YEAR, year);
+	calendar.set(Calendar.MONTH, month);
+	calendar.set(Calendar.DAY_OF_MONTH, day);
+	return calendar.get(Calendar.YEAR) == year
+		&& calendar.get(Calendar.MONTH) == month
+		&& calendar.get(Calendar.DAY_OF_MONTH) == day;
+}
+
 int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
 	sendSelectionEvent ();
 	return OS.noErr;
@@ -690,10 +699,19 @@ void setDay(int newDay, boolean notify) {
  */
 public void setDate (int year, int month, int day) {
 	checkWidget ();
-	setYear (year);
-	setDay (1);
-	setMonth (month);
-	setDay (day);
+	if (!isValidDate(year, month, day)) return;
+	if ((style & SWT.CALENDAR) != 0) {
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month);
+		setDay(day, false);
+	} else {
+		dateRec.year = (short)year;
+		dateRec.month = (short)(month + 1);
+		dateRec.day = (short)day;
+		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
+		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	}
+	redraw();
 }
 
 /**
@@ -842,9 +860,21 @@ public void setSeconds (int seconds) {
  */
 public void setTime (int hours, int minutes, int seconds) {
 	checkWidget ();
-	setHours (hours);
-	setMinutes (minutes);
-	setSeconds (seconds);
+	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
+	if (!isValid(Calendar.MINUTE, minutes)) return;
+	if (!isValid(Calendar.SECOND, seconds)) return;
+	if ((style & SWT.CALENDAR) != 0) {
+		calendar.set(Calendar.HOUR_OF_DAY, hours);
+		calendar.set(Calendar.MINUTE, minutes);
+		calendar.set(Calendar.SECOND, seconds);
+	} else {
+		dateRec.hour = (short)hours;
+		dateRec.minute = (short)minutes;
+		dateRec.second = (short)seconds;
+		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
+		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	}
+	redraw();
 }
 
 /**
