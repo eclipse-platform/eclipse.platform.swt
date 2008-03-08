@@ -351,7 +351,8 @@ void addItem (TreeItem item, int index) {
 	 */
 	if (item.availableIndex < parent.topIndex) {
 		parent.topIndex++;
-		parent.getVerticalBar ().setSelection (parent.topIndex);
+		ScrollBar vBar = parent.getVerticalBar ();
+		if (vBar != null) vBar.setSelection (parent.topIndex);
 		return;
 	}
 	
@@ -2321,7 +2322,8 @@ public void setExpanded (boolean value) {
 		 */
 		if (availableIndex < parent.topIndex) {
 			parent.topIndex += descendentsCount - 1;
-			parent.getVerticalBar ().setSelection (parent.topIndex);
+			ScrollBar vBar = parent.getVerticalBar ();
+			if (vBar != null) vBar.setSelection (parent.topIndex);
 			return;
 		}
 
@@ -2356,7 +2358,8 @@ public void setExpanded (boolean value) {
 		int bottomIndex = availableIndex + descendents.length - 1;
 		if (bottomIndex < parent.topIndex) {
 			parent.topIndex = parent.topIndex - descendents.length + 1;
-			parent.getVerticalBar ().setSelection (parent.topIndex);
+			ScrollBar vBar = parent.getVerticalBar ();
+			if (vBar != null) vBar.setSelection (parent.topIndex);
 		}
 		
 		parent.updateHorizontalBar ();

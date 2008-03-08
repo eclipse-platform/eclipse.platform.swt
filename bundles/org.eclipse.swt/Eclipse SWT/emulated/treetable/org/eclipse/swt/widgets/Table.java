@@ -140,7 +140,7 @@ public boolean isFocusControl() {
  * @see Widget#getStyle
  */
 public Table (Composite parent, int style) {
-	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED));
+	super (parent, checkStyle (style));
 	setForeground (null);	/* set foreground and background to chosen default colors */
 	setBackground (null);
 	GC gc = new GC (this);
@@ -194,14 +194,18 @@ public Table (Composite parent, int style) {
 		}
 	};
 
-	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
-	vBar.setValues (0, 0, 1, 1, 1, 1);
-	hBar.setValues (0, 0, 1, 1, 1, 1);
-	vBar.setVisible (false);
-	hBar.setVisible (false);
-	vBar.addListener (SWT.Selection, listener);
-	hBar.addListener (SWT.Selection, listener);
+	if (hBar != null) {
+		hBar.setValues (0, 0, 1, 1, 1, 1);
+		hBar.setVisible (false);
+		hBar.addListener (SWT.Selection, listener);
+	}
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null) {
+		vBar.setValues (0, 0, 1, 1, 1, 1);
+		vBar.setVisible (false);
+		vBar.addListener (SWT.Selection, listener);
+	}
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -251,6 +255,9 @@ boolean checkData (TableItem item, boolean redraw) {
 	return true;
 }
 static int checkStyle (int style) {
+	//TEMPORARY CODE
+	//style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style |= SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 protected void checkSubclass () {
@@ -490,7 +497,8 @@ void createItem (TableItem item) {
 	 */
 	if (item.index < topIndex) {
 		topIndex++;
-		getVerticalBar ().setSelection (topIndex);
+		ScrollBar vBar = getVerticalBar ();
+		if (vBar != null) vBar.setSelection (topIndex);
 		return;
 	}
 	/*
@@ -665,8 +673,10 @@ void destroyItem (TableColumn column) {
 			newWidth += columns [i].width;
 		}
 		ScrollBar hBar = getHorizontalBar (); 
-		hBar.setMaximum (newWidth);
-		hBar.setVisible (clientArea.width < newWidth);
+		if (hBar != null) {
+			hBar.setMaximum (newWidth);
+			hBar.setVisible (clientArea.width < newWidth);
+		}
 		int selection = hBar.getSelection ();
 		if (selection != horizontalOffset) {
 			horizontalOffset = selection;
@@ -727,7 +737,8 @@ void destroyItem (TableItem item) {
 	 */
 	if (index < topIndex) {
 		topIndex = oldTopIndex - 1;
-		getVerticalBar ().setSelection (topIndex);
+		ScrollBar vBar = getVerticalBar ();
+		if (vBar != null) vBar.setSelection (topIndex);
 	}
 
 	/* selectedItems array */
@@ -1287,10 +1298,11 @@ void handleEvents (Event event) {
 		case SWT.Resize:
 			onResize (event); break;
 		case SWT.Selection:
+			if (event.widget == getHorizontalBar ()) {
+				onScrollHorizontal (event);
+			}
 			if (event.widget == getVerticalBar ()) {
 				onScrollVertical (event);
-			} else {
-				onScrollHorizontal (event);
 			}
 			break;
 		case SWT.FocusOut:
@@ -1763,7 +1775,8 @@ void onArrowDown (int stateMask) {
 			if (itemsCount <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
-			getVerticalBar ().setSelection (topIndex);
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1792,7 +1805,8 @@ void onArrowDown (int stateMask) {
 			if (itemsCount <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
-			getVerticalBar ().setSelection (topIndex);
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1847,10 +1861,12 @@ void onArrowLeft (int stateMask) {
 		gc.dispose();
 	}
 	horizontalOffset = newSelection;
-	getHorizontalBar ().setSelection (horizontalOffset);
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar != null) hBar.setSelection (horizontalOffset);
 }
 void onArrowRight (int stateMask) {
 	ScrollBar hBar = getHorizontalBar ();
+	if (hBar == null) return;
 	int maximum = hBar.getMaximum ();
 	int clientWidth = clientArea.width;
 	if ((horizontalOffset + clientArea.width) == maximum) return;
@@ -1897,7 +1913,8 @@ void onArrowUp (int stateMask) {
 			if (topIndex == 0) return;	/* at top */
 			update ();
 			topIndex--;
-			getVerticalBar ().setSelection (topIndex);
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1926,7 +1943,8 @@ void onArrowUp (int stateMask) {
 			if (topIndex == 0) return;	/* at top */
 			update ();
 			topIndex--;
-			getVerticalBar ().setSelection (topIndex);
+			ScrollBar vBar = getVerticalBar ();
+			if (vBar != null) vBar.setSelection (topIndex);
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -2735,32 +2753,38 @@ void onResize (Event event) {
 	clientArea = getClientArea ();
 	/* vertical scrollbar */
 	ScrollBar vBar = getVerticalBar ();
-	int clientHeight = (clientArea.height - getHeaderHeight ()) / itemHeight;
-	int thumb = Math.min (clientHeight, itemsCount);
-	vBar.setThumb (thumb);
-	vBar.setPageIncrement (thumb);
-	int index = vBar.getSelection ();
-	if (index != topIndex) {
-		topIndex = index;
-		redraw ();
+	if (vBar != null) {
+		int clientHeight = (clientArea.height - getHeaderHeight ()) / itemHeight;
+		int thumb = Math.min (clientHeight, itemsCount);
+		vBar.setThumb (thumb);
+		vBar.setPageIncrement (thumb);
+		int index = vBar.getSelection ();
+		if (index != topIndex) {
+			topIndex = index;
+			redraw ();
+		}
+		boolean visible = clientHeight < itemsCount;
+		if (visible != vBar.getVisible ()) {
+			vBar.setVisible (visible);
+			clientArea = getClientArea ();
+		}
 	}
-	boolean visible = clientHeight < itemsCount;
-	if (visible != vBar.getVisible ()) {
-		vBar.setVisible (visible);
-		clientArea = getClientArea ();
-	}
+	
 	/* horizontal scrollbar */ 
-	ScrollBar hBar = getHorizontalBar ();
-	int hBarMaximum = hBar.getMaximum ();
-	thumb = Math.min (clientArea.width, hBarMaximum);
-	hBar.setThumb (thumb);
-	hBar.setPageIncrement (thumb);
-	horizontalOffset = hBar.getSelection ();
-	visible = clientArea.width < hBarMaximum;
-	if (visible != hBar.getVisible ()) {
-		hBar.setVisible (visible);
-		clientArea = getClientArea ();
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar != null) {
+		int hBarMaximum = hBar.getMaximum ();
+		int thumb = Math.min (clientArea.width, hBarMaximum);
+		hBar.setThumb (thumb);
+		hBar.setPageIncrement (thumb);
+		horizontalOffset = hBar.getSelection ();
+		boolean visible = clientArea.width < hBarMaximum;
+		if (visible != hBar.getVisible ()) {
+			hBar.setVisible (visible);
+			clientArea = getClientArea ();
+		}
 	}
+	
 	/* header */
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
@@ -2769,7 +2793,9 @@ void onResize (Event event) {
 	if (itemsCount == 0 && isFocusControl ()) redraw ();
 }
 void onScrollHorizontal (Event event) {
-	int newSelection = getHorizontalBar ().getSelection ();
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar == null) return;
+	int newSelection = hBar.getSelection ();
 	update ();
 	if (itemsCount > 0) {
 		GC gc = new GC (this);
@@ -2795,7 +2821,9 @@ void onScrollHorizontal (Event event) {
 	horizontalOffset = newSelection;
 }
 void onScrollVertical (Event event) {
-	int newSelection = getVerticalBar ().getSelection ();
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar == null) return;
+	int newSelection = vBar.getSelection ();
 	update ();
 	GC gc = new GC (this);
 	gc.copyArea (
@@ -3021,13 +3049,17 @@ public void removeAll () {
 	anchorItem = lastClickedItem = null;
 	lastSelectionEvent = null;
 	ScrollBar vBar = getVerticalBar ();
-	vBar.setMaximum (1);
-	vBar.setVisible (false);
+	if (vBar != null) {
+		vBar.setMaximum (1);
+		vBar.setVisible (false);
+	}
 	if (columns.length == 0) {
 		horizontalOffset = 0;
-		ScrollBar hBar = getHorizontalBar ();
-		hBar.setMaximum (1);
-		hBar.setVisible (false);
+		ScrollBar hBar = getHorizontalBar (); 
+		if (hBar != null) {
+			hBar.setMaximum (1);
+			hBar.setVisible (false);
+		}
 	}
 
 	setRedraw (true);
@@ -3314,11 +3346,13 @@ public void setFont (Font value) {
 	/* update scrollbars */
 	if (columns.length == 0) updateHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
-	int thumb = (clientArea.height - getHeaderHeight ()) / itemHeight;
-	vBar.setThumb (thumb);
-	vBar.setPageIncrement (thumb);
-	topIndex = vBar.getSelection ();
-	vBar.setVisible (thumb < vBar.getMaximum ());
+	if (vBar != null) {
+		int thumb = (clientArea.height - getHeaderHeight ()) / itemHeight;
+		vBar.setThumb (thumb);
+		vBar.setPageIncrement (thumb);
+		topIndex = vBar.getSelection ();
+		vBar.setVisible (thumb < vBar.getMaximum ());
+	}
 	redraw ();
 }
 void setHeaderImageHeight (int value) {
@@ -3735,7 +3769,8 @@ public void setTopIndex (int index) {
 	update ();
 	int change = topIndex - index;
 	topIndex = index;
-	getVerticalBar ().setSelection (topIndex);
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null) vBar.setSelection (topIndex);
 	if (drawCount <= 0) {
 		GC gc = new GC (this);
 		gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
@@ -3781,7 +3816,8 @@ public void showColumn (TableColumn column) {
 	} else {
 		horizontalOffset = absX + column.width - clientArea.width;
 	}
-	getHorizontalBar ().setSelection (horizontalOffset);
+	ScrollBar hBar = getHorizontalBar (); 
+	if (hBar != null) hBar.setSelection (horizontalOffset);
 	redraw ();
 	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 }
@@ -3940,18 +3976,20 @@ void updateColumnWidth (TableColumn column, int width) {
 		maximum += columns [i].width;
 	}
 	ScrollBar hBar = getHorizontalBar ();
-	hBar.setMaximum (Math.max (1, maximum));	/* setting a value of 0 here is ignored */
-	if (hBar.getThumb () != clientArea.width) {
-		hBar.setThumb (clientArea.width);
-		hBar.setPageIncrement (clientArea.width);
-	}
-	int oldHorizontalOffset = horizontalOffset;	/* hBar.setVisible() can modify horizontalOffset */
-	hBar.setVisible (clientArea.width < maximum);
-	int selection = hBar.getSelection ();
-	if (selection != oldHorizontalOffset) {
-		horizontalOffset = selection;
-		redraw ();
-		if (drawCount <= 0 && header.getVisible ()) header.redraw ();
+	if (hBar != null) {
+		hBar.setMaximum (Math.max (1, maximum));	/* setting a value of 0 here is ignored */
+		if (hBar.getThumb () != clientArea.width) {
+			hBar.setThumb (clientArea.width);
+			hBar.setPageIncrement (clientArea.width);
+		}
+		int oldHorizontalOffset = horizontalOffset;	/* hBar.setVisible() can modify horizontalOffset */
+		hBar.setVisible (clientArea.width < maximum);
+		int selection = hBar.getSelection ();
+		if (selection != oldHorizontalOffset) {
+			horizontalOffset = selection;
+			redraw ();
+			if (drawCount <= 0 && header.getVisible ()) header.redraw ();
+		}
 	}
 
 	column.sendEvent (SWT.Resize);
@@ -3969,8 +4007,9 @@ void updateColumnWidth (TableColumn column, int width) {
  */
 void updateHorizontalBar () {
 	if (drawCount > 0) return;
-
 	ScrollBar hBar = getHorizontalBar ();
+	if (hBar == null) return;
+	
 	int maxX = 0;
 	if (columns.length > 0) {
 		for (int i = 0; i < columns.length; i++) {
@@ -4015,9 +4054,10 @@ void updateHorizontalBar () {
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
 	if (drawCount > 0) return;
+	ScrollBar hBar = getHorizontalBar ();
+	if (hBar == null) return;
 
 	newRightX += horizontalOffset;
-	ScrollBar hBar = getHorizontalBar ();
 	int barMaximum = hBar.getMaximum ();
 	if (newRightX > barMaximum) {	/* item has extended beyond previous maximum */
 		hBar.setMaximum (newRightX);
@@ -4043,10 +4083,11 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 }
 void updateVerticalBar () {
 	if (drawCount > 0) return;
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar == null) return;
 
 	int pageSize = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	int maximum = Math.max (1, itemsCount);	/* setting a value of 0 here is ignored */
-	ScrollBar vBar = getVerticalBar ();
 	if (maximum != vBar.getMaximum ()) {
 		vBar.setMaximum (maximum);
 	}
