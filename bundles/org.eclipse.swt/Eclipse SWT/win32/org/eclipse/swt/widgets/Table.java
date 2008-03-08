@@ -286,6 +286,27 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 			}
 		}
 	}
+	
+	/* Remove the scroll bars that Windows keeps automatically adding */
+	boolean fixScroll = false;
+	if ((style & SWT.H_SCROLL) == 0 || (style & SWT.V_SCROLL) == 0) {
+		switch (msg) {
+			case OS.WM_PAINT:
+			case OS.WM_NCPAINT:
+			case OS.WM_WINDOWPOSCHANGING: {
+				int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+				if ((style & SWT.H_SCROLL) == 0 && (bits & OS.WS_HSCROLL) != 0) {
+					fixScroll = true;
+					bits &= ~OS.WS_HSCROLL;
+				}
+				if ((style & SWT.V_SCROLL) == 0 && (bits & OS.WS_VSCROLL) != 0) {
+					fixScroll = true;
+					bits &= ~OS.WS_VSCROLL;
+				}
+				if (fixScroll) OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			}
+		}
+	}
 	int /*long*/ code = 0;
 	if (fixPaint) {
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -294,6 +315,10 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		OS.EndPaint (hwnd, ps);
 	} else {
 		code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
+	}
+	if (fixScroll) {
+		int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		OS.RedrawWindow (handle, null, 0, flags);
 	}
 	
 	if (checkActivate) ignoreActivate = false;
@@ -2682,6 +2707,11 @@ public int indexOf (TableItem item) {
 
 boolean isCustomToolTip () {
 	return hooks (SWT.MeasureItem);
+}
+
+boolean isOptimizedRedraw () {
+	if ((style & SWT.H_SCROLL) == 0 || (style & SWT.V_SCROLL) == 0) return false;
+	return !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
 }
 
 /**
@@ -5105,7 +5135,7 @@ void update (boolean all) {
 	*/
 	int /*long*/ oldHeaderProc = 0, oldTableProc = 0;
 	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+	boolean fixSubclass = isOptimizedRedraw ();
 	if (fixSubclass) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 		oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
@@ -5401,7 +5431,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			*/
 			int /*long*/ oldHeaderProc = 0, oldTableProc = 0;
 			int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-			boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+			boolean fixSubclass = isOptimizedRedraw ();
 			if (fixSubclass) {
 				oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 				oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
@@ -5761,7 +5791,7 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	int /*long*/ oldHeaderProc = 0, oldTableProc = 0;
 	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+	boolean fixSubclass = isOptimizedRedraw ();
 	if (fixSubclass) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 		oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);
@@ -5860,7 +5890,7 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	int /*long*/ oldHeaderProc = 0, oldTableProc = 0;
 	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+	boolean fixSubclass = isOptimizedRedraw ();
 	if (fixSubclass) {
 		oldTableProc = OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TableProc);
 		oldHeaderProc = OS.SetWindowLongPtr (hwndHeader, OS.GWLP_WNDPROC, HeaderProc);

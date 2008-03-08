@@ -153,6 +153,13 @@ static int checkStyle (int style) {
 	* widget that Windows creates.
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	
+	/*
+	* Note: Windows only supports TVS_NOSCROLL and TVS_NOHSCROLL.
+	*/
+	if ((style & SWT.H_SCROLL) != 0 && (style & SWT.V_SCROLL) == 0) {
+		style |= SWT.V_SCROLL;
+	}
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
@@ -1949,9 +1956,11 @@ void createItem (TreeColumn column, int index) {
 	/* When the first column is created, hide the horizontal scroll bar */
 	if (columnCount == 0) {
 		scrollWidth = 0;
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		bits |= OS.TVS_NOHSCROLL;
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		if ((style & SWT.H_SCROLL) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			bits |= OS.TVS_NOHSCROLL;
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		}
 		/*
 		* Bug in Windows.  When TVS_NOHSCROLL is set after items
 		* have been inserted into the tree, Windows shows the
@@ -2408,7 +2417,7 @@ void destroyItem (TreeColumn column) {
 		scrollWidth = 0;
 		if (!hooks (SWT.MeasureItem)) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			bits &= ~OS.TVS_NOHSCROLL;
+			if ((style & SWT.H_SCROLL) != 0) bits &= ~OS.TVS_NOHSCROLL;
 			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 			OS.InvalidateRect (handle, null, true);
 		}
@@ -5455,6 +5464,15 @@ int widgetStyle () {
 			bits |= OS.TVS_FULLROWSELECT;
 		} else {
 			bits |= OS.TVS_HASLINES;
+		}
+	}
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		bits &= ~(OS.WS_HSCROLL | OS.WS_VSCROLL);
+		bits |= OS.TVS_NOSCROLL;
+	} else {
+		if ((style & SWT.H_SCROLL) == 0) {
+			bits &= ~OS.WS_HSCROLL;
+			bits |= OS.TVS_NOHSCROLL;
 		}
 	}
 //	bits |= OS.TVS_NOTOOLTIPS | OS.TVS_DISABLEDRAGDROP;

@@ -508,6 +508,8 @@ public class OS extends C {
 	public static final int DCX_CACHE = 0x2;
 	public static final int DCX_CLIPCHILDREN = 0x8;
 	public static final int DCX_CLIPSIBLINGS = 0x10;
+	public static final int DCX_INTERSECTRGN = 0x80;
+	public static final int DCX_WINDOW = 0x1;
 	public static final int DEFAULT_CHARSET = 0x1;
 	public static final int DEFAULT_GUI_FONT = 0x11;
 	public static final int DFCS_BUTTONCHECK = 0x0;
@@ -1831,6 +1833,7 @@ public class OS extends C {
 	public static final int TVS_LINESATROOT = 0x4;
 	public static final int TVS_NOHSCROLL = 0x8000;
 	public static final int TVS_NONEVENHEIGHT = 0x4000;
+	public static final int TVS_NOSCROLL = 0x2000;
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
 	public static final int TVS_TRACKSELECT = 0x200;
