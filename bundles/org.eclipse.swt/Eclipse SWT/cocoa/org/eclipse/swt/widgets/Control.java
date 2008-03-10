@@ -1292,12 +1292,14 @@ boolean hasFocus () {
  */
 public int internal_new_GC (GCData data) {
 	checkWidget();
-	int context = 0;
-	if (data != null && data.paintRect != null) {
-		context = NSGraphicsContext.currentContext().id;
-	} else {
-		context = NSGraphicsContext.graphicsContextWithWindow(view.window()).id;
-	}
+	NSGraphicsContext current = NSGraphicsContext.currentContext();
+	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithWindow(view.window());
+	NSGraphicsContext.setCurrentContext(context);
+	NSAffineTransform transform = NSAffineTransform.transform();
+	NSRect rect = topView().frame(); //FIME: Needs to be updated when view size changes
+	transform.translateXBy(0, rect.height);
+	transform.scaleXBy(1, -1);
+	transform.set();
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -1311,7 +1313,8 @@ public int internal_new_GC (GCData data) {
 		data.background = control.getBackgroundColor ().handle;
 		data.font = font != null ? font : defaultFont ();		
 	}
-	return context;
+	NSGraphicsContext.setCurrentContext(current);
+	return context.id;
 }
 
 /**	 
@@ -1328,7 +1331,9 @@ public int internal_new_GC (GCData data) {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
-	checkWidget ();	
+	checkWidget ();
+	//performance? Carbon used CGContextSynchronize instead of CGContextFlush.
+	OS.objc_msgSend(context, OS.sel_flushGraphics);
 }
 
 /**
