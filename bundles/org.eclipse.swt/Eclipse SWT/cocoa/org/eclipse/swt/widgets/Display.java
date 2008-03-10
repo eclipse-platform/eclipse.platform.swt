@@ -155,12 +155,11 @@ public class Display extends Device {
 		{OS.NSEndFunctionKey, SWT.END},
 		
 //		{??,	SWT.INSERT},
-		{OS.NSDeleteCharacter, SWT.BS},
 
 		/* Virtual and Ascii Keys */
-//		{51,	SWT.BS},
+		{OS.NSDeleteCharacter, SWT.BS},
 //		{36,	SWT.CR},
-//		{117, SWT.DEL},
+		{OS.NSDeleteFunctionKey, SWT.DEL},
 //		{53,	SWT.ESC},
 //		{76,	SWT.LF},
 //		{48,	SWT.TAB},	
@@ -211,7 +210,7 @@ public class Display extends Device {
 //		{??,	SWT.BREAK},
 //		{??,	SWT.PRINT_SCREEN},
 		
-//		{114, SWT.HELP},
+		{OS.NSHelpFunctionKey, SWT.HELP},
 		
 	};
 
