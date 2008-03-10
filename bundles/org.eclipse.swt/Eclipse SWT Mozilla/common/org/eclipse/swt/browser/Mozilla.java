@@ -1357,24 +1357,6 @@ void disposeCOMInterfaces () {
 }
 
 public boolean execute (String script) {
-	/* 
-	 * Since the script is flattened to a single line (possibly containing
-	 * \n and/or \r characters), a line comment ('//') results in all
-	 * subsequent content being interpreted as comment text.  To work around
-	 * this, pre-process the script to remove all line comments. 
-	 */
-	String LINE_COMMENT = "//"; //$NON-NLS-1$
-	int index = script.indexOf (LINE_COMMENT);
-	while (index != -1) {
-		int endIndex1 = script.indexOf ('\r', index);
-		int endIndex2 = script.indexOf ('\n', index);
-		int endIndex = script.length ();
-		if (endIndex1 != -1) endIndex = endIndex1;
-		if (endIndex2 != -1) endIndex = Math.min (endIndex, endIndex2);
-		script = script.substring (0, index) + script.substring (endIndex);
-		index = script.indexOf (LINE_COMMENT, index);
-	}
-
 	String url = PREFIX_JAVASCRIPT + script + ";void(0);";	//$NON-NLS-1$
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
