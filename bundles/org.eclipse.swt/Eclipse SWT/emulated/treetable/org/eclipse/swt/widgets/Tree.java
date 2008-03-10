@@ -297,7 +297,7 @@ boolean checkData (TreeItem item, boolean redraw) {
 }
 static int checkStyle (int style) {
 	//TEMPORARY CODE
-	//style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	style |= SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
