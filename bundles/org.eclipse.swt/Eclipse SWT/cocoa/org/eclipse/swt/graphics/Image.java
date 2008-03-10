@@ -844,7 +844,6 @@ public int internal_new_GC (GCData data) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	NSGraphicsContext current = NSGraphicsContext.currentContext();
-	
 	NSBitmapImageRep rep = imageRep;
 	if (imageRep.hasAlpha()) {
 		int bpr = width * 4;
