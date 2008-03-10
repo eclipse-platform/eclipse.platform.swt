@@ -331,9 +331,10 @@ void createHandle () {
 		} else if ((style & SWT.SEARCH) != 0) {
 			widget = (NSTextField)new NSSearchField().alloc();
 		} else {
-			widget = (NSTextField)new NSTextField().alloc();
+			widget = (NSTextField)new SWTTextField().alloc();
 		}
 		widget.initWithFrame(new NSRect());
+		widget.setSelectable(true);
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.BORDER) == 0) widget.setBordered(false);
 		int align = OS.NSLeftTextAlignment;
@@ -1620,6 +1621,10 @@ int traversalCode (int key, int theEvent) {
 //		}
 	}
 	return bits;
+}
+
+boolean useSharedEditor() {
+	return (style & SWT.SINGLE) != 0;
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {

@@ -145,10 +145,8 @@ void createHandle () {
 	parent.contentView().addSubview_(view);
 }
 
-void keyDown(int id, int theEvent) {
-	super.keyDown(id, theEvent);
+void sendKeyEvent(NSEvent nsEvent, int type) {
 	//TODO consumed
-	NSEvent nsEvent = new NSEvent(theEvent);
 	int keyCode = nsEvent.keyCode();
 	switch (keyCode) {
 		case 126: /* Up arrow */

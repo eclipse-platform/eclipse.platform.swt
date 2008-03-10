@@ -258,7 +258,7 @@ void createHandle () {
 	buttonWidget.setTarget(buttonWidget);
 	buttonWidget.setAction(OS.sel_sendSelection);
 	buttonWidget.setTag(jniRef);
-	NSTextField textWidget = (NSTextField)new NSTextField().alloc();
+	NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
 	textWidget.initWithFrame(new NSRect());
 //	textWidget.setTarget(widget);
 	textWidget.setTag(jniRef);
@@ -732,6 +732,9 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	setSelection (selection, true, true, false);
 }
 
+boolean useSharedEditor() {
+	return true;
+}
 
 String verifyText (String string, int start, int end, Event keyEvent) {
 	Event event = new Event ();

@@ -119,6 +119,7 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Region region;
 	Rectangle normalBounds;
+	SWTTextView sharedEditor;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -449,7 +450,9 @@ void createHandle () {
 		view = window.contentView();
 		return;
 	} else {
-		window = (NSWindow) new NSWindow ().alloc ();
+		SWTWindow swtWindow = (SWTWindow) new SWTWindow ().alloc ();
+		swtWindow.setTag(jniRef);
+		window = (NSWindow)swtWindow;
 		NSRect rect = new NSRect();
 		Monitor monitor = getMonitor ();
 		Rectangle clientArea = monitor.getClientArea ();
@@ -768,6 +771,8 @@ void releaseHandle () {
 	window.setDelegate(null);
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
+	if (sharedEditor != null) sharedEditor.release();
+	sharedEditor = null;
 	super.releaseHandle ();
 	window = null;
 }
@@ -1267,7 +1272,34 @@ boolean windowShouldClose(int window) {
 	return false;
 }
 
+int windowWillReturnFieldEditor_toObject(int window, int anObject) {
+	int tag = OS.objc_msgSend(anObject, OS.sel_tag);
+	if (tag == 0 || tag == -1) return 0;
+	Widget widget = (Widget)OS.JNIGetObject(tag);
+	if (widget == null || !widget.useSharedEditor()) return 0;
+	if (sharedEditor == null) {
+		sharedEditor = (SWTTextView)new SWTTextView().alloc();
+		sharedEditor.initWithFrame(new NSRect());
+		sharedEditor.setDelegate(sharedEditor);
+		sharedEditor.setEditable(true);
+	}
+	sharedEditor.setTag(tag);
+	return sharedEditor.id;
+}
+
 void windowWillClose(int notification) {
+}
+
+void windowSendEvent(int id, int event) {
+	super.windowSendEvent(id, event);
+	NSEvent nsEvent = new NSEvent(event);
+	int type = nsEvent.type();
+	if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
+		Control focusControl = display.getFocusControl();
+		if (focusControl != null) {
+			focusControl.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp);
+		}
+	}
 }
 
 }

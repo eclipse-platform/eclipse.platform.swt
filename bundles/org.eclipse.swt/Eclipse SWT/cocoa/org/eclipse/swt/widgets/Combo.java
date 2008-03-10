@@ -1344,6 +1344,10 @@ public void setVisibleItemCount (int count) {
 	}
 }
 
+boolean useSharedEditor() {
+	return (style & SWT.READ_ONLY) == 0;
+}
+
 String verifyText (String string, int start, int end, Event keyEvent) {
 	Event event = new Event ();
 	event.text = string;

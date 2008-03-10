@@ -155,6 +155,7 @@ public class Display extends Device {
 		{OS.NSEndFunctionKey, SWT.END},
 		
 //		{??,	SWT.INSERT},
+		{OS.NSDeleteCharacter, SWT.BS},
 
 		/* Virtual and Ascii Keys */
 //		{51,	SWT.BS},
@@ -1576,6 +1577,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidResignKey_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowWillReturnFieldEditor_1toObject_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_timerProc_1, proc3, "@:@");
@@ -1614,8 +1616,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
@@ -1637,8 +1637,6 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
@@ -1655,8 +1653,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1, proc6, "@:@@@i");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTOutlineView";
@@ -1672,8 +1668,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTreeItem";
@@ -1710,8 +1704,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
@@ -1740,8 +1732,6 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
@@ -1788,6 +1778,14 @@ void initClasses () {
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
+	OS.objc_registerClassPair(cls);
+
+	className = "SWTWindow";
+	cls = OS.objc_allocateClassPair(OS.class_NSWindow, className, 0);
+	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2919,7 +2917,8 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		System.arraycopy (nsTimers, 0, newTimerIds, 0, nsTimers.length);
 		nsTimers = newTimerIds;
 	}
-	NSTimer timer = NSTimer.static_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_1, 0, false);
+	NSNumber userInfo = NSNumber.numberWithInt(index);
+	NSTimer timer = NSTimer.static_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_1, userInfo.id, false);
 	timer.retain();
 	if (timer != null) {
 		nsTimers [index] = timer;
@@ -2929,7 +2928,8 @@ public void timerExec (int milliseconds, Runnable runnable) {
 
 int timerProc (int id) {
 	NSTimer timer = new NSTimer (id);
-	int index = timer.userInfo();
+	NSNumber number = new NSNumber(timer.userInfo());
+	int index = number.intValue();
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
 		if (allowTimers) {
@@ -3131,10 +3131,6 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.mouseUp(arg0);
 	} else if (sel == OS.sel_mouseEntered_1) {
 		widget.mouseEntered(arg0);
-	} else if (sel == OS.sel_keyDown_1) {
-		widget.keyDown(id, arg0);
-	} else if (sel == OS.sel_keyUp_1) {
-		widget.keyUp(id, arg0);
 	} else if (sel == OS.sel_flagsChanged_1) {
 		widget.flagsChanged(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
@@ -3161,6 +3157,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.menuNeedsUpdate(arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_1) {
 		widget.outlineViewSelectionDidChange(arg0);
+	} else if (sel == OS.sel_sendEvent_1) {
+		widget.windowSendEvent(id, arg0);
 	}
 	return 0;
 }
@@ -3183,6 +3181,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 		return widget.outlineView_shouldExpandItem(arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_menu_1willHighlightItem_1) {
 		widget.menu_willHighlightItem(arg0, arg1);
+	} else if (sel == OS.sel_windowWillReturnFieldEditor_1toObject_1) {
+		return widget.windowWillReturnFieldEditor_toObject(arg0, arg1);
 	}
 	return 0;
 }
@@ -3197,11 +3197,11 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	}
 	if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
 		return widget.tableView_shouldEditTableColumn_row(arg0, arg1, arg2) ? 1 : 0;
-	} else  if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
+	} else if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
 		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;
-	} else  if (sel == OS.sel_outlineView_1child_1ofItem_1) {
+	} else if (sel == OS.sel_outlineView_1child_1ofItem_1) {
 		 return widget.outlineView_child_ofItem(arg0, arg1, arg2);
-	} else  if (sel == OS.sel_outlineView_1objectValueForTableColumn_1byItem_1) {
+	} else if (sel == OS.sel_outlineView_1objectValueForTableColumn_1byItem_1) {
 		 return widget.outlineView_objectValueForTableColumn_byItem(arg0, arg1, arg2);
 	}
 	return 0;

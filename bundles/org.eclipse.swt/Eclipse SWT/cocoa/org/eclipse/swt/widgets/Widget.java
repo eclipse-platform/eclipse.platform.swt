@@ -598,14 +598,6 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-void keyDown(int id, int event) {
-	callSuper(id, OS.sel_keyDown_1, event);
-}
-
-void keyUp(int id, int event) {
-	callSuper(id, OS.sel_keyUp_1, event);
-}
-
 void flagsChanged(int event) {
 }
 
@@ -1208,15 +1200,15 @@ boolean setKeyState (Event event, int type, int theEvent) {
 void tableViewSelectionDidChange (int aNotification) {
 }
 
+int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
+	return 0;
+}
+
 void tableView_setObjectValue_forTableColumn_row(int aTableView, int anObject, int aTableColumn, int rowIndex) {	
 }
 
 boolean tableView_shouldEditTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
 	return true;
-}
-
-int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
-	return 0;
 }
 
 void tableView_willDisplayCell_forTableColumn_row(int aTableView, int aCell, int aTableColumn, int rowIndex) {
@@ -1237,6 +1229,10 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
+boolean useSharedEditor() {
+	return false;
+}
+
 void willSelectTabViewItem(int tabView, int tabViewItem) {
 }
 
@@ -1252,6 +1248,10 @@ void windowDidResignKey(int notification) {
 void windowDidBecomeKey(int notification) {
 }
 
+void windowSendEvent(int id, int event) {
+	callSuper(id, OS.sel_sendEvent_1, event);
+}
+
 boolean windowShouldClose(int window) {
 	return false;
 }
@@ -1259,4 +1259,7 @@ boolean windowShouldClose(int window) {
 void windowWillClose(int notification) {
 }
 
+int windowWillReturnFieldEditor_toObject(int window, int anObject) {
+	return 0;
+}
 }

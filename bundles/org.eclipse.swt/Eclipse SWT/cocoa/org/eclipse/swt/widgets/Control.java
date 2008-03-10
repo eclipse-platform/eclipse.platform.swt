@@ -1597,20 +1597,6 @@ void sendKeyEvent (NSEvent nsEvent, int type) {
 	}
 }
 
-void keyDown(int id, int theEvent) {
-	super.keyDown(id, theEvent);
-	if (!hasFocus()) return;
-	NSEvent nsEvent = new NSEvent (theEvent);
-	sendKeyEvent (nsEvent, SWT.KeyDown);
-}
-
-void keyUp(int id, int theEvent) {
-	super.keyUp (id, theEvent);
-	if (!hasFocus()) return;
-	NSEvent nsEvent = new NSEvent (theEvent);
-	sendKeyEvent (nsEvent, SWT.KeyUp);
-}
-
 void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }
