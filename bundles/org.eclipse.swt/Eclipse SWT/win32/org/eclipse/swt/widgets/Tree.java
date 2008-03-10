@@ -2561,6 +2561,21 @@ void destroyItem (TreeItem item, int /*long*/ hItem) {
 	updateScrollBar ();
 }
 
+void destroyScrollBar (int type) {
+	super.destroyScrollBar (type);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		bits &= ~(OS.WS_HSCROLL | OS.WS_VSCROLL);
+		bits |= OS.TVS_NOSCROLL;
+	} else {
+		if ((style & SWT.H_SCROLL) == 0) {
+			bits &= ~OS.WS_HSCROLL;
+			bits |= OS.TVS_NOHSCROLL;
+		}
+	}
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+}
+
 void enableDrag (boolean enabled) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if (enabled && hooks (SWT.DragDetect)) {

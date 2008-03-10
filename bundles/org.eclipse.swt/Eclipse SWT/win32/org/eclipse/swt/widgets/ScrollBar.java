@@ -192,6 +192,7 @@ void destroyWidget () {
 	} else {
 		OS.ShowScrollBar (hwnd, type, false);
 	}
+	parent.destroyScrollBar (style);
 	releaseHandle ();
 }
 

@@ -133,6 +133,20 @@ void createWidget () {
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
 
+void destroyScrollBar (int type) {
+	int /*long*/ hwnd = scrolledHandle ();
+	int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+	if ((type & SWT.HORIZONTAL) != 0) {
+		style &= ~SWT.H_SCROLL;
+		bits &= ~OS.WS_HSCROLL;
+	}
+	if ((type & SWT.VERTICAL) != 0) {
+		style &= ~SWT.V_SCROLL;
+		bits &= ~OS.WS_VSCROLL;
+	}
+	OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
+}
+
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
