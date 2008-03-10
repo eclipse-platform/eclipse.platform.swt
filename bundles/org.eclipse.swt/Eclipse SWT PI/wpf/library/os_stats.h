@@ -638,6 +638,8 @@ typedef enum {
 	Matrix_1OffsetY__ID_FUNC,
 	Matrix_1RotatePrepend_FUNC,
 	Matrix_1ScalePrepend_FUNC,
+	Matrix_1SetIdentity_FUNC,
+	Matrix_1SkewPrepend_FUNC,
 	Matrix_1Transform_FUNC,
 	Matrix_1TranslatePrepend_FUNC,
 	MemberDescriptor_1Name_FUNC,

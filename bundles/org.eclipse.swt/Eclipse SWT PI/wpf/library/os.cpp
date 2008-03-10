@@ -7435,6 +7435,28 @@ JNIEXPORT void JNICALL OS_NATIVE(Matrix_1ScalePrepend)
 }
 #endif
 
+#ifndef NO_Matrix_1SetIdentity
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Matrix_1SetIdentity)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(Matrix_1SetIdentity)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, Matrix_1SetIdentity_FUNC);
+	((Matrix^)TO_OBJECT(arg0))->SetIdentity();
+	OS_NATIVE_EXIT(env, that, Matrix_1SetIdentity_FUNC);
+}
+#endif
+
+#ifndef NO_Matrix_1SkewPrepend
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Matrix_1SkewPrepend)(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2);
+JNIEXPORT void JNICALL OS_NATIVE(Matrix_1SkewPrepend)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
+{
+	OS_NATIVE_ENTER(env, that, Matrix_1SkewPrepend_FUNC);
+	((Matrix^)TO_OBJECT(arg0))->SkewPrepend(arg1, arg2);
+	OS_NATIVE_EXIT(env, that, Matrix_1SkewPrepend_FUNC);
+}
+#endif
+
 #ifndef NO_Matrix_1Transform
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Matrix_1Transform)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(Matrix_1Transform)

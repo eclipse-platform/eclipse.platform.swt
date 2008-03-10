@@ -962,6 +962,8 @@ public static final native void Matrix_OffsetY(int sender, double value);
 public static final native int Matrix_Multiply(int m1, int m2);
 public static final native void Matrix_RotatePrepend(int sender, double angle);
 public static final native void Matrix_ScalePrepend(int sender, double scaleX, double scaleY);
+public static final native void Matrix_SetIdentity(int sender);
+public static final native void Matrix_SkewPrepend(int sender, double skewX, double skewY);
 public static final native void Matrix_TranslatePrepend(int sender, double tx, double ty);
 public static final native int Matrix_Transform(int sender, int point);
 public static final native int MessageBox_Show (int messageBoxText, int caption, int button, int icon,	int defaultResult);

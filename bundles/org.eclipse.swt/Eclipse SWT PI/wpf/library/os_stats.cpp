@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1423;
-int OS_nativeFunctionCallCount[1423];
+int OS_nativeFunctionCount = 1425;
+int OS_nativeFunctionCallCount[1425];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -630,6 +630,8 @@ char * OS_nativeFunctionNames[] = {
 	"Matrix_1OffsetY__ID",
 	"Matrix_1RotatePrepend",
 	"Matrix_1ScalePrepend",
+	"Matrix_1SetIdentity",
+	"Matrix_1SkewPrepend",
 	"Matrix_1Transform",
 	"Matrix_1TranslatePrepend",
 	"MemberDescriptor_1Name",
