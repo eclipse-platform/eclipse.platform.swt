@@ -689,8 +689,6 @@ boolean hasBorder () {
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.closures [KEY_PRESS_EVENT], false);
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.closures [MAP_EVENT], false);
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [UNMAP_EVENT], 0, display.closures [UNMAP_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.closures [WINDOW_STATE_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.closures [CONFIGURE_EVENT], false);
@@ -1019,11 +1017,6 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_key_press_event (widget, event);
 }
 
-int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
-	minimized = false;
-	return 0;
-}
-
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	int width = OS.GTK_WIDGET_WIDTH (shellHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
@@ -1063,11 +1056,6 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	return result;
 }
 
-int /*long*/ gtk_unmap_event (int /*long*/ widget, int /*long*/ event) {
-	minimized = true;
-	return 0;
-}
-
 int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventWindowState gdkEvent = new GdkEventWindowState ();
 	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
@@ -1080,6 +1068,7 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 		} else {
 			sendEvent (SWT.Deiconify);
 		}
+		updateShells ();
 	}
 	return 0;
 }
@@ -1769,27 +1758,28 @@ void updateModal () {
 }
 
 void updateShells () {
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
+	Shell[] shells = getShells ();
+	for (int i = 0; i < shells.length; i++) {
 		boolean update = false;
-		Shell shell = shells [i];
-		if (shell.isUndecorated ()) {
-			update = true;
-		} else {
-			do {
-				shell = (Shell) shell.getParent ();
-			} while (shell != null && shell != this && !shell.isUndecorated ());
-			if (shell != null && shell != this) update = true;
+		Shell shell = shells[i];
+		while (shell != null && shell != this && !shell.isUndecorated ()) {
+			shell = (Shell) shell.getParent ();
 		}
+		if (shell != null && shell != this) update = true;
 		if (update) {
 			if (minimized) {
-				OS.gtk_widget_hide (shells [i].shellHandle);
-			} else if (showWithParent) {
-				OS.gtk_widget_show (shells [i].shellHandle);
+				if (shells[i].isVisible ()) {
+					shells[i].showWithParent = true;
+					OS.gtk_widget_hide(shells[i].shellHandle);
+				}
+			} else {
+				if (shells[i].showWithParent) {
+					shells[i].showWithParent = false;
+					OS.gtk_widget_show(shells[i].shellHandle);
+				}
 			}
 		}
 	}
-	showWithParent = minimized;
 }
 
 void deregister () {
