@@ -969,7 +969,6 @@ public void setLayoutDeferred (boolean defer) {
 	}
 }
 
-
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	boolean changed = super.setScrollBarVisible (bar, visible);
 	if (changed && layout != null) {
