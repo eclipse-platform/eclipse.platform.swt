@@ -172,6 +172,14 @@ public void getElements(float[] elements) {
 	elements[5] = struct.tY;
 }
 
+public void identity() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	NSAffineTransformStruct struct = new NSAffineTransformStruct();
+	struct.m11 = 1;
+	struct.m22 = 1;
+	handle.setTransformStruct(struct);
+}
+
 /**
  * Modifies the receiver such that the matrix it represents becomes the
  * the mathematical inverse of the matrix it previously represented. 
@@ -297,6 +305,18 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
 	struct.tX = dx;
 	struct.tY = dy;
 	handle.setTransformStruct(struct);
+}
+
+public void shear(float shearX, float shearY) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	NSAffineTransformStruct struct = new NSAffineTransformStruct();
+	struct.m11 = 1;
+	struct.m12 = shearX;
+	struct.m21 = shearY;
+	struct.m22 = 1;
+	NSAffineTransform matrix = NSAffineTransform.transform();
+	matrix.setTransformStruct(struct);
+	handle.prependTransform(matrix);
 }
 
 /** 

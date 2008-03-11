@@ -165,6 +165,11 @@ public void getElements(float[] elements) {
 	System.arraycopy(handle, 0, elements, 0, handle.length);
 }
 
+public void identity() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.CGAffineTransformMake(1, 0, 0, 1, 0, 0, handle);
+}
+
 /**
  * Modifies the receiver such that the matrix it represents becomes the
  * the mathematical inverse of the matrix it previously represented. 
@@ -281,6 +286,12 @@ public void scale(float scaleX, float scaleY) {
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGAffineTransformMake(m11, m12, m21, m22, dx, dy, handle);
+}
+
+public void shear(float shearX, float shearY) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	float[] matrix = {1, shearX, shearY, 1, 0, 0};
+	OS.CGAffineTransformConcat(matrix, handle, handle);
 }
 
 /** 
