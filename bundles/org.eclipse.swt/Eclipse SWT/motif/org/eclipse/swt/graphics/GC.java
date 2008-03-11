@@ -259,13 +259,16 @@ void checkGC (int mask) {
 			data.cairoXoffset = data.cairoYoffset = 0;
 			double[] matrix = new double[6];
 			Cairo.cairo_get_matrix(cairo, matrix);
-			double scaling = matrix[0];
+			double[] dx = new double[]{1};
+			double[] dy = new double[]{1};
+			Cairo.cairo_user_to_device_distance(cairo, dx, dy);
+			double scaling = dx[0];
 			if (scaling < 0) scaling = -scaling;
 			double strokeWidth = data.lineWidth * scaling;
 			if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
 				data.cairoXoffset = 0.5 / scaling;
 			}
-			scaling = matrix[3];
+			scaling = dy[0];
 			if (scaling < 0) scaling = -scaling;
 			strokeWidth = data.lineWidth * scaling;
 			if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
