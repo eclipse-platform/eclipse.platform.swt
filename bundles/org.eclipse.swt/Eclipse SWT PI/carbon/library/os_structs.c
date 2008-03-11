@@ -706,6 +706,40 @@ void setCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct)
 }
 #endif
 
+#ifndef NO_CGSize
+typedef struct CGSize_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID width, height;
+} CGSize_FID_CACHE;
+
+CGSize_FID_CACHE CGSizeFc;
+
+void cacheCGSizeFields(JNIEnv *env, jobject lpObject)
+{
+	if (CGSizeFc.cached) return;
+	CGSizeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CGSizeFc.width = (*env)->GetFieldID(env, CGSizeFc.clazz, "width", "F");
+	CGSizeFc.height = (*env)->GetFieldID(env, CGSizeFc.clazz, "height", "F");
+	CGSizeFc.cached = 1;
+}
+
+CGSize *getCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
+{
+	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
+	lpStruct->width = (*env)->GetFloatField(env, lpObject, CGSizeFc.width);
+	lpStruct->height = (*env)->GetFloatField(env, lpObject, CGSizeFc.height);
+	return lpStruct;
+}
+
+void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
+{
+	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
+	(*env)->SetFloatField(env, lpObject, CGSizeFc.width, (jfloat)lpStruct->width);
+	(*env)->SetFloatField(env, lpObject, CGSizeFc.height, (jfloat)lpStruct->height);
+}
+#endif
+
 #ifndef NO_ColorPickerInfo
 typedef struct ColorPickerInfo_FID_CACHE {
 	int cached;

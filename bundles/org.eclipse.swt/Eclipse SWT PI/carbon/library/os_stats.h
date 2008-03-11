@@ -261,6 +261,7 @@ typedef enum {
 	CGShadingCreateAxial_FUNC,
 	CGShadingCreateRadial_FUNC,
 	CGShadingRelease_FUNC,
+	CGSizeApplyAffineTransform_FUNC,
 	CGWarpMouseCursorPosition_FUNC,
 	CPSEnableForegroundOperation_FUNC,
 	CPSSetProcessName_FUNC,

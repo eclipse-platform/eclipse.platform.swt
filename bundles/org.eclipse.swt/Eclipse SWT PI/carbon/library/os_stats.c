@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 947;
-int OS_nativeFunctionCallCount[947];
+int OS_nativeFunctionCount = 948;
+int OS_nativeFunctionCallCount[948];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -253,6 +253,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGShadingCreateAxial",
 	"CGShadingCreateRadial",
 	"CGShadingRelease",
+	"CGSizeApplyAffineTransform",
 	"CGWarpMouseCursorPosition",
 	"CPSEnableForegroundOperation",
 	"CPSSetProcessName",

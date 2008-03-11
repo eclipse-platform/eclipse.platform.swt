@@ -203,6 +203,18 @@ void setCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct);
 #define CGRect_sizeof() 0
 #endif
 
+#ifndef NO_CGSize
+void cacheCGSizeFields(JNIEnv *env, jobject lpObject);
+CGSize *getCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct);
+void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct);
+#define CGSize_sizeof() sizeof(CGSize)
+#else
+#define cacheCGSizeFields(a,b)
+#define getCGSizeFields(a,b,c) NULL
+#define setCGSizeFields(a,b,c)
+#define CGSize_sizeof() 0
+#endif
+
 #ifndef NO_ColorPickerInfo
 void cacheColorPickerInfoFields(JNIEnv *env, jobject lpObject);
 ColorPickerInfo *getColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPickerInfo *lpStruct);

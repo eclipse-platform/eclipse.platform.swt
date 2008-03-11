@@ -1256,6 +1256,7 @@ public static final native int CGRectContainsPoint(CGRect rect, CGPoint point);
 public static final native int CGShadingCreateAxial (int colorspace, CGPoint start, CGPoint end, int function, boolean extendStart, boolean extendEnd);
 public static final native int CGShadingCreateRadial (int colorspace, CGPoint start, float startRadius, CGPoint end, float endRadius, int function, boolean extendStart, boolean extendEnd);
 public static final native void CGShadingRelease (int shading);
+public static final native void CGSizeApplyAffineTransform (CGSize size, float[] t, CGSize result);
 public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosition);
 public static final native int ChangeMenuItemAttributes(int menu, int item, int setTheseAttributes, int clearTheseAttributes);
 public static final native int ChangeWindowAttributes(int windowHandle, int setAttributes, int clearAttributes);
