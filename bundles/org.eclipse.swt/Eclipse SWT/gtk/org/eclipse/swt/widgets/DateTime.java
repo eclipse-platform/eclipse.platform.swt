@@ -501,6 +501,12 @@ boolean isValid(int fieldName, int value) {
 	return value >= min && value <= max;
 }
 
+boolean isValid(int year, int month, int day) {
+	Calendar valid = Calendar.getInstance();
+	valid.set(year, month, day);
+	return valid.get(Calendar.YEAR) == year && valid.get(Calendar.MONTH) == month && valid.get(Calendar.DAY_OF_MONTH) == day;
+}
+
 void incrementField(int amount) {
 	int fieldName = fieldNames[currentField];
 	int value = calendar.get(fieldName);
@@ -845,10 +851,19 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
  */
 public void setDate (int year, int month, int day) {
 	checkWidget ();
-	setYear (year);
-	setDay (1);
-	setMonth (month);
-	setDay (day);
+	if (!isValid(year, month, day)) return;
+	if ((style & SWT.CALENDAR) != 0) {
+		this.year = year;
+		this.month = month;
+		this.day = day;
+		OS.gtk_calendar_select_month(handle, month, year);
+		OS.gtk_calendar_select_day(handle, day);
+	} else {
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		updateControl();
+	}
 }
 
 /**
@@ -989,9 +1004,19 @@ public void setSeconds (int seconds) {
  */
 public void setTime (int hours, int minutes, int seconds) {
 	checkWidget ();
-	setHours (hours);
-	setMinutes (minutes);
-	setSeconds (seconds);
+	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
+	if (!isValid(Calendar.MINUTE, minutes)) return;
+	if (!isValid(Calendar.SECOND, seconds)) return;
+	if ((style & SWT.CALENDAR) != 0) {
+		this.hours = hours;
+		this.minutes = minutes;
+		this.seconds = seconds;
+	} else {
+		calendar.set(Calendar.HOUR_OF_DAY, hours);
+		calendar.set(Calendar.MINUTE, minutes);
+		calendar.set(Calendar.SECOND, seconds);
+		updateControl();
+	}
 }
 
 /**
