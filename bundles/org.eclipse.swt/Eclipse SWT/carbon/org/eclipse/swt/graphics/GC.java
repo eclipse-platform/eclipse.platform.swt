@@ -319,7 +319,6 @@ void checkGC (int mask) {
 			data.drawXOffset = 0.5f / scaling;
 		}
 		scaling = size.height;
-		System.out.println(size.width + " " + size.height);
 		if (scaling < 0) scaling = -scaling;
 		strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
