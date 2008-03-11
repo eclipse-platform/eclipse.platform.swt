@@ -45,6 +45,7 @@ import org.eclipse.swt.graphics.*;
 public class DateTime extends Composite {
 	boolean ignoreSelection;
 	SYSTEMTIME lastSystemTime;
+	SYSTEMTIME time = new SYSTEMTIME (); // only used in calendar mode
 	static final int /*long*/ DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
 	static final int /*long*/ CalendarProc;
@@ -496,6 +497,7 @@ public int getDay () {
  */
 public int getHours () {
 	checkWidget ();
+	if ((style & SWT.CALENDAR) != 0) return time.wHour;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -517,6 +519,7 @@ public int getHours () {
  */
 public int getMinutes () {
 	checkWidget ();
+	if ((style & SWT.CALENDAR) != 0) return time.wMinute;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -564,6 +567,7 @@ String getNameText() {
  */
 public int getSeconds () {
 	checkWidget ();
+	if ((style & SWT.CALENDAR) != 0) return time.wSecond;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -697,6 +701,7 @@ public void setHours (int hours) {
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
 	systime.wHour = (short)hours;
 	OS.SendMessage (handle, msg, 0, systime);
+	if ((style & SWT.CALENDAR) != 0 && hours >= 0 && hours <= 23) time.wHour = (short)hours;
 }
 
 /**
@@ -720,6 +725,7 @@ public void setMinutes (int minutes) {
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
 	systime.wMinute = (short)minutes;
 	OS.SendMessage (handle, msg, 0, systime);
+	if ((style & SWT.CALENDAR) != 0 && minutes >= 0 && minutes <= 59) time.wMinute = (short)minutes;
 }
 
 /**
@@ -767,6 +773,7 @@ public void setSeconds (int seconds) {
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
 	systime.wSecond = (short)seconds;
 	OS.SendMessage (handle, msg, 0, systime);
+	if ((style & SWT.CALENDAR) != 0 && seconds >= 0 && seconds <= 59) time.wSecond = (short)seconds;
 }
 
 /**
@@ -793,6 +800,14 @@ public void setTime (int hours, int minutes, int seconds) {
 	systime.wMinute = (short)minutes;
 	systime.wSecond = (short)seconds;
 	OS.SendMessage (handle, msg, 0, systime);
+	if ((style & SWT.CALENDAR) != 0
+			&& hours >= 0 && hours <= 23
+			&& minutes >= 0 && minutes <= 59
+			&& seconds >= 0 && seconds <= 59) {
+		time.wHour = (short)hours;
+		time.wMinute = (short)minutes;
+		time.wSecond = (short)seconds;
+	}
 }
 
 /**
