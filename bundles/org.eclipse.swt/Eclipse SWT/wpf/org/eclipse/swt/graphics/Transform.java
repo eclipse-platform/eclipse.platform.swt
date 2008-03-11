@@ -175,6 +175,11 @@ public void getElements(float[] elements) {
 	elements[5] = (float)OS.Matrix_OffsetY(handle);
 }
 
+public void identity() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.Matrix_SetIdentity(handle);
+}
+
 /**
  * Modifies the receiver such that the matrix it represents becomes the
  * the mathematical inverse of the matrix it previously represented. 
@@ -302,6 +307,20 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
 	OS.Matrix_M22(handle, m22);
 	OS.Matrix_OffsetX(handle, dx);
 	OS.Matrix_OffsetY(handle, dy);
+}
+
+public void shear(float shearX, float shearY) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int matrix = OS.gcnew_Matrix(1, shearX, shearY, 1, 0, 0);
+	int result = OS.Matrix_Multiply(handle, matrix);
+	OS.Matrix_M11(handle, OS.Matrix_M11(result));
+	OS.Matrix_M12(handle, OS.Matrix_M12(result));
+	OS.Matrix_M21(handle, OS.Matrix_M21(result));
+	OS.Matrix_M22(handle, OS.Matrix_M22(result));
+	OS.Matrix_OffsetX(handle, OS.Matrix_OffsetX(result));
+	OS.Matrix_OffsetY(handle, OS.Matrix_OffsetY(result));
+	OS.GCHandle_Free(result);
+	OS.GCHandle_Free(matrix);
 }
 
 /** 
