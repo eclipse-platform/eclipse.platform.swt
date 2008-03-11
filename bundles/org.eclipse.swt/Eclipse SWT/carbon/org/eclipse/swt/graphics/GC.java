@@ -307,13 +307,19 @@ void checkGC (int mask) {
 	}
 	if ((state & DRAW_OFFSET) != 0) {
 		data.drawXOffset = data.drawYOffset = 0;
-		float scaling = data.transform != null ? data.transform[0] : 1;
+		CGSize size = new CGSize();
+		size.width = size.height = 1;
+		if (data.transform != null) {
+			OS.CGSizeApplyAffineTransform(size, data.transform, size);
+		}
+		float scaling = size.width;
 		if (scaling < 0) scaling = -scaling;
 		float strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
 			data.drawXOffset = 0.5f / scaling;
 		}
-		scaling = data.transform != null ? data.transform[3] : 1;
+		scaling = size.height;
+		System.out.println(size.width + " " + size.height);
 		if (scaling < 0) scaling = -scaling;
 		strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {

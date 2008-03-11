@@ -305,19 +305,18 @@ void checkGC (int mask) {
 	}
 	if ((state & DRAW_OFFSET) != 0) {
 		data.drawXOffset = data.drawYOffset = 0;
-		float sx = 1, sy = 1;
+		NSSize size = new NSSize();
+		size.width = size.height = 1;
 		if (data.transform != null) {
-			NSAffineTransformStruct struct = data.transform.transformStruct();
-			sx = struct.m11;
-			sy = struct.m22;
+			size = data.transform.transformSize(size);
 		}
-		float scaling = sx;
+		float scaling = size.width;
 		if (scaling < 0) scaling = -scaling;
 		float strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
 			data.drawXOffset = 0.5f / scaling;
 		}
-		scaling = sy;
+		scaling = size.height;
 		if (scaling < 0) scaling = -scaling;
 		strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
