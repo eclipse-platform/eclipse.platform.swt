@@ -363,7 +363,8 @@ public Shell (Shell parent, int style) {
 }
 
 /**	 
- * Invokes platform specific functionality to allocate a new shell.
+ * Invokes platform specific functionality to allocate a new shell
+ * that is embedded.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
  * API for <code>Shell</code>. It is marked public only so that it
@@ -380,6 +381,23 @@ public static Shell win32_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new shell
+ * that is not embedded.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Shell</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param display the display for the shell
+ * @param handle the handle for the shell
+ * @return a new shell object containing the specified display and handle
+ * 
+ * @since 3.3
+ */
 public static Shell internal_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
