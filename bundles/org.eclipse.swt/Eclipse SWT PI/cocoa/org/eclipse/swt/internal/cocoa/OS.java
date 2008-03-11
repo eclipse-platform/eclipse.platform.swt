@@ -575,6 +575,7 @@ public static final int class_NSPointerArray = objc_getClass("NSPointerArray");
 public static final int class_NSURLAuthenticationChallenge = objc_getClass("NSURLAuthenticationChallenge");
 public static final int class_NSStatusBar = objc_getClass("NSStatusBar");
 public static final int class_NSTextField = objc_getClass("NSTextField");
+public static final int class_NSSecureTextField = objc_getClass("NSSecureTextField");
 public static final int class_NSOutputStream = objc_getClass("NSOutputStream");
 public static final int class_NSComboBoxCell = objc_getClass("NSComboBoxCell");
 public static final int class_NSXMLDTDNode = objc_getClass("NSXMLDTDNode");

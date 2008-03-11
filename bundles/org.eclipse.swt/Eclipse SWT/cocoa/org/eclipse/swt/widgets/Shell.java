@@ -1283,7 +1283,6 @@ int windowWillReturnFieldEditor_toObject(int window, int anObject) {
 		sharedEditor.setDelegate(sharedEditor);
 		sharedEditor.setEditable(true);
 	}
-	sharedEditor.setTag(tag);
 	return sharedEditor.id;
 }
 

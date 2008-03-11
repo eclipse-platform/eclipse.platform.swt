@@ -310,6 +310,9 @@ boolean clickOnLink(int textView, int link, int charIndex) {
 void comboBoxSelectionDidChange(int notification) {
 }
 
+void controlTextDidBeginEditing(int notification) {
+}
+
 void createHandle () {
 }
 

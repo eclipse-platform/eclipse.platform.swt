@@ -1724,6 +1724,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_controlTextDidBeginEditing_1, proc3, "@:@@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTDatePicker";
@@ -1777,6 +1778,12 @@ void initClasses () {
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
+	OS.class_addMethod(cls, OS.sel_controlTextDidBeginEditing_1, proc3, "@:@@");
+	OS.objc_registerClassPair(cls);
+
+	className = "SWTSearchField";
+	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
+	OS.class_addMethod(cls, OS.sel_controlTextDidBeginEditing_1, proc3, "@:@@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTWindow";
@@ -3158,6 +3165,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.outlineViewSelectionDidChange(arg0);
 	} else if (sel == OS.sel_sendEvent_1) {
 		widget.windowSendEvent(id, arg0);
+	} else if (sel == OS.sel_controlTextDidBeginEditing_1) {
+		widget.controlTextDidBeginEditing(arg0);
 	}
 	return 0;
 }

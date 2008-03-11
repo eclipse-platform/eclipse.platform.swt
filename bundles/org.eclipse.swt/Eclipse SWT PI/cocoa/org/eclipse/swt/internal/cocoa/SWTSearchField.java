@@ -10,17 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
-public class SWTTextView extends NSTextView {
+public class SWTSearchField extends NSSearchField {
 
-public SWTTextView() {
-	super(0);
-}
 
-public SWTTextView(int id) {
-	super(id);
-}
-
-public void setTag(int tag) {
-	OS.objc_msgSend(id, OS.sel_setTag_1, tag);
-}
 }
