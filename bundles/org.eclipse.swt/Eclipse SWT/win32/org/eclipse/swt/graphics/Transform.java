@@ -168,6 +168,21 @@ public void getElements(float[] elements) {
 
 /**
  * Modifies the receiver such that the matrix it represents becomes the
+ * identity matrix. 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void identity() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Gdip.Matrix_SetElements(handle, 1, 0, 0, 1, 0, 0);
+}
+
+/**
+ * Modifies the receiver such that the matrix it represents becomes
  * the mathematical inverse of the matrix it previously represented. 
  *
  * @exception SWTException <ul>
@@ -279,6 +294,24 @@ public void scale(float scaleX, float scaleY) {
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, dx, dy);
+}
+
+/**
+ * Modifies the receiver so that it represents a transformation that is
+ * equivalent to its previous transformation sheared by (shearX, shearY).
+ * 
+ * @param shearX the shear factor in the X direction
+ * @param shearY the shear factor in the Y direction
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void shear(float shearX, float shearY) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Gdip.Matrix_Shear(handle, shearX, shearY, Gdip.MatrixOrderPrepend);
 }
 
 /** 
