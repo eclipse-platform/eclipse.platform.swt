@@ -1641,6 +1641,7 @@ public void drawText (String string, int x, int y, int flags) {
 		if ((data.style & SWT.MIRRORED) != 0) {
 			Cairo.cairo_restore(cairo);
 		}
+		Cairo.cairo_new_path(cairo);
 		return;
 	}
 	checkGC(FOREGROUND | FONT | BACKGROUND_BG);
