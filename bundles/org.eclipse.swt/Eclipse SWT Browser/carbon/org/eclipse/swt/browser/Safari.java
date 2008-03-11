@@ -46,7 +46,7 @@ class Safari extends WebBrowser {
 	static final int MIN_SIZE = 16;
 	static final int MAX_PROGRESS = 100;
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
-	static final String AGENT_STRING = "Safari/unknown"; //$NON-NLS-1$
+	static final String AGENT_STRING = "Safari/412.0"; /* Safari version on OSX 10.4 initial release */ //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
