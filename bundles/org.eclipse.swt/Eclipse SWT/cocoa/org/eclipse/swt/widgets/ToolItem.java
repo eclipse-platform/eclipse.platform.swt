@@ -171,7 +171,7 @@ protected void checkSubclass () {
 }
 
 Point computeSize () {
-//	checkWidget();
+	checkWidget();
 	int width = 0, height = 0;
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((parent.style & SWT.HORIZONTAL) != 0) {
@@ -192,6 +192,11 @@ Point computeSize () {
 		view.setNeedsDisplay(true);
 	}
 	return new Point (width, height);
+}
+
+void destroyWidget() {
+	parent.destroyItem(this);
+	super.destroyWidget();
 }
 
 void drawRect(int id, NSRect rect) {
