@@ -212,9 +212,9 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = srcImage.getBounds();
+	this.type = srcImage.type;
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
-			this.type = srcImage.type;
 			switch (type) {
 				case SWT.BITMAP:
 					/* Get the HDC for the device */
