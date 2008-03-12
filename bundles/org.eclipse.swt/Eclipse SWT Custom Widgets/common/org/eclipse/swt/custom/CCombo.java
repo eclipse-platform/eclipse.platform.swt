@@ -115,7 +115,11 @@ public CCombo (Composite parent, int style) {
 				return;
 			}
 			if (getShell () == event.widget) {
-				handleFocus (SWT.FocusOut);
+				getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						handleFocus (SWT.FocusOut);
+					}
+				});
 			}
 		}
 	};
