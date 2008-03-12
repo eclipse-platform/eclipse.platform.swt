@@ -45,6 +45,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  */
 public class DateTime extends Composite {
 	LongDateRec dateRec;
+	LongDateRec dateAndTime = new LongDateRec ();  // copy of date for a kControlClockTypeHourMinuteSecond or time for a kControlClockTypeMonthDayYear
 
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
@@ -435,6 +436,7 @@ public Color getForeground() {
  */
 public int getDay () {
 	checkWidget ();
+	if ((style & SWT.TIME) != 0) return dateAndTime.day;
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.DAY_OF_MONTH);
 	}
@@ -457,6 +459,7 @@ public int getDay () {
  */
 public int getHours () {
 	checkWidget ();
+	if ((style & SWT.DATE) != 0) return dateAndTime.hour;
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
@@ -479,6 +482,7 @@ public int getHours () {
  */
 public int getMinutes () {
 	checkWidget ();
+	if ((style & SWT.DATE) != 0) return dateAndTime.minute;
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.MINUTE);
 	}
@@ -501,6 +505,7 @@ public int getMinutes () {
  */
 public int getMonth () {
 	checkWidget ();
+	if ((style & SWT.TIME) != 0) return dateAndTime.month - 1;
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.MONTH);
 	}
@@ -528,6 +533,7 @@ String getNameText() {
  */
 public int getSeconds () {
 	checkWidget ();
+	if ((style & SWT.DATE) != 0) return dateAndTime.second;
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.SECOND);
 	}
@@ -550,6 +556,7 @@ public int getSeconds () {
  */
 public int getYear () {
 	checkWidget ();
+	if ((style & SWT.TIME) != 0) return dateAndTime.year;
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.YEAR);
 	}
@@ -570,9 +577,11 @@ void hookEvents () {
 }
 
 boolean isValid(int fieldName, int value) {
+	int year = (style & SWT.TIME) != 0 ? dateAndTime.year : dateRec.year;
+	int month = (style & SWT.TIME) != 0 ? dateAndTime.month : dateRec.month;
 	Calendar calendar = Calendar.getInstance();
-	calendar.set(Calendar.YEAR, dateRec.year);
-	calendar.set(Calendar.MONTH, dateRec.month - 1);
+	calendar.set(Calendar.YEAR, year);
+	calendar.set(Calendar.MONTH, month - 1);
 	int min = calendar.getActualMinimum(fieldName);
 	int max = calendar.getActualMaximum(fieldName);
 	return value >= min && value <= max;
@@ -703,6 +712,7 @@ public void setDate (int year, int month, int day) {
 	if ((style & SWT.CALENDAR) != 0) {
 		calendar.set(Calendar.YEAR, year);
 		calendar.set(Calendar.MONTH, month);
+		redraw();
 		setDay(day, false);
 	} else {
 		dateRec.year = (short)year;
@@ -710,8 +720,13 @@ public void setDate (int year, int month, int day) {
 		dateRec.day = (short)day;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		redraw();
+		if ((style & SWT.TIME) != 0) {
+			dateAndTime.year = (short)year;
+			dateAndTime.month = (short)(month + 1);
+			dateAndTime.day = (short)day;
+		}
 	}
-	redraw();
 }
 
 /**
@@ -736,6 +751,7 @@ public void setDay (int day) {
 		dateRec.day = (short)day;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.TIME) != 0) dateAndTime.day = (short)day;
 		redraw();
 	}
 }
@@ -762,6 +778,7 @@ public void setHours (int hours) {
 		dateRec.hour = (short)hours;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.DATE) != 0) dateAndTime.hour = (short)hours;
 	}
 	redraw();
 }
@@ -788,6 +805,7 @@ public void setMinutes (int minutes) {
 		dateRec.minute = (short)minutes;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.DATE) != 0) dateAndTime.minute = (short)minutes;
 	}
 	redraw();
 }
@@ -814,6 +832,7 @@ public void setMonth (int month) {
 		dateRec.month = (short)(month + 1);
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.TIME) != 0) dateAndTime.month = (short)(month + 1);
 	}
 	redraw();
 }
@@ -840,6 +859,7 @@ public void setSeconds (int seconds) {
 		dateRec.second = (short)seconds;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.DATE) != 0) dateAndTime.second = (short)seconds;
 	}
 	redraw();
 }
@@ -873,6 +893,11 @@ public void setTime (int hours, int minutes, int seconds) {
 		dateRec.second = (short)seconds;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.DATE) != 0) {
+			dateAndTime.hour = (short)hours;
+			dateAndTime.minute = (short)minutes;
+			dateAndTime.second = (short)seconds;
+		}
 	}
 	redraw();
 }
@@ -900,6 +925,7 @@ public void setYear (int year) {
 		dateRec.year = (short)year;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+		if ((style & SWT.TIME) != 0) dateAndTime.year = (short)year;
 	}
 	redraw();
 }
