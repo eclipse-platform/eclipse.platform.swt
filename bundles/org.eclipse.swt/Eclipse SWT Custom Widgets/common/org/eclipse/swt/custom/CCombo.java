@@ -462,7 +462,12 @@ public void cut () {
  */
 public void deselect (int index) {
 	checkWidget ();
-	list.deselect (index);
+	if (0 <= index && index < list.getItemCount () &&
+			index == list.getSelectionIndex() && 
+			text.getText().equals(list.getItem(index))) {
+		text.setText("");  //$NON-NLS-1$
+		list.deselect (index);
+	}
 }
 /**
  * Deselects all selected items in the receiver's list.
@@ -480,6 +485,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget ();
+	text.setText("");  //$NON-NLS-1$
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
