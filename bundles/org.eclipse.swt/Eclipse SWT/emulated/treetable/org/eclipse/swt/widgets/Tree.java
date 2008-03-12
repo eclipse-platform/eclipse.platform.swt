@@ -2315,7 +2315,7 @@ void onEnd (int stateMask) {
 	for (int i = anchorIndex; i <= selectIndex; i++) {
 		newSelection [writeIndex++] = availableItems [i];
 	}
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	redrawItems (anchorIndex, selectIndex, true);
 	showItem (selectedItem);
@@ -2423,7 +2423,7 @@ void onHome (int stateMask) {
 	for (int i = anchorIndex; i >= 0; i--) {
 		newSelection [writeIndex++] = availableItems [i];
 	}
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	redrawItems (anchorIndex, selectIndex, true);
 	showItem (selectedItem);
@@ -2645,7 +2645,7 @@ void onMouseDown (Event event) {
 					newSelection [writeIndex++] = availableItems [i];
 				}
 				newSelection [writeIndex] = availableItems [selectIndex];
-				setSelection (newSelection);
+				setSelection (newSelection, false);
 				setFocusItem (selectedItem, true);
 				redrawItems (
 					Math.min (anchorIndex, selectIndex),
@@ -2705,7 +2705,7 @@ void onMouseDown (Event event) {
 			newSelection [writeIndex++] = availableItems [i];
 		}
 		newSelection [writeIndex] = availableItems [selectIndex];
-		setSelection (newSelection);
+		setSelection (newSelection, false);
 		setFocusItem (selectedItem, true);
 		redrawItems (
 			Math.min (anchorIndex, selectIndex),
@@ -2813,7 +2813,7 @@ void onPageDown (int stateMask) {
 		newSelection [writeIndex++] = availableItems [i];
 	}
 	newSelection [writeIndex] = availableItems [selectIndex];
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	showItem (selectedItem);
 	Event newEvent = new Event ();
@@ -2895,7 +2895,7 @@ void onPageUp (int stateMask) {
 		newSelection [writeIndex++] = availableItems [i];
 	}
 	newSelection [writeIndex] = availableItems [selectIndex];
-	setSelection (newSelection);
+	setSelection (newSelection, false);
 	setFocusItem (selectedItem, true);
 	showItem (selectedItem);
 	Event newEvent = new Event ();
@@ -3743,7 +3743,7 @@ public void setRedraw (boolean value) {
 public void setSelection (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSelection (new TreeItem [] {item});
+	setSelection (new TreeItem [] {item}, true);
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -3770,6 +3770,10 @@ public void setSelection (TreeItem item) {
 public void setSelection (TreeItem[] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (items, true);
+}
+
+void setSelection (TreeItem[] items, boolean updateViewport) {
 	if (items.length == 0 || ((style & SWT.SINGLE) != 0 && items.length > 1)) {
 		deselectAll ();
 		return;
@@ -3804,8 +3808,10 @@ public void setSelection (TreeItem[] items) {
 			}
 		}
 	}
-	showItem (selectedItems [0]);
-	setFocusItem (selectedItems [0], true);
+	if (updateViewport) {
+		showItem (selectedItems [0]);
+		setFocusItem (selectedItems [0], true);
+	}
 	for (int i = 0; i < selectedItems.length; i++) {
 		int availableIndex = selectedItems [i].availableIndex;
 		if (availableIndex != -1) {
