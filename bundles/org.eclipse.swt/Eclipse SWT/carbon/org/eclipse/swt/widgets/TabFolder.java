@@ -627,6 +627,10 @@ void setSelection (int index, boolean notify, boolean force) {
 	}
 	OS.SetControl32BitValue (handle, index+1);
 	index = OS.GetControl32BitValue (handle) - 1;
+	if (hasFocus ()) {
+		int window = OS.GetControlOwner (handle);
+		OS.SetKeyboardFocus (window, handle, (short) (index + 1));
+	}
 	lastSelected = index;
 	if (index != -1) {
 		TabItem item = items [index];
