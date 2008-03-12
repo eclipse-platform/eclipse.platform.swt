@@ -324,7 +324,7 @@ public final class GIFFileFormat extends FileFormat {
 			boolean authentic =
 				authentication[0] == '2' &&
 				authentication[1] == '.' &&
-				authentication[7] == '0';
+				authentication[2] == '0';
 			if (netscape && authentic && data[0] == 01) { //$NON-NLS-1$ //$NON-NLS-2$
 				repeatCount = (data[1] & 0xFF) | ((data[2] & 0xFF) << 8);
 				loader.repeatCount = repeatCount;
