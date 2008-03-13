@@ -172,9 +172,12 @@ void deregister () {
 
 void destroyWidget () {
 	int topHandle = topHandle ();
-	int parentHandle = parent.handle;
-	int children = OS.Panel_Children (parentHandle);
-	OS.UIElementCollection_Remove (children, topHandle);
+	OS.UIElement_Visibility (topHandle, OS.Visibility_Collapsed);
+	if (parent.scrolledHandle != 0) {
+		int parentHandle = parent.handle;
+		int children = OS.Panel_Children (parentHandle);
+		OS.UIElementCollection_Remove (children, topHandle);
+	}
 	releaseHandle ();
 }
 
