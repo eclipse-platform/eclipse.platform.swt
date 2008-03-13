@@ -75,10 +75,7 @@ abstract class Tab {
 	Combo backgroundModeCombo;
 	Button backgroundModeImageButton, backgroundModeColorButton;
 
-	/* Event logging variables and controls */
-	Text eventConsole;
-	boolean logging = false;
-	boolean [] eventsFilter;
+	boolean samplePopup = false;
 	
 	/* Set/Get API controls */
 	Combo nameCombo;
@@ -86,52 +83,135 @@ abstract class Tab {
 	Button getButton, setButton;
 	Text setText, getText;
 
-	static final Object [][] EVENT_NAMES = {
-		{"Activate", new Integer(SWT.Activate)}, 
-		{"Arm", new Integer(SWT.Arm)}, 
-		{"Close", new Integer(SWT.Close)},
-		{"Collapse", new Integer(SWT.Collapse)},
-		{"Deactivate", new Integer(SWT.Deactivate)},
-		{"DefaultSelection", new Integer(SWT.DefaultSelection)},
-		{"Deiconify", new Integer(SWT.Deiconify)}, 
-		{"Dispose", new Integer(SWT.Dispose)},
-		{"DragDetect", new Integer(SWT.DragDetect)}, 
-		{"EraseItem", new Integer(SWT.EraseItem)},
-		{"Expand", new Integer(SWT.Expand)}, 
-		{"FocusIn", new Integer(SWT.FocusIn)}, 
-		{"FocusOut", new Integer(SWT.FocusOut)},
-		{"HardKeyDown", new Integer(SWT.HardKeyDown)}, 
-		{"HardKeyUp", new Integer(SWT.HardKeyUp)},
-		{"Help", new Integer(SWT.Help)}, 
-		{"Hide", new Integer(SWT.Hide)},
-		{"Iconify", new Integer(SWT.Iconify)}, 
-		{"KeyDown", new Integer(SWT.KeyDown)},
-		{"KeyUp", new Integer(SWT.KeyUp)},
-		{"MeasureItem", new Integer(SWT.MeasureItem)},
-		{"MenuDetect", new Integer(SWT.MenuDetect)},
-		{"Modify", new Integer(SWT.Modify)}, 
-		{"MouseDoubleClick", new Integer(SWT.MouseDoubleClick)},
-		{"MouseDown", new Integer(SWT.MouseDown)}, 
-		{"MouseEnter", new Integer(SWT.MouseEnter)}, 
-		{"MouseExit", new Integer(SWT.MouseExit)}, 
-		{"MouseHover", new Integer(SWT.MouseHover)},
-		{"MouseMove", new Integer(SWT.MouseMove)}, 
-		{"MouseUp", new Integer(SWT.MouseUp)}, 
-		{"MouseWheel", new Integer(SWT.MouseWheel)},
-		{"Move", new Integer(SWT.Move)}, 
-		{"Paint", new Integer(SWT.Paint)}, 
-		{"PaintItem", new Integer(SWT.PaintItem)},
-		{"Resize", new Integer(SWT.Resize)}, 
-		{"Selection", new Integer(SWT.Selection)}, 
-		{"SetData", new Integer(SWT.SetData)},
-//		{"Settings", new Integer(SWT.Settings)},  // note: this event only goes to Display
-		{"Show", new Integer(SWT.Show)}, 
-		{"Traverse", new Integer(SWT.Traverse)}, 
-		{"Verify", new Integer(SWT.Verify)},
-	};
+	/* Event logging variables and controls */
+	Text eventConsole;
+	boolean logging = false;
+	boolean [] eventsFilter;
+	int setFieldsMask = 0;
+	Event setFieldsEvent = new Event ();
+	boolean ignore = false;
 	
-	boolean samplePopup = false;
+	/* Event logging constants */
+	static final int DOIT	= 0x0100;
+	static final int DETAIL	= 0x0200;
+	static final int TEXT	= 0x0400;
+	static final int X		= 0x0800;
+	static final int Y		= 0x1000;
+	static final int WIDTH	= 0x2000;
+	static final int HEIGHT	= 0x4000;
 
+	static final int DETAIL_IME			= 0;
+	static final int DETAIL_ERASE_ITEM	= 1;
+	static final int DETAIL_TRAVERSE	= 2;
+
+	static class EventInfo {
+		String name;
+		int type;
+		int settableFields;
+		int setFields;
+		Event event;
+		EventInfo (String name, int type, int settableFields, int setFields, Event event) {
+			this.name = name;
+			this.type = type;
+			this.settableFields = settableFields;
+			this.setFields = setFields;
+			this.event = event;
+		}
+	}
+	
+	final EventInfo [] EVENT_INFO = {
+		new EventInfo ("Activate", SWT.Activate, 0, 0, new Event()), 
+		new EventInfo ("Arm", SWT.Arm, 0, 0, new Event()), 
+		new EventInfo ("Close", SWT.Close, DOIT, 0, new Event()),
+		new EventInfo ("Collapse", SWT.Collapse, 0, 0, new Event()),
+		new EventInfo ("Deactivate", SWT.Deactivate, 0, 0, new Event()),
+		new EventInfo ("DefaultSelection", SWT.DefaultSelection, 0, 0, new Event()),
+		new EventInfo ("Deiconify", SWT.Deiconify, 0, 0, new Event()), 
+		new EventInfo ("Dispose", SWT.Dispose, 0, 0, new Event()),
+		new EventInfo ("DragDetect", SWT.DragDetect, 0, 0, new Event()), 
+		new EventInfo ("EraseItem", SWT.EraseItem, DETAIL | DETAIL_ERASE_ITEM, 0, new Event()),
+		new EventInfo ("Expand", SWT.Expand, 0, 0, new Event()), 
+		new EventInfo ("FocusIn", SWT.FocusIn, 0, 0, new Event()), 
+		new EventInfo ("FocusOut", SWT.FocusOut, 0, 0, new Event()),
+		new EventInfo ("HardKeyDown", SWT.HardKeyDown, 0, 0, new Event()), 
+		new EventInfo ("HardKeyUp", SWT.HardKeyUp, 0, 0, new Event()),
+		new EventInfo ("Help", SWT.Help, 0, 0, new Event()), 
+		new EventInfo ("Hide", SWT.Hide, 0, 0, new Event()),
+		new EventInfo ("Iconify", SWT.Iconify, 0, 0, new Event()), 
+		new EventInfo ("KeyDown", SWT.KeyDown, DOIT, 0, new Event()),
+		new EventInfo ("KeyUp", SWT.KeyUp, DOIT, 0, new Event()),
+		new EventInfo ("MeasureItem", SWT.MeasureItem, 0, 0, new Event()),
+		new EventInfo ("MenuDetect", SWT.MenuDetect, X | Y | DOIT, 0, new Event()),
+		new EventInfo ("Modify", SWT.Modify, 0, 0, new Event()), 
+		new EventInfo ("MouseDoubleClick", SWT.MouseDoubleClick, 0, 0, new Event()),
+		new EventInfo ("MouseDown", SWT.MouseDown, 0, 0, new Event()), 
+		new EventInfo ("MouseEnter", SWT.MouseEnter, 0, 0, new Event()), 
+		new EventInfo ("MouseExit", SWT.MouseExit, 0, 0, new Event()), 
+		new EventInfo ("MouseHover", SWT.MouseHover, 0, 0, new Event()),
+		new EventInfo ("MouseMove", SWT.MouseMove, 0, 0, new Event()), 
+		new EventInfo ("MouseUp", SWT.MouseUp, 0, 0, new Event()), 
+		new EventInfo ("MouseWheel", SWT.MouseWheel, 0, 0, new Event()),
+		new EventInfo ("Move", SWT.Move, 0, 0, new Event()), 
+		new EventInfo ("Paint", SWT.Paint, 0, 0, new Event()), 
+		new EventInfo ("PaintItem", SWT.PaintItem, 0, 0, new Event()),
+		new EventInfo ("Resize", SWT.Resize, 0, 0, new Event()), 
+		new EventInfo ("Selection", SWT.Selection, X | Y | DOIT, 0, new Event()), // sash
+		new EventInfo ("SetData", SWT.SetData, 0, 0, new Event()),
+//		new EventInfo ("Settings", SWT.Settings, 0, 0, new Event()),  // note: this event only goes to Display
+		new EventInfo ("Show", SWT.Show, 0, 0, new Event()), 
+		new EventInfo ("Traverse", SWT.Traverse, DETAIL | DETAIL_TRAVERSE | DOIT, 0, new Event()),
+		new EventInfo ("Verify", SWT.Verify, TEXT | DOIT, 0, new Event()),
+		new EventInfo ("ImeComposition", SWT.ImeComposition, DETAIL | DETAIL_IME | TEXT | DOIT, 0, new Event()),
+	};
+
+	static final String [][] DETAIL_CONSTANTS = {
+		{ // DETAIL_IME = 0
+			"SWT.COMPOSITION_CHANGED",
+			"SWT.COMPOSITION_OFFSET",
+			"SWT.COMPOSITION_SELECTION",
+		},
+		{ // DETAIL_ERASE_ITEM = 1
+			"SWT.SELECTED",
+			"SWT.FOCUSED",
+			"SWT.BACKGROUND",
+			"SWT.FOREGROUND",
+			"SWT.HOT",
+		},
+		{ // DETAIL_TRAVERSE = 2
+			"SWT.TRAVERSE_NONE",
+			"SWT.TRAVERSE_ESCAPE",
+			"SWT.TRAVERSE_RETURN",
+			"SWT.TRAVERSE_TAB_PREVIOUS",
+			"SWT.TRAVERSE_TAB_NEXT",
+			"SWT.TRAVERSE_ARROW_PREVIOUS",
+			"SWT.TRAVERSE_ARROW_NEXT",
+			"SWT.TRAVERSE_MNEMONIC",
+			"SWT.TRAVERSE_PAGE_PREVIOUS",
+			"SWT.TRAVERSE_PAGE_NEXT",
+		},
+	};
+
+	static final Object [] DETAIL_VALUES = {
+		"SWT.COMPOSITION_CHANGED", new Integer(SWT.COMPOSITION_CHANGED),
+		"SWT.COMPOSITION_OFFSET", new Integer(SWT.COMPOSITION_OFFSET),
+		"SWT.COMPOSITION_SELECTION", new Integer(SWT.COMPOSITION_SELECTION),
+		"SWT.SELECTED", new Integer(SWT.SELECTED),
+		"SWT.FOCUSED", new Integer(SWT.FOCUSED),
+		"SWT.BACKGROUND", new Integer(SWT.BACKGROUND),
+		"SWT.FOREGROUND", new Integer(SWT.FOREGROUND),
+		"SWT.HOT", new Integer(SWT.HOT),
+		"SWT.TRAVERSE_NONE", new Integer(SWT.TRAVERSE_NONE),
+		"SWT.TRAVERSE_ESCAPE", new Integer(SWT.TRAVERSE_ESCAPE),
+		"SWT.TRAVERSE_RETURN", new Integer(SWT.TRAVERSE_RETURN),
+		"SWT.TRAVERSE_TAB_PREVIOUS", new Integer(SWT.TRAVERSE_TAB_PREVIOUS),
+		"SWT.TRAVERSE_TAB_NEXT", new Integer(SWT.TRAVERSE_TAB_NEXT),
+		"SWT.TRAVERSE_ARROW_PREVIOUS", new Integer(SWT.TRAVERSE_ARROW_PREVIOUS),
+		"SWT.TRAVERSE_ARROW_NEXT", new Integer(SWT.TRAVERSE_ARROW_NEXT),
+		"SWT.TRAVERSE_MNEMONIC", new Integer(SWT.TRAVERSE_MNEMONIC),
+		"SWT.TRAVERSE_PAGE_PREVIOUS", new Integer(SWT.TRAVERSE_PAGE_PREVIOUS),
+		"SWT.TRAVERSE_PAGE_NEXT", new Integer(SWT.TRAVERSE_PAGE_NEXT),
+	};
+		
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -451,6 +531,188 @@ abstract class Tab {
 		backgroundModeColorButton.setSelection(false);
 	}
 	
+	void createEditEventDialog(Shell parent, int x, int y, final int index) {
+		final Shell dialog = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+		dialog.setLayout(new GridLayout());
+		dialog.setText(ControlExample.getResourceString ("Edit_Event"));
+		Label label = new Label (dialog, SWT.NONE);
+		label.setText (ControlExample.getResourceString ("Edit_Event_Fields", new String [] {EVENT_INFO[index].name}));
+		
+		Group group = new Group (dialog, SWT.NONE);
+		group.setLayout(new GridLayout(2, false));
+		group.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true)); 
+		
+		final int fields = EVENT_INFO[index].settableFields;
+		final int eventType = EVENT_INFO[index].type;
+		setFieldsMask = EVENT_INFO[index].setFields;
+		setFieldsEvent = EVENT_INFO[index].event;
+		
+		if ((fields & DOIT) != 0) {
+			new Label (group, SWT.NONE).setText ("doit");
+			final Combo doitCombo = new Combo (group, SWT.READ_ONLY);
+			doitCombo.setItems (new String [] {"", "true", "false"});
+			if ((setFieldsMask & DOIT) != 0) doitCombo.setText(Boolean.toString(setFieldsEvent.doit));
+			doitCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			doitCombo.addSelectionListener(new SelectionAdapter () {
+				public void widgetSelected(SelectionEvent e) {
+					String newValue = doitCombo.getText();
+					if (newValue.length() == 0) {
+						setFieldsMask &= ~DOIT;
+					} else {
+						setFieldsEvent.type = eventType;
+						setFieldsEvent.doit = newValue.equals("true");
+						setFieldsMask |= DOIT;
+					}
+				}
+			});
+		}
+
+		if ((fields & DETAIL) != 0) {
+			new Label (group, SWT.NONE).setText ("detail");			
+			int detailType = fields & 0xFF;
+			final Combo detailCombo = new Combo (group, SWT.READ_ONLY);
+			detailCombo.setItems (DETAIL_CONSTANTS[detailType]);
+			detailCombo.add ("", 0);
+			detailCombo.setVisibleItemCount(detailCombo.getItemCount());
+			if ((setFieldsMask & DETAIL) != 0) detailCombo.setText (DETAIL_CONSTANTS[detailType][setFieldsEvent.detail]);
+			detailCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			detailCombo.addSelectionListener(new SelectionAdapter () {
+				public void widgetSelected(SelectionEvent e) {
+					String newValue = detailCombo.getText();
+					if (newValue.length() == 0) {
+						setFieldsMask &= ~DETAIL;
+					} else {
+						setFieldsEvent.type = eventType;
+						for (int i = 0; i < DETAIL_VALUES.length; i += 2) {
+							if (newValue.equals (DETAIL_VALUES [i])) {
+								setFieldsEvent.detail = ((Integer) DETAIL_VALUES [i + 1]).intValue();
+								break;
+							}
+						}
+						setFieldsMask |= DETAIL;
+					}
+				}
+			});
+		}
+
+		if ((fields & TEXT) != 0) {
+			new Label (group, SWT.NONE).setText ("text");	
+			final Text textText = new Text (group, SWT.BORDER);
+			if ((setFieldsMask & TEXT) != 0) textText.setText(setFieldsEvent.text);
+			textText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			textText.addModifyListener(new ModifyListener () {
+				public void modifyText(ModifyEvent e) {
+					String newValue = textText.getText();
+					if (newValue.length() == 0) {
+						setFieldsMask &= ~TEXT;
+					} else {
+						setFieldsEvent.type = eventType;
+						setFieldsEvent.text = newValue;
+						setFieldsMask |= TEXT;
+					}
+				}
+			});
+		}
+
+		if ((fields & X) != 0) {
+			new Label (group, SWT.NONE).setText ("x");	
+			final Text xText = new Text (group, SWT.BORDER);
+			if ((setFieldsMask & X) != 0) xText.setText(Integer.toString(setFieldsEvent.x));
+			xText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			xText.addModifyListener(new ModifyListener () {
+				public void modifyText(ModifyEvent e) {
+					String newValue = xText.getText ();
+					try {
+						int newIntValue = Integer.parseInt (newValue);
+						setFieldsEvent.type = eventType;
+						setFieldsEvent.x = newIntValue;
+						setFieldsMask |= X;
+					} catch (NumberFormatException ex) {
+						setFieldsMask &= ~X;
+					}
+				}
+			});
+		}
+
+		if ((fields & Y) != 0) {
+			new Label (group, SWT.NONE).setText ("y");	
+			final Text yText = new Text (group, SWT.BORDER);
+			if ((setFieldsMask & Y) != 0) yText.setText(Integer.toString(setFieldsEvent.y));
+			yText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			yText.addModifyListener(new ModifyListener () {
+				public void modifyText(ModifyEvent e) {
+					String newValue = yText.getText ();
+					try {
+						int newIntValue = Integer.parseInt (newValue);
+						setFieldsEvent.type = eventType;
+						setFieldsEvent.y = newIntValue;
+						setFieldsMask |= Y;
+					} catch (NumberFormatException ex) {
+						setFieldsMask &= ~Y;
+					}
+				}
+			});
+		}
+
+		if ((fields & WIDTH) != 0) {
+			new Label (group, SWT.NONE).setText ("width");	
+			final Text widthText = new Text (group, SWT.BORDER);
+			if ((setFieldsMask & WIDTH) != 0) widthText.setText(Integer.toString(setFieldsEvent.width));
+			widthText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			widthText.addModifyListener(new ModifyListener () {
+				public void modifyText(ModifyEvent e) {
+					String newValue = widthText.getText ();
+					try {
+						int newIntValue = Integer.parseInt (newValue);
+						setFieldsEvent.type = eventType;
+						setFieldsEvent.width = newIntValue;
+						setFieldsMask |= WIDTH;
+					} catch (NumberFormatException ex) {
+						setFieldsMask &= ~WIDTH;
+					}
+				}
+			});
+		}
+
+		if ((fields & HEIGHT) != 0) {
+			new Label (group, SWT.NONE).setText ("height");	
+			final Text heightText = new Text (group, SWT.BORDER);
+			if ((setFieldsMask & HEIGHT) != 0) heightText.setText(Integer.toString(setFieldsEvent.height));
+			heightText.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
+			heightText.addModifyListener(new ModifyListener () {
+				public void modifyText(ModifyEvent e) {
+					String newValue = heightText.getText ();
+					try {
+						int newIntValue = Integer.parseInt (newValue);
+						setFieldsEvent.type = eventType;
+						setFieldsEvent.height = newIntValue;
+						setFieldsMask |= HEIGHT;
+					} catch (NumberFormatException ex) {
+						setFieldsMask &= ~HEIGHT;
+					}
+				}
+			});
+		}
+
+		Button ok = new Button (dialog, SWT.PUSH);
+		ok.setText (ControlExample.getResourceString("OK"));
+		GridData data = new GridData (70, SWT.DEFAULT);
+		data.horizontalAlignment = SWT.RIGHT;
+		ok.setLayoutData (data);
+		ok.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				EVENT_INFO[index].setFields = setFieldsMask;
+				EVENT_INFO[index].event = setFieldsEvent;
+				dialog.dispose();
+			}
+		});
+
+		dialog.setDefaultButton(ok);
+		dialog.pack();
+		dialog.setLocation(x, y);
+		dialog.open();
+	}
+
 	/**
 	 * Create the event console popup menu.
 	 */
@@ -517,18 +779,18 @@ abstract class Tab {
 		dialog.setLayout (new GridLayout (2, false));
 		final Table table = new Table (dialog, SWT.BORDER | SWT.V_SCROLL | SWT.CHECK);
 		GridData data = new GridData(GridData.FILL_BOTH);
-		data.verticalSpan = 2;
+		data.verticalSpan = 3;
 		table.setLayoutData(data);
-		for (int i = 0; i < EVENT_NAMES.length; i++) {
+		for (int i = 0; i < EVENT_INFO.length; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);
-			item.setText ((String)EVENT_NAMES[i][0]);
+			item.setText (EVENT_INFO[i].name);
 			item.setChecked (eventsFilter[i]);
 		}
 		final String [] customNames = getCustomEventNames ();
 		for (int i = 0; i < customNames.length; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);
 			item.setText (customNames[i]);
-			item.setChecked (eventsFilter[EVENT_NAMES.length + i]);
+			item.setChecked (eventsFilter[EVENT_INFO.length + i]);
 		}
 		Button selectAll = new Button (dialog, SWT.PUSH);
 		selectAll.setText(ControlExample.getResourceString ("Select_All"));
@@ -536,28 +798,63 @@ abstract class Tab {
 		selectAll.addSelectionListener (new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
-				for (int i = 0; i < EVENT_NAMES.length; i++) {
+				for (int i = 0; i < EVENT_INFO.length; i++) {
 					items[i].setChecked(true);
 				}
 				for (int i = 0; i < customNames.length; i++) {
-					items[EVENT_NAMES.length + i].setChecked(true);
+					items[EVENT_INFO.length + i].setChecked(true);
 				}
 			}
 		});
 		Button deselectAll = new Button (dialog, SWT.PUSH);
 		deselectAll.setText(ControlExample.getResourceString ("Deselect_All"));
-		deselectAll.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING));
+		deselectAll.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		deselectAll.addSelectionListener (new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
-				for (int i = 0; i < EVENT_NAMES.length; i++) {
+				for (int i = 0; i < EVENT_INFO.length; i++) {
 					items[i].setChecked(false);
 				}
 				for (int i = 0; i < customNames.length; i++) {
-					items[EVENT_NAMES.length + i].setChecked(false);
+					items[EVENT_INFO.length + i].setChecked(false);
 				}
 			}
 		});
+		final Button editEvent = new Button (dialog, SWT.PUSH);
+		editEvent.setText (ControlExample.getResourceString ("Edit_Event"));
+		editEvent.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING));
+		editEvent.addSelectionListener (new SelectionAdapter() {
+			public void widgetSelected (SelectionEvent e) {
+				Point pt = editEvent.getLocation();
+				pt = e.display.map(editEvent, null, pt);
+				int index = table.getSelectionIndex();
+				if (getExampleWidgets().length > 0 && index != -1) {
+					createEditEventDialog(dialog, pt.x, pt.y, index);
+				}
+			}
+		});
+		editEvent.setEnabled(false);
+		table.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				int fields = 0;
+				int index = table.getSelectionIndex();
+				if (index != -1 && index < EVENT_INFO.length) {  // TODO: Allow custom widgets to specify event info
+					fields = (EVENT_INFO[index].settableFields);
+				}
+				editEvent.setEnabled(fields != 0);
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				if (editEvent.getEnabled()) {
+					Point pt = editEvent.getLocation();
+					pt = e.display.map(editEvent, null, pt);
+					int index = table.getSelectionIndex();
+					if (getExampleWidgets().length > 0 && index != -1 && index < EVENT_INFO.length) {
+						createEditEventDialog(dialog, pt.x, pt.y, index);
+					}
+				}
+			}
+		});
+
 		new Label(dialog, SWT.NONE); /* Filler */
 		Button ok = new Button (dialog, SWT.PUSH);
 		ok.setText(ControlExample.getResourceString ("OK"));
@@ -566,25 +863,27 @@ abstract class Tab {
 		ok.addSelectionListener (new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
-				for (int i = 0; i < EVENT_NAMES.length; i++) {
+				for (int i = 0; i < EVENT_INFO.length; i++) {
 					eventsFilter[i] = items[i].getChecked();
 				}
 				for (int i = 0; i < customNames.length; i++) {
-					eventsFilter[EVENT_NAMES.length + i] = items[EVENT_NAMES.length + i].getChecked();
+					eventsFilter[EVENT_INFO.length + i] = items[EVENT_INFO.length + i].getChecked();
 				}
 				dialog.dispose();
 			}
 		});
 		dialog.pack ();
 		/*
-		 * If the preferred size of the dialog is too tall for the screen,
+		 * If the preferred size of the dialog is too tall for the display,
 		 * then reduce the height, so that the vertical scrollbar will appear.
 		 */
-		Point size = dialog.getSize();
-		Rectangle bounds = display.getBounds();
-		if (size.y > bounds.height) {
-			dialog.setSize(size.x, bounds.height);
+		Rectangle bounds = dialog.getBounds();
+		Rectangle trim = dialog.computeTrim(0, 0, 0, 0);
+		Rectangle clientArea = display.getClientArea();
+		if (bounds.height > clientArea.height) {
+			dialog.setSize(bounds.width, clientArea.height - trim.height);
 		}
+		dialog.setLocation(bounds.x, 0);
 		dialog.open ();
 		while (! dialog.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -639,8 +938,8 @@ abstract class Tab {
 		
 		/* Initialize the eventsFilter to log all events. */
 		int customEventCount = getCustomEventNames ().length;
-		eventsFilter = new boolean [EVENT_NAMES.length + customEventCount];
-		for (int i = 0; i < EVENT_NAMES.length + customEventCount; i++) {
+		eventsFilter = new boolean [EVENT_INFO.length + customEventCount];
+		for (int i = 0; i < EVENT_INFO.length + customEventCount; i++) {
 			eventsFilter [i] = true;
 		}
 
@@ -1148,7 +1447,9 @@ abstract class Tab {
 			}
 			String [] customNames = getCustomEventNames ();
 			for (int i = 0; i < customNames.length; i++) {
-				if (eventsFilter [EVENT_NAMES.length + i]) hookCustomListener (customNames[i]);
+				if (eventsFilter [EVENT_INFO.length + i]) {
+					hookCustomListener (customNames[i]);
+				}
 			}
 		}
 	}
@@ -1171,8 +1472,10 @@ abstract class Tab {
 					log (event);
 				}
 			};
-			for (int i = 0; i < EVENT_NAMES.length; i++) {
-				if (eventsFilter [i]) widget.addListener (((Integer)EVENT_NAMES[i][1]).intValue(), listener);
+			for (int i = 0; i < EVENT_INFO.length; i++) {
+				if (eventsFilter [i]) {
+					widget.addListener (EVENT_INFO[i].type, listener);
+				}
 			}
 		}
 	}
@@ -1182,11 +1485,11 @@ abstract class Tab {
 	 */
 	void log(Event event) {
 		int i = 0;
-		while (i < EVENT_NAMES.length) {
-			if (((Integer)EVENT_NAMES[i][1]).intValue() == event.type) break;
+		while (i < EVENT_INFO.length) {
+			if (EVENT_INFO[i].type == event.type) break;
 			i++;
 		}
-		String toString = (String)EVENT_NAMES[i][0] + " ["+event.type+"]: ";
+		String toString = EVENT_INFO[i].name + " [" + event.type + "]: ";
 		switch (event.type) {
 			case SWT.KeyDown:
 			case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
@@ -1227,8 +1530,24 @@ abstract class Tab {
 			case SWT.SetData:
 			default: toString += event.toString ();
 		}
-		eventConsole.append (toString);
-		eventConsole.append ("\n");
+		log (toString);
+		
+		/* Return values for event fields. */
+		int mask = EVENT_INFO[i].setFields;
+		if (!ignore && mask != 0) {
+			Event setFieldsEvent = EVENT_INFO[i].event;
+			if ((mask & DOIT) != 0) event.doit = setFieldsEvent.doit;
+			if ((mask & DETAIL) != 0) event.detail = setFieldsEvent.detail;
+			if ((mask & TEXT) != 0) event.text = setFieldsEvent.text;
+			if ((mask & X) != 0) event.x = setFieldsEvent.x;
+			if ((mask & Y) != 0) event.y = setFieldsEvent.y;
+			if ((mask & WIDTH) != 0) event.width = setFieldsEvent.width;
+			if ((mask & HEIGHT) != 0) event.height = setFieldsEvent.height;
+			eventConsole.append (ControlExample.getResourceString("Returning"));
+			ignore = true;
+			log (event);
+			ignore = false;
+		}
 	}
 	
 	/**
