@@ -194,6 +194,8 @@ void destroyWidget () {
 	}
 	parent.destroyScrollBar (style);
 	releaseHandle ();
+	//This code is intentionally commented
+	//parent.sendEvent (SWT.Resize);
 }
 
 Rectangle getBounds () {
