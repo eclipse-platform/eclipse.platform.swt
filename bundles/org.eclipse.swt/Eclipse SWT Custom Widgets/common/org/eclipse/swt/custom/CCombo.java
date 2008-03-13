@@ -1022,6 +1022,12 @@ void listEvent (Event event) {
 				case SWT.TRAVERSE_ARROW_NEXT:
 					event.doit = false;
 					break;
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					event.doit = text.traverse(event.detail);
+					event.detail = SWT.TRAVERSE_NONE;
+					if (event.doit) dropDown(false);
+					return;
 			}
 			Event e = new Event ();
 			e.time = event.time;
