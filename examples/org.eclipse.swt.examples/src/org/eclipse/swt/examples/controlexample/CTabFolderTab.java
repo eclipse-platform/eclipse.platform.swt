@@ -218,7 +218,7 @@ class CTabFolderTab extends Tab {
 		for (int i = 0; i < CTabItems1.length; i++) {
 			CTabItem item = new CTabItem(tabFolder1, SWT.NONE);
 			item.setText(CTabItems1[i]);
-			Text text = new Text(tabFolder1, SWT.READ_ONLY);
+			Text text = new Text(tabFolder1, SWT.WRAP | SWT.MULTI);
 			text.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
 			item.setControl(text);
 		}
