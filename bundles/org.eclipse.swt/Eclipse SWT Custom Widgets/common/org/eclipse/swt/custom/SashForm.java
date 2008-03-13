@@ -98,6 +98,23 @@ public int getOrientation() {
 	//checkWidget();
 	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
 }
+/**
+ * Returns the width of the sashes when the controls in the SashForm are 
+ * laid out.
+ * 
+ * @return the width of the sashes
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public int getSashWidth() {
+	checkWidget();
+	return SASH_WIDTH;
+}
 public int getStyle() {
 	int style = super.getStyle();
 	style |= getOrientation() == SWT.VERTICAL ? SWT.VERTICAL : SWT.HORIZONTAL;
@@ -346,6 +363,25 @@ public void setMaximizedControl(Control control){
 	layout(false);
 }
 
+/**
+ * Specify the width of the sashes when the controls in the SashForm are 
+ * laid out.
+ * 
+ * @param int the width of the sashes
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setSashWidth(int width) {
+	checkWidget();
+	if (SASH_WIDTH == width) return;
+	SASH_WIDTH = width;
+	layout(false);
+}
 /**
  * Specify the relative weight of each child in the SashForm.  This will determine
  * what percent of the total width (if SashForm has Horizontal orientation) or 
