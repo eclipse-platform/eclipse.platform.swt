@@ -144,13 +144,13 @@ public void create (Composite parent, int style) {
 	webView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 	jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	SWTWebViewDelegate delegate = (SWTWebViewDelegate)new SWTWebViewDelegate().alloc().init();
+	final SWTWebViewDelegate delegate = (SWTWebViewDelegate)new SWTWebViewDelegate().alloc().init();
 	delegate.setTag(jniRef);
 	this.delegate = delegate;
 	this.webView = webView;
 	browser.view.addSubview_(webView);
 	
-	NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+	final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
 	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
@@ -169,7 +169,7 @@ public void create (Composite parent, int style) {
 					Safari.this.webView.setResourceLoadDelegate(null);
 					Safari.this.webView.setUIDelegate(null);
 					Safari.this.webView.setPolicyDelegate(null);
-					NSNotificationCenter.defaultCenter().removeObserver(Safari.this.webView);
+					notificationCenter.removeObserver(delegate);
 					
 					Safari.this.webView.release();
 					Safari.this.webView = null;
