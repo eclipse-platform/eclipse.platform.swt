@@ -163,6 +163,11 @@ void deregister () {
 	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 
+void destroyScrollBar (ScrollBar bar) {
+	setScrollBarVisible (bar, false);
+	bar.destroyHandle ();
+}
+
 public int getBorderWidth () {
 	checkWidget();
 	if ((state & CANVAS) != 0 && hasBorder ()) {
@@ -391,17 +396,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	if (scrolledHandle == 0) return false;
 	if ((state & CANVAS) == 0) return false;
-	if (visible) {
-		if ((bar.state & HIDDEN) == 0) return false;
-		bar.state &= ~HIDDEN;
-	} else {
-		if ((bar.state & HIDDEN) != 0) return false;
-		bar.state |= HIDDEN;
-	}
 	resizeClientArea ();
 	setVisible (bar.handle, visible);
-	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
-	sendEvent (SWT.Resize);
 	return true;
 }
 

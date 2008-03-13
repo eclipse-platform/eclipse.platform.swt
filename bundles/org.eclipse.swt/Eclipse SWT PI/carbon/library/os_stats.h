@@ -412,6 +412,7 @@ typedef enum {
 	GetCurrentProcess_FUNC,
 	GetCurrentScrap_FUNC,
 	GetDataBrowserCallbacks_FUNC,
+	GetDataBrowserHasScrollBars_FUNC,
 	GetDataBrowserItemCount_FUNC,
 	GetDataBrowserItemDataButtonValue_FUNC,
 	GetDataBrowserItemPartBounds_FUNC,

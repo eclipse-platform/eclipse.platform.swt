@@ -423,6 +423,12 @@ public void deselectAll () {
 	deselect (null, 0);
 }
 
+void destroyScrollBar (ScrollBar bar) {
+	if ((bar.style & SWT.H_SCROLL) != 0) style &= ~SWT.H_SCROLL;
+	if ((bar.style & SWT.V_SCROLL) != 0) style &= ~SWT.V_SCROLL;
+	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
+}
+
 void fixSelection (int index, boolean add) {
 	int [] selection = getSelectionIndices ();
 	if (selection.length == 0) return;
@@ -1284,6 +1290,14 @@ public void setItems (String [] items) {
 	this.items = new String [items.length];
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	itemCount = items.length;
+}
+
+boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	boolean [] horiz = new boolean [1], vert = new boolean [1];
+	OS.GetDataBrowserHasScrollBars (handle, horiz, vert);
+	if ((bar.style & SWT.H_SCROLL) != 0) horiz [0] = visible;
+	if ((bar.style & SWT.V_SCROLL) != 0) vert [0] = visible;
+	return OS.SetDataBrowserHasScrollBars (handle, horiz [0], vert [0]) == OS.noErr;
 }
 
 /**

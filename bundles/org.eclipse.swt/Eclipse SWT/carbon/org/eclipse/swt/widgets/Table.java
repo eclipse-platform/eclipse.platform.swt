@@ -892,6 +892,12 @@ void destroyItem (TableItem item) {
 	}
 }
 
+void destroyScrollBar (ScrollBar bar) {
+	if ((bar.style & SWT.H_SCROLL) != 0) style &= ~SWT.H_SCROLL;
+	if ((bar.style & SWT.V_SCROLL) != 0) style &= ~SWT.V_SCROLL;
+	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
+}
+
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
 	int index = getIndex (id);
 	if (!(0 <= index && index < itemCount)) return OS.noErr;
@@ -2967,6 +2973,14 @@ public void setRedraw (boolean redraw) {
 		}		
 	 	checkItems (true);
 	}
+}
+
+boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	boolean [] horiz = new boolean [1], vert = new boolean [1];
+	OS.GetDataBrowserHasScrollBars (handle, horiz, vert);
+	if ((bar.style & SWT.H_SCROLL) != 0) horiz [0] = visible;
+	if ((bar.style & SWT.V_SCROLL) != 0) vert [0] = visible;
+	return OS.SetDataBrowserHasScrollBars (handle, horiz [0], vert [0]) == OS.noErr;
 }
 
 boolean setScrollWidth (TableItem item) {

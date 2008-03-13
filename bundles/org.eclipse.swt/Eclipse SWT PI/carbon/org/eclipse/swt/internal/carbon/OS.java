@@ -1405,6 +1405,7 @@ public static final native int GetCurrentEventQueue();
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int GetCurrentScrap(int[] scrap);
 public static final native int GetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
+public static final native int GetDataBrowserHasScrollBars(int browser, boolean [] horiz, boolean [] vert);
 public static final native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
 public static final native int GetDataBrowserItemDataButtonValue(int itemData, short [] theData);
 public static final native int GetDataBrowserItemPartBounds(int cHandle, int item, int property, int part, Rect bounds);

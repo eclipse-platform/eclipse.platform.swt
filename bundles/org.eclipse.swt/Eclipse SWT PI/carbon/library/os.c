@@ -5406,6 +5406,25 @@ fail:
 }
 #endif
 
+#ifndef NO_GetDataBrowserHasScrollBars
+JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserHasScrollBars)
+	(JNIEnv *env, jclass that, jint arg0, jbooleanArray arg1, jbooleanArray arg2)
+{
+	jboolean *lparg1=NULL;
+	jboolean *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDataBrowserHasScrollBars_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetBooleanArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)GetDataBrowserHasScrollBars((ControlRef)arg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseBooleanArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetDataBrowserHasScrollBars_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDataBrowserItemCount
 JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserItemCount)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jintArray arg4)

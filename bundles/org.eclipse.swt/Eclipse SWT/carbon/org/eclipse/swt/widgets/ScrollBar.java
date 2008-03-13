@@ -182,12 +182,18 @@ int actionProc (int theControl, int partCode) {
 	return result;
 }
 
-void destroyWidget () {
+void destroyHandle () {
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
 	}
+}
+
+void destroyWidget () {
+	parent.destroyScrollBar (this);
+	releaseHandle ();
+	//parent.sendEvent (SWT.Resize);
 }
 
 void enableWidget (boolean enabled) {
@@ -561,7 +567,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
 	visibleRgn = 0;
-	parent = null;
 }
 
 void resetVisibleRegion (int control) {
@@ -785,7 +790,17 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollBarVisible (this, visible);
+	if (visible) {
+		if ((state & HIDDEN) == 0) return;
+		state &= ~HIDDEN;
+	} else {
+		if ((state & HIDDEN) != 0) return;
+		state |= HIDDEN;
+	}
+	if (parent.setScrollBarVisible (this, visible)) {
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		parent.sendEvent (SWT.Resize);
+	}
 }
 
 void setZOrder () {
