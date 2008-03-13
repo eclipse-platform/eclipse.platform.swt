@@ -141,6 +141,10 @@ void createWidget (int index) {
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
+void destroyScrollBar (ScrollBar bar) {
+	setScrollBarVisible (bar, false);
+	if ((state & CANVAS) != 0) bar.destroyHandle ();
+}
 void deregister () {
 	super.deregister ();
 	if (formHandle != 0) display.removeWidget (formHandle);
@@ -346,11 +350,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	int [] argList3 = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
-	if (argList1 [1] != argList3 [1] || argList1 [3] != argList3 [3]) {
-		sendEvent (SWT.Resize);
-		return true;
-	}
-	return false;
+	return argList1 [1] != argList3 [1] || argList1 [3] != argList3 [3];
 }
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;

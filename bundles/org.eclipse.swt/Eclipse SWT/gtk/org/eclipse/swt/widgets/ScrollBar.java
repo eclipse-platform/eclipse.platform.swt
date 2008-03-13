@@ -146,6 +146,16 @@ void deregister () {
 	if (adjustmentHandle != 0) display.removeWidget (adjustmentHandle);
 }
 
+void destroyHandle () {
+	super.destroyWidget ();
+}
+
+void destroyWidget () {
+	parent.destroyScrollBar (this);
+	releaseHandle ();
+	//parent.sendEvent (SWT.Resize);
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -459,6 +469,11 @@ void register () {
 	if (adjustmentHandle != 0) display.addWidget (adjustmentHandle, this);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
+
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
@@ -467,7 +482,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	parent = null;
+	//parent = null;
 }
 
 /**
@@ -741,7 +756,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	parent.setScrollBarVisible (this, visible);
+	if (parent.setScrollBarVisible (this, visible)) {
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		parent.sendEvent (SWT.Resize);
+	}
 }
 
 }

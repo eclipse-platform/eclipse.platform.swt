@@ -156,6 +156,12 @@ void deregister () {
 	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 
+void destroyScrollBar (ScrollBar bar) {
+	setScrollBarVisible (bar, false);
+	//This code is intentionally commented
+	//bar.destroyHandle ();
+}
+
 public int getBorderWidth () {
 	checkWidget();
 	int border = 0;
@@ -293,8 +299,6 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 		vsp [0] = policy;
 	}
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp [0], vsp [0]);
-	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
-	sendEvent (SWT.Resize);
 	return true;
 }
 

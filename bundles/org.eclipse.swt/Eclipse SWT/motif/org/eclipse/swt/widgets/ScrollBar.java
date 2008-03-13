@@ -143,6 +143,14 @@ void createHandle (int index) {
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
+void destroyHandle () {
+	super.destroyWidget ();
+}
+void destroyWidget () {
+	parent.destroyScrollBar (this);
+	releaseHandle ();
+	//parent.sendEvent (SWT.Resize);
+}
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -396,14 +404,14 @@ void manageChildren () {
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle, OS.None);
 }
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
 void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
-}
-void releaseWidget () {
-	super.releaseWidget ();
-	parent = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -666,7 +674,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollBarVisible (this, visible);
+	if (parent.setScrollBarVisible (this, visible)) {
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		parent.sendEvent (SWT.Resize);
+	}
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
