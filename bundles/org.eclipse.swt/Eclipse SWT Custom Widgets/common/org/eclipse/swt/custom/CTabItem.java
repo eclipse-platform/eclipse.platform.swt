@@ -750,6 +750,24 @@ public CTabFolder getParent () {
 	return parent;
 }
 /**
+ * Returns <code>true</code> to indicate that the receiver's close button should be shown.
+ * Otherwise return <code>false</code>. The initial value is defined by the style (SWT.CLOSE)
+ * that was used to create the receiver.
+ * 
+ * @return <code>true</code> if the close button should be shown
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getShowClose() {
+	checkWidget();
+	return showClose;
+}
+/**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
  *
@@ -980,6 +998,27 @@ public void setImage (Image image) {
 		parent.redrawTabs();
 	}
 }
+/**
+ * Sets to <code>true</code> to indicate that the receiver's close button should be shown.
+ * If the parent (CTabFolder) was created with SWT.CLOSE style, changing this value has
+ * no effect.
+ * 
+ * @param close the new state of the close button
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public void setShowClose(boolean close) {
+	checkWidget();
+	if (showClose == close) return;
+	showClose = close;
+	parent.updateItems();
+	parent.redrawTabs();
+}
 public void setText (String string) {
 	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -1007,4 +1046,5 @@ public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
 }
+
 }
