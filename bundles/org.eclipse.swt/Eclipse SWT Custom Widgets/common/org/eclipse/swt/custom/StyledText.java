@@ -6682,7 +6682,11 @@ int sendWordBoundaryEvent(int eventType, int movement, int offset, int newOffset
 }
 /**
  * Sets the alignment of the widget. The argument should be one of <code>SWT.LEFT</code>, 
- * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>. The alignment applies for all lines.  
+ * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>. The alignment applies for all lines.
+ * </p><p>
+ * Note that if <code>SWT.MULTI</code> is set, then <code>SWT.WRAP</code> must also be set
+ * in order to stabilize the right edge before setting alignment.
+ * </p>
  * 
  * @param alignment the new alignment
  *  
