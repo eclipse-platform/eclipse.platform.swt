@@ -59,11 +59,10 @@ class ExpandBarTab extends Tab {
 		// First item
 		Composite composite = new Composite (expandBar1, SWT.NONE);
 		composite.setLayout(new GridLayout ());
-		boolean isFlex = "flex".equals(SWT.getPlatform());
-		if (!isFlex) new Button (composite, SWT.PUSH).setText("SWT.PUSH");
+		new Button (composite, SWT.PUSH).setText("SWT.PUSH");
 		new Button (composite, SWT.RADIO).setText("SWT.RADIO");
 		new Button (composite, SWT.CHECK).setText("SWT.CHECK");
-		if (!isFlex) new Button (composite, SWT.TOGGLE).setText("SWT.TOGGLE");
+		new Button (composite, SWT.TOGGLE).setText("SWT.TOGGLE");
 		ExpandItem item = new ExpandItem (expandBar1, SWT.NONE, 0);
 		item.setText(ControlExample.getResourceString("Item1_Text"));
 		item.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
