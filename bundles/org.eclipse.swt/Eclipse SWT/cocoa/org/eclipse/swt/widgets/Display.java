@@ -1638,6 +1638,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_sendArrowSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
@@ -3081,6 +3082,10 @@ int windowDelegateProc(int delegate, int sel) {
 	}
 	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
+		return 0;
+	}
+	if (sel == OS.sel_sendArrowSelection) {
+		widget.sendArrowSelection();
 		return 0;
 	}
 	if (sel == OS.sel_sendDoubleSelection) {

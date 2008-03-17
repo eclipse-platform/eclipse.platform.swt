@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ToolItem extends Item {
 	NSView view;
+	NSButton button, arrow;
 	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -45,7 +46,9 @@ public class ToolItem extends Item {
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 6;
-	static final int INSET = 3;
+	static final int INSET = 5;
+	static final int ARROW_WIDTH = 5;
+	static final int ARROW_INSET = 2;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -185,15 +188,54 @@ Point computeSize () {
 			height = Math.max (height, control.getMininumHeight ());
 		}
 	} else {
-		((NSButton)view).sizeToFit ();
-		NSRect rect = view.frame();
-		width = (int)rect.width + INSET;
-		height = (int)rect.height + INSET;
+		((NSButton)button).sizeToFit ();
+		NSRect frame = button.frame();
+		width = (int)frame.width + INSET;
+		height = (int)frame.height;
+		if (arrow != null) {
+			width += ARROW_INSET + ARROW_WIDTH;
+		}
 		view.setNeedsDisplay(true);
 	}
 	return new Point (width, height);
 }
 
+void createWidget() {
+	createJNIRef ();
+	if ((style & SWT.SEPARATOR) != 0) {
+		SWTBox widget = (SWTBox)new SWTBox().alloc();
+		widget.initWithFrame(new NSRect());
+		widget.setBoxType(OS.NSBoxSeparator);
+		widget.setTag(jniRef);
+		view = widget;
+	} else {
+		SWTView widget = (SWTView)new SWTView().alloc();
+		widget.initWithFrame(new NSRect());
+		widget.setTag(parent.jniRef);
+		parent.contentView().addSubview_(widget);
+		button = (NSButton)new SWTButton().alloc();
+		button.initWithFrame(new NSRect());
+		button.setBordered(false);
+		button.setAction(OS.sel_sendSelection);
+		button.setTarget(button);
+		button.setTag(jniRef);
+		button.setImagePosition(OS.NSImageOverlaps);
+		button.setTitle(NSString.stringWith(""));
+		button.setEnabled(parent.getEnabled());
+		widget.addSubview_(button);
+		if ((style & SWT.DROP_DOWN) != 0) {
+			arrow = (NSButton)new SWTButton().alloc();
+			arrow.initWithFrame(new NSRect());
+			arrow.setBordered(false);
+			arrow.setAction(OS.sel_sendArrowSelection);
+			arrow.setTarget(arrow);
+			arrow.setTag(jniRef);
+			arrow.setEnabled(parent.getEnabled());
+			widget.addSubview_(arrow);
+		}
+		view = widget;
+	}
+}
 void destroyWidget() {
 	parent.destroyItem(this);
 	super.destroyWidget();
@@ -215,11 +257,36 @@ void drawRect(int id, NSRect rect) {
 		NSBezierPath.strokeRect(bounds);
 		context.restoreGraphicsState();
 	}
+	if (arrow != null && id == arrow.id) {
+		NSRect frame = arrow.frame();
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		context.saveGraphicsState();
+		NSPoint p1 = new NSPoint();
+		p1.y = frame.height / (float)2.0 - frame.width / (float)2.0;
+		NSPoint p2 = new NSPoint();
+		p2.x = frame.width;
+		p2.y = p1.y;
+		NSPoint p3 = new NSPoint();
+		p3.x = frame.width / (float)2.0;
+		p3.y = (float)(p2.y + Math.sqrt(Math.pow(frame.width, 2) - Math.pow(frame.width / 2, 2)));
+		NSBezierPath path = NSBezierPath.bezierPath();
+		path.moveToPoint(p1);
+		path.lineToPoint(p2);
+		path.lineToPoint(p3);
+		path.closePath();
+		NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
+		color.set();
+		path.fill();
+		context.restoreGraphicsState();
+	}
 }
 
 void enableWidget(boolean enabled) {
 	if ((style & SWT.SEPARATOR) == 0) {
-		((NSButton)view).setEnabled(enabled);
+		((NSButton)button).setEnabled(enabled);
+		if (arrow != null) {
+			((NSButton)arrow).setEnabled(enabled);
+		}
 	}
 }
 
@@ -413,7 +480,15 @@ void releaseHandle () {
 		OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
 		view.release();
 	}
-	view = null;
+	if (button != null) {
+		OS.objc_msgSend(button.id, OS.sel_setTag_1, -1);
+		button.release();
+	}
+	if (arrow != null) {
+		OS.objc_msgSend(arrow.id, OS.sel_setTag_1, -1);
+		arrow.release();
+	}
+	view = button = arrow = null;
 	parent = null;
 }
 
@@ -460,6 +535,15 @@ void selectRadio () {
 	setSelection (true);
 }
 
+void sendArrowSelection () {
+	NSRect frame = view.frame();
+	Event event = new Event ();
+	event.detail = SWT.ARROW;
+	event.x = (int)frame.x;
+	event.y = (int)(frame.y + arrow.frame().height);
+	postEvent (SWT.Selection, event);
+}
+
 void sendSelection () {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
@@ -477,6 +561,14 @@ void setBounds (int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	view.setFrame(rect);
+	if (arrow != null) {
+		rect = button.frame();
+		NSRect arrowRect = new NSRect();
+		arrowRect.x = rect.width + ARROW_INSET;
+		arrowRect.width = ARROW_WIDTH;
+		arrowRect.height = rect.height;
+		arrow.setFrame(arrowRect);
+	}
 }
 
 /**
@@ -657,16 +749,16 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
 	NSString str = NSString.stringWith(string);
-	((NSButton)view).setTitle(str);
+	((NSButton)button).setTitle(str);
 	parent.relayout ();
 	if (text.length() != 0 && image != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {
-			((NSButton)view).setImagePosition(OS.NSImageLeft);
+			((NSButton)button).setImagePosition(OS.NSImageLeft);
 		} else {
-			((NSButton)view).setImagePosition(OS.NSImageAbove);		
+			((NSButton)button).setImagePosition(OS.NSImageAbove);		
 		}
 	} else {
-		((NSButton)view).setImagePosition(OS.NSImageOverlaps);			
+		((NSButton)button).setImagePosition(OS.NSImageOverlaps);			
 	}
 }
 
@@ -728,15 +820,15 @@ void updateImage (boolean layout) {
 			image = disabledImage;
 		}
 	}
-	((NSButton)view).setImage(image != null ? image.handle : null);
+	((NSButton)button).setImage(image != null ? image.handle : null);
 	if (text.length() != 0 && image != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {
-			((NSButton)view).setImagePosition(OS.NSImageLeft);
+			((NSButton)button).setImagePosition(OS.NSImageLeft);
 		} else {
-			((NSButton)view).setImagePosition(OS.NSImageAbove);		
+			((NSButton)button).setImagePosition(OS.NSImageAbove);		
 		}
 	} else {
-		((NSButton)view).setImagePosition(OS.NSImageOverlaps);			
+		((NSButton)button).setImagePosition(OS.NSImageOverlaps);			
 	}
 	parent.relayout();
 }

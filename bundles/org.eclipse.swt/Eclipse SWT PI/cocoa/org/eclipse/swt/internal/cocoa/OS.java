@@ -36,6 +36,7 @@ public class OS extends C {
 
 	public static final int sel_sendSelection = sel_registerName("sendSelection");
 	public static final int sel_sendDoubleSelection = sel_registerName("sendDoubleSelection");
+	public static final int sel_sendArrowSelection = sel_registerName("sendArrowSelection");
 	public static final int sel_sendVerticalSelection = sel_registerName("sendVerticalSelection");
 	public static final int sel_sendHorizontalSelection = sel_registerName("sendHorizontalSelection");
 	public static final int sel_drawAtPoint_ = sel_registerName("drawAtPoint:");

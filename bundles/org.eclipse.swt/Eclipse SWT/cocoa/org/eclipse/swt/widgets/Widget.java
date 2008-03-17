@@ -828,6 +828,9 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
+void sendArrowSelection () {
+}
+
 void sendEvent (Event event) {
 	Display display = event.display;
 	if (!display.filterEvent (event)) {
