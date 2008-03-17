@@ -262,12 +262,12 @@ void drawRect(int id, NSRect rect) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
 		NSPoint p1 = new NSPoint();
-		p1.y = frame.height / (float)2.0 - frame.width / (float)2.0;
+		p1.y = (float)Math.ceil(frame.height / 2 - frame.width / 2);
 		NSPoint p2 = new NSPoint();
 		p2.x = frame.width;
 		p2.y = p1.y;
 		NSPoint p3 = new NSPoint();
-		p3.x = frame.width / (float)2.0;
+		p3.x = frame.width / 2;
 		p3.y = (float)(p2.y + Math.sqrt(Math.pow(frame.width, 2) - Math.pow(frame.width / 2, 2)));
 		NSBezierPath path = NSBezierPath.bezierPath();
 		path.moveToPoint(p1);
