@@ -7168,7 +7168,10 @@ public void setKeyBinding(int key, int action) {
 /**
  * Sets the alignment of the specified lines. The argument should be one of <code>SWT.LEFT</code>, 
  * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>.
- * <p>
+ * <p><p>
+ * Note that if <code>SWT.MULTI</code> is set, then <code>SWT.WRAP</code> must also be set
+ * in order to stabilize the right edge before setting alignment.
+ * </p>
  * Should not be called if a LineStyleListener has been set since the listener 
  * maintains the line attributes.
  * </p><p>
