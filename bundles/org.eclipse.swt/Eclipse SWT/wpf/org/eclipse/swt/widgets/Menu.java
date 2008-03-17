@@ -857,6 +857,10 @@ public void setLocation (Point location) {
 	setLocation (location.x, location.y);
 }
 
+void setNameScope() {
+	// DO NOTHING
+}
+
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
