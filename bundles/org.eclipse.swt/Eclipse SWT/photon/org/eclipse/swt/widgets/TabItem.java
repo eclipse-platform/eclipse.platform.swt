@@ -118,6 +118,25 @@ void destroyWidget () {
 }
 
 /**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public Rectangle getBounds() {
+	//TODO: Need to provide implementation for photon.
+	checkWidget();
+	return new Rectangle (0, 0, 0, 0);
+}
+
+/**
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
  * control has been set, return <code>null</code>.
