@@ -157,9 +157,7 @@ public class Display extends Device {
 //		{??,	SWT.INSERT},
 
 		/* Virtual and Ascii Keys */
-		{OS.NSDeleteCharacter, SWT.BS},
 //		{36,	SWT.CR},
-		{OS.NSDeleteFunctionKey, SWT.DEL},
 //		{53,	SWT.ESC},
 //		{76,	SWT.LF},
 //		{48,	SWT.TAB},	

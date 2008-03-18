@@ -1585,6 +1585,15 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			event.character = (char) keys.characterAtIndex (i);
 			//TODO - get unshifted vaules for Shift+1
 			event.keyCode = keyCodes.characterAtIndex (i);
+			/* 
+			* Feature on OSX.  The backspace key (labeled Delete on Mac keyboards) is mapped to SWT's
+			* Delete key code.  Fix the Backspace and Delete cases to be consistent with other platforms.
+			*/
+			if (event.keyCode == 127) {
+				event.keyCode = event.character = '\b';
+			} else if ((event.keyCode & 0xFFFF) == OS.NSDeleteFunctionKey) {
+				event.keyCode = event.character = 127;
+			}
 		}
 		setInputState (event, nsEvent, type);
 		if (sendKeyEvent (type, event)) {
