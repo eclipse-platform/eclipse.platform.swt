@@ -168,6 +168,28 @@ public Control getControl () {
 }
 
 /**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public Rectangle getBounds() {
+	checkWidget();
+	int index = parent.indexOf(this);
+	if (index == -1) return new Rectangle (0, 0, 0, 0);
+	RECT itemRect = new RECT ();
+	OS.SendMessage (parent.handle, OS.TCM_GETITEMRECT, index, itemRect);
+	return new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+}
+
+/**
  * Returns the receiver's parent, which must be a <code>TabFolder</code>.
  *
  * @return the receiver's parent

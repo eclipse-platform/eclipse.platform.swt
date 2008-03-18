@@ -139,7 +139,7 @@ void expand(int left, int top, int right, int bottom) {
 /**
  * Return the bounds of the TabItem.
  */
-Rectangle getBounds () {
+public Rectangle getBounds () {
 	return new Rectangle(x, y, width, height);
 }
 /**
