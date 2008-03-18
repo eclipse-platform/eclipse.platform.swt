@@ -503,6 +503,42 @@ void fixShell (Shell newShell, Control control) {
 //	if (control == lastActive) setActiveControl (null);
 }
 
+void flagsChanged(int theEvent) {
+	Display display = this.display;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	int modifiers = nsEvent.modifierFlags();
+	int lastModifiers = display.lastModifiers;
+//	int chord = OS.GetCurrentEventButtonState ();
+	int type = SWT.KeyUp;	
+	if ((modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSAlternateKeyMask) != 0 && (lastModifiers & OS.NSAlternateKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSShiftKeyMask) != 0 && (lastModifiers & OS.NSShiftKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSControlKeyMask) != 0 && (lastModifiers & OS.NSControlKeyMask) == 0) type = SWT.KeyDown;
+	if ((modifiers & OS.NSCommandKeyMask) != 0 && (lastModifiers & OS.NSCommandKeyMask) == 0) type = SWT.KeyDown;
+	Control target = getCurrentKeyTarget();
+	if (type == SWT.KeyUp && (modifiers & OS.NSAlphaShiftKeyMask) == 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) != 0) {
+		if (target != null) {
+			Event event = new Event ();
+			event.keyCode = SWT.CAPS_LOCK;
+	//		setInputState (event, SWT.KeyDown, chord, modifiers);
+			target.sendKeyEvent (SWT.KeyDown, event);
+		}
+	}
+	Event event = new Event ();
+//	setInputState (event, type, chord, modifiers);
+	if (event.keyCode == 0 && event.character == 0) return;
+	boolean result = sendKeyEvent (type, event);
+	if (type == SWT.KeyDown && (modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) {
+		if (target != null) {
+			event = new Event ();
+			event.keyCode = SWT.CAPS_LOCK;
+	//		setInputState (event, SWT.KeyUp, chord, modifiers);
+			target.sendKeyEvent (SWT.KeyUp, event);
+		}
+	}
+	display.lastModifiers = modifiers;
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
@@ -556,6 +592,36 @@ public Rectangle getClientArea () {
 		height = (int)size.height;
 	}
 	return new Rectangle (0, 0, width, height);
+}
+
+Control getCurrentKeyTarget() {
+	Control result = display.getFocusControl();
+	if (result != null) return result;
+
+	/*
+	* If the first responder is the shared field editor then answer its
+	* delegate as the event target.
+	*/
+	NSResponder firstResponder = window.firstResponder();
+	if (firstResponder.isKindOfClass(NSText.static_class())) {
+		NSText text = new NSText(firstResponder.id);
+		if (text.isFieldEditor()) {
+			id delegateId = text.delegate();
+			if (delegateId != null) {
+				NSObject delegate = new NSObject(delegateId.id);
+				if (delegate.respondsToSelector(OS.sel_tag)) {
+					int tag = OS.objc_msgSend(delegate.id, OS.sel_tag);
+					if (tag != 0 && tag != -1) {
+						Control control = (Control)OS.JNIGetObject(tag);
+						if (control != null) {
+							return control;
+						}
+					}
+				}
+			}
+		}
+	}
+	return null;
 }
 
 int getDrawCount (int control) {
@@ -1276,32 +1342,7 @@ void windowSendEvent(int id, int event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = nsEvent.type();
 	if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
-		Control eventTarget = display.getFocusControl();
-		if (eventTarget == null) {
-			/*
-			* If the first responder is the shared field editor then set its delegate
-			* as the event target.
-			*/
-			NSResponder firstResponder = window.firstResponder();
-			if (firstResponder.isKindOfClass(NSText.static_class())) {
-				NSText text = new NSText(firstResponder.id);
-				if (text.isFieldEditor()) {
-					id delegateId = text.delegate();
-					if (delegateId != null) {
-						NSObject delegate = new NSObject(delegateId.id);
-						if (delegate.respondsToSelector(OS.sel_tag)) {
-							int tag = OS.objc_msgSend(delegate.id, OS.sel_tag);
-							if (tag != 0 && tag != -1) {
-								Control control = (Control)OS.JNIGetObject(tag);
-								if (control != null) {
-									eventTarget = control;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		Control eventTarget = getCurrentKeyTarget();
 		if (eventTarget != null) {
 			if (!eventTarget.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp)) return;
 		}

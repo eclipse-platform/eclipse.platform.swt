@@ -1612,7 +1612,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
@@ -1783,6 +1782,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
 
