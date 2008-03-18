@@ -119,7 +119,6 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Region region;
 	Rectangle normalBounds;
-	SWTTextView sharedEditor;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -771,8 +770,6 @@ void releaseHandle () {
 	window.setDelegate(null);
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
-	if (sharedEditor != null) sharedEditor.release();
-	sharedEditor = null;
 	super.releaseHandle ();
 	window = null;
 }
@@ -1272,33 +1269,44 @@ boolean windowShouldClose(int window) {
 	return false;
 }
 
-int windowWillReturnFieldEditor_toObject(int window, int anObject) {
-	int tag = OS.objc_msgSend(anObject, OS.sel_tag);
-	if (tag == 0 || tag == -1) return 0;
-	Widget widget = (Widget)OS.JNIGetObject(tag);
-	if (widget == null || !widget.useSharedEditor()) return 0;
-	if (sharedEditor == null) {
-		sharedEditor = (SWTTextView)new SWTTextView().alloc();
-		sharedEditor.initWithFrame(new NSRect());
-		sharedEditor.setDelegate(sharedEditor);
-		sharedEditor.setEditable(true);
-	}
-	return sharedEditor.id;
-}
-
 void windowWillClose(int notification) {
 }
 
 void windowSendEvent(int id, int event) {
-	super.windowSendEvent(id, event);
 	NSEvent nsEvent = new NSEvent(event);
 	int type = nsEvent.type();
 	if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
-		Control focusControl = display.getFocusControl();
-		if (focusControl != null) {
-			focusControl.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp);
+		Control eventTarget = display.getFocusControl();
+		if (eventTarget == null) {
+			/*
+			* If the first responder is the shared field editor then set its delegate
+			* as the event target.
+			*/
+			NSResponder firstResponder = window.firstResponder();
+			if (firstResponder.isKindOfClass(NSText.static_class())) {
+				NSText text = new NSText(firstResponder.id);
+				if (text.isFieldEditor()) {
+					id delegateId = text.delegate();
+					if (delegateId != null) {
+						NSObject delegate = new NSObject(delegateId.id);
+						if (delegate.respondsToSelector(OS.sel_tag)) {
+							int tag = OS.objc_msgSend(delegate.id, OS.sel_tag);
+							if (tag != 0 && tag != -1) {
+								Control control = (Control)OS.JNIGetObject(tag);
+								if (control != null) {
+									eventTarget = control;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if (eventTarget != null) {
+			eventTarget.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp);
 		}
 	}
+	super.windowSendEvent(id, event);
 }
 
 }

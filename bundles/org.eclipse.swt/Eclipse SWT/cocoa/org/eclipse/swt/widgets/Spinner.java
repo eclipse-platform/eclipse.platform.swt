@@ -219,14 +219,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return super.computeTrim(x, y, width, height);
 }
 
-void controlTextDidBeginEditing(int notification) {
-	NSNotification nsNotification = new NSNotification(notification);
-	NSDictionary userInfo = nsNotification.userInfo();
-	id id = userInfo.objectForKey(NSString.stringWith("NSFieldEditor"));
-	SWTTextView editor = new SWTTextView(id.id);
-	editor.setTag(jniRef);
-}
-
 /**
  * Copies the selected text.
  * <p>
@@ -270,7 +262,6 @@ void createHandle () {
 	textWidget.initWithFrame(new NSRect());
 //	textWidget.setTarget(widget);
 	textWidget.setTag(jniRef);
-	textWidget.setDelegate(textWidget);
 	widget.addSubview_(textWidget);
 	widget.addSubview_(buttonWidget);
 	buttonView = buttonWidget;
@@ -739,10 +730,6 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	buttonView.setMaxValue(maximum);
 	buttonView.setMinValue(minimum);
 	setSelection (selection, true, true, false);
-}
-
-boolean useSharedEditor() {
-	return true;
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {

@@ -303,17 +303,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-void controlTextDidBeginEditing(int notification) {
-	/* NSSecureText uses its own editor instead of the window's shared editor */
-	if ((style & (SWT.SINGLE | SWT.PASSWORD)) == SWT.SINGLE) {
-		NSNotification nsNotification = new NSNotification(notification);
-		NSDictionary userInfo = nsNotification.userInfo();
-		id id = userInfo.objectForKey(NSString.stringWith("NSFieldEditor"));
-		SWTTextView editor = new SWTTextView(id.id);
-		editor.setTag(jniRef);
-	}
-}
-
 /**
  * Copies the selected text.
  * <p>
@@ -340,7 +329,7 @@ void createHandle () {
 		if ((style & SWT.PASSWORD) != 0) {
 			widget = (NSTextField)new NSSecureTextField().alloc();
 		} else if ((style & SWT.SEARCH) != 0) {
-			widget = (NSTextField)new SWTSearchField().alloc();
+			widget = (NSTextField)new NSSearchField().alloc();
 		} else {
 			widget = (NSTextField)new SWTTextField().alloc();
 		}
@@ -352,7 +341,6 @@ void createHandle () {
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
 		widget.setAlignment(align);
-		widget.setDelegate(widget);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
@@ -1633,11 +1621,6 @@ int traversalCode (int key, int theEvent) {
 //		}
 	}
 	return bits;
-}
-
-boolean useSharedEditor() {
-	/* NSSecureText uses its own editor instead of the window's shared editor */
-	return (style & (SWT.SINGLE | SWT.PASSWORD)) == SWT.SINGLE;
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {

@@ -1576,7 +1576,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidResignKey_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowWillReturnFieldEditor_1toObject_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_timerProc_1, proc3, "@:@");
@@ -1725,7 +1724,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_controlTextDidBeginEditing_1, proc3, "@:@@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTDatePicker";
@@ -1779,12 +1777,6 @@ void initClasses () {
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
-	OS.class_addMethod(cls, OS.sel_controlTextDidBeginEditing_1, proc3, "@:@@");
-	OS.objc_registerClassPair(cls);
-
-	className = "SWTSearchField";
-	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
-	OS.class_addMethod(cls, OS.sel_controlTextDidBeginEditing_1, proc3, "@:@@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTWindow";
@@ -3170,8 +3162,6 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.outlineViewSelectionDidChange(arg0);
 	} else if (sel == OS.sel_sendEvent_1) {
 		widget.windowSendEvent(id, arg0);
-	} else if (sel == OS.sel_controlTextDidBeginEditing_1) {
-		widget.controlTextDidBeginEditing(arg0);
 	}
 	return 0;
 }
@@ -3194,8 +3184,6 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 		return widget.outlineView_shouldExpandItem(arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_menu_1willHighlightItem_1) {
 		widget.menu_willHighlightItem(arg0, arg1);
-	} else if (sel == OS.sel_windowWillReturnFieldEditor_1toObject_1) {
-		return widget.windowWillReturnFieldEditor_toObject(arg0, arg1);
 	}
 	return 0;
 }

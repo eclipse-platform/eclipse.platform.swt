@@ -20,6 +20,10 @@ public NSText(int id) {
 	super(id);
 }
 
+public static int static_class() {
+	return OS.objc_msgSend(OS.class_NSText, OS.sel_class);
+}
+
 public NSData RTFDFromRange(NSRange range) {
 	int result = OS.objc_msgSend(this.id, OS.sel_RTFDFromRange_1, range);
 	return result != 0 ? new NSData(result) : null;

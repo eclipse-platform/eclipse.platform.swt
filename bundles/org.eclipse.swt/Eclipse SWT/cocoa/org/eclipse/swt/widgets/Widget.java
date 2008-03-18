@@ -310,9 +310,6 @@ boolean clickOnLink(int textView, int link, int charIndex) {
 void comboBoxSelectionDidChange(int notification) {
 }
 
-void controlTextDidBeginEditing(int notification) {
-}
-
 void createHandle () {
 }
 
@@ -1235,10 +1232,6 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
-boolean useSharedEditor() {
-	return false;
-}
-
 void willSelectTabViewItem(int tabView, int tabViewItem) {
 }
 
@@ -1265,7 +1258,4 @@ boolean windowShouldClose(int window) {
 void windowWillClose(int notification) {
 }
 
-int windowWillReturnFieldEditor_toObject(int window, int anObject) {
-	return 0;
-}
 }

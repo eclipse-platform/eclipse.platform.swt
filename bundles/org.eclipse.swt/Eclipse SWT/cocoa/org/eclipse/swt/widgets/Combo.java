@@ -337,16 +337,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-void controlTextDidBeginEditing(int notification) {
-	if ((style & SWT.READ_ONLY) == 0) {
-		NSNotification nsNotification = new NSNotification(notification);
-		NSDictionary userInfo = nsNotification.userInfo();
-		id id = userInfo.objectForKey(NSString.stringWith("NSFieldEditor"));
-		SWTTextView editor = new SWTTextView(id.id);
-		editor.setTag(jniRef);
-	}
-}
-
 /**
  * Copies the selected text.
  * <p>
@@ -1352,10 +1342,6 @@ public void setVisibleItemCount (int count) {
 	} else {
 		((NSComboBox)view).setNumberOfVisibleItems(count);
 	}
-}
-
-boolean useSharedEditor() {
-	return (style & SWT.READ_ONLY) == 0;
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
