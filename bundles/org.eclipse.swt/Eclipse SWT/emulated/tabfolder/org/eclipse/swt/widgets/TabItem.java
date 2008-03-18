@@ -140,6 +140,7 @@ void expand(int left, int top, int right, int bottom) {
  * Return the bounds of the TabItem.
  */
 public Rectangle getBounds () {
+	checkWidget();
 	return new Rectangle(x, y, width, height);
 }
 /**
