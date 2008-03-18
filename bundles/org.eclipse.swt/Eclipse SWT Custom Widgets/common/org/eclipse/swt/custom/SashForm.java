@@ -367,7 +367,7 @@ public void setMaximizedControl(Control control){
  * Specify the width of the sashes when the controls in the SashForm are 
  * laid out.
  * 
- * @param int the width of the sashes
+ * @param width the width of the sashes
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
