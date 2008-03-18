@@ -145,7 +145,7 @@ void createHandle () {
 	parent.contentView().addSubview_(view);
 }
 
-void sendKeyEvent(NSEvent nsEvent, int type) {
+boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	//TODO consumed
 	int keyCode = nsEvent.keyCode();
 	switch (keyCode) {
@@ -176,7 +176,7 @@ void sendKeyEvent(NSEvent nsEvent, int type) {
 			} else {
 				newY = Math.min (Math.max (0, lastY + yChange), parentHeight - height);
 			}
-			if (newX == lastX && newY == lastY) return;
+			if (newX == lastX && newY == lastY) return true;
 			Event event = new Event ();
 			event.x = newX;
 			event.y = newY;
@@ -189,7 +189,7 @@ void sendKeyEvent(NSEvent nsEvent, int type) {
 				if (isDisposed ()) break;
 				lastX = event.x;
 				lastY = event.y;
-				if (isDisposed ()) return;
+				if (isDisposed ()) return false;
 				int cursorX = event.x, cursorY = event.y;
 				if ((style & SWT.VERTICAL) != 0) {
 					cursorY += height / 2;
@@ -201,6 +201,7 @@ void sendKeyEvent(NSEvent nsEvent, int type) {
 			break;
 		}
 	}
+	return true;
 }
 
 void mouseDown(int theEvent) {

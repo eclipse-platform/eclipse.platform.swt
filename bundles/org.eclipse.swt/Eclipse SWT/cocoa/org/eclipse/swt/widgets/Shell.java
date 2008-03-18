@@ -1303,7 +1303,7 @@ void windowSendEvent(int id, int event) {
 			}
 		}
 		if (eventTarget != null) {
-			eventTarget.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp);
+			if (!eventTarget.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp)) return;
 		}
 	}
 	super.windowSendEvent(id, event);

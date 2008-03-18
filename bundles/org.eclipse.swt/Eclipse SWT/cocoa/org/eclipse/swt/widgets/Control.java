@@ -1569,8 +1569,8 @@ boolean sendKeyEvent (Event event) {
 }
 
 //TODO - missing modifier keys (see flagsChanged:)
-void sendKeyEvent (NSEvent nsEvent, int type) {
-	if ((state & SAFARI_EVENTS_FIX) != 0) return;
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	if ((state & SAFARI_EVENTS_FIX) != 0) return false;
 	int count = 0;
 	NSString keys = nsEvent.characters();
 	//TODO - check lowercase doesn't mangle char codes
@@ -1595,6 +1595,7 @@ void sendKeyEvent (NSEvent nsEvent, int type) {
 	if (count != keys.length () - 1) {
 //		OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
 	}
+	return count == keys.length ();
 }
 
 void markLayout (boolean changed, boolean all) {
