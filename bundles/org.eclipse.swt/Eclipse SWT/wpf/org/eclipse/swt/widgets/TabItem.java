@@ -156,6 +156,32 @@ void destroyWidget () {
 }
 
 /**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Rectangle getBounds () {
+	checkWidget ();
+	int topHandle =	handle;
+	int point = OS.gcnew_Point (0, 0);
+	if (point == 0) error (SWT.ERROR_NO_HANDLES);
+	int location = OS.UIElement_TranslatePoint (topHandle, point, parent.handle);
+	int x = (int) OS.Point_X (location);
+	int y = (int) OS.Point_Y (location);
+	OS.GCHandle_Free (point);
+	OS.GCHandle_Free (location);
+	int width = (int) OS.FrameworkElement_ActualWidth (topHandle);
+	int height = (int) OS.FrameworkElement_ActualHeight (topHandle);
+	return new Rectangle (x, y, width, height);
+}
+
+/**
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
  * control has been set, return <code>null</code>.
