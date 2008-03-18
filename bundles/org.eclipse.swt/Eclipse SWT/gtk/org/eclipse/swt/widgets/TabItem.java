@@ -131,6 +131,16 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+public Rectangle getBounds () {
+	checkWidget();
+	int x = OS.GTK_WIDGET_X (handle);
+	int y = OS.GTK_WIDGET_Y (handle);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (handle);
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (handle);
+	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
+	return new Rectangle (x, y, width, height);
+}
+
 /**
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
