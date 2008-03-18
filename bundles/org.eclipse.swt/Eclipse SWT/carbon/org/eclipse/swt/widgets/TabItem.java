@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlTabInfoRecV1;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -127,6 +128,18 @@ protected void checkSubclass () {
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+public Rectangle getBounds() {
+	checkWidget ();
+	int index = parent.indexOf (this);
+	if (index == -1) return new Rectangle (0, 0, 0, 0);
+	int rgnHandle = OS.NewRgn ();
+	OS.GetControlRegion (parent.handle, (short) (index + 1), rgnHandle);
+	Rect rect = new Rect ();
+	OS.GetRegionBounds (rgnHandle, rect);
+	OS.DisposeRgn (rgnHandle);
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**
