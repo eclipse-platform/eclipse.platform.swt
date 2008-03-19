@@ -1741,6 +1741,7 @@ public void select (int index) {
 		OS.gtk_list_select_item (listHandle, index);
 		ignoreSelect = false;
 	}
+	sendEvent (SWT.Modify);
 }
 
 void setBackgroundColor (GdkColor color) {
