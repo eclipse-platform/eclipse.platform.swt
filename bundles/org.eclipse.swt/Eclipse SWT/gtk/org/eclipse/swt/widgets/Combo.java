@@ -2035,6 +2035,7 @@ public void setText (String string) {
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.gtk_combo_box_set_active (handle, index);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			sendEvent (SWT.Modify);
 			return;
 		}
 	}
