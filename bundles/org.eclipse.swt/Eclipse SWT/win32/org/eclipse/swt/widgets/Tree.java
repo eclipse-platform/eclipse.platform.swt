@@ -73,6 +73,7 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
+	int columnCount;
 	ImageList imageList, headerImageList;
 	TreeItem currentItem;
 	TreeColumn sortColumn;
@@ -395,7 +396,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 	OS.GetClientRect (scrolledHandle (), clientRect);
 	if (hwndHeader != 0) {
 		OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
-		count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		count = columnCount;
 		if (count != 0) {
 			order = new int [count];
 			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
@@ -863,7 +864,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 	if (linesVisible) {
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			if (hwndHeader != 0) {
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0) {
+				if (columnCount != 0) {
 					HDITEM hdItem = new HDITEM ();
 					hdItem.mask = OS.HDI_WIDTH;
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
@@ -932,7 +933,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 	int count = 0;
 	RECT clipRect = null;
 	if (hwndHeader != 0) {
-		count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		count = columnCount;
 		if (count != 0) {
 			boolean clip = !printClient;
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
@@ -1335,8 +1336,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*/ l
 				RECT rect = new RECT ();
 				HDITEM hdItem = new HDITEM ();
 				hdItem.mask = OS.HDI_WIDTH;
-				int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-				for (int i=0; i<count; i++) {
+				for (int i=0; i<columnCount; i++) {
 					int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 					OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
@@ -1744,8 +1744,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hwndHeader != 0) {
 		HDITEM hdItem = new HDITEM ();
 		hdItem.mask = OS.HDI_WIDTH;
-		int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		for (int i=0; i<count; i++) {
+		for (int i=0; i<columnCount; i++) {
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 			width += hdItem.cxy;
 		}
@@ -1870,7 +1869,6 @@ void createHeaderToolTips () {
 
 void createItem (TreeColumn column, int index) {
 	if (hwndHeader == 0) createParent ();
-	int columnCount = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (columnCount == columns.length) {
 		TreeColumn [] newColumns = new TreeColumn [columns.length + 4];
@@ -1933,7 +1931,7 @@ void createItem (TreeColumn column, int index) {
 			}
 		}
 	}
-	System.arraycopy (columns, index, columns, index + 1, columnCount - index);
+	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	
 	/*
@@ -1954,7 +1952,7 @@ void createItem (TreeColumn column, int index) {
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	
 	/* When the first column is created, hide the horizontal scroll bar */
-	if (columnCount == 0) {
+	if (columnCount == 1) {
 		scrollWidth = 0;
 		if ((style & SWT.H_SCROLL) != 0) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -1981,7 +1979,7 @@ void createItem (TreeColumn column, int index) {
 	updateScrollBar ();
 	
 	/* Redraw to hide the items when the first column is created */
-	if (columnCount == 0 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
+	if (columnCount == 1 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
 		OS.InvalidateRect (handle, null, true);
 	}
 	
@@ -2331,7 +2329,6 @@ public void deselectAll () {
 
 void destroyItem (TreeColumn column) {
 	if (hwndHeader == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	int columnCount = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < columnCount) {
 		if (columns [index] == column) break;
@@ -2645,10 +2642,7 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 		} else {
 			OS.GetClientRect (handle, rect);
 		}
-		int count = 1;
-		if (hwndHeader != 0) {
-			count = Math.max (1, (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
-		}
+		int count = Math.max (1, columnCount);
 		int [] order = new int [count];
 		if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
 		index [0] = 0;
@@ -2918,8 +2912,7 @@ int /*long*/ getBottomItem () {
 public TreeColumn getColumn (int index) {
 	checkWidget ();
 	if (hwndHeader == 0) error (SWT.ERROR_INVALID_RANGE);
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	return columns [index];
 }
 
@@ -2941,8 +2934,7 @@ public TreeColumn getColumn (int index) {
  */
 public int getColumnCount () {
 	checkWidget ();
-	if (hwndHeader == 0) return 0;
-	return (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	return columnCount;
 }
 
 /**
@@ -2976,9 +2968,8 @@ public int getColumnCount () {
 public int[] getColumnOrder () {
 	checkWidget ();
 	if (hwndHeader == 0) return new int [0];
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	int [] order = new int [count];
-	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+	int [] order = new int [columnCount];
+	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 	return order;
 }
 
@@ -3014,9 +3005,8 @@ public int[] getColumnOrder () {
 public TreeColumn [] getColumns () {
 	checkWidget ();
 	if (hwndHeader == 0) return new TreeColumn [0];
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	TreeColumn [] result = new TreeColumn [count];
-	System.arraycopy (columns, 0, result, 0, count);
+	TreeColumn [] result = new TreeColumn [columnCount];
+	System.arraycopy (columns, 0, result, 0, columnCount);
 	return result;
 }
 
@@ -3628,8 +3618,7 @@ public int indexOf (TreeColumn column) {
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (hwndHeader == 0) return -1;
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<columnCount; i++) {
 		if (columns [i] == column) return i;
 	}
 	return -1;
@@ -4117,8 +4106,7 @@ public void setLinesVisible (boolean show) {
 
 int /*long*/ scrolledHandle () {
 	if (hwndHeader == 0) return handle;
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	return count == 0 && scrollWidth == 0 ? handle : hwndParent;
+	return columnCount == 0 && scrollWidth == 0 ? handle : hwndParent;
 }
 
 void select (int /*long*/ hItem, TVITEM tvItem) {
@@ -4303,8 +4291,7 @@ Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return null;
 	if (hwndHeader != 0) {
-		int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (count == 0) {
+		if (columnCount == 0) {
 			if (event.x + event.width > scrollWidth) {
 				setScrollWidth (scrollWidth = event.x + event.width);
 			}
@@ -4445,10 +4432,7 @@ void setCursor () {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = 0;
-	if (hwndHeader != 0) {
-		count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	}
+	int count = columnCount;
 	if (count == 0) {
 		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
 		return;
@@ -4692,8 +4676,7 @@ void setScrollWidth () {
 	if (hwndHeader == 0 || hwndParent == 0) return;
 	int width = 0;
 	HDITEM hdItem = new HDITEM ();
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<columnCount; i++) {
 		hdItem.mask = OS.HDI_WIDTH;
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 		width += hdItem.cxy;
@@ -4710,7 +4693,7 @@ void setScrollWidth (int width) {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	int count = columnCount;
 	if (count == 0 && width == 0) {
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
 		info.nPage = info.nMax + 1;
@@ -5136,8 +5119,7 @@ public void showColumn (TreeColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (0 <= index && index < count) {
+	if (0 <= index && index < columnCount) {
 		if (hwndParent != 0) {
 			forceResize ();
 			RECT rect = new RECT ();
@@ -5312,8 +5294,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
 	if (headerToolTipHandle == hdr.hwndFrom) {
-		int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		for (int i=0; i<count; i++) {
+		for (int i=0; i<columnCount; i++) {
 			TreeColumn column = columns [i];
 			if (column.id == hdr.idFrom) return column.toolTipText;
 		}
@@ -5377,8 +5358,7 @@ void updateHeaderToolTips () {
 	lpti.uFlags = OS.TTF_SUBCLASS;
 	lpti.hwnd = hwndHeader;
 	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-	int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<columnCount; i++) {
 		TreeColumn column = columns [i];
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, rect) != 0) {
 			lpti.uId = column.id = display.nextToolTipId++;
@@ -5436,7 +5416,6 @@ void updateImages () {
 
 void updateScrollBar () {
 	if (hwndParent != 0) {
-		int columnCount = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		if (columnCount != 0 || scrollWidth != 0) {
 			SCROLLINFO info = new SCROLLINFO ();
 			info.cbSize = SCROLLINFO.sizeof;
@@ -5567,7 +5546,6 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 						OS.ScreenToClient (hwnd, pt);
 						pinfo.x = pt.x;
 						pinfo.y = pt.y;
-						int columnCount = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, pinfo);
 						if (0 <= index && index < columnCount && !columns [index].resizable) {
 							if ((pinfo.flags & (OS.HHT_ONDIVIDER | OS.HHT_ONDIVOPEN)) != 0) {
@@ -5805,10 +5783,9 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		case OS.VK_ADD:
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
 				if (hwndHeader != 0) {
-					int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-					TreeColumn [] newColumns = new TreeColumn [count];
-					System.arraycopy (columns, 0, newColumns, 0, count);
-					for (int i=0; i<count; i++) {
+					TreeColumn [] newColumns = new TreeColumn [columnCount];
+					System.arraycopy (columns, 0, newColumns, 0, columnCount);
+					for (int i=0; i<columnCount; i++) {
 						TreeColumn column = newColumns [i];
 						if (!column.isDisposed () && column.getResizable ()) {
 							column.pack ();
@@ -7293,8 +7270,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 		}
 		case OS.NM_RELEASEDCAPTURE: {
 			if (!ignoreColumnMove) {
-				int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-				for (int i=0; i<count; i++) {
+				for (int i=0; i<columnCount; i++) {
 					TreeColumn column = columns [i];
 					column.updateToolTip (i);
 				}
@@ -7323,9 +7299,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				HDITEM pitem = new HDITEM ();
 				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 				if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-					int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-					int [] order = new int [count];
-					OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+					int [] order = new int [columnCount];
+					OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 					int index = 0;
 					while (index < order.length) {
 					 	if (order [index] == phdn.iItem) break;
@@ -7417,13 +7392,12 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 						column.updateToolTip (phdn.iItem);
 						column.sendEvent (SWT.Resize);
 						if (isDisposed ()) return LRESULT.ZERO;	
-						int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						TreeColumn [] newColumns = new TreeColumn [count];
-						System.arraycopy (columns, 0, newColumns, 0, count);
-						int [] order = new int [count];
-						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+						TreeColumn [] newColumns = new TreeColumn [columnCount];
+						System.arraycopy (columns, 0, newColumns, 0, columnCount);
+						int [] order = new int [columnCount];
+						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 						boolean moved = false;
-						for (int i=0; i<count; i++) {
+						for (int i=0; i<columnCount; i++) {
 							TreeColumn nextColumn = newColumns [order [i]];
 							if (moved && !nextColumn.isDisposed ()) {
 								nextColumn.updateToolTip (order [i]);

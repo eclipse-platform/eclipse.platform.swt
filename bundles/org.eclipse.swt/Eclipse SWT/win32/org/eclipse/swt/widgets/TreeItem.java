@@ -436,7 +436,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 	int columnCount = 0;
 	int /*long*/ hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
-		columnCount = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		columnCount = parent.columnCount;
 		firstColumn = index == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 	}
 	RECT rect = new RECT ();
@@ -971,10 +971,7 @@ void redraw () {
 	*/
 	boolean full = (parent.style & (SWT.FULL_SELECTION | SWT.VIRTUAL)) != 0;
 	if (!full) {
-		int /*long*/ hwndHeader = parent.hwndHeader;
-		if (hwndHeader != 0) {
-			full = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0;
-		}
+		full = parent.columnCount != 0;
 		if (!full) {
 			if (parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
 				full = true;
