@@ -1736,12 +1736,19 @@ public void select (int index) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_combo_box_set_active (handle, index);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		if ((style & SWT.READ_ONLY) != 0) {
+			/*
+			* Feature in GTK. Read Only combo boxes do not get a chance to send out a 
+			* Modify event in the gtk_changed callback. The fix is to send a Modify event 
+			* here.
+			*/
+			sendEvent (SWT.Modify);
+		}
 	} else {
 		ignoreSelect = true;
 		OS.gtk_list_select_item (listHandle, index);
 		ignoreSelect = false;
 	}
-	sendEvent (SWT.Modify);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -2036,6 +2043,11 @@ public void setText (String string) {
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.gtk_combo_box_set_active (handle, index);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			/*
+			* Feature in GTK. Read Only combo boxes do not get a chance to send out a 
+			* Modify event in the gtk_changed callback. The fix is to send a Modify event 
+			* here.
+			*/
 			sendEvent (SWT.Modify);
 			return;
 		}
