@@ -1111,12 +1111,12 @@ boolean setInputState (Event event, int type, int chord, int modifiers) {
 	return true; 
 }
 
-boolean setKeyState (Event event, int type, int theEvent) {
+boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 //	boolean isNull = false;
 //	int [] keyCode = new int [1];
 //	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 //	event.keyCode = Display.translateKey (keyCode [0]);
-//	switch (event.keyCode) {
+	switch (event.keyCode) {
 //		case SWT.LF: {
 //			/*
 //			* Feature in the Macintosh.  When the numeric key pad
@@ -1128,9 +1128,9 @@ boolean setKeyState (Event event, int type, int theEvent) {
 //			event.character = '\r';
 //			break;
 //		}
-//		case SWT.BS: event.character = '\b'; break;
+		case SWT.BS: event.character = '\b'; break;
 //		case SWT.CR: event.character = '\r'; break;
-//		case SWT.DEL: event.character = 0x7F; break;
+		case SWT.DEL: event.character = 0x7F; break;
 //		case SWT.ESC: event.character = 0x1B; break;
 //		case SWT.TAB: event.character = '\t'; break;
 //		default: {
@@ -1188,7 +1188,7 @@ boolean setKeyState (Event event, int type, int theEvent) {
 //			}
 //			break;
 //		}
-//	}
+	}
 //	if (event.keyCode == 0 && event.character == 0) {
 //		if (!isNull) return false;
 //	}
@@ -1197,7 +1197,7 @@ boolean setKeyState (Event event, int type, int theEvent) {
 //	int [] modifiers = new int [1];
 //	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 //	return setInputState (event, type, chord [0], modifiers [0]);
-	return false;
+	return true;
 }
 
 void tableViewSelectionDidChange (int aNotification) {

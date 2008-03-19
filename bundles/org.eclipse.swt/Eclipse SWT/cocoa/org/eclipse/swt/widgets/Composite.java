@@ -839,7 +839,7 @@ public void setTabList (Control [] tabList) {
 	this.tabList = tabList;
 }
 
-int traversalCode (int key, int theEvent) {
+int traversalCode (int key, NSEvent theEvent) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
 		if (hooksKeys ()) return 0;

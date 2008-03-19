@@ -570,7 +570,7 @@ public void setText (String string) {
 	((NSButton)view).setAttributedTitle(createString());
 }
 
-int traversalCode (int key, int theEvent) {
+int traversalCode (int key, NSEvent theEvent) {
 	int code = super.traversalCode (key, theEvent);
 	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;

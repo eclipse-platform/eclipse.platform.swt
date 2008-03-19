@@ -1606,7 +1606,7 @@ public void showSelection () {
 	}
 }
 
-int traversalCode (int key, int theEvent) {
+int traversalCode (int key, NSEvent theEvent) {
 	int bits = super.traversalCode (key, theEvent);
 	if ((style & SWT.READ_ONLY) != 0) return bits;
 	if ((style & SWT.MULTI) != 0) {

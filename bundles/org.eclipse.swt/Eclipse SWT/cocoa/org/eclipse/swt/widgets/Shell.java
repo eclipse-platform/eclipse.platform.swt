@@ -515,7 +515,7 @@ void flagsChanged(int theEvent) {
 	if ((modifiers & OS.NSShiftKeyMask) != 0 && (lastModifiers & OS.NSShiftKeyMask) == 0) type = SWT.KeyDown;
 	if ((modifiers & OS.NSControlKeyMask) != 0 && (lastModifiers & OS.NSControlKeyMask) == 0) type = SWT.KeyDown;
 	if ((modifiers & OS.NSCommandKeyMask) != 0 && (lastModifiers & OS.NSCommandKeyMask) == 0) type = SWT.KeyDown;
-	Control target = getCurrentKeyTarget();
+	Control target = display.getFocusControl();
 	if (type == SWT.KeyUp && (modifiers & OS.NSAlphaShiftKeyMask) == 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) != 0) {
 		if (target != null) {
 			Event event = new Event ();
@@ -592,36 +592,6 @@ public Rectangle getClientArea () {
 		height = (int)size.height;
 	}
 	return new Rectangle (0, 0, width, height);
-}
-
-Control getCurrentKeyTarget() {
-	Control result = display.getFocusControl();
-	if (result != null) return result;
-
-	/*
-	* If the first responder is the shared field editor then answer its
-	* delegate as the event target.
-	*/
-	NSResponder firstResponder = window.firstResponder();
-	if (firstResponder.isKindOfClass(NSText.static_class())) {
-		NSText text = new NSText(firstResponder.id);
-		if (text.isFieldEditor()) {
-			id delegateId = text.delegate();
-			if (delegateId != null) {
-				NSObject delegate = new NSObject(delegateId.id);
-				if (delegate.respondsToSelector(OS.sel_tag)) {
-					int tag = OS.objc_msgSend(delegate.id, OS.sel_tag);
-					if (tag != 0 && tag != -1) {
-						Control control = (Control)OS.JNIGetObject(tag);
-						if (control != null) {
-							return control;
-						}
-					}
-				}
-			}
-		}
-	}
-	return null;
 }
 
 int getDrawCount (int control) {
@@ -1342,8 +1312,15 @@ void windowSendEvent(int id, int event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = nsEvent.type();
 	if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
-		Control eventTarget = getCurrentKeyTarget();
+		Control eventTarget = display.getFocusControl();
 		if (eventTarget != null) {
+			if (type == OS.NSKeyDown) {
+				boolean[] consume = new boolean[1];
+				int key = nsEvent.keyCode();
+				if (eventTarget.translateTraversal(key, nsEvent, consume)) return;
+				if (consume[0]) return;
+				if (eventTarget.isDisposed()) return;
+			}
 			if (!eventTarget.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp)) return;
 		}
 	}

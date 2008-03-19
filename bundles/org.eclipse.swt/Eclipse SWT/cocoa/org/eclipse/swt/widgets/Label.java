@@ -305,6 +305,10 @@ void setForeground (float [] color) {
 	cell.setAttributedStringValue(createString());
 }
 
+boolean setTabItemFocus () {
+	return false;
+}
+
 /**
  * Sets the receiver's image to the argument, which may be
  * null indicating that no image should be displayed.

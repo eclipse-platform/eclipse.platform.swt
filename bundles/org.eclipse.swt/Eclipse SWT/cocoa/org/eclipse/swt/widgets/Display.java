@@ -1083,6 +1083,29 @@ public Control getFocusControl () {
 					//TODO go up hierarchy
 					return (Control)object;
 				}
+			} else {
+				/*
+				* If the first responder is the shared field editor then answer its
+				* delegate as the focus control.
+				*/
+				if (view.isKindOfClass(NSText.static_class())) {
+					NSText text = new NSText(view.id);
+					if (text.isFieldEditor()) {
+						id delegateId = text.delegate();
+						if (delegateId != null) {
+							NSObject delegate = new NSObject(delegateId.id);
+							if (delegate.respondsToSelector(OS.sel_tag)) {
+								tag = OS.objc_msgSend(delegate.id, OS.sel_tag);
+								if (tag != 0 && tag != -1) {
+									Object object = OS.JNIGetObject(tag);
+									if (object instanceof Control) {
+										return (Control)object;
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

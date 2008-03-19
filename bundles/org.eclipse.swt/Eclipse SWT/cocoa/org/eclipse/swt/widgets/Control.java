@@ -1392,7 +1392,7 @@ boolean isTabGroup () {
 			if (tabList [i] == this) return true;
 		}
 	}
-	int code = traversalCode (0, 0);
+	int code = traversalCode (0, null);
 	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
 	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
 }
@@ -1404,7 +1404,7 @@ boolean isTabItem () {
 			if (tabList [i] == this) return false;
 		}
 	}
-	int code = traversalCode (0, 0);
+	int code = traversalCode (0, null);
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 
@@ -1550,16 +1550,13 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		int keyCode = Display.translateKey (keys.characterAtIndex (i) & 0xFFFF);
 		if (keyCode != 0) {
 			event.keyCode = keyCode;
-			switch (event.keyCode) {
-				case SWT.BS: event.character = '\b'; break;
-				case SWT.DEL: event.character = 0x7F; break;
-			}
 		} else {
 			event.character = (char) keys.characterAtIndex (i);
-			//TODO - get unshifted vaules for Shift+1
+			//TODO - get unshifted values for Shift+1
 			event.keyCode = keyCodes.characterAtIndex (i);
 		}
 		setInputState (event, nsEvent, type);
+		if (!setKeyState(event, type, nsEvent)) return false;
 		if (sendKeyEvent (type, event)) {
 			chars [count++] = chars [i];
 		}
@@ -3023,7 +3020,7 @@ NSView topView () {
 	return view;
 }
 
-boolean translateTraversal (int key, int theEvent, boolean [] consume) {
+boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 	int detail = SWT.TRAVERSE_NONE;
 	int code = traversalCode (key, theEvent);
 	boolean all = false;
@@ -3040,10 +3037,9 @@ boolean translateTraversal (int key, int theEvent, boolean [] consume) {
 			break;
 		}
 		case 48: /* Tab */ {
-//			int [] modifiers = new int [1];
-//			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//			boolean next = (modifiers [0] & OS.shiftKey) == 0;
-//			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
+			int modifiers = display.lastModifiers;
+			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
 		case 126: /* Up arrow */
@@ -3083,7 +3079,7 @@ boolean translateTraversal (int key, int theEvent, boolean [] consume) {
 	return false;
 }
 
-int traversalCode (int key, int theEvent) {
+int traversalCode (int key, NSEvent theEvent) {
 	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
 	Shell shell = getShell ();
 	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
