@@ -541,6 +541,9 @@ public int getStyle () {
 	return style;
 }
 
+void helpRequested(int theEvent) {
+}
+
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);

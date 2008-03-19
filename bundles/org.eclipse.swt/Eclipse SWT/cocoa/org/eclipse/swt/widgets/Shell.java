@@ -747,6 +747,17 @@ boolean hasBorder () {
 	return false;
 }
 
+void helpRequested(int theEvent) {
+	Control control = display.getFocusControl();
+	while (control != null) {
+		if (control.hooks (SWT.Help)) {
+			control.postEvent (SWT.Help);
+			break;
+		}
+		control = control.parent;
+	}
+}
+
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();

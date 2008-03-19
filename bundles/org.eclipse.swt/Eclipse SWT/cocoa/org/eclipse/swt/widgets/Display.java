@@ -1808,6 +1808,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_helpRequested_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -3185,6 +3186,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.outlineViewSelectionDidChange(arg0);
 	} else if (sel == OS.sel_sendEvent_1) {
 		widget.windowSendEvent(id, arg0);
+	} else if (sel == OS.sel_helpRequested_1) {
+		widget.helpRequested(arg0);
 	}
 	return 0;
 }
