@@ -123,7 +123,7 @@ void setProfilePath (String path) {
 	if (!Compatibility.fileExists (path, "")) { //$NON-NLS-1$
 		int /*long*/[] result = new int /*long*/[1];
 		nsEmbedString pathString = new nsEmbedString (path);
-		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 		pathString.dispose ();
@@ -196,7 +196,7 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 		int index = 0;
 		for (int i = 0; i < propertyValues.length; i++) {
 			nsEmbedString pathString = new nsEmbedString (propertyValues[i]);
-			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
 			if (rc != XPCOM.NS_ERROR_FILE_UNRECOGNIZED_PATH) {
 				/* value appears to be a valid pathname */
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -292,7 +292,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	if (propertyValue != null && propertyValue.length () > 0) {
 		int /*long*/[] result = new int /*long*/[1];
 		nsEmbedString pathString = new nsEmbedString (propertyValue);
-		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 		pathString.dispose ();

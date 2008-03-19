@@ -328,7 +328,7 @@ public void create (Composite parent, int style) {
 		if (!Initialized) {
 			int /*long*/[] retVal = new int /*long*/[1];
 			nsEmbedString pathString = new nsEmbedString (mozillaPath);
-			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, retVal);
+			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, retVal);
 			pathString.dispose ();
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
@@ -925,7 +925,7 @@ public void create (Composite parent, int style) {
 				if (LocationProvider != null) {
 					String prefsLocation = LocationProvider.profilePath + AppFileLocProvider.PREFERENCES_FILE;
 					nsEmbedString pathString = new nsEmbedString (prefsLocation);
-					rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+					rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 					if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 					pathString.dispose ();

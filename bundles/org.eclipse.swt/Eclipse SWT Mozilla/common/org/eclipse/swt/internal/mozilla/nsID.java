@@ -47,7 +47,7 @@ public boolean Equals(nsID other) {
 	XPCOM.memmove(ptr, this, nsID.sizeof);
 	int /*long*/ otherPtr = XPCOM.nsID_new();
 	XPCOM.memmove(otherPtr, other, nsID.sizeof);
-	boolean result = XPCOM.nsID_Equals(ptr, otherPtr);
+	boolean result = XPCOM.nsID_Equals(ptr, otherPtr) != 0;
 	XPCOM.nsID_delete(ptr);
 	XPCOM.nsID_delete(otherPtr);
 	return result;

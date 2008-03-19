@@ -129,7 +129,7 @@ public static final native void memmove(int /*long*/ dest, nsID src, int nbytes)
 public static final native int NS_GetComponentManager(int /*long*/[] result);
 public static final native int NS_GetServiceManager(int /*long*/[] result);
 public static final native int NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirectory, int /*long*/ appFileLocationProvider);
-public static final native int NS_NewLocalFile(int /*long*/ path, boolean followLinks, int /*long*/[] result);
+public static final native int NS_NewLocalFile(int /*long*/ path, int followLinks, int /*long*/[] result);
 public static final native int strlen_PRUnichar(int /*long*/ s);
 public static final native int /*long*/ nsEmbedCString_new();
 public static final native int /*long*/ nsEmbedCString_new(byte[] aString, int length);
@@ -139,7 +139,7 @@ public static final native int nsEmbedCString_Length(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedCString_get(int /*long*/ ptr);
 public static final native void nsID_delete(int /*long*/ ptr);
 public static final native int /*long*/ nsID_new();
-public static final native boolean nsID_Equals(int /*long*/ ptr, int /*long*/ other);
+public static final native int nsID_Equals(int /*long*/ ptr, int /*long*/ other);
 public static final native int /*long*/ nsEmbedString_new();
 public static final native int /*long*/ nsEmbedString_new(char[] aString);
 public static final native void nsEmbedString_delete(int /*long*/ ptr);

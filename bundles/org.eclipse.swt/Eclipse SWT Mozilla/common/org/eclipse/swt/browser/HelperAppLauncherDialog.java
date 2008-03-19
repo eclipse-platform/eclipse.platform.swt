@@ -211,7 +211,7 @@ int PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2
 		return XPCOM.NS_ERROR_FAILURE;
 	}
 	nsEmbedString path = new nsEmbedString (name);
-	rc = XPCOM.NS_NewLocalFile (path.getAddress (), true, result);
+	rc = XPCOM.NS_NewLocalFile (path.getAddress (), 1, result);
 	path.dispose ();
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);

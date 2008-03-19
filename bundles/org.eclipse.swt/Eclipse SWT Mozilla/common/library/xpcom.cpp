@@ -83,9 +83,9 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1InitXPCOM2)
 #endif
 
 #ifndef NO_NS_1NewLocalFile
-extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jintArray arg2);
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jintArray arg2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
 {
 	jint *lparg2=NULL;
 	jint rc = 0;
@@ -3188,13 +3188,13 @@ fail:
 #endif
 
 #ifndef NO_nsID_1Equals
-extern "C" JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsID_1Equals)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsID_1Equals)
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(nsID_1Equals)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsID_1Equals)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jboolean rc = 0;
+	jint rc = 0;
 	XPCOM_NATIVE_ENTER(env, that, nsID_1Equals_FUNC);
-	rc = (jboolean)((nsID *)arg0)->Equals(*(nsID *)arg1);
+	rc = (jint)((nsID *)arg0)->Equals(*(nsID *)arg1);
 	XPCOM_NATIVE_EXIT(env, that, nsID_1Equals_FUNC);
 	return rc;
 }
