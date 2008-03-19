@@ -176,7 +176,7 @@ public class Display extends Device {
 	Callback msgFilterCallback;
 	int /*long*/ msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
-	boolean runDragDrop = true;
+	boolean runDragDrop = true, dragCancelled = false;
 	
 	/* Idle Hook */
 	Callback foregroundIdleCallback;
@@ -3083,9 +3083,10 @@ int /*long*/ monitorEnumProc (int /*long*/ hmonitor, int /*long*/ hdc, int /*lon
 int /*long*/ msgFilterProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lParam) {
 	switch ((int)/*64*/code) {
 		case OS.MSGF_COMMCTRL_BEGINDRAG: {
-			if (!runDragDrop) {
+			if (!runDragDrop && !dragCancelled) {
 				OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
 				if (hookMsg.message == OS.WM_MOUSEMOVE) {
+					dragCancelled = true;
 					OS.SendMessage (hookMsg.hwnd, OS.WM_CANCELMODE, 0, 0);
 				}
 			}

@@ -3542,6 +3542,8 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, OS.LVS_EX_FULLROWSELECT);
 	}
+	dragStarted = false;
+	display.dragCancelled = false;
 	if (!dragDetect) display.runDragDrop = false;
 	int /*long*/ code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (!dragDetect) display.runDragDrop = true;
@@ -3551,7 +3553,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 		OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_FULLROWSELECT, 0);
 	}
 	
-	if (dragStarted || !dragDetect) {
+	if (dragStarted || display.dragCancelled) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		}
@@ -3565,7 +3567,6 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 			sendMouseEvent (SWT.MouseUp, button, handle, msg, wParam, lParam);
 		}
 	}
-	dragStarted = false;
 	return new LRESULT (code);
 }
 
