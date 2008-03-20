@@ -4046,6 +4046,7 @@ void update (boolean all) {
 //	checkWidget();
 	//TODO - not all
 	OS.HIViewRender (handle);
+	if (isDisposed()) return;
 	OS.HIWindowFlush (OS.GetControlOwner (handle));
 }
 
