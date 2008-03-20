@@ -8806,6 +8806,16 @@ fail:
 }
 #endif
 
+#ifndef NO_HIWindowFlush
+JNIEXPORT void JNICALL OS_NATIVE(HIWindowFlush)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, HIWindowFlush_FUNC);
+	HIWindowFlush(arg0);
+	OS_NATIVE_EXIT(env, that, HIWindowFlush_FUNC);
+}
+#endif
+
 #ifndef NO_HLock
 JNIEXPORT void JNICALL OS_NATIVE(HLock)
 	(JNIEnv *env, jclass that, jint arg0)

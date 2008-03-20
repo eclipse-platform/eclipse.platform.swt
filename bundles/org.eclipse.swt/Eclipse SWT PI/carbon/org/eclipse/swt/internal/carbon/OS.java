@@ -1624,6 +1624,7 @@ public static final native void HUnlock(int h);
 public static final native int IconRefToIconFamily(int theIconRef, int whichIcons, int[] iconFamily);
 public static final native int InitContextualMenus();
 public static final native void InitCursor();
+public static final native void HIWindowFlush(int window);
 public static final native int InitDataBrowserCallbacks(DataBrowserCallbacks callbacks);
 public static final native int InitDataBrowserCustomCallbacks(DataBrowserCustomCallbacks callbacks); 
 public static final native void InsertMenu(int mHandle, short beforeID);
