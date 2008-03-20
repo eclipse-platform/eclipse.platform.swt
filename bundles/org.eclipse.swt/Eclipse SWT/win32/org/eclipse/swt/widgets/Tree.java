@@ -390,16 +390,14 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 			}
 		}
 	}
-	int count = 0;
 	int [] order = null;
 	RECT clientRect = new RECT ();
 	OS.GetClientRect (scrolledHandle (), clientRect);
 	if (hwndHeader != 0) {
 		OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
-		count = columnCount;
-		if (count != 0) {
-			order = new int [count];
-			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+		if (columnCount != 0) {
+			order = new int [columnCount];
+			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 		}
 	}
 	int sortIndex = -1, clrSortBk = -1;
@@ -413,9 +411,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 	}
 	int x = 0;
 	Point size = null;
-	for (int i=0; i<Math.max (1, count); i++) {
+	for (int i=0; i<Math.max (1, columnCount); i++) {
 		int index = order == null ? i : order [i], width = nmcd.right - nmcd.left;
-		if (count > 0 && hwndHeader != 0) {
+		if (columnCount > 0 && hwndHeader != 0) {
 			HDITEM hdItem = new HDITEM ();
 			hdItem.mask = OS.HDI_WIDTH;
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
@@ -435,7 +433,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 							itemRect.right += EXPLORER_EXTRA + 1;
 							pClipRect.left = itemRect.left;
 							pClipRect.right = itemRect.right;
-							if (count > 0 && hwndHeader != 0) {
+							if (columnCount > 0 && hwndHeader != 0) {
 								HDITEM hdItem = new HDITEM ();
 								hdItem.mask = OS.HDI_WIDTH;
 								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
@@ -444,11 +442,11 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 						}
 						RECT pRect = new RECT ();
 						OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						if (count > 0 && hwndHeader != 0) {
+						if (columnCount > 0 && hwndHeader != 0) {
 							int totalWidth = 0;
 							HDITEM hdItem = new HDITEM ();
 							hdItem.mask = OS.HDI_WIDTH;
-							for (int j=0; j<count; j++) {
+							for (int j=0; j<columnCount; j++) {
 								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
 								totalWidth += hdItem.cxy;
 							}
@@ -663,7 +661,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 										} else {
 											clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
 										}
-										if (!ignoreFullSelection && index == count - 1) {
+										if (!ignoreFullSelection && index == columnCount - 1) {
 											RECT selectionRect = new RECT ();
 											OS.SetRect (selectionRect, backgroundRect.left, backgroundRect.top, nmcd.right, backgroundRect.bottom);
 											backgroundRect = selectionRect;
@@ -671,11 +669,11 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 									} else {
 										RECT pRect = new RECT ();
 										OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-										if (count > 0 && hwndHeader != 0) {
+										if (columnCount > 0 && hwndHeader != 0) {
 											int totalWidth = 0;
 											HDITEM hdItem = new HDITEM ();
 											hdItem.mask = OS.HDI_WIDTH;
-											for (int j=0; j<count; j++) {
+											for (int j=0; j<columnCount; j++) {
 												OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
 												totalWidth += hdItem.cxy;
 											}
@@ -686,7 +684,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 												pRect.left = clientRect.left;
 												pRect.right = clientRect.right;
 											}
-											if (index == count - 1) {
+											if (index == columnCount - 1) {
 												RECT selectionRect = new RECT ();
 												OS.SetRect (selectionRect, backgroundRect.left, backgroundRect.top, pRect.right, backgroundRect.bottom);
 												backgroundRect = selectionRect;
@@ -863,15 +861,13 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 	}
 	if (linesVisible) {
 		if ((style & SWT.FULL_SELECTION) != 0) {
-			if (hwndHeader != 0) {
-				if (columnCount != 0) {
-					HDITEM hdItem = new HDITEM ();
-					hdItem.mask = OS.HDI_WIDTH;
-					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
-					RECT rect = new RECT ();
-					OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
-					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-				}
+			if (columnCount != 0) {
+				HDITEM hdItem = new HDITEM ();
+				hdItem.mask = OS.HDI_WIDTH;
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+				RECT rect = new RECT ();
+				OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
+				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 			}
 		}
 		RECT rect = new RECT ();
@@ -930,22 +926,18 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 	if (ignoreCustomDraw || nmcd.left == nmcd.right) {
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
 	}
-	int count = 0;
 	RECT clipRect = null;
-	if (hwndHeader != 0) {
-		count = columnCount;
-		if (count != 0) {
-			boolean clip = !printClient;
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				clip = true;
-			}
-			if (clip) {
-				clipRect = new RECT ();
-				HDITEM hdItem = new HDITEM ();
-				hdItem.mask = OS.HDI_WIDTH;
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-				OS.SetRect (clipRect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
-			}
+	if (columnCount != 0) {
+		boolean clip = !printClient;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			clip = true;
+		}
+		if (clip) {
+			clipRect = new RECT ();
+			HDITEM hdItem = new HDITEM ();
+			hdItem.mask = OS.HDI_WIDTH;
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+			OS.SetRect (clipRect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
 		}
 	}
 	int clrText = -1, clrTextBk = -1;
@@ -1053,7 +1045,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 				boolean draw = !selected && !hot;
 				if (!explorerTheme && selected) draw = !ignoreDrawSelection;
 				if (draw) {
-					if (count == 0) {
+					if (columnCount == 0) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							fillBackground (hDC, clrTextBk, rect);
 						} else {
@@ -1079,7 +1071,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 					* is to emulate TVS_FULLROWSELECT.
 					*/
 					if ((style & SWT.FULL_SELECTION) != 0) {
-						if ((style & SWT.FULL_SELECTION) != 0 && count == 0) {
+						if ((style & SWT.FULL_SELECTION) != 0 && columnCount == 0) {
 							fillBackground (hDC, OS.GetBkColor (hDC), rect);
 						} else {
 							fillBackground (hDC, OS.GetBkColor (hDC), cellRect);
@@ -1169,7 +1161,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 			if (clrTextBk != -1) {
 				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-					if (count != 0 && hwndHeader != 0) {
+					if (columnCount != 0 && hwndHeader != 0) {
 						RECT rect = new RECT ();
 						HDITEM hdItem = new HDITEM ();
 						hdItem.mask = OS.HDI_WIDTH;
@@ -1237,7 +1229,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 					if (clrTextBk != -1) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							RECT rect = new RECT ();
-							if (count != 0) {
+							if (columnCount != 0) {
 								HDITEM hdItem = new HDITEM ();
 								hdItem.mask = OS.HDI_WIDTH;
 								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
@@ -2911,7 +2903,6 @@ int /*long*/ getBottomItem () {
  */
 public TreeColumn getColumn (int index) {
 	checkWidget ();
-	if (hwndHeader == 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	return columns [index];
 }
@@ -2967,7 +2958,7 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	if (hwndHeader == 0) return new int [0];
+	if (columnCount == 0) return new int [0];
 	int [] order = new int [columnCount];
 	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 	return order;
@@ -3004,7 +2995,6 @@ public int[] getColumnOrder () {
  */
 public TreeColumn [] getColumns () {
 	checkWidget ();
-	if (hwndHeader == 0) return new TreeColumn [0];
 	TreeColumn [] result = new TreeColumn [columnCount];
 	System.arraycopy (columns, 0, result, 0, columnCount);
 	return result;
@@ -3617,7 +3607,6 @@ public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	if (hwndHeader == 0) return -1;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i] == column) return i;
 	}
@@ -4432,36 +4421,35 @@ void setCursor () {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = columnCount;
-	if (count == 0) {
+	if (columnCount == 0) {
 		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
 		return;
 	}
-	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
-	int [] oldOrder = new int [count];
-	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = new int [columnCount];
+	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, oldOrder);
 	boolean reorder = false;
-	boolean [] seen = new boolean [count];
+	boolean [] seen = new boolean [columnCount];
 	for (int i=0; i<order.length; i++) {
 		int index = order [i];
-		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_RANGE);
 		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
 		seen [index] = true;
 		if (index != oldOrder [i]) reorder = true;
 	}
 	if (reorder) {
-		RECT [] oldRects = new RECT [count];
-		for (int i=0; i<count; i++) {
+		RECT [] oldRects = new RECT [columnCount];
+		for (int i=0; i<columnCount; i++) {
 			oldRects [i] = new RECT ();
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
 		OS.InvalidateRect (handle, null, true);
 		updateImageList ();
-		TreeColumn [] newColumns = new TreeColumn [count];
-		System.arraycopy (columns, 0, newColumns, 0, count);
+		TreeColumn [] newColumns = new TreeColumn [columnCount];
+		System.arraycopy (columns, 0, newColumns, 0, columnCount);
 		RECT newRect = new RECT ();
-		for (int i=0; i<count; i++) {
+		for (int i=0; i<columnCount; i++) {
 			TreeColumn column = newColumns [i];
 			if (!column.isDisposed ()) {
 				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
@@ -4693,8 +4681,7 @@ void setScrollWidth (int width) {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
-	int count = columnCount;
-	if (count == 0 && width == 0) {
+	if (columnCount == 0 && width == 0) {
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
 		info.nPage = info.nMax + 1;
 		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
@@ -4729,7 +4716,7 @@ void setScrollWidth (int width) {
 	SetWindowPos (hwndHeader, OS.HWND_TOP, pos.x - left, pos.y, pos.cx + left, pos.cy, OS.SWP_NOACTIVATE);
 	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	int b = (bits & OS.WS_EX_CLIENTEDGE) != 0 ? OS.GetSystemMetrics (OS.SM_CXEDGE) : 0;
-	int w = pos.cx + (count == 0 && width == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
+	int w = pos.cx + (columnCount == 0 && width == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
 	int h = rect.bottom - rect.top - pos.cy;
 	boolean oldIgnore = ignoreResize;
 	ignoreResize = true;
@@ -5120,26 +5107,24 @@ public void showColumn (TreeColumn column) {
 	int index = indexOf (column);
 	if (index == -1) return;
 	if (0 <= index && index < columnCount) {
-		if (hwndParent != 0) {
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (hwndParent, rect);
-			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-			RECT headerRect = new RECT ();
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-			boolean scroll = headerRect.left < rect.left;
-			if (!scroll) {
-				int width = Math.min (rect.right - rect.left, headerRect.right - headerRect.left);
-				scroll = headerRect.left + width > rect.right;
-			}
-			if (scroll) {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
-				info.fMask = OS.SIF_POS;
-				info.nPos = Math.max (0, headerRect.left - Tree.INSET / 2);
-				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-				setScrollWidth ();
-			}
+		forceResize ();
+		RECT rect = new RECT ();
+		OS.GetClientRect (hwndParent, rect);
+		OS.MapWindowPoints (hwndParent, handle, rect, 2);
+		RECT headerRect = new RECT ();
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		boolean scroll = headerRect.left < rect.left;
+		if (!scroll) {
+			int width = Math.min (rect.right - rect.left, headerRect.right - headerRect.left);
+			scroll = headerRect.left + width > rect.right;
+		}
+		if (scroll) {
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_POS;
+			info.nPos = Math.max (0, headerRect.left - Tree.INSET / 2);
+			OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+			setScrollWidth ();
 		}
 	}
 }
