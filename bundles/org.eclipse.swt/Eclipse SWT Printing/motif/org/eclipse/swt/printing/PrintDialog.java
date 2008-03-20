@@ -12,6 +12,7 @@ package org.eclipse.swt.printing;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  */
 public class PrintDialog extends Dialog {
+	PrinterData printerData;
 	int scope = PrinterData.ALL_PAGES;
 	int startPage = -1, endPage = -1;
 	boolean printToFile = false;
@@ -79,6 +81,28 @@ public PrintDialog (Shell parent) {
 public PrintDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
+}
+/**
+ * Sets the printer data that will be used when the dialog
+ * is opened.
+ * 
+ * @param data the data that will be used when the dialog is opened
+ * 
+ * @since 3.4
+ */
+public void setPrinterData(PrinterData data) {
+	this.printerData = data;
+}
+/**
+ * Returns the printer data that will be used when the dialog
+ * is opened.
+ * 
+ * @return the data that will be used when the dialog is opened
+ * 
+ * @since 3.4
+ */
+public PrinterData getPrinterData() {
+	return printerData;
 }
 /**
  * Makes the receiver visible and brings it to the front

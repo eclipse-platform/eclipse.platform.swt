@@ -26,6 +26,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 
 public class PrintDialog extends Dialog {
+	PrinterData printerData;
 	int scope = PrinterData.ALL_PAGES;
 	int startPage = 1, endPage = 1;
 	boolean printToFile = false;
@@ -82,6 +83,30 @@ public PrintDialog (Shell parent) {
 public PrintDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
+}
+
+/**
+ * Sets the printer data that will be used when the dialog
+ * is opened.
+ * 
+ * @param data the data that will be used when the dialog is opened
+ * 
+ * @since 3.4
+ */
+public void setPrinterData(PrinterData data) {
+	this.printerData = data;
+}
+
+/**
+ * Returns the printer data that will be used when the dialog
+ * is opened.
+ * 
+ * @return the data that will be used when the dialog is opened
+ * 
+ * @since 3.4
+ */
+public PrinterData getPrinterData() {
+	return printerData;
 }
 
 /**
@@ -233,7 +258,18 @@ public PrinterData open() {
 	pd.nMaxPage = -1;
 	pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, startPage));
 	pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, endPage));
-	
+	int lpInitData = 0;
+	int hHeap = OS.GetProcessHeap();
+	if (printerData != null) {
+		byte buffer [] = printerData.otherData;
+		if (buffer != null && buffer.length != 0) {
+			/* If user setup info from a previous print dialog was specified, restore the DEVMODE struct. */
+			lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
+			OS.MoveMemory(lpInitData, buffer, buffer.length);
+			pd.hDevMode = lpInitData;
+		}
+	}
+
 	Display display = parent.getDisplay();
 	Shell [] shells = display.getShells();
 	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
@@ -316,6 +352,7 @@ public PrinterData open() {
 		data.otherData = new byte[size];
 		OS.MoveMemory(data.otherData, ptr, size);
 		OS.GlobalUnlock(hMem);
+		if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 
 		endPage = data.endPage;
 		printToFile = data.printToFile;
