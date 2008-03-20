@@ -185,7 +185,9 @@ void createHandle () {
  */
 public int getDay () {
 	checkWidget ();
-	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).dayOfMonth();
+	NSDate date = ((NSDatePicker)view).dateValue();
+	NSCalendarDate calendarDate = date.dateWithCalendarFormat(null, null);
+	return calendarDate.dayOfMonth();
 }
 
 /**
