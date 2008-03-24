@@ -5768,7 +5768,7 @@ public void invokeAction(int action) {
  * Temporary until SWT provides this
  */
 boolean isBidi() {
-	return IS_GTK || BidiUtil.isBidiPlatform() || isMirrored;
+	return IS_GTK || IS_CARBON || BidiUtil.isBidiPlatform() || isMirrored;
 }
 boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();

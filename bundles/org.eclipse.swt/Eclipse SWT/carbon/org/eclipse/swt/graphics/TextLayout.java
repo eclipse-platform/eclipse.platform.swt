@@ -265,7 +265,8 @@ public final class TextLayout extends Resource {
 	int[] breaks, hardBreaks, lineX, lineWidth, lineHeight, lineAscent;
 
 	static final int TAB_COUNT = 32;
-	static final char ZWS = '\u200B';
+	int[] invalidOffsets;
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B';
 	
 	static final int UNDERLINE_IME_INPUT = 1 << 16;
 	static final int UNDERLINE_IME_TARGET_CONVERTED = 2 << 16;
@@ -309,9 +310,10 @@ void checkLayout() {
 
 void computeRuns() {
 	if (breaks != null) return;
-	int textLength = text.length();
+	String segmentsText = getSegmentsText();
+	int textLength = segmentsText.length();
 	char[] chars = new char[textLength + 1];
-	text.getChars(0, textLength, chars, 1);
+	segmentsText.getChars(0, textLength, chars, 1);
 	chars[0] = ZWS;
 	int breakCount = 1;
 	for (int i = 0; i < chars.length; i++) {
@@ -329,7 +331,23 @@ void computeRuns() {
 			hardBreaks[breakCount++] = i;
 		}
 	}
-	hardBreaks[breakCount] = translateOffset(textLength);
+	int offsetCount = 0;
+	for (int i = 0; i < chars.length; i++) {
+		char c = chars[i];
+		if (c == LTR_MARK || c == RTL_MARK || c == ZWS) {
+			offsetCount++;
+		}
+	}
+	invalidOffsets = new int[offsetCount];
+	offsetCount = 0;
+	for (int i = 0; i < chars.length; i++) {
+		char c = chars[i];
+		if (c == LTR_MARK || c == RTL_MARK || c == ZWS) {
+			invalidOffsets[offsetCount++] = i;
+		}
+	}
+
+	hardBreaks[breakCount] = chars.length;
 	int newTextPtr = OS.NewPtr(chars.length * 2);
 	OS.memmove(newTextPtr, chars, chars.length * 2);
 	OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
@@ -847,6 +865,7 @@ void freeRuns() {
 	if (indentStyle != 0) OS.ATSUDisposeStyle(indentStyle);
 	indentStyle = 0;
 	breaks = lineX = lineWidth = lineHeight = lineAscent = null;
+	invalidOffsets = null;
 }
 
 /** 
@@ -1278,58 +1297,74 @@ int _getOffset (int offset, int movement, boolean forward) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return 0;
 	offset = translateOffset(offset);
-	int[] newOffset = new int[1];
+	int newOffset;
 	int type = OS.kATSUByCharacter;
 	switch (movement) {
 		case SWT.MOVEMENT_CLUSTER: type = OS.kATSUByCharacterCluster; break;
 		case SWT.MOVEMENT_WORD: type = OS.kATSUByWord; break;
 	}
 	if (forward) {
-		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
-		offset = newOffset[0];
-		newOffset[0] = untranslateOffset(newOffset[0]);
+		offset = _getNativeOffset(offset, type, forward);
+		newOffset = untranslateOffset(offset);
 		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_END) {
-			while (newOffset[0] < length && 
-					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) &&
-					Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
-				OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
-				offset = newOffset[0];
-				newOffset[0] = untranslateOffset(newOffset[0]);
+			while (newOffset < length && 
+					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset)) &&
+					Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
 			}
 		}
 		if (movement == SWT.MOVEMENT_WORD_START) {
-			while (newOffset[0] < length && 
-					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) &&
-					!Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
-				OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
-				offset = newOffset[0];
-				newOffset[0] = untranslateOffset(newOffset[0]);
+			while (newOffset < length && 
+					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset)) &&
+					!Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
 			}
 		}
 	} else {
-		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
-		offset = newOffset[0];
-		newOffset[0] = untranslateOffset(newOffset[0]);
+		offset = _getNativeOffset(offset, type, forward);
+		newOffset = untranslateOffset(offset);
 		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_START) {
-			while (newOffset[0] > 0 && 
-					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) && 
-					!Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
-				OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
-				offset = newOffset[0];
-				newOffset[0] = untranslateOffset(newOffset[0]);
+			while (newOffset > 0 && 
+					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset)) && 
+					!Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
 			}
 		}
 		if (movement == SWT.MOVEMENT_WORD_END) {
-			while (newOffset[0] > 0 && 
-					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) && 
-					Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
-				OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
-				offset = newOffset[0];
-				newOffset[0] = untranslateOffset(newOffset[0]);
+			while (newOffset > 0 && 
+					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset)) && 
+					Compatibility.isLetterOrDigit(text.charAt(newOffset - 1))))) {
+				offset = _getNativeOffset(offset, type, forward);
+				newOffset = untranslateOffset(offset);
 			}
 		}
 	}
-	return newOffset[0];
+	return newOffset;
+}
+
+int _getNativeOffset(int offset, int movement, boolean forward) {
+	int[] buffer = new int [1];
+	boolean invalid = false;
+	do {
+		if (forward) {
+			OS.ATSUNextCursorPosition(layout, offset, movement, buffer);
+		} else {
+			OS.ATSUPreviousCursorPosition(layout, offset, movement, buffer);
+		}
+		if (buffer[0] == offset) return offset;
+		offset = buffer[0];
+		invalid = false;
+		for (int i = 0; i < invalidOffsets.length; i++) {
+			if (offset == invalidOffsets[i]) {
+				invalid = true;
+				break;
+			}
+		}
+	} while (invalid);
+	return offset;
 }
 
 /**
@@ -1496,6 +1531,34 @@ public int[] getRanges () {
 public int[] getSegments() {
 	checkLayout();
 	return segments;
+}
+
+String getSegmentsText() {
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments <= 1) return text;
+	int length = text.length();
+	if (length == 0) return text;
+	if (nSegments == 2) {
+		if (segments[0] == 0 && segments[1] == length) return text;
+	}
+	char[] oldChars = new char[length];
+	text.getChars(0, length, oldChars, 0);
+	char[] newChars = new char[length + nSegments];
+	int charCount = 0, segmentCount = 0;
+	char separator = getOrientation() == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			newChars[charCount + segmentCount++] = separator;
+		} else {
+			newChars[charCount + segmentCount] = oldChars[charCount++];
+		}
+	}
+	if (segmentCount < nSegments) {
+		segments[segmentCount] = charCount;
+		newChars[charCount + segmentCount++] = separator;
+	}
+	return new String(newChars, 0, Math.min(charCount + segmentCount, newChars.length));
 }
 
 /**
@@ -2074,15 +2137,28 @@ public String toString () {
 /*
  *  Translate a client offset to an internal offset
  */
-int translateOffset (int offset) {
-	return offset + 1;
+int translateOffset(int offset) {
+	for (int i = 0; i < invalidOffsets.length; i++) {
+		if (offset < invalidOffsets[i]) break; 
+		offset++;
+	}
+	return offset;
 }
 
 /*
  *  Translate an internal offset to a client offset
  */
-int untranslateOffset (int offset) {
-	return Math.max(0, offset - 1);
+int untranslateOffset(int offset) {
+	for (int i = 0; i < invalidOffsets.length; i++) {
+		if (offset == invalidOffsets[i]) {
+			offset++;
+			continue;
+		}
+		if (offset < invalidOffsets[i]) {
+			return offset - i;
+		}
+	}
+	return offset - invalidOffsets.length;
 }
 
 }
