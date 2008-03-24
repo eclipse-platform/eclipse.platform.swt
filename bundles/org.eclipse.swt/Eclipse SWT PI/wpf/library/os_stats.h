@@ -832,6 +832,7 @@ typedef enum {
 	SWTDockPanel_1JNIRefProperty_FUNC,
 	SWTDockPanel_1typeid_FUNC,
 	SWTTextRunProperties_1ForegroundBrush_FUNC,
+	SaveFileDialog_1OverwritePrompt_FUNC,
 	Screen_1AllScreens_FUNC,
 	Screen_1Bounds_FUNC,
 	Screen_1PrimaryScreen_FUNC,

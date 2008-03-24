@@ -9698,6 +9698,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Run_1Text)
 }
 #endif
 
+#ifndef NO_SaveFileDialog_1OverwritePrompt
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(SaveFileDialog_1OverwritePrompt)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(SaveFileDialog_1OverwritePrompt)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, SaveFileDialog_1OverwritePrompt_FUNC);
+	((SaveFileDialog^)TO_OBJECT(arg0))->OverwritePrompt = (arg1);
+	OS_NATIVE_EXIT(env, that, SaveFileDialog_1OverwritePrompt_FUNC);
+}
+#endif
+
 #ifndef NO_Screen_1AllScreens
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Screen_1AllScreens)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(Screen_1AllScreens)

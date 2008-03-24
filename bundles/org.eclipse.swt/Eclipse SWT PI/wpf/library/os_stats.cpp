@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1425;
-int OS_nativeFunctionCallCount[1425];
+int OS_nativeFunctionCount = 1426;
+int OS_nativeFunctionCallCount[1426];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -824,6 +824,7 @@ char * OS_nativeFunctionNames[] = {
 	"SWTDockPanel_1JNIRefProperty",
 	"SWTDockPanel_1typeid",
 	"SWTTextRunProperties_1ForegroundBrush",
+	"SaveFileDialog_1OverwritePrompt",
 	"Screen_1AllScreens",
 	"Screen_1Bounds",
 	"Screen_1PrimaryScreen",
