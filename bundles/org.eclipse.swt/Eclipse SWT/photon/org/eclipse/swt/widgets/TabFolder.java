@@ -321,6 +321,16 @@ public TabItem getItem (int index) {
 	return items [index];
 }
 
+public TabItem getItem (Point point) {
+	checkWidget();
+	for (int index = 0; index < itemCount; index++) {
+		TabItem item = items[index];
+		Rectangle bounds = item.getBounds();
+		if (bounds.contains(point)) return item;
+	}
+	return null;
+}
+
 /**
  * Returns an array of <code>TabItem</code>s which are the items
  * in the receiver. 
