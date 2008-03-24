@@ -347,7 +347,6 @@ void createHandle () {
 		view = widget;
 		parent.contentView().addSubview_(widget);
 	} else {
-		style &= ~SWT.HORIZONTAL;
 		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
 		scrollWidget.initWithFrame(new NSRect());
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
@@ -364,6 +363,14 @@ void createHandle () {
 		size.width = size.height = Float.MAX_VALUE;
 		widget.setMaxSize(size);
 		widget.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+
+		if ((style & SWT.WRAP) == 0) {
+			widget.setHorizontallyResizable(true);
+			NSSize csize = new NSSize();
+			csize.width = csize.height = Float.MAX_VALUE;
+			widget.textContainer().setWidthTracksTextView(false);
+			widget.textContainer().setContainerSize(csize);
+		}
 
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
