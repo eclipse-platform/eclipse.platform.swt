@@ -1195,6 +1195,13 @@ public void open () {
 	}
 }
 
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
+}
+
 void register () {
 	super.register ();
 	int [] theRoot = new int [1];
