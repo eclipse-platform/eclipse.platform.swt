@@ -291,6 +291,26 @@ public PrinterData open() {
 		/* Set state into print dialog settings. */
 		int /*long*/ settings = OS.gtk_print_settings_new();
 		int /*long*/ page_setup = OS.gtk_page_setup_new();
+		
+		if (printerData != null) {
+			if (printerData.otherData != null) {
+				Printer.restore(printerData.otherData, settings, page_setup);
+			}
+			/* Set values of settings from PrinterData. */
+			Printer.setScope(settings, printerData.scope, printerData.startPage, printerData.endPage);
+			//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
+			if (printerData.printToFile) {
+				byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
+				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+			}
+			if (printerData.driver.equals("GtkPrintBackendFile") && printerData.name.equals("Print to File")) { //$NON-NLS-1$ //$NON-NLS-2$
+				byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
+				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+			}
+			OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
+			OS.gtk_print_settings_set_collate(settings, printerData.collate);	
+		}
+		
 		Printer.setScope(settings, scope, startPage, endPage);
 		if (printToFile) {
 			byte [] buffer = Converter.wcsToMbcs (null, "Print to File", true); //$NON-NLS-1$

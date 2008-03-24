@@ -55,8 +55,8 @@ public final class Printer extends Device {
 	boolean isGCCreated = false;
 	Font systemFont;
 
-	byte [] settingsData;
-	int start, end;
+	static byte [] settingsData;
+	static int start, end;
 
 	static final String GTK_LPR_BACKEND = "GtkPrintBackendLpr"; //$NON-NLS-1$
 
@@ -184,6 +184,56 @@ static PrinterData printerDataFromGtkPrinter(int /*long*/ printer) {
 	return new PrinterData (backendType, name);
 }
 
+/* 
+* Restore printer settings and page_setup data from data.
+*/
+static void restore(byte [] data, int /*long*/ settings, int /*long*/ page_setup) {
+	settingsData = data;
+	start = end = 0;
+	while (end < settingsData.length && settingsData[end] != 0) {
+		start = end;
+		while (end < settingsData.length && settingsData[end] != 0) end++;
+		end++;
+		byte [] keyBuffer = new byte [end - start];
+		System.arraycopy (settingsData, start, keyBuffer, 0, keyBuffer.length);
+		start = end;
+		while (end < settingsData.length && settingsData[end] != 0) end++;
+		end++;
+		byte [] valueBuffer = new byte [end - start];
+		System.arraycopy (settingsData, start, valueBuffer, 0, valueBuffer.length);
+		OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
+		if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (null, keyBuffer))+": "+new String (Converter.mbcsToWcs (null, valueBuffer)));
+	}
+	end++; // skip extra null terminator
+	
+	/* Retrieve stored page_setup data.
+	 * Note that page_setup properties must be stored (in PrintDialog) and restored (here) in the same order.
+	 */
+	OS.gtk_page_setup_set_orientation(page_setup, restoreInt("orientation")); //$NON-NLS-1$
+	OS.gtk_page_setup_set_top_margin(page_setup, restoreDouble("top_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
+	OS.gtk_page_setup_set_bottom_margin(page_setup, restoreDouble("bottom_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
+	OS.gtk_page_setup_set_left_margin(page_setup, restoreDouble("left_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
+	OS.gtk_page_setup_set_right_margin(page_setup, restoreDouble("right_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
+	byte [] name = restoreBytes("paper_size_name", true); //$NON-NLS-1$
+	byte [] display_name = restoreBytes("paper_size_display_name", true); //$NON-NLS-1$
+	byte [] ppd_name = restoreBytes("paper_size_ppd_name", true); //$NON-NLS-1$
+	double width = restoreDouble("paper_size_width"); //$NON-NLS-1$
+	double height = restoreDouble("paper_size_height"); //$NON-NLS-1$
+	boolean custom = restoreBoolean("paper_size_is_custom"); //$NON-NLS-1$
+	int /*long*/ paper_size = 0;
+	if (custom) {
+		if (ppd_name.length > 0) {
+			paper_size = OS.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
+		} else {
+			paper_size = OS.gtk_paper_size_new_custom(name, display_name, width, height, OS.GTK_UNIT_MM);
+		}
+	} else {
+		paper_size = OS.gtk_paper_size_new(name);
+	}
+	OS.gtk_page_setup_set_paper_size(page_setup, paper_size);
+	OS.gtk_paper_size_free(paper_size);
+}
+
 static void setScope(int /*long*/ settings, int scope, int startPage, int endPage) {
 	switch (scope) {
 	case PrinterData.ALL_PAGES:
@@ -252,22 +302,22 @@ public Printer(PrinterData data) {
 	super(checkNull(data));
 }
 
-int restoreInt(String key) {
+static int restoreInt(String key) {
 	byte [] value = restoreBytes(key, false);
 	return Integer.parseInt(new String(value));
 }
 
-double restoreDouble(String key) {
+static double restoreDouble(String key) {
 	byte [] value = restoreBytes(key, false);
 	return Double.parseDouble(new String(value));
 }
 
-boolean restoreBoolean(String key) {
+static boolean restoreBoolean(String key) {
 	byte [] value = restoreBytes(key, false);
 	return Boolean.valueOf(new String(value)).booleanValue();
 }
 
-byte [] restoreBytes(String key, boolean nullTerminate) {
+static byte [] restoreBytes(String key, boolean nullTerminate) {
 	//get key
 	start = end;
 	while (end < settingsData.length && settingsData[end] != 0) end++;
@@ -670,51 +720,7 @@ protected void init() {
 	settings = OS.gtk_print_settings_new();
 	pageSetup = OS.gtk_page_setup_new();
 	if (data.otherData != null) {
-		/* Retreive stored printer_settings data. */
-		settingsData = data.otherData;
-		start = end = 0;
-		while (end < settingsData.length && settingsData[end] != 0) {
-			start = end;
-			while (end < settingsData.length && settingsData[end] != 0) end++;
-			end++;
-			byte [] keyBuffer = new byte [end - start];
-			System.arraycopy (settingsData, start, keyBuffer, 0, keyBuffer.length);
-			start = end;
-			while (end < settingsData.length && settingsData[end] != 0) end++;
-			end++;
-			byte [] valueBuffer = new byte [end - start];
-			System.arraycopy (settingsData, start, valueBuffer, 0, valueBuffer.length);
-			OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
-			if (DEBUG) System.out.println(new String (Converter.mbcsToWcs (null, keyBuffer))+": "+new String (Converter.mbcsToWcs (null, valueBuffer)));
-		}
-		end++; // skip extra null terminator
-		
-		/* Retreive stored page_setup data.
-		 * Note that page_setup properties must be stored (in PrintDialog) and restored (here) in the same order.
-		 */
-		OS.gtk_page_setup_set_orientation(pageSetup, restoreInt("orientation")); //$NON-NLS-1$
-		OS.gtk_page_setup_set_top_margin(pageSetup, restoreDouble("top_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-		OS.gtk_page_setup_set_bottom_margin(pageSetup, restoreDouble("bottom_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-		OS.gtk_page_setup_set_left_margin(pageSetup, restoreDouble("left_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-		OS.gtk_page_setup_set_right_margin(pageSetup, restoreDouble("right_margin"), OS.GTK_UNIT_MM); //$NON-NLS-1$
-		byte [] name = restoreBytes("paper_size_name", true); //$NON-NLS-1$
-		byte [] display_name = restoreBytes("paper_size_display_name", true); //$NON-NLS-1$
-		byte [] ppd_name = restoreBytes("paper_size_ppd_name", true); //$NON-NLS-1$
-		double width = restoreDouble("paper_size_width"); //$NON-NLS-1$
-		double height = restoreDouble("paper_size_height"); //$NON-NLS-1$
-		boolean custom = restoreBoolean("paper_size_is_custom"); //$NON-NLS-1$
-		int /*long*/ paper_size = 0;
-		if (custom) {
-			if (ppd_name.length > 0) {
-				paper_size = OS.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
-			} else {
-				paper_size = OS.gtk_paper_size_new_custom(name, display_name, width, height, OS.GTK_UNIT_MM);
-			}
-		} else {
-			paper_size = OS.gtk_paper_size_new(name);
-		}
-		OS.gtk_page_setup_set_paper_size(pageSetup, paper_size);
-		OS.gtk_paper_size_free(paper_size);
+		restore(data.otherData, settings, pageSetup);
 	}
 	
 	/* Set values of settings from PrinterData. */
