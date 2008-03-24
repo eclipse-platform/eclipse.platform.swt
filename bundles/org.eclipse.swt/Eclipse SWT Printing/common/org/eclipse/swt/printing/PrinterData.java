@@ -125,6 +125,10 @@ public final class PrinterData extends DeviceData {
 	 * private, platform-specific data
 	 * On Windows, this contains a copy of the DEVMODE struct
 	 * returned from the <code>PrintDialog</code>.
+	 * On GTK, this contains a copy of the print_settings and page_setup
+	 * returned from the <code>PrintDialog</code>.
+	 * On OS X Carbon, this contains a copy of the PrintSettings and PageFormat
+	 * returned from the <code>PrintDialog</code>.
 	 * This field is not currently used on the X/Window System.
 	 */	
 	byte [] otherData;
