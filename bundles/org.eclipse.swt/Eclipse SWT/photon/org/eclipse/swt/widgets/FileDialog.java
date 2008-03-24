@@ -36,6 +36,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String filterPath = "", fileName = "";
 	int filterIndex = -1;
+	boolean overwritePrompt = false;
 	static final String FILTER = "*";
 	
 /**
@@ -329,4 +330,29 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwritePrompt () {
+	return overwritePrompt;
+}
+
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param prompt true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwritePrompt (boolean prompt) {
+	//overwritePrompt = prompt;
+}
 }

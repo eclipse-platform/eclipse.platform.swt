@@ -36,6 +36,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
 	int filterIndex = -1;
+	boolean overwritePrompt = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
 /**
@@ -198,6 +199,7 @@ public String open () {
 	int identifiers = 0, kUTTypeData = 0;
 	int [] outDialog = new int [1];
 	if ((style & SWT.SAVE) != 0) {
+		if (!overwritePrompt) options.optionFlags |= OS.kNavDontConfirmReplacement;
 		// NEEDS WORK - filter extensions, start in filter path, allow user
 		// to select existing files.
 		OS.NavCreatePutFileDialog (options, 0, 0, 0, 0, outDialog);		
@@ -463,5 +465,31 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
+}
+
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwritePrompt () {
+	return overwritePrompt;
+}
+
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param prompt true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwritePrompt (boolean prompt) {
+	overwritePrompt = prompt;
 }
 }

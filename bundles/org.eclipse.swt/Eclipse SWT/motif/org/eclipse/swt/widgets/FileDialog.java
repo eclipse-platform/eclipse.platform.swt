@@ -41,6 +41,7 @@ public class FileDialog extends Dialog {
 	String filterPath = ""; //$NON-NLS-1$
 	String fullPath;
 	int filterIndex = -1;
+	boolean overwritePrompt = false;
 	static final String FILTER = "*"; //$NON-NLS-1$
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 
@@ -608,5 +609,31 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
+}
+
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwritePrompt () {
+	return overwritePrompt;
+}
+
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param prompt true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwritePrompt (boolean prompt) {
+//	overwritePrompt = prompt;
 }
 }

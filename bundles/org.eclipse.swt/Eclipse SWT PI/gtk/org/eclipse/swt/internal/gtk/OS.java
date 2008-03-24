@@ -4875,6 +4875,15 @@ public static final void gtk_file_chooser_set_current_name(int /*long*/ chooser,
 		lock.unlock();
 	}
 }
+//public static final native void _gtk_file_chooser_set_do_overwrite_confirmation(int /*long*/ chooser, boolean do_overwrite_confirmation);
+//public static final void gtk_file_chooser_set_do_overwrite_confirmation(int /*long*/ chooser, boolean do_overwrite_confirmation) {
+//	lock.lock();
+//	try {
+//		_gtk_file_chooser_set_do_overwrite_confirmation(chooser, do_overwrite_confirmation);
+//	} finally {
+//		lock.unlock();
+//	}
+//}
 public static final native void _gtk_file_chooser_set_extra_widget(int /*long*/ chooser, int /*long*/ extra_widget);
 public static final void gtk_file_chooser_set_extra_widget(int /*long*/ chooser, int /*long*/ extra_widget) {
 	lock.lock();

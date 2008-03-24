@@ -37,6 +37,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
 	int filterIndex = 0;
+	boolean overwritePrompt = false;
 	static final String FILTER = "*.*";
 	static int BUFFER_SIZE = 1024 * 32;
 	static boolean USE_HOOK;
@@ -266,6 +267,8 @@ public String open () {
 	OPENFILENAME struct = new OPENFILENAME ();
 	struct.lStructSize = OPENFILENAME.sizeof;
 	struct.Flags = OS.OFN_HIDEREADONLY | OS.OFN_NOCHANGEDIR;
+	boolean save = (style & SWT.SAVE) != 0;
+	if (save && overwritePrompt) struct.Flags |= OS.OFN_OVERWRITEPROMPT;
 	Callback callback = null;
 	if ((style & SWT.MULTI) != 0) {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER;
@@ -292,7 +295,6 @@ public String open () {
 	* extension at the time that the dialog is closed.
 	*/
 	int /*long*/ lpstrDefExt = 0;
-	boolean save = (style & SWT.SAVE) != 0;
 	if (save) {
 		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 		struct.lpstrDefExt = lpstrDefExt;
@@ -491,7 +493,7 @@ public void setFilterIndex (int index) {
 }
 
 /**
- * Sets the the names that describe the filter extensions
+ * Sets the names that describe the filter extensions
  * which the dialog will use to filter the files it shows
  * to the argument, which may be null.
  * <p>
@@ -529,4 +531,29 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwritePrompt () {
+	return overwritePrompt;
+}
+
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param prompt true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwritePrompt (boolean prompt) {
+	overwritePrompt = prompt;
+}
 }

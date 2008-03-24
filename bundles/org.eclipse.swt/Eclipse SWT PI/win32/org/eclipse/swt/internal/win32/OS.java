@@ -1203,6 +1203,7 @@ public class OS extends C {
 	public static final int OFN_ENABLEHOOK = 0x20;
 	public static final int OFN_HIDEREADONLY = 0x4;
 	public static final int OFN_NOCHANGEDIR = 0x8;
+	public static final int OFN_OVERWRITEPROMPT = 0x2;
 	public static final int OIC_BANG = 0x7F03;
 	public static final int OIC_HAND = 0x7F01;
 	public static final int OIC_INFORMATION = 0x7F04;

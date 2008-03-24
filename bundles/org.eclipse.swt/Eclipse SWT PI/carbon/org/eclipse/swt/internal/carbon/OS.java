@@ -724,6 +724,7 @@ public class OS extends C {
 	public static final int kNavCBNewLocation = 5;
 	public static final int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
 	public static final int kNavSupportPackages = 0x00001000;
+	public static final int kNavDontConfirmReplacement = 0x00010000;
 	public static final int kNavUserActionCancel = 1;
 	public static final int kNavUserActionChoose = 4;
 	public static final int kNavUserActionOpen = 2;

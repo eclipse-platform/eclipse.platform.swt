@@ -39,6 +39,7 @@ public class FileDialog extends Dialog {
 	String[] fileNames = new String [0];
 	String fullPath = "";
 	int filterIndex = -1;
+	boolean overwritePrompt = false;
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
@@ -491,6 +492,9 @@ void presetChooserDialog () {
 		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
 		OS.gtk_file_chooser_set_current_name (handle, buffer);
 	}
+	if ((style & SWT.SAVE) != 0 && overwritePrompt) {
+//		OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, true);
+	}
 
 	/* Set the extension filters */
 	if (filterNames == null) filterNames = new String [0];
@@ -649,5 +653,31 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
+}
+
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwritePrompt () {
+	return overwritePrompt;
+}
+
+/**
+ * Sets the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @param prompt true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public void setOverwritePrompt (boolean prompt) {
+	overwritePrompt = prompt;
 }
 }
