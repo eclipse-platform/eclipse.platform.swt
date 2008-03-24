@@ -267,6 +267,21 @@ TabItem getItem (int items, int index) {
 	return result;
 }
 
+public TabItem getItem (Point point) {
+	checkWidget();
+	int items = OS.ItemsControl_Items (handle);
+	for (int index = 0; index < itemCount; index++) {
+		TabItem item = getItem (items, index); 
+		Rectangle bounds = item.getBounds();
+		if (bounds.contains(point)) {
+			OS.GCHandle_Free (items);
+			return item;
+		}
+	}
+	OS.GCHandle_Free (items);
+	return null;
+}
+
 /**
  * Returns the number of items contained in the receiver.
  *
