@@ -159,6 +159,19 @@ public String getFilterPath () {
 }
 
 /**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwrite () {
+	return overwrite;
+}
+
+/**
  * Makes the dialog visible and brings it to the front
  * of the display.
  *
@@ -333,19 +346,6 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
-}
-
-/**
- * Returns the flag that the dialog will use to
- * determine whether to prompt the user for file
- * overwrite if the selected file already exists.
- *
- * @return true if the dialog will prompt for file overwrite, false otherwise
- * 
- * @since 3.4
- */
-public boolean getOverwrite () {
-	return overwrite;
 }
 
 /**

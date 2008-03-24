@@ -169,6 +169,19 @@ public String getFilterPath () {
 	return filterPath;
 }
 
+/**
+ * Returns the flag that the dialog will use to
+ * determine whether to prompt the user for file
+ * overwrite if the selected file already exists.
+ *
+ * @return true if the dialog will prompt for file overwrite, false otherwise
+ * 
+ * @since 3.4
+ */
+public boolean getOverwrite () {
+	return overwrite;
+}
+
 int itemSelected (int widget, int client, int call) {
 	/* this callback will only be hooked if the dialog style is MULTI */
 	int fileList = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
@@ -609,19 +622,6 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
-}
-
-/**
- * Returns the flag that the dialog will use to
- * determine whether to prompt the user for file
- * overwrite if the selected file already exists.
- *
- * @return true if the dialog will prompt for file overwrite, false otherwise
- * 
- * @since 3.4
- */
-public boolean getOverwrite () {
-	return overwrite;
 }
 
 /**
