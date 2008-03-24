@@ -36,7 +36,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
 	int filterIndex = -1;
-	boolean overwrite = false;
+	boolean overwrite = true; //TODO: if setOverwrite(false) is implemented, change default to false for consistency
 	static final char EXTENSION_SEPARATOR = ';';
 
 /**
@@ -320,6 +320,8 @@ public void setFilterPath (String string) {
  * @since 3.4
  */
 public void setOverwrite (boolean prompt) {
+	//TODO: May be able to implement this with private NSSavePanel method (BOOL)_overwriteExistingFileCheck:(NSString *)filename
+	/* See bug 223703 */
 	//overwrite = prompt;
 }
 }
