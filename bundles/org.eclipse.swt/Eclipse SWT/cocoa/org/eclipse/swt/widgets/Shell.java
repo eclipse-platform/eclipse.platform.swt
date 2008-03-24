@@ -462,7 +462,7 @@ void createHandle () {
 			styleMask = OS.NSTitledWindowMask;
 			if ((style & SWT.CLOSE) != 0) styleMask |= OS.NSClosableWindowMask;
 			if ((style & SWT.MIN) != 0) styleMask |= OS.NSMiniaturizableWindowMask;
-//			if ((style & SWT.MAX) != 0) styleMask |= ;
+			if ((style & SWT.MAX) != 0) styleMask |= OS.NSResizableWindowMask;
 			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
 		}
 		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, false);
