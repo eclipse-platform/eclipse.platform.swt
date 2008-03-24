@@ -247,8 +247,8 @@ public PrinterData open() {
 	pd.lStructSize = PRINTDLG.sizeof;
 	Control parent = getParent();
 	if (parent != null) pd.hwndOwner = parent.handle;
-	int lpInitData = 0;
-	int hHeap = OS.GetProcessHeap();
+	int /*long*/ lpInitData = 0;
+	int /*long*/ hHeap = OS.GetProcessHeap();
 	if (printerData != null) {
 		byte buffer [] = printerData.otherData;
 		if (buffer != null && buffer.length != 0) {
