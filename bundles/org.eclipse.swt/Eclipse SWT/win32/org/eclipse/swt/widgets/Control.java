@@ -1939,7 +1939,7 @@ public boolean print (GC gc) {
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		int topHandle = topHandle ();
+		int /*long*/ topHandle = topHandle ();
 		int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
