@@ -758,6 +758,20 @@ boolean mnemonicMatch (char key) {
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
+void printWidget (int /*long*/ hwnd, int /*long*/ hDC) {
+	/*
+	* Bug in Windows.  For some reason, PrintWindow() fails
+	* when it is called on a push button.  The fix is to
+	* detect the failure and use WM_PRINT instead.  Note
+	* that WM_PRINT cannot be used all the time because it
+	* fails for browser controls when the browser has focus.
+	*/
+	if (!OS.PrintWindow (hwnd, hDC, 0)) {
+		int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND | OS.PRF_CHILDREN;
+		OS.SendMessage (hwnd, OS.WM_PRINT, hDC, flags);
+	}
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();

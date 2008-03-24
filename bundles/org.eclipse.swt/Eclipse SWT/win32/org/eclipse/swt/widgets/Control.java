@@ -1939,17 +1939,22 @@ public boolean print (GC gc) {
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int topHandle = topHandle ();
+		int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
 		if ((bits & OS.WS_VISIBLE) == 0) {
-			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
 		}
-		OS.PrintWindow (handle, gc.handle, 0);
+		printWidget (topHandle, gc.handle);
 		if ((bits & OS.WS_VISIBLE) == 0) {
-			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
 		}
 		return true;
 	}
 	return false;
+}
+
+void printWidget (int /*long*/ hwnd, int /*long*/ hDC) {
+	OS.PrintWindow (hwnd, hDC, 0);
 }
 
 /**
