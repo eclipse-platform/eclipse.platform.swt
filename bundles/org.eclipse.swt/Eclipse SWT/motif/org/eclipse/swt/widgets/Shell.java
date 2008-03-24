@@ -1175,6 +1175,12 @@ public void open () {
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
+public boolean print (GC gc) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	return false;
+}
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	/* Allow the busy cursor to be displayed in a disabled shell */
