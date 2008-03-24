@@ -499,6 +499,16 @@ public TabItem getItem (int index) {
 	if (!(0 <= index && index < getItemCount())) error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
+public TabItem getItem (Point point) {
+	checkWidget();
+	int count = items.length;
+	for (int index = 0; index < count; index++) {
+		TabItem item = items[index];
+		Rectangle bounds = item.getBounds();
+		if (bounds.contains(point)) return item;
+	}
+	return null;
+}
 /**
  * Returns the number of items contained in the receiver.
  *
