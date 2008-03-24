@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 930;
-int OS_nativeFunctionCallCount[930];
+int OS_nativeFunctionCount = 933;
+int OS_nativeFunctionCallCount[933];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -767,6 +767,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
@@ -797,6 +798,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
@@ -890,6 +892,7 @@ char * OS_nativeFunctionNames[] = {
 	"SystemParametersInfoW__II_3II",
 	"TBBUTTONINFO_1sizeof",
 	"TBBUTTON_1sizeof",
+	"TCHITTESTINFO_1sizeof",
 	"TCITEM_1sizeof",
 	"TEXTMETRICA_1sizeof",
 	"TEXTMETRICW_1sizeof",

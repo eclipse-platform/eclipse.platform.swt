@@ -294,6 +294,17 @@ public TabItem getItem (int index) {
 	return items [index];
 }
 
+public TabItem getItem(Point point) {
+	checkWidget ();
+	int count = OS.GetControl32BitMaximum (handle);
+	for (int index = 0; index < count; index++) {
+		TabItem item = items[index];
+		Rectangle bounds = item.getBounds();
+		if (bounds.contains(point)) return item;
+	}
+	return null;
+}
+
 /**
  * Returns the number of items contained in the receiver.
  *

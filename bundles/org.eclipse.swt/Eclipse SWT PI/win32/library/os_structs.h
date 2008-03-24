@@ -1475,6 +1475,18 @@ void setTBBUTTONINFOFields(JNIEnv *env, jobject lpObject, TBBUTTONINFO *lpStruct
 #define TBBUTTONINFO_sizeof() 0
 #endif
 
+#ifndef NO_TCHITTESTINFO
+void cacheTCHITTESTINFOFields(JNIEnv *env, jobject lpObject);
+TCHITTESTINFO *getTCHITTESTINFOFields(JNIEnv *env, jobject lpObject, TCHITTESTINFO *lpStruct);
+void setTCHITTESTINFOFields(JNIEnv *env, jobject lpObject, TCHITTESTINFO *lpStruct);
+#define TCHITTESTINFO_sizeof() sizeof(TCHITTESTINFO)
+#else
+#define cacheTCHITTESTINFOFields(a,b)
+#define getTCHITTESTINFOFields(a,b,c) NULL
+#define setTCHITTESTINFOFields(a,b,c)
+#define TCHITTESTINFO_sizeof() 0
+#endif
+
 #ifndef NO_TCITEM
 void cacheTCITEMFields(JNIEnv *env, jobject lpObject);
 TCITEM *getTCITEMFields(JNIEnv *env, jobject lpObject, TCITEM *lpStruct);

@@ -345,6 +345,26 @@ public TabItem getItem (int index) {
 }
 
 /**
+ * Returns the tab item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the tab item at the given point, or null if the point is not in a tab item
+ * 
+ * @since 3.4
+ */
+public TabItem getItem (Point point) {
+	checkWidget ();
+	TCHITTESTINFO pinfo = new TCHITTESTINFO();
+	pinfo.x = point.x;
+	pinfo.y = point.y;
+	int index = (int)/*64*/OS.SendMessage(handle, OS.TCM_HITTEST, 0, pinfo);
+	if (index == -1) return null;
+	return items[index];
+}
+
+/**
  * Returns the number of items contained in the receiver.
  *
  * @return the number of items

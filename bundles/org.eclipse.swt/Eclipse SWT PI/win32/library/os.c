@@ -12195,6 +12195,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	TCHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC);
+	if (arg3) if ((lparg3 = getTCHITTESTINFOFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setTCHITTESTINFOFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -12670,6 +12686,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win3
 fail:
 	if (arg3 && lparg3) setTBBUTTONFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	TCHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC);
+	if (arg3) if ((lparg3 = getTCHITTESTINFOFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setTCHITTESTINFOFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC);
 	return rc;
 }
 #endif
@@ -14057,6 +14089,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(TBBUTTON_1sizeof)
 	OS_NATIVE_ENTER(env, that, TBBUTTON_1sizeof_FUNC);
 	rc = (jint)TBBUTTON_sizeof();
 	OS_NATIVE_EXIT(env, that, TBBUTTON_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TCHITTESTINFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(TCHITTESTINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TCHITTESTINFO_1sizeof_FUNC);
+	rc = (jint)TCHITTESTINFO_sizeof();
+	OS_NATIVE_EXIT(env, that, TCHITTESTINFO_1sizeof_FUNC);
 	return rc;
 }
 #endif

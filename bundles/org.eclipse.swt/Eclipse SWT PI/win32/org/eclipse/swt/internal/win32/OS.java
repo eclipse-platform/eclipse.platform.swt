@@ -1608,6 +1608,7 @@ public class OS extends C {
 	public static final int TCM_GETITEMCOUNT = 0x1304;
 	public static final int TCM_GETITEMRECT = 0x130a;
 	public static final int TCM_GETTOOLTIPS = 0x132d;
+	public static final int TCM_HITTEST = 0x130d;
 	public static final int TCM_INSERTITEM = IsUnicode ? 0x133e : 0x1307;
 	public static final int TCM_SETCURSEL = 0x130c;
 	public static final int TCM_SETIMAGELIST = 0x1303;
@@ -2206,6 +2207,7 @@ public static final native int SYSTEMTIME_sizeof ();
 public static final native int TBBUTTON_sizeof ();
 public static final native int TBBUTTONINFO_sizeof ();
 public static final native int TCITEM_sizeof ();
+public static final native int TCHITTESTINFO_sizeof ();
 public static final native int TEXTMETRICA_sizeof ();
 public static final native int TEXTMETRICW_sizeof ();
 public static final native int TF_DA_COLOR_sizeof ();
@@ -3039,6 +3041,11 @@ public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TOOLINFO lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3828,6 +3835,7 @@ public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTON lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTONINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCITEM lParam);
+public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TOOLINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVINSERTSTRUCT lParam);
@@ -3858,6 +3866,7 @@ public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTON lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTONINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCITEM lParam);
+public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TOOLINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVINSERTSTRUCT lParam);

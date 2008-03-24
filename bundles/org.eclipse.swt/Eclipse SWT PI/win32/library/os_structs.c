@@ -6953,6 +6953,43 @@ void setTBBUTTONINFOFields(JNIEnv *env, jobject lpObject, TBBUTTONINFO *lpStruct
 }
 #endif
 
+#ifndef NO_TCHITTESTINFO
+typedef struct TCHITTESTINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, flags;
+} TCHITTESTINFO_FID_CACHE;
+
+TCHITTESTINFO_FID_CACHE TCHITTESTINFOFc;
+
+void cacheTCHITTESTINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (TCHITTESTINFOFc.cached) return;
+	TCHITTESTINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TCHITTESTINFOFc.x = (*env)->GetFieldID(env, TCHITTESTINFOFc.clazz, "x", "I");
+	TCHITTESTINFOFc.y = (*env)->GetFieldID(env, TCHITTESTINFOFc.clazz, "y", "I");
+	TCHITTESTINFOFc.flags = (*env)->GetFieldID(env, TCHITTESTINFOFc.clazz, "flags", "I");
+	TCHITTESTINFOFc.cached = 1;
+}
+
+TCHITTESTINFO *getTCHITTESTINFOFields(JNIEnv *env, jobject lpObject, TCHITTESTINFO *lpStruct)
+{
+	if (!TCHITTESTINFOFc.cached) cacheTCHITTESTINFOFields(env, lpObject);
+	lpStruct->pt.x = (*env)->GetIntField(env, lpObject, TCHITTESTINFOFc.x);
+	lpStruct->pt.y = (*env)->GetIntField(env, lpObject, TCHITTESTINFOFc.y);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, TCHITTESTINFOFc.flags);
+	return lpStruct;
+}
+
+void setTCHITTESTINFOFields(JNIEnv *env, jobject lpObject, TCHITTESTINFO *lpStruct)
+{
+	if (!TCHITTESTINFOFc.cached) cacheTCHITTESTINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TCHITTESTINFOFc.x, (jint)lpStruct->pt.x);
+	(*env)->SetIntField(env, lpObject, TCHITTESTINFOFc.y, (jint)lpStruct->pt.y);
+	(*env)->SetIntField(env, lpObject, TCHITTESTINFOFc.flags, (jint)lpStruct->flags);
+}
+#endif
+
 #ifndef NO_TCITEM
 typedef struct TCITEM_FID_CACHE {
 	int cached;
