@@ -247,17 +247,6 @@ public PrinterData open() {
 	pd.lStructSize = PRINTDLG.sizeof;
 	Control parent = getParent();
 	if (parent != null) pd.hwndOwner = parent.handle;
-	pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
-	if (printToFile) pd.Flags |= OS.PD_PRINTTOFILE;
-	switch (scope) {
-		case PrinterData.PAGE_RANGE: pd.Flags |= OS.PD_PAGENUMS; break;
-		case PrinterData.SELECTION: pd.Flags |= OS.PD_SELECTION; break;
-		default: pd.Flags |= OS.PD_ALLPAGES;
-	}
-	pd.nMinPage = 1;
-	pd.nMaxPage = -1;
-	pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, startPage));
-	pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, endPage));
 	int lpInitData = 0;
 	int hHeap = OS.GetProcessHeap();
 	if (printerData != null) {
@@ -269,6 +258,17 @@ public PrinterData open() {
 			pd.hDevMode = lpInitData;
 		}
 	}
+	pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
+	if (printToFile) pd.Flags |= OS.PD_PRINTTOFILE;
+	switch (scope) {
+		case PrinterData.PAGE_RANGE: pd.Flags |= OS.PD_PAGENUMS; break;
+		case PrinterData.SELECTION: pd.Flags |= OS.PD_SELECTION; break;
+		default: pd.Flags |= OS.PD_ALLPAGES;
+	}
+	pd.nMinPage = 1;
+	pd.nMaxPage = -1;
+	pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, startPage));
+	pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, endPage));
 
 	Display display = parent.getDisplay();
 	Shell [] shells = display.getShells();
