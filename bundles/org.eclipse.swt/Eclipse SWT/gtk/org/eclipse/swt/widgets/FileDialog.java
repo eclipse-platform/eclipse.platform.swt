@@ -493,7 +493,9 @@ void presetChooserDialog () {
 		OS.gtk_file_chooser_set_current_name (handle, buffer);
 	}
 	if ((style & SWT.SAVE) != 0 && overwritePrompt) {
-//		OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, true);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 8, 0)) {
+			OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, true);
+		}
 	}
 
 	/* Set the extension filters */

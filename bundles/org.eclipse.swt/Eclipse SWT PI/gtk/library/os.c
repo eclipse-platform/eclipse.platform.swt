@@ -8018,6 +8018,32 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation_FUNC);
+/*
+	gtk_file_chooser_set_do_overwrite_confirmation(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_set_do_overwrite_confirmation_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_set_do_overwrite_confirmation");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1set_1extra_1widget
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1extra_1widget)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

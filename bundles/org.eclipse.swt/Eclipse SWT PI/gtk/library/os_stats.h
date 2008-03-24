@@ -585,6 +585,7 @@ typedef enum {
 	_1gtk_1file_1chooser_1get_1filter_FUNC,
 	_1gtk_1file_1chooser_1set_1current_1folder_FUNC,
 	_1gtk_1file_1chooser_1set_1current_1name_FUNC,
+	_1gtk_1file_1chooser_1set_1do_1overwrite_1confirmation_FUNC,
 	_1gtk_1file_1chooser_1set_1extra_1widget_FUNC,
 	_1gtk_1file_1chooser_1set_1filename_FUNC,
 	_1gtk_1file_1chooser_1set_1filter_FUNC,

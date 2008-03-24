@@ -63,6 +63,7 @@
 #define gtk_file_chooser_get_filter_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_set_current_folder_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_set_current_name_LIB "libgtk-x11-2.0.so.0"
+#define gtk_file_chooser_set_do_overwrite_confirmation_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_set_extra_widget_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_set_filename_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_set_filter_LIB "libgtk-x11-2.0.so.0"
