@@ -39,7 +39,7 @@ public class FileDialog extends Dialog {
 	String[] fileNames = new String [0];
 	String fullPath = "";
 	int filterIndex = -1;
-	boolean overwritePrompt = false;
+	boolean overwrite = false;
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
@@ -492,7 +492,7 @@ void presetChooserDialog () {
 		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
 		OS.gtk_file_chooser_set_current_name (handle, buffer);
 	}
-	if ((style & SWT.SAVE) != 0 && overwritePrompt) {
+	if ((style & SWT.SAVE) != 0 && overwrite) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 8, 0)) {
 			OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, true);
 		}
@@ -666,8 +666,8 @@ public void setFilterPath (String string) {
  * 
  * @since 3.4
  */
-public boolean getOverwritePrompt () {
-	return overwritePrompt;
+public boolean getOverwrite () {
+	return overwrite;
 }
 
 /**
@@ -679,7 +679,7 @@ public boolean getOverwritePrompt () {
  * 
  * @since 3.4
  */
-public void setOverwritePrompt (boolean prompt) {
-	overwritePrompt = prompt;
+public void setOverwrite (boolean prompt) {
+	overwrite = prompt;
 }
 }

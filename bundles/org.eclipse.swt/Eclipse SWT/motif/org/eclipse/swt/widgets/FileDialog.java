@@ -41,7 +41,7 @@ public class FileDialog extends Dialog {
 	String filterPath = ""; //$NON-NLS-1$
 	String fullPath;
 	int filterIndex = -1;
-	boolean overwritePrompt = false;
+	boolean overwrite = false;
 	static final String FILTER = "*"; //$NON-NLS-1$
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 
@@ -620,8 +620,8 @@ public void setFilterPath (String string) {
  * 
  * @since 3.4
  */
-public boolean getOverwritePrompt () {
-	return overwritePrompt;
+public boolean getOverwrite () {
+	return overwrite;
 }
 
 /**
@@ -633,7 +633,7 @@ public boolean getOverwritePrompt () {
  * 
  * @since 3.4
  */
-public void setOverwritePrompt (boolean prompt) {
-//	overwritePrompt = prompt;
+public void setOverwrite (boolean prompt) {
+//	overwrite = prompt;
 }
 }

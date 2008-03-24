@@ -37,7 +37,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
 	int filterIndex = 0;
-	boolean overwritePrompt = false;
+	boolean overwrite = false;
 	static final String FILTER = "*.*";
 	static int BUFFER_SIZE = 1024 * 32;
 	static boolean USE_HOOK;
@@ -268,7 +268,7 @@ public String open () {
 	struct.lStructSize = OPENFILENAME.sizeof;
 	struct.Flags = OS.OFN_HIDEREADONLY | OS.OFN_NOCHANGEDIR;
 	boolean save = (style & SWT.SAVE) != 0;
-	if (save && overwritePrompt) struct.Flags |= OS.OFN_OVERWRITEPROMPT;
+	if (save && overwrite) struct.Flags |= OS.OFN_OVERWRITEPROMPT;
 	Callback callback = null;
 	if ((style & SWT.MULTI) != 0) {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER;
@@ -540,8 +540,8 @@ public void setFilterPath (String string) {
  * 
  * @since 3.4
  */
-public boolean getOverwritePrompt () {
-	return overwritePrompt;
+public boolean getOverwrite () {
+	return overwrite;
 }
 
 /**
@@ -553,7 +553,7 @@ public boolean getOverwritePrompt () {
  * 
  * @since 3.4
  */
-public void setOverwritePrompt (boolean prompt) {
-	overwritePrompt = prompt;
+public void setOverwrite (boolean prompt) {
+	overwrite = prompt;
 }
 }

@@ -36,7 +36,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
 	int filterIndex = -1;
-	boolean overwritePrompt = false;
+	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
 /**
@@ -306,8 +306,8 @@ public void setFilterPath (String string) {
  * 
  * @since 3.4
  */
-public boolean getOverwritePrompt () {
-	return overwritePrompt;
+public boolean getOverwrite () {
+	return overwrite;
 }
 
 /**
@@ -319,7 +319,7 @@ public boolean getOverwritePrompt () {
  * 
  * @since 3.4
  */
-public void setOverwritePrompt (boolean prompt) {
-	//overwritePrompt = prompt;
+public void setOverwrite (boolean prompt) {
+	//overwrite = prompt;
 }
 }

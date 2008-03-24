@@ -36,7 +36,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";  //$NON-NLS-1$//$NON-NLS-2$
 	int filterIndex = -1;
-	boolean overwritePrompt = false;
+	boolean overwrite = false;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -207,7 +207,7 @@ public String open () {
 	OS.FileDialog_InitialDirectory (dialog, filterPathPtr);
 	OS.GCHandle_Free (filterPathPtr);
 	
-	if ((style & SWT.SAVE) != 0) OS.SaveFileDialog_OverwritePrompt (dialog, overwritePrompt);
+	if ((style & SWT.SAVE) != 0) OS.SaveFileDialog_OverwritePrompt (dialog, overwrite);
 	
 	int parentHandle = (parent.style & SWT.ON_TOP) == 0 ? parent.shellHandle : 0;
 	boolean success = OS.CommonDialog_ShowDialog (dialog, parentHandle);
@@ -344,8 +344,8 @@ public void setFilterPath (String string) {
  * 
  * @since 3.4
  */
-public boolean getOverwritePrompt () {
-	return overwritePrompt;
+public boolean getOverwrite () {
+	return overwrite;
 }
 
 /**
@@ -357,7 +357,7 @@ public boolean getOverwritePrompt () {
  * 
  * @since 3.4
  */
-public void setOverwritePrompt (boolean prompt) {
-	overwritePrompt = prompt;
+public void setOverwrite (boolean prompt) {
+	overwrite = prompt;
 }
 }
