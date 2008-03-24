@@ -323,6 +323,7 @@ public TabItem getItem (int index) {
 
 public TabItem getItem (Point point) {
 	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int index = 0; index < itemCount; index++) {
 		TabItem item = items[index];
 		Rectangle bounds = item.getBounds();

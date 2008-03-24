@@ -269,6 +269,7 @@ TabItem getItem (int items, int index) {
 
 public TabItem getItem (Point point) {
 	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int items = OS.ItemsControl_Items (handle);
 	for (int index = 0; index < itemCount; index++) {
 		TabItem item = getItem (items, index); 

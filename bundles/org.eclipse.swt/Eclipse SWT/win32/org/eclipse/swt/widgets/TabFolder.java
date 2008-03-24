@@ -351,11 +351,20 @@ public TabItem getItem (int index) {
  *
  * @param point the point used to locate the item
  * @return the tab item at the given point, or null if the point is not in a tab item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  * 
  * @since 3.4
  */
 public TabItem getItem (Point point) {
 	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TCHITTESTINFO pinfo = new TCHITTESTINFO();
 	pinfo.x = point.x;
 	pinfo.y = point.y;

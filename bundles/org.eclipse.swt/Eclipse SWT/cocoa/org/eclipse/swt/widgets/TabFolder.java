@@ -251,6 +251,7 @@ public TabItem getItem (int index) {
 
 public TabItem getItem (Point point) {
 	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	NSPoint nsPoint = new NSPoint ();
 	nsPoint.x = point.x;
 	nsPoint.y = point.y;

@@ -308,6 +308,7 @@ public TabItem getItem (int index) {
 
 public TabItem getItem(Point point) {
 	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return null;
 	int itemCount = OS.g_list_length (list);

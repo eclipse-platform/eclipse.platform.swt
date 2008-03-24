@@ -501,6 +501,7 @@ public TabItem getItem (int index) {
 }
 public TabItem getItem (Point point) {
 	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = items.length;
 	for (int index = 0; index < count; index++) {
 		TabItem item = items[index];
