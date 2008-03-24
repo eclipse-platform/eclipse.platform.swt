@@ -131,9 +131,25 @@ void destroyWidget () {
  * @since 3.4
  */
 public Rectangle getBounds() {
-	//TODO: Need to provide implementation for cocoa.
 	checkWidget();
-	return new Rectangle (0, 0, 0, 0);
+	Rectangle result = new Rectangle (0, 0, 0, 0);
+	if (nsItem.respondsToSelector (OS.sel_accessibilityAttributeValue_1)) {
+		int posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_1, OS.NSAccessibilityPositionAttribute ());
+		int sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_1, OS.NSAccessibilitySizeAttribute ());		
+		NSValue val = new NSValue (posValue);
+		NSPoint pt = val.pointValue ();
+		NSWindow window = parent.view.window ();
+		pt.y = window.screen ().frame ().height - pt.y;
+		pt = parent.view.convertPoint_fromView_ (pt, null);
+		pt = window.convertScreenToBase (pt);
+		result.x = (int) pt.x;
+		result.y = (int) pt.y;
+		val = new NSValue (sizeValue);
+		NSSize size = val.sizeValue ();
+		result.width = (int) size.width;
+		result.height = (int) size.height;
+	}
+	return result;
 }
 
 /**

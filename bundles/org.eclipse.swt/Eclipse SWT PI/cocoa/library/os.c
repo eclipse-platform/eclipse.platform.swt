@@ -288,6 +288,30 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveTo)
 }
 #endif
 
+#ifndef NO_NSAccessibilityPositionAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(NSAccessibilityPositionAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityPositionAttribute_FUNC);
+	rc = (jint)NSAccessibilityPositionAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityPositionAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilitySizeAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(NSAccessibilitySizeAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilitySizeAttribute_FUNC);
+	rc = (jint)NSAccessibilitySizeAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilitySizeAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSBackgroundColorAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSBackgroundColorAttributeName)
 	(JNIEnv *env, jclass that)

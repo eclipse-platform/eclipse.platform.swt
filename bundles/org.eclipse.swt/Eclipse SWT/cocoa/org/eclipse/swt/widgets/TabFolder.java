@@ -249,6 +249,22 @@ public TabItem getItem (int index) {
 	return items [index];
 }
 
+public TabItem getItem (Point point) {
+	checkWidget ();
+	NSPoint nsPoint = new NSPoint ();
+	nsPoint.x = point.x;
+	nsPoint.y = point.y;
+	NSTabView tabView = (NSTabView) view;
+	NSTabViewItem tabViewItem = tabView.tabViewItemAtPoint (nsPoint);
+	for (int i = 0; i < itemCount; i++) {
+		NSTabViewItem item = items[i].nsItem;
+		if (item.isEqual (tabViewItem)) {
+			return items [i];
+		}
+	}
+	return null;
+}
+
 /**
  * Returns the number of items contained in the receiver.
  *

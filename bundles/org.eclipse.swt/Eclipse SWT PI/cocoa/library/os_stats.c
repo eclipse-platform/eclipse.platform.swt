@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 318;
-int OS_nativeFunctionCallCount[318];
+int OS_nativeFunctionCount = 320;
+int OS_nativeFunctionCallCount[320];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -30,6 +30,8 @@ char * OS_nativeFunctionNames[] = {
 	"JNIGetObject",
 	"LineTo",
 	"MoveTo",
+	"NSAccessibilityPositionAttribute",
+	"NSAccessibilitySizeAttribute",
 	"NSBackgroundColorAttributeName",
 	"NSBaselineOffsetAttributeName",
 	"NSBitsPerPixelFromDepth",

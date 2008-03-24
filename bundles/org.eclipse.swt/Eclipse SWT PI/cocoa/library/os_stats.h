@@ -38,6 +38,8 @@ typedef enum {
 	JNIGetObject_FUNC,
 	LineTo_FUNC,
 	MoveTo_FUNC,
+	NSAccessibilityPositionAttribute_FUNC,
+	NSAccessibilitySizeAttribute_FUNC,
 	NSBackgroundColorAttributeName_FUNC,
 	NSBaselineOffsetAttributeName_FUNC,
 	NSBitsPerPixelFromDepth_FUNC,
