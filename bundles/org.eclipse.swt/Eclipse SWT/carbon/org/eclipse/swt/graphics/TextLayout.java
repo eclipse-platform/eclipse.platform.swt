@@ -334,7 +334,7 @@ void computeRuns() {
 	int offsetCount = 0;
 	for (int i = 0; i < chars.length; i++) {
 		char c = chars[i];
-		if (c == LTR_MARK || c == RTL_MARK || c == ZWS) {
+		if (c == LTR_MARK || c == RTL_MARK) {
 			offsetCount++;
 		}
 	}
@@ -342,7 +342,7 @@ void computeRuns() {
 	offsetCount = 0;
 	for (int i = 0; i < chars.length; i++) {
 		char c = chars[i];
-		if (c == LTR_MARK || c == RTL_MARK || c == ZWS) {
+		if (c == LTR_MARK || c == RTL_MARK) {
 			invalidOffsets[offsetCount++] = i;
 		}
 	}
@@ -2142,7 +2142,7 @@ int translateOffset(int offset) {
 		if (offset < invalidOffsets[i]) break; 
 		offset++;
 	}
-	return offset;
+	return offset + 1;
 }
 
 /*
@@ -2155,10 +2155,10 @@ int untranslateOffset(int offset) {
 			continue;
 		}
 		if (offset < invalidOffsets[i]) {
-			return offset - i;
+			return Math.max(0, offset - i - 1);
 		}
 	}
-	return offset - invalidOffsets.length;
+	return Math.max(0, offset - invalidOffsets.length - 1);
 }
 
 }
