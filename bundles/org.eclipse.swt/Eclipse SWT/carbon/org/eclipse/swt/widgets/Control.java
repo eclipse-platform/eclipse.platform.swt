@@ -2324,7 +2324,7 @@ public void redraw () {
 
 void redraw (boolean children) {
 //	checkWidget();
-	redrawWidget (handle, true);
+	redrawWidget (handle, children);
 }
 
 /**
