@@ -315,13 +315,13 @@ public void setFilterPath (String string) {
  * determine whether to prompt the user for file
  * overwrite if the selected file already exists.
  *
- * @param prompt true if the dialog will prompt for file overwrite, false otherwise
+ * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
  * 
  * @since 3.4
  */
-public void setOverwrite (boolean prompt) {
+public void setOverwrite (boolean overwrite) {
 	//TODO: May be able to implement this with private NSSavePanel method (BOOL)_overwriteExistingFileCheck:(NSString *)filename
 	/* See bug 223703 */
-	//overwrite = prompt;
+	//this.overwrite = overwrite;
 }
 }
