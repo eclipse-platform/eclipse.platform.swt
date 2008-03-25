@@ -1445,7 +1445,12 @@ public int getOffset(int x, int y, int[] trailing) {
 			break;
 		}
 	}
-	return Math.min(untranslateOffset(offset[0]), length - 1);
+	offset[0] = untranslateOffset(offset[0]);
+	if (offset[0] > length - 1) {
+		offset[0] = length - 1;
+		if (trailing != null) trailing[0] = 1; 
+	}
+	return offset[0];
 }
 
 /**
