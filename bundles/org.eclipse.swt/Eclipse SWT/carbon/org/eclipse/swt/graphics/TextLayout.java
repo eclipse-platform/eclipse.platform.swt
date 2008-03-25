@@ -356,6 +356,7 @@ void computeRuns() {
 	textPtr = newTextPtr;
 
 	int[] buffer = new int[1];
+	Font font = this.font != null ? this.font : device.systemFont;
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem run = styles[i];
 		run.createStyle(device, font);
