@@ -34,7 +34,6 @@ import org.eclipse.swt.events.*;
 public class TableColumn extends Item {
 	Table parent;
 	NSTableColumn nsColumn;
-	boolean resizable;
 	String toolTipText;
 
 /**
@@ -71,7 +70,6 @@ public class TableColumn extends Item {
  */
 public TableColumn (Table parent, int style) {
 	super (parent, checkStyle (style));
-	resizable = true;
 	this.parent = parent;
 	parent.createItem (this, parent.getColumnCount ());
 }
@@ -112,7 +110,6 @@ public TableColumn (Table parent, int style) {
  */
 public TableColumn (Table parent, int style, int index) {
 	super (parent, checkStyle (style));
-	resizable = true;
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -270,7 +267,7 @@ public boolean getMoveable () {
  */
 public boolean getResizable () {
 	checkWidget ();
-	return resizable;
+	return nsColumn.resizingMask() != OS.NSTableColumnNoResizing;
 }
 
 /**
@@ -488,7 +485,7 @@ public void setMoveable (boolean moveable) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget ();
-	this.resizable = resizable;
+	nsColumn.setResizingMask (resizable ? OS.NSTableColumnUserResizingMask : OS.NSTableColumnNoResizing);
 }
 
 public void setText (String string) {
@@ -498,7 +495,7 @@ public void setText (String string) {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
-	nsColumn.headerCell().setTitle(NSString.stringWithCharacters(buffer, length));
+	nsColumn.headerCell ().setTitle (NSString.stringWithCharacters (buffer, length));
 }
 
 /**
