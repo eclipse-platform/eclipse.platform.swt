@@ -365,12 +365,12 @@ public TabItem getItem (int index) {
 public TabItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TCHITTESTINFO pinfo = new TCHITTESTINFO();
+	TCHITTESTINFO pinfo = new TCHITTESTINFO ();
 	pinfo.x = point.x;
 	pinfo.y = point.y;
-	int index = (int)/*64*/OS.SendMessage(handle, OS.TCM_HITTEST, 0, pinfo);
+	int index = (int)/*64*/OS.SendMessage (handle, OS.TCM_HITTEST, 0, pinfo);
 	if (index == -1) return null;
-	return items[index];
+	return items [index];
 }
 
 /**
