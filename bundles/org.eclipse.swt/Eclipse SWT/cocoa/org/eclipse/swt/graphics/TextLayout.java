@@ -732,11 +732,11 @@ int _getOffset (int offset, int movement, boolean forward) {
 			return untranslateOffset(textStorage.nextWordFromIndex(offset, forward));
 		}
 		case SWT.MOVEMENT_WORD_END: {
-			NSRange range = textStorage.doubleClickAtIndex(offset);
+			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
 			return untranslateOffset(range.location + range.length);
 		}
 		case SWT.MOVEMENT_WORD_START: {
-			NSRange range = textStorage.doubleClickAtIndex(offset);
+			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
 			return untranslateOffset(range.location);
 		}
 		default:
