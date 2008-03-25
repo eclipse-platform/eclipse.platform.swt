@@ -2138,11 +2138,12 @@ public String toString () {
  *  Translate a client offset to an internal offset
  */
 int translateOffset(int offset) {
+	offset++;
 	for (int i = 0; i < invalidOffsets.length; i++) {
 		if (offset < invalidOffsets[i]) break; 
 		offset++;
 	}
-	return offset + 1;
+	return offset;
 }
 
 /*
