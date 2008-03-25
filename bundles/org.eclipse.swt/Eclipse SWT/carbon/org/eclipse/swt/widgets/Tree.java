@@ -3370,7 +3370,7 @@ public void setTopItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	showItem (item, false);
-	int columnId = (columnCount == 0) ? column_id : columns [0].id;
+	int columnId = (style & SWT.CHECK) != 0 ? CHECK_COLUMN_ID : columnCount == 0 ? column_id : columns [0].id;
 	OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) OS.kDataBrowserRevealWithoutSelecting);
 	Rect rect = new Rect ();
 	if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
@@ -3503,7 +3503,7 @@ void showItem (TreeItem item, boolean scroll) {
 		}
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
-		int columnId = (columnCount == 0) ? column_id : columns [0].id;
+		int columnId = (style & SWT.CHECK) != 0 ? CHECK_COLUMN_ID : columnCount == 0 ? column_id : columns [0].id;
 		int options = OS.kDataBrowserRevealWithoutSelecting;
 		/*
 		* This code is intentionally commented, since kDataBrowserRevealAndCenterInView
