@@ -2125,7 +2125,7 @@ void createItemToolTips () {
 		OS.WS_EX_TRANSPARENT,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
-		OS.TTS_NOPREFIX,
+		OS.TTS_NOPREFIX | OS.TTS_NOANIMATE | OS.TTS_NOFADE,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
 		handle,
 		0,
@@ -5303,7 +5303,9 @@ String toolTipText (NMTTDISPINFO hdr) {
 				if (strings != null) text = strings [index [0]];
 			}
 			//TEMPORARY CODE
-			if (isCustomToolTip ()) text = " ";
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if (isCustomToolTip ()) text = " ";
+			}
 			if (text != null) return text;
 		}
 	}
@@ -7462,11 +7464,17 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 				//TEMPORARY CODE
 //				nmcd.uDrawFlags |= OS.DT_CALCRECT;
 //				OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
+				if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+					OS.SetTextColor (nmcd.hdc, OS.GetSysColor (OS.COLOR_INFOBK));
+				}
 				return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT | OS.CDRF_NEWFONT);
 			}
 			break;
 		}
 		case OS.CDDS_POSTPAINT: {
+			if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+				OS.SetTextColor (nmcd.hdc, OS.GetSysColor (OS.COLOR_INFOTEXT));
+			}
 			if (OS.SendMessage (itemToolTipHandle, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 				TOOLINFO lpti = new TOOLINFO ();
 				lpti.cbSize = TOOLINFO.sizeof;
