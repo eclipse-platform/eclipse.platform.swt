@@ -7462,8 +7462,8 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 		case OS.CDDS_PREPAINT: {
 			if (isCustomToolTip ()) {
 				//TEMPORARY CODE
-//				nmcd.uDrawFlags |= OS.DT_CALCRECT;
-//				OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
+				//nmcd.uDrawFlags |= OS.DT_CALCRECT;
+				//OS.MoveMemory (lParam, nmcd, NMTTCUSTOMDRAW.sizeof);
 				if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
 					OS.SetTextColor (nmcd.hdc, OS.GetSysColor (OS.COLOR_INFOBK));
 				}
