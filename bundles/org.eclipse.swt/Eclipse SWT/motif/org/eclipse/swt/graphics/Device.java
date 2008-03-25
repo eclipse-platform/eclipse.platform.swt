@@ -188,6 +188,9 @@ public Device(DeviceData data) {
 		create (data);
 		init ();
 		register (this);
+		
+		/* Initialize the system font slot */
+		systemFont = getSystemFont ();
 	}
 }
 
@@ -699,9 +702,6 @@ protected void init () {
 	};
 	crMapping = OS.XmParseMappingCreate(argList, argList.length / 2);
 	OS.XmStringFree(crString);
-	
-	/* Initialize the system font slot */
-	systemFont = getSystemFont ();
 }
 
 /**	 
