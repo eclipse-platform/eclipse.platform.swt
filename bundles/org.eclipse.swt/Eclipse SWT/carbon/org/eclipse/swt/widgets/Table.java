@@ -1117,6 +1117,11 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	return OS.noErr;
 }
 
+void enableWidget(boolean enabled) {
+	super.enableWidget (enabled);
+	redrawWidget (handle, false);
+}
+
 void fixScrollBar () {
 	/*
 	* Bug in the Macintosh. For some reason, the data browser does not update
