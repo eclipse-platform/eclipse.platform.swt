@@ -39,6 +39,7 @@ public LineBackgroundEvent(StyledTextEvent e) {
 	super(e);
 	lineOffset = e.detail;
 	lineText = e.text;
+	lineBackground = e.lineBackground;
 }
 }
 
