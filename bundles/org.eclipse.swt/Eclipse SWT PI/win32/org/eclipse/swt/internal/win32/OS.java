@@ -2057,6 +2057,7 @@ public class OS extends C {
 	public static final int WS_CLIPCHILDREN = 0x2000000;
 	public static final int WS_CLIPSIBLINGS = 0x4000000;
 	public static final int WS_DISABLED = 0x4000000;
+	public static final int WS_EX_APPWINDOW = 0x40000;
 	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_COMPOSITED = 0x2000000;
