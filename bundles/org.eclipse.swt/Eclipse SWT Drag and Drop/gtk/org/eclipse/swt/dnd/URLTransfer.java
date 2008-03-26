@@ -30,7 +30,9 @@ public class URLTransfer extends ByteArrayTransfer {
 
 	static URLTransfer _instance = new URLTransfer();
 	private static final String TEXT_UNICODE = "text/unicode"; //$NON-NLS-1$
+	private static final String TEXT_XMOZURL = "text/x-moz-url"; //$NON-NLS-1$
 	private static final int TEXT_UNICODE_ID = registerType(TEXT_UNICODE);	
+	private static final int TEXT_XMOZURL_ID = registerType(TEXT_XMOZURL);	
 	
 private URLTransfer() {}
 
@@ -94,11 +96,11 @@ public Object nativeToJava(TransferData transferData){
 }
 
 protected int[] getTypeIds(){
-	return new int[] {TEXT_UNICODE_ID};
+	return new int[] {TEXT_XMOZURL_ID, TEXT_UNICODE_ID};
 }
 
 protected String[] getTypeNames(){
-	return new String[] {TEXT_UNICODE}; 
+	return new String[] {TEXT_XMOZURL, TEXT_UNICODE}; 
 }
 
 boolean checkURL(Object object) {
