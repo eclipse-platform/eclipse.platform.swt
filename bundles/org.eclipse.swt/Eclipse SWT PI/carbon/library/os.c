@@ -8811,7 +8811,7 @@ JNIEXPORT void JNICALL OS_NATIVE(HIWindowFlush)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	OS_NATIVE_ENTER(env, that, HIWindowFlush_FUNC);
-	HIWindowFlush(arg0);
+	HIWindowFlush((WindowRef)arg0);
 	OS_NATIVE_EXIT(env, that, HIWindowFlush_FUNC);
 }
 #endif
