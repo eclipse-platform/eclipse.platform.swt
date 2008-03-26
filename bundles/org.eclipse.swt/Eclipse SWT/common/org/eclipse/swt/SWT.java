@@ -1473,7 +1473,7 @@ public class SWT {
 	 * <p>
 	 * By default, before a widget paints, the client area is filled with the current background.
 	 * When this style is specified, the background is not filled and widgets that are obscured
-	 * will not draw through.
+	 * will draw through.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
