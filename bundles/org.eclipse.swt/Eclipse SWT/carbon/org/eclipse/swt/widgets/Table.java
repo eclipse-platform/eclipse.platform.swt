@@ -1117,8 +1117,13 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	return OS.noErr;
 }
 
-void enableWidget(boolean enabled) {
+void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
+	/*
+	* Bug in the Macintosh. For some reason, the data browser does not
+	* redraw the checkboxes when the enable state changes. The fix is
+	* to force a redraw.
+	*/
 	redrawWidget (handle, false);
 }
 
