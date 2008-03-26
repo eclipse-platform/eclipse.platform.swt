@@ -1173,6 +1173,16 @@ public class SWT {
 	public static final int V_SCROLL = 1 << 9;
 
 	/**
+	 * Style constant for no scrollbar behavior (value is 1&lt;&lt;3).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Scrollable</code> and subclasses</li>
+	 * </ul></p>
+	 *
+	 * @since 3.4
+	 */
+	public static final int NO_SCROLL = 1 << 3;
+	
+	/**
 	 * Style constant for bordered behavior (value is 1&lt;&lt;11).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
