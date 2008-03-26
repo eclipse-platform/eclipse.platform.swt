@@ -262,6 +262,7 @@ void createHandle () {
 	textWidget.initWithFrame(new NSRect());
 //	textWidget.setTarget(widget);
 	textWidget.setTag(jniRef);
+	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
 	widget.addSubview_(textWidget);
 	widget.addSubview_(buttonWidget);
 	buttonView = buttonWidget;
@@ -410,7 +411,7 @@ int getSelectionText () {
  */
 public void paste () {
 	checkWidget ();
-//	if ((style & SWT.READ_ONLY) != 0) return;
+	if ((style & SWT.READ_ONLY) != 0) return;
 //	String text = getClipboardText ();
 //	short [] selection = new short [2];
 //	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null) != OS.noErr) return;
