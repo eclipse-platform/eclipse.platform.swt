@@ -1761,10 +1761,22 @@ public void setVisible (boolean visible) {
 	if (!visible) fixActiveShell ();
 	super.setVisible (visible);
 	if (isDisposed ()) return;
-	if (showWithParent == visible) return;
-	showWithParent = visible;
+	if (showWithParent != visible) {
+		showWithParent = visible;
+		if (visible) {
+			if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);		
+		}
+	}
+	
+	/* Make the splash screen appear in the task bar */
 	if (visible) {
-		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
+		if (parent != null && (parent.state & FOREIGN_HANDLE) != 0) {
+			int /*long*/ hwndParent = parent.handle;
+			int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+			if ((style & OS.WS_EX_APPWINDOW) == 0) {
+				OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, style | OS.WS_EX_APPWINDOW);
+			}
+		}
 	}
 }
 
