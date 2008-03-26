@@ -45,7 +45,7 @@ public class Scale extends Control {
 		TrackBarProc = lpWndClass.lpfnWndProc;
 		/*
 		* Feature in Windows.  The track bar window class
-		* does not include CS_DBLCLKS.  This mean that these
+		* does not include CS_DBLCLKS.  This means that these
 		* controls will not get double click messages such as
 		* WM_LBUTTONDBLCLK.  The fix is to register a new 
 		* window class with CS_DBLCLKS.
