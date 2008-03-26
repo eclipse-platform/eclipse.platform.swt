@@ -20,14 +20,16 @@ public class Snippet299 {
 		layout.center = true;
 		shell.setLayout(layout);
 
+		Button button0 = new Button(shell, SWT.PUSH);
+		button0.setText("Button 0");
+		
 		Button button1 = new Button(shell, SWT.PUSH);
 		button1.setText("Button 1");
-
+		button1.setLayoutData(new RowData (SWT.DEFAULT, 50));
+		
 		Button button2 = new Button(shell, SWT.PUSH);
 		button2.setText("Button 2");
-		RowData data = new RowData();
-		data.height = 200;
-		button2.setLayoutData(data);
+		button2.setLayoutData(new RowData (SWT.DEFAULT, 70));
 
 		Button button3 = new Button(shell, SWT.PUSH);
 		button3.setText("Button 3");
