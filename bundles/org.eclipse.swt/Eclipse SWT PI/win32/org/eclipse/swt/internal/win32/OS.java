@@ -560,6 +560,8 @@ public class OS extends C {
 	public static final int DTM_SETSYSTEMTIME = DTM_FIRST + 2;
 	public static final int DTN_FIRST = 0xFFFFFD08;
 	public static final int DTN_DATETIMECHANGE = DTN_FIRST + 1;
+	public static final int DTN_CLOSEUP = DTN_FIRST + 7;
+	public static final int DTN_DROPDOWN = DTN_FIRST + 6;
 	public static final int DTS_LONGDATEFORMAT = 0x0004;
 	public static final int DTS_SHORTDATECENTURYFORMAT = 0x000C;
 	public static final int DTS_SHORTDATEFORMAT = 0x0000;
@@ -1078,7 +1080,8 @@ public class OS extends C {
 	public static final int MCM_GETCURSEL = MCM_FIRST + 1;
 	public static final int MCM_SETCURSEL = MCM_FIRST + 2;
 	public static final int MCN_FIRST = 0xFFFFFD12;
-	public static final int MCN_SELCHANGE = MCN_FIRST + 1; 
+	public static final int MCN_SELCHANGE = MCN_FIRST + 1;
+	public static final int MCN_SELECT = MCN_FIRST + 4;
 	public static final int MCM_GETMINREQRECT = MCM_FIRST + 9;
 	public static final int MCS_NOTODAY = 0x0010;
 	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
