@@ -86,6 +86,9 @@ private String textString() {
 	return "This is the text component in testing\nNew Line1\nNew Line2\nNew Line3\nNew Line4.";
 }
 private boolean isBidi() {
+	return  SWT.getPlatform().equals("gtk") || SWT.getPlatform().equals("carbon") || BidiUtil.isBidiPlatform();// || isMirrored;
+}
+boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 // this method must not be public so that the auto-gen tool keeps it
@@ -227,7 +230,7 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	text.addBidiSegmentListener(listener);
 	// cause StyledText to call the BidiSegmentListener. 
 	text.getLocationAtOffset(0);
-	if (isBidi() || SWT.getPlatform().equals("gtk")) {
+	if (isBidi()) {
 		assertTrue("Listener not called", listenerCalled);
 	}
 	else {
@@ -1074,7 +1077,7 @@ void test_getLinePixel(StyledText text) {
 
 public void test_getLocationAtOffsetI(){
 	// copy from StyledText, has to match value used by StyledText
-	final int XINSET = isBidi() ? 2 : 0;
+	final int XINSET = isBidiCaret() ? 2 : 0;
 	
 	assertTrue(":a:", text.getLocationAtOffset(0).equals(new Point(XINSET, 0)));
 	try {
@@ -1153,7 +1156,7 @@ public void test_getOffsetAtLineI() {
 public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	boolean exceptionThrown = false;
 	Point location;
-	final int XINSET = isBidi() ? 2 : 0;
+	final int XINSET = isBidiCaret() ? 2 : 0;
 	
 	assertTrue(":a:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 0);
 	try {
@@ -2695,7 +2698,7 @@ public void test_selectAll() {
 
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	Caret caret = new Caret(text, SWT.NONE);
-	final int XINSET = isBidi() ? 2 : 0;
+	final int XINSET = isBidiCaret() ? 2 : 0;
 	
 	text.setCaret(caret);
 	assertEquals(XINSET, text.getCaret().getLocation().x);
