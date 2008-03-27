@@ -490,7 +490,7 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 			return (SWT_PTR) fnx_array[argCount][i];
 #else
 			{
-			int j = 0, k;
+			int j = 0, k, pad = 0;
 			unsigned char* code;
 			if (callbackCode == NULL) {
 #if defined (_WIN32) || defined (_WIN32_WCE)
@@ -509,6 +509,18 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 			//MOV EBP,ESP - 2 bytes
 			code[j++] = 0x8b;
 			code[j++] = 0xec;
+
+#ifdef __APPLE__
+			/* darwin calling conventions require that the stack be aligned on a 16-byte boundary. */
+			k = (argCount+3)*sizeof(SWT_PTR);
+			pad = ((k + 15) & ~15) - k;
+			if (pad > 0) {
+				//SUB ESP,pad - 3 bytes
+				code[j++] = 0x83;
+				code[j++] = 0xec;
+				code[j++] = pad;
+			}
+#endif
 
 			// 3*argCount bytes
 			for (k=(argCount + 1) * sizeof(SWT_PTR); k >= sizeof(SWT_PTR)*2; k -= sizeof(SWT_PTR)) {
@@ -543,7 +555,11 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 			//ADD ESP,(argCount + 1) * sizeof(SWT_PTR) - 3 bytes
 			code[j++] = 0x83;
 			code[j++] = 0xc4;
+#ifdef __APPLE__
+			code[j++] = (unsigned char)(pad + ((argCount + 1) * sizeof(SWT_PTR)));
+#else
 			code[j++] = (unsigned char)((argCount + 1) * sizeof(SWT_PTR));
+#endif
 
 			//POP EBP - 1 byte
 			code[j++] = 0x5d;
@@ -557,6 +573,12 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 			//RETN - 1 byte
 			code[j++] = 0xc3;
 #endif
+
+			if (j > CALLBACK_THUNK_SIZE) {
+				jclass errorClass = (*env)->FindClass(env, "java/lang/Error");
+				(*env)->ThrowNew(env, errorClass, "Callback thunk overflow");
+			}
+
 			return (SWT_PTR)code;
 			}
 #endif /* USE_ASSEMBLER */
