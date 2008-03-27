@@ -1457,6 +1457,25 @@ public int getSelectionIndex() {
 	return selectedIndex;
 }
 /**
+ * Returns <code>true</code> to indicate that the close button can be shown on tabs.
+ * Otherwise return <code>false</code>. When this value is <code>false</code>, it will
+ * override the showClose state of the individual tabs. The initial value is defined by 
+ * the style (SWT.CLOSE) that was used to create the receiver.
+ * 
+ * @return <code>true</code> if the tabs can display the close button
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
+public boolean getShowClose() {
+	checkWidget();
+	return showClose;
+}
+/**
  * Returns <code>true</code> if the CTabFolder is rendered
  * with a simple, traditional shape.
  * 
