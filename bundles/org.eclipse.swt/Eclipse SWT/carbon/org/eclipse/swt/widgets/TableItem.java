@@ -125,9 +125,13 @@ static Table checkNull (Table control) {
 int calculateWidth (int index, GC gc) {
 	if (index == 0 && width != -1) return width;
 	int width = 0;
-	Image image = getImage (index);
-	String text = getText (index);
-	gc.setFont (getFont (index));
+	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	Font font = null;
+	if (cellFont != null) font = cellFont[index];
+	if (font == null) font = this.font;
+	if (font == null) font = parent.getFont();
+	gc.setFont (font);
 	if (image != null) width += image.getBounds ().width + parent.getGap ();
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
 	if (parent.hooks (SWT.MeasureItem)) {

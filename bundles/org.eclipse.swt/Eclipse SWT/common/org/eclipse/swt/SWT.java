@@ -1173,6 +1173,16 @@ public class SWT {
 	public static final int V_SCROLL = 1 << 9;
 
 	/**
+	 * Style constant for no scrollbar behavior (value is 1&lt;&lt;4).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Scrollable</code> and subclasses</li>
+	 * </ul></p>
+	 *
+	 * @since 3.4
+	 */
+	public static final int NO_SCROLL = 1 << 4;
+	
+	/**
 	 * Style constant for bordered behavior (value is 1&lt;&lt;11).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
@@ -1463,7 +1473,7 @@ public class SWT {
 	 * <p>
 	 * By default, before a widget paints, the client area is filled with the current background.
 	 * When this style is specified, the background is not filled and widgets that are obscured
-	 * will not draw through.
+	 * will draw through.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
