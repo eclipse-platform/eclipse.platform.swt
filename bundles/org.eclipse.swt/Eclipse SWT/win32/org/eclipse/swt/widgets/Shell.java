@@ -1775,6 +1775,13 @@ public void setVisible (boolean visible) {
 			int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
 			if ((style & OS.WS_EX_APPWINDOW) == 0) {
 				OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, style | OS.WS_EX_APPWINDOW);
+				/*
+				* Bug in Windows.  The window does not show in the task bar when
+				* WS_EX_APPWINDOW is added after the window has already been shown.
+				* The fix is to hide and shown the shell. 
+				*/
+				OS.ShowWindow (hwndParent, OS.SW_HIDE);
+				OS.ShowWindow (hwndParent, OS.SW_RESTORE);
 			}
 		}
 	}
