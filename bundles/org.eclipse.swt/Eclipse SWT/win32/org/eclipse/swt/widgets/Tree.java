@@ -145,15 +145,16 @@ public Tree (Composite parent, int style) {
 
 static int checkStyle (int style) {
 	/*
-	* Feature in Windows.  It is not possible to create
-	* a tree that scrolls and does not have scroll bars.
-	* The TVS_NOSCROLL style will remove the scroll bars
-	* but the tree will never scroll.  Therefore, no matter
-	* what style bits are specified, set the H_SCROLL and
-	* V_SCROLL bits so that the SWT style will match the
-	* widget that Windows creates.
+	* Feature in Windows.  Even when WS_HSCROLL or
+	* WS_VSCROLL is not specified, Windows creates
+	* trees and tables with scroll bars.  The fix
+	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
+	* is not set.
 	*/
-	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style |= SWT.NO_SCROLL;
+	if ((style & SWT.NO_SCROLL) == 0) {
+		style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	}
 	
 	/*
 	* Note: Windows only supports TVS_NOSCROLL and TVS_NOHSCROLL.

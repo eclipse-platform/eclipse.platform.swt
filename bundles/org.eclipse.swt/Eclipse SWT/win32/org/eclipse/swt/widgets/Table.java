@@ -391,13 +391,16 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 
 static int checkStyle (int style) {
 	/*
-	* Feature in Windows.  It is not possible to create
-	* a table that does not have scroll bars.  Therefore,
-	* no matter what style bits are specified, set the
-	* H_SCROLL and V_SCROLL bits so that the SWT style
-	* will match the widget that Windows creates.
+	* Feature in Windows.  Even when WS_HSCROLL or
+	* WS_VSCROLL is not specified, Windows creates
+	* trees and tables with scroll bars.  The fix
+	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
+	* is not set.
 	*/
-	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style |= SWT.NO_SCROLL;
+	if ((style & SWT.NO_SCROLL) == 0) {
+		style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	}
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
