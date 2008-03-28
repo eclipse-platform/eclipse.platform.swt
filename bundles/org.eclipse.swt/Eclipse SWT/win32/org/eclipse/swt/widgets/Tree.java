@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
