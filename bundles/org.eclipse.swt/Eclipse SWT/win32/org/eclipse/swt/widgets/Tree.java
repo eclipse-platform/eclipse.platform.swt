@@ -151,7 +151,6 @@ static int checkStyle (int style) {
 	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
 	* is not set.
 	*/
-	style |= SWT.NO_SCROLL;
 	if ((style & SWT.NO_SCROLL) == 0) {
 		style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	}
