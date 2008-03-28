@@ -172,11 +172,18 @@ public Tree (Composite parent, int style) {
 
 static int checkStyle (int style) {
 	/*
-	* To be compatible with Windows, force the H_SCROLL
-	* and V_SCROLL style bits.  On Windows, it is not
-	* possible to create a table without scroll bars.
+	* Feature in Windows.  Even when WS_HSCROLL or
+	* WS_VSCROLL is not specified, Windows creates
+	* trees and tables with scroll bars.  The fix
+	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
+	* is not set.
 	*/
-	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		if ((style & SWT.NO_SCROLL) == 0) {
+			style |= SWT.H_SCROLL | SWT.V_SCROLL;
+		}
+	}
+	
 	/* WPF is always FULL_SELECTION */
 	style |= SWT.FULL_SELECTION;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
