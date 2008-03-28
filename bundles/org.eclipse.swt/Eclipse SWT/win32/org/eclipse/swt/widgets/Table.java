@@ -397,8 +397,12 @@ static int checkStyle (int style) {
 	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
 	* is not set.
 	*/
-	if ((style & SWT.NO_SCROLL) == 0) {
-		style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		if ((style & SWT.NO_SCROLL) == 0) {
+			style |= SWT.H_SCROLL | SWT.V_SCROLL;
+		}
+	} else {
+		style &= ~SWT.NO_SCROLL;
 	}
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
