@@ -59,7 +59,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
@@ -135,6 +135,9 @@ public class Tree extends Composite {
  * @see SWT#SINGLE
  * @see SWT#MULTI
  * @see SWT#CHECK
+ * @see SWT#FULL_SELECTION
+ * @see SWT#VIRTUAL
+ * @see SWT#NO_SCROLL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

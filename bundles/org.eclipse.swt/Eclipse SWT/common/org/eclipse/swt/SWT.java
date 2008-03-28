@@ -1174,8 +1174,15 @@ public class SWT {
 
 	/**
 	 * Style constant for no scrollbar behavior (value is 1&lt;&lt;4).
-	 * <p><b>Used By:</b><ul>
-	 * <li><code>Scrollable</code> and subclasses</li>
+	 * <p>
+	 * When neither H_SCROLL or V_SCROLL are specified, controls
+	 * are free to create the default scroll bars for the control.
+	 * Using NO_SCROLL overrides the default and forces the control
+	 * to have no scroll bars.
+	 * 
+	 * <b>Used By:</b><ul>
+	 * <li><code>Tree</code></li>
+	 * <li><code>Table</code></li>
 	 * </ul></p>
 	 *
 	 * @since 3.4

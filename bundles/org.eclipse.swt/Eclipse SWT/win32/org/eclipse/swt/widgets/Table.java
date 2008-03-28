@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
@@ -126,6 +126,7 @@ public class Table extends Composite {
  * @see SWT#FULL_SELECTION
  * @see SWT#HIDE_SELECTION
  * @see SWT#VIRTUAL
+ * @see SWT#NO_SCROLL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
