@@ -124,7 +124,8 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			RGB result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("ColorDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
@@ -147,13 +148,14 @@ class DialogTab extends Tab {
 			String result = dialog.open();
 			textWidget.append (ControlExample.getResourceString("FileDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append ("getFileNames() =" + Text.DELIMITER);
 			if ((dialog.getStyle () & SWT.MULTI) != 0) {
 				String [] files = dialog.getFileNames ();
 				for (int i=0; i<files.length; i++) {
 					textWidget.append ("\t" + files [i] + Text.DELIMITER);
 				}
 			}
-			textWidget.append (Text.DELIMITER);
+			textWidget.append ("getFilterIndex() = " + dialog.getFilterIndex() + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
@@ -162,7 +164,15 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			FontData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("FontDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append ("getFontList() =" + Text.DELIMITER);
+			FontData [] fonts = dialog.getFontList ();
+			if (fonts != null) {
+				for (int i=0; i<fonts.length; i++) {
+					textWidget.append ("\t" + fonts [i] + Text.DELIMITER);
+				}
+			}
+			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
@@ -171,7 +181,11 @@ class DialogTab extends Tab {
 			dialog.setText(ControlExample.getResourceString("Title"));
 			PrinterData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("PrintDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append ("getScope() = " + dialog.getScope() + Text.DELIMITER);
+			textWidget.append ("getStartPage() = " + dialog.getStartPage() + Text.DELIMITER);
+			textWidget.append ("getEndPage() = " + dialog.getEndPage() + Text.DELIMITER);
+			textWidget.append ("getPrintToFile() = " + dialog.getPrintToFile() + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 	
