@@ -121,7 +121,23 @@ public void addSelectionListener (SelectionListener listener) {
 
 int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (handle == 0) return 0;
-	if (LinkProc != 0) return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
+	if (LinkProc != 0) {
+		/*
+		* Feature in Windows.  By convention, native Windows controls
+		* check for a non-NULL wParam, assume that it is an HDC and
+		* paint using that device.  The SysLink control does not.
+		* The fix is to check for an HDC and use WM_PRINTCLIENT.
+		*/
+		switch (msg) {
+			case OS.WM_PAINT:
+				if (wParam != 0) {
+					OS.SendMessage (hwnd, OS.WM_PRINTCLIENT, wParam, 0);
+					return 0;
+				}
+				break;
+		}
+		return OS.CallWindowProc (LinkProc, hwnd, msg, wParam, lParam);
+	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
