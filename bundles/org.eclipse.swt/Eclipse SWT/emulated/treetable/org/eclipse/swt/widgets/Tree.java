@@ -296,8 +296,18 @@ boolean checkData (TreeItem item, boolean redraw) {
 	return true;
 }
 static int checkStyle (int style) {
-	//TEMPORARY CODE
-	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	/*
+	* Feature in Windows.  Even when WS_HSCROLL or
+	* WS_VSCROLL is not specified, Windows creates
+	* trees and tables with scroll bars.  The fix
+	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
+	* is not set.
+	*/
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		if ((style & SWT.NO_SCROLL) == 0) {
+			style |= SWT.H_SCROLL | SWT.V_SCROLL;
+		}
+	}
 	style |= SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
