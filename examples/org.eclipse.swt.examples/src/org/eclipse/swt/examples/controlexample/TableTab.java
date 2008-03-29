@@ -26,7 +26,7 @@ class TableTab extends ScrollableTab {
 	Button packColumnsButton;
 	
 	/* Style widgets added to the "Style" group */
-	Button checkButton, fullSelectionButton, hideSelectionButton;
+	Button noScrollButton, checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
 	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, linesVisibleButton, subImagesButton;
@@ -278,6 +278,7 @@ class TableTab extends ScrollableTab {
 		if (multiButton.getSelection ()) style |= SWT.MULTI;
 		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
+		if (noScrollButton.getSelection ()) style |= SWT.NO_SCROLL;
 		if (checkButton.getSelection ()) style |= SWT.CHECK;
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
 		if (hideSelectionButton.getSelection ()) style |= SWT.HIDE_SELECTION;
@@ -346,6 +347,8 @@ class TableTab extends ScrollableTab {
 		super.createStyleGroup ();
 		
 		/* Create the extra widgets */
+		noScrollButton = new Button (styleGroup, SWT.CHECK);
+		noScrollButton.setText ("SWT.NO_SCROLL");
 		checkButton = new Button (styleGroup, SWT.CHECK);
 		checkButton.setText ("SWT.CHECK");
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
@@ -602,6 +605,7 @@ class TableTab extends ScrollableTab {
 			setWidgetLinesVisible ();
 		}
 		super.setExampleWidgetState ();
+		noScrollButton.setSelection ((table1.getStyle () & SWT.NO_SCROLL) != 0);
 		checkButton.setSelection ((table1.getStyle () & SWT.CHECK) != 0);
 		fullSelectionButton.setSelection ((table1.getStyle () & SWT.FULL_SELECTION) != 0);
 		hideSelectionButton.setSelection ((table1.getStyle () & SWT.HIDE_SELECTION) != 0);

@@ -27,7 +27,7 @@ class TreeTab extends ScrollableTab {
 	Button packColumnsButton;
 	
 	/* Style widgets added to the "Style" group */
-	Button checkButton, fullSelectionButton;
+	Button noScrollButton, checkButton, fullSelectionButton;
 
 	/* Other widgets added to the "Other" group */
 	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, subImagesButton, linesVisibleButton;
@@ -284,6 +284,7 @@ class TreeTab extends ScrollableTab {
 		if (multiButton.getSelection()) style |= SWT.MULTI;
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
 		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
+		if (noScrollButton.getSelection()) style |= SWT.NO_SCROLL;
 		if (checkButton.getSelection()) style |= SWT.CHECK;
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
@@ -411,6 +412,8 @@ class TreeTab extends ScrollableTab {
 		super.createStyleGroup();
 		
 		/* Create the extra widgets */
+		noScrollButton = new Button (styleGroup, SWT.CHECK);
+		noScrollButton.setText ("SWT.NO_SCROLL");
 		checkButton = new Button (styleGroup, SWT.CHECK);
 		checkButton.setText ("SWT.CHECK");
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
@@ -577,10 +580,9 @@ class TreeTab extends ScrollableTab {
 			setWidgetLinesVisible ();
 		}
 		super.setExampleWidgetState ();
+		noScrollButton.setSelection ((tree1.getStyle () & SWT.NO_SCROLL) != 0);
 		checkButton.setSelection ((tree1.getStyle () & SWT.CHECK) != 0);
-		checkButton.setSelection ((tree2.getStyle () & SWT.CHECK) != 0);
 		fullSelectionButton.setSelection ((tree1.getStyle () & SWT.FULL_SELECTION) != 0);
-		fullSelectionButton.setSelection ((tree2.getStyle () & SWT.FULL_SELECTION) != 0);
 		try {
 			TreeColumn column = tree1.getColumn(0);
 			moveableColumns.setSelection (column.getMoveable());
