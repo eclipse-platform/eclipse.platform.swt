@@ -4165,7 +4165,7 @@ public void select (TreeItem item) {
 		*/
 		SCROLLINFO hInfo = null;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.TVS_NOHSCROLL) == 0) {
+		if ((bits & (OS.TVS_NOHSCROLL | OS.TVS_NOSCROLL)) == 0) {
 			hInfo = new SCROLLINFO ();
 			hInfo.cbSize = SCROLLINFO.sizeof;
 			hInfo.fMask = OS.SIF_ALL;
@@ -4700,14 +4700,16 @@ void setScrollWidth (int width) {
 		info.nPage = info.nMax + 1;
 		OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 	} else {
-		OS.GetClientRect (hwndParent, rect);
-		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
-		info.nMax = width;
-		info.nPage = rect.right - rect.left + 1;
-		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-		info.fMask = OS.SIF_POS;
-		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
-		left = info.nPos;
+		if ((style & SWT.H_SCROLL) != 0) {
+			OS.GetClientRect (hwndParent, rect);
+			OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
+			info.nMax = width;
+			info.nPage = rect.right - rect.left + 1;
+			OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+			info.fMask = OS.SIF_POS;
+			OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
+			left = info.nPos;
+		}
 	}
 	if (horizontalBar != null) {
 		horizontalBar.setIncrement (INCREMENT);
