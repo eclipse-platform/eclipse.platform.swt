@@ -267,10 +267,17 @@ static int checkStyle (int style) {
 	* trees and tables with scroll bars.  The fix
 	* is to set H_SCROLL and V_SCROLL when NO_SCROLL
 	* is not set.
+	* 
+	* NOTE: This code appears on all platforms so that
+	* applications have consistent scroll bar behavior.
 	*/
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 		if ((style & SWT.NO_SCROLL) == 0) {
 			style |= SWT.H_SCROLL | SWT.V_SCROLL;
+		}
+	} else {
+		if ((style & SWT.NO_SCROLL) != 0) {
+			style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 		}
 	}
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
