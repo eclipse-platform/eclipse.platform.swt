@@ -1773,8 +1773,8 @@ public void setVisible (boolean visible) {
 		if (parent != null && (parent.state & FOREIGN_HANDLE) != 0) {
 			int /*long*/ hwndParent = parent.handle;
 			int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
-			if ((style & OS.WS_EX_APPWINDOW) == 0) {
-				OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, style | OS.WS_EX_APPWINDOW);
+			if ((style & OS.WS_EX_TOOLWINDOW) != 0) {
+				OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, style & ~OS.WS_EX_TOOLWINDOW);
 				/*
 				* Bug in Windows.  The window does not show in the task bar when
 				* WS_EX_APPWINDOW is added after the window has already been shown.

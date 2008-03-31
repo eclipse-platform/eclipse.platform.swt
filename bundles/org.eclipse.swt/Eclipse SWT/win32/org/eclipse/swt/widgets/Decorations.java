@@ -1310,7 +1310,19 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/* Use the character encoding for the default locale */
 	TCHAR buffer = new TCHAR (0, string, true);
-	OS.SetWindowText (handle, buffer);
+	/*
+	* Ensure that the title appears in the task bar.
+	*/
+	if ((state & FOREIGN_HANDLE) != 0) {
+		int /*long*/ hHeap = OS.GetProcessHeap ();
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount);
+		OS.DefWindowProc (handle, OS.WM_SETTEXT, 0, pszText);
+		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	} else {
+		OS.SetWindowText (handle, buffer);
+	}
 }
 
 public void setVisible (boolean visible) {
