@@ -1314,7 +1314,7 @@ public void setText (String string) {
 	if ((state & FOREIGN_HANDLE) != 0) {
 		int /*long*/ hHeap = OS.GetProcessHeap ();
 		int byteCount = buffer.length () * TCHAR.sizeof;
-		int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (pszText, buffer, byteCount);
 		OS.DefWindowProc (handle, OS.WM_SETTEXT, 0, pszText);
 		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
