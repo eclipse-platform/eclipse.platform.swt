@@ -1777,7 +1777,7 @@ public void setVisible (boolean visible) {
 				OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, style & ~OS.WS_EX_TOOLWINDOW);
 				/*
 				* Bug in Windows.  The window does not show in the task bar when
-				* WS_EX_APPWINDOW is added after the window has already been shown.
+				* WS_EX_TOOLWINDOW is removed after the window has already been shown.
 				* The fix is to hide and shown the shell. 
 				*/
 				OS.ShowWindow (hwndParent, OS.SW_HIDE);

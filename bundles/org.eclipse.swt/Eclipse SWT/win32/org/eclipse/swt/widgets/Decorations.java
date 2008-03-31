@@ -1310,9 +1310,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/* Use the character encoding for the default locale */
 	TCHAR buffer = new TCHAR (0, string, true);
-	/*
-	* Ensure that the title appears in the task bar.
-	*/
+	/* Ensure that the title appears in the task bar.*/
 	if ((state & FOREIGN_HANDLE) != 0) {
 		int /*long*/ hHeap = OS.GetProcessHeap ();
 		int byteCount = buffer.length () * TCHAR.sizeof;
