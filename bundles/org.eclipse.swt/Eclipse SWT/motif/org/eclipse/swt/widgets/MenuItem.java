@@ -121,6 +121,7 @@ public MenuItem (Menu parent, int style, int index) {
 }
 void addAccelerator () {
 	if (accelerator == 0 || !getEnabled ()) return;
+	if ((accelerator & SWT.COMMAND) != 0) return;
 	/*
 	* Bug in Solaris.  When accelerators are set more
 	* than once in the same menu bar, the time it takes
