@@ -2487,7 +2487,8 @@ int SetFocus () {
 }	
 
 int GetVisibility (int /*long*/ aVisibility) {
-	XPCOM.memmove (aVisibility, new int[] {browser.isVisible () ? 1 : 0}, 4); /* PRBool */
+	boolean visible = browser.isVisible () && !browser.getShell ().getMinimized ();
+	XPCOM.memmove (aVisibility, new int[] {visible ? 1 : 0}, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
 
