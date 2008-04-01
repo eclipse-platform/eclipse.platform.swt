@@ -279,12 +279,13 @@ public void create(Composite parent, int style) {
 						for (int i = 0; i < locationListeners.length; i++) {
 							locationListeners[i].changing(newEvent);
 						}
+						boolean doit = newEvent.doit && !browser.isDisposed(); 
 						Variant cancel = event.arguments[6];
 						if (cancel != null) {
 							int /*long*/ pCancel = cancel.getByRef();
-							COM.MoveMemory(pCancel, new short[] {newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+							COM.MoveMemory(pCancel, new short[] {doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 						}
-						if (newEvent.doit) {
+						if (doit) {
 							varResult = event.arguments[0];
 							IDispatch dispatch = varResult.getDispatch();
 							Variant variant = new Variant(auto);
