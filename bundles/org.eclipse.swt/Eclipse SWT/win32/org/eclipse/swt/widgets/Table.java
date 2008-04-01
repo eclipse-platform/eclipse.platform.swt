@@ -1492,7 +1492,7 @@ void createItem (TableColumn column, int index) {
 		} else {
 			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		}
-		if ((parent.style & SWT.VIRTUAL) == 0) {
+		if ((style & SWT.VIRTUAL) == 0) {
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
@@ -1770,7 +1770,7 @@ void destroyItem (TableColumn column) {
 				OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 			}
 		}
-		if ((parent.style & SWT.VIRTUAL) == 0) {
+		if ((style & SWT.VIRTUAL) == 0) {
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
