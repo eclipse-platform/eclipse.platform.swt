@@ -41,6 +41,8 @@ class Safari extends WebBrowser {
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String AGENT_STRING = "Safari/unknown"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String PROTOCOL_FILE = "file:"; //$NON-NLS-1$
+	static final String PROTOCOL_HTTP = "http:"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 
@@ -396,15 +398,22 @@ void _setText(String html) {
 
 public boolean setUrl(String url) {
 	html = null;
-	StringBuffer buffer = new StringBuffer();
-	if (url.indexOf('/') == 0) buffer.append("file://"); //$NON-NLS-1$  //$NON-NLS-2$
-	else if (url.indexOf(':') == -1) buffer.append("http://");	 //$NON-NLS-1$
-	for (int i = 0; i < url.length(); i++) {
-		char c = url.charAt(i);
-		if (c == ' ') buffer.append("%20"); //$NON-NLS-1$  //$NON-NLS-2$
-		else buffer.append(c);
+
+	NSURL inURL;
+	if (url.startsWith(PROTOCOL_FILE)) {
+		url = url.substring(PROTOCOL_FILE.length());
 	}
-	NSURL inURL = NSURL.static_URLWithString_(NSString.stringWith(buffer.toString()));
+	boolean isHttpURL = url.indexOf('/') != 0;
+	if (isHttpURL) {
+		if (url.indexOf(':') == -1) {
+			url = PROTOCOL_HTTP + "//" + url; //$NON-NLS-1$
+		}
+		inURL = NSURL.static_URLWithString_(NSString.stringWith(url.toString()));
+	} else {
+		inURL = NSURL.static_fileURLWithPath_(NSString.stringWith(url.toString()));
+	}
+	if (inURL == null) return false;
+
 	NSURLRequest request = NSURLRequest.static_requestWithURL_(inURL);
 	WebFrame mainFrame= webView.mainFrame();
 	mainFrame.loadRequest(request);

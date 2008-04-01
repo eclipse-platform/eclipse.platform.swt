@@ -50,9 +50,9 @@ public NSURL baseURL() {
 	return result == this.id ? this : (result != 0 ? new NSURL(result) : null);
 }
 
-public static id static_fileURLWithPath_(NSString path) {
+public static NSURL static_fileURLWithPath_(NSString path) {
 	int result = OS.objc_msgSend(OS.class_NSURL, OS.sel_fileURLWithPath_1, path != null ? path.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSURL(result) : null;
 }
 
 public static id static_fileURLWithPath_isDirectory_(NSString path, boolean isDir) {
