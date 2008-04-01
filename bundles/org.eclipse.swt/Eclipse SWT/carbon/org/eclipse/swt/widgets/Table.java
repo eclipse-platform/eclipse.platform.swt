@@ -1871,39 +1871,39 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 							startX += width;
 						}
 					} else {
-						int columnIndex = 0;
 						TableItem item = null;
-						TableColumn column = null;
-						int rc = OS.noErr;
-						for (int i=getTopIndex (); i<itemCount && item == null && rc == OS.noErr; i++) {
-							if (columnCount == 0) {
-								if ((rc = OS.GetDataBrowserItemPartBounds (handle, getId (i), column_id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
-									if (OS.PtInRect (pt, rect)) {
-										item = _getItem (i);
-										break;
-									}
-								}
-							} else {
-								for (int j = 0; j < columnCount; j++) {
-									column = columns [j];
-									if ((rc = OS.GetDataBrowserItemPartBounds (handle, getId (i), column.id, OS.kDataBrowserPropertyContentPart, rect)) == OS.noErr) {
-										if (OS.PtInRect (pt, rect)) {
-											item = _getItem (i);
-											columnIndex = j;
-											break;
-										}
-									}
-								}
+						int index = getIndex (lastHittest);
+						if (0 <= index && index < itemCount) {
+							if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, lastHittestColumn, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
+								item = _getItem (index);
 							}
 						}
 						if (item != null) {
+							int columnIndex = 0;
+							TableColumn column = null;
+							if (columnCount > 0) {
+								for (int i = 0; i < columnCount; i++) {
+									if (columns[i].id == lastHittestColumn) {
+										column = columns[i];
+										columnIndex = i;
+										break;
+									}
+								}
+							}
+							int columnId = lastHittestColumn;
 							GC gc = new GC (this);
 							int inset = getInsetWidth ();
 							int width = item.calculateWidth (columnIndex, gc) + inset;
 							gc.dispose ();
-							short [] w = new short [1];
-							OS.GetDataBrowserTableViewNamedColumnWidth (handle, column == null ? column_id : column.id, w);
-							if (width > w [0]) {
+							int columnWidth;
+							if (columnCount == 0) {
+								columnWidth = getClientArea ().width;
+							} else {
+								short [] w = new short [1];
+								OS.GetDataBrowserTableViewNamedColumnWidth (handle, columnId, w);
+								columnWidth = w[0];
+							}
+							if (width > columnWidth) {
 								toolTipText = item.getText (columnIndex);
 								Image image = item.getImage (columnIndex);
 								int imageWidth = image != null ? image.getBounds ().width + getGap () : 0;
