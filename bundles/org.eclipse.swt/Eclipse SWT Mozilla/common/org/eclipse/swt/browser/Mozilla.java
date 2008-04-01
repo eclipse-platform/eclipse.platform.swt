@@ -2671,7 +2671,7 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 			for (int i = 0; i < locationListeners.length; i++) {
 				locationListeners[i].changing (event);
 			}
-			doit = event.doit;
+			doit = event.doit && !browser.isDisposed();
 		}
 	}
 	XPCOM.memmove (retval, new int[] {doit ? 0 : 1}, 4); /* PRBool */
