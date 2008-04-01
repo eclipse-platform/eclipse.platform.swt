@@ -389,8 +389,7 @@ void createAccelerators () {
 					while (menu != null && menu != menuBar) {
 						menu = menu.getParentMenu ();
 					}
-					if (menu == menuBar) {
-						item.fillAccel (accel);
+					if (menu == menuBar && item.fillAccel (accel)) {
 						OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
 						System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
 						nAccel++;

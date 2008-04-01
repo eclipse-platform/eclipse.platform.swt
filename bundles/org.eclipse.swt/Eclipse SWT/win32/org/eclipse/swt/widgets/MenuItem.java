@@ -235,10 +235,10 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void fillAccel (ACCEL accel) {
-	accel.fVirt = 0;
-	accel.cmd = accel.key = 0;
-	if (accelerator == 0 || !getEnabled ()) return;
+boolean fillAccel (ACCEL accel) {
+	accel.cmd = accel.key = accel.fVirt = 0;
+	if (accelerator == 0 || !getEnabled ()) return false;
+	if ((accelerator & SWT.COMMAND) != 0) return false;
 	int fVirt = OS.FVIRTKEY;
 	int key = accelerator & SWT.KEY_MASK;
 	int vKey = Display.untranslateKey (key);
@@ -256,7 +256,7 @@ void fillAccel (ACCEL accel) {
 			case 127: key = OS.VK_DELETE; break;
 			default: {
 				key = Display.wcsToMbcs ((char) key);
-				if (key == 0) return;
+				if (key == 0) return false;
 				if (OS.IsWinCE) {
 					key = (int)/*64*/OS.CharUpper ((short) key);
 				} else {
@@ -276,6 +276,7 @@ void fillAccel (ACCEL accel) {
 	if ((accelerator & SWT.ALT) != 0) accel.fVirt |= OS.FALT;
 	if ((accelerator & SWT.SHIFT) != 0) accel.fVirt |= OS.FSHIFT;
 	if ((accelerator & SWT.CONTROL) != 0) accel.fVirt |= OS.FCONTROL;
+	return true;
 }
 
 void fixMenus (Decorations newParent) {
