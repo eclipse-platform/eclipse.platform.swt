@@ -48,6 +48,8 @@ class Safari extends WebBrowser {
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String AGENT_STRING = "Safari/412.0"; /* Safari version on OSX 10.4 initial release */ //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String PROTOCOL_FILE = "file:"; //$NON-NLS-1$
+	static final String PROTOCOL_HTTP = "http:"; //$NON-NLS-1$
 	static final String URI_APPLEWEBDATA = "applewebdata://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
@@ -646,33 +648,31 @@ void _setText(String html) {
 public boolean setUrl(String url) {
 	html = null;
 
-	StringBuffer buffer = new StringBuffer();
-	if (url.indexOf('/') == 0) buffer.append("file://"); //$NON-NLS-1$  //$NON-NLS-2$
-	else if (url.indexOf(':') == -1) buffer.append("http://");	 //$NON-NLS-1$
-	for (int i = 0; i < url.length(); i++) {
-		char c = url.charAt(i);
-		if (c == ' ') buffer.append("%20"); //$NON-NLS-1$  //$NON-NLS-2$
-		else buffer.append(c);
+	if (url.startsWith(PROTOCOL_FILE)) {
+		url = url.substring(PROTOCOL_FILE.length());
 	}
-	
-	int length = buffer.length();
+	int selector = Cocoa.S_fileURLWithPath;
+	boolean isHttpURL = url.indexOf('/') != 0;
+	if (isHttpURL) {
+		selector = Cocoa.S_URLWithString;
+		if (url.indexOf(':') == -1) {
+			url = PROTOCOL_HTTP + "//" + url; //$NON-NLS-1$
+		}
+	}
+	int length = url.length();
 	char[] chars = new char[length];
-	buffer.getChars(0, length, chars, 0);
+	url.getChars(0, length, chars, 0);
 	int sHandle = OS.CFStringCreateWithCharacters(0, chars, length);
-
-	/*
-	* Note.  URLWithString uses autorelease.  The resulting URL
-	* does not need to be released.
-	* inURL = [NSURL URLWithString:(NSString *)sHandle]
-	*/	
-	int inURL= Cocoa.objc_msgSend(Cocoa.C_NSURL, Cocoa.S_URLWithString, sHandle);
+	/* NSURL.fileURLWithPath and NSURL.URLWithString do autorelease */
+	int inURL = Cocoa.objc_msgSend(Cocoa.C_NSURL, selector, sHandle);
 	OS.CFRelease(sHandle);
-		
+	if (inURL == 0) return false;
+
 	//request = [NSURLRequest requestWithURL:(NSURL*)inURL];
 	int request= Cocoa.objc_msgSend(Cocoa.C_NSURLRequest, Cocoa.S_requestWithURL, inURL);
-	
+
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
-	
+
 	//mainFrame = [webView mainFrame];
 	int mainFrame= Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
 

@@ -103,6 +103,7 @@ public static final int S_valueForKey = Cocoa.sel_registerName("valueForKey:"); 
 public static final int S_webFrame = Cocoa.sel_registerName("webFrame"); //$NON-NLS-1$
 public static final int S_URL = Cocoa.sel_registerName("URL"); //$NON-NLS-1$
 public static final int S_URLWithString = Cocoa.sel_registerName("URLWithString:"); //$NON-NLS-1$
+public static final int S_fileURLWithPath = Cocoa.sel_registerName("fileURLWithPath:"); //$NON-NLS-1$
 public static final int S_systemStatusBar = Cocoa.sel_registerName("systemStatusBar"); //$NON-NLS-1$
 public static final int S_statusItemWithLength = Cocoa.sel_registerName("statusItemWithLength:"); //$NON-NLS-1$
 public static final int S_setTitle = Cocoa.sel_registerName("setTitle:"); //$NON-NLS-1$
