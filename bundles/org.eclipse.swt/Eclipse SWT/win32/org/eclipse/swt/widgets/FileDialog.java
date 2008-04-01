@@ -40,7 +40,20 @@ public class FileDialog extends Dialog {
 	boolean overwrite = false;
 	static final String FILTER = "*.*";
 	static int BUFFER_SIZE = 1024 * 32;
-	static boolean USE_HOOK;
+	static boolean USE_HOOK = true;
+	static {
+		/*
+		*  Feature in Vista.  When OFN_ENABLEHOOK is set in the
+		*  save or open file dialog,  Vista uses the old XP look
+		*  and feel.  OFN_ENABLEHOOK is used to grow the file
+		*  name buffer in a multi-select file dialog.  The fix
+		*  is to only use OFN_ENABLEHOOK when the buffer has
+		*  overrun.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			USE_HOOK = false;
+		}
+	}
 
 /**
  * Constructs a new instance of this class given only its parent.
