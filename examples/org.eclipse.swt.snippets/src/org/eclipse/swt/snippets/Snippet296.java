@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet296 {
@@ -52,6 +53,25 @@ public static void main (String[] args) {
 		public void treeCollapsed (TreeEvent e) {
 			int prefHeight = tree.computeSize (SWT.DEFAULT, SWT.DEFAULT).y;
 			tree.setSize (clientWidth, prefHeight);
+		}
+	});
+	/*
+	 * The following listener ensures that a newly-selected item
+	 * in the Tree is always visible.
+	 */
+	tree.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			TreeItem [] selectedItems = tree.getSelection();
+			if (selectedItems.length > 0) {
+				Rectangle itemRect = selectedItems[0].getBounds();
+				Rectangle area = sc.getClientArea();
+				Point origin = sc.getOrigin();
+				if (itemRect.x < origin.x || itemRect.y < origin.y
+						|| itemRect.x + itemRect.width > origin.x + area.width
+						|| itemRect.y + itemRect.height > origin.y + area.height) {
+					sc.setOrigin(itemRect.x, itemRect.y);
+				}
+			}
 		}
 	});
 
