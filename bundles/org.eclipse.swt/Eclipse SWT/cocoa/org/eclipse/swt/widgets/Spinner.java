@@ -177,46 +177,35 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-//	int width = 0, height = 0;
-//	int max = OS.GetControl32BitMaximum (buttonHandle);
-//	String string = String.valueOf (max);
-//	if (digits > 0) {
-//		StringBuffer buffer = new StringBuffer ();
-//		buffer.append (string);
-//		buffer.append (getDecimalSeparator ());
-//		int count = digits - string.length ();
-//		while (count >= 0) {
-//			buffer.append ("0");
-//			count--;
-//		}
-//		string = buffer.toString ();
-//	}
-//	char [] buffer = new char [string.length ()];
-//	string.getChars (0, buffer.length, buffer, 0);
-//	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-//	Point size = textExtent (ptr, 0);
-//	if (ptr != 0) OS.CFRelease (ptr);
-//	width = Math.max (width, size.x);
-//	height = Math.max (height, size.y);
-//	int [] metric = new int [1];
-//	OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
-//	width += metric [0] * 2;
-//	if (wHint != SWT.DEFAULT) width = wHint;
-//	if (hHint != SWT.DEFAULT) height = hHint;
-//	Rectangle trim = computeTrim (0, 0, width, height);
-//	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsHeight, metric);
-//	trim.height = Math.max (trim.height, metric [0]);
-//	return new Point (trim.width, trim.height);
-	return new Point(60, 26);
-}
-
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget ();
-	//TODO - trim around text
+	float width = 0, height = 0;
+	String string = Double.toString (buttonView.maxValue ());
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (1);
+	dict.setObject(textView.font (), OS.NSFontAttributeName ());
+	int length = string.length ();
+	char [] chars = new char [length];
+	string.getChars (0, length, chars, 0);
+	NSString nsString = NSString.stringWithCharacters (chars, length);
+	NSAttributedString str = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString_attributes_ (nsString, dict);
+	NSSize size = str.size ();
+	str.release ();
+	width = size.width;
+	height = size.height;
+	NSRect frameRect = textView.frame();
+	NSCell cell = new NSCell (textView.cell ());
+	NSRect cellRect = cell.drawingRectForBounds(frameRect);
+	width += frameRect.width - cellRect.width;
+	height += frameRect.height - cellRect.height;
+	width += GAP;
+	NSRect oldRect = buttonView.frame ();
 	buttonView.sizeToFit();
-	NSRect rect = buttonView.bounds();
-	width += rect.width;
-	return super.computeTrim(x, y, width, height);
+	NSRect newRect = buttonView.frame ();
+	buttonView.setFrame (oldRect);
+	width += newRect.width;
+	height = Math.max (height, newRect.height);
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	Rectangle trim = computeTrim (0, 0, (int) width, (int) height);
+	return new Point (trim.width, trim.height);
 }
 
 /**
