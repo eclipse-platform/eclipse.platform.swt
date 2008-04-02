@@ -2497,7 +2497,7 @@ int SetVisibility (int aVisibility) {
 		WindowEvent event = new WindowEvent (browser);
 		event.display = browser.getDisplay ();
 		event.widget = browser;
-		if (aVisibility == 1) {
+		if (aVisibility != 0) {
 			/*
 			* Bug in Mozilla.  When the JavaScript window.open is executed, Mozilla
 			* fires multiple SetVisibility 1 notifications.  The workaround is
