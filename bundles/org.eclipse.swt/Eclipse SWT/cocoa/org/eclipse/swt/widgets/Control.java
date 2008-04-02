@@ -2911,7 +2911,10 @@ void setZOrder () {
 
 void setZOrder (Control control, boolean above) {
 	NSView otherView = control == null ? null : control.topView ();
+	view.retain();
+	view.removeFromSuperview();
 	parent.contentView().addSubview_positioned_relativeTo_(view, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
+	view.release();
 }
 
 void sort (int [] items) {
