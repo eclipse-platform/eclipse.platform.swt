@@ -54,6 +54,7 @@ class Safari extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
+	static final String BROWSER_COCOA_BUTTON = "org.eclipse.swt.browser.Browser.CocoaButton"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
 
 	/* event strings */
@@ -91,6 +92,34 @@ public void create (Composite parent, int style) {
 		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
+	
+	/*
+	* Bug in Safari.  For some reason, when a window contains a
+	* WebView, VoiceOver no longer follows focus.  The VoiceOver
+	* cursor (activated by Control+Alt+arrows) continues to work,
+	* but keyboard focus is not tracked.  The fix is to create
+	* and dispose a cocoa button once per window.  This must be
+	* done before the WebView is created or the problem persists.
+	* 
+	* NOTE:  This only happens on OSX 10.5 (Leopard).
+	*/
+	if (OS.VERSION >= 0x1050) {
+		Shell shell = parent.getShell();
+		if (shell.getData(BROWSER_COCOA_BUTTON) == null) {
+			int[] root = new int[1];
+			OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(parent.handle)), OS.kHIViewWindowContentID(), root);
+			int rootHandle = root[0];
+			int buttonHandle = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.objc_getClass("NSButton"), Cocoa.S_alloc), Cocoa.S_initWithFrame, 0);
+			int outControl[] = new int[1];
+			Cocoa.HICocoaViewCreate(buttonHandle, 0, outControl);
+			OS.HIViewSetFrame(outControl[0], new CGRect());
+			OS.HIViewSetVisible(outControl[0], false);
+			OS.HIViewAddSubview(rootHandle, outControl[0]);
+			OS.DisposeControl(outControl[0]);
+			shell.setData(BROWSER_COCOA_BUTTON, new Boolean(true));
+		}
+	}
+
 	int outControl[] = new int[1];
 	try {
 		Cocoa.HIWebViewCreate(outControl);
