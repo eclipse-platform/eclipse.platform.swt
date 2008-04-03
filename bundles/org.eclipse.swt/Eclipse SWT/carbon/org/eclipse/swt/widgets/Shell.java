@@ -119,6 +119,7 @@ import org.eclipse.swt.graphics.*;
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
 	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
+	boolean showWithParent;
 	int invalRgn;
 	Control lastActive;
 	Rect rgnRect;
@@ -852,6 +853,7 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowActivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
+		OS.kEventClassWindow, OS.kEventWindowCollapsing,
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowDrawContent,
@@ -986,6 +988,13 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventWindowCollapsing (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowCollapsing (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	updateMinimized (true);
+	return result;
+}
+
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -1033,6 +1042,7 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	minimized = false;
+	updateMinimized (false);
 	sendEvent (SWT.Deiconify);
 	return result;
 }
@@ -1689,6 +1699,30 @@ boolean traverseEscape () {
 	if (!isVisible () || !isEnabled ()) return false;
 	close ();
 	return true;
+}
+
+void updateMinimized (boolean minimized) {
+	/*
+	* Need to handle ON_TOP child shells ourselfs, since they
+	* are not in the same group hierarchy of this shell.
+	*/
+	Shell [] shells = getShells ();
+	for (int i = 0; i < shells.length; i++) {
+		Shell shell = shells [i];
+		if (this == shell.parent && (shell.style & SWT.ON_TOP) != 0) {
+			if (minimized) {
+				if (shells[i].isVisible ()) {
+					shells[i].showWithParent = true;
+					OS.HideWindow (shell.shellHandle);
+				}
+			} else {
+				if (shells[i].showWithParent) {
+					shells[i].showWithParent = false;
+					OS.ShowWindow (shell.shellHandle);
+				}
+			}
+		}
+	}
 }
 
 void updateSystemUIMode () {

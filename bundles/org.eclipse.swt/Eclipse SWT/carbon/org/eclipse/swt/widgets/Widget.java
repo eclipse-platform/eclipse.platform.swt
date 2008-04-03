@@ -1251,6 +1251,10 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventWindowCollapsing (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -2028,6 +2032,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowBoundsChanged:		return kEventWindowBoundsChanged (nextHandler, theEvent, userData);
 		case OS.kEventWindowClose:				return kEventWindowClose (nextHandler, theEvent, userData);
 		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
+		case OS.kEventWindowCollapsing:			return kEventWindowCollapsing (nextHandler, theEvent, userData);
 		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
 		case OS.kEventWindowDrawContent:		return kEventWindowDrawContent (nextHandler, theEvent, userData);
 		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
