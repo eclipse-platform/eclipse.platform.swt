@@ -1710,12 +1710,6 @@ void setToolTipTitle (int /*long*/ hwndToolTip, String text, int icon) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (drawCount != 0) {
-		if (((state & HIDDEN) == 0) == visible) return;
-	} else {
-		if (visible == OS.IsWindowVisible (handle)) return;
-	}
-	
 	/*
 	* Feature in Windows.  When ShowWindow() is called used to hide
 	* a window, Windows attempts to give focus to the parent. If the
