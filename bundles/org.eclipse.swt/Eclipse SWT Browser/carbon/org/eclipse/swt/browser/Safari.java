@@ -109,7 +109,7 @@ public void create (Composite parent, int style) {
 			int[] root = new int[1];
 			OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(parent.handle)), OS.kHIViewWindowContentID(), root);
 			int rootHandle = root[0];
-			int buttonHandle = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.objc_getClass("NSButton"), Cocoa.S_alloc), Cocoa.S_initWithFrame, 0);
+			int buttonHandle = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.C_NSButton, Cocoa.S_alloc), Cocoa.S_initWithFrame, new NSRect());
 			int outControl[] = new int[1];
 			Cocoa.HICocoaViewCreate(buttonHandle, 0, outControl);
 			OS.HIViewSetFrame(outControl[0], new CGRect());

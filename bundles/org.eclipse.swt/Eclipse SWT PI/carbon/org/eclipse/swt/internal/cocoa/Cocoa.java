@@ -38,6 +38,7 @@ public static final int C_NSBitmapImageRep = Cocoa.objc_getClass("NSBitmapImageR
 public static final int C_NSImageView = Cocoa.objc_getClass("NSImageView"); //$NON-NLS-1$
 public static final int C_WebPreferences = Cocoa.objc_getClass("WebPreferences"); //$NON-NLS-1$
 public static final int C_NSBezierPath = Cocoa.objc_getClass("NSBezierPath"); //$NON-NLS-1$
+public static final int C_NSButton = Cocoa.objc_getClass("NSButton"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
