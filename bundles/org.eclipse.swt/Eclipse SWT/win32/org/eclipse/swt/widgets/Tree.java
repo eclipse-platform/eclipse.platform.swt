@@ -3566,6 +3566,11 @@ int imageIndex (Image image, int index) {
 	int imageIndex = imageList.indexOf (image);
 	if (imageIndex == -1) imageIndex = imageList.add (image);
 	if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == index) {
+		/*
+		* Feature in Windows.  When setting the same image list multiple
+		* times, Windows does work making this operation slow.  The fix
+		* is to test for the same image list before setting the new one.
+		*/
 		int /*long*/ hImageList = imageList.getHandle ();
 		int /*long*/ hOldImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		if (hOldImageList != hImageList) {
