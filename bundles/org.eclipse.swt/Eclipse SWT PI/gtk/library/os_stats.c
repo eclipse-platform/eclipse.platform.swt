@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1256;
-int OS_nativeFunctionCallCount[1256];
+int OS_nativeFunctionCount = 1259;
+int OS_nativeFunctionCallCount[1259];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -237,6 +237,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1unref",
 	"_1g_1quark_1from_1string",
 	"_1g_1set_1prgname",
+	"_1g_1signal_1add_1emission_1hook",
 	"_1g_1signal_1connect",
 	"_1g_1signal_1connect_1after",
 	"_1g_1signal_1connect_1closure",
@@ -250,6 +251,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1signal_1handlers_1disconnect_1matched",
 	"_1g_1signal_1handlers_1unblock_1matched",
 	"_1g_1signal_1lookup",
+	"_1g_1signal_1remove_1emission_1hook",
 	"_1g_1signal_1stop_1emission_1by_1name",
 	"_1g_1slist_1data",
 	"_1g_1slist_1free",
@@ -276,6 +278,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1utf8_1strlen",
 	"_1g_1utf8_1to_1utf16__II_3I_3I_3I",
 	"_1g_1utf8_1to_1utf16___3BI_3I_3I_3I",
+	"_1g_1value_1peek_1pointer",
 	"_1gdk_1atom_1intern",
 	"_1gdk_1atom_1name",
 	"_1gdk_1beep",

@@ -324,9 +324,12 @@ public PrinterData open() {
 		PrinterData data = null;
 		//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
 		Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
+		
+		int signalId = 0;
+		int /*long*/ hookId = 0;
 		if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
-			OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
-			OS.gtk_container_forall (handle, ((LONG) display.getData (GET_DIRECTION_PROC_KEY)).value, OS.GTK_TEXT_DIR_RTL);
+			signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+			hookId = OS.g_signal_add_emission_hook (signalId, 0, ((LONG) display.getData (GET_DIRECTION_PROC_KEY)).value, handle, 0);
 		}	
 		display.setData (ADD_IDLE_PROC_KEY, null);
 		Object oldModal = null;
@@ -337,6 +340,9 @@ public PrinterData open() {
 		int response = OS.gtk_dialog_run (handle);
 		if (OS.gtk_window_get_modal (handle)) {
 			display.setData (SET_MODAL_DIALOG, oldModal);
+		}
+		if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+			OS.g_signal_remove_emission_hook (signalId, hookId);
 		}
 		if (response == OS.GTK_RESPONSE_OK) {
 			int /*long*/ printer = OS.gtk_print_unix_dialog_get_selected_printer(handle);

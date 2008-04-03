@@ -2426,7 +2426,7 @@ void initializeCallbacks () {
 	cellDataProc = cellDataCallback.getAddress ();
 	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	setDirectionCallback = new Callback (this, "setDirectionProc", 2); //$NON-NLS-1$
+	setDirectionCallback = new Callback (this, "setDirectionProc", 4); //$NON-NLS-1$
 	setDirectionProc = setDirectionCallback.getAddress ();
 	if (setDirectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
@@ -3582,12 +3582,11 @@ public void setData (Object data) {
 	this.data = data;
 }
 
-int /*long*/ setDirectionProc (int /*long*/ widget, int /*long*/ direction) {
-	OS.gtk_widget_set_direction (widget, (int)/*64*/ direction);
-	if (OS.GTK_IS_CONTAINER (widget)) {
-		OS.gtk_container_forall (widget, setDirectionProc, direction);
+int /*long*/ setDirectionProc (int /*long*/ ihint, int n_param_values, int /*long*/ param_values, int /*long*/ data) {
+	if (OS.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values)) == data) {
+		OS.gtk_widget_set_direction (OS.g_value_peek_pointer(param_values), OS.GTK_TEXT_DIR_RTL);
 	}
-	return 0;
+	return 1;
 }
 
 void setModalDialog (Dialog modalDailog) {

@@ -1443,6 +1443,24 @@ public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _g_signal_add_emission_hook(int signal_id, int detail, int /*long*/ hook_func, int /*long*/ hook_data, int /*long*/ data_destroy);
+public static final int /*long*/ g_signal_add_emission_hook(int signal_id, int detail, int /*long*/ hook_func, int /*long*/ hook_data, int /*long*/ data_destroy) {
+	lock.lock();
+	try {
+		return _g_signal_add_emission_hook(signal_id, detail, hook_func, hook_data, data_destroy);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _g_signal_remove_emission_hook(int signal_id, int /*long*/ hook_id);
+public static final void g_signal_remove_emission_hook(int signal_id, int /*long*/ hook_id) {
+	lock.lock();
+	try {
+		 _g_signal_remove_emission_hook (signal_id, hook_id);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _g_cclosure_new(int /*long*/ callback_func, int /*long*/ user_data, int /*long*/ destroy_data);
 public static final int /*long*/ g_cclosure_new(int /*long*/ callback_func, int /*long*/ user_data, int /*long*/ destroy_data) {
 	lock.lock();
@@ -2250,6 +2268,15 @@ public static final int /*long*/ g_utf8_to_utf16(int /*long*/ str, int /*long*/ 
 	lock.lock();
 	try {
 		return _g_utf8_to_utf16(str, len, items_read, items_written, error);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _g_value_peek_pointer (int /*long*/ value);
+public static final  int /*long*/ g_value_peek_pointer (int /*long*/ value) {
+	lock.lock();
+	try {
+		return _g_value_peek_pointer(value);
 	} finally {
 		lock.unlock();
 	}

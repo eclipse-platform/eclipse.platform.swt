@@ -381,10 +381,6 @@ String openChooserDialog () {
 	}
 	presetChooserDialog ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
-		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
-	}	
 	display.addIdleProc ();
 	String answer = null;
 	Dialog oldModal = null;
@@ -392,7 +388,16 @@ String openChooserDialog () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.setDirectionProc, handle, 0);
+	}	
 	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
 	if (OS.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}
@@ -417,10 +422,6 @@ String openClassicDialog () {
 	}
 	presetClassicDialog ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
-		OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
-	}
 	display.addIdleProc ();
 	String answer = null;
 	Dialog oldModal = null;
@@ -428,7 +429,16 @@ String openClassicDialog () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
+	int signalId = 0;
+	int /*long*/ hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.setDirectionProc, handle, 0);
+	}	
 	int response = OS.gtk_dialog_run (handle);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook (signalId, hookId);
+	}
 	if (OS.gtk_window_get_modal (handle)) {
 		display.setModalDialog (oldModal);
 	}

@@ -2878,6 +2878,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1signal_1add_1emission_1hook
+JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1signal_1add_1emission_1hook)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1add_1emission_1hook_FUNC);
+	rc = (jlong)g_signal_add_emission_hook((guint)arg0, (GQuark)arg1, (GSignalEmissionHook)arg2, (gpointer)arg3, (GDestroyNotify)arg4);
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1add_1emission_1hook_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1signal_1connect
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
@@ -3056,6 +3068,16 @@ fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1signal_1lookup_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1g_1signal_1remove_1emission_1hook
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1signal_1remove_1emission_1hook)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1remove_1emission_1hook_FUNC);
+	g_signal_remove_emission_hook((guint)arg0, (gulong)arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1remove_1emission_1hook_FUNC);
 }
 #endif
 
@@ -3465,6 +3487,18 @@ fail:
 		if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1utf8_1to_1utf16___3BI_3I_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1value_1peek_1pointer
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1value_1peek_1pointer)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1value_1peek_1pointer_FUNC);
+	rc = (jint)g_value_peek_pointer((const GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1value_1peek_1pointer_FUNC);
 	return rc;
 }
 #endif
