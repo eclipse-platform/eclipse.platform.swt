@@ -1703,7 +1703,7 @@ boolean traverseEscape () {
 
 void updateMinimized (boolean minimized) {
 	/*
-	* Need to handle ON_TOP child shells ourselfs, since they
+	* Need to handle ON_TOP child shells ourselves, since they
 	* are not in the same group hierarchy of this shell.
 	*/
 	Shell [] shells = getShells ();
