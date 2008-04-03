@@ -24,3 +24,16 @@
 #endif
 
 #endif /* INC_os_H */
+
+#ifndef NATIVE_STATS
+#define OS_NATIVE_ENTER(env, that, func) \
+	@try {  
+#define OS_NATIVE_EXIT(env, that, func) \
+	} \
+	@catch (NSException *nsx) { \
+		jclass threadClass = (*env)->FindClass(env, "java/lang/Thread"); \
+		jmethodID dumpStackID = (*env)->GetStaticMethodID(env, threadClass, "dumpStack", "()V"); \
+		if (dumpStackID != NULL) (*env)->CallStaticVoidMethod(env, threadClass, dumpStackID, 0); \
+		@throw; \
+	}
+#endif
