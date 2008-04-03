@@ -1611,6 +1611,7 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
+	showWithParent = visible;
 	setWindowVisible (visible);
 }
 
