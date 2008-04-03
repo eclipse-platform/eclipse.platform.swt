@@ -503,6 +503,7 @@ public class OS extends C {
 	public static final int kEventWindowActivated = 5;
 	public static final int kEventWindowBoundsChanged = 27;
 	public static final int kEventWindowClose = 72;
+	public static final int kEventWindowCollapsing = 86;
 	public static final int kEventWindowCollapsed = 67;
 	public static final int kEventWindowDeactivated = 6;
 	public static final int kEventWindowDrawContent = 2;
