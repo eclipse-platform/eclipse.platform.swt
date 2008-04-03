@@ -116,7 +116,7 @@ public void create (Composite parent, int style) {
 			OS.HIViewSetVisible(outControl[0], false);
 			OS.HIViewAddSubview(rootHandle, outControl[0]);
 			OS.DisposeControl(outControl[0]);
-			shell.setData(BROWSER_COCOA_BUTTON, new Boolean(true));
+			shell.setData(BROWSER_COCOA_BUTTON, "true");
 		}
 	}
 
