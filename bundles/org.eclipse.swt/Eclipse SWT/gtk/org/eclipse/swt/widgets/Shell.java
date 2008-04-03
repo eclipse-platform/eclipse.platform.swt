@@ -1068,7 +1068,7 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 		} else {
 			sendEvent (SWT.Deiconify);
 		}
-		updateShells ();
+		updateMinimized (minimized);
 	}
 	return 0;
 }
@@ -1538,7 +1538,6 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
-	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
 		if (visible) {
@@ -1551,6 +1550,8 @@ public void setVisible (boolean visible) {
 	} else {
 		updateModal ();
 	}
+	showWithParent = visible;
+	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
@@ -1764,7 +1765,7 @@ void updateModal () {
 	modalGroup = group;
 }
 
-void updateShells () {
+void updateMinimized (boolean minimized) {
 	Shell[] shells = getShells ();
 	for (int i = 0; i < shells.length; i++) {
 		boolean update = false;
