@@ -218,6 +218,12 @@ public class Display extends Device {
 	Callback setDirectionCallback;
 	static final String GET_DIRECTION_PROC_KEY = "org.eclipse.swt.internal.gtk.getDirectionProc"; //$NON-NLS-1$
 	
+	/* Set direction callback */
+	int /*long*/ emissionProc;
+	Callback emissionProcCallback;
+	static final String GET_EMISSION_PROC_KEY = "org.eclipse.swt.internal.gtk.getEmissionProc"; //$NON-NLS-1$
+	
+	
 	/* Get all children callback */
 	int /*long*/ allChildrenProc, allChildren;
 	Callback allChildrenCallback;
@@ -1066,6 +1072,13 @@ protected void destroy () {
 void destroyDisplay () {
 }
 
+int /*long*/ emissionProc (int /*long*/ ihint, int n_param_values, int /*long*/ param_values, int /*long*/ data) {
+	if (OS.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values)) == data) {
+		OS.gtk_widget_set_direction (OS.g_value_peek_pointer(param_values), OS.GTK_TEXT_DIR_RTL);
+	}
+	return 1;
+}
+
 /**
  * Returns the display which the given thread is the
  * user-interface thread for, or null if the given thread
@@ -1498,6 +1511,9 @@ public Object getData (String key) {
 	}
 	if (key.equals (GET_DIRECTION_PROC_KEY)) {
 		return new LONG (setDirectionProc);
+	}
+	if (key.equals (GET_EMISSION_PROC_KEY)) {
+		return new LONG (emissionProc);
 	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -2426,9 +2442,13 @@ void initializeCallbacks () {
 	cellDataProc = cellDataCallback.getAddress ();
 	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	setDirectionCallback = new Callback (this, "setDirectionProc", 4); //$NON-NLS-1$
+	setDirectionCallback = new Callback (this, "setDirectionProc", 2); //$NON-NLS-1$
 	setDirectionProc = setDirectionCallback.getAddress ();
 	if (setDirectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	emissionProcCallback = new Callback (this, "emissionProc", 4); //$NON-NLS-1$
+	emissionProc = emissionProcCallback.getAddress ();
+	if (emissionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	allChildrenCallback = new Callback (this, "allChildrenProc", 2); //$NON-NLS-1$
 	allChildrenProc = allChildrenCallback.getAddress ();
@@ -3097,6 +3117,10 @@ void releaseDisplay () {
 	/* Dispose the set direction callback */
 	setDirectionCallback.dispose (); setDirectionCallback = null;
 	setDirectionProc = 0;
+	
+	/* Dispose the emission proc callback */
+	emissionProcCallback.dispose (); emissionProcCallback = null;
+	emissionProc = 0;
 
 	/* Dispose the set direction callback */
 	allChildrenCallback.dispose (); allChildrenCallback = null;
@@ -3582,11 +3606,12 @@ public void setData (Object data) {
 	this.data = data;
 }
 
-int /*long*/ setDirectionProc (int /*long*/ ihint, int n_param_values, int /*long*/ param_values, int /*long*/ data) {
-	if (OS.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values)) == data) {
-		OS.gtk_widget_set_direction (OS.g_value_peek_pointer(param_values), OS.GTK_TEXT_DIR_RTL);
+int /*long*/ setDirectionProc (int /*long*/ widget, int /*long*/ direction) {
+	OS.gtk_widget_set_direction (widget, (int)/*64*/ direction);
+	if (OS.GTK_IS_CONTAINER (widget)) {
+		OS.gtk_container_forall (widget, setDirectionProc, direction);
 	}
-	return 1;
+	return 0;
 }
 
 void setModalDialog (Dialog modalDailog) {

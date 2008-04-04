@@ -158,7 +158,7 @@ public int open () {
 	int /*long*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
-		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.setDirectionProc, handle, 0);
+		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}	
 	int response = OS.gtk_dialog_run (handle);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {

@@ -40,8 +40,7 @@ public class PrintDialog extends Dialog {
 	static final String SET_MODAL_DIALOG = "org.eclipse.swt.internal.gtk.setModalDialog";
 	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.addIdleProc";
 	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk.removeIdleProc";
-	static final String GET_DIRECTION_PROC_KEY = "org.eclipse.swt.internal.gtk.getDirectionProc";
-
+	static final String GET_EMISSION_PROC_KEY = "org.eclipse.swt.internal.gtk.getEmissionProc";
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -329,7 +328,7 @@ public PrinterData open() {
 		int /*long*/ hookId = 0;
 		if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
 			signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
-			hookId = OS.g_signal_add_emission_hook (signalId, 0, ((LONG) display.getData (GET_DIRECTION_PROC_KEY)).value, handle, 0);
+			hookId = OS.g_signal_add_emission_hook (signalId, 0, ((LONG) display.getData (GET_EMISSION_PROC_KEY)).value, handle, 0);
 		}	
 		display.setData (ADD_IDLE_PROC_KEY, null);
 		Object oldModal = null;
