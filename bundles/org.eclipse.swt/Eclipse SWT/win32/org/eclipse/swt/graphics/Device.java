@@ -56,6 +56,7 @@ public abstract class Device implements Drawable {
 
 	/* Scripts */
 	int /*long*/ [] scripts;
+	LOGFONT [] logFontsCache;
 
 	/* Advanced Graphics */
 	int /*long*/ [] gdipToken;
@@ -893,6 +894,7 @@ protected void release () {
 	}
 	gdipToken = null;
 	scripts = null;
+	logFontsCache = null;
 	if (hPalette != 0) OS.DeleteObject (hPalette);
 	hPalette = 0;
 	colorRefCount = null;

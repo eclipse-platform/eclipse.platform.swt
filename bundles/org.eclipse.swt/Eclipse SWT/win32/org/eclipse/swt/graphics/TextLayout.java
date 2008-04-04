@@ -2718,10 +2718,10 @@ boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
  * Generate glyphs for one Run.
  */
 void shape (final int /*long*/ hdc, final StyleItem run) {
-	int[] buffer = new int[1];
-	char[] chars = new char[run.length];
+	final int[] buffer = new int[1];
+	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
-	int maxGlyphs = (chars.length * 3 / 2) + 16;
+	final int maxGlyphs = (chars.length * 3 / 2) + 16;
 	int /*long*/ hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
 	if (run.glyphs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -2731,7 +2731,28 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	if (run.visAttrs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.PTR_SIZEOF);
 	if (run.psc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (!shape(hdc, run, chars, buffer,  maxGlyphs)) {
+	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+	final short script = run.analysis.eScript;
+	
+	if (!shapeSucceed) {
+		/* 
+		 * Shape failed.
+		 * Try to shape with fNoGlyphIndex when the run is in the 
+		 * Private Use Area. This allows for end-user-defined character (EUDC).
+		 */
+		SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
+		OS.MoveMemory(properties, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
+		if (properties.fPrivateUseArea) {
+			run.analysis.fNoGlyphIndex = true;
+			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+		}
+	}
+	
+	if (!shapeSucceed) {
+		/*
+		* Shape Failed.
+		* Try to use MLANG to find a suitable font to shape the run.  
+		*/
 		if (mLangFontLink2 != 0) {
 			int[] dwCodePages = new int[1];
 			int[] cchCodePages = new int[1];
@@ -2741,22 +2762,94 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			/* MapFont() */
 			if (OS.VtblCall(10, mLangFontLink2, hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
 				int /*long*/ hFont = OS.SelectObject(hdc, hNewFont[0]);
-				if (shape(hdc, run, chars, buffer, maxGlyphs)) {
+				shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+				if (shapeSucceed) {
 					run.fallbackFont = hNewFont[0];
 				} else {
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
 					OS.SelectObject(hdc, hFont);
-					SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-					OS.MoveMemory(properties, device.scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-					if (properties.fPrivateUseArea) {
-						run.analysis.fNoGlyphIndex = true;
-					}
-					OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
-					run.glyphCount = buffer[0];
 				}
 			}
 		}
+	}
+	
+	if (!shapeSucceed) {
+		/*
+		* Shape Failed.
+		* Try to shape the run using the LOGFONT in the cache.
+		*/
+		final int hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
+		final LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+		OS.GetObject(hFont, LOGFONT.sizeof, logFont);
+		
+		LOGFONT cachedLogFont = device.logFontsCache != null ? device.logFontsCache[script] : null;
+		if (cachedLogFont != null) {
+			cachedLogFont.lfHeight = logFont.lfHeight;
+			cachedLogFont.lfWeight = logFont.lfWeight;
+			cachedLogFont.lfItalic = logFont.lfItalic;
+			cachedLogFont.lfWidth = logFont.lfWidth;
+			int newFont = OS.CreateFontIndirect(cachedLogFont);
+			OS.SelectObject(hdc, newFont);
+			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+			if (shapeSucceed) {
+				run.fallbackFont = newFont;
+			} else {
+				OS.SelectObject(hdc, hFont);
+				OS.DeleteObject(newFont);
+			}
+		}
+		if (!shapeSucceed) {
+			/*
+			* Shape Failed.
+			* Use EnumFontFamExProc to iterate over every font in the system that supports 
+			* the charset of the run and try to shape it.  
+			*/
+			if (device.logFontsCache == null) device.logFontsCache = new LOGFONT[device.scripts.length];
+			final LOGFONT newLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+			Object object = new Object () {
+				public int EnumFontFamExProc(int lpelfe, int lpntme, int FontType, int lParam) {
+					OS.MoveMemory(newLogFont, lpelfe, LOGFONT.sizeof);
+					if (FontType == OS.RASTER_FONTTYPE) return 1;
+					newLogFont.lfHeight = logFont.lfHeight;
+					newLogFont.lfWeight = logFont.lfWeight;
+					newLogFont.lfItalic = logFont.lfItalic;
+					newLogFont.lfWidth = logFont.lfWidth;
+					int newFont = OS.CreateFontIndirect(newLogFont);
+					OS.SelectObject(hdc, newFont);
+					if (shape(hdc, run, chars, buffer, maxGlyphs)) {
+						run.fallbackFont = newFont;
+						LOGFONT cacheLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+						OS.MoveMemory(cacheLogFont, lpelfe, LOGFONT.sizeof);
+						device.logFontsCache[script] = cacheLogFont;
+						return 0;
+					}
+					OS.SelectObject(hdc, hFont);
+					OS.DeleteObject(newFont);
+					return 1;
+				}
+			};
+			Callback callback = new Callback(object, "EnumFontFamExProc", 4);
+			int address = callback.getAddress();
+			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+			SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
+			OS.MoveMemory(properties, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
+			int charSet = properties.fAmbiguousCharSet ? OS.DEFAULT_CHARSET : properties.bCharSet;
+			newLogFont.lfCharSet = (byte)charSet;
+			OS.EnumFontFamiliesEx(hdc, newLogFont, address, 0, 0);
+			callback.dispose();
+			shapeSucceed = run.fallbackFont != 0;
+		}
+	}
+	
+	if (!shapeSucceed) {
+		/*
+		* Shape Failed.
+		* Give up and shape the run with the default font. 
+		* Missing glyphs typically will be represent as black boxes in the text. 
+		*/
+		OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
+		run.glyphCount = buffer[0];
 	}
 	int[] abc = new int[3];
 	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
