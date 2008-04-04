@@ -3253,16 +3253,17 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 		} else {
 			drawBackground = clrTextBk != -1;
 			/*
-			* Bug in Windows.  When LVM_SETTEXTBKCOLOR or LVM_SETBKCOLOR
-			* is used to set the background color of the the text or the
-			* control, the color is not set in the HDC that is provided
-			* in Custom Draw.  The fix is to explicitly set the background
-			* color.
+			* Bug in Windows.  When LVM_SETTEXTBKCOLOR, LVM_SETBKCOLOR
+			* or LVM_SETTEXTCOLOR is used to set the background color of
+			* the the text or the control, the color is not set in the HDC
+			* that is provided in Custom Draw.  The fix is to explicitly
+			* set the color.
 			*/
-			if (clrTextBk == -1) {
+			if (clrText == -1 || clrTextBk == -1) {
 				Control control = findBackgroundControl ();
 				if (control == null) control = this;
-				clrTextBk = control.getBackgroundPixel ();
+				if (clrText == -1) clrText = control.getForegroundPixel ();
+				if (clrTextBk == -1) clrTextBk = control.getBackgroundPixel ();
 			}
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
@@ -3651,16 +3652,17 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 			if (clrTextBk == -1) clrTextBk = item.background;
 			drawBackground = clrTextBk != -1;
 			/*
-			* Bug in Windows.  When LVM_SETTEXTBKCOLOR or LVM_SETBKCOLOR
-			* is used to set the background color of the the text or the
-			* control, the color is not set in the HDC that is provided
-			* in Custom Draw.  The fix is to explicitly set the background
-			* color.
+			* Bug in Windows.  When LVM_SETTEXTBKCOLOR, LVM_SETBKCOLOR
+			* or LVM_SETTEXTCOLOR is used to set the background color of
+			* the the text or the control, the color is not set in the HDC
+			* that is provided in Custom Draw.  The fix is to explicitly
+			* set the color.
 			*/
-			if (clrTextBk == -1) {
+			if (clrText == -1 || clrTextBk == -1) {
 				Control control = findBackgroundControl ();
 				if (control == null) control = this;
-				clrTextBk = control.getBackgroundPixel ();
+				if (clrText == -1) clrText = control.getForegroundPixel ();
+				if (clrTextBk == -1) clrTextBk = control.getBackgroundPixel ();
 			}
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
