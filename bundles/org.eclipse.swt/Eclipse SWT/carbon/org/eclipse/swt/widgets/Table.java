@@ -1525,26 +1525,6 @@ public TableItem getItem (Point point) {
 			}
 		}
 	}
-	//TODO - optimize
-	for (int i=0; i<itemCount; i++) {
-		int columnId = columnCount == 0 ? column_id : columns [0].id;
-		if (OS.GetDataBrowserItemPartBounds (handle, getId (i), columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-			rect.bottom = (short)(rect.top + height [0]);
-			if (rect.top <= pt.v && pt.v < rect.bottom) {
-				if (columnCount == 0) {
-					if (OS.PtInRect (pt, rect)) return _getItem (i);
-				} else {
-					for (int j = 0; j < columnCount; j++) {
-						if (OS.GetDataBrowserItemPartBounds (handle, getId (i), columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-							rect.bottom = (short)(rect.top + height [0]);
-							if (OS.PtInRect (pt, rect)) return _getItem (i);
-						}
-					}
-				}
-				return null;
-			}
-		}
-	}
 	return null;
 }
 

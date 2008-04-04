@@ -1603,10 +1603,21 @@ public TreeItem getItem (Point point) {
 			}
 		}
 	}
-	//TODO - optimize
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
+	/* Find the item by approximating its row position */
+	int[] top = new int[1];
+	int[] left = new int[1];
+	OS.GetDataBrowserScrollPosition (handle, top, left);		
+	short [] header = new short [1];
+	OS.GetDataBrowserListViewHeaderBtnHeight (handle, header);
+	int [] offsets = new int [] {0, 1, -1};
+	for (int i = 0; i < offsets.length; i++) {
+		int row = (top[0] - header [0] + point.y) / height [0] + offsets [i];
+		if (row >= 0) {
+			int [] itemId = new int[1];
+			int result = OS.GetDataBrowserTableViewItemID (handle, row, itemId);
+			if (result != OS.noErr) return null;
+			TreeItem item = _getItem(itemId[0], false);
+			if (item == null) return null;
 			if (OS.GetDataBrowserItemPartBounds (handle, item.id, disclosure [0], OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
 				if (OS.PtInRect (pt, rect)) return null;
 			}
@@ -1914,19 +1925,14 @@ public int getSortDirection () {
  * @since 2.1
  */
 public TreeItem getTopItem () {
-	checkWidget();
-	//TODO - optimize
-	Rect rect = new Rect ();
-	int y = getBorderWidth () + getHeaderHeight ();
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			int columnId = (columnCount == 0) ? column_id : columns [0].id;
-			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				if (rect.top <= y && y <= rect.bottom) return item;
-			}
-		}
-	}
+	checkWidget ();
+	/* Find the topItem by calculating its row position */
+	int[] top = new int[1], left = new int[1];
+	OS.GetDataBrowserScrollPosition (handle, top, left);		
+	int row = top[0] / getItemHeight ();;
+	int [] itemId = new int[1];
+	int result = OS.GetDataBrowserTableViewItemID (handle, row, itemId);
+	if (result == OS.noErr) return _getItem (itemId[0], false);
 	return null;
 }
 
