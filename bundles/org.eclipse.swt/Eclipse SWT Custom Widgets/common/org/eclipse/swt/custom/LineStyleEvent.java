@@ -82,6 +82,8 @@ public class LineStyleEvent extends TypedEvent {
 	
 public LineStyleEvent(StyledTextEvent e) {
 	super(e);
+	styles = e.styles;
+	ranges = e.ranges;
 	lineOffset = e.detail;
 	lineText = e.text;
 	alignment = e.alignment;
