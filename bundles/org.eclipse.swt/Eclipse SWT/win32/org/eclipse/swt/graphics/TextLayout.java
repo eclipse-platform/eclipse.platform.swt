@@ -2779,7 +2779,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 		* Shape Failed.
 		* Try to shape the run using the LOGFONT in the cache.
 		*/
-		final int hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
+		final int /*long*/ hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
 		final LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
 		OS.GetObject(hFont, LOGFONT.sizeof, logFont);
 		
@@ -2789,7 +2789,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			cachedLogFont.lfWeight = logFont.lfWeight;
 			cachedLogFont.lfItalic = logFont.lfItalic;
 			cachedLogFont.lfWidth = logFont.lfWidth;
-			int newFont = OS.CreateFontIndirect(cachedLogFont);
+			int /*long*/ newFont = OS.CreateFontIndirect(cachedLogFont);
 			OS.SelectObject(hdc, newFont);
 			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
 			if (shapeSucceed) {
@@ -2815,7 +2815,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 					newLogFont.lfWeight = logFont.lfWeight;
 					newLogFont.lfItalic = logFont.lfItalic;
 					newLogFont.lfWidth = logFont.lfWidth;
-					int newFont = OS.CreateFontIndirect(newLogFont);
+					int /*long*/ newFont = OS.CreateFontIndirect(newLogFont);
 					OS.SelectObject(hdc, newFont);
 					if (shape(hdc, run, chars, buffer, maxGlyphs)) {
 						run.fallbackFont = newFont;
@@ -2830,7 +2830,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 				}
 			};
 			Callback callback = new Callback(object, "EnumFontFamExProc", 4);
-			int address = callback.getAddress();
+			int /*long*/ address = callback.getAddress();
 			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 			SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
 			OS.MoveMemory(properties, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
