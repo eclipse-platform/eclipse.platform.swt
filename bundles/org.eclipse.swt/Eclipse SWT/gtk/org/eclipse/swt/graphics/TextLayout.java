@@ -74,6 +74,7 @@ public TextLayout (Device device) {
 	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
 	layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.pango_layout_set_font_description(layout, device.systemFont.handle);
 	OS.pango_layout_set_wrap(layout, OS.PANGO_WRAP_WORD_CHAR);
 	OS.pango_layout_set_tabs(layout, this.device.emptyTab);
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
@@ -1764,7 +1765,7 @@ public void setFont (Font font) {
 	if (oldFont == font) return;
 	this.font = font;
 	if (oldFont != null && oldFont.equals(font)) return;
-	OS.pango_layout_set_font_description(layout, font != null ? font.handle : 0);
+	OS.pango_layout_set_font_description(layout, font != null ? font.handle : device.systemFont.handle);
 }
 
 /**
