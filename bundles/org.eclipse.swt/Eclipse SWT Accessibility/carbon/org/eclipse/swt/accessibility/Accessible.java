@@ -262,7 +262,7 @@ public class Accessible {
 	 */
 	public int internal_kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
-			OS.CallNextEventHandler (nextHandler, theEvent);
+			int result = OS.CallNextEventHandler (nextHandler, theEvent);
 			//TODO: check error?
 			int childID = getChildIDFromEvent(theEvent);
 			if (childID != ACC.CHILDID_SELF) {
@@ -305,6 +305,7 @@ public class Accessible {
 			}
 			
 			/* Invalid childID means the application did not implement getFocus, so just go with the default handler. */
+			return result;
 		}
 		return OS.eventNotHandledErr;
 	}
@@ -321,16 +322,10 @@ public class Accessible {
 	 */
 	public int internal_kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
-			int code = OS.CallNextEventHandler (nextHandler, theEvent);
-			int stringArrayRef = 0;
-			if (code != OS.noErr) {
-				int [] arrayRef = new int[1];
-				OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
-				stringArrayRef = arrayRef[0];
-			}
-			if (stringArrayRef == 0) {
-				stringArrayRef = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
-			}
+			OS.CallNextEventHandler (nextHandler, theEvent);
+			int [] arrayRef = new int[1];
+			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+			int stringArrayRef = arrayRef[0];
 			int length = OS.CFArrayGetCount(stringArrayRef);
 			String [] osAllAttributes = new String [length];
 			for (int i = 0; i < length; i++) {
