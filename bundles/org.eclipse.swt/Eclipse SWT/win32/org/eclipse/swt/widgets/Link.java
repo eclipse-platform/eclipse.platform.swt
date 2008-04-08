@@ -51,6 +51,34 @@ public class Link extends Control {
 			WNDCLASS lpWndClass = new WNDCLASS ();
 			OS.GetClassInfo (0, LinkClass, lpWndClass);
 			LinkProc = lpWndClass.lpfnWndProc;
+			/*
+			* Feature in Windows.  The SysLink window class
+			* does not include CS_DBLCLKS.  This means that these
+			* controls will not get double click messages such as
+			* WM_LBUTTONDBLCLK.  The fix is to register a new 
+			* window class with CS_DBLCLKS.
+			* 
+			* NOTE:  Screen readers look for the exact class name
+			* of the control in order to provide the correct kind
+			* of assistance.  Therefore, it is critical that the
+			* new window class have the same name.  It is possible
+			* to register a local window class with the same name
+			* as a global class.  Since bits that affect the class
+			* are being changed, it is possible that other native
+			* code, other than SWT, could create a control with
+			* this class name, and fail unexpectedly.
+			*/
+			int /*long*/ hInstance = OS.GetModuleHandle (null);
+			int /*long*/ hHeap = OS.GetProcessHeap ();
+			lpWndClass.hInstance = hInstance;
+			lpWndClass.style &= ~OS.CS_GLOBALCLASS;
+			lpWndClass.style |= OS.CS_DBLCLKS;
+			int byteCount = LinkClass.length () * TCHAR.sizeof;
+			int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpszClassName, LinkClass, byteCount);
+			lpWndClass.lpszClassName = lpszClassName;
+			OS.RegisterClass (lpWndClass);
+			OS.HeapFree (hHeap, 0, lpszClassName);
 		} else {
 			LinkProc = 0;
 		}
