@@ -905,6 +905,8 @@ public void stop() {
 }
 
 void handleMouseEvent (OleEvent e) {
+	if (e.arguments == null || e.arguments.length == 0) return; /* for IE5 */
+
 	Variant arg = e.arguments[0];
 	OleAutomation event = arg.getAutomation();
 	int[] rgdispid = event.getIDsOfNames(new String[]{ PROPERTY_TYPE });
