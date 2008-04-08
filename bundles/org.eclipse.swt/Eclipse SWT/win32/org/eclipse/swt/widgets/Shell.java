@@ -404,7 +404,7 @@ public static Shell internal_new (Display display, int /*long*/ handle) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
-	style &=~SWT.TRANSPARENT;
+	style &= ~SWT.TRANSPARENT;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
@@ -1898,7 +1898,7 @@ int /*long*/ windowProc () {
 	if (OS.IsSP) return DialogProc;
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
-		if ((style & trim) == 0) super.windowProc ();
+		if ((style & trim) == 0) return super.windowProc ();
 	}
 	return parent != null ? DialogProc : super.windowProc ();
 }
