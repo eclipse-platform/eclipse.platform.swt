@@ -826,6 +826,20 @@ LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
+	if (result != null) return result;
+	
+	/*
+	* Feature in Windows. For WM_NCHITTEST, the Syslink window proc
+	* returns HTTRANSPARENT when mouse is over plain text. The fix is
+	* to always return HTCLIENT.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) return new LRESULT (OS.HTCLIENT);
+	
+	return result;
+}
+
 LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
