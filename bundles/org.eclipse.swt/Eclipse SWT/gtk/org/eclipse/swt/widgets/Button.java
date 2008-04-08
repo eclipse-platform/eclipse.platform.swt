@@ -176,7 +176,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) state |= THEME_BACKGROUND; 	
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
