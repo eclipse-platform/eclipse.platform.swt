@@ -14,12 +14,14 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 953;
-int OS_nativeFunctionCallCount[953];
+int OS_nativeFunctionCount = 959;
+int OS_nativeFunctionCallCount[959];
 char * OS_nativeFunctionNames[] = {
+	"AECoerceDesc",
 	"AECountItems",
 	"AECreateDesc",
 	"AEDisposeDesc",
+	"AEGetDescData",
 	"AEGetNthPtr",
 	"AEInstallEventHandler",
 	"AEProcessAppleEvent",
@@ -672,7 +674,8 @@ char * OS_nativeFunctionNames[] = {
 	"NavCreateChooseFolderDialog",
 	"NavCreateGetFileDialog",
 	"NavCreatePutFileDialog",
-	"NavCustomControl",
+	"NavCustomControl__IILorg_eclipse_swt_internal_carbon_AEDesc_2",
+	"NavCustomControl__IILorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2",
 	"NavDialogDispose",
 	"NavDialogGetReply",
 	"NavDialogGetSaveFileName",
@@ -963,6 +966,9 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_GDevice_2II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_NavCBRec_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_NavFileOrFolderInfo_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_PixMap_2II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_Point_2_3II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_RGBColor_2II",

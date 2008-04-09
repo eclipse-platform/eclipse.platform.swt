@@ -2861,6 +2861,82 @@ void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *
 }
 #endif
 
+#ifndef NO_NavCBRec
+typedef struct NavCBRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, context, window, customRect, previewRect, eventData, userAction, reserved;
+} NavCBRec_FID_CACHE;
+
+NavCBRec_FID_CACHE NavCBRecFc;
+
+void cacheNavCBRecFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavCBRecFc.cached) return;
+	NavCBRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavCBRecFc.version = (*env)->GetFieldID(env, NavCBRecFc.clazz, "version", "S");
+	NavCBRecFc.context = (*env)->GetFieldID(env, NavCBRecFc.clazz, "context", "I");
+	NavCBRecFc.window = (*env)->GetFieldID(env, NavCBRecFc.clazz, "window", "I");
+	NavCBRecFc.customRect = (*env)->GetFieldID(env, NavCBRecFc.clazz, "customRect", "Lorg/eclipse/swt/internal/carbon/Rect;");
+	NavCBRecFc.previewRect = (*env)->GetFieldID(env, NavCBRecFc.clazz, "previewRect", "Lorg/eclipse/swt/internal/carbon/Rect;");
+	NavCBRecFc.eventData = (*env)->GetFieldID(env, NavCBRecFc.clazz, "eventData", "Lorg/eclipse/swt/internal/carbon/NavEventData;");
+	NavCBRecFc.userAction = (*env)->GetFieldID(env, NavCBRecFc.clazz, "userAction", "I");
+	NavCBRecFc.reserved = (*env)->GetFieldID(env, NavCBRecFc.clazz, "reserved", "[B");
+	NavCBRecFc.cached = 1;
+}
+
+NavCBRec *getNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct)
+{
+	if (!NavCBRecFc.cached) cacheNavCBRecFields(env, lpObject);
+	lpStruct->version = (*env)->GetShortField(env, lpObject, NavCBRecFc.version);
+	lpStruct->context = (NavDialogRef)(*env)->GetIntField(env, lpObject, NavCBRecFc.context);
+	lpStruct->window = (WindowRef)(*env)->GetIntField(env, lpObject, NavCBRecFc.window);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.customRect);
+	if (lpObject1 != NULL) getRectFields(env, lpObject1, &lpStruct->customRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.previewRect);
+	if (lpObject1 != NULL) getRectFields(env, lpObject1, &lpStruct->previewRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.eventData);
+	if (lpObject1 != NULL) getNavEventDataFields(env, lpObject1, &lpStruct->eventData);
+	}
+	lpStruct->userAction = (NavUserAction)(*env)->GetIntField(env, lpObject, NavCBRecFc.userAction);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavCBRecFc.reserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
+	return lpStruct;
+}
+
+void setNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct)
+{
+	if (!NavCBRecFc.cached) cacheNavCBRecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavCBRecFc.version, (jshort)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, NavCBRecFc.context, (jint)lpStruct->context);
+	(*env)->SetIntField(env, lpObject, NavCBRecFc.window, (jint)lpStruct->window);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.customRect);
+	if (lpObject1 != NULL) setRectFields(env, lpObject1, &lpStruct->customRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.previewRect);
+	if (lpObject1 != NULL) setRectFields(env, lpObject1, &lpStruct->previewRect);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavCBRecFc.eventData);
+	if (lpObject1 != NULL) setNavEventDataFields(env, lpObject1, &lpStruct->eventData);
+	}
+	(*env)->SetIntField(env, lpObject, NavCBRecFc.userAction, (jint)lpStruct->userAction);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavCBRecFc.reserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
+}
+#endif
+
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {
 	int cached;
@@ -2928,6 +3004,178 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.popupExtension, (jint)lpStruct->popupExtension);
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.modality, (jint)lpStruct->modality);
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.parentWindow, (jint)lpStruct->parentWindow);
+}
+#endif
+
+#ifndef NO_NavEventData
+typedef struct NavEventData_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID eventDataParms, itemHit;
+} NavEventData_FID_CACHE;
+
+NavEventData_FID_CACHE NavEventDataFc;
+
+void cacheNavEventDataFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavEventDataFc.cached) return;
+	NavEventDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavEventDataFc.eventDataParms = (*env)->GetFieldID(env, NavEventDataFc.clazz, "eventDataParms", "Lorg/eclipse/swt/internal/carbon/NavEventDataInfo;");
+	NavEventDataFc.itemHit = (*env)->GetFieldID(env, NavEventDataFc.clazz, "itemHit", "S");
+	NavEventDataFc.cached = 1;
+}
+
+NavEventData *getNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct)
+{
+	if (!NavEventDataFc.cached) cacheNavEventDataFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavEventDataFc.eventDataParms);
+	if (lpObject1 != NULL) getNavEventDataInfoFields(env, lpObject1, &lpStruct->eventDataParms);
+	}
+	lpStruct->itemHit = (*env)->GetShortField(env, lpObject, NavEventDataFc.itemHit);
+	return lpStruct;
+}
+
+void setNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct)
+{
+	if (!NavEventDataFc.cached) cacheNavEventDataFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NavEventDataFc.eventDataParms);
+	if (lpObject1 != NULL) setNavEventDataInfoFields(env, lpObject1, &lpStruct->eventDataParms);
+	}
+	(*env)->SetShortField(env, lpObject, NavEventDataFc.itemHit, (jshort)lpStruct->itemHit);
+}
+#endif
+
+#ifndef NO_NavEventDataInfo
+typedef struct NavEventDataInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID event, param;
+} NavEventDataInfo_FID_CACHE;
+
+NavEventDataInfo_FID_CACHE NavEventDataInfoFc;
+
+void cacheNavEventDataInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavEventDataInfoFc.cached) return;
+	NavEventDataInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavEventDataInfoFc.event = (*env)->GetFieldID(env, NavEventDataInfoFc.clazz, "event", "I");
+	NavEventDataInfoFc.param = (*env)->GetFieldID(env, NavEventDataInfoFc.clazz, "param", "I");
+	NavEventDataInfoFc.cached = 1;
+}
+
+NavEventDataInfo *getNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct)
+{
+	if (!NavEventDataInfoFc.cached) cacheNavEventDataInfoFields(env, lpObject);
+	lpStruct->event = (EventRecord *)(*env)->GetIntField(env, lpObject, NavEventDataInfoFc.event);
+	lpStruct->param = (void *)(*env)->GetIntField(env, lpObject, NavEventDataInfoFc.param);
+	return lpStruct;
+}
+
+void setNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct)
+{
+	if (!NavEventDataInfoFc.cached) cacheNavEventDataInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NavEventDataInfoFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, NavEventDataInfoFc.param, (jint)lpStruct->param);
+}
+#endif
+
+#ifndef NO_NavFileOrFolderInfo
+typedef struct NavFileOrFolderInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, isFolder, visible, creationDate, modificationDate;
+} NavFileOrFolderInfo_FID_CACHE;
+
+NavFileOrFolderInfo_FID_CACHE NavFileOrFolderInfoFc;
+
+void cacheNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavFileOrFolderInfoFc.cached) return;
+	NavFileOrFolderInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavFileOrFolderInfoFc.version = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "version", "S");
+	NavFileOrFolderInfoFc.isFolder = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "isFolder", "Z");
+	NavFileOrFolderInfoFc.visible = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "visible", "Z");
+	NavFileOrFolderInfoFc.creationDate = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "creationDate", "I");
+	NavFileOrFolderInfoFc.modificationDate = (*env)->GetFieldID(env, NavFileOrFolderInfoFc.clazz, "modificationDate", "I");
+	NavFileOrFolderInfoFc.cached = 1;
+}
+
+NavFileOrFolderInfo *getNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct)
+{
+	if (!NavFileOrFolderInfoFc.cached) cacheNavFileOrFolderInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetShortField(env, lpObject, NavFileOrFolderInfoFc.version);
+	lpStruct->isFolder = (*env)->GetBooleanField(env, lpObject, NavFileOrFolderInfoFc.isFolder);
+	lpStruct->visible = (*env)->GetBooleanField(env, lpObject, NavFileOrFolderInfoFc.visible);
+	lpStruct->creationDate = (*env)->GetIntField(env, lpObject, NavFileOrFolderInfoFc.creationDate);
+	lpStruct->modificationDate = (*env)->GetIntField(env, lpObject, NavFileOrFolderInfoFc.modificationDate);
+	return lpStruct;
+}
+
+void setNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct)
+{
+	if (!NavFileOrFolderInfoFc.cached) cacheNavFileOrFolderInfoFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavFileOrFolderInfoFc.version, (jshort)lpStruct->version);
+	(*env)->SetBooleanField(env, lpObject, NavFileOrFolderInfoFc.isFolder, (jboolean)lpStruct->isFolder);
+	(*env)->SetBooleanField(env, lpObject, NavFileOrFolderInfoFc.visible, (jboolean)lpStruct->visible);
+	(*env)->SetIntField(env, lpObject, NavFileOrFolderInfoFc.creationDate, (jint)lpStruct->creationDate);
+	(*env)->SetIntField(env, lpObject, NavFileOrFolderInfoFc.modificationDate, (jint)lpStruct->modificationDate);
+}
+#endif
+
+#ifndef NO_NavMenuItemSpec
+typedef struct NavMenuItemSpec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, menuCreator, menuType, menuItemName, reserved;
+} NavMenuItemSpec_FID_CACHE;
+
+NavMenuItemSpec_FID_CACHE NavMenuItemSpecFc;
+
+void cacheNavMenuItemSpecFields(JNIEnv *env, jobject lpObject)
+{
+	if (NavMenuItemSpecFc.cached) return;
+	NavMenuItemSpecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavMenuItemSpecFc.version = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "version", "S");
+	NavMenuItemSpecFc.menuCreator = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "menuCreator", "I");
+	NavMenuItemSpecFc.menuType = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "menuType", "I");
+	NavMenuItemSpecFc.menuItemName = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "menuItemName", "[B");
+	NavMenuItemSpecFc.reserved = (*env)->GetFieldID(env, NavMenuItemSpecFc.clazz, "reserved", "[B");
+	NavMenuItemSpecFc.cached = 1;
+}
+
+NavMenuItemSpec *getNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct)
+{
+	if (!NavMenuItemSpecFc.cached) cacheNavMenuItemSpecFields(env, lpObject);
+	lpStruct->version = (*env)->GetShortField(env, lpObject, NavMenuItemSpecFc.version);
+	lpStruct->menuCreator = (*env)->GetIntField(env, lpObject, NavMenuItemSpecFc.menuCreator);
+	lpStruct->menuType = (*env)->GetIntField(env, lpObject, NavMenuItemSpecFc.menuType);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.menuItemName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->menuItemName), (jbyte *)lpStruct->menuItemName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.reserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
+	return lpStruct;
+}
+
+void setNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct)
+{
+	if (!NavMenuItemSpecFc.cached) cacheNavMenuItemSpecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavMenuItemSpecFc.version, (jshort)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, NavMenuItemSpecFc.menuCreator, (jint)lpStruct->menuCreator);
+	(*env)->SetIntField(env, lpObject, NavMenuItemSpecFc.menuType, (jint)lpStruct->menuType);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.menuItemName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->menuItemName), (jbyte *)lpStruct->menuItemName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, NavMenuItemSpecFc.reserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (jbyte *)lpStruct->reserved);
+	}
 }
 #endif
 

@@ -15,6 +15,18 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_carbon_OS_##func
 
+#ifndef NO_AECoerceDesc
+JNIEXPORT jint JNICALL OS_NATIVE(AECoerceDesc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AECoerceDesc_FUNC);
+	rc = (jint)AECoerceDesc((AEDesc *)arg0, arg1, (AEDesc *)arg2);
+	OS_NATIVE_EXIT(env, that, AECoerceDesc_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AECountItems
 JNIEXPORT jint JNICALL OS_NATIVE(AECountItems)
 	(JNIEnv *env, jclass that, jobject arg0, jintArray arg1)
@@ -65,6 +77,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(AEDisposeDesc)
 fail:
 	if (arg0 && lparg0) setAEDescFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, AEDisposeDesc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AEGetDescData
+JNIEXPORT jint JNICALL OS_NATIVE(AEGetDescData)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AEGetDescData_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)AEGetDescData((AEDesc *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, AEGetDescData_FUNC);
 	return rc;
 }
 #endif
@@ -9676,18 +9704,34 @@ fail:
 }
 #endif
 
-#ifndef NO_NavCustomControl
-JNIEXPORT jint JNICALL OS_NATIVE(NavCustomControl)
+#ifndef NO_NavCustomControl__IILorg_eclipse_swt_internal_carbon_AEDesc_2
+JNIEXPORT jint JNICALL OS_NATIVE(NavCustomControl__IILorg_eclipse_swt_internal_carbon_AEDesc_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	AEDesc _arg2, *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, NavCustomControl_FUNC);
+	OS_NATIVE_ENTER(env, that, NavCustomControl__IILorg_eclipse_swt_internal_carbon_AEDesc_2_FUNC);
 	if (arg2) if ((lparg2 = getAEDescFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)NavCustomControl((NavDialogRef)arg0, (NavCustomControlMessage)arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setAEDescFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, NavCustomControl_FUNC);
+	OS_NATIVE_EXIT(env, that, NavCustomControl__IILorg_eclipse_swt_internal_carbon_AEDesc_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NavCustomControl__IILorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2
+JNIEXPORT jint JNICALL OS_NATIVE(NavCustomControl__IILorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NavMenuItemSpec _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NavCustomControl__IILorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2_FUNC);
+	if (arg2) if ((lparg2 = getNavMenuItemSpecFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)NavCustomControl((NavDialogRef)arg0, (NavCustomControlMessage)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setNavMenuItemSpecFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, NavCustomControl__IILorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2_FUNC);
 	return rc;
 }
 #endif
@@ -13547,6 +13591,48 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_carbon_HMHel
 fail:
 	if (arg0 && lparg0) setHMHelpContentRecFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_carbon_NavCBRec_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_carbon_NavCBRec_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NavCBRec _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_carbon_NavCBRec_2II_FUNC);
+	if (arg0) if ((lparg0 = getNavCBRecFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setNavCBRecFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_carbon_NavCBRec_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_carbon_NavFileOrFolderInfo_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_carbon_NavFileOrFolderInfo_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NavFileOrFolderInfo _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_carbon_NavFileOrFolderInfo_2II_FUNC);
+	if (arg0) if ((lparg0 = getNavFileOrFolderInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setNavFileOrFolderInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_carbon_NavFileOrFolderInfo_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NavMenuItemSpec _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2II_FUNC);
+	if (arg0) if ((lparg0 = getNavMenuItemSpecFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setNavMenuItemSpecFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2II_FUNC);
 }
 #endif
 

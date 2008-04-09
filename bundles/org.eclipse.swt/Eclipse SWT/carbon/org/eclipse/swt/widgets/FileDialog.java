@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
@@ -35,7 +36,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
-	int filterIndex = -1;
+	int filterIndex = 0;
 	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
@@ -172,6 +173,65 @@ public boolean getOverwrite () {
 	return overwrite;
 }
 
+int eventProc (int callBackSelector, int callBackParms, int callBackUD) {
+	switch (callBackSelector) {
+		case OS.kNavCBPopupMenuSelect:
+			NavCBRec cbRec = new NavCBRec ();
+			OS.memmove (cbRec, callBackParms, NavCBRec.sizeof);
+			if (cbRec.eventData.eventDataParms.param != 0) {
+				NavMenuItemSpec spec = new NavMenuItemSpec ();
+				OS.memmove (spec, cbRec.eventData.eventDataParms.param, NavMenuItemSpec.sizeof);
+				int index = spec.menuType;
+				if (0 <= index && index < filterExtensions.length) {
+					filterIndex = index;
+				}
+			}
+			break;
+	}
+	return 0;
+}
+
+int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
+	if (filterMode == OS.kNavFilteringBrowserList) {
+		if (filterExtensions != null && 0 <= filterIndex && filterIndex < filterExtensions.length) {
+			NavFileOrFolderInfo info = new NavFileOrFolderInfo();
+			OS.memmove (info, infoPtr, NavFileOrFolderInfo.sizeof);
+			if (!info.isFolder) {
+				OS.AECoerceDesc (theItem, OS.typeFSRef, theItem);
+				byte [] fsRef = new byte [80];
+				if (OS.AEGetDescData (theItem, fsRef, fsRef.length) == OS.noErr) {
+					int url = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
+					if (url != 0) {
+						int ext = OS.CFURLCopyPathExtension (url);
+						OS.CFRelease (url);
+						if (ext != 0) {
+							char [] buffer= new char [OS.CFStringGetLength (ext)];
+							CFRange range = new CFRange ();
+							range.length = buffer.length;
+							OS.CFStringGetCharacters (ext, range, buffer);
+							OS.CFRelease (ext);
+							String extension = new String (buffer);
+							String extensions = filterExtensions [filterIndex];
+							int start = 0, length = extensions.length ();
+							while (start < length) {
+								int index = extensions.indexOf (EXTENSION_SEPARATOR, start);
+								if (index == -1) index = length;
+								String filter = extensions.substring (start, index).trim ();
+								if (filter.equals ("*") || filter.equals ("*.*")) return 1;
+								if (filter.startsWith ("*.")) filter = filter.substring (2);
+								if (filter.toLowerCase ().equals(extension.toLowerCase ())) return 1;
+								start = index + 1;
+							}
+							return 0;
+						}
+					}
+				}
+			}
+		}
+	}
+	return 1;
+}
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -208,18 +268,37 @@ public String open () {
 	options.location_h = -1;
 	options.location_v = -1;
 	options.saveFileName = fileNamePtr;
+	options.modality = OS.kWindowModalityAppModal;
 
-	int identifiers = 0, kUTTypeData = 0;
+	int extensions = 0;
+	Callback filterCallback = null, eventCallback = null;
 	int [] outDialog = new int [1];
 	if ((style & SWT.SAVE) != 0) {
 		if (!overwrite) options.optionFlags |= OS.kNavDontConfirmReplacement;
-		// NEEDS WORK - filter extensions, start in filter path, allow user
-		// to select existing files.
 		OS.NavCreatePutFileDialog (options, 0, 0, 0, 0, outDialog);		
 	} else {
 		if ((style & SWT.MULTI) != 0) options.optionFlags |= OS.kNavAllowMultipleFiles;
-		// NEEDS WORK - filter extensions, start in filter path, select file name if it exists
-		OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, outDialog);
+		int filterProc = 0, eventProc = 0;
+		if (filterExtensions != null && filterExtensions.length != 0) {
+			extensions = options.popupExtension = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, filterExtensions.length, 0);
+			for (int i = 0; i < filterExtensions.length; i++) {
+				String str = filterExtensions [i];
+				if (filterNames != null && filterNames.length > i) {
+					str = filterNames [i];
+				}
+				char [] chars = new char [str.length ()];
+				str.getChars (0, chars.length, chars, 0);
+				int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+				if (ptr != 0) OS.CFArrayAppendValue (extensions, ptr);
+			}			
+			filterCallback = new Callback (this, "filterProc", 4);
+			filterProc = filterCallback.getAddress();
+			if (filterProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			eventCallback = new Callback (this, "eventProc", 3);
+			eventProc = eventCallback.getAddress();
+			if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
+		OS.NavCreateGetFileDialog(options, 0, eventProc, 0, filterProc, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
 		if (filterPath != null && filterPath.length () > 0) {
@@ -242,61 +321,10 @@ public String open () {
 				OS.CFRelease (str);
 			}
 		}
-		if (filterExtensions == null) filterExtensions = new String [0];
-		//TEMPORARY CODE
-		if (false && filterExtensions.length != 0 && OS.VERSION >= 0x1040) {
-			int count = 0;
-			String[] extensions = new String [filterExtensions.length];
-			for (int i = 0; i < filterExtensions.length; i++) {
-				if (filterExtensions [i] != null) {
-					int start = 0, length = filterExtensions [i].length ();
-					while (start < length) {
-						int index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR, start);
-						if (index == -1) index = length;
-						String extension = filterExtensions [i].substring (start, index);
-						boolean found = false;
-						for (int j = 0; j < count; j++) {
-							if (extensions [j].equals (extension)) {
-								found = true;
-								break;
-							}
-						}
-						if (!found) {
-							if (count == extensions.length) {
-								String[] newExtensions = new String [count + 4];
-								System.arraycopy (extensions, 0, newExtensions, 0, count);
-								extensions = newExtensions;
-							}
-							extensions[count++] = extension;
-						}
-						start = index + 1;
-					}
-				}
-			}
-			String publicData = "public.data";
-			char [] buffer = new char [publicData.length ()];
-			publicData.getChars (0, buffer.length, buffer, 0);
-			kUTTypeData = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			identifiers = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
-			for (int i = 0; i < count; i++) {
-				int uti;
-				String extension = extensions [i];
-				if (extension.equals ("*.*")) {
-					String publicItem = "public.item";
-					buffer = new char [publicItem.length ()];
-					publicItem.getChars (0, buffer.length, buffer, 0);
-					uti = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-				} else {
-					boolean star = extension.startsWith ("*.");
-					buffer = new char [extension.length () - (star ? 2 : 0)];
-					extension.getChars (star ? 2 : 0, extension.length (), buffer, 0);
-					int ext = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-					uti = OS.UTTypeCreatePreferredIdentifierForTag (OS.kUTTagClassFilenameExtension (), ext, kUTTypeData);
-					OS.CFRelease (ext);
-				}
-				if (uti != 0) OS.CFArrayAppendValue (identifiers, uti);
-			}			
-			OS.NavDialogSetFilterTypeIdentifiers (outDialog [0], identifiers);
+		if (filterExtensions != null && 0 <= filterIndex && filterIndex < filterExtensions.length) {
+			NavMenuItemSpec spec = new NavMenuItemSpec ();
+			spec.menuType = filterIndex;
+			OS.NavCustomControl (outDialog [0], OS.kNavCtlSelectCustomType, spec);
 		}
 		OS.NavDialogRun (outDialog [0]);
 		int action = OS.NavDialogGetUserAction (outDialog [0]);
@@ -313,7 +341,6 @@ public String open () {
 				OS.AECountItems (selection, count);
 				if (count [0] > 0) {
 					fileNames = new String [count [0]];
-					filterIndex = -1;
 					int maximumSize = 80; // size of FSRef
 					int dataPtr = OS.NewPtr (maximumSize);
 					int[] aeKeyword = new int [1];
@@ -398,15 +425,15 @@ public String open () {
 	if (titlePtr != 0) OS.CFRelease (titlePtr);
 	if (fileNamePtr != 0) OS.CFRelease (fileNamePtr);	
 	if (outDialog [0] != 0) OS.NavDialogDispose (outDialog [0]);
-	if (identifiers != 0) {
-		int count = OS.CFArrayGetCount (identifiers);
+	if (extensions != 0) {
+		int count = OS.CFArrayGetCount (extensions);
 		for (int i = 0; i < count; i++) {
-			OS.CFRelease (OS.CFArrayGetValueAtIndex (identifiers, i));
+			OS.CFRelease (OS.CFArrayGetValueAtIndex (extensions, i));
 		}			
-		OS.CFRelease (identifiers);
+		OS.CFRelease (extensions);
 	}
-	if (kUTTypeData != 0) OS.CFRelease(kUTTypeData);
-
+	if (filterCallback != null) filterCallback.dispose();
+	if (eventCallback != null) eventCallback.dispose();
 	return fullPath;	
 }
 

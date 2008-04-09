@@ -25,9 +25,11 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	AECoerceDesc_FUNC,
 	AECountItems_FUNC,
 	AECreateDesc_FUNC,
 	AEDisposeDesc_FUNC,
+	AEGetDescData_FUNC,
 	AEGetNthPtr_FUNC,
 	AEInstallEventHandler_FUNC,
 	AEProcessAppleEvent_FUNC,
@@ -680,7 +682,8 @@ typedef enum {
 	NavCreateChooseFolderDialog_FUNC,
 	NavCreateGetFileDialog_FUNC,
 	NavCreatePutFileDialog_FUNC,
-	NavCustomControl_FUNC,
+	NavCustomControl__IILorg_eclipse_swt_internal_carbon_AEDesc_2_FUNC,
+	NavCustomControl__IILorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2_FUNC,
 	NavDialogDispose_FUNC,
 	NavDialogGetReply_FUNC,
 	NavDialogGetSaveFileName_FUNC,
@@ -971,6 +974,9 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_carbon_GDevice_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II_FUNC,
+	memmove__Lorg_eclipse_swt_internal_carbon_NavCBRec_2II_FUNC,
+	memmove__Lorg_eclipse_swt_internal_carbon_NavFileOrFolderInfo_2II_FUNC,
+	memmove__Lorg_eclipse_swt_internal_carbon_NavMenuItemSpec_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_carbon_PixMap_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_carbon_Point_2_3II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_carbon_RGBColor_2II_FUNC,

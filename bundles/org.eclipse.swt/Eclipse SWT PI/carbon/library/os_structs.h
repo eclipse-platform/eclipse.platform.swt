@@ -707,6 +707,18 @@ void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *
 #define MenuTrackingData_sizeof() 0
 #endif
 
+#ifndef NO_NavCBRec
+void cacheNavCBRecFields(JNIEnv *env, jobject lpObject);
+NavCBRec *getNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct);
+void setNavCBRecFields(JNIEnv *env, jobject lpObject, NavCBRec *lpStruct);
+#define NavCBRec_sizeof() sizeof(NavCBRec)
+#else
+#define cacheNavCBRecFields(a,b)
+#define getNavCBRecFields(a,b,c) NULL
+#define setNavCBRecFields(a,b,c)
+#define NavCBRec_sizeof() 0
+#endif
+
 #ifndef NO_NavDialogCreationOptions
 void cacheNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject);
 NavDialogCreationOptions *getNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct);
@@ -717,6 +729,54 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 #define getNavDialogCreationOptionsFields(a,b,c) NULL
 #define setNavDialogCreationOptionsFields(a,b,c)
 #define NavDialogCreationOptions_sizeof() 0
+#endif
+
+#ifndef NO_NavEventData
+void cacheNavEventDataFields(JNIEnv *env, jobject lpObject);
+NavEventData *getNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct);
+void setNavEventDataFields(JNIEnv *env, jobject lpObject, NavEventData *lpStruct);
+#define NavEventData_sizeof() sizeof(NavEventData)
+#else
+#define cacheNavEventDataFields(a,b)
+#define getNavEventDataFields(a,b,c) NULL
+#define setNavEventDataFields(a,b,c)
+#define NavEventData_sizeof() 0
+#endif
+
+#ifndef NO_NavEventDataInfo
+void cacheNavEventDataInfoFields(JNIEnv *env, jobject lpObject);
+NavEventDataInfo *getNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct);
+void setNavEventDataInfoFields(JNIEnv *env, jobject lpObject, NavEventDataInfo *lpStruct);
+#define NavEventDataInfo_sizeof() sizeof(NavEventDataInfo)
+#else
+#define cacheNavEventDataInfoFields(a,b)
+#define getNavEventDataInfoFields(a,b,c) NULL
+#define setNavEventDataInfoFields(a,b,c)
+#define NavEventDataInfo_sizeof() 0
+#endif
+
+#ifndef NO_NavFileOrFolderInfo
+void cacheNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject);
+NavFileOrFolderInfo *getNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct);
+void setNavFileOrFolderInfoFields(JNIEnv *env, jobject lpObject, NavFileOrFolderInfo *lpStruct);
+#define NavFileOrFolderInfo_sizeof() sizeof(NavFileOrFolderInfo)
+#else
+#define cacheNavFileOrFolderInfoFields(a,b)
+#define getNavFileOrFolderInfoFields(a,b,c) NULL
+#define setNavFileOrFolderInfoFields(a,b,c)
+#define NavFileOrFolderInfo_sizeof() 0
+#endif
+
+#ifndef NO_NavMenuItemSpec
+void cacheNavMenuItemSpecFields(JNIEnv *env, jobject lpObject);
+NavMenuItemSpec *getNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct);
+void setNavMenuItemSpecFields(JNIEnv *env, jobject lpObject, NavMenuItemSpec *lpStruct);
+#define NavMenuItemSpec_sizeof() sizeof(NavMenuItemSpec)
+#else
+#define cacheNavMenuItemSpecFields(a,b)
+#define getNavMenuItemSpecFields(a,b,c) NULL
+#define setNavMenuItemSpecFields(a,b,c)
+#define NavMenuItemSpec_sizeof() 0
 #endif
 
 #ifndef NO_NavReplyRecord
