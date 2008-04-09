@@ -232,9 +232,37 @@ public String open () {
 	int /*long*/ hHeap = OS.GetProcessHeap ();
 	
 	/* Get the owner HWND for the dialog */
-	int /*long*/ hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
-
+	int /*long*/ hwndOwner = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
+	
+	/*
+	* Feature in Windows.  There is no API to set the orientation of a
+	* file dialog.  It is always inherited from the parent.  The fix is
+	* to create a hidden parent and set the orientation in the hidden
+	* parent for the dialog to inherit.
+	*/
+	boolean enabled = false;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		if (dialogOrientation != parentOrientation) {
+			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+			hwndOwner = OS.CreateWindowEx (
+				exStyle,
+				Shell.DialogClass,
+				null,
+				0,
+				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+				hwndParent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			enabled = OS.IsWindowEnabled (hwndParent);
+			if (enabled) OS.EnableWindow (hwndParent, false);
+		}
+	}
+		
 	/* Convert the title and copy it into lpstrTitle */
 	if (title == null) title = "";	
 	/* Use the character encoding for the default locale */
@@ -455,6 +483,13 @@ public String open () {
 	OS.HeapFree (hHeap, 0, lpstrTitle);
 	if (lpstrDefExt != 0) OS.HeapFree (hHeap, 0, lpstrDefExt);
 
+	/* Destroy the BIDI orientation window */
+	if (hwndParent != hwndOwner) {
+		if (enabled) OS.EnableWindow (hwndParent, true);
+		OS.SetActiveWindow (hwndParent);
+		OS.DestroyWindow (hwndOwner);
+	}
+	
 	/*
 	* This code is intentionally commented.  On some
 	* platforms, the owner window is repainted right

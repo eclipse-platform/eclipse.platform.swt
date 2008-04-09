@@ -134,9 +134,37 @@ public FontData open () {
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	/* Get the owner HWND for the dialog */
-	int /*long*/ hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
-
+	int /*long*/ hwndOwner = parent.handle;
+	int /*long*/ hwndParent = parent.handle;
+	
+	/*
+	* Feature in Windows.  There is no API to set the orientation of a
+	* font dialog.  It is always inherited from the parent.  The fix is
+	* to create a hidden parent and set the orientation in the hidden
+	* parent for the dialog to inherit.
+	*/
+	boolean enabled = false;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		if (dialogOrientation != parentOrientation) {
+			int exStyle = OS.WS_EX_NOINHERITLAYOUT;
+			if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
+			hwndOwner = OS.CreateWindowEx (
+				exStyle,
+				Shell.DialogClass,
+				null,
+				0,
+				OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+				hwndParent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			enabled = OS.IsWindowEnabled (hwndParent);
+			if (enabled) OS.EnableWindow (hwndParent, false);
+		}
+	}
+		
 	/* Open the dialog */
 	int /*long*/ hHeap = OS.GetProcessHeap ();
 	CHOOSEFONT lpcf = new CHOOSEFONT ();
@@ -223,6 +251,13 @@ public FontData open () {
 		
 	/* Free the OS memory */
 	if (lpLogFont != 0) OS.HeapFree (hHeap, 0, lpLogFont);
+
+	/* Destroy the BIDI orientation window */
+	if (hwndParent != hwndOwner) {
+		if (enabled) OS.EnableWindow (hwndParent, true);
+		OS.SetActiveWindow (hwndParent);
+		OS.DestroyWindow (hwndOwner);
+	}
 
 	/*
 	* This code is intentionally commented.  On some
