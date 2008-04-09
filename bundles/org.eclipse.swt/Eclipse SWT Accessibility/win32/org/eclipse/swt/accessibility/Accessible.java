@@ -1087,7 +1087,10 @@ public class Accessible {
 			listener.getState(event);
 		}
 		int state = stateToOs(event.detail);
-		if (grayed) state |= COM.STATE_SYSTEM_MIXED;
+		if ((state & ACC.STATE_CHECKED) != 0 && grayed) {
+			state &= ~ COM.STATE_SYSTEM_CHECKED;
+			state |= COM.STATE_SYSTEM_MIXED;
+		}
 		COM.MoveMemory(pvarState, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarState + 8, new int[] { state }, 4);
 		return COM.S_OK;
