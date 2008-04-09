@@ -222,6 +222,26 @@ public String open () {
 		OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
+		if (filterPath != null && filterPath.length () > 0) {
+			char [] chars = new char [filterPath.length ()];
+			filterPath.getChars (0, chars.length, chars, 0);
+			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+			if (str != 0) {
+				int url = OS.CFURLCreateWithFileSystemPath (OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
+				if (url != 0) {
+					byte [] fsRef = new byte [80];
+					if (OS.CFURLGetFSRef (url, fsRef)) {
+						AEDesc params = new AEDesc ();
+						if (OS.AECreateDesc (OS.typeFSRef, fsRef, fsRef.length, params) == OS.noErr) {
+							OS.NavCustomControl (outDialog [0], OS.kNavCtlSetLocation, params);
+							OS.AEDisposeDesc (params);
+						}
+					}
+					OS.CFRelease (url);
+				}
+				OS.CFRelease (str);
+			}
+		}
 		if (filterExtensions == null) filterExtensions = new String [0];
 		//TEMPORARY CODE
 		if (false && filterExtensions.length != 0 && OS.VERSION >= 0x1040) {

@@ -723,6 +723,7 @@ public class OS extends C {
 	public static final int kNavAllowMultipleFiles = 0x00000080;
 	public static final int kNavAllowOpenPackages = 0x00002000;
 	public static final int kNavCBNewLocation = 5;
+	public static final int kNavCtlSetLocation = 8;
 	public static final int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
 	public static final int kNavSupportPackages = 0x00001000;
 	public static final int kNavDontConfirmReplacement = 0x00010000;
@@ -1033,6 +1034,8 @@ public static final native int kPMGraphicsContextCoreGraphics();
 public static final native int ActiveNonFloatingWindow();
 public static final native int ActivateTSMDocument(int idocID);
 public static final native int AECountItems(AEDesc theAEDescList, int[] theCount);
+public static final native int AECreateDesc(int typeCode, byte[] dataPtr, int dataSize, AEDesc result);
+public static final native int AEDisposeDesc(AEDesc theAEDesc);
 public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
 public static final native int AEInstallEventHandler(int theAEEventClass, int theAEEventID, int handler, int handlerRefcon, boolean isSysHandler);  
 public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
@@ -1671,6 +1674,7 @@ public static final native void MoveWindow(int wHandle, short h, short v, boolea
 public static final native int NavCreateChooseFolderDialog(NavDialogCreationOptions inOptions, int inEventProc, int inFilterProc, int inClientData, int[] outDialog);
 public static final native int NavCreateGetFileDialog(NavDialogCreationOptions inOptions, int inTypeList, int inEventProc, int inPreviewProc, int inFilterProc, int inClientData, int[] outDialog);
 public static final native int NavCreatePutFileDialog(NavDialogCreationOptions inOptions, int inFileType, int inFileCreator, int inEventProc, int inClientData, int[] outDialog);
+public static final native int NavCustomControl(int dialog, int selector, AEDesc parms);
 public static final native void NavDialogDispose(int dialogHandle);
 public static final native int NavDialogGetSaveFileName(int dialogHandle);
 public static final native int NavDialogGetUserAction(int dialogHandle);

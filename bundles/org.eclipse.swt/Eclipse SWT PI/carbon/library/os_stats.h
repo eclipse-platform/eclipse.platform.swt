@@ -26,6 +26,8 @@ extern char* OS_nativeFunctionNames[];
 
 typedef enum {
 	AECountItems_FUNC,
+	AECreateDesc_FUNC,
+	AEDisposeDesc_FUNC,
 	AEGetNthPtr_FUNC,
 	AEInstallEventHandler_FUNC,
 	AEProcessAppleEvent_FUNC,
@@ -678,6 +680,7 @@ typedef enum {
 	NavCreateChooseFolderDialog_FUNC,
 	NavCreateGetFileDialog_FUNC,
 	NavCreatePutFileDialog_FUNC,
+	NavCustomControl_FUNC,
 	NavDialogDispose_FUNC,
 	NavDialogGetReply_FUNC,
 	NavDialogGetSaveFileName_FUNC,

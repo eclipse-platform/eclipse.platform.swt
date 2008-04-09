@@ -14,10 +14,12 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 950;
-int OS_nativeFunctionCallCount[950];
+int OS_nativeFunctionCount = 953;
+int OS_nativeFunctionCallCount[953];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
+	"AECreateDesc",
+	"AEDisposeDesc",
 	"AEGetNthPtr",
 	"AEInstallEventHandler",
 	"AEProcessAppleEvent",
@@ -670,6 +672,7 @@ char * OS_nativeFunctionNames[] = {
 	"NavCreateChooseFolderDialog",
 	"NavCreateGetFileDialog",
 	"NavCreatePutFileDialog",
+	"NavCustomControl",
 	"NavDialogDispose",
 	"NavDialogGetReply",
 	"NavDialogGetSaveFileName",

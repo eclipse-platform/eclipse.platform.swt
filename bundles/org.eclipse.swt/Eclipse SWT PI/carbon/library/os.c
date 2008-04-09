@@ -34,6 +34,41 @@ fail:
 }
 #endif
 
+#ifndef NO_AECreateDesc
+JNIEXPORT jint JNICALL OS_NATIVE(AECreateDesc)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jobject arg3)
+{
+	jbyte *lparg1=NULL;
+	AEDesc _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AECreateDesc_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getAEDescFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)AECreateDesc((DescType)arg0, (const void *)lparg1, (Size)arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setAEDescFields(env, arg3, lparg3);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, AECreateDesc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AEDisposeDesc
+JNIEXPORT jint JNICALL OS_NATIVE(AEDisposeDesc)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	AEDesc _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AEDisposeDesc_FUNC);
+	if (arg0) if ((lparg0 = getAEDescFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)AEDisposeDesc(lparg0);
+fail:
+	if (arg0 && lparg0) setAEDescFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, AEDisposeDesc_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AEGetNthPtr
 JNIEXPORT jint JNICALL OS_NATIVE(AEGetNthPtr)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jint arg5, jint arg6, jintArray arg7)
@@ -9637,6 +9672,22 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg0 && lparg0) setNavDialogCreationOptionsFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, NavCreatePutFileDialog_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NavCustomControl
+JNIEXPORT jint JNICALL OS_NATIVE(NavCustomControl)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	AEDesc _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NavCustomControl_FUNC);
+	if (arg2) if ((lparg2 = getAEDescFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)NavCustomControl((NavDialogRef)arg0, (NavCustomControlMessage)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setAEDescFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, NavCustomControl_FUNC);
 	return rc;
 }
 #endif

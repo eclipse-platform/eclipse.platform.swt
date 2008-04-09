@@ -137,6 +137,26 @@ public String open () {
 	int [] outDialog = new int [1];
 	// NEEDS WORK - use inFilterProc to handle filtering
 	if (OS.NavCreateChooseFolderDialog (options, 0, 0, 0, outDialog) == OS.noErr) {
+		if (filterPath != null && filterPath.length () > 0) {
+			char [] chars = new char [filterPath.length ()];
+			filterPath.getChars (0, chars.length, chars, 0);
+			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+			if (str != 0) {
+				int url = OS.CFURLCreateWithFileSystemPath (OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
+				if (url != 0) {
+					byte [] fsRef = new byte [80];
+					if (OS.CFURLGetFSRef (url, fsRef)) {
+						AEDesc params = new AEDesc ();
+						if (OS.AECreateDesc (OS.typeFSRef, fsRef, fsRef.length, params) == OS.noErr) {
+							OS.NavCustomControl (outDialog [0], OS.kNavCtlSetLocation, params);
+							OS.AEDisposeDesc (params);
+						}
+					}
+					OS.CFRelease (url);
+				}
+				OS.CFRelease (str);
+			}
+		}
 		OS.NavDialogRun (outDialog [0]);
 		if (OS.NavDialogGetUserAction (outDialog [0]) == OS.kNavUserActionChoose) {
 			NavReplyRecord record = new NavReplyRecord ();
