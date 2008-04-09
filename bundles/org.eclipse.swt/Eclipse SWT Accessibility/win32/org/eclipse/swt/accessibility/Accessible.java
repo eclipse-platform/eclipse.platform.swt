@@ -1050,7 +1050,7 @@ public class Accessible {
 				osState = pState[0];
 			}
 		}
-
+		boolean grayed = false;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = osToChildID(v.lVal);
 		event.detail = osToState(osState);
@@ -1071,12 +1071,14 @@ public class Accessible {
 				int /*long*/ result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
+				grayed = tvItem.state >> 12 > 2;
 			} else if (control instanceof Table && (control.getStyle() & SWT.CHECK) != 0) {
 				Table table = (Table) control;
 				int index = event.childID;
 				if (0 <= index && index < table.getItemCount()) {
 					TableItem item = table.getItem(index);
 					if (item.getChecked()) event.detail |= ACC.STATE_CHECKED;
+					if (item.getGrayed()) grayed = true;
 				}
 			}
 		}
@@ -1085,6 +1087,7 @@ public class Accessible {
 			listener.getState(event);
 		}
 		int state = stateToOs(event.detail);
+		if (grayed) state |= COM.STATE_SYSTEM_MIXED;
 		COM.MoveMemory(pvarState, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarState + 8, new int[] { state }, 4);
 		return COM.S_OK;
