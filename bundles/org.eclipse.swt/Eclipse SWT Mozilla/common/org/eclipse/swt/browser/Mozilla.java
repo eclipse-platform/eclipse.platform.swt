@@ -1528,6 +1528,10 @@ public Object getWebBrowser () {
 		Object mozilla = method.invoke (null, new Object[0]);
 		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, String.class}); //$NON-NLS-1$
 		webBrowserObject = method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
+		/*
+		 * The following AddRef() is needed to offset the automatic Release() that
+		 * will be performed by JavaXPCOM when webBrowserObject is finalized.
+		 */
 		webBrowser.AddRef ();
 		return webBrowserObject;
 	} catch (ClassNotFoundException e) {
