@@ -206,9 +206,11 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 						OS.CFRelease (url);
 						if (ext != 0) {
 							char [] buffer= new char [OS.CFStringGetLength (ext)];
-							CFRange range = new CFRange ();
-							range.length = buffer.length;
-							OS.CFStringGetCharacters (ext, range, buffer);
+							if (buffer.length > 0) {
+								CFRange range = new CFRange ();
+								range.length = buffer.length;
+								OS.CFStringGetCharacters (ext, range, buffer);
+							}
 							OS.CFRelease (ext);
 							String extension = new String (buffer);
 							String extensions = filterExtensions [filterIndex];
