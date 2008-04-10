@@ -100,6 +100,7 @@ public class Snippet285 {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+		region.dispose();
 		display.dispose();
 	}
 	
