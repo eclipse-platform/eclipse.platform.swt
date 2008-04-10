@@ -235,6 +235,7 @@ public Rectangle getBounds () {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	int id = parent.getId (itemIndex);
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [0].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
@@ -276,6 +277,7 @@ public Rectangle getBounds (int index) {
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	int id = parent.getId (itemIndex);
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
@@ -473,6 +475,7 @@ public Rectangle getImageBounds (int index) {
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	int id = parent.getId (itemIndex);
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
@@ -584,6 +587,7 @@ public Rectangle getTextBounds (int index) {
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	int id = parent.getId (itemIndex);
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
@@ -623,6 +627,7 @@ void redraw (int propertyID) {
 	if (parent.currentItem == this) return;
 	if (parent.drawCount != 0 && propertyID != Table.CHECK_COLUMN_ID) return;
 	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return;
 	int [] id = new int [] {parent.getId (itemIndex)};
 	OS.UpdateDataBrowserItems (parent.handle, OS.kDataBrowserNoItem, id.length, id, OS.kDataBrowserItemNoProperty, propertyID);
 	/*
