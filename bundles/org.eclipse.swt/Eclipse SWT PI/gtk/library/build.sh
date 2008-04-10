@@ -103,8 +103,14 @@ if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
 		export MOZILLA_INCLUDES
 		export MOZILLA_LIBS
 		MAKE_MOZILLA=make_mozilla
+	elif [ x`pkg-config --exists libxul && echo YES` = "xYES" ]; then
+		MOZILLA_INCLUDES=`pkg-config --cflags libxul`
+		MOZILLA_LIBS=`pkg-config --libs libxul`
+		export MOZILLA_INCLUDES
+		export MOZILLA_LIBS
+		MAKE_MOZILLA=make_mozilla
 	else
-		echo "Mozilla/XPCOM or Firefox/XPCOM libraries not found:"
+		echo "None of the following libraries were found:  Mozilla/XPCOM, Firefox/XPCOM, or XULRunner/XPCOM"
 		echo "    *** Mozilla embedding support will not be compiled."
 	fi
 fi
