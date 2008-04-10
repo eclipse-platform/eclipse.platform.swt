@@ -3048,6 +3048,7 @@ void setItemCount (TreeItem parentItem, int count) {
 			int length = Math.max (4, (lastIndex + 3) / 4 * 4);
 			TreeItem [] newItems = new TreeItem [length];
 			System.arraycopy(items, 0, newItems, 0, Math.min(items.length, lastIndex));
+			items = newItems;
 		}
 	}
 	
