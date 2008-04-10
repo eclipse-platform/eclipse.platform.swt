@@ -235,11 +235,11 @@ public class OS extends C {
 //	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
 	public static final int ALTERNATE = 1;
 	public static final int ASSOCF_NOTRUNCATE = 0x00000020;
+	public static final int ASSOCF_INIT_IGNOREUNKNOWN = 0x400;
 	public static final int ASSOCSTR_COMMAND = 1;
 	public static final int ASSOCSTR_DEFAULTICON = 15;
 	public static final int ASSOCSTR_FRIENDLYAPPNAME = 4;
 	public static final int ASSOCSTR_FRIENDLYDOCNAME = 3;
-	public static final int ASSOCSTR_INIT_IGNOREUNKNOWN = 0x400;
 	public static final int AW_SLIDE = 0x00040000;
 	public static final int AW_ACTIVATE = 0x00020000;
 	public static final int AW_BLEND = 0x00080000;

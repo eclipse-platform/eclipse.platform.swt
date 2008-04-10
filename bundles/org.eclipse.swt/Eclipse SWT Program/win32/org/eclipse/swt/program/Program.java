@@ -36,10 +36,11 @@ static String assocQueryString (int assocStr, TCHAR key, boolean expand) {
 	TCHAR pszOut = new TCHAR(0, 1024);
 	int[] pcchOut = new int[1];
 	pcchOut[0] = pszOut.length();
-	int result = OS.AssocQueryString(OS.ASSOCF_NOTRUNCATE, assocStr, key, null, pszOut, pcchOut);
+	int flags = OS.ASSOCF_NOTRUNCATE | OS.ASSOCF_INIT_IGNOREUNKNOWN;
+	int result = OS.AssocQueryString (flags, assocStr, key, null, pszOut, pcchOut);
 	if (result == OS.E_POINTER) {
 		pszOut = new TCHAR(0, pcchOut [0]);
-		result = OS.AssocQueryString(OS.ASSOCF_NOTRUNCATE, assocStr, key, null, pszOut, pcchOut);
+		result = OS.AssocQueryString (flags, assocStr, key, null, pszOut, pcchOut);
 	}
 	if (result == 0) {
 		if (!OS.IsWinCE && expand) {
