@@ -730,6 +730,19 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int index = (int)/*64*/hdr.idFrom;
 	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
+		/*
+		* Bug in Windows. For some reason the reading order
+		* in NMTTDISPINFO is sometimes set incorrectly.  The
+		* reading order seems to change every time the mouse
+		* enters the control from the top edge.  The fix is
+		* to explicitly set TTF_RTLREADING.
+		*/
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			hdr.uFlags |= OS.TTF_RTLREADING;
+		} else {
+			hdr.uFlags &= ~OS.TTF_RTLREADING;
+		}
+		
 		if (toolTipText != null) return "";
 		if (0 <= index && index < items.length) {
 			TabItem item = items [index];
