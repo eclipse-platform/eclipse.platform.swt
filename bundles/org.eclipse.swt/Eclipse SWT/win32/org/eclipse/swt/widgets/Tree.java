@@ -6109,6 +6109,30 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			}
 		}
+		/*
+		* Bug in Windows.  When a tree has no images and an item is
+		* expanded or collapsed, for some reason, Windows changes
+		* the size of the selection.  When the user expands a tree
+		* item, the selection rectangle is made a few pixels larger.
+		* When the user collapses an item, the selection rectangle
+		* is restored to the original size but the selection is not
+		* redrawn, causing pixel corruption.  The fix is to detect
+		* this case and redraw the item.
+		*/
+		if ((lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+				if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) == 0) {
+					int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+					if (hItem != 0) {
+						RECT rect = new RECT ();
+						if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
+							OS.InvalidateRect (handle, rect, true);
+						}
+					}
+				}
+			}
+		}
 		if (deselected) {
 			Event event = new Event ();
 			event.item = _getItem (lpht.hItem);
