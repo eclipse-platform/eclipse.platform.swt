@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 959;
-int OS_nativeFunctionCallCount[959];
+int OS_nativeFunctionCount = 962;
+int OS_nativeFunctionCallCount[962];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -212,8 +212,10 @@ char * OS_nativeFunctionNames[] = {
 	"CGDisplayBitsPerPixel",
 	"CGDisplayBitsPerSample",
 	"CGDisplayBytesPerRow",
+	"CGDisplayHideCursor",
 	"CGDisplayPixelsHigh",
 	"CGDisplayPixelsWide",
+	"CGDisplayShowCursor",
 	"CGFontCreateWithPlatformFont",
 	"CGFontRelease",
 	"CGFunctionCreate",
@@ -232,6 +234,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGImageGetHeight",
 	"CGImageGetWidth",
 	"CGImageRelease",
+	"CGMainDisplayID",
 	"CGPathAddArc",
 	"CGPathAddCurveToPoint",
 	"CGPathAddLineToPoint",

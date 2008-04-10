@@ -2579,6 +2579,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayBytesPerRow)
 }
 #endif
 
+#ifndef NO_CGDisplayHideCursor
+JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayHideCursor)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayHideCursor_FUNC);
+	rc = (jint)CGDisplayHideCursor(arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayHideCursor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGDisplayPixelsHigh
 JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayPixelsHigh)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -2599,6 +2611,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayPixelsWide)
 	OS_NATIVE_ENTER(env, that, CGDisplayPixelsWide_FUNC);
 	rc = (jint)CGDisplayPixelsWide((CGDirectDisplayID)arg0);
 	OS_NATIVE_EXIT(env, that, CGDisplayPixelsWide_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayShowCursor
+JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayShowCursor)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayShowCursor_FUNC);
+	rc = (jint)CGDisplayShowCursor(arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayShowCursor_FUNC);
 	return rc;
 }
 #endif
@@ -2867,6 +2891,18 @@ JNIEXPORT void JNICALL OS_NATIVE(CGImageRelease)
 	OS_NATIVE_ENTER(env, that, CGImageRelease_FUNC);
 	CGImageRelease((CGImageRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGImageRelease_FUNC);
+}
+#endif
+
+#ifndef NO_CGMainDisplayID
+JNIEXPORT jint JNICALL OS_NATIVE(CGMainDisplayID)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGMainDisplayID_FUNC);
+	rc = (jint)CGMainDisplayID();
+	OS_NATIVE_EXIT(env, that, CGMainDisplayID_FUNC);
+	return rc;
 }
 #endif
 
