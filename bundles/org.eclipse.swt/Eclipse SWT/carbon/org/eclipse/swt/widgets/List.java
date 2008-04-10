@@ -247,6 +247,7 @@ void createHandle () {
 	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
+	OS.SetDataBrowserTableViewHiliteStyle (handle, OS.kDataBrowserTableViewFillHilite);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
