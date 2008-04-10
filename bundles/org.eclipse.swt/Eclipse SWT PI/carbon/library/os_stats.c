@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 962;
-int OS_nativeFunctionCallCount[962];
+int OS_nativeFunctionCount = 963;
+int OS_nativeFunctionCallCount[963];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -890,6 +890,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetThemeTextColor",
 	"SetThemeWindowBackground",
 	"SetUpControlBackground",
+	"SetUserFocusWindow",
 	"SetWindowActivationScope",
 	"SetWindowAlpha",
 	"SetWindowBounds",

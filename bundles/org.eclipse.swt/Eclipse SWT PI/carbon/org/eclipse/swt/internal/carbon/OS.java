@@ -1520,6 +1520,7 @@ public static final native int GetThemeTextColor(short inColor, short inDepth, b
 public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, Point ioBounds, short[] baseLine);
 public static final native int GetUserFocusEventTarget();
 public static final native int GetUserFocusWindow();
+public static final native int SetUserFocusWindow(int inWindow);
 public static final native int GetWindowActivationScope(int inWindow, int[] outScope);
 public static final native int GetWindowAlpha(int inWindow, float [] outAlpha);
 public static final native void GetWindowBounds(int wHandle, short windowRegion, Rect bounds);

@@ -669,6 +669,7 @@ public void forceActive () {
 	checkWidget ();
 	if (!isVisible ()) return;
 	OS.SelectWindow (shellHandle);
+	OS.SetUserFocusWindow (shellHandle);
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
 
@@ -1303,6 +1304,7 @@ public void setActive () {
 	checkWidget ();
 	if (!isVisible ()) return;
 	OS.SelectWindow (shellHandle);
+	OS.SetUserFocusWindow (shellHandle);
 }
 
 void setActiveControl (Control control) {

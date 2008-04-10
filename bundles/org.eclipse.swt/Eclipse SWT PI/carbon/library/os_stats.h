@@ -898,6 +898,7 @@ typedef enum {
 	SetThemeTextColor_FUNC,
 	SetThemeWindowBackground_FUNC,
 	SetUpControlBackground_FUNC,
+	SetUserFocusWindow_FUNC,
 	SetWindowActivationScope_FUNC,
 	SetWindowAlpha_FUNC,
 	SetWindowBounds_FUNC,

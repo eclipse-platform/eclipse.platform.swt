@@ -12594,6 +12594,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetUpControlBackground)
 }
 #endif
 
+#ifndef NO_SetUserFocusWindow
+JNIEXPORT jint JNICALL OS_NATIVE(SetUserFocusWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetUserFocusWindow_FUNC);
+	rc = (jint)SetUserFocusWindow((WindowRef)arg0);
+	OS_NATIVE_EXIT(env, that, SetUserFocusWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetWindowActivationScope
 JNIEXPORT jint JNICALL OS_NATIVE(SetWindowActivationScope)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
