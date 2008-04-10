@@ -213,6 +213,16 @@ int kEventTextInputPosToOffset (int nextHandler, int theEvent, int userData) {
 	return super.kEventTextInputPosToOffset (nextHandler, theEvent, userData);
 }
 
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent(nextHandler, theEvent, userData);
+	if (result != OS.noErr) {
+		if (caret != null) {
+			OS.CGDisplayHideCursor (OS.CGMainDisplayID ());
+		}
+	}
+	return result;
+}
+
 int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
 	if (ime != null) {
 		int result = ime.kEventTextInputUpdateActiveInputArea (nextHandler, theEvent, userData);
