@@ -223,7 +223,6 @@ public class Display extends Device {
 	Callback emissionProcCallback;
 	static final String GET_EMISSION_PROC_KEY = "org.eclipse.swt.internal.gtk.getEmissionProc"; //$NON-NLS-1$
 	
-	
 	/* Get all children callback */
 	int /*long*/ allChildrenProc, allChildren;
 	Callback allChildrenCallback;
@@ -1404,8 +1403,8 @@ public Control getCursorControl () {
 		int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
 		do {
 			if (OS.XQueryPointer (xDisplay, xParent, unused, buffer, unused, unused, unused, unused, unused) == 0) {
-				OS.gdk_error_trap_pop ();
-				return null;
+				handle = 0;
+				break;
 			}
 			if ((xWindow = buffer [0]) != 0) {
 				xParent = xWindow;
