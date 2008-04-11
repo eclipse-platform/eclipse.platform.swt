@@ -4045,6 +4045,7 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	//TODO - not all
+	if (display.inPaint) return;
 	OS.HIViewRender (handle);
 	if (isDisposed()) return;
 	OS.HIWindowFlush (OS.GetControlOwner (handle));
