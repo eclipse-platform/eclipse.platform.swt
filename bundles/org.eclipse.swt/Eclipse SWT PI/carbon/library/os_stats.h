@@ -562,6 +562,7 @@ typedef enum {
 	HIShapeReplacePathInCGContext_FUNC,
 	HITextViewCreate_FUNC,
 	HITextViewGetTXNObject_FUNC,
+	HITextViewSetBackgroundColor_FUNC,
 	HIThemeDrawBackground_FUNC,
 	HIThemeDrawButton_FUNC,
 	HIThemeDrawFocusRect_FUNC,

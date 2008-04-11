@@ -16,7 +16,6 @@ import org.eclipse.swt.internal.carbon.HIThemeFrameDrawInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.CFRange;
@@ -1603,19 +1602,11 @@ void setBackground (float [] color) {
 	if (txnObject == 0) {
 		super.setBackground (color);
 	} else {
-		TXNBackground txnColor = new TXNBackground (); 
-		txnColor.bgType = OS.kTXNBackgroundTypeRGB;
-		int red = (short) (color == null ? 0xff : color [0] * 255);
-		int green = (short) (color == null ? 0xff : color [1] * 255);
-		int blue = (short) (color == null ? 0xff : color [2] * 255);
-		txnColor.bg_red = (short) (red << 8 | red);
-		txnColor.bg_green = (short) (green << 8 | green);
-		txnColor.bg_blue = (short) (blue << 8 | blue);
-		boolean readOnly = (style & SWT.READ_ONLY) != 0;
-		int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
-		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
-		OS.TXNSetBackground (txnObject, txnColor);
-		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
+		int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+		int colorRef = OS.CGColorCreate (colorspace, color);
+		OS.HITextViewSetBackgroundColor (handle, colorRef);
+		OS.CGColorRelease (colorRef);
+		OS.CGColorSpaceRelease (colorspace);
 	}
 }
 

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 964;
-int OS_nativeFunctionCallCount[964];
+int OS_nativeFunctionCount = 965;
+int OS_nativeFunctionCallCount[965];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -554,6 +554,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIShapeReplacePathInCGContext",
 	"HITextViewCreate",
 	"HITextViewGetTXNObject",
+	"HITextViewSetBackgroundColor",
 	"HIThemeDrawBackground",
 	"HIThemeDrawButton",
 	"HIThemeDrawFocusRect",

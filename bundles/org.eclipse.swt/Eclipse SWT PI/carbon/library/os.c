@@ -7850,6 +7850,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HITextViewGetTXNObject)
 }
 #endif
 
+#ifndef NO_HITextViewSetBackgroundColor
+JNIEXPORT jint JNICALL OS_NATIVE(HITextViewSetBackgroundColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HITextViewSetBackgroundColor_FUNC);
+	rc = (jint)HITextViewSetBackgroundColor((HIViewRef)arg0, (CGColorRef)arg1);
+	OS_NATIVE_EXIT(env, that, HITextViewSetBackgroundColor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIThemeDrawBackground
 JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawBackground)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)

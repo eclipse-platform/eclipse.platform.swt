@@ -1564,6 +1564,7 @@ public static final native int HISearchFieldGetAttributes(int inSearchField, int
 public static final native int HISearchFieldSetDescriptiveText(int inSearchField, int inDescription);
 public static final native int HITextViewCreate(CGRect inBoundsRect, int inOptions, int inTXNFrameOptions, int[] outTextView);
 public static final native int HITextViewGetTXNObject(int inTextView);
+public static final native int HITextViewSetBackgroundColor(int inTextView, int inColor); 
 public static final native int HIThemeDrawBackground(CGRect inBounds, HIThemeBackgroundDrawInfo inDrawInfo, int inContext, int inOrientation); 
 public static final native int HIThemeDrawButton(CGRect inBounds, HIThemeButtonDrawInfo inDrawInfo, int inContext, int inOrientation, CGRect outLabelRect);
 public static final native int HIThemeDrawFocusRect(CGRect inRect, boolean inHasFocus, int inContext, int inOrientation); 
