@@ -25,6 +25,7 @@ class EventTable {
 	int [] types;
 	Listener [] listeners;
 	int level;
+	static final int GROW_SIZE = 4;
 	
 public Listener [] getListeners (int eventType) {
 	if (types == null) return new Listener [0];
@@ -44,8 +45,8 @@ public Listener [] getListeners (int eventType) {
 }
 
 public void hook (int eventType, Listener listener) {
-	if (types == null) types = new int [4];
-	if (listeners == null) listeners = new Listener [4];
+	if (types == null) types = new int [GROW_SIZE];
+	if (listeners == null) listeners = new Listener [GROW_SIZE];
 	int length = types.length, index = length - 1;
 	while (index >= 0) {
 		if (types [index] != 0) break;
@@ -53,10 +54,10 @@ public void hook (int eventType, Listener listener) {
 	}
 	index++;
 	if (index == length) {
-		int [] newTypes = new int [length + 4];
+		int [] newTypes = new int [length + GROW_SIZE];
 		System.arraycopy (types, 0, newTypes, 0, length);
 		types = newTypes;
-		Listener [] newListeners = new Listener [length + 4];
+		Listener [] newListeners = new Listener [length + GROW_SIZE];
 		System.arraycopy (listeners, 0, newListeners, 0, length);
 		listeners = newListeners;
 	}
