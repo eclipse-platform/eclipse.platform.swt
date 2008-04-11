@@ -585,8 +585,10 @@ void updateHeader () {
 	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
 	desc.btnFontStyle_just = OS.teFlushLeft;
-	if ((style & SWT.CENTER) != 0) desc.btnFontStyle_just = OS.teCenter;
-	if ((style & SWT.RIGHT) != 0) desc.btnFontStyle_just = OS.teFlushRight;
+	if (parent.indexOf (this) != 0) {
+		if ((style & SWT.CENTER) != 0) desc.btnFontStyle_just = OS.teCenter;
+		if ((style & SWT.RIGHT) != 0) desc.btnFontStyle_just = OS.teFlushRight;
+	}
 	desc.btnFontStyle_flags |= OS.kControlUseJustMask;
 	if (resizable) {
 		desc.minimumWidth = 0;
