@@ -823,6 +823,7 @@ public class OS extends C {
 	public static final int kThemeBrushPrimaryHighlightColor = -3;
 	public static final int kThemeBrushSecondaryHighlightColor = -4;
 	public static final int kThemeBrushButtonFaceActive = 29;
+	public static final int kThemeBrushButtonInactiveDarkShadow = 36;
 	public static final int kThemeBrushFocusHighlight = 19;
 	public static final int kThemeBrushListViewBackground = 10; 
 	public static final int kThemeButtonOff = 0;
