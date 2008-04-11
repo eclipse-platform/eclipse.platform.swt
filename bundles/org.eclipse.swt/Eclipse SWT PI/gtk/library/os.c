@@ -1696,6 +1696,40 @@ fail:
 }
 #endif
 
+#ifndef NO__1XQueryPointer
+JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryPointer)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XQueryPointer_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	rc = (jint)XQueryPointer((Display *)arg0, (Window)arg1, (Window *)lparg2, (Window *)lparg3, (int *)lparg4, (int *)lparg5, (int *)lparg6, (int *)lparg7, (unsigned int *)lparg8);
+fail:
+	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1XQueryPointer_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XQueryTree
 JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryTree)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
@@ -2879,12 +2913,12 @@ fail:
 #endif
 
 #ifndef NO__1g_1signal_1add_1emission_1hook
-JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1signal_1add_1emission_1hook)
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1add_1emission_1hook)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-	jlong rc = 0;
+	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1signal_1add_1emission_1hook_FUNC);
-	rc = (jlong)g_signal_add_emission_hook((guint)arg0, (GQuark)arg1, (GSignalEmissionHook)arg2, (gpointer)arg3, (GDestroyNotify)arg4);
+	rc = (jint)g_signal_add_emission_hook((guint)arg0, (GQuark)arg1, (GSignalEmissionHook)arg2, (gpointer)arg3, (GDestroyNotify)arg4);
 	OS_NATIVE_EXIT(env, that, _1g_1signal_1add_1emission_1hook_FUNC);
 	return rc;
 }
@@ -3073,7 +3107,7 @@ fail:
 
 #ifndef NO__1g_1signal_1remove_1emission_1hook
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1signal_1remove_1emission_1hook)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1g_1signal_1remove_1emission_1hook_FUNC);
 	g_signal_remove_emission_hook((guint)arg0, (gulong)arg1);

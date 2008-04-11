@@ -744,6 +744,15 @@ public static final int /*long*/ XInternAtom(int /*long*/ display, byte[] name, 
 		lock.unlock();
 	}
 }
+public static final native int _XQueryPointer(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] child_return, int[] root_x_return, int[] root_y_return, int[] win_x_return, int[] win_y_return, int[] mask_return);
+public static final int XQueryPointer(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] child_return, int[] root_x_return, int[] root_y_return, int[] win_x_return, int[] win_y_return, int[] mask_return) {
+	lock.lock();
+	try {
+		return _XQueryPointer(display, w, root_return, child_return, root_x_return, root_y_return, win_x_return, win_y_return, mask_return);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _XQueryTree(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] parent_return, int /*long*/[] children_return, int[] nchildren_return);
 public static final int XQueryTree(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] parent_return, int /*long*/[] children_return, int[] nchildren_return) {
 	lock.lock();

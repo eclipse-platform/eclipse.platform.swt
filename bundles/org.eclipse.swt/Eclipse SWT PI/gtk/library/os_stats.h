@@ -169,6 +169,7 @@ typedef enum {
 	_1XInternAtom_FUNC,
 	_1XKeysymToKeycode_FUNC,
 	_1XListProperties_FUNC,
+	_1XQueryPointer_FUNC,
 	_1XQueryTree_FUNC,
 	_1XReconfigureWMWindow_FUNC,
 	_1XRenderComposite_FUNC,

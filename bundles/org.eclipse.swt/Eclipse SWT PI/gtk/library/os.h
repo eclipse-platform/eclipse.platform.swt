@@ -51,6 +51,7 @@
 #define NO__1XFlush
 #define NO__1XGetSelectionOwner
 #define NO__1XQueryTree
+#define NO__1XQueryPointer
 #define NO__1XKeysymToKeycode
 #define NO__1XReconfigureWMWindow
 #define NO__1XSendEvent

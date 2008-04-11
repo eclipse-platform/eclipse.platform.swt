@@ -1386,11 +1386,38 @@ int getCaretBlinkTime () {
 public Control getCursorControl () {
 	checkDevice();
 	int[] x = new int[1], y = new int[1];
-	int /*long*/ window = OS.gdk_window_at_pointer (x,y);
-	if (window == 0) return null;
+	int /*long*/ handle = 0;
 	int /*long*/ [] user_data = new int /*long*/ [1];
-	OS.gdk_window_get_user_data (window, user_data);
-	int /*long*/ handle = user_data [0];
+	int /*long*/ window = OS.gdk_window_at_pointer (x,y);
+	if (window != 0) {
+		OS.gdk_window_get_user_data (window, user_data);
+		handle = user_data [0];
+	} else {
+		/*
+		* Feature in GTK. gdk_window_at_pointer() will not return a window 
+		* if the pointer is over a foreign embedded window. The fix is to use
+		* XQueryPointer to find the containing GDK window.
+		*/
+		if (!OS.GDK_WINDOWING_X11 ()) return null;
+		OS.gdk_error_trap_push ();
+		int [] unused = new int [1], buffer = new int [1];
+		int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
+		do {
+			if (OS.XQueryPointer (xDisplay, xParent, unused, buffer, unused, unused, unused, unused, unused) == 0) {
+				OS.gdk_error_trap_pop ();
+				return null;
+			}
+			if ((xWindow = buffer [0]) != 0) {
+				xParent = xWindow;
+				int /*long*/ gdkWindow = OS.gdk_window_lookup (xWindow);
+				if (gdkWindow != 0)	{
+					OS.gdk_window_get_user_data (gdkWindow, user_data);
+					if (user_data[0] != 0) handle = user_data[0];	
+				}
+			}
+		} while (xWindow != 0);
+		OS.gdk_error_trap_pop ();
+	}
 	if (handle == 0) return null;
 	do {
 		Widget widget = getWidget (handle);
