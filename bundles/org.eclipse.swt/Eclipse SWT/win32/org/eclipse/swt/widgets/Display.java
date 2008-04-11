@@ -191,8 +191,9 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
-	boolean runMessages = true, runMessagesInIdle = false;
+	boolean runMessages = true, runMessagesInIdle = false, runMessagesInMessageProc = true;
 	static final String RUN_MESSAGES_IN_IDLE_KEY = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
+	static final String RUN_MESSAGES_IN_MESSAGE_PROC_KEY = "org.eclipse.swt.internal.win32.runMessagesInMessageProc"; //$NON-NLS-1$
 	Thread thread;
 
 	/* Display Shutdown */
@@ -1272,14 +1273,16 @@ public Widget findWidget (Widget widget, int /*long*/ id) {
 }
 
 int /*long*/ foregroundIdleProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lParam) {
-	if (runMessages) {
-		if (code >= 0) {
-			if (getMessageCount () != 0) {
-				if (runMessagesInIdle) {
+	if (code >= 0) {
+		if (runMessages && getMessageCount () != 0) {
+			if (runMessagesInIdle) {
+				if (runMessagesInMessageProc) {
 					OS.PostMessage (hwndMessage, SWT_RUNASYNC, 0, 0);
+				} else {
+					runAsyncMessages (false);
 				}
-				wakeThread ();
 			}
+			wakeThread ();
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)/*64*/code, wParam, lParam);
@@ -1556,6 +1559,9 @@ public Object getData (String key) {
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
 		return new Boolean (runMessagesInIdle);
+	}
+	if (key.equals (RUN_MESSAGES_IN_MESSAGE_PROC_KEY)) {
+		return new Boolean (runMessagesInMessageProc);
 	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -3983,6 +3989,11 @@ public void setData (String key, Object value) {
 	if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
 		Boolean data = (Boolean) value;
 		runMessagesInIdle = data != null && data.booleanValue ();
+		return;
+	}
+	if (key.equals (RUN_MESSAGES_IN_MESSAGE_PROC_KEY)) {
+		Boolean data = (Boolean) value;
+		runMessagesInMessageProc = data != null && data.booleanValue ();
 		return;
 	}
 	
