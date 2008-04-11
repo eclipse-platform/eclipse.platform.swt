@@ -1076,7 +1076,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			if (!wasSelected) gc.setForeground (foreground);
 		}
 	}
-	if (columnCount != 0) {
+	if (columnCount != 0 && index != 0) {
 		TableColumn column = columns [columnIndex];
 		if ((column.style & SWT.CENTER) != 0) x += (width - contentWidth) / 2;
 		if ((column.style & SWT.RIGHT) != 0) x += width - contentWidth;
