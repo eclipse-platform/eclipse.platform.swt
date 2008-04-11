@@ -497,14 +497,6 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlTrack(nextHandler, theEvent, userData);
-	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
-		redraw ();
-	}
-	return result;
-}
-
 void releaseWidget () {
 	super.releaseWidget ();
 	if (cIcon != 0) {
