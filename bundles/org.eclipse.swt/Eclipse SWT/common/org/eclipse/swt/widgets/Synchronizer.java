@@ -38,6 +38,8 @@ public class Synchronizer {
 	RunnableLock [] messages;
 	Object messageLock = new Object ();
 	Thread syncThread;
+	static final int GROW_SIZE = 4;
+	static final int MESSAGE_LIMIT = 64;
 
 	//TEMPORARY CODE
 	static final boolean IS_CARBON = "carbon".equals (SWT.getPlatform ());
@@ -54,9 +56,9 @@ public Synchronizer (Display display) {
 void addLast (RunnableLock lock) {
 	boolean wake = false;
 	synchronized (messageLock) {
-		if (messages == null) messages = new RunnableLock [4];
+		if (messages == null) messages = new RunnableLock [GROW_SIZE];
 		if (messageCount == messages.length) {
-			RunnableLock[] newMessages = new RunnableLock [messageCount + 4];
+			RunnableLock[] newMessages = new RunnableLock [messageCount + GROW_SIZE];
 			System.arraycopy (messages, 0, newMessages, 0, messageCount);
 			messages = newMessages;
 		}
@@ -108,7 +110,7 @@ RunnableLock removeFirst () {
 		System.arraycopy (messages, 1, messages, 0, --messageCount);
 		messages [messageCount] = null;
 		if (messageCount == 0) {
-			if (messages.length > 64) messages = null;
+			if (messages.length > MESSAGE_LIMIT) messages = null;
 		}
 		return lock;
 	}
