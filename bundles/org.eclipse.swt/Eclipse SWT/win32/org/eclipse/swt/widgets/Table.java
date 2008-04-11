@@ -3814,7 +3814,11 @@ void setBackgroundTransparent (boolean transparent) {
 			Control control = findBackgroundControl ();
 			if (control == null) control = this;
 			if (control.backgroundImage == null) {
-				setBackgroundPixel (control.getBackgroundPixel ());
+				int newPixel = control.getBackgroundPixel ();
+				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
+				OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
+				if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
+				OS.InvalidateRect (handle, null, true);
 			}
 			
 			/* Set LVS_EX_FULLROWSELECT */
