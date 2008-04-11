@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
@@ -138,36 +139,23 @@ void click () {
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	if ((style & SWT.ARROW) != 0 && OS.VERSION >= 0x1050) {
-		int [] context = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-		int state;
-		if (OS.IsControlEnabled (control)) {
-			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-			if (display.grabControl == this) state = OS.kThemeStatePressed;
-		} else {
-			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-		}
-		CGRect rect = new CGRect ();
-		OS.HIViewGetBounds (handle, rect);
-		int orientation = OS.kThemeArrowRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeArrowUp;
-		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeArrowDown;;
-		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeArrowLeft;
-		HIThemePopupArrowDrawInfo info = new HIThemePopupArrowDrawInfo ();
-		info.state = state;
-		info.orientation = (short) orientation;
-		info.size = (short) OS.kThemeArrow9pt;
-		OS.HIThemeDrawPopupArrow (rect, info, context [0], OS.kHIThemeOrientationNormal);
-		return OS.noErr;
-	}
 	int [] context = null;
-	if ((style & SWT.ARROW) != 0 && (style & SWT.UP) != 0) {
-		context = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-		OS.CGContextSaveGState (context[0]);
-		OS.CGContextScaleCTM (context[0], 1f, -1);
-		OS.CGContextTranslateCTM (context[0], 0, -getBounds().height);
+	if ((style & SWT.ARROW) != 0) {
+		boolean invert = false;
+		if (OS.VERSION < 0x1050) {
+			invert = (style & SWT.UP) != 0;
+		} else {
+			invert = (style & SWT.UP) != 0 || (style & SWT.RIGHT) != 0;
+		}
+		if (invert) {
+			context = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+			OS.CGContextSaveGState (context[0]);
+			CGRect rect = new CGRect();
+			OS.HIViewGetBounds (handle, rect);
+			OS.CGContextRotateCTM (context[0], (float)Compatibility.PI);
+			OS.CGContextTranslateCTM (context[0], -rect.width, -rect.height);
+		}
 	}
 	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
 	if (context != null) OS.CGContextRestoreGState (context[0]);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 963;
-int OS_nativeFunctionCallCount[963];
+int OS_nativeFunctionCount = 964;
+int OS_nativeFunctionCallCount[964];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -172,6 +172,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextMoveToPoint",
 	"CGContextRelease",
 	"CGContextRestoreGState",
+	"CGContextRotateCTM",
 	"CGContextSaveGState",
 	"CGContextScaleCTM",
 	"CGContextSelectFont",

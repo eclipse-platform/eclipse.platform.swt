@@ -2111,6 +2111,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextRestoreGState)
 }
 #endif
 
+#ifndef NO_CGContextRotateCTM
+JNIEXPORT void JNICALL OS_NATIVE(CGContextRotateCTM)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextRotateCTM_FUNC);
+	CGContextRotateCTM((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextRotateCTM_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSaveGState
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSaveGState)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -1183,6 +1183,7 @@ public static final native void CGContextGetPathBoundingBox(int ctx, CGRect rect
 public static final native void CGContextGetTextPosition (int ctx, CGPoint point);
 public static final native void CGContextMoveToPoint (int ctx, float x, float y);
 public static final native void CGContextRelease(int ctx);
+public static final native void CGContextRotateCTM(int ctx, float angle);
 public static final native void CGContextRestoreGState(int ctx);
 public static final native void CGContextSaveGState(int ctx);
 public static final native void CGContextSelectFont (int ctx, byte[] name, float size, int textEncoding);

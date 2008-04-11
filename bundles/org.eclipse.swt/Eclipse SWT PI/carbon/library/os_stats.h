@@ -180,6 +180,7 @@ typedef enum {
 	CGContextMoveToPoint_FUNC,
 	CGContextRelease_FUNC,
 	CGContextRestoreGState_FUNC,
+	CGContextRotateCTM_FUNC,
 	CGContextSaveGState_FUNC,
 	CGContextScaleCTM_FUNC,
 	CGContextSelectFont_FUNC,
