@@ -2807,8 +2807,8 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			*/
 			if (device.logFontsCache == null) device.logFontsCache = new LOGFONT[device.scripts.length];
 			final LOGFONT newLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
-			Object object = new Object () {
-				public int EnumFontFamExProc(int lpelfe, int lpntme, int FontType, int lParam) {
+			class EnumFontFamEx {
+				int EnumFontFamExProc(int lpelfe, int lpntme, int FontType, int lParam) {
 					OS.MoveMemory(newLogFont, lpelfe, LOGFONT.sizeof);
 					if (FontType == OS.RASTER_FONTTYPE) return 1;
 					newLogFont.lfHeight = logFont.lfHeight;
@@ -2829,6 +2829,9 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 					return 1;
 				}
 			};
+			EnumFontFamEx object = new EnumFontFamEx();
+			/* Avoid compiler warnings */
+			if (false) object.EnumFontFamExProc(0, 0, 0, 0);
 			Callback callback = new Callback(object, "EnumFontFamExProc", 4);
 			int /*long*/ address = callback.getAddress();
 			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
