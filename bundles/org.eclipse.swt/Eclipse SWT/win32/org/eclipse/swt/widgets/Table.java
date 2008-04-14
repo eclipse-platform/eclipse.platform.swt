@@ -6254,6 +6254,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 		}
 		case OS.LVN_BEGINDRAG:
 		case OS.LVN_BEGINRDRAG: {
+			if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) break;
 			dragStarted = true;
 			if (hdr.code == OS.LVN_BEGINDRAG) {
 				int pos = OS.GetMessagePos ();

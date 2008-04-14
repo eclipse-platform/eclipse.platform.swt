@@ -7215,8 +7215,11 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 		}
 		case OS.TVN_BEGINDRAGA:
 		case OS.TVN_BEGINDRAGW:
+			if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) break;
+			//FALL THROUGH
 		case OS.TVN_BEGINRDRAGA:
 		case OS.TVN_BEGINRDRAGW: {
+			dragStarted = true;
 			NMTREEVIEW treeView = new NMTREEVIEW ();
 			OS.MoveMemory (treeView, lParam, NMTREEVIEW.sizeof);
 			TVITEM tvItem = treeView.itemNew;
@@ -7227,7 +7230,6 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				ignoreSelect = ignoreDeselect = false;
 				hSelect = 0;
 			}
-			dragStarted = true;
 			break;
 		}
 		case OS.NM_RECOGNIZEGESTURE: {
