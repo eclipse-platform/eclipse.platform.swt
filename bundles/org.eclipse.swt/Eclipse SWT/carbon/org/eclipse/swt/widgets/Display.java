@@ -3027,8 +3027,8 @@ public boolean readAndDispatch () {
 	}
 	events |= runPaint ();
 	if (events) {
-		runDeferredEvents ();
 		runEnterExit ();
+		runDeferredEvents ();
 		return true;
 	}
 	return runAsyncMessages (false);
