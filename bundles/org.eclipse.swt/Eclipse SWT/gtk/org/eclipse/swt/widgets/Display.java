@@ -1071,7 +1071,7 @@ protected void destroy () {
 void destroyDisplay () {
 }
 
-int /*long*/ emissionProc (int /*long*/ ihint, int n_param_values, int /*long*/ param_values, int /*long*/ data) {
+int /*long*/ emissionProc (int /*long*/ ihint, int /*long*/ n_param_values, int /*long*/ param_values, int /*long*/ data) {
 	if (OS.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values)) == data) {
 		OS.gtk_widget_set_direction (OS.g_value_peek_pointer(param_values), OS.GTK_TEXT_DIR_RTL);
 	}
@@ -1399,10 +1399,11 @@ public Control getCursorControl () {
 		*/
 		if (!OS.GDK_WINDOWING_X11 ()) return null;
 		OS.gdk_error_trap_push ();
-		int [] unused = new int [1], buffer = new int [1];
-		int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
+		int[] unusedInt = new int[1];
+		int /*long*/[] unusedPtr = new int /*long*/[1], buffer = new int /*long*/[1];
+		int /*long*/ xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
 		do {
-			if (OS.XQueryPointer (xDisplay, xParent, unused, buffer, unused, unused, unused, unused, unused) == 0) {
+			if (OS.XQueryPointer (xDisplay, xParent, unusedPtr, buffer, unusedInt, unusedInt, unusedInt, unusedInt, unusedInt) == 0) {
 				handle = 0;
 				break;
 			}
