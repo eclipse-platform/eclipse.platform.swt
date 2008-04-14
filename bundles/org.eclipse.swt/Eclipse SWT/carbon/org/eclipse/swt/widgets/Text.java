@@ -474,11 +474,21 @@ public void copy () {
 void createHandle () {
 	int [] outControl = new int [1];
 	if ((style & SWT.MULTI) != 0 || (style & (SWT.BORDER | SWT.SEARCH)) == 0) {
-		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0 || OS.VERSION >= 0x1050) {
 			int options = 0;
 			if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.H_SCROLL | SWT.V_SCROLL)) options |= OS.kHIScrollViewOptionsAllowGrow;
 			if ((style & SWT.H_SCROLL) != 0) options |= OS.kHIScrollViewOptionsHorizScroll;
 			if ((style & SWT.V_SCROLL) != 0) options |= OS.kHIScrollViewOptionsVertScroll;
+			/*
+			* Bug in the Macintosh.  HIScrollViewCreate() fails if no scroll bit is
+			* specified. In order to get horizontal scrolling in a single line text, a
+			* scroll view is created with the vertical bit set and the scroll bars
+			* are set to auto hide.  But calling HIScrollViewSetScrollBarAutoHide()
+			* before the view has been resized still leaves space for the vertical
+			* scroll bar.  The fix is to call HIScrollViewSetScrollBarAutoHide()
+			* once the widget has been resized.
+			*/
+			if (options == 0) options |= OS.kHIScrollViewOptionsVertScroll;
 			OS.HIScrollViewCreate (options, outControl);
 			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 			scrolledHandle = outControl [0];
@@ -1665,6 +1675,18 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				if (ptr [0] != 0) OS.CFRelease (ptr [0]);				
 			}
 		}
+	}
+	/*
+	* Bug in the Macintosh.  HIScrollViewCreate() fails if no scroll bit is
+	* specified. In order to get horizontal scrolling in a single line text, a
+	* scroll view is created with the vertical bit set and the scroll bars
+	* are set to auto hide.  But calling HIScrollViewSetScrollBarAutoHide()
+	* before the view has been resized still leaves space for the vertical
+	* scroll bar.  The fix is to call HIScrollViewSetScrollBarAutoHide()
+	* once the widget has been resized.
+	*/
+	if (scrolledHandle != 0 && (style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		OS.HIScrollViewSetScrollBarAutoHide (scrolledHandle, true);
 	}
 	return result;
 }
