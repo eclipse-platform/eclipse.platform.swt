@@ -531,20 +531,17 @@ abstract class Tab {
 			code.append ("\t\t" + names [i] + ".setItems (new String [] {\"Item 1\", \"Item 2\", \"Item 2\"});\n");
 		} else if (controlType.equals ("Table")) {
 			code.append ("\t\t" + names [i] + ".setLinesVisible (true);\n");
-			for (int j = 1; j < 3; j++) {
-				code.append ("\t\tTableItem tableItem" + j + " = new TableItem (" + names [i] + ", SWT.NONE);\n");
-				code.append ("\t\ttableItem" + j + ".setText (\"Item" + j + "\");\n");
-			}
+			code.append ("\t\tfor (int i = 0; i < 2; i++) {\n");
+			code.append ("\t\tTableItem tableItem = new TableItem (" + names [i] + ", SWT.NONE);\n");
+			code.append ("\t\t\ttableItem.setText (\"Item\" + i);\n}");
 		} else if (controlType.equals ("Tree")) {
-			for (int j = 1; j < 3; j++) {
-				code.append ("\t\tTreeItem treeItem" + j + " = new TreeItem (" + names [i] + ", SWT.NONE);\n");
-				code.append ("\t\ttreeItem" + j + ".setText (\"Item" + j + "\");\n");
-			}
+			code.append ("\t\tfor (int i = 0; i < 2; i++) {\n");
+			code.append ("\t\tTreeItem treeItem = new TreeItem (" + names [i] + ", SWT.NONE);\n");
+			code.append ("\t\t\ttreeItem.setText (\"Item\" + i);\n}");
 		} else if (controlType.equals ("ToolBar")) {
-			for (int j = 1; j < 3; j++) {
-				code.append ("\t\tToolItem toolItem" + j + " = new ToolItem (" + names [i] + ", SWT.NONE);\n");
-				code.append ("\t\ttoolItem" + j + ".setText (\"Item" + j + "\");\n");
-			}
+			code.append ("\t\tfor (int i = 0; i < 2; i++) {\n");
+			code.append ("\t\tToolItem toolItem = new ToolItem (" + names [i] + ", SWT.NONE);\n");
+			code.append ("\t\t\ttoolItem.setText (\"Item\" + i);\n}");
 		} else if (controlType.equals ("CoolBar")) {
 			code.append ("\t\tToolBar coolToolBar = new ToolBar (" + names [i] + ", SWT.BORDER);\n");
 			code.append ("\t\tToolItem coolToolItem = new ToolItem (coolToolBar, SWT.NONE);\n");
