@@ -2701,7 +2701,7 @@ boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 		OS.MoveMemory(glyphs, run.glyphs, glyphs.length * 2);
 		int i;
 		for (i = 0; i < glyphs.length; i++) {
-			if (glyphs[i] == fp.wgDefault) break;
+			if (glyphs[i] == fp.wgDefault || glyphs[i] == fp.wgInvalid) break;
 		}
 		if (i == glyphs.length) return true;
 	}
