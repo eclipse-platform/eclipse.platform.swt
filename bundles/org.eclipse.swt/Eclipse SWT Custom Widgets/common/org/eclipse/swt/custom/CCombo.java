@@ -309,6 +309,7 @@ void arrowEvent (Event event) {
 			break;
 		}
 		case SWT.Selection: {
+			text.setFocus();
 			dropDown (!isDropped ());
 			break;
 		}
