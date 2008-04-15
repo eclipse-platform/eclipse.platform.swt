@@ -3662,9 +3662,10 @@ void setZOrder () {
 	int parentHandle = parent.handle;
 	OS.HIViewAddSubview (parentHandle, topHandle);
 	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
-	Rect rect = getInset ();
-	rect.right = rect.left;
-	rect.bottom = rect.top;
+	Rect inset = getInset ();
+	Rect rect = new Rect ();
+	rect.left = rect.right = inset.left;
+	rect.top = rect.bottom = inset.top;
 	OS.SetControlBounds (topHandle, rect);
 }
 

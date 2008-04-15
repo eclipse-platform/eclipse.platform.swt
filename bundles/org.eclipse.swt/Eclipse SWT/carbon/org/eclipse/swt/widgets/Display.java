@@ -2224,7 +2224,7 @@ void initializeInsets () {
 	}
 	searchTextInset = computeInset (outControl [0]);
 	//FIXME - 
-	editTextInset.bottom = editTextInset.top;
+	searchTextInset.bottom = searchTextInset.top;
 	OS.DisposeControl (outControl [0]);
 	
 	CGRect cgRect = new CGRect ();
