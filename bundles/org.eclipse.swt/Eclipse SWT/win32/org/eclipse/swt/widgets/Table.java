@@ -716,7 +716,11 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*l
 		if (!ignoreDrawFocus && focusRect != null) {
 			if (handle == OS.GetFocus ()) {
 				int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-				if ((uiState & OS.UISF_HIDEFOCUS) == 0) OS.DrawFocusRect (nmcd.hdc, focusRect);
+				if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+					OS.SetTextColor (nmcd.hdc, 0);
+					OS.SetBkColor (nmcd.hdc, 0xFFFFFF);
+					OS.DrawFocusRect (nmcd.hdc, focusRect);
+				}
 			}
 			focusRect = null;
 		}
