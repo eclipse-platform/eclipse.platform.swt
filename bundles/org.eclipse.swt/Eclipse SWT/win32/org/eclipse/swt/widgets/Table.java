@@ -72,10 +72,11 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
+	RECT focusRect;
+	int /*long*/ headerToolTipHandle;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect;
-	int /*long*/ headerToolTipHandle;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ int /*long*/ HeaderProc;
 	static final int INSET = 4;
@@ -712,6 +713,13 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*l
 			sendPaintItemEvent (item, nmcd);
 			//widget could be disposed at this point
 		}
+		if (!ignoreDrawFocus && focusRect != null) {
+			if (handle == OS.GetFocus ()) {
+				int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) == 0) OS.DrawFocusRect (nmcd.hdc, focusRect);
+			}
+			focusRect = null;
+		}
 	}
 	return null;
 }
@@ -740,12 +748,13 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 	selectionForeground = -1;
 	ignoreDrawForeground = ignoreDrawSelection = ignoreDrawFocus = ignoreDrawBackground = false;
 	if (OS.IsWindowVisible (handle)) {
+		Event measureEvent = null;
 		if (hooks (SWT.MeasureItem)) {
-			sendMeasureItemEvent (item, (int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
+			measureEvent = sendMeasureItemEvent (item, (int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		if (hooks (SWT.EraseItem)) {
-			sendEraseItemEvent (item, nmcd, lParam);
+			sendEraseItemEvent (item, nmcd, lParam, measureEvent);
 			if (isDisposed () || item.isDisposed ()) return null;
 			code |= OS.CDRF_NOTIFYPOSTPAINT;
 		}
@@ -3202,7 +3211,7 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
-void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lParam) {
+void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lParam, Event measureEvent) {
 	int /*long*/ hDC = nmcd.hdc;
 	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 	if (clrText == -1) clrText = item.foreground;
@@ -3330,10 +3339,6 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	}
-	if (ignoreDrawFocus) {
-		nmcd.uItemState &= ~OS.CDIS_FOCUS;
-		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-	}
 	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 	if (ignoreDrawForeground && ignoreDrawHot) {
@@ -3342,37 +3347,48 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			fillBackground (hDC, clrTextBk, backgroundRect);
 		}
 	}
-	if (!ignoreDrawHot || (!ignoreDrawSelection && clrSelectionBk != -1)) {
-		if (explorerTheme) {
-			boolean hot = drawHot;
-			RECT pClipRect = new RECT ();
-			OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			RECT rect = new RECT ();
-			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			if ((style & SWT.FULL_SELECTION) != 0) {
-				int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-				int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
-				RECT headerRect = new RECT ();
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-				OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
-				rect.left = 0;
-				rect.right = headerRect.right;
-				pClipRect.left = cellRect.left;
-				pClipRect.right += EXPLORER_EXTRA;
-			} else {
-				rect.right += EXPLORER_EXTRA;
-				pClipRect.right += EXPLORER_EXTRA;
-			}
-			int /*long*/ hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
-			int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
-			if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
-			OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
-			OS.CloseThemeData (hTheme);
-		} else {
-			boolean fullText = ((style & SWT.FULL_SELECTION) != 0 || !firstColumn);
-			RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
-			fillBackground (hDC, clrSelectionBk, textRect);
+	focusRect = null;
+	if (!ignoreDrawHot || !ignoreDrawSelection || !ignoreDrawFocus) {
+		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
+		RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
+		if (measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
+			textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+			if (!ignoreDrawFocus) focusRect = textRect;
 		}
+		if (explorerTheme) {
+			if (!ignoreDrawHot || (!ignoreDrawSelection && clrSelectionBk != -1)) {
+				boolean hot = drawHot;
+				RECT pClipRect = new RECT ();
+				OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				RECT rect = new RECT ();
+				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					int count = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+					int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
+					RECT headerRect = new RECT ();
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+					rect.left = 0;
+					rect.right = headerRect.right;
+					pClipRect.left = cellRect.left;
+					pClipRect.right += EXPLORER_EXTRA;
+				} else {
+					rect.right += EXPLORER_EXTRA;
+					pClipRect.right += EXPLORER_EXTRA;
+				}
+				int /*long*/ hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
+				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
+				if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
+				OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
+				OS.CloseThemeData (hTheme);
+			}
+		} else {
+			if (!ignoreDrawSelection && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, textRect);
+		}
+	}
+	if (ignoreDrawFocus || focusRect != null) {
+		nmcd.uItemState &= ~OS.CDIS_FOCUS;
+		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 	}
 	if (ignoreDrawForeground) {
 		RECT clipRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, false, hDC);
