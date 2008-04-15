@@ -533,15 +533,15 @@ abstract class Tab {
 			code.append ("\t\t" + names [i] + ".setLinesVisible (true);\n");
 			code.append ("\t\tfor (int i = 0; i < 2; i++) {\n");
 			code.append ("\t\tTableItem tableItem = new TableItem (" + names [i] + ", SWT.NONE);\n");
-			code.append ("\t\t\ttableItem.setText (\"Item\" + i);\n}");
+			code.append ("\t\t\ttableItem.setText (\"Item\" + i);\n\t\t}\n");
 		} else if (controlType.equals ("Tree")) {
 			code.append ("\t\tfor (int i = 0; i < 2; i++) {\n");
 			code.append ("\t\tTreeItem treeItem = new TreeItem (" + names [i] + ", SWT.NONE);\n");
-			code.append ("\t\t\ttreeItem.setText (\"Item\" + i);\n}");
+			code.append ("\t\t\ttreeItem.setText (\"Item\" + i);\n\t\t}\n");
 		} else if (controlType.equals ("ToolBar")) {
 			code.append ("\t\tfor (int i = 0; i < 2; i++) {\n");
 			code.append ("\t\tToolItem toolItem = new ToolItem (" + names [i] + ", SWT.NONE);\n");
-			code.append ("\t\t\ttoolItem.setText (\"Item\" + i);\n}");
+			code.append ("\t\t\ttoolItem.setText (\"Item\" + i);\n\t\t}\n");
 		} else if (controlType.equals ("CoolBar")) {
 			code.append ("\t\tToolBar coolToolBar = new ToolBar (" + names [i] + ", SWT.BORDER);\n");
 			code.append ("\t\tToolItem coolToolItem = new ToolItem (coolToolBar, SWT.NONE);\n");
