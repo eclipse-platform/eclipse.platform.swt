@@ -360,28 +360,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
 	if (txnObject == 0) {
-		if ((style & SWT.RIGHT) != 0) {
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
-		}
-		Rect rect = new Rect ();
-		OS.GetBestControlRect (handle, rect, null);
-		if ((style & SWT.RIGHT) != 0) {
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {0});
-		}
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
 		if ((style & SWT.SEARCH) != 0) {
 			int [] ptr1 = new int [1];
 			OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr1, null);
 			Point size1 = textExtent (ptr1 [0], 0);
 			if (ptr1 [0] != 0) OS.CFRelease (ptr1 [0]);
 			width = size1.x;
+			height = size1.y;
+			int [] metric = new int [1];
+			OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
+			height += metric [0] * 2;
+			OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, metric);
+			height += metric [0] * 2;
 			//This code is intentionally commented
 //			int [] ptr2 = new int [1];
 //			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
 //			Point size2 = textExtent (ptr2 [0], 0);
 //			width = Math.max (width, size2.x);
 //			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
+		} else {
+			if ((style & SWT.RIGHT) != 0) {
+				OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
+			}
+			Rect rect = new Rect ();
+			OS.GetBestControlRect (handle, rect, null);
+			if ((style & SWT.RIGHT) != 0) {
+				OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {0});
+			}
+			width = rect.right - rect.left;
+			height = rect.bottom - rect.top;
 		}
 	} else {
 		int [] oDataHandle = new int [1];
