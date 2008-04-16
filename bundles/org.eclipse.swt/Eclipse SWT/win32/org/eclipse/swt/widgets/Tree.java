@@ -972,7 +972,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 		//TODO - BUG - measure and erase sent when first column is clipped
 		Event measureEvent = null;
 		if (hooks (SWT.MeasureItem)) {
-			/* measureEvent = */ sendMeasureItemEvent (item, index, hDC);
+			measureEvent = sendMeasureItemEvent (item, index, hDC);
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		selectionForeground = -1;
@@ -1136,9 +1136,9 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 				if (measureEvent != null) {
 					textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
 				}
-				nmcd.uItemState &= ~OS.CDIS_FOCUS;
-				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
-				focusRect = textRect;
+//				nmcd.uItemState &= ~OS.CDIS_FOCUS;
+//				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+//				focusRect = textRect;
 			}
 			if (explorerTheme) {
 				if (selected || (hot && ignoreDrawHot)) nmcd.uItemState &= ~OS.CDIS_HOT;

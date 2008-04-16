@@ -749,7 +749,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 	if (OS.IsWindowVisible (handle)) {
 		Event measureEvent = null;
 		if (hooks (SWT.MeasureItem)) {
-			/* measureEvent = */ sendMeasureItemEvent (item, (int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
+			measureEvent = sendMeasureItemEvent (item, (int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		if (hooks (SWT.EraseItem)) {
@@ -3355,7 +3355,11 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			if (measureEvent != null) {
 				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
 			}
-			if (!ignoreDrawFocus) focusRect = textRect;
+			if (!ignoreDrawFocus) {
+//				nmcd.uItemState &= ~OS.CDIS_FOCUS;
+//				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+//				focusRect = textRect;
+			}
 		}
 		if (explorerTheme) {
 			if (!ignoreDrawHot || (!ignoreDrawSelection && clrSelectionBk != -1)) {
@@ -3388,7 +3392,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			if (!ignoreDrawSelection && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, textRect);
 		}
 	}
-	if (focused && (ignoreDrawFocus || focusRect != null)) {
+	if (focused && ignoreDrawFocus) {
 		nmcd.uItemState &= ~OS.CDIS_FOCUS;
 		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 	}
