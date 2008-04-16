@@ -8937,6 +8937,22 @@ JNIEXPORT void JNICALL OS_NATIVE(HIWindowFlush)
 }
 #endif
 
+#ifndef NO_HIWindowIsDocumentModalTarget
+JNIEXPORT jboolean JNICALL OS_NATIVE(HIWindowIsDocumentModalTarget)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HIWindowIsDocumentModalTarget_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)HIWindowIsDocumentModalTarget((WindowRef)arg0, (WindowRef*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, HIWindowIsDocumentModalTarget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HLock
 JNIEXPORT void JNICALL OS_NATIVE(HLock)
 	(JNIEnv *env, jclass that, jint arg0)

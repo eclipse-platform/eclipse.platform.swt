@@ -408,6 +408,7 @@ public class OS extends C {
 	public static final int kEventPriorityStandard = 1;
 	public static final double kEventDurationForever = -1.0;
 	public static final double kEventDurationNoWait = 0.0;
+	public static final int kEventParamEventRef = ('e'<<24) + ('v'<<16) + ('n'<<8) + 't';
 	public static final int kEventFontSelection = 2;
 	public static final int kEventFontPanelClosed = 1;
 	public static final int kEventParamGrafPort =  ('g'<<24) + ('r'<<16) + ('a'<<8) + 'f';
@@ -460,6 +461,7 @@ public class OS extends C {
 	public static final int kEventParamMenuItemIndex = ('i'<<24) + ('t'<<16) + ('e'<<8) + 'm';
 	public static final int kEventParamMenuItemBounds = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'b';
 	public static final int kEventParamMenuItemWidth = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'w';
+	public static final int kEventParamModalClickResult = ('w'<<24) + ('m'<<16) + ('c'<<8) + 'r';
 	public static final int kEventParamModalWindow = ('m'<<24) + ('w'<<16) + ('i'<<8) + 'n';
 	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
@@ -536,6 +538,9 @@ public class OS extends C {
 	public static final int kHICommandQuit = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kHILayoutBindMin = 1;
 	public static final int kHILayoutBindMax= 2;
+	public static final int kHIModalClickIsModal = 1 << 0;
+	public static final int kHIModalClickAllowEvent = 1 << 1;
+	public static final int kHIModalClickAnnounce = 1 << 2;	
 	public static final int kHIScrollViewOptionsVertScroll = (1 << 0);
 	public static final int kHIScrollViewOptionsHorizScroll = (1 << 1);
 	public static final int kHIScrollViewOptionsAllowGrow = (1 << 2);
@@ -996,6 +1001,7 @@ public class OS extends C {
 	public static final int typeMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeMenuItemIndex = ('m'<<24) + ('i'<<16) + ('d'<<8) + 'x';        
 	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
+	public static final int typeModalClickResult = ('w'<<24) + ('m'<<16) + ('c'<<8) + 'r';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeMouseWheelAxis = ('m'<<24) + ('w'<<16) + ('a'<<8) + 'x';
 	public static final int typeQDPoint = ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
@@ -1010,6 +1016,8 @@ public class OS extends C {
 	public static final int typeUnicodeText = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int typeWildCard = ('w'<<24) + ('i'<<16) + ('l'<<8) + 'd';
 	public static final int typeWindowDefPartCode = ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
+	public static final int typeWindowPartCode = ('w'<<24) + ('p'<<16) + ('a'<<8) + 'r';
+	public static final int kEventParamWindowPartCode = ('w'<<24) + ('p'<<16) + ('a'<<8) + 'r';
 	public static final int typeWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int typeWindowRegionCode = ('w'<<24) + ('s'<<16) + ('h'<<8) + 'p';
 	public static final int updateEvt = 6;
@@ -1642,6 +1650,7 @@ public static final native int IconRefToIconFamily(int theIconRef, int whichIcon
 public static final native int InitContextualMenus();
 public static final native void InitCursor();
 public static final native void HIWindowFlush(int window);
+public static final native boolean HIWindowIsDocumentModalTarget(int inWindow, int[] outOwner);  
 public static final native int InitDataBrowserCallbacks(DataBrowserCallbacks callbacks);
 public static final native int InitDataBrowserCustomCallbacks(DataBrowserCustomCallbacks callbacks); 
 public static final native void InsertMenu(int mHandle, short beforeID);

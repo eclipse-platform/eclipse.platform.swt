@@ -2084,6 +2084,38 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	if ((state & IGNORE_WHEEL) != 0) return OS.eventNotHandledErr;
+	
+	/*
+	* Bug in the Macintosh.  Mouse Wheel events are still processed when the
+	* window is not enabled due to a modal dialog.  The fix is to not let the
+	* default handlers run when window is modal disabled.
+	*/
+	int window = OS.GetControlOwner (handle);
+	if (OS.HIWindowIsDocumentModalTarget (window, null)) {
+		return OS.noErr;
+	}	
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassWindow, OS.kEventWindowGetClickModality, 0.0, 0, event);
+	if (event [0] != 0) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowPartCode, OS.typeWindowPartCode, null, 2, null, part);
+		int [] modifiers = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+		OS.SetEventParameter (event [0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[]{window});
+		OS.SetEventParameter (event [0], OS.kEventParamWindowPartCode, OS.typeWindowPartCode, 2, part);
+		OS.SetEventParameter (event [0], OS.kEventParamKeyModifiers, OS.typeUInt32, 4, modifiers);
+		OS.SetEventParameter (event [0], OS.kEventParamEventRef, OS.typeEventRef, 4, new int[]{theEvent});
+		OS.SendEventToEventTarget (event [0], OS.GetApplicationEventTarget ());
+		int [] clickResult = new int [1];
+		OS.GetEventParameter (event [0], OS.kEventParamModalClickResult, OS.typeModalClickResult, null, modifiers.length * 4, null, clickResult);
+		OS.ReleaseEvent (event [0]);
+		if ((clickResult [0] & OS.kHIModalClickIsModal) != 0) {
+			if ((clickResult [0] & OS.kHIModalClickAllowEvent) == 0) {
+				return OS.noErr;
+			}
+		}
+	}
+	
 	short [] wheelAxis = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelAxis, OS.typeMouseWheelAxis, null, 2, null, wheelAxis);
 	int [] wheelDelta = new int [1];

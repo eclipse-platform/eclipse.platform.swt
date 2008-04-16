@@ -627,6 +627,7 @@ typedef enum {
 	HIViewSetZOrder_FUNC,
 	HIViewSimulateClick_FUNC,
 	HIWindowFlush_FUNC,
+	HIWindowIsDocumentModalTarget_FUNC,
 	HLock_FUNC,
 	HMDisplayTag_FUNC,
 	HMGetTagDelay_FUNC,
