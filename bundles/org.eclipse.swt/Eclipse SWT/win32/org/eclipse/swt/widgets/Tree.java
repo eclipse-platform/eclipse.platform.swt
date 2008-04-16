@@ -960,6 +960,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 	}
 	boolean selected = isItemSelected (nmcd);
 	boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
+	boolean focused = (nmcd.uItemState & OS.CDIS_FOCUS) != 0;
 	if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
 		if (hFont != -1) OS.SelectObject (hDC, hFont);
 		if (linesVisible) {
@@ -1064,17 +1065,23 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 					selectionForeground = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				}
 				if (explorerTheme) {
-					RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
-					RECT pClipRect = item.getBounds (index, true, true, false, false, true, hDC);
-					pRect.left -= EXPLORER_EXTRA;
-					pRect.right += EXPLORER_EXTRA;
-					pClipRect.left -= EXPLORER_EXTRA;
-					pClipRect.right += EXPLORER_EXTRA;
-					int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
-					int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-					if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-					OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-					OS.CloseThemeData (hTheme);
+					if ((style & SWT.FULL_SELECTION) == 0) {
+						RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
+						RECT pClipRect = item.getBounds (index, true, true, true, false, true, hDC);
+						if (measureEvent != null) {
+							pRect.right = Math.min (pClipRect.right, measureEvent.x + measureEvent.width);
+						} else {
+							pRect.right += EXPLORER_EXTRA;
+							pClipRect.right += EXPLORER_EXTRA;
+						}
+						pRect.left -= EXPLORER_EXTRA;
+						pClipRect.left -= EXPLORER_EXTRA;
+						int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+						OS.CloseThemeData (hTheme);
+					}
 				} else {
 					/*
 					* Feature in Windows.  When the tree has the style
@@ -1120,8 +1127,8 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 				}
 			}
-			if (measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
-				RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
+			if (focused && measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
+				RECT textRect = item.getBounds (index, true, explorerTheme, false, false, true, hDC);
 				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
 				nmcd.uItemState &= ~OS.CDIS_FOCUS;
 				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
