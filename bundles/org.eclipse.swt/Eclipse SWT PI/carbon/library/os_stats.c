@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 965;
-int OS_nativeFunctionCallCount[965];
+int OS_nativeFunctionCount = 967;
+int OS_nativeFunctionCallCount[967];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -718,6 +718,7 @@ char * OS_nativeFunctionNames[] = {
 	"PMGetLastPage",
 	"PMGetPageRange",
 	"PMGetResolution",
+	"PMPrinterGetOutputResolution",
 	"PMRelease",
 	"PMSessionBeginDocumentNoDialog",
 	"PMSessionBeginPageNoDialog",
@@ -728,6 +729,7 @@ char * OS_nativeFunctionNames[] = {
 	"PMSessionEndDocumentNoDialog",
 	"PMSessionEndPageNoDialog",
 	"PMSessionError",
+	"PMSessionGetCurrentPrinter",
 	"PMSessionGetDestinationType",
 	"PMSessionGetGraphicsContext",
 	"PMSessionPageSetupDialog",

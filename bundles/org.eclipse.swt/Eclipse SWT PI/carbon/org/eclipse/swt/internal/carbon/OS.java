@@ -1727,6 +1727,7 @@ public static final native int PMGetFirstPage(int printSettings, int[] first);
 public static final native int PMGetJobNameCFString(int printSettings, int[] name);
 public static final native int PMGetLastPage(int printSettings, int[] last);
 public static final native int PMGetPageRange(int printSettings, int[] minPage, int[] maxPage);
+public static final native int PMPrinterGetOutputResolution(int i, int printSettings, PMResolution resolution);
 public static final native int PMRelease(int printManagerObject);
 public static final native int PMGetResolution(int pageFormat, PMResolution resolution);
 public static final native int PMSessionBeginDocumentNoDialog(int printSession, int printSettings, int pageFormat);
@@ -1738,6 +1739,7 @@ public static final native int PMSessionDefaultPrintSettings(int printSession, i
 public static final native int PMSessionEndDocumentNoDialog(int printSession);
 public static final native int PMSessionEndPageNoDialog(int printSession);
 public static final native int PMSessionError(int printSession);
+public static final native int PMSessionGetCurrentPrinter(int printSession, int[] printer);
 public static final native int PMSessionGetDestinationType(int printSession, int printSettings, short[] destTypeP); 
 public static final native int PMSessionGetGraphicsContext(int printSession, int graphicsType, int[] graphicsContext);
 public static final native int PMSessionPageSetupDialog(int printSession, int pageFormat, boolean[] result);	

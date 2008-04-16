@@ -10335,6 +10335,22 @@ fail:
 }
 #endif
 
+#ifndef NO_PMPrinterGetOutputResolution
+JNIEXPORT jint JNICALL OS_NATIVE(PMPrinterGetOutputResolution)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	PMResolution _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PMPrinterGetOutputResolution_FUNC);
+	if (arg2) if ((lparg2 = getPMResolutionFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)PMPrinterGetOutputResolution((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
+fail:
+	if (arg2 && lparg2) setPMResolutionFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, PMPrinterGetOutputResolution_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PMRelease
 JNIEXPORT jint JNICALL OS_NATIVE(PMRelease)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -10469,6 +10485,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMSessionError)
 	OS_NATIVE_ENTER(env, that, PMSessionError_FUNC);
 	rc = (jint)PMSessionError((PMPrintSession)arg0);
 	OS_NATIVE_EXIT(env, that, PMSessionError_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionGetCurrentPrinter
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionGetCurrentPrinter)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PMSessionGetCurrentPrinter_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)PMSessionGetCurrentPrinter((PMPrintSession)arg0, (PMPrinter *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, PMSessionGetCurrentPrinter_FUNC);
 	return rc;
 }
 #endif

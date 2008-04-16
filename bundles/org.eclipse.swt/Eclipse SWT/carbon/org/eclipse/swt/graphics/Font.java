@@ -295,9 +295,23 @@ public FontData[] getFontData() {
 	if ((this.style & OS.bold) != 0) style |= SWT.BOLD;
 	if (atsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
 	if (atsName.indexOf("Bold") != -1) style |= SWT.BOLD;
-	FontData data = new FontData(name, size, style);
+	int deviceDPI = device.getDPI().y;
+	int screenDPI = getScreenDPI().y;
+	FontData data = new FontData(name, size * screenDPI/deviceDPI, style);
 	data.atsName = atsName;
 	return new FontData[]{data};
+}
+
+Point getScreenDPI() {
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memmove(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memmove(device, ptr[0], GDevice.sizeof);
+	OS.memmove(ptr, device.gdPMap, 4);
+	PixMap pixmap = new PixMap();
+	OS.memmove(pixmap, ptr[0], PixMap.sizeof);
+	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
 }
 
 /**	 
@@ -378,7 +392,9 @@ void init(String name, float height, int style, String atsName) {
 			}
 		}
 	}
-	this.size = height;
+	int deviceDPI = device.getDPI().y;
+	int screenDPI = getScreenDPI().y;
+	this.size = height * deviceDPI/screenDPI;
 	if (font == 0) {
 		Font systemFont = device.systemFont;
 		this.handle = systemFont.handle;

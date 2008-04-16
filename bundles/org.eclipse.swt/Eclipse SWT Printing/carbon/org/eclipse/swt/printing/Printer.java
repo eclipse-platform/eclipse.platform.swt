@@ -12,11 +12,8 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.PMRect;
-import org.eclipse.swt.internal.carbon.PMResolution;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -40,6 +37,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  */
 public final class Printer extends Device {
 	PrinterData data;
+	Font defaultFont;
 	int printSession, printSettings, pageFormat;
 	boolean inPage, isGCCreated;
 	int context;
@@ -110,6 +108,21 @@ static String getCurrentPrinterName(int printSession) {
 		OS.CFRelease(printerList[0]);
 	}
 	return result;
+}
+Point getScreenDPI() {
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memmove(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memmove(device, ptr[0], GDevice.sizeof);
+	OS.memmove(ptr, device.gdPMap, 4);
+	PixMap pixmap = new PixMap();
+	OS.memmove(pixmap, ptr[0], PixMap.sizeof);
+	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
+}
+public Font getSystemFont() {
+	checkDevice();
+	return defaultFont;
 }
 static String getString(int ptr) {
 	int length = OS.CFStringGetLength(ptr);
@@ -348,6 +361,10 @@ protected void init () {
 	super.init();
 	colorspace = OS.CGColorSpaceCreateDeviceRGB();
 	if (colorspace == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int printerDPI = getDPI().y;
+	int screenDPI = getScreenDPI().y;
+	Font systemFont = getSystemFont();
+	defaultFont = Font.carbon_new(this, systemFont.handle, systemFont.style, systemFont.size * printerDPI/screenDPI);
 }
 
 /**	 
@@ -375,6 +392,8 @@ public void internal_dispose_GC(int context, GCData data) {
 protected void release () {
 	if (colorspace != 0) OS.CGColorSpaceRelease(colorspace);
 	colorspace = 0;
+	if (defaultFont != null) defaultFont.dispose();
+	defaultFont = null;
 	super.release();
 }
 
@@ -521,7 +540,13 @@ public void endPage() {
 public Point getDPI() {
 	checkDevice();
 	PMResolution resolution = new PMResolution();
-	OS.PMGetResolution(pageFormat, resolution);
+	if (OS.VERSION <= 0x1040) {
+		OS.PMGetResolution(pageFormat, resolution);
+	} else {
+		int[] printer = new int[1]; 
+		OS.PMSessionGetCurrentPrinter(printSession, printer);
+		OS.PMPrinterGetOutputResolution(printer[0], printSettings, resolution);
+	}
 	return new Point((int)resolution.hRes, (int)resolution.vRes);
 }
 
@@ -631,6 +656,9 @@ void setupNewPage() {
 		OS.CGContextTranslateCTM(context, 0, -(float)(paperRect.bottom-paperRect.top));
 		OS.CGContextSetStrokeColorSpace(context, colorspace);
 		OS.CGContextSetFillColorSpace(context, colorspace);
+		Point printerDPI = getDPI();
+		Point screenDPI = getScreenDPI();
+		OS.CGContextScaleCTM(context, screenDPI.x/printerDPI.x, screenDPI.y/printerDPI.y);
 	}
 }
 
