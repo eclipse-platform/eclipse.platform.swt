@@ -78,7 +78,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		int /*long*/[] error = new int /*long*/[1];
 		int /*long*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
-		int /*long*/ localePtr = OS.g_locale_from_utf8(utf8Ptr, -1, null, null, error);
+		int /*long*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
 		OS.g_free(utf8Ptr);
 		if (error[0] != 0 || localePtr == 0) continue;
 		int /*long*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
@@ -158,7 +158,7 @@ public Object nativeToJava(TransferData transferData) {
 		int /*long*/ localePtr = OS.g_filename_from_uri(files[i], null, error);
 		OS.g_free(files[i]);
 		if (error[0] != 0 || localePtr == 0) continue;
-		int /*long*/ utf8Ptr = OS.g_locale_to_utf8(localePtr, -1, null, null, error);
+		int /*long*/ utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
 		int /*long*/[] items_written = new int /*long*/[1];
