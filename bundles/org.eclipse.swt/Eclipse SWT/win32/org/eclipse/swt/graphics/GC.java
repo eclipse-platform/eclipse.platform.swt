@@ -3719,6 +3719,14 @@ public int hashCode () {
  */
 public boolean isClipped() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
+		int rgn = Gdip.Region_new();
+		Gdip.Graphics_GetClip(data.gdipGraphics, rgn);
+		boolean isInfinite = Gdip.Region_IsInfinite(rgn, gdipGraphics);
+		Gdip.Region_delete(rgn);
+		return !isInfinite;
+	}
 	int /*long*/ region = OS.CreateRectRgn(0, 0, 0, 0);
 	int result = OS.GetClipRgn(handle, region);
 	OS.DeleteObject(region);
