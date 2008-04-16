@@ -9744,6 +9744,7 @@ public static final native void memmove(int /*long*/ dest, GtkTargetEntry src, i
 public static final native void memmove(int /*long*/ dest, GtkAdjustment src);
 public static final native void memmove(int /*long*/ dest, GdkEventButton src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, GdkEventExpose src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, GdkEventMotion src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, GtkWidgetClass src);
 public static final native void memmove(int /*long*/ dest, PangoAttribute src, int /*long*/ size);
 public static final native void memmove(GObjectClass  dest, int /*long*/ src);

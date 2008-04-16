@@ -3895,14 +3895,7 @@ void setToolTipText (Shell shell, String newString) {
 		* under the pointer).
 		*/
 		if (display.currentControl == this) {
-			byte[] buffer = null;
-			if (newString != null && newString.length() > 0) {
-				char[] chars = fixMnemonic(newString, false);
-				buffer = Converter.wcsToMbcs(null, chars, true);
-			}
-			OS.gtk_widget_set_tooltip_text (shell.handle, null);
-			OS.gtk_tooltip_trigger_tooltip_query (OS.gdk_display_get_default ());
-			OS.gtk_widget_set_tooltip_text (shell.handle, buffer);
+			shell.setToolTipText (shell.handle, eventHandle (), newString);
 		}
 	} else {
 		shell.setToolTipText (eventHandle (), newString);
