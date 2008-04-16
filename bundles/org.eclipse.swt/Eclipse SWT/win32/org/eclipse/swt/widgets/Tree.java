@@ -76,6 +76,7 @@ public class Tree extends Composite {
 	ImageList imageList, headerImageList;
 	TreeItem currentItem;
 	TreeColumn sortColumn;
+	RECT focusRect;
 	int /*long*/ hwndParent, hwndHeader, hAnchor, hInsert, hSelect;
 	int lastID;
 	int /*long*/ hFirstIndexOf, hLastIndexOf;
@@ -478,22 +479,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
 				}
-			} else {
-				if (explorerTheme && hooks (SWT.EraseItem)) {
-					if ((selected && !ignoreDrawSelection) || (hot && !ignoreDrawHot)) {
-						RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
-						RECT pClipRect = item.getBounds (index, true, true, false, false, true, hDC);
-						pRect.left -= EXPLORER_EXTRA;
-						pRect.right += EXPLORER_EXTRA;
-						pClipRect.left -= EXPLORER_EXTRA;
-						pClipRect.right += EXPLORER_EXTRA;
-						int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
-						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-						OS.CloseThemeData (hTheme);
-					}
-				}
 			}
 		}
 		if (x + width > clientRect.left) {
@@ -885,6 +870,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 	}
+	if (!ignoreDrawFocus && focusRect != null) {
+		OS.DrawFocusRect (hDC, focusRect);
+		focusRect = null;
+	}
 	if (!explorerTheme) {
 		if (handle == OS.GetFocus ()) {
 			int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
@@ -979,8 +968,9 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 			OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 		}
 		//TODO - BUG - measure and erase sent when first column is clipped
+		Event measureEvent = null;
 		if (hooks (SWT.MeasureItem)) {
-			sendMeasureItemEvent (item, index, hDC);
+			/* measureEvent = */ sendMeasureItemEvent (item, index, hDC);
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		selectionForeground = -1;
@@ -988,15 +978,15 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 		if (hooks (SWT.EraseItem)) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
-				drawBackground (hDC, rect);
-			} else {
-				fillBackground (hDC, OS.GetBkColor (hDC), rect);
-			}
 			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			if (clrSortBk != -1) {
-				RECT fullRect = item.getBounds (index, true, true, true, true, true, hDC);
-				drawBackground (hDC, fullRect, clrSortBk);
+				drawBackground (hDC, cellRect, clrSortBk);
+			} else {
+				if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
+					drawBackground (hDC, rect);
+				} else {
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				}
 			}
 			int nSavedDC = OS.SaveDC (hDC);
 			GCData data = new GCData ();
@@ -1073,7 +1063,19 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 				if (!selected && !hot) {
 					selectionForeground = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				}
-				if (!explorerTheme) {
+				if (explorerTheme) {
+					RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
+					RECT pClipRect = item.getBounds (index, true, true, false, false, true, hDC);
+					pRect.left -= EXPLORER_EXTRA;
+					pRect.right += EXPLORER_EXTRA;
+					pClipRect.left -= EXPLORER_EXTRA;
+					pClipRect.right += EXPLORER_EXTRA;
+					int /*long*/ hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+					int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+					if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+					OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+					OS.CloseThemeData (hTheme);
+				} else {
 					/*
 					* Feature in Windows.  When the tree has the style
 					* TVS_FULLROWSELECT, the background color for the
@@ -1089,6 +1091,9 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 						}
 					} else {
 						RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
+						if (measureEvent != null) {
+							textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+						}
 						fillBackground (hDC, OS.GetBkColor (hDC), textRect);
 					}
 				}
@@ -1114,6 +1119,13 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 					}
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 				}
+			}
+			if (measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
+				RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
+				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+				nmcd.uItemState &= ~OS.CDIS_FOCUS;
+				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+				focusRect = textRect;
 			}
 			if (explorerTheme) {
 				if (selected || (hot && ignoreDrawHot)) nmcd.uItemState &= ~OS.CDIS_HOT;
@@ -7379,7 +7391,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					rect.left = headerRect.right - gridWidth;
 					int newX = rect.left + deltaX;
 					rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
-					if (explorerTheme || (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
+					if (explorerTheme || (findImageControl () != null || hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
+						rect.left -= OS.GetSystemMetrics (OS.SM_CXFOCUSBORDER);
 						OS.InvalidateRect (handle, rect, true);
 						OS.OffsetRect (rect, deltaX, 0);
 						OS.InvalidateRect (handle, rect, true);

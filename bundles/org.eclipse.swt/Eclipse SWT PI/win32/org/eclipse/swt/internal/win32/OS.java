@@ -1430,6 +1430,7 @@ public class OS extends C {
 	public static final int SM_CXDOUBLECLK = 36;
 	public static final int SM_CYDOUBLECLK = 37;
 	public static final int SM_CXEDGE = 0x2d;
+	public static final int SM_CXFOCUSBORDER = 83;
 	public static final int SM_CXHSCROLL = 0x15;
 	public static final int SM_CXICON = 0x0b;
 	public static final int SM_CYICON = 0x0c;
@@ -1443,6 +1444,7 @@ public class OS extends C {
 	public static final int SM_CXVSCROLL = 0x2;
 	public static final int SM_CYBORDER = 0x6;
 	public static final int SM_CYCURSOR = 0xe;
+	public static final int SM_CYFOCUSBORDER = 84;
 	public static final int SM_CYHSCROLL = 0x3;
 	public static final int SM_CYMENU = 0xf;
 	public static final int SM_CXMINTRACK = 34;
