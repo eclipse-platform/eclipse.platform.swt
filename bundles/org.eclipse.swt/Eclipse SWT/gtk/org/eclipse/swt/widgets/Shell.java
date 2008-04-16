@@ -1895,20 +1895,18 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which 
 		* contain the proper x and y coordinates.
 		*/
-		boolean trigger = false;
 		int /*long*/ eventPtr = 0;
 		int /*long*/ tipWindow = OS.GTK_WIDGET_WINDOW (rootWidget);
 		if (tipWindow != 0) {
-			eventPtr = OS.gdk_event_new (OS.GDK_MOTION_NOTIFY);
-			GdkEventMotion event = new GdkEventMotion ();
-			event.type = OS.GDK_MOTION_NOTIFY;
-			event.window = OS.g_object_ref (tipWindow);
 			int [] x = new int [1], y = new int [1];
 			int /*long*/ window = OS.gdk_window_at_pointer (x, y);
 			int /*long*/ [] user_data = new int /*long*/ [1];
 			OS.gdk_window_get_user_data (window, user_data);
 			if (tipWidget == user_data [0]) {
-				trigger = true;
+				eventPtr = OS.gdk_event_new (OS.GDK_MOTION_NOTIFY);
+				GdkEventMotion event = new GdkEventMotion ();
+				event.type = OS.GDK_MOTION_NOTIFY;
+				event.window = OS.g_object_ref (tipWindow);
 				event.x = x [0];
 				event.y = y [0];
 				OS.gdk_window_get_origin (window, x, y);
@@ -1919,7 +1917,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			}
 		}
 		OS.gtk_widget_set_tooltip_text (rootWidget, buffer);
-		if (trigger) {
+		if (eventPtr != 0) {
 			OS.gtk_main_do_event (eventPtr);
 			OS.gdk_event_free (eventPtr);
 		}
