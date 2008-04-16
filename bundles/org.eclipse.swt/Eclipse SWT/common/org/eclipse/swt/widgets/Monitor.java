@@ -49,7 +49,8 @@ public boolean equals (Object object) {
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its device.
+ * relative to its device. Note that on multi-monitor systems the
+ * origin can be negative.
  *
  * @return the receiver's bounding rectangle
  */	
