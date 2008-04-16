@@ -40,6 +40,7 @@ public class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	String toolTipText;
 	boolean drawHotImage;
+	int width;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -718,10 +719,12 @@ void resizeControl () {
 		* combo box.
 		*/
 		Rectangle itemRect = getBounds ();
-		control.setSize (itemRect.width, itemRect.height);
 		Rectangle rect = control.getBounds ();
-		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
-		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+		int height = Math.max (itemRect.height, rect.height);
+		control.setSize (width, height);
+		OS.gtk_widget_set_size_request (handle, width, height);
+		rect.x = itemRect.x;
+		rect.y = itemRect.y;
 		control.setLocation (rect.x, rect.y);
 	} else {
 		if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
@@ -1028,7 +1031,7 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	OS.gtk_widget_set_size_request (handle, width, -1);
+	this.width = width;
 	parent.relayout ();
 }
 
