@@ -723,8 +723,9 @@ void resizeControl () {
 		int height = Math.max (itemRect.height, rect.height);
 		control.setSize (width, height);
 		OS.gtk_widget_set_size_request (handle, width, height);
-		rect.x = itemRect.x;
-		rect.y = itemRect.y;
+		rect = control.getBounds ();
+		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
+		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
 		control.setLocation (rect.x, rect.y);
 	} else {
 		if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
