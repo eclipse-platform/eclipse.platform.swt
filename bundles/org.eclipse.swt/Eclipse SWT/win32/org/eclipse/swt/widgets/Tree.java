@@ -873,25 +873,26 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 	if (!ignoreDrawFocus && focusRect != null) {
 		OS.DrawFocusRect (hDC, focusRect);
 		focusRect = null;
-	}
-	if (!explorerTheme) {
-		if (handle == OS.GetFocus ()) {
-			int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-				int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-				if (hItem == item.handle) {
-					if (!ignoreDrawFocus && findImageControl () != null) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							RECT focusRect = new RECT ();
-							OS.SetRect (focusRect, 0, nmcd.top, clientRect.right + 1, nmcd.bottom);
-							OS.DrawFocusRect (hDC, focusRect);
-						} else {
-							int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-							RECT focusRect = item.getBounds (index, true, false, false, false, false, hDC);
-							RECT clipRect = item.getBounds (index, true, false, false, false, true, hDC);
-							OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
-							OS.DrawFocusRect (hDC, focusRect);
-							OS.SelectClipRgn (hDC, 0);
+	} else {
+		if (!explorerTheme) {
+			if (handle == OS.GetFocus ()) {
+				int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+					int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+					if (hItem == item.handle) {
+						if (!ignoreDrawFocus && findImageControl () != null) {
+							if ((style & SWT.FULL_SELECTION) != 0) {
+								RECT focusRect = new RECT ();
+								OS.SetRect (focusRect, 0, nmcd.top, clientRect.right + 1, nmcd.bottom);
+								OS.DrawFocusRect (hDC, focusRect);
+							} else {
+								int index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+								RECT focusRect = item.getBounds (index, true, false, false, false, false, hDC);
+								RECT clipRect = item.getBounds (index, true, false, false, false, true, hDC);
+								OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+								OS.DrawFocusRect (hDC, focusRect);
+								OS.SelectClipRgn (hDC, 0);
+							}
 						}
 					}
 				}
@@ -960,7 +961,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 	}
 	boolean selected = isItemSelected (nmcd);
 	boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
-	boolean focused = (nmcd.uItemState & OS.CDIS_FOCUS) != 0;
+	boolean focused = explorerTheme && (nmcd.uItemState & OS.CDIS_FOCUS) != 0;
 	if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
 		if (hFont != -1) OS.SelectObject (hDC, hFont);
 		if (linesVisible) {
@@ -1018,7 +1019,10 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 				if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
 					if (handle == OS.GetFocus ()) {
 						int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-						if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+						if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+							focused = true;
+							event.detail |= SWT.FOCUSED;
+						}
 					}
 				}
 			}
@@ -1127,9 +1131,11 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 				}
 			}
-			if (focused && measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
+			if (focused && !ignoreDrawFocus && (style & SWT.FULL_SELECTION) == 0) {
 				RECT textRect = item.getBounds (index, true, explorerTheme, false, false, true, hDC);
-				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+				if (measureEvent != null) {
+					textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+				}
 				nmcd.uItemState &= ~OS.CDIS_FOCUS;
 				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 				focusRect = textRect;

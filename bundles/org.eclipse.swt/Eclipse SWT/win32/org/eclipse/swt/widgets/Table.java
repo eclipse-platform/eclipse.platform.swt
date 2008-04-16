@@ -3351,8 +3351,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	if (!ignoreDrawHot || !ignoreDrawSelection || !ignoreDrawFocus) {
 		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 		RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
-		if (focused && measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
-			textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+		if (focused && (style & SWT.FULL_SELECTION) == 0) {
+			if (measureEvent != null) {
+				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
+			}
 			if (!ignoreDrawFocus) focusRect = textRect;
 		}
 		if (explorerTheme) {
@@ -3386,7 +3388,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			if (!ignoreDrawSelection && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, textRect);
 		}
 	}
-	if (ignoreDrawFocus || focusRect != null) {
+	if (focused && (ignoreDrawFocus || focusRect != null)) {
 		nmcd.uItemState &= ~OS.CDIS_FOCUS;
 		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 	}
