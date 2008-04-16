@@ -772,7 +772,6 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((data.uiState & OS.UISF_HIDEFOCUS) != 0) return;
-	checkGC(FOREGROUND_TEXT | BACKGROUND_TEXT);
 	data.focusDrawn = true;
 	int /*long*/ hdc = handle;
 	int state = 0;
@@ -799,8 +798,6 @@ public void drawFocus (int x, int y, int width, int height) {
 		Gdip.Matrix_delete(matrix);
 		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 		state = OS.SaveDC(hdc);
-		OS.SetBkColor(hdc, data.background);
-		OS.SetTextColor(hdc, data.foreground);
 		if (lpXform != null) {
 			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
 			OS.SetWorldTransform(hdc, lpXform);
@@ -810,12 +807,16 @@ public void drawFocus (int x, int y, int width, int height) {
 			OS.DeleteObject(clipRgn);
 		}
 	}
+	OS.SetBkColor(hdc, 0xFFFFFF);
+	OS.SetTextColor(hdc, 0x000000);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, x + width, y + height);
 	OS.DrawFocusRect(hdc, rect);
 	if (gdipGraphics != 0) {
 		OS.RestoreDC(hdc, state);
 		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+	} else {
+		data.state &= ~(BACKGROUND_TEXT | FOREGROUND_TEXT);
 	}
 }
 
