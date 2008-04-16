@@ -131,6 +131,7 @@ public static final int S_set = Cocoa.sel_registerName("set"); //$NON-NLS-1$
 public static final int S_init = Cocoa.sel_registerName("init"); //$NON-NLS-1$
 public static final int S_frame = Cocoa.sel_registerName("frame"); //$NON-NLS-1$
 public static final int S_window = Cocoa.sel_registerName("window"); //$NON-NLS-1$
+public static final int S_makeKeyWindow = Cocoa.sel_registerName("makeKeyWindow"); //$NON-NLS-1$
 public static final int S_addRepresentation = Cocoa.sel_registerName("addRepresentation:"); //$NON-NLS-1$
 public static final int S_initWithBitmapDataPlanes = Cocoa.sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:"); //$NON-NLS-1$
 public static final int S_bitmapData = Cocoa.sel_registerName("bitmapData"); //$NON-NLS-1$

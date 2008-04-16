@@ -116,7 +116,7 @@ public void create (Composite parent, int style) {
 			OS.HIViewSetVisible(outControl[0], false);
 			OS.HIViewAddSubview(rootHandle, outControl[0]);
 			OS.DisposeControl(outControl[0]);
-			shell.setData(BROWSER_COCOA_BUTTON, "true");
+			shell.setData(BROWSER_COCOA_BUTTON, "true"); //$NON-NLS-1$
 		}
 	}
 
@@ -176,8 +176,8 @@ public void create (Composite parent, int style) {
 	* sub view of the browser handle.  The fix is to add the web view to the
 	* window root control and resize it on top of the browser handle.
 	* 
-	* Note that when reparent the browser is reparented, the web view has to
-	* be reparent by hand by hooking kEventControlOwningWindowChanged.
+	* Note that when the browser is reparented, the web view has to
+	* be reparented by hand by hooking kEventControlOwningWindowChanged.
 	*/
 	int window = OS.GetControlOwner(browser.handle);
 	int[] contentView = new int[1];
@@ -250,10 +250,21 @@ public void create (Composite parent, int style) {
 					lastHoveredLinkURL = null;
 					break;
 				}
+				case SWT.Activate: {
+					Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.HIWebViewGetWebView(webViewHandle), Cocoa.S_window), Cocoa.S_makeKeyWindow);
+					break;
+				}
+				case SWT.FocusIn: {
+					OS.SetKeyboardFocus(OS.GetControlOwner(browser.handle), webViewHandle, (short)-1);
+					break;
+				}
 			}
 		}
 	};
 	browser.addListener(SWT.Dispose, listener);
+	browser.addListener(SWT.FocusIn, listener);
+	browser.addListener(SWT.KeyDown, listener); /* needed to make browser traversable */
+	browser.getShell().addListener(SWT.Activate, listener);
 	
 	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
 	int callback3Address = Callback3.getAddress();
