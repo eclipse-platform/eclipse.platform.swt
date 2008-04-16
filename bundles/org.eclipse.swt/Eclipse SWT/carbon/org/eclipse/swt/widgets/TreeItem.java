@@ -236,8 +236,7 @@ int calculateWidth (int index, GC gc) {
 		event.width = width;
 		event.height = height [0];
 		parent.sendEvent (SWT.MeasureItem, event);
-		if (parent.itemHeight < event.height) {
-			parent.itemHeight = event.height;
+		if (height [0] < event.height) {
 			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
 			redrawWidget (parent.handle, false);
 		}

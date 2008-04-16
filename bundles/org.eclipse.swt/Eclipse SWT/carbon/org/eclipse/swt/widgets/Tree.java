@@ -84,7 +84,7 @@ public class Tree extends Composite {
 	int [] childIds;
 	GC paintGC;
 	int sortDirection;
-	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight;
+	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll, drawBackground;
 	Rectangle imageBounds;
 	TreeItem showItem;
@@ -779,7 +779,6 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
-	itemHeight = -1;
 }
 
 Color defaultBackground () {
@@ -1101,8 +1100,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.width = contentWidth;
 		event.height = itemHeight;
 		sendEvent (SWT.MeasureItem, event);
-		if (this.itemHeight < event.height) {
-			this.itemHeight = event.height;
+		if (itemHeight < event.height) {
+			itemHeight = event.height;
 			OS.SetDataBrowserTableViewRowHeight (handle, (short) event.height);
 			redrawWidget (handle, false);
 		}
@@ -1110,7 +1109,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			redrawWidget (handle, false);
 		}
 		contentWidth = event.width;
-		itemHeight = event.height;
 		gc.setClipping (region);
 		gc.setFont (font);
 	}
@@ -2700,7 +2698,6 @@ public void removeAll () {
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
 	visibleCount = 0;
-	itemHeight = -1;
 	setScrollWidth (true);
 }
 

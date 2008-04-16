@@ -77,7 +77,7 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	GC paintGC;
 	int sortDirection;
-	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight, lastIndexOf;
+	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, lastIndexOf;
 	boolean  ignoreSelect, wasSelected, fixScrollWidth, drawBackground;
 	Rectangle imageBounds;
 	int showIndex, lastHittest, lastHittestColumn;
@@ -667,7 +667,6 @@ void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];
 	columns = new TableColumn [4];
-	itemHeight = -1;
 	showIndex = -1;
 }
 
@@ -1030,8 +1029,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.width = contentWidth;
 		event.height = itemHeight;
 		sendEvent (SWT.MeasureItem, event);
-		if (this.itemHeight < event.height) {
-			this.itemHeight = event.height;
+		if (itemHeight < event.height) {
+			itemHeight = event.height;
 			OS.SetDataBrowserTableViewRowHeight (handle, (short) event.height);
 			redrawWidget (handle, false);
 		}
@@ -1039,7 +1038,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			redrawWidget (handle, false);
 		}
 		contentWidth = event.width;
-		itemHeight = event.height;
 		gc.setClipping (region);
 		gc.setFont (font);
 	}
@@ -3279,7 +3277,6 @@ public void setSortDirection  (int direction) {
 }
 
 void setTableEmpty () {
-	itemHeight = -1;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	itemCount = anchorFirst = anchorLast = 0;
 	items = new TableItem [4];

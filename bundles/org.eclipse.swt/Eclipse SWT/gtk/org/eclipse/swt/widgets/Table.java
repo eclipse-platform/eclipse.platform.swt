@@ -2462,7 +2462,7 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 				sendEvent (SWT.MeasureItem, event);
 				gc.dispose ();
 				contentWidth [0] = event.width - imageWidth;
-				contentHeight [0] = event.height;
+				if (contentHeight [0] < event.height) contentHeight [0] = event.height;
 				if (width != 0) OS.memmove (width, contentWidth, 4);
 				if (height != 0) OS.memmove (height, contentHeight, 4);
 			}
