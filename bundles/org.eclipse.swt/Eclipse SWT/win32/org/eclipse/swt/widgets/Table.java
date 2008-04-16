@@ -714,14 +714,9 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*l
 			//widget could be disposed at this point
 		}
 		if (!ignoreDrawFocus && focusRect != null) {
-			if (handle == OS.GetFocus ()) {
-				int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-				if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-					OS.SetTextColor (nmcd.hdc, 0);
-					OS.SetBkColor (nmcd.hdc, 0xFFFFFF);
-					OS.DrawFocusRect (nmcd.hdc, focusRect);
-				}
-			}
+			OS.SetTextColor (nmcd.hdc, 0);
+			OS.SetBkColor (nmcd.hdc, 0xFFFFFF);
+			OS.DrawFocusRect (nmcd.hdc, focusRect);
 			focusRect = null;
 		}
 	}
@@ -3305,6 +3300,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 			}
 		}
 	}
+	boolean focused = (event.detail & SWT.FOCUSED) != 0;
 	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
@@ -3357,7 +3353,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 		RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 		if (measureEvent != null && (style & SWT.FULL_SELECTION) == 0) {
 			textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
-			if (!ignoreDrawFocus) focusRect = textRect;
+			if (focused && !ignoreDrawFocus) focusRect = textRect;
 		}
 		if (explorerTheme) {
 			if (!ignoreDrawHot || (!ignoreDrawSelection && clrSelectionBk != -1)) {
