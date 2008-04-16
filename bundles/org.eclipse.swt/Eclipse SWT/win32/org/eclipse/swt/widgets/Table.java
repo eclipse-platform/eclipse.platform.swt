@@ -754,7 +754,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 	if (OS.IsWindowVisible (handle)) {
 		Event measureEvent = null;
 		if (hooks (SWT.MeasureItem)) {
-			measureEvent = sendMeasureItemEvent (item, (int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
+			/* measureEvent = */ sendMeasureItemEvent (item, (int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		if (hooks (SWT.EraseItem)) {
