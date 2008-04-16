@@ -78,6 +78,7 @@
 #define gtk_expander_set_expanded_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_set_label_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_set_label_widget_LIB "libgtk-x11-2.0.so.0"
+#define gtk_label_set_line_wrap_mode_LIB "libgtk-x11-2.0.so.0"
 #define gtk_menu_shell_set_take_focus_LIB "libgtk-x11-2.0.so.0"
 #define gtk_window_set_keep_below_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tooltip_trigger_tooltip_query_LIB "libgtk-x11-2.0.so.0"

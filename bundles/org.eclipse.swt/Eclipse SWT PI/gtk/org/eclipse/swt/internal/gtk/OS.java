@@ -5523,6 +5523,15 @@ public static final void gtk_label_set_line_wrap(int /*long*/ label, boolean wra
 		lock.unlock();
 	}
 }
+public static final native void _gtk_label_set_line_wrap_mode(int /*long*/ label, int wrap_mode);
+public static final void gtk_label_set_line_wrap_mode(int /*long*/ label, int wrap_mode) {
+	lock.lock();
+	try {
+		_gtk_label_set_line_wrap_mode(label, wrap_mode);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_label_set_text(int /*long*/ label, int /*long*/ str);
 public static final void gtk_label_set_text(int /*long*/ label, int /*long*/ str) {
 	lock.lock();

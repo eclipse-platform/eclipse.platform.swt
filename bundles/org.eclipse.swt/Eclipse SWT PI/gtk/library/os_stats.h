@@ -657,6 +657,7 @@ typedef enum {
 	_1gtk_1label_1set_1attributes_FUNC,
 	_1gtk_1label_1set_1justify_FUNC,
 	_1gtk_1label_1set_1line_1wrap_FUNC,
+	_1gtk_1label_1set_1line_1wrap_1mode_FUNC,
 	_1gtk_1label_1set_1text__II_FUNC,
 	_1gtk_1label_1set_1text__I_3B_FUNC,
 	_1gtk_1label_1set_1text_1with_1mnemonic_FUNC,

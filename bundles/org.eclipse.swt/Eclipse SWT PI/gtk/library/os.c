@@ -9052,6 +9052,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1label_1set_1line_1wrap)
 }
 #endif
 
+#ifndef NO__1gtk_1label_1set_1line_1wrap_1mode
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1label_1set_1line_1wrap_1mode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1label_1set_1line_1wrap_1mode_FUNC);
+/*
+	gtk_label_set_line_wrap_mode(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_label_set_line_wrap_mode_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_label_set_line_wrap_mode");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1label_1set_1line_1wrap_1mode_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1label_1set_1text__II
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1label_1set_1text__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

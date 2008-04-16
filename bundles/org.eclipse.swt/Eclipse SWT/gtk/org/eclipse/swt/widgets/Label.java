@@ -199,7 +199,12 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, handle);
 	}
 	if ((style & SWT.SEPARATOR) != 0) return;
-	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (labelHandle, true);
+	if ((style & SWT.WRAP) != 0) {
+		OS.gtk_label_set_line_wrap (labelHandle, true);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR );
+		}
+	}
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
