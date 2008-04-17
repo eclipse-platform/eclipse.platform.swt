@@ -1150,15 +1150,15 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		if ((column.style & SWT.CENTER) != 0) x += (width - contentWidth) / 2;
 		if ((column.style & SWT.RIGHT) != 0) x += width - contentWidth;
 	}
-	int stringX = x;
-	if (image != null) stringX += this.imageBounds.width + gap;
+	int stringX = x, imageWidth = 0;
+	if (image != null) stringX += imageWidth = this.imageBounds.width + gap;
 	if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
 		if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight - 1);
 				drawState &= ~SWT.BACKGROUND;
 			} else if (columnIndex == 0) {
-				gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
+				gc.fillRectangle (stringX - 1, y, (contentWidth - imageWidth) + 2, itemHeight - 1);
 				drawState &= ~SWT.BACKGROUND;
 			}
 		 } else {
@@ -1167,7 +1167,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	if ((drawState & SWT.BACKGROUND) != 0) {
 		if (columnCount == 0) {
-			gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
+			gc.fillRectangle (stringX - 1, y, (contentWidth - imageWidth) + 2, itemHeight - 1);
 		} else {
 			gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
 		}
