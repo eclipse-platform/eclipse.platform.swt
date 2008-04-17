@@ -187,6 +187,7 @@ protected void checkSubclass () {
 
 void createWidget (int index) {
 	parent.createItem (this, index);
+	setOrientation ();
 	hookEvents ();
 	register ();
 	text = "";
@@ -560,6 +561,15 @@ public void setImage (Image image) {
 public void setMoveable (boolean moveable) {
 	checkWidget();
 	OS.gtk_tree_view_column_set_reorderable (handle, moveable);
+}
+
+void setOrientation() {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (buttonHandle != 0) {
+			OS.gtk_widget_set_direction (buttonHandle, OS.GTK_TEXT_DIR_RTL);
+			OS.gtk_container_forall (buttonHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);	
+		}
+	}
 }
 
 /**
