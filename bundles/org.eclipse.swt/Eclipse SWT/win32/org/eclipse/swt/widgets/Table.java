@@ -1356,19 +1356,27 @@ void createHandle () {
 	* 
 	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int bits2 = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
-		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_LAYOUTRTL);
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			int bits2 = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
+			OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_LAYOUTRTL);
+			int /*long*/ hwndTooltop = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+			int bits3 = OS.GetWindowLong (hwndTooltop, OS.GWL_EXSTYLE);
+			OS.SetWindowLong (hwndTooltop, OS.GWL_EXSTYLE, bits3 | OS.WS_EX_LAYOUTRTL);
+		}
 	}
 }
 
 void createHeaderToolTips () {
 	if (OS.IsWinCE) return;
 	if (headerToolTipHandle != 0) return;
+	int bits = 0;
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
+	}
 	headerToolTipHandle = OS.CreateWindowEx (
-		0,
+		bits,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX,

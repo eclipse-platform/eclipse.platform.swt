@@ -1878,8 +1878,12 @@ void createHandle () {
 void createHeaderToolTips () {
 	if (OS.IsWinCE) return;
 	if (headerToolTipHandle != 0) return;
+	int bits = 0;
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
+	}
 	headerToolTipHandle = OS.CreateWindowEx (
-		0,
+		bits,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX,
@@ -2158,11 +2162,15 @@ void createItem (TreeItem item, int /*long*/ hParent, int /*long*/ hInsertAfter,
 void createItemToolTips () {
 	if (OS.IsWinCE) return;
 	if (itemToolTipHandle != 0) return;
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	bits |= OS.TVS_NOTOOLTIPS;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	bits1 |= OS.TVS_NOTOOLTIPS;
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits1);
+	int bits2 = 0;
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) bits2 |= OS.WS_EX_LAYOUTRTL;
+	}
 	itemToolTipHandle = OS.CreateWindowEx (
-		OS.WS_EX_TRANSPARENT,
+		bits2 | OS.WS_EX_TRANSPARENT,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX | OS.TTS_NOANIMATE | OS.TTS_NOFADE,
