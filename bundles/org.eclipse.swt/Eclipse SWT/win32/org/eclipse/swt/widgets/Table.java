@@ -1371,7 +1371,7 @@ void createHeaderToolTips () {
 		0,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
-		0,
+		OS.TTS_NOPREFIX,
 		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
 		handle,
 		0,
