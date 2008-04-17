@@ -40,7 +40,6 @@ public class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	String toolTipText;
 	boolean drawHotImage;
-	int width;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -323,6 +322,7 @@ public Rectangle getBounds () {
 		height = OS.GTK_WIDGET_HEIGHT (topHandle);		
 	}
 	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
+	if ((style & SWT.SEPARATOR) != 0 && control != null) height = Math.max (height, 23);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -719,11 +719,9 @@ void resizeControl () {
 		* combo box.
 		*/
 		Rectangle itemRect = getBounds ();
+		control.setSize (itemRect.width, itemRect.height);
+		OS.gtk_widget_set_size_request (handle, itemRect.width, itemRect.height);
 		Rectangle rect = control.getBounds ();
-		int height = Math.max (itemRect.height, rect.height);
-		control.setSize (width, height);
-		OS.gtk_widget_set_size_request (handle, width, height);
-		rect = control.getBounds ();
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
 		control.setLocation (rect.x, rect.y);
@@ -1032,7 +1030,9 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	this.width = width;
+	boolean isVertical = (parent.style & SWT.VERTICAL) != 0;
+	OS.gtk_widget_set_size_request (separatorHandle, width, isVertical ? 6 : 15);
+	OS.gtk_widget_set_size_request (handle, width, isVertical ? 6 : 15);
 	parent.relayout ();
 }
 
