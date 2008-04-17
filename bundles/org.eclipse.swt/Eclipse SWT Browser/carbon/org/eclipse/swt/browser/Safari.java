@@ -233,6 +233,7 @@ public void create (Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
+					browser.getShell().removeListener(SWT.Activate, this);
 					OS.RemoveEventHandler(windowBoundsHandler);
 					windowBoundsHandler = 0;
 
