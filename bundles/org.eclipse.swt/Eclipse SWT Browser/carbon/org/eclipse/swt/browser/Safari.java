@@ -325,6 +325,10 @@ public void create (Composite parent, int style) {
 	Cocoa.objc_msgSend(webView, Cocoa.S_setApplicationNameForUserAgent, sHandle);
 	OS.CFRelease(sHandle);
 
+	if (display.getActiveShell() == browser.getShell()) {
+		Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.HIWebViewGetWebView(webViewHandle), Cocoa.S_window), Cocoa.S_makeKeyWindow);
+	}
+
 	if (!Initialized) {
 		Initialized = true;
 		/* disable applets */
