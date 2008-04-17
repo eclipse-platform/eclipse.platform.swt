@@ -10359,7 +10359,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMPrinterGetOutputResolution)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, PMPrinterGetOutputResolution_FUNC);
 	if (arg2) if ((lparg2 = getPMResolutionFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
 	rc = (jint)PMPrinterGetOutputResolution((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(PMPrinter, PMPrintSettings, PMResolution *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(PMPrinterGetOutputResolution_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("PMPrinterGetOutputResolution"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
+		}
+	}
 fail:
 	if (arg2 && lparg2) setPMResolutionFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, PMPrinterGetOutputResolution_FUNC);

@@ -30,3 +30,4 @@
 #define HIShapeReplacePathInCGContext_LIB "com.apple.Carbon"
 #define AXUIElementGetDataBrowserItemInfo_LIB "com.apple.Carbon"
 #define AXUIElementCreateWithDataBrowserAndItemInfo_LIB "com.apple.Carbon"
+#define PMPrinterGetOutputResolution_LIB "com.apple.Carbon"
