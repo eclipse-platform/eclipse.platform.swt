@@ -3351,7 +3351,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	if (!ignoreDrawHot || !ignoreDrawSelection || !ignoreDrawFocus) {
 		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 		RECT textRect = item.getBounds ((int)/*64*/nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
-		if (focused && (style & SWT.FULL_SELECTION) == 0) {
+		if ((style & SWT.FULL_SELECTION) == 0) {
 			if (measureEvent != null) {
 				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
 			}
