@@ -1005,6 +1005,28 @@ Rect getInset () {
 	return display.comboInset;
 }
 
+static final String [] attributes = {
+	OS.kAXTitleAttribute,
+	OS.kAXValueAttribute,
+};
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+	}
+	OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] arrayRef = new int[1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+	for (int i = 0; i < attributes.length; i++) {
+		String string = attributes[i];
+		char [] buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		OS.CFArrayAppendValue(arrayRef[0], stringRef);
+		OS.CFRelease(stringRef);
+	}
+	return OS.noErr;
+}
+
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 	if (accessible != null) {
 		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
@@ -1020,6 +1042,17 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		OS.CFStringGetCharacters (stringRef [0], range, buffer);
 		String attributeName = new String(buffer);
 		if (attributeName.equals (OS.kAXValueAttribute)) {
+			String text = getText ();
+			buffer = new char [text.length ()];
+			text.getChars (0, buffer.length, buffer, 0);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+		if (attributeName.equals (OS.kAXTitleAttribute)) {
 			String text = getText ();
 			buffer = new char [text.length ()];
 			text.getChars (0, buffer.length, buffer, 0);
