@@ -435,6 +435,7 @@ public void copyArea(Image image, int x, int y) {
 		if (OS.CGGetDisplaysWithRect(rect, displays.length, displays, count) != 0) return;
 		for (int i = 0; i < count[0]; i++) {
 			int display = displays[i];
+			OS.CGDisplayBounds(display, rect);
 			int address = OS.CGDisplayBaseAddress(display);
 			if (address != 0) {
 				int width = OS.CGDisplayPixelsWide(display);
@@ -457,7 +458,7 @@ public void copyArea(Image image, int x, int y) {
 					srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, bitmapInfo, provider, null, true, 0);
 					OS.CGDataProviderRelease(provider);
 				}
-				copyArea(image, x, y, srcImage);
+				copyArea(image, x - (int)rect.x, y - (int)rect.y, srcImage);
 				if (srcImage != 0) OS.CGImageRelease(srcImage);
 			}
 		}

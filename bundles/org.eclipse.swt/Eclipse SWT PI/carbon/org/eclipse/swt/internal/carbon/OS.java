@@ -1239,6 +1239,7 @@ public static final native int CGDisplayPixelsHigh (int display);
 public static final native int CGDisplayPixelsWide (int display);
 public static final native int CGDisplayHideCursor(int display);
 public static final native int CGDisplayShowCursor(int display);
+public static final native void CGDisplayBounds(int display, CGRect result);
 public static final native int CGMainDisplayID();
 public static final native int CGFontCreateWithPlatformFont (int[] platformFontReference);
 public static final native void CGFontRelease (int font);
