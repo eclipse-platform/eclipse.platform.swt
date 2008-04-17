@@ -846,6 +846,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 				int cellHeight = cellRect.bottom - cellRect.top;
 				gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
 				sendEvent (SWT.PaintItem, event);
+				if (data.focusDrawn) focusRect = null;
 				event.gc = null;
 				gc.dispose ();
 				OS.RestoreDC (hDC, nSavedDC);
@@ -1136,9 +1137,9 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 				if (measureEvent != null) {
 					textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
 				}
-//				nmcd.uItemState &= ~OS.CDIS_FOCUS;
-//				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
-//				focusRect = textRect;
+				nmcd.uItemState &= ~OS.CDIS_FOCUS;
+				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+				focusRect = textRect;
 			}
 			if (explorerTheme) {
 				if (selected || (hot && ignoreDrawHot)) nmcd.uItemState &= ~OS.CDIS_HOT;

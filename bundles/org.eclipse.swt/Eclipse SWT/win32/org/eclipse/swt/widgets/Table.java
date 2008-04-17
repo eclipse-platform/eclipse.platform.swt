@@ -3356,9 +3356,9 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 				textRect.right = Math.min (cellRect.right, measureEvent.x + measureEvent.width);
 			}
 			if (!ignoreDrawFocus) {
-//				nmcd.uItemState &= ~OS.CDIS_FOCUS;
-//				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-//				focusRect = textRect;
+				nmcd.uItemState &= ~OS.CDIS_FOCUS;
+				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+				focusRect = textRect;
 			}
 		}
 		if (explorerTheme) {
@@ -3723,6 +3723,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	int cellHeight = cellRect.bottom - cellRect.top;
 	gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
 	sendEvent (SWT.PaintItem, event);
+	if (data.focusDrawn) focusRect = null;
 	event.gc = null;
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
