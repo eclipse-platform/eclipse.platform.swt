@@ -146,6 +146,9 @@ public class Display extends Device {
 	Combo focusCombo;
 	boolean ignoreFocus, delayDispose;
 
+	/* Modality */
+	Shell [] modalShells;
+
 	/* Menus */
 	Menu menuBar;
 	Menu [] menus, popups;
@@ -635,6 +638,22 @@ protected void checkDevice () {
  */
 protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void clearModal (Shell shell) {
+	if (modalShells == null) return;
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) break;
+		if (modalShells [index] == null) return;
+		index++;
+	}
+	if (index == length) return;
+	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
+	modalShells [length] = null;
+	if (index == 0 && modalShells [0] == null) modalShells = null;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 int[] createImage (int type) {
@@ -3189,6 +3208,7 @@ void releaseDisplay () {
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
 	widgetTable = menus = popups = null;
+	modalShells = null;
 	menuBar = null;
 	eventTable = filterTable = null;
 	thread = null;
@@ -3807,6 +3827,24 @@ void setMenuBar (Menu menu) {
 		OS.DisposeMenu (theMenu);
 	}
 	menuBar = menu;
+}
+
+void setModalShell (Shell shell) {
+	if (modalShells == null) modalShells = new Shell [4];
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) return;
+		if (modalShells [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Shell [] newModalShells = new Shell [length + 4];
+		System.arraycopy (modalShells, 0, newModalShells, 0, length);
+		modalShells = newModalShells;
+	}
+	modalShells [index] = shell;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 /**

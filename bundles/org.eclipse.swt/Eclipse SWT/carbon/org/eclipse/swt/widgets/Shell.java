@@ -766,6 +766,34 @@ public Point getMinimumSize () {
 	return new Point (width, height);
 }
 
+Shell getModalShell () {
+	Shell shell = null;
+	Shell [] modalShells = display.modalShells;
+	if (modalShells != null) {
+		int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		int index = modalShells.length;
+		while (--index >= 0) {
+			Shell modal = modalShells [index];
+			if (modal != null) {
+				if ((modal.style & bits) != 0) {
+					Control control = this;
+					while (control != null) {
+						if (control == modal) break;
+						control = control.parent;
+					}
+					if (control != modal) return modal;
+					break;
+				}
+				if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
+					if (shell == null) shell = getShell ();
+					if (modal.parent == shell) return modal;
+				}
+			}
+		}
+	}
+	return null;
+}
+
 float [] getParentBackground () {
 	return null;
 }
@@ -1059,6 +1087,23 @@ int kEventWindowGetClickModality (int nextHandler, int theEvent, int userData) {
 	int [] modal = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamModalWindow, OS.typeWindowRef, null, 4, null, modal);
 	if (modal [0] != 0) OS.SelectWindow (modal [0]);
+	
+	/*
+	* Feature in the Macintosh. ON_TOP shells are in the kFloatingWindowClass window
+	* group and are not modal disabled by default. The fix is to detect that it should
+	* be disabled and update the event parameters.
+	*/
+	if ((style & SWT.ON_TOP) != 0) {
+		Shell modalShell = getModalShell ();
+		if (modalShell != null) {
+			int [] modality = new int [1];
+			int clickResult = OS.kHIModalClickIsModal | OS.kHIModalClickAnnounce;
+			OS.GetWindowModality (modalShell.shellHandle, modality, null);
+			OS.SetEventParameter (theEvent, OS.kEventParamWindowModality, OS.typeWindowModality, 4, modality);
+			OS.SetEventParameter (theEvent, OS.kEventParamModalClickResult, OS.typeModalClickResult, 4, new int[]{clickResult});
+			OS.SetEventParameter (theEvent, OS.kEventParamModalWindow, OS.typeWindowRef, 4, new int[]{modalShell.shellHandle});
+		}
+	}
 	return result;
 }
 
@@ -1242,6 +1287,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	display.clearModal (this);
 	disposed = true;
 	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
 	display.updateQuitMenu ();
@@ -1606,6 +1652,16 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & mask) != 0) {
+		if (visible) {
+			display.setModalShell (this);
+		} else {
+			display.clearModal (this);
+		}
+	} else {
+		updateModal ();
+	}
 	if (visible) {
 		if ((state & HIDDEN) == 0) return;
 		state &= ~HIDDEN;
@@ -1638,6 +1694,15 @@ void setWindowVisible (boolean visible) {
 			OS.GetWindowActivationScope (shellHandle, scope);
 			OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
 		}
+		/*
+		* Bug in the Macintosh.  ShowWindow() does not activate the shell when an ON_TOP
+		* shell is active. The fix is to detect that the shell was not activated and
+		* activate it.
+		*/
+		Shell activeShell = null;
+		if ((style & SWT.ON_TOP) == 0) {
+			activeShell = display.getActiveShell ();
+		}
 		int shellHandle = this.shellHandle;
 		OS.RetainWindow (shellHandle);
 		OS.ShowWindow (shellHandle);
@@ -1649,6 +1714,10 @@ void setWindowVisible (boolean visible) {
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.SetWindowActivationScope (shellHandle, scope [0]);
 			OS.BringToFront (shellHandle);
+		} else {
+			if (activeShell != null && activeShell == display.getActiveShell () && (activeShell.style & SWT.ON_TOP) != 0) {
+				bringToTop (false);
+			}
 		}
 		opened = true;
 		if (!moved) {
@@ -1726,6 +1795,10 @@ void updateMinimized (boolean minimized) {
 			}
 		}
 	}
+}
+
+void updateModal () {
+	// do nothing
 }
 
 void updateSystemUIMode () {
