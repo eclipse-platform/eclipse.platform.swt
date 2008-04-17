@@ -742,7 +742,6 @@ String toolTipText (NMTTDISPINFO hdr) {
 		} else {
 			hdr.uFlags &= ~OS.TTF_RTLREADING;
 		}
-		
 		if (toolTipText != null) return "";
 		if (0 <= index && index < items.length) {
 			TabItem item = items [index];
