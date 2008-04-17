@@ -463,6 +463,7 @@ public class OS extends C {
 	public static final int kEventParamMenuItemWidth = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'w';
 	public static final int kEventParamModalClickResult = ('w'<<24) + ('m'<<16) + ('c'<<8) + 'r';
 	public static final int kEventParamModalWindow = ('m'<<24) + ('w'<<16) + ('i'<<8) + 'n';
+	public static final int kEventParamWindowModality = ('w'<<24) + ('m'<<16) + ('o'<<8) + 'd';
 	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
 	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
@@ -1017,6 +1018,7 @@ public class OS extends C {
 	public static final int typeWildCard = ('w'<<24) + ('i'<<16) + ('l'<<8) + 'd';
 	public static final int typeWindowDefPartCode = ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
 	public static final int typeWindowPartCode = ('w'<<24) + ('p'<<16) + ('a'<<8) + 'r';
+	public static final int typeWindowModality = ('w'<<24) + ('m'<<16) + ('o'<<8) + 'd';
 	public static final int kEventParamWindowPartCode = ('w'<<24) + ('p'<<16) + ('a'<<8) + 'r';
 	public static final int typeWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int typeWindowRegionCode = ('w'<<24) + ('s'<<16) + ('h'<<8) + 'p';
