@@ -1041,18 +1041,7 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		range.length = length;
 		OS.CFStringGetCharacters (stringRef [0], range, buffer);
 		String attributeName = new String(buffer);
-		if (attributeName.equals (OS.kAXValueAttribute)) {
-			String text = getText ();
-			buffer = new char [text.length ()];
-			text.getChars (0, buffer.length, buffer, 0);
-			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (stringRef [0] != 0) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
-			}
-		}
-		if (attributeName.equals (OS.kAXTitleAttribute)) {
+		if (attributeName.equals (OS.kAXValueAttribute) || attributeName.equals (OS.kAXTitleAttribute)) {
 			String text = getText ();
 			buffer = new char [text.length ()];
 			text.getChars (0, buffer.length, buffer, 0);
