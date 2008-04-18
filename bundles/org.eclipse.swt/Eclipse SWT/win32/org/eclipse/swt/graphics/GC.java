@@ -594,8 +594,12 @@ static void destroyGdipBrush(int /*long*/ brush) {
  * </ul>
  */
 void destroy() {
+	boolean gdip = data.gdipGraphics != 0;
 	disposeGdip();
-
+	if (gdip && (data.style & SWT.MIRRORED) != 0) {
+		OS.SetLayout(handle, OS.GetLayout(handle) | OS.LAYOUT_RTL);
+	}
+	
 	/* Select stock pen and brush objects and free resources */
 	if (data.hPen != 0) {
 		OS.SelectObject(handle, OS.GetStockObject(OS.NULL_PEN));
@@ -3622,15 +3626,28 @@ void initGdip() {
 int /*long*/ identity() {
 	if ((data.style & SWT.MIRRORED) != 0) {
 		int width = 0;
-		Image image = data.image;
-		if (image != null) {
-			BITMAP bm = new BITMAP();
-			OS.GetObject(image.handle, BITMAP.sizeof, bm);
-			width = bm.bmWidth;
-		} else if (data.hwnd != 0) {
-			RECT rect = new RECT();
-			OS.GetClientRect(data.hwnd, rect);
-			width = rect.right - rect.left;
+		int technology = OS.GetDeviceCaps(handle, OS.TECHNOLOGY);
+		if (technology == OS.DT_RASPRINTER) {
+			width = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
+		} else {
+			Image image = data.image;
+			if (image != null) {
+				BITMAP bm = new BITMAP();
+				OS.GetObject(image.handle, BITMAP.sizeof, bm);
+				width = bm.bmWidth;
+			} else {
+				int /*long*/ hwnd = OS.IsWinCE ? data.hwnd : OS.WindowFromDC(handle);
+				if (hwnd != 0) {
+					RECT rect = new RECT();
+					OS.GetClientRect(hwnd, rect);
+					width = rect.right - rect.left;
+				} else {
+					int /*long*/ hBitmap = OS.GetCurrentObject(handle, OS.OBJ_BITMAP);
+					BITMAP bm = new BITMAP();
+					OS.GetObject(hBitmap, BITMAP.sizeof, bm);
+					width = bm.bmWidth;
+				}
+			}
 		}
 		POINT pt = new POINT ();
 		if (!OS.IsWinCE) OS.GetWindowOrgEx (handle, pt);
@@ -4836,6 +4853,13 @@ public static GC win32_new(Drawable drawable, GCData data) {
 public static GC win32_new(int /*long*/ hDC, GCData data) {
 	GC gc = new GC();
 	gc.device = data.device;
+	data.style |= SWT.LEFT_TO_RIGHT;
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		int flags = OS.GetLayout (hDC);
+		if ((flags & OS.LAYOUT_RTL) != 0) {
+			data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+		}
+	}
 	gc.init(null, data, hDC);
 	return gc;
 }
