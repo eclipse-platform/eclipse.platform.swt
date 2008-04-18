@@ -174,6 +174,18 @@ TableItem _getItem (int index) {
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	/*
+	* Feature in the Macintosh.  The draw item proc is not called if the column width
+	* is zero. This means that the SWT.MeasureItem listener is not called and the column
+	* does not get wider ever.  The fix is to change the column width to one.
+	*/
+	if (columnCount == 0 && (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+		if (width [0] == 0) {
+			OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) 1);
+		}
+	}
 	GC currentGC = paintGC;
 	if (currentGC == null) {
 		GCData data = new GCData ();
