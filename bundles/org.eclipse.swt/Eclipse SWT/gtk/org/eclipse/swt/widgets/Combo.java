@@ -670,6 +670,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.closures [INSERT_TEXT], false);
 		OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.closures [DELETE_TEXT], false);
 		OS.g_signal_connect_closure (entryHandle, OS.activate, display.closures [ACTIVATE], false);
+		OS.g_signal_connect_closure (entryHandle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	}
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | 
 		OS.GDK_BUTTON_RELEASE_MASK;
@@ -1379,6 +1380,14 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 		}
 	}
 	return result;
+}
+
+int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (menu, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}
+	return 0;
 }
 
 /**

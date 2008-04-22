@@ -448,6 +448,7 @@ public class OS extends C {
 	public static final byte[] move_focus = ascii("move-focus");
 	public static final byte[] output = ascii("output");
 	public static final byte[] popup_menu = ascii("popup-menu");
+	public static final byte[] populate_popup = ascii("populate-popup");
 	public static final byte[] preedit_changed = ascii("preedit-changed");
 	public static final byte[] realize = ascii("realize");
 	public static final byte[] row_activated = ascii("row-activated");
@@ -1169,6 +1170,15 @@ public static final boolean GTK_IS_IMAGE_MENU_ITEM(int /*long*/ obj) {
 	lock.lock();
 	try {
 		return _GTK_IS_IMAGE_MENU_ITEM(obj);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _GTK_IS_MENU_ITEM(int /*long*/ obj);
+public static final boolean GTK_IS_MENU_ITEM(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_MENU_ITEM(obj);
 	} finally {
 		lock.unlock();
 	}
@@ -5789,6 +5799,15 @@ public static final void gtk_menu_item_remove_submenu(int /*long*/ menu_item) {
 	lock.lock();
 	try {
 		_gtk_menu_item_remove_submenu(menu_item);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_menu_item_get_submenu(int /*long*/ menu_item);
+public static final int /*long*/ gtk_menu_item_get_submenu(int /*long*/ menu_item) {
+	lock.lock();
+	try {
+		return _gtk_menu_item_get_submenu(menu_item);
 	} finally {
 		lock.unlock();
 	}

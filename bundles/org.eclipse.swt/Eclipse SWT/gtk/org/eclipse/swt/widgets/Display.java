@@ -2392,6 +2392,7 @@ void initializeCallbacks () {
 	closures [Widget.MOTION_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT, 0);
 	closures [Widget.MOTION_NOTIFY_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT_INVERSE, 0);
 	closures [Widget.MOVE_FOCUS] = OS.g_cclosure_new (windowProc3, Widget.MOVE_FOCUS, 0);
+	closures [Widget.POPULATE_POPUP] = OS.g_cclosure_new (windowProc3, Widget.POPULATE_POPUP, 0);
 	closures [Widget.SCROLL_EVENT] = OS.g_cclosure_new (windowProc3, Widget.SCROLL_EVENT, 0);
 	closures [Widget.SHOW_HELP] = OS.g_cclosure_new (windowProc3, Widget.SHOW_HELP, 0);
 	closures [Widget.SIZE_ALLOCATE] = OS.g_cclosure_new (windowProc3, Widget.SIZE_ALLOCATE, 0);
@@ -3635,6 +3636,13 @@ public void setData (Object data) {
 
 int /*long*/ setDirectionProc (int /*long*/ widget, int /*long*/ direction) {
 	OS.gtk_widget_set_direction (widget, (int)/*64*/ direction);
+	if (OS.GTK_IS_MENU_ITEM (widget)) {
+		int /*long*/ submenu = OS.gtk_menu_item_get_submenu (widget);
+		if (submenu != 0) {
+			OS.gtk_widget_set_direction (submenu, (int)/*64*/ direction);
+			OS.gtk_container_forall (submenu, setDirectionProc, direction);
+		}
+	}
 	if (OS.GTK_IS_CONTAINER (widget)) {
 		OS.gtk_container_forall (widget, setDirectionProc, direction);
 	}

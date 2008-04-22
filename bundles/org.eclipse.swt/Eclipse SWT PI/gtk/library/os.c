@@ -1216,6 +1216,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1MENU_1ITEM
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1MENU_1ITEM)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1MENU_1ITEM_FUNC);
+	rc = (jboolean)GTK_IS_MENU_ITEM(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1MENU_1ITEM_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1PLUG
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1PLUG)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9367,6 +9379,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1menu_1bar_1new)
 	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1bar_1new_FUNC);
 	rc = (jint)gtk_menu_bar_new();
 	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1bar_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1menu_1item_1get_1submenu
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1menu_1item_1get_1submenu)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1item_1get_1submenu_FUNC);
+	rc = (jint)gtk_menu_item_get_submenu((GtkMenuItem *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1item_1get_1submenu_FUNC);
 	return rc;
 }
 #endif

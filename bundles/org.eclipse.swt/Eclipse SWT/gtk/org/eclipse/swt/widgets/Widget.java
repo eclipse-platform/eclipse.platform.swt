@@ -134,32 +134,33 @@ public abstract class Widget {
 	static final int MOTION_NOTIFY_EVENT_INVERSE = 34;
 	static final int MOVE_FOCUS = 35;
 	static final int OUTPUT = 36;
-	static final int POPUP_MENU = 37;
-	static final int PREEDIT_CHANGED = 38;
-	static final int REALIZE = 39;
-	static final int ROW_ACTIVATED = 40;
-	static final int SCROLL_CHILD = 41;
-	static final int SCROLL_EVENT = 42;
-	static final int SELECT = 43;
-	static final int SHOW = 44;
-	static final int SHOW_HELP = 45;
-	static final int SIZE_ALLOCATE = 46;
-	static final int STYLE_SET = 47;
-	static final int SWITCH_PAGE = 48;
-	static final int TEST_COLLAPSE_ROW = 49;
-	static final int TEST_EXPAND_ROW = 50;
-	static final int TEXT_BUFFER_INSERT_TEXT = 51;
-	static final int TOGGLED = 52;
-	static final int UNMAP = 53;
-	static final int UNMAP_EVENT = 54;
-	static final int UNREALIZE = 55;
-	static final int VALUE_CHANGED = 56;
-	static final int VISIBILITY_NOTIFY_EVENT = 57;
-	static final int WINDOW_STATE_EVENT = 58;
-	static final int ACTIVATE_INVERSE = 59;
-	static final int DAY_SELECTED = 60;
-	static final int MONTH_CHANGED = 61;
-	static final int LAST_SIGNAL = 62;
+	static final int POPULATE_POPUP = 37;
+	static final int POPUP_MENU = 38;
+	static final int PREEDIT_CHANGED = 39;
+	static final int REALIZE = 40;
+	static final int ROW_ACTIVATED = 41;
+	static final int SCROLL_CHILD = 42;
+	static final int SCROLL_EVENT = 43;
+	static final int SELECT = 44;
+	static final int SHOW = 45;
+	static final int SHOW_HELP = 46;
+	static final int SIZE_ALLOCATE = 47;
+	static final int STYLE_SET = 48;
+	static final int SWITCH_PAGE = 49;
+	static final int TEST_COLLAPSE_ROW = 50;
+	static final int TEST_EXPAND_ROW = 51;
+	static final int TEXT_BUFFER_INSERT_TEXT = 52;
+	static final int TOGGLED = 53;
+	static final int UNMAP = 54;
+	static final int UNMAP_EVENT = 55;
+	static final int UNREALIZE = 56;
+	static final int VALUE_CHANGED = 57;
+	static final int VISIBILITY_NOTIFY_EVENT = 58;
+	static final int WINDOW_STATE_EVENT = 59;
+	static final int ACTIVATE_INVERSE = 60;
+	static final int DAY_SELECTED = 61;
+	static final int MONTH_CHANGED = 62;
+	static final int LAST_SIGNAL = 63;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -730,6 +731,10 @@ int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_output (int /*long*/ widget) {
+	return 0;
+}
+
+int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
 	return 0;
 }
 
@@ -1535,6 +1540,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
 		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
 		case MOVE_FOCUS: return gtk_move_focus (handle, arg0);
+		case POPULATE_POPUP: return gtk_populate_popup (handle, arg0);
 		case SCROLL_EVENT:	return gtk_scroll_event (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);

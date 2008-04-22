@@ -1317,6 +1317,14 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
+int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_container_forall (menu, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
+	}
+	return 0;
+}
+
 int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter, int /*long*/ text, int /*long*/ length) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
@@ -1354,10 +1362,12 @@ void hookEvents () {
 		OS.g_signal_connect_closure (handle, OS.delete_text, display.closures [DELETE_TEXT], false);
 		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
 		OS.g_signal_connect_closure (handle, OS.grab_focus, display.closures [GRAB_FOCUS], false);
+		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	} else {
 		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.closures [CHANGED], false);
 		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.closures [TEXT_BUFFER_INSERT_TEXT], false);
 		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.closures [DELETE_RANGE], false);
+		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	}
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) {
