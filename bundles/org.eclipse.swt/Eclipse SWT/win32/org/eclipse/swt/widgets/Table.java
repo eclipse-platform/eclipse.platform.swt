@@ -6319,6 +6319,9 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (hooks (SWT.MouseDown) || hooks (SWT.MouseUp)) {
 				return LRESULT.ONE;
 			}
+			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+				if (findImageControl () != null) return LRESULT.ONE;
+			}
 			break;
 		}
 		case OS.LVN_BEGINDRAG:
