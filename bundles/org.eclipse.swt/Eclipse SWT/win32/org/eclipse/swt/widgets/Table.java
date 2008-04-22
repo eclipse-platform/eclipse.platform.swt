@@ -229,7 +229,16 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
 			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
-			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			if (redraw) {
+				/*
+				* Feature in Windows.  When LVM_SETBKCOLOR is used with CLR_NONE
+				* to make the background of the table transparent, drawing becomes
+				* slow.  The fix is to temporarily clear CLR_NONE when redraw is
+				* turned off.
+				*/
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, 0xFFFFFF);
+			}
 			//FALL THROUGH
 			
 		/* Mouse messages */
@@ -352,6 +361,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
 			if (redraw) {
+				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 				int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
@@ -3980,9 +3990,16 @@ void setDeferResize (boolean defer) {
 	if (defer) {
 		if (resizeCount++ == 0) {
 			wasResized = false;
+			/*
+			* Feature in Windows.  When LVM_SETBKCOLOR is used with CLR_NONE
+			* to make the background of the table transparent, drawing becomes
+			* slow.  The fix is to temporarily clear CLR_NONE when redraw is
+			* turned off.
+			*/
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (drawCount++ == 0 && OS.IsWindowVisible (handle)) {
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, 0xFFFFFF);
 				}
 			}
 		}
@@ -3990,6 +4007,7 @@ void setDeferResize (boolean defer) {
 		if (--resizeCount == 0) {
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (--drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
+					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 					if (OS.IsWinCE) {
 						int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
@@ -5797,6 +5815,31 @@ LRESULT WM_SETFONT (int /*long*/ wParam, int /*long*/ lParam) {
 		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
 	}
 	return result;
+}
+
+LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When LVM_SETBKCOLOR is used with CLR_NONE
+	* to make the background of the table transparent, drawing becomes
+	* slow.  The fix is to temporarily clear CLR_NONE when redraw is
+	* turned off.
+	*/
+	if (wParam == 1) {
+		if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
+			}
+		}
+	}
+	int code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	if (wParam == 0) {
+		if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, 0xFFFFFF);
+		}
+	}
+	return code == 0 ? LRESULT.ZERO : new LRESULT (code);
 }
 
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
