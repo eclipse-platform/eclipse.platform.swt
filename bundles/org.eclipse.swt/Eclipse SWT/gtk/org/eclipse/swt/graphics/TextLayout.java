@@ -104,18 +104,19 @@ void computeRuns () {
 	char[] chars = null;
 	int segementsLength = segmentsText.length();
 	if ((ascent != -1  || descent != -1) && segementsLength > 0) {
-		int /*long*/ iter = OS.pango_layout_get_iter(layout);
-		if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		PangoRectangle rect = new PangoRectangle();
 		if (ascent != -1) rect.y =  -(ascent  * OS.PANGO_SCALE);
 		rect.height = (Math.max(0, ascent) + Math.max(0, descent)) * OS.PANGO_SCALE;
 		int lineCount = OS.pango_layout_get_line_count(layout);
 		chars = new char[segementsLength + lineCount * 2];
-		int oldPos = 0, count = 0;
-		do {
-			int bytePos = OS.pango_layout_iter_get_index(iter);
+		int oldPos = 0, lineIndex = 0;
+		PangoLayoutLine line = new PangoLayoutLine();
+		while (lineIndex < lineCount) {
+			int /*long*/ linePtr = OS.pango_layout_get_line(layout, lineIndex);
+			OS.memmove(line, linePtr, PangoLayoutLine.sizeof);
+			int bytePos = line.start_index;
 			/* Note: The length in bytes of ZWS and ZWNBS are both equals to 3 */
-			int offset = count * 6;
+			int offset = lineIndex * 6;
 			int /*long*/ attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = bytePos + offset;
@@ -129,14 +130,13 @@ void computeRuns () {
 			OS.memmove (attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);			
 			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
-			chars[pos + count * 2] = ZWS;
-			chars[pos + count * 2 + 1] = ZWNBS;
-			segmentsText.getChars(oldPos, pos, chars,  oldPos + count * 2);
+			chars[pos + lineIndex * 2] = ZWS;
+			chars[pos + lineIndex * 2 + 1] = ZWNBS;
+			segmentsText.getChars(oldPos, pos, chars,  oldPos + lineIndex * 2);
 			oldPos = pos;
-			count++;
-		} while (OS.pango_layout_iter_next_line(iter));
-		OS.pango_layout_iter_free (iter);
-		segmentsText.getChars(oldPos, segementsLength, chars,  oldPos + count * 2);
+			lineIndex++;
+		}
+		segmentsText.getChars(oldPos, segementsLength, chars,  oldPos + lineIndex * 2);
 		buffer = Converter.wcsToMbcs(null, chars, false);
 		OS.pango_layout_set_text (layout, buffer, buffer.length);
 		ptr = OS.pango_layout_get_text(layout);
