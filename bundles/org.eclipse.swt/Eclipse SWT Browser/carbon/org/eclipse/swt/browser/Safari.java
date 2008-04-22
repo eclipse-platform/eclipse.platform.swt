@@ -245,6 +245,7 @@ public void create (Composite parent, int style) {
 					Cocoa.objc_msgSend(webView, Cocoa.S_setResourceLoadDelegate, 0);
 					Cocoa.objc_msgSend(webView, Cocoa.S_setUIDelegate, 0);
 					Cocoa.objc_msgSend(webView, Cocoa.S_setPolicyDelegate, 0);
+					Cocoa.objc_msgSend(webView, Cocoa.S_setDownloadDelegate, 0);
 					Cocoa.objc_msgSend(notificationCenter, Cocoa.S_removeObserver, delegate);
 					
 					Cocoa.objc_msgSend(delegate, Cocoa.S_release);

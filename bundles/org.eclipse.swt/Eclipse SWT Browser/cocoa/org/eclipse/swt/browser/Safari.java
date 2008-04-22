@@ -171,6 +171,7 @@ public void create (Composite parent, int style) {
 					Safari.this.webView.setResourceLoadDelegate(null);
 					Safari.this.webView.setUIDelegate(null);
 					Safari.this.webView.setPolicyDelegate(null);
+					Safari.this.webView.setDownloadDelegate(null);
 					notificationCenter.removeObserver(delegate);
 					
 					Safari.this.webView.release();
