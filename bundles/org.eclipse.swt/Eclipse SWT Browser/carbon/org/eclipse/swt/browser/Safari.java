@@ -27,7 +27,7 @@ class Safari extends WebBrowser {
 	int webViewHandle;
 	int windowBoundsHandler;
 	
-	boolean changingLocation;
+	boolean changingLocation, hasNewFocusElement;
 	String lastHoveredLinkURL;
 	String html;
 	int identifier;
@@ -64,6 +64,8 @@ class Safari extends WebBrowser {
 	static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
+	static final String DOMEVENT_FOCUSIN = "DOMFocusIn"; //$NON-NLS-1$
+	static final String DOMEVENT_FOCUSOUT = "DOMFocusOut"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -256,6 +258,7 @@ public void create (Composite parent, int style) {
 					break;
 				}
 				case SWT.FocusIn: {
+					hasNewFocusElement = true;
 					OS.SetKeyboardFocus(OS.GetControlOwner(browser.handle), webViewHandle, (short)-1);
 					break;
 				}
@@ -797,6 +800,7 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 
 void didFinishLoadForFrame(int frame) {
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
+	hookDOMFocusListeners(frame);
 	hookDOMMouseListeners(frame);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
 		hookDOMKeyListeners(frame);
@@ -880,6 +884,32 @@ void didFinishLoadForFrame(int frame) {
 	}
 }
 
+void hookDOMFocusListeners(int frame) {
+	/*
+	* WebKit's DOM listener api became functional in OSX 10.4, so if an earlier
+	* version than this is detected then do not hook the DOM listeners.
+	*/
+	if (OS.VERSION < 0x1040) return;
+
+	int document = Cocoa.objc_msgSend(frame, Cocoa.S_DOMDocument);
+
+	String string = DOMEVENT_FOCUSIN;
+	int length = string.length();
+	char[] chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	int ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
+	OS.CFRelease(ptr);
+
+	string = DOMEVENT_FOCUSOUT;
+	length = string.length();
+	chars = new char[length];
+	string.getChars(0, length, chars, 0);
+	ptr = OS.CFStringCreateWithCharacters(0, chars, length);
+	Cocoa.objc_msgSend(document, Cocoa.S_addEventListener, ptr, delegate, 0);
+	OS.CFRelease(ptr);
+}
+	
 void hookDOMKeyListeners(int frame) {
 	/*
 	* WebKit's DOM listener api became functional in OSX 10.4, so if an earlier
@@ -1490,6 +1520,15 @@ void handleEvent(int evt) {
 	OS.CFStringGetCharacters(type, range, buffer);
 	String typeString = new String(buffer);
 
+	if (typeString.equals(DOMEVENT_FOCUSIN)) {
+		hasNewFocusElement = true;
+		return;
+	}
+	if (typeString.equals(DOMEVENT_FOCUSOUT)) {
+		hasNewFocusElement = false;
+		return;
+	}
+
 	boolean ctrl = Cocoa.objc_msgSend(evt, Cocoa.S_ctrlKey) != 0;
 	boolean shift = Cocoa.objc_msgSend(evt, Cocoa.S_shiftKey) != 0;
 	boolean alt = Cocoa.objc_msgSend(evt, Cocoa.S_altKey) != 0;
@@ -1510,8 +1549,26 @@ void handleEvent(int evt) {
 		keyEvent.character = (char)charCode;
 		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		browser.notifyListeners(keyEvent.type, keyEvent);
-		if (!keyEvent.doit) {
+
+		boolean doit = keyEvent.doit;
+		/*
+		* Bug in Safari.  Attempting to traverse out of Safari backwards (Shift+Tab) leaves
+		* Safari in a strange state where it no longer has focus but still receives keys.
+		* The Carbon-based Safari examples have the same problem.  The workaround is to
+		* only allow forward Tab traversals within the Browser.
+		*/
+		if (doit && keyEvent.keyCode == SWT.TAB && (keyEvent.stateMask & SWT.SHIFT) != 0) {
+			doit = false;
+		}
+		if (!doit) {
 			Cocoa.objc_msgSend(evt, Cocoa.S_preventDefault);
+		} else {
+			if (keyEvent.keyCode == SWT.TAB && DOMEVENT_KEYUP.equals(typeString)) {
+				if (!hasNewFocusElement) {
+					browser.traverse(SWT.TRAVERSE_TAB_NEXT);
+				}
+				hasNewFocusElement = false;
+			}
 		}
 		return;
 	}
