@@ -14,6 +14,9 @@ import org.eclipse.swt.internal.win32.*;
 
 public class COM extends OS {
 	/** GUID Constants */
+	public static final GUID CLSID_DragDropHelper = COM.IIDFromString("{4657278A-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
+	public static final GUID IID_IDropTargetHelper = COM.IIDFromString("{4657278B-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
+	public static final GUID IID_IDragSourceHelper = COM.IIDFromString("{DE5BF786-477A-11d2-839D-00C04FD918D0}"); //$NON-NLS-1$
 	public static final GUID IIDJavaBeansBridge = COM.IIDFromString("{8AD9C840-044E-11D1-B3E9-00805F499D93}"); //$NON-NLS-1$
 	public static final GUID IIDShockwaveActiveXControl = COM.IIDFromString("{166B1BCA-3F9C-11CF-8075-444553540000}"); //$NON-NLS-1$
 	public static final GUID IIDIEditorSiteTime = IIDFromString("{6BD2AEFE-7876-45e6-A6E7-3BFCDF6540AA}"); //$NON-NLS-1$
@@ -464,6 +467,9 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int /*long*/ arg1);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, POINT arg2, int arg3);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, POINT arg1, int arg2);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, POINT arg0, int arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int[] arg4);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, long[] arg4);

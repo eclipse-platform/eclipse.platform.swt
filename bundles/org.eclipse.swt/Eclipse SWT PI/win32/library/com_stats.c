@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 152;
-int COM_nativeFunctionCallCount[152];
+int COM_nativeFunctionCount = 155;
+int COM_nativeFunctionCallCount[155];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CAUUID_1sizeof",
@@ -103,6 +103,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIIIIIIIII",
 	"VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_DVTARGETDEVICE_2Lorg_eclipse_swt_internal_win32_SIZE_2",
 	"VtblCall__IIIILorg_eclipse_swt_internal_ole_win32_GUID_2I_3I",
+	"VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I",
 	"VtblCall__IIII_3I",
 	"VtblCall__IIII_3J",
 	"VtblCall__IIIJ_3I",
@@ -112,6 +113,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I",
 	"VtblCall__IIILorg_eclipse_swt_internal_ole_win32_STATSTG_2_3I",
 	"VtblCall__IIILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2",
+	"VtblCall__IIILorg_eclipse_swt_internal_win32_POINT_2I",
 	"VtblCall__IIILorg_eclipse_swt_internal_win32_SIZE_2",
 	"VtblCall__IIIZ",
 	"VtblCall__III_3I",
@@ -133,6 +135,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_LICINFO_2",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2",
+	"VtblCall__IILorg_eclipse_swt_internal_win32_POINT_2I",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2",

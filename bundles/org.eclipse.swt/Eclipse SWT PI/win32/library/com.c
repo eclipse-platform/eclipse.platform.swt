@@ -1288,6 +1288,22 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5)
+{
+	POINT _arg4, *lparg4=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
+	if (arg4) if ((lparg4 = getPOINTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, POINT *, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5);
+fail:
+	if (arg4 && lparg4) setPOINTFields(env, arg4, lparg4);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IIII_3I
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIII_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
@@ -1446,6 +1462,22 @@ fail:
 	if (arg7 && lparg7) setRECTFields(env, arg7, lparg7);
 	if (arg3 && lparg3) setMSGFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIILorg_eclipse_swt_internal_win32_POINT_2I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIILorg_eclipse_swt_internal_win32_POINT_2I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+{
+	POINT _arg3, *lparg3=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
+	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, POINT *, jint))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIILorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
 	return rc;
 }
 #endif
@@ -1814,6 +1846,22 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_MS
 fail:
 	if (arg2 && lparg2) setMSGFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_win32_POINT_2I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_POINT_2I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	POINT _arg2, *lparg2=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
+	if (arg2) if ((lparg2 = getPOINTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, POINT *, jint))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setPOINTFields(env, arg2, lparg2);
+	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
 	return rc;
 }
 #endif
