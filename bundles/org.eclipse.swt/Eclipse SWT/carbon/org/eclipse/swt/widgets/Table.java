@@ -2244,7 +2244,7 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		}
 	}
 	if (accessible != null) {
-		return super.kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
 	}
 	return code;
 }

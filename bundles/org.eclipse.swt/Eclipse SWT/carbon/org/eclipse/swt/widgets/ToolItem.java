@@ -861,6 +861,9 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {selection ? 1 : 0});
 		return OS.noErr;
 	}
+	if (parent.accessible != null) {
+		code = parent.accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
 	return code;
 }
 
