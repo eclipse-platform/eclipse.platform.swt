@@ -1095,6 +1095,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 			return text;
 		}
 		case TABLE: {
+			Image image = Display.getDefault().getSystemImage(SWT.ICON_INFORMATION);
 			Table table = new Table(parent, SWT.BORDER | SWT.MULTI);
 			table.setHeaderVisible(true);
 			TableColumn column0 = new TableColumn(table, SWT.LEFT);
@@ -1108,6 +1109,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 				item.setText(0, prefix+" name "+i);
 				item.setText(1, prefix+" value "+i);
 				item.setText(2, prefix+" description "+i);
+				item.setImage(image);
 			}
 			column0.pack();
 			column1.pack();
@@ -1120,6 +1122,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 			return text;
 		}
 		case TREE: {
+			Image image = Display.getDefault().getSystemImage(SWT.ICON_INFORMATION);
 			Tree tree = new Tree(parent, SWT.BORDER | SWT.MULTI);
 			tree.setHeaderVisible(true);
 			TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
@@ -1133,16 +1136,19 @@ private Control createWidget(int type, Composite parent, String prefix){
 				item.setText(0, prefix+" name "+i);
 				item.setText(1, prefix+" value "+i);
 				item.setText(2, prefix+" description "+i);
+				item.setImage(image);
 				for (int j = 0; j < 3; j++) {
 					TreeItem subItem = new TreeItem(item, SWT.NONE);
 					subItem.setText(0, prefix+" name "+i+" "+j);
 					subItem.setText(1, prefix+" value "+i+" "+j);
 					subItem.setText(2, prefix+" description "+i+" "+j);
+					subItem.setImage(image);
 					for (int k = 0; k < 3; k++) {
 						TreeItem subsubItem = new TreeItem(subItem, SWT.NONE);
 						subsubItem.setText(0, prefix+" name "+i+" "+j+" "+k);
 						subsubItem.setText(1, prefix+" value "+i+" "+j+" "+k);
 						subsubItem.setText(2, prefix+" description "+i+" "+j+" "+k);
+						subsubItem.setImage(image);
 					}
 				}
 			}
