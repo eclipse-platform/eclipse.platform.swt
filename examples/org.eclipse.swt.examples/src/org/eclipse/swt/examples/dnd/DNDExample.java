@@ -51,6 +51,8 @@ public class DNDExample {
 	private Text dropConsole;
 	private boolean dropEventDetail = false;
 	
+	private Image itemImage;
+	
 	private static final int BUTTON_TOGGLE = 0;
 	private static final int BUTTON_RADIO = 1;
 	private static final int BUTTON_CHECK = 2;
@@ -1095,7 +1097,6 @@ private Control createWidget(int type, Composite parent, String prefix){
 			return text;
 		}
 		case TABLE: {
-			Image image = Display.getDefault().getSystemImage(SWT.ICON_INFORMATION);
 			Table table = new Table(parent, SWT.BORDER | SWT.MULTI);
 			table.setHeaderVisible(true);
 			TableColumn column0 = new TableColumn(table, SWT.LEFT);
@@ -1109,7 +1110,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 				item.setText(0, prefix+" name "+i);
 				item.setText(1, prefix+" value "+i);
 				item.setText(2, prefix+" description "+i);
-				item.setImage(image);
+				item.setImage(itemImage);
 			}
 			column0.pack();
 			column1.pack();
@@ -1122,7 +1123,6 @@ private Control createWidget(int type, Composite parent, String prefix){
 			return text;
 		}
 		case TREE: {
-			Image image = Display.getDefault().getSystemImage(SWT.ICON_INFORMATION);
 			Tree tree = new Tree(parent, SWT.BORDER | SWT.MULTI);
 			tree.setHeaderVisible(true);
 			TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
@@ -1136,19 +1136,19 @@ private Control createWidget(int type, Composite parent, String prefix){
 				item.setText(0, prefix+" name "+i);
 				item.setText(1, prefix+" value "+i);
 				item.setText(2, prefix+" description "+i);
-				item.setImage(image);
+				item.setImage(itemImage);
 				for (int j = 0; j < 3; j++) {
 					TreeItem subItem = new TreeItem(item, SWT.NONE);
 					subItem.setText(0, prefix+" name "+i+" "+j);
 					subItem.setText(1, prefix+" value "+i+" "+j);
 					subItem.setText(2, prefix+" description "+i+" "+j);
-					subItem.setImage(image);
+					subItem.setImage(itemImage);
 					for (int k = 0; k < 3; k++) {
 						TreeItem subsubItem = new TreeItem(subItem, SWT.NONE);
 						subsubItem.setText(0, prefix+" name "+i+" "+j+" "+k);
 						subsubItem.setText(1, prefix+" value "+i+" "+j+" "+k);
 						subsubItem.setText(2, prefix+" description "+i+" "+j+" "+k);
-						subsubItem.setImage(image);
+						subsubItem.setImage(itemImage);
 					}
 				}
 			}
@@ -1207,6 +1207,9 @@ public void open(Display display) {
 	shell.setText("Drag and Drop Example");
 	shell.setLayout(new FillLayout());
 	
+	String loc = DNDExample.class.getResource("openFolder.gif").getPath();
+	itemImage = new Image (display, loc);
+
 	ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
 	Composite parent = new Composite(sc, SWT.NONE);
 	sc.setContent(parent);
@@ -1349,7 +1352,8 @@ public void open(Display display) {
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();
-	}	
+	}
+	itemImage.dispose();
 }
 
 private void printEvent(DragSourceEvent e) {
