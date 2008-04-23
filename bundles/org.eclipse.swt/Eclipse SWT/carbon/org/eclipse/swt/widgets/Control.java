@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.ATSFontMetrics;
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -616,6 +617,15 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
+boolean contains (String [] array, String element) {
+	for (int i = 0; i < array.length; i++) {
+		if (array [i].equals (element)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void createWidget () {
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
@@ -1015,6 +1025,10 @@ public Accessible getAccessible () {
 	return accessible;
 }
 	
+String [] getAxAttributes () {
+	return null;
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -1858,10 +1872,41 @@ int kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData
 }
 
 int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+	int code = OS.eventNotHandledErr;
+	String [] attributes = getAxAttributes ();
+	if (attributes != null) {
+		OS.CallNextEventHandler (nextHandler, theEvent);
+		nextHandler = 0;
+		int [] arrayRef = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
+		int attributesArrayRef = arrayRef [0];
+		int length = OS.CFArrayGetCount (attributesArrayRef);
+		String[] osAttributes = new String [length];
+		for (int i = 0; i < length; i++) {
+			int stringRef = OS.CFArrayGetValueAtIndex (attributesArrayRef, i);
+			int strLength = OS.CFStringGetLength (stringRef);
+			char [] buffer = new char [strLength];
+			CFRange range = new CFRange ();
+			range.length = strLength;
+			OS.CFStringGetCharacters (stringRef, range, buffer);
+			osAttributes [i] = new String (buffer);
+		}
+		for (int i = 0; i < attributes.length; i++) {
+			if (!contains (osAttributes, attributes [i])) {
+				String string = attributes [i];
+				char [] buffer = new char [string.length ()];
+				string.getChars (0, buffer.length, buffer, 0);
+				int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+				OS.CFArrayAppendValue (attributesArrayRef, stringRef);
+				OS.CFRelease (stringRef);
+			}
+		}
+		code = OS.noErr;
 	}
-	return OS.eventNotHandledErr;
+	if (accessible != null) {
+		code = accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+	}
+	return code;
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {

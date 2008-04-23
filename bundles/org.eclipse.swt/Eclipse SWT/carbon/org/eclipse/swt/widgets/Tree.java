@@ -100,6 +100,9 @@ public class Tree extends Composite {
 	static final int DISCLOSURE_COLUMN_EDGE_INSET = 8;
 	static final int DISCLOSURE_COLUMN_LEVEL_INDENT = 24;
 	static final int DISCLOSURE_TRIANGLE_AND_CONTENT_GAP = 8;
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXTitleAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1225,6 +1228,10 @@ void fixScrollBar () {
 	if (top [0] > maximum) {
 		OS.SetDataBrowserScrollPosition (handle, maximum, left [0]);
 	}
+}
+
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
 }
 
 public int getBorderWidth () {
@@ -2416,27 +2423,6 @@ int itemNotificationProc (int browser, int id, int message) {
 			}
 			break;
 		}
-	}
-	return OS.noErr;
-}
-
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] arrayRef = new int[1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
-	int stringArrayRef = arrayRef[0];
-	if (stringArrayRef != 0) {
-		String string = OS.kAXTitleAttribute;
-		char [] buffer = new char [string.length ()];
-		string.getChars (0, buffer.length, buffer, 0);
-		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (stringRef != 0) {
-			OS.CFArrayAppendValue(stringArrayRef, stringRef);
-			OS.CFRelease(stringRef);
-		}
-	}
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
 	}
 	return OS.noErr;
 }

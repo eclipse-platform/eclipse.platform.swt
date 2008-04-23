@@ -40,8 +40,14 @@ public class Sash extends Control {
 	Cursor sizeCursor;
 	boolean dragging;
 	int lastX, lastY, startX, startY;
-	private final static int INCREMENT = 1;
-	private final static int PAGE_INCREMENT = 9;
+	static final int INCREMENT = 1;
+	static final int PAGE_INCREMENT = 9;
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXOrientationAttribute,
+		OS.kAXValueAttribute,
+		OS.kAXMaxValueAttribute,
+		OS.kAXMinValueAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -150,29 +156,8 @@ void drawBackground (int control, int context) {
 	fillBackground (control, context, null);
 }
 
-static final String [] requiredAttributes = {
-	OS.kAXOrientationAttribute,
-	OS.kAXValueAttribute,
-	OS.kAXMaxValueAttribute,
-	OS.kAXMinValueAttribute,
-};
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] arrayRef = new int[1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
-	int stringArrayRef = arrayRef[0];
-	for (int i = 0; i < requiredAttributes.length; i++) {
-		String string = requiredAttributes[i];
-		char [] buffer = new char [string.length ()];
-		string.getChars (0, buffer.length, buffer, 0);
-		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		OS.CFArrayAppendValue(stringArrayRef, stringRef);
-		OS.CFRelease(stringRef);
-	}
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
-	}
-	return OS.noErr;
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {

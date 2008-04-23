@@ -87,6 +87,10 @@ public class Table extends Composite {
 	static final int ICON_AND_TEXT_GAP = 4;
 	static final int CELL_CONTENT_INSET = 12;
 	static final int BORDER_INSET = 1;
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXChildrenAttribute,
+		OS.kAXTitleAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1177,6 +1181,10 @@ void fixSelection (int index, boolean add) {
 	if (fix) select (selection, newCount, true);
 }
 
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
+}
+
 public int getBorderWidth () {
 	checkWidget ();
 	int border = 0;
@@ -2168,27 +2176,6 @@ int itemNotificationProc (int browser, int id, int message) {
 			}
 			break;
 		}
-	}
-	return OS.noErr;
-}
-
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] arrayRef = new int[1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
-	int stringArrayRef = arrayRef[0];
-	if (stringArrayRef != 0) {
-		String string = OS.kAXTitleAttribute;
-		char [] buffer = new char [string.length ()];
-		string.getChars (0, buffer.length, buffer, 0);
-		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (stringRef != 0) {
-			OS.CFArrayAppendValue(stringArrayRef, stringRef);
-			OS.CFRelease(stringRef);
-		}
-	}
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
 	}
 	return OS.noErr;
 }

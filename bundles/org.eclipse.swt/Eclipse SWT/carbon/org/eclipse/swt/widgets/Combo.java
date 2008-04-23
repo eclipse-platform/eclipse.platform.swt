@@ -77,6 +77,10 @@ public class Combo extends Composite {
 		LIMIT = 0x7FFFFFFF;
 	}
 	
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXTitleAttribute,
+		OS.kAXValueAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -623,6 +627,10 @@ void destroyWidget () {
 	}
 }
 
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
@@ -1005,32 +1013,7 @@ Rect getInset () {
 	return display.comboInset;
 }
 
-static final String [] attributes = {
-	OS.kAXTitleAttribute,
-	OS.kAXValueAttribute,
-};
-int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
-	}
-	OS.CallNextEventHandler (nextHandler, theEvent);
-	int [] arrayRef = new int[1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
-	for (int i = 0; i < attributes.length; i++) {
-		String string = attributes[i];
-		char [] buffer = new char [string.length ()];
-		string.getChars (0, buffer.length, buffer, 0);
-		int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		OS.CFArrayAppendValue(arrayRef[0], stringRef);
-		OS.CFRelease(stringRef);
-	}
-	return OS.noErr;
-}
-
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
-	}
 	if ((style & SWT.READ_ONLY) == 0) {
 		int [] stringRef = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
@@ -1052,6 +1035,9 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 				return OS.noErr;
 			}
 		}
+	}
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

@@ -48,6 +48,9 @@ public class Link extends Control {
 	
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
+	static final String [] AX_ATTRIBUTES = {
+		OS.kAXTitleAttribute,
+	};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -213,6 +216,10 @@ void enableWidget (boolean enabled) {
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
 	redraw ();
+}
+
+String [] getAxAttributes () {
+	return AX_ATTRIBUTES;
 }
 
 String getNameText () {

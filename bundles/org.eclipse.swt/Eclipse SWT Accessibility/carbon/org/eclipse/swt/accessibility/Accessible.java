@@ -322,7 +322,8 @@ public class Accessible {
 	 */
 	public int internal_kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
-			OS.CallNextEventHandler (nextHandler, theEvent);
+			/* If nextHandler is 0, then it was already called. */
+			if (nextHandler != 0) OS.CallNextEventHandler (nextHandler, theEvent);
 			int [] arrayRef = new int[1];
 			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
 			int stringArrayRef = arrayRef[0];
