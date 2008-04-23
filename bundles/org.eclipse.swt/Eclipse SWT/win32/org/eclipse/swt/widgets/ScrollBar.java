@@ -648,29 +648,29 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* scroll bar operation is performed), the opposite scroll
 	* bar draws.  The fix is to hide both scroll bars.
 	*/
-	boolean both = false;
+	boolean barVisible = false;
 	boolean visible = getVisible ();
-	if (!visible) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-//		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		if (!OS.IsWinCE) {
-			ScrollBar bar = null;
-			switch (flags) {
-				case OS.SB_HORZ:
-					bar = parent.getVerticalBar ();
-					break;
-				case OS.SB_VERT:
-					bar = parent.getHorizontalBar ();
-					break;
-			}
-			both = bar != null && !bar.getVisible ();
+	
+	/*
+	* This line is intentionally commented.  Currently
+	* always show scrollbar as being enabled and visible.
+	*/
+//	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+	ScrollBar bar = null;
+	if (!OS.IsWinCE) {
+		switch (flags) {
+			case OS.SB_HORZ:
+				bar = parent.getVerticalBar ();
+				break;
+			case OS.SB_VERT:
+				bar = parent.getHorizontalBar ();
+				break;
 		}
+		barVisible = bar != null && bar.getVisible ();
 	}
 	if (!visible || (state & DISABLED) != 0) fRedraw = false;
 	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
+	
 	/*
 	* Bug in Windows.  For some reason, when the widget
 	* is a standard scroll bar, and SetScrollInfo() is
@@ -687,7 +687,24 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 		*/
 //		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, both ? OS.SB_BOTH : flags, false);
+			OS.ShowScrollBar (hwnd, !barVisible ? OS.SB_BOTH : flags, false);
+		}
+	}
+	
+	/*
+	* Bug in Windows.  When only one scroll bar is visible,
+	* and the thumb changes using SIF_RANGE or SIF_PAGE
+	* from being visible to hidden, the opposite scroll
+	* bar is incorrectly made visible.  The next time the
+	* parent is resized (or another scroll bar operation
+	* is performed), the opposite scroll bar draws.  The
+	* fix is to hide the opposite scroll bar again. 
+	*  
+	* NOTE: This problem only happens on Vista
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (visible && !barVisible) {
+			OS.ShowScrollBar (hwnd, flags == OS.SB_HORZ ? OS.SB_VERT : OS.SB_HORZ, false);
 		}
 	}
 		
