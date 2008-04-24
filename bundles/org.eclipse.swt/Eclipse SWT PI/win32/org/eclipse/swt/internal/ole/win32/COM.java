@@ -17,6 +17,7 @@ public class COM extends OS {
 	public static final GUID CLSID_DragDropHelper = COM.IIDFromString("{4657278A-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
 	public static final GUID IID_IDropTargetHelper = COM.IIDFromString("{4657278B-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
 	public static final GUID IID_IDragSourceHelper = COM.IIDFromString("{DE5BF786-477A-11d2-839D-00C04FD918D0}"); //$NON-NLS-1$
+	public static final GUID IID_IDragSourceHelper2 = COM.IIDFromString("{83E07D0D-0C5F-4163-BF1A-60B274051E40}"); //$NON-NLS-1$
 	public static final GUID IIDJavaBeansBridge = COM.IIDFromString("{8AD9C840-044E-11D1-B3E9-00805F499D93}"); //$NON-NLS-1$
 	public static final GUID IIDShockwaveActiveXControl = COM.IIDFromString("{166B1BCA-3F9C-11CF-8075-444553540000}"); //$NON-NLS-1$
 	public static final GUID IIDIEditorSiteTime = IIDFromString("{6BD2AEFE-7876-45e6-A6E7-3BFCDF6540AA}"); //$NON-NLS-1$
@@ -224,6 +225,7 @@ public class COM extends OS {
 	public static final int DROPEFFECT_MOVE = 2; 
 	public static final int DROPEFFECT_LINK = 4; 
 	public static final int DROPEFFECT_SCROLL = 0x80000000; 
+	public static final int DSH_ALLOWDROPDESCRIPTIONTEXT = 0x1;
 	public static final int DV_E_FORMATETC = -2147221404;
 	public static final int DV_E_STGMEDIUM = -2147221402;
 	public static final int DV_E_TYMED = -2147221399;
@@ -452,6 +454,7 @@ public static final native int ProgIDFromCLSID(GUID clsid, int /*long*/[] lplpsz
 public static final native int RegisterDragDrop(int /*long*/ hwnd, int /*long*/ pDropTarget);
 public static final native void ReleaseStgMedium(int /*long*/ pmedium); 
 public static final native int RevokeDragDrop(int /*long*/ hwnd);
+public static final native int SHDoDragDrop(int /*long*/ hwnd, int /*long*/ pDataObject, int /*long*/ pDropSource, int dwOKEffect, int[] pdwEffect);
 public static final native int StgCreateDocfile(char[] pwcsName, int grfMode, int reserved, int /*long*/[] ppstgOpen);
 public static final native int StgIsStorageFile(char[] pwcsName);
 public static final native int StgOpenStorage(char[] pwcsName, int /*long*/ pstgPriority, int grfMode, int /*long*/ snbExclude, int reserved, int /*long*/[] ppstgOpen);
@@ -470,6 +473,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, POINT arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, POINT arg1, int arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, POINT arg0, int arg1);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, SHDRAGIMAGE arg0, int /*long*/ arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int[] arg4);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, long[] arg4);
@@ -691,6 +695,7 @@ public static final native int GUID_sizeof();
 public static final native int LICINFO_sizeof();
 public static final native int OLECMD_sizeof();
 public static final native int OLEINPLACEFRAMEINFO_sizeof();
+public static final native int SHDRAGIMAGE_sizeof();
 public static final native int STATSTG_sizeof();
 public static final native int STGMEDIUM_sizeof();
 public static final native int TYPEATTR_sizeof();

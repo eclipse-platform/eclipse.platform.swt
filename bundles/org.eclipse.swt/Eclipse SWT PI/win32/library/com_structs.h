@@ -167,6 +167,18 @@ void setOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAME
 #define OLEINPLACEFRAMEINFO_sizeof() 0
 #endif
 
+#ifndef NO_SHDRAGIMAGE
+void cacheSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject);
+SHDRAGIMAGE *getSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
+void setSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
+#define SHDRAGIMAGE_sizeof() sizeof(SHDRAGIMAGE)
+#else
+#define cacheSHDRAGIMAGEFields(a,b)
+#define getSHDRAGIMAGEFields(a,b,c) NULL
+#define setSHDRAGIMAGEFields(a,b,c)
+#define SHDRAGIMAGE_sizeof() 0
+#endif
+
 #ifndef NO_STATSTG
 void cacheSTATSTGFields(JNIEnv *env, jobject lpObject);
 STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct);

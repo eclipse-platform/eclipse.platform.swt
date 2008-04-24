@@ -595,6 +595,58 @@ void setOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAME
 }
 #endif
 
+#ifndef NO_SHDRAGIMAGE
+typedef struct SHDRAGIMAGE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID sizeDragImage, ptOffset, hbmpDragImage, crColorKey;
+} SHDRAGIMAGE_FID_CACHE;
+
+SHDRAGIMAGE_FID_CACHE SHDRAGIMAGEFc;
+
+void cacheSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject)
+{
+	if (SHDRAGIMAGEFc.cached) return;
+	SHDRAGIMAGEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SHDRAGIMAGEFc.sizeDragImage = (*env)->GetFieldID(env, SHDRAGIMAGEFc.clazz, "sizeDragImage", "Lorg/eclipse/swt/internal/win32/SIZE;");
+	SHDRAGIMAGEFc.ptOffset = (*env)->GetFieldID(env, SHDRAGIMAGEFc.clazz, "ptOffset", "Lorg/eclipse/swt/internal/win32/POINT;");
+	SHDRAGIMAGEFc.hbmpDragImage = (*env)->GetFieldID(env, SHDRAGIMAGEFc.clazz, "hbmpDragImage", "I");
+	SHDRAGIMAGEFc.crColorKey = (*env)->GetFieldID(env, SHDRAGIMAGEFc.clazz, "crColorKey", "I");
+	SHDRAGIMAGEFc.cached = 1;
+}
+
+SHDRAGIMAGE *getSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct)
+{
+	if (!SHDRAGIMAGEFc.cached) cacheSHDRAGIMAGEFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SHDRAGIMAGEFc.sizeDragImage);
+	if (lpObject1 != NULL) getSIZEFields(env, lpObject1, &lpStruct->sizeDragImage);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SHDRAGIMAGEFc.ptOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->ptOffset);
+	}
+	lpStruct->hbmpDragImage = (*env)->GetIntField(env, lpObject, SHDRAGIMAGEFc.hbmpDragImage);
+	lpStruct->crColorKey = (*env)->GetIntField(env, lpObject, SHDRAGIMAGEFc.crColorKey);
+	return lpStruct;
+}
+
+void setSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct)
+{
+	if (!SHDRAGIMAGEFc.cached) cacheSHDRAGIMAGEFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SHDRAGIMAGEFc.sizeDragImage);
+	if (lpObject1 != NULL) setSIZEFields(env, lpObject1, &lpStruct->sizeDragImage);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SHDRAGIMAGEFc.ptOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->ptOffset);
+	}
+	(*env)->SetIntField(env, lpObject, SHDRAGIMAGEFc.hbmpDragImage, (jint)lpStruct->hbmpDragImage);
+	(*env)->SetIntField(env, lpObject, SHDRAGIMAGEFc.crColorKey, (jint)lpStruct->crColorKey);
+}
+#endif
+
 #ifndef NO_STATSTG
 typedef struct STATSTG_FID_CACHE {
 	int cached;
