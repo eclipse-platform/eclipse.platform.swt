@@ -13,8 +13,8 @@ package org.eclipse.swt.internal.ole.win32;
 import org.eclipse.swt.internal.win32.*;
 
 public final class SHDRAGIMAGE {
-	public SIZE sizeDragImage;
-	public POINT ptOffset;
+	public SIZE sizeDragImage = new SIZE ();
+	public POINT ptOffset = new POINT ();
 	public int /*long*/ hbmpDragImage;
 	public int crColorKey;
 	public static final int sizeof = COM.SHDRAGIMAGE_sizeof ();
