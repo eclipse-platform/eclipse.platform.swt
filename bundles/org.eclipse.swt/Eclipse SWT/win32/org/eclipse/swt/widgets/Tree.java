@@ -2171,9 +2171,7 @@ void createItemToolTips () {
 	* NOTE: Windows 2000 doesn't have the problem and
 	* setting WS_EX_TRANSPARENT causes pixel corruption. 
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		bits2 |= OS.WS_EX_TRANSPARENT;
-	}
+	if (OS.COMCTL32_MAJOR >= 6) bits2 |= OS.WS_EX_TRANSPARENT;
 	itemToolTipHandle = OS.CreateWindowEx (
 		bits2,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
