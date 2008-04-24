@@ -41,7 +41,6 @@ public class Link extends Control {
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
-	int [] bidiSegments;
 	int focusIndex;
 	
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
@@ -690,14 +689,14 @@ public void setText (String string) {
 	boolean enabled = (state & DISABLED) == 0;
 	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
 	linkStyle.underline = true;
-	bidiSegments = new int[offsets.length*2];
+	int [] bidiSegments = new int [offsets.length*2];
 	for (int i = 0; i < offsets.length; i++) {
 		Point point = offsets [i];
 		layout.setStyle (linkStyle, point.x, point.y);
 		bidiSegments[i*2] = point.x;
 		bidiSegments[i*2+1] = point.y+1;
 	}
-	layout.setSegments(bidiSegments);
+	layout.setSegments (bidiSegments);
 	TextStyle mnemonicStyle = new TextStyle (null, null, null);
 	mnemonicStyle.underline = true;
 	for (int i = 0; i < mnemonics.length; i++) {
