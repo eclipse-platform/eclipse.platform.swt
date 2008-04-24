@@ -2161,8 +2161,21 @@ void createItemToolTips () {
 	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) bits2 |= OS.WS_EX_LAYOUTRTL;
 	}
+	/*
+	* Feature in Windows.  For some reason, when the user
+	* clicks on a tool tip, it temporarily takes focus, even
+	* when WS_EX_NOACTIVATE is specified.  The fix is to
+	* use WS_EX_TRANSPARENT, even though WS_EX_TRANSPARENT
+	* is documented to affect painting, not hit testing.
+	*
+	* NOTE: Windows 2000 doesn't have the problem and
+	* setting WS_EX_TRANSPARENT causes pixel corruption. 
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		bits2 |= OS.WS_EX_TRANSPARENT;
+	}
 	itemToolTipHandle = OS.CreateWindowEx (
-		bits2 | OS.WS_EX_TRANSPARENT,
+		bits2,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
 		OS.TTS_NOPREFIX | OS.TTS_NOANIMATE | OS.TTS_NOFADE,
