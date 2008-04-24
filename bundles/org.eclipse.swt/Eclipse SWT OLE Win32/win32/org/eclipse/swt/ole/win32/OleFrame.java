@@ -187,7 +187,7 @@ static int /*long*/ getMsgProc(int /*long*/ code, int /*long*/ wParam, int /*lon
 	if (display == null) return 0;
 	LONG hHook = (LONG)display.getData(HHOOK);
 	if (hHook == null) return 0;
-	if (code < 0) {
+	if (code < 0 || (wParam & OS.PM_REMOVE) == 0) {
 		return OS.CallNextHookEx(hHook.value, (int)/*64*/code, wParam, lParam);
 	}
 	MSG msg = (MSG)display.getData(HHOOKMSG);

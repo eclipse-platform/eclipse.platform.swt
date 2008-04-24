@@ -1961,7 +1961,7 @@ int /*long*/ getMsgProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lP
 		if (embeddedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.SetWindowLongPtr (embeddedHwnd, OS.GWLP_WNDPROC, embeddedProc);
 	}
-	if (code >= 0 && wParam != OS.PM_NOREMOVE) {
+	if (code >= 0 && (wParam & OS.PM_REMOVE) != 0) {
 		MSG msg = new MSG ();
 		OS.MoveMemory (msg, lParam, MSG.sizeof);
 		switch (msg.message) {
