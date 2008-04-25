@@ -216,7 +216,8 @@ static int /*long*/ getMsgProc(int /*long*/ code, int /*long*/ wParam, int /*lon
 						OleFrame frame = site.frame;
 						frame.setData(CONSUME_KEY, null);
 						consumed = frame.translateOleAccelerator(msg);
-						if (frame.getData(CONSUME_KEY) != null) consumed = false;
+						String value = (String)frame.getData(CONSUME_KEY); 
+						if (value != null) consumed = value.equals("true"); //$NON-NLS-1$
 						frame.setData(CONSUME_KEY, null);
 					}
 					boolean accentKey = false;

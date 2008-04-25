@@ -23,10 +23,11 @@ class WebSite extends OleControlSite {
 	COMObject iServiceProvider;
 	COMObject iInternetSecurityManager;
 	COMObject iOleCommandTarget;
+	boolean ignoreNextMessage;
 
 	static final int OLECMDID_SHOWSCRIPTERROR = 40;
+	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 	static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
-	boolean ignoreNextMessage;
 
 public WebSite(Composite parent, int style, String progId) {
 	super(parent, style, progId);		
@@ -253,7 +254,7 @@ int ShowUI(int dwID, int /*long*/ pActiveObject, int /*long*/ pCommandTarget, in
 int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCmdID) {
 	/*
 	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
-	* the Internet Explorer shortcuts (e.g. F5 for refresh).  This overrides the shortcuts
+	* the Internet Explorer shortcuts (e.g. Ctrl+F for Find).  This overrides the shortcuts
 	* defined by SWT.  The workaround is to forward the accelerator keys to the parent window
 	* and have Internet Explorer ignore the ones handled by the parent window.
 	*/
@@ -269,13 +270,10 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 		}
 	}
 	/*
-	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
-	* the Internet Explorer shortcuts.  CTRL-N opens a standalone IE, which is undesirable
-	* and can cause a crash in some contexts.  CTRL-O is being intercepted by IE, but this
-	* accelerator should be handled by Eclipse. F5 causes a refresh, which is not appropriate
-	* when rendering HTML from memory.  The workaround is to block the handling of these
-	* shortcuts by IE when necessary, and in some cases ensure that Eclipse has an opportunity
-	* to handle these accelerators.
+	* By default the IE shortcuts are run.  However, F5 causes a refresh, which is not
+	* appropriate when rendering HTML from memory, and CTRL-N opens a standalone IE,
+	* which is undesirable and can cause a crash in some contexts.  The workaround is
+	* to block the handling of these shortcuts by IE.
 	*/
 	int result = COM.S_FALSE;
 	MSG msg = new MSG();
@@ -283,11 +281,7 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 	if (msg.message == OS.WM_KEYDOWN) {
 		switch ((int)/*64*/msg.wParam) {
 			case OS.VK_N:
-			case OS.VK_O:
-				if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-					getParent().setData(CONSUME_KEY, "false"); //$NON-NLS-1$
-					result = COM.S_OK;
-				}
+				if (OS.GetKeyState (OS.VK_CONTROL) < 0) result = COM.S_OK;
 				break;
 			case OS.VK_F5:
 				OleAutomation auto = new OleAutomation(this);
@@ -302,8 +296,51 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 					pVarResult.dispose();
 				}
 				break;
+			default:
+				OS.TranslateMessage(msg);
+				frame.setData(CONSUME_KEY, "true"); //$NON-NLS-1$
+				break;
 		}
 	}
+
+	boolean isAccent = false;
+	switch ((int)/*64*/msg.wParam) {
+		case OS.VK_SHIFT:
+		case OS.VK_MENU:
+		case OS.VK_CONTROL:
+		case OS.VK_CAPITAL:
+		case OS.VK_NUMLOCK:
+		case OS.VK_SCROLL:
+			break;
+		default: {
+			/* 
+			* Bug in Windows. The high bit in the result of MapVirtualKey() on
+			* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
+			* They should both be bit 32.  The fix is to test the right bit.
+			*/
+			int mapKey = OS.MapVirtualKey ((int)/*64*/msg.wParam, 2);
+			if (mapKey != 0) {
+				isAccent = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
+				if (!isAccent) {
+					for (int i=0; i<ACCENTS.length; i++) {
+						int value = OS.VkKeyScan (ACCENTS [i]);
+						if (value != -1 && (value & 0xFF) == msg.wParam) {
+							int state = value >> 8;
+							if ((OS.GetKeyState (OS.VK_SHIFT) < 0) == ((state & 0x1) != 0) &&
+								(OS.GetKeyState (OS.VK_CONTROL) < 0) == ((state & 0x2) != 0) &&
+								(OS.GetKeyState (OS.VK_MENU) < 0) == ((state & 0x4) != 0)) {
+									if ((state & 0x7) != 0) isAccent = true;
+									break;
+							}
+						}
+					}
+				}
+			}
+			break;
+		}
+	};
+	if (isAccent) result = COM.S_OK;
+
 	return result;
 }
 

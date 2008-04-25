@@ -22,7 +22,7 @@ class IE extends WebBrowser {
 	OleFrame frame;
 	OleControlSite site;
 	OleAutomation auto;
-	OleListener mouseListener;
+	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
 	boolean back, forward, navigate, delaySetText, ignoreDispose;
@@ -31,7 +31,7 @@ class IE extends WebBrowser {
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int /*long*/ globalDispatch;
 	String html;
-	int style;
+	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
 	static boolean SilenceInternalNavigate;
@@ -95,10 +95,13 @@ class IE extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
 	static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
+	static final String EVENT_DRAGEND = "dragend";	//$NON-NLS-1$
 	static final String EVENT_DRAGSTART = "dragstart";	//$NON-NLS-1$
+	static final String EVENT_KEYDOWN = "keydown";	//$NON-NLS-1$
+	static final String EVENT_KEYPRESS = "keypress";	//$NON-NLS-1$
+	static final String EVENT_KEYUP = "keyup";	//$NON-NLS-1$
 	static final String EVENT_MOUSEMOVE = "mousemove";	//$NON-NLS-1$
 	static final String EVENT_MOUSEWHEEL = "mousewheel";	//$NON-NLS-1$
-	static final String EVENT_DRAGEND = "dragend";	//$NON-NLS-1$
 	static final String EVENT_MOUSEUP = "mouseup";	//$NON-NLS-1$
 	static final String EVENT_MOUSEDOWN = "mousedown";	//$NON-NLS-1$
 	static final String EVENT_MOUSEOUT = "mouseout";	//$NON-NLS-1$
@@ -109,6 +112,9 @@ class IE extends WebBrowser {
 	static final String PROPERTY_CLIENTY = "clientY"; //$NON-NLS-1$
 	static final String PROPERTY_CTRLKEY = "ctrlKey"; //$NON-NLS-1$
 	static final String PROPERTY_FROMELEMENT = "fromElement"; //$NON-NLS-1$
+	static final String PROPERTY_KEYCODE = "keyCode"; //$NON-NLS-1$
+	static final String PROPERTY_REPEAT = "repeat"; //$NON-NLS-1$
+	static final String PROPERTY_RETURNVALUE = "returnValue"; //$NON-NLS-1$
 	static final String PROPERTY_SHIFTKEY = "shiftKey"; //$NON-NLS-1$
 	static final String PROPERTY_TOELEMENT = "toElement"; //$NON-NLS-1$
 	static final String PROPERTY_TYPE = "type"; //$NON-NLS-1$
@@ -206,9 +212,9 @@ public void create(Composite parent, int style) {
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
 
-	mouseListener = new OleListener() {
+	domListener = new OleListener() {
 		public void handleEvent (OleEvent e) {
-			handleMouseEvent(e);
+			handleDOMEvent(e);
 		}
 	};
 
@@ -228,26 +234,21 @@ public void create(Composite parent, int style) {
 					/*
 					* It is possible for the Browser's OLE frame to have been disposed
 					* by a Dispose listener that was invoked by notifyListeners above,
-					* so check for this before unhooking its mouse listeners.
+					* so check for this before unhooking its DOM listeners.
 					*/
-					if (!frame.isDisposed ()) unhookMouseListeners(documents);
+					if (!frame.isDisposed ()) unhookDOMListeners(documents);
 
 					for (int i = 0; i < documents.length; i++) {
 						documents[i].dispose();
 					}
 					documents = null;
-					mouseListener = null;
+					domListener = null;
 					if (auto != null) auto.dispose();
 					auto = null;
 					break;
 				}
 				case SWT.Resize: {
 					frame.setBounds(browser.getClientArea());
-					break;
-				}
-				case SWT.KeyDown:
-				case SWT.KeyUp: {
-					browser.notifyListeners(e.type, e);
 					break;
 				}
 				case SWT.MouseWheel: {
@@ -259,8 +260,6 @@ public void create(Composite parent, int style) {
 	};
 	browser.addListener(SWT.Dispose, listener);
 	browser.addListener(SWT.Resize, listener);
-	site.addListener(SWT.KeyDown, listener);
-	site.addListener(SWT.KeyUp, listener);
 	site.addListener(SWT.MouseWheel, listener);
 	
 	OleListener oleListener = new OleListener() {
@@ -292,8 +291,8 @@ public void create(Composite parent, int style) {
 							IDispatch top = variant.getDispatch();
 							boolean isTop = top.getAddress() == dispatch.getAddress();
 							if (isTop) {
-								/* unhook mouse listeners and unref the last document(s) */
-								unhookMouseListeners(documents);
+								/* unhook DOM listeners and unref the last document(s) */
+								unhookDOMListeners(documents);
 								for (int i = 0; i < documents.length; i++) {
 									documents[i].dispose();
 								}
@@ -436,7 +435,7 @@ public void create(Composite parent, int style) {
 						Variant variant = new Variant(auto);
 						IDispatch top = variant.getDispatch();
 						boolean isTop = top.getAddress() == dispatch.getAddress();
-						hookMouseListeners(webBrowser, isTop);
+						hookDOMListeners(webBrowser, isTop);
 						webBrowser.dispose();
 						break;
 					}
@@ -904,7 +903,7 @@ public void stop() {
 	auto.invoke(rgdispid[0]);
 }
 
-void handleMouseEvent (OleEvent e) {
+void handleDOMEvent (OleEvent e) {
 	if (e.arguments == null || e.arguments.length == 0) return; /* for IE5 */
 
 	Variant arg = e.arguments[0];
@@ -915,6 +914,186 @@ void handleMouseEvent (OleEvent e) {
 	String eventType = pVarResult.getString();
 	pVarResult.dispose();
 
+	if (eventType.equals(EVENT_KEYDOWN)) {
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_KEYCODE });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		lastKeyCode = translateKey (pVarResult.getInt());
+		pVarResult.dispose();
+
+		MSG msg = new MSG ();
+		int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
+		if (OS.PeekMessage (msg, frame.handle, OS.WM_CHAR, OS.WM_CHAR, flags)) {
+			/* a keypress will be received for this key so don't send KeyDown here */
+			event.dispose();
+			return;
+		}
+
+		/* if this is a repeating key then an event should not be fired for it */
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_REPEAT });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		boolean repeating = pVarResult.getBoolean();
+		pVarResult.dispose();
+		if (repeating) {
+			event.dispose();
+			return;
+		}
+
+		int mask = 0;
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_ALTKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.ALT;
+		pVarResult.dispose();
+
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CTRLKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.CTRL;
+		pVarResult.dispose();
+
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_SHIFTKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.SHIFT;
+		pVarResult.dispose();
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyDown;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.stateMask = mask;
+		keyEvent.stateMask &= ~lastKeyCode;		/* remove current keydown if it's a state key */
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			rgdispid = event.getIDsOfNames(new String[] { PROPERTY_RETURNVALUE });
+			dispIdMember = rgdispid[0];
+			Variant pVarFalse = new Variant(false);
+			event.setProperty(dispIdMember, pVarFalse);
+			pVarFalse.dispose();
+		}
+
+		event.dispose();
+		return;
+	}
+
+	if (eventType.equals(EVENT_KEYPRESS)) {
+		int mask = 0;
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CTRLKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.CTRL;
+		pVarResult.dispose();
+
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_SHIFTKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.SHIFT;
+		pVarResult.dispose();
+
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_ALTKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.ALT;
+		pVarResult.dispose();
+
+		/* in the keypress event the keyCode actually corresponds to the character code */
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_KEYCODE });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		lastCharCode = pVarResult.getInt();
+		pVarResult.dispose();
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyDown;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.character = (char)lastCharCode;
+		keyEvent.stateMask = mask;
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			rgdispid = event.getIDsOfNames(new String[] { PROPERTY_RETURNVALUE });
+			dispIdMember = rgdispid[0];
+			Variant pVarFalse = new Variant(false);
+			event.setProperty(dispIdMember, pVarFalse);
+			pVarFalse.dispose();
+		}
+
+		event.dispose();
+		return;
+	}
+
+	if (eventType.equals(EVENT_KEYUP)) {
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_KEYCODE });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		int keyCode = translateKey (pVarResult.getInt());
+		pVarResult.dispose();
+
+		/*
+		* if a key code could not be determined for this key then it's a
+		* key for which key events are not sent (eg.- the Windows key)
+		*/
+		if (keyCode == 0) {
+			lastKeyCode = lastCharCode = 0;
+			event.dispose();
+			return;
+		}
+
+		if (keyCode != lastKeyCode) {
+			/* keyup does not correspond to the last keydown */
+			lastKeyCode = keyCode;
+			lastCharCode = 0;
+		}
+
+		int mask = 0;
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CTRLKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.CTRL;
+		pVarResult.dispose();
+
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_ALTKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.ALT;
+		pVarResult.dispose();
+
+		rgdispid = event.getIDsOfNames(new String[] { PROPERTY_SHIFTKEY });
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		if (pVarResult.getBoolean()) mask |= SWT.SHIFT;
+		pVarResult.dispose();
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyUp;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.character = (char)lastCharCode;
+		keyEvent.stateMask = mask;
+		switch (lastKeyCode) {
+			case SWT.SHIFT:
+			case SWT.CONTROL:
+			case SWT.ALT:
+			case SWT.COMMAND: {
+				keyEvent.stateMask |= lastKeyCode;
+			}
+		}
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit) {
+			rgdispid = event.getIDsOfNames(new String[] { PROPERTY_RETURNVALUE });
+			dispIdMember = rgdispid[0];
+			Variant pVarFalse = new Variant(false);
+			event.setProperty(dispIdMember, pVarFalse);
+			pVarFalse.dispose();
+		}
+
+		lastKeyCode = lastCharCode = 0;
+		event.dispose();
+		return;
+	}
+	
 	/*
 	 * Feature in IE. MouseOver/MouseOut events are fired any time the mouse enters
 	 * or exits any element within the Browser.  To ensure that SWT events are only
@@ -1050,7 +1229,7 @@ void handleMouseEvent (OleEvent e) {
 	}
 }
 
-void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
+void hookDOMListeners(OleAutomation webBrowser, final boolean isTop) {
 	int[] rgdispid = webBrowser.getIDsOfNames(new String[]{ "Document" }); //$NON-NLS-1$
 	int dispIdMember = rgdispid[0];
 	Variant	pVarResult = webBrowser.getProperty(dispIdMember);
@@ -1065,23 +1244,26 @@ void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
 	/*
 	 * In some cases, such as setting the Browser's content from a string,
 	 * NavigateComplete2 is received multiple times for a top-level document.
-	 * For cases like this, any previously-hooked mouse listeners must be
+	 * For cases like this, any previously-hooked DOM listeners must be
 	 * removed from the document before hooking the new set of listeners,
 	 * otherwise multiple sets of events will be received.  
 	 */
-	unhookMouseListeners (new OleAutomation[] {document});
+	unhookDOMListeners (new OleAutomation[] {document});
 
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEWHEEL, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
-	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYDOWN, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYUP, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEWHEEL, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, domListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND, domListener);
 	/* ensure that enter/exit are only fired once, by the top-level document */
 	if (isTop) {
-		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
-		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
+		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, domListener);
+		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, domListener);
 	}
 
 	OleAutomation[] newDocuments = new OleAutomation[documents.length + 1];
@@ -1090,21 +1272,24 @@ void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
 	documents = newDocuments;
 }
 
-void unhookMouseListeners(OleAutomation[] documents) {
+void unhookDOMListeners(OleAutomation[] documents) {
 	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
 	GUID guid = new GUID();
 	if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
 		for (int i = 0; i < documents.length; i++) {
 			OleAutomation document = documents[i];
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEWHEEL, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
-			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYDOWN, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYUP, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEWHEEL, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGEND, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, domListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, domListener);
 		}
 	}
 }
