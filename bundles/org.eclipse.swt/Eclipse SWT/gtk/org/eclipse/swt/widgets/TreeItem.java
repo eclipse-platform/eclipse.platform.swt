@@ -1629,7 +1629,7 @@ public void setImage (int index, Image image) {
 					 * the style.
 					 */
 					int /*long*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
-					OS.gtk_widget_modify_style (parentHandle, style);
+					parent.modifyStyle (parentHandle, style);
 				}
 			} 
 		}

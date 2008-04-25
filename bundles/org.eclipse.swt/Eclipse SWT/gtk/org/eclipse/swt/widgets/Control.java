@@ -665,6 +665,16 @@ void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }
 
+void modifyStyle (int /*long*/ handle, int /*long*/ style) {
+	super.modifyStyle(handle, style);
+	/*
+	* Bug in GTK.  When changing the style of a control that  
+	* has had a region set on it, the region is lost.  The 
+	* fix is to set the region again.
+	*/
+	if (region != null) OS.gdk_window_shape_combine_region (OS.GTK_WIDGET_WINDOW (topHandle ()), region.handle, 0, 0);
+}
+
 void moveHandle (int x, int y) {
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
@@ -3354,7 +3364,7 @@ void setBackgroundColor (int /*long*/ handle, GdkColor color) {
 	int flags = OS.gtk_rc_style_get_color_flags (style, index);
 	flags = (color == null) ? flags & ~OS.GTK_RC_BG : flags | OS.GTK_RC_BG;
 	OS.gtk_rc_style_set_color_flags (style, index, flags);
-	OS.gtk_widget_modify_style (handle, style);
+	modifyStyle (handle, style);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -4098,10 +4108,10 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 void setWidgetBackground  () {
 	if (fixedHandle != 0) {
 		int /*long*/ style = OS.gtk_widget_get_modifier_style (fixedHandle);
-		OS.gtk_widget_modify_style (fixedHandle, style);
+		modifyStyle (fixedHandle, style);
 	}
 	int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
-	OS.gtk_widget_modify_style (handle, style);
+	modifyStyle (handle, style);
 }
 
 boolean showMenu (int x, int y) {

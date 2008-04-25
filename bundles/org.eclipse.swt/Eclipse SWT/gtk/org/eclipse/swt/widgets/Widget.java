@@ -975,6 +975,10 @@ boolean mnemonicMatch (int /*long*/ mnemonicHandle, char key) {
 	return keyval1 == keyval2;
 }
 
+void modifyStyle (int /*long*/ handle, int /*long*/ style) {
+	OS.gtk_widget_modify_style (handle, style);
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -1385,7 +1389,7 @@ void setForegroundColor (int /*long*/ handle, GdkColor color) {
 	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_ACTIVE);
 	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
 	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_ACTIVE, flags);
-	OS.gtk_widget_modify_style (handle, style);	
+	modifyStyle (handle, style);	
 }
 
 boolean setInputState (Event event, int state) {
