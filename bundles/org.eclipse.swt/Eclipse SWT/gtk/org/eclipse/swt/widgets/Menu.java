@@ -175,7 +175,15 @@ void _setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			if ((OS.GTK_VERSION >=  OS.VERSION (2, 8, 0))) {
-				OS.gtk_menu_shell_set_take_focus (handle, false);
+				/*
+				* Feature in GTK. ON_TOP shells will send out 
+				* SWT.Deactivate whenever a context menu is shown.
+				* The fix is to prevent the menu from taking focus
+				* when it is being shown in an ON_TOP shell.
+				*/
+				if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
+					OS.gtk_menu_shell_set_take_focus (handle, false);
+				}
 			}
 			int /*long*/ address = hasLocation ? display.menuPositionProc: 0;
 			/*
