@@ -2585,6 +2585,7 @@ int FocusNextElement () {
 	*/
 	browser.getDisplay ().asyncExec (new Runnable () {
 		public void run () {
+			if (browser.isDisposed ()) return;
 			browser.traverse (SWT.TRAVERSE_TAB_NEXT);
 		}
 	});
@@ -2600,6 +2601,7 @@ int FocusPrevElement () {
 	*/
 	browser.getDisplay ().asyncExec (new Runnable () {
 		public void run () {
+			if (browser.isDisposed ()) return;
 			browser.traverse (SWT.TRAVERSE_TAB_PREVIOUS);
 		}
 	});
