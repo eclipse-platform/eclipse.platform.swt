@@ -5833,7 +5833,7 @@ LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 		}
 	}
-	int code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	int /*long*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (wParam == 0) {
 		if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, 0xFFFFFF);

@@ -474,7 +474,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int /*long*/ arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, POINT arg2, int arg3);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, POINT arg1, int arg2);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, POINT arg1, int /*long*/ arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, POINT arg0, int arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, SHDRAGIMAGE arg0, int /*long*/ arg1);
 
