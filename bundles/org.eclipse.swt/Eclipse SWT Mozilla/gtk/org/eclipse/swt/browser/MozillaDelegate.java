@@ -131,7 +131,7 @@ void handleMouseDown () {
 	if ((shellStyle & SWT.ON_TOP) != 0 && (((shellStyle & SWT.NO_FOCUS) == 0) || ((browser.getStyle () & SWT.NO_FOCUS) == 0))) {
 		browser.getDisplay ().asyncExec (new Runnable () {
 			public void run () {
-				if (browser.isDisposed ()) return;
+				if (browser == null || browser.isDisposed ()) return;
 				((Mozilla)browser.webBrowser).Activate ();
 			}
 		});
