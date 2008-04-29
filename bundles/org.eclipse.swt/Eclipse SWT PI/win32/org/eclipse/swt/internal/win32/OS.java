@@ -2201,6 +2201,7 @@ public static final native int SCRIPT_STATE_sizeof ();
 public static final native int SCROLLBARINFO_sizeof ();
 public static final native int SCROLLINFO_sizeof ();
 public static final native int SHACTIVATEINFO_sizeof ();
+public static final native int SHDRAGIMAGE_sizeof();
 public static final native int SHELLEXECUTEINFO_sizeof ();
 public static final native int SHFILEINFOA_sizeof ();
 public static final native int SHFILEINFOW_sizeof ();
@@ -3032,6 +3033,11 @@ public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, SHDRAGIMAGE lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTON lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3838,6 +3844,7 @@ public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, REBARBANDINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, RECT lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, SYSTEMTIME lParam);
+public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, SHDRAGIMAGE lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTON lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTONINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCITEM lParam);
@@ -3869,6 +3876,7 @@ public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, REBARBANDINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, RECT lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, SYSTEMTIME lParam);
+public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, SHDRAGIMAGE lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTON lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TBBUTTONINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TCITEM lParam);

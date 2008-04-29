@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 933;
-int OS_nativeFunctionCallCount[933];
+int OS_nativeFunctionCount = 936;
+int OS_nativeFunctionCallCount[936];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -708,6 +708,7 @@ char * OS_nativeFunctionNames[] = {
 	"SHBrowseForFolderA",
 	"SHBrowseForFolderW",
 	"SHCreateMenuBar",
+	"SHDRAGIMAGE_1sizeof",
 	"SHELLEXECUTEINFO_1sizeof",
 	"SHFILEINFOA_1sizeof",
 	"SHFILEINFOW_1sizeof",
@@ -763,6 +764,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
@@ -794,6 +796,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SIZE_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",

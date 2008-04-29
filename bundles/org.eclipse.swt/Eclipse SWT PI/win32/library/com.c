@@ -961,18 +961,6 @@ JNIEXPORT jint JNICALL COM_NATIVE(RevokeDragDrop)
 }
 #endif
 
-#ifndef NO_SHDRAGIMAGE_1sizeof
-JNIEXPORT jint JNICALL COM_NATIVE(SHDRAGIMAGE_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, SHDRAGIMAGE_1sizeof_FUNC);
-	rc = (jint)SHDRAGIMAGE_sizeof();
-	COM_NATIVE_EXIT(env, that, SHDRAGIMAGE_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SHDoDragDrop
 JNIEXPORT jint JNICALL COM_NATIVE(SHDoDragDrop)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
@@ -1862,22 +1850,6 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_ole_win32_SHDRAGIMAGE_2I
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win32_SHDRAGIMAGE_2I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
-{
-	SHDRAGIMAGE _arg2, *lparg2=NULL;
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_SHDRAGIMAGE_2I_FUNC);
-	if (arg2) if ((lparg2 = getSHDRAGIMAGEFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, SHDRAGIMAGE *, jint))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3);
-fail:
-	if (arg2 && lparg2) setSHDRAGIMAGEFields(env, arg2, lparg2);
-	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_SHDRAGIMAGE_2I_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -1957,6 +1929,22 @@ fail:
 	if (arg3 && lparg3) setRECTFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	SHDRAGIMAGE _arg2, *lparg2=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC);
+	if (arg2) if ((lparg2 = getSHDRAGIMAGEFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, SHDRAGIMAGE *, jint))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setSHDRAGIMAGEFields(env, arg2, lparg2);
+	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC);
 	return rc;
 }
 #endif

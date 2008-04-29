@@ -698,7 +698,6 @@ public static final native int GUID_sizeof();
 public static final native int LICINFO_sizeof();
 public static final native int OLECMD_sizeof();
 public static final native int OLEINPLACEFRAMEINFO_sizeof();
-public static final native int SHDRAGIMAGE_sizeof();
 public static final native int STATSTG_sizeof();
 public static final native int STGMEDIUM_sizeof();
 public static final native int TYPEATTR_sizeof();

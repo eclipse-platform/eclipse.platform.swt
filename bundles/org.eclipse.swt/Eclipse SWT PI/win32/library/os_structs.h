@@ -1331,6 +1331,18 @@ void setSHACTIVATEINFOFields(JNIEnv *env, jobject lpObject, SHACTIVATEINFO *lpSt
 #define SHACTIVATEINFO_sizeof() 0
 #endif
 
+#ifndef NO_SHDRAGIMAGE
+void cacheSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject);
+SHDRAGIMAGE *getSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
+void setSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lpStruct);
+#define SHDRAGIMAGE_sizeof() sizeof(SHDRAGIMAGE)
+#else
+#define cacheSHDRAGIMAGEFields(a,b)
+#define getSHDRAGIMAGEFields(a,b,c) NULL
+#define setSHDRAGIMAGEFields(a,b,c)
+#define SHDRAGIMAGE_sizeof() 0
+#endif
+
 #ifndef NO_SHELLEXECUTEINFO
 void cacheSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject);
 SHELLEXECUTEINFO *getSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct);

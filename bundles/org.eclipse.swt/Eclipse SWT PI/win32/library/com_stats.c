@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 158;
-int COM_nativeFunctionCallCount[158];
+int COM_nativeFunctionCount = 157;
+int COM_nativeFunctionCallCount[157];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CAUUID_1sizeof",
@@ -79,7 +79,6 @@ char * COM_nativeFunctionNames[] = {
 	"RegisterDragDrop",
 	"ReleaseStgMedium",
 	"RevokeDragDrop",
-	"SHDRAGIMAGE_1sizeof",
 	"SHDoDragDrop",
 	"STATSTG_1sizeof",
 	"STGMEDIUM_1sizeof",
@@ -136,12 +135,12 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_LICINFO_2",
-	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_SHDRAGIMAGE_2I",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_POINT_2I",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2",
+	"VtblCall__IILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I",
 	"VtblCall__IIZ",
 	"VtblCall__II_3C",
 	"VtblCall__II_3CI",
