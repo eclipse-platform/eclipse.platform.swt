@@ -82,7 +82,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 			if (OS.SendMessage (control.handle, DI_GETDRAGIMAGE, 0, shdi) != 0) {
 				event.x += shdi.ptOffset.x;
 				event.y += shdi.ptOffset.y;
-				int /*long */ hImage = shdi.hbmpDragImage;
+				int /*long*/ hImage = shdi.hbmpDragImage;
 				if (hImage != 0) {
 					BITMAP bm = new BITMAP ();
 					OS.GetObject (hImage, BITMAP.sizeof, bm);
