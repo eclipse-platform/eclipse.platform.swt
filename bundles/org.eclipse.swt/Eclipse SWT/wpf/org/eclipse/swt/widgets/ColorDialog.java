@@ -51,7 +51,7 @@ public class ColorDialog extends Dialog {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**

@@ -46,7 +46,7 @@ public class DirectoryDialog extends Dialog {
  * </ul>
  */
 public DirectoryDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**

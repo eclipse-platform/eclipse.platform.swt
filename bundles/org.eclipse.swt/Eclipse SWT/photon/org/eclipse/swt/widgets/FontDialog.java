@@ -47,7 +47,7 @@ public class FontDialog extends Dialog {
  * </ul>
  */
 public FontDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 /**
  * Constructs a new instance of this class given its parent
