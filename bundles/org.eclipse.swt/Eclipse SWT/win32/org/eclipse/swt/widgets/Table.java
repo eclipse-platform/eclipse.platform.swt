@@ -5382,6 +5382,10 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		}
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
+	if (msg == Display.DI_GETDRAGIMAGE) {
+		if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) return 0;
+//		if (getSelectionCount () != 1) return 0;
+	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 

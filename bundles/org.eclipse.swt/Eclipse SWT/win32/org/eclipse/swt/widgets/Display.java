@@ -370,6 +370,7 @@ public class Display extends Device {
 	static final int SWT_RUNASYNC		= OS.WM_APP + 6;
 	static int SWT_TASKBARCREATED;
 	static int SWT_RESTORECARET;
+	static int DI_GETDRAGIMAGE;
 	
 	/* Workaround for Adobe Reader 7.0 */
 	int hitCount;
@@ -2551,6 +2552,7 @@ protected void init () {
 	/* Register custom messages message */
 	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
 	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true)); //$NON-NLS-1$
+	DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
 
 	/* Initialize OLE */
 	if (!OS.IsWinCE) OS.OleInitialize (0);
