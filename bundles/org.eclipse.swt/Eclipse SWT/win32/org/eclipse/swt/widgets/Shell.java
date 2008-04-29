@@ -1723,6 +1723,9 @@ public void setVisible (boolean visible) {
 	if ((style & mask) != 0) {
 		if (visible) {
 			display.setModalShell (this);
+			if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+				display.setModalDialog (null);
+			}
 			Control control = display._getFocusControl ();
 			if (control != null && !control.isActive ()) {
 				bringToTop ();
