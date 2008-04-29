@@ -65,7 +65,7 @@ public class ColorDialog extends Dialog {
  * @see Widget#getStyle
  */
 public ColorDialog(Shell parent) {
-	this(parent, SWT.NULL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -96,7 +96,7 @@ public ColorDialog(Shell parent) {
  * @see Widget#getStyle
  */
 public ColorDialog(Shell parent, int style) {
-	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 void createChildren() {

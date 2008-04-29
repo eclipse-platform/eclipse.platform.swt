@@ -59,7 +59,7 @@ public class FileDialog extends Dialog {
  * </ul>
  */
 public FileDialog (Shell parent) {
-	this (parent, SWT.PRIMARY_MODAL);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -87,7 +87,7 @@ public FileDialog (Shell parent) {
  * </ul>
  */
 public FileDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 

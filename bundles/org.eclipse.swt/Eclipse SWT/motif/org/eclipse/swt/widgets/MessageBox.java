@@ -81,7 +81,7 @@ public MessageBox (Shell parent) {
  * </ul>
  */
 public MessageBox (Shell parent, int style) {
-	super (parent, checkStyle (style));
+	super (parent, checkStyle (parent, checkStyle (style)));
 	checkSubclass ();
 }
 int activate (int widget, int client, int call) {
@@ -90,7 +90,6 @@ int activate (int widget, int client, int call) {
 	return 0;
 }
 static int checkStyle (int style) {
-	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) == 0) style |= SWT.APPLICATION_MODAL;
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 	int bits = style & mask;
 	if (bits == SWT.OK || bits == SWT.CANCEL || bits == (SWT.OK | SWT.CANCEL)) return style;

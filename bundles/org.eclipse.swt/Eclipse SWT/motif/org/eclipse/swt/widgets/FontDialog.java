@@ -113,7 +113,7 @@ public class FontDialog extends Dialog {
  * </ul>
  */
 public FontDialog (Shell parent) {
-	this (parent, SWT.NONE);
+	this (parent, SWT.APPLICATION_MODAL);
 }
 
 /**
@@ -141,7 +141,7 @@ public FontDialog (Shell parent) {
  * </ul>
  */
 public FontDialog (Shell parent, int style) {
-	super (parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
