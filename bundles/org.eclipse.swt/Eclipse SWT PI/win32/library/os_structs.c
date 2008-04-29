@@ -6337,7 +6337,7 @@ SHDRAGIMAGE *getSHDRAGIMAGEFields(JNIEnv *env, jobject lpObject, SHDRAGIMAGE *lp
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SHDRAGIMAGEFc.ptOffset);
 	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->ptOffset);
 	}
-	lpStruct->hbmpDragImage = (*env)->GetIntField(env, lpObject, SHDRAGIMAGEFc.hbmpDragImage);
+	lpStruct->hbmpDragImage = (HBITMAP)(*env)->GetIntField(env, lpObject, SHDRAGIMAGEFc.hbmpDragImage);
 	lpStruct->crColorKey = (*env)->GetIntField(env, lpObject, SHDRAGIMAGEFc.crColorKey);
 	return lpStruct;
 }
