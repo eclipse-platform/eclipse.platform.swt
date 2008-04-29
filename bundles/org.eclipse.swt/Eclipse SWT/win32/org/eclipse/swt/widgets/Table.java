@@ -5383,7 +5383,15 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
 	if (msg == Display.DI_GETDRAGIMAGE) {
+		/*
+		* Bug in Windows.  For some reason, DI_GETDRAGIMAGE
+		* returns an image that does not contain strings.
+		* The fix is to disable the table window proc.
+		* 
+		* NOTE: This only happens on Vista.
+		*/
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) return 0;
+		//TEMPORARY CODE
 		if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) return 0;
 //		if (getSelectionCount () != 1) return 0;
 	}

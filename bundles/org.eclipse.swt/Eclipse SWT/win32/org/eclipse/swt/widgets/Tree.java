@@ -5686,8 +5686,16 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		}
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
-	if (msg == Display.DI_GETDRAGIMAGE) {		
+	if (msg == Display.DI_GETDRAGIMAGE) {
+		//TEMPORARY CODE
 		if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) return 0;
+		/*
+		* When there is more than one item selected, DI_GETDRAGIMAGE
+		* returns the item under the cursor.  This happens because
+		* the tree does not have implement multi-select.  The fix 
+		* is to disable DI_GETDRAGIMAGE when more than one item is
+		* selected.
+		*/
 		if ((style & SWT.MULTI) != 0) {
 			if (getSelectionCount () != 1) return 0;
 		}
