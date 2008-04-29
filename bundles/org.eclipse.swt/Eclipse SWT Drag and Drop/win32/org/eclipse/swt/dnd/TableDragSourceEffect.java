@@ -76,7 +76,74 @@ public class TableDragSourceEffect extends DragSourceEffect {
 	
 	Image getDragSourceImage(DragSourceEvent event) {
 		if (dragSourceImage != null) dragSourceImage.dispose();
-		dragSourceImage = null;		
+		dragSourceImage = null;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+			SHDRAGIMAGE shdi = new SHDRAGIMAGE();
+			int DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
+			if (OS.SendMessage (control.handle, DI_GETDRAGIMAGE, 0, shdi) != 0) {
+				event.x += shdi.ptOffset.x;
+				event.y += shdi.ptOffset.y;
+				int /*long */ hImage = shdi.hbmpDragImage;
+				if (hImage != 0) {
+					BITMAP bm = new BITMAP ();
+					OS.GetObject (hImage, BITMAP.sizeof, bm);
+					int srcWidth = bm.bmWidth;
+					int srcHeight = bm.bmHeight;
+					
+					/* Create resources */
+					int /*long*/ hdc = OS.GetDC (0);
+					int /*long*/ srcHdc = OS.CreateCompatibleDC (hdc);
+					int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
+					int /*long*/ memHdc = OS.CreateCompatibleDC (hdc);
+					BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
+					bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+					bmiHeader.biWidth = srcWidth;
+					bmiHeader.biHeight = -srcHeight;
+					bmiHeader.biPlanes = 1;
+					bmiHeader.biBitCount = 32;
+					bmiHeader.biCompression = OS.BI_RGB;
+					byte []	bmi = new byte[BITMAPINFOHEADER.sizeof];
+					OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+					int /*long*/ [] pBits = new int /*long*/ [1];
+					int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+					if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+					int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
+
+					BITMAP dibBM = new BITMAP ();
+					OS.GetObject (memDib, BITMAP.sizeof, dibBM);
+					int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
+
+				 	/* Get the foreground pixels */
+				 	OS.BitBlt (memHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
+				 	byte[] srcData = new byte [sizeInBytes];
+					OS.MoveMemory (srcData, dibBM.bmBits, sizeInBytes);
+
+					byte[] alphaData = new byte[srcWidth * srcHeight];
+					int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+					int ap = 0, sp = 3;
+					for (int y = 0; y < srcHeight; ++y) {
+						for (int x = 0; x < srcWidth; ++x) {
+							alphaData [ap++] = srcData [sp];
+							sp += 4;
+						}
+						sp += spinc;
+					}
+					PaletteData palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
+					ImageData data = new ImageData(srcWidth, srcHeight, bm.bmBitsPixel, palette, bm.bmWidthBytes, srcData);
+					data.alphaData = alphaData;
+					data.transparentPixel = shdi.crColorKey;
+					dragSourceImage = new Image(control.getDisplay(), data);
+					OS.SelectObject (memHdc, oldMemBitmap);
+					OS.DeleteDC (memHdc);
+					OS.DeleteObject (memDib);
+					OS.SelectObject (srcHdc, oldSrcBitmap);
+					OS.DeleteDC (srcHdc);
+					OS.ReleaseDC (0, hdc);
+					return dragSourceImage;
+				}
+			}
+			return null;
+		}
 		Table table = (Table) control;
 		TableItem[] selection = table.getSelection();
 		if (selection.length == 0) return null;
