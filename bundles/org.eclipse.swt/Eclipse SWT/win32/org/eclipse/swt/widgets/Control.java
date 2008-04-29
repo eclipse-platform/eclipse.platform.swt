@@ -2648,7 +2648,8 @@ public void setBounds (Rectangle rect) {
 /**
  * If the argument is <code>true</code>, causes the receiver to have
  * all mouse events delivered to it until the method is called with
- * <code>false</code> as the argument.
+ * <code>false</code> as the argument.  Note that on some platforms,
+ * a mouse button must currently be down for capture to be assigned.
  *
  * @param capture <code>true</code> to capture the mouse, and <code>false</code> to release it
  *
