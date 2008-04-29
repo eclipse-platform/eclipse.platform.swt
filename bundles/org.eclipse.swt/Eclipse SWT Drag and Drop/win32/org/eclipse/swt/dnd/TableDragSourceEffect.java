@@ -145,6 +145,8 @@ public class TableDragSourceEffect extends DragSourceEffect {
 			return null;
 		}
 		Table table = (Table) control;
+		//TEMPORARY CODE
+		if (table.isListening (SWT.EraseItem) || table.isListening (SWT.PaintItem)) return null;
 		TableItem[] selection = table.getSelection();
 		if (selection.length == 0) return null;
 		int /*long*/ tableImageList = OS.SendMessage (table.handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);

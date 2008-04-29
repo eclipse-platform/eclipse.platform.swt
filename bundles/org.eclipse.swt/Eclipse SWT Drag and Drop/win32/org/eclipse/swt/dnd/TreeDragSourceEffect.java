@@ -134,6 +134,8 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		}
 		
 		Tree tree = (Tree) control;
+		//TEMPORARY CODE
+		if (tree.isListening (SWT.EraseItem) || tree.isListening (SWT.PaintItem)) return null;
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) return null;
 		int /*long*/ treeImageList = OS.SendMessage (tree.handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
