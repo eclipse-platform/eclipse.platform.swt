@@ -164,6 +164,9 @@ void checkParent (Shell parent) {
 }
 
 static int checkStyle (Shell parent, int style) {
+	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) == 0) {
+		style |= SWT.APPLICATION_MODAL;
+	}
 	style &= ~SWT.MIRRORED;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
 		if (parent != null) {
