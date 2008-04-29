@@ -74,7 +74,7 @@ public DirectoryDialog (Shell parent) {
  * </ul>
  */
 public DirectoryDialog (Shell parent, int style) {
-	super (parent, parent == null? style : checkStyle (parent, style));
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 /**

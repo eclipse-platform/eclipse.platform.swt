@@ -82,7 +82,7 @@ public FileDialog (Shell parent) {
  * </ul>
  */
 public FileDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 

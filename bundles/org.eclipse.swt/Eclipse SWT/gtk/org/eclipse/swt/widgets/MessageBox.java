@@ -80,7 +80,7 @@ public MessageBox (Shell parent) {
  * </ul>
  */
 public MessageBox (Shell parent, int style) {
-	super(parent, parent == null? checkStyle (style) : checkStyle (parent, style));
+	super (parent, checkStyle (parent, checkStyle (style)));
 	checkSubclass ();
 }
 
@@ -190,10 +190,6 @@ private static int checkStyle (int style) {
 	if (bits == (SWT.RETRY | SWT.CANCEL) || bits == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) return style;
 	style = (style & ~mask) | SWT.OK;
 	return style;
-}
-
-static int checkStyle (Shell parent, int style) {
-	return checkStyle(Dialog.checkStyle(parent, style));
 }
 
 char[] fixPercent (String string) {
