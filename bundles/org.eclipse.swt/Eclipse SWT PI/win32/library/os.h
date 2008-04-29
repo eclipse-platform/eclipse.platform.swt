@@ -99,6 +99,7 @@
 #define NO_SCRIPT_PROPERTIES
 #define NO_SCRIPT_STATE
 #define NO_SCROLLBARINFO
+#define NO_SHDRAGIMAGE
 #define NO_TF_DA_COLOR
 #define NO_TF_DISPLAYATTRIBUTE
 #define NO_TOOLINFO
@@ -428,6 +429,7 @@
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2
@@ -441,6 +443,7 @@
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2
+#define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable
 #define NO_SetErrorMode
