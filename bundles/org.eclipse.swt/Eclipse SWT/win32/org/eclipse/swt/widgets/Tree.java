@@ -644,7 +644,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 									if (!explorerTheme) {
 										drawBackground = true;
 										ignoreDrawBackground = false;
-										if (handle == OS.GetFocus () && OS.IsWindowEnabled (handle)) {
+										if ((handle == OS.GetFocus () || display.getHighContrast ()) && OS.IsWindowEnabled (handle)) {
 											clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 										} else {
 											clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);

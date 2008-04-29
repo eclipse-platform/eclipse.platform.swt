@@ -792,7 +792,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 				if ((result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0)) {
 					int clrSelection = -1;
 					if (nmcd.iSubItem == 0) {
-						if (OS.GetFocus () == handle) {
+						if (OS.GetFocus () == handle || display.getHighContrast ()) {
 							clrSelection = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 						} else {
 							if ((style & SWT.HIDE_SELECTION) == 0) {
@@ -800,7 +800,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 							}
 						}
 					} else {
-						if (OS.GetFocus () == handle) {
+						if (OS.GetFocus () == handle || display.getHighContrast ()) {
 							clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 							clrTextBk = clrSelection = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 						} else {
@@ -3257,7 +3257,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 	}
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-			if (OS.GetFocus () == handle) {
+			if (OS.GetFocus () == handle || display.getHighContrast ()) {
 				drawSelected = true;
 				data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
@@ -3661,7 +3661,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	}
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-			if (OS.GetFocus () == handle) {
+			if (OS.GetFocus () == handle || display.getHighContrast ()) {
 				drawSelected = true;
 				if (selectionForeground != -1) {
 					data.foreground = selectionForeground;
