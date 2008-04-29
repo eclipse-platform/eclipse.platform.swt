@@ -5382,6 +5382,10 @@ void handleResize(Event event) {
  * the content change.
  */
 void handleTextChanged(TextChangedEvent event) {
+	int offset = ime.getCompositionOffset();
+	if (offset != -1 && lastTextChangeStart < offset) {
+		ime.setCompositionOffset(offset + lastTextChangeNewCharCount - lastTextChangeReplaceCharCount);
+	}
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
 	resetCache(firstLine, 0);
 	if (!isFixedLineHeight() && topIndex > firstLine) {

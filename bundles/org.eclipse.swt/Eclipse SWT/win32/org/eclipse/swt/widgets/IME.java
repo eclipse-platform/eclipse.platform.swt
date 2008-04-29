@@ -201,6 +201,14 @@ void releaseWidget () {
 	ranges = null;
 }
 
+public void setCompositionOffset (int offset) {
+	checkWidget ();
+	if (offset < 0) return;
+	if (startOffset != -1) {
+		startOffset = offset;
+	}
+}
+
 LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	if (!isInlineEnabled ()) return null;
 	ranges = null;
