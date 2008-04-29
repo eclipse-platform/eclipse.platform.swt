@@ -77,7 +77,7 @@ public FontDialog (Shell parent) {
  * </ul>
  */
 public FontDialog (Shell parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (parent, style));
 	checkSubclass ();
 }
 
