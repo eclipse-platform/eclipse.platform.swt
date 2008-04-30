@@ -28,7 +28,7 @@ public class Snippet301 {
 		layout.marginHeight = 10;
 		layout.marginWidth = 10;
 		shell.setLayout(layout);
-		Table table = new Table (shell, SWT.BORDER | SWT.MULTI | SWT.NO_SCROLL);
+		Table table = new Table (shell, SWT.BORDER | SWT.NO_SCROLL);
 
 		for (int i=0; i<10; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);
