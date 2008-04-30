@@ -58,7 +58,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	int style = fd.getStyle();
 	style &= ~SWT.LEFT_TO_RIGHT;
 	style &= ~SWT.RIGHT_TO_LEFT;
-	assertTrue(style==SWT.NULL);
+	assertTrue(style==SWT.APPLICATION_MODAL);
 	
 	fd = new FileDialog(shell, SWT.APPLICATION_MODAL);
 	style = fd.getStyle();
