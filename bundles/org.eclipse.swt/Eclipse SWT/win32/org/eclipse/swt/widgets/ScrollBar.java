@@ -703,7 +703,7 @@ boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fR
 	* NOTE: This problem only happens on Vista
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		if (visible && !barVisible) {
+		if (visible && bar != null && !barVisible) {
 			OS.ShowScrollBar (hwnd, flags == OS.SB_HORZ ? OS.SB_VERT : OS.SB_HORZ, false);
 		}
 	}
