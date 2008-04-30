@@ -1207,8 +1207,7 @@ public void open(Display display) {
 	shell.setText("Drag and Drop Example");
 	shell.setLayout(new FillLayout());
 	
-	String loc = DNDExample.class.getResource("openFolder.gif").getPath();
-	itemImage = new Image (display, loc);
+	itemImage = new Image (display, DNDExample.class.getResourceAsStream("openFolder.gif"));
 
 	ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
 	Composite parent = new Composite(sc, SWT.NONE);
