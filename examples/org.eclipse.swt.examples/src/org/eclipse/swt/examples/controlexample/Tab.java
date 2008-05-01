@@ -82,6 +82,7 @@ abstract class Tab {
 	Label returnTypeLabel;
 	Button getButton, setButton;
 	Text setText, getText;
+	Shell setGetDialog;
 
 	/* Event logging variables and controls */
 	Text eventConsole;
@@ -299,15 +300,20 @@ abstract class Tab {
 		 */
 		final String [] methodNames = getMethodNames ();
 		if (methodNames != null) {
-			Button setGetButton = new Button (otherGroup, SWT.PUSH);
+			final Button setGetButton = new Button (otherGroup, SWT.PUSH);
 			setGetButton.setText (ControlExample.getResourceString ("Set_Get"));
 			setGetButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 			setGetButton.addSelectionListener (new SelectionAdapter() {
 				public void widgetSelected (SelectionEvent e) {
-					Button button = (Button)e.widget;
-					Point pt = button.getLocation();
-					pt = e.display.map(button, null, pt);
-					if (getExampleWidgets().length >  0) createSetGetDialog(pt.x, pt.y, methodNames);
+					if (getExampleWidgets().length >  0) {
+						if (setGetDialog == null) {
+							setGetDialog = createSetGetDialog(methodNames);
+						}
+						Point pt = setGetButton.getLocation();
+						pt = display.map(setGetButton.getParent(), null, pt);
+						setGetDialog.setLocation(pt.x, pt.y);
+						setGetDialog.open();
+					}
 				}
 			});
 		}
@@ -968,7 +974,7 @@ abstract class Tab {
 		return null;
 	}
 
-	void createSetGetDialog(int x, int y, String[] methodNames) {
+	Shell createSetGetDialog(String[] methodNames) {
 		final Shell dialog = new Shell(shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MODELESS);
 		dialog.setLayout(new GridLayout(2, false));
 		dialog.setText(getTabText() + " " + ControlExample.getResourceString ("Set_Get"));
@@ -1010,8 +1016,12 @@ abstract class Tab {
 		resetLabels();
 		dialog.setDefaultButton(setButton);
 		dialog.pack();
-		dialog.setLocation(x, y);
-		dialog.open();
+		dialog.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				setGetDialog = null;
+			}
+		});
+		return dialog;
 	}
 
 	void resetLabels() {
