@@ -31,7 +31,7 @@ class BrowserTab extends Tab {
 	/* Style widgets added to the "Style" group */
 	Button mozillaButton;
 	
-	String errorMessage;
+	String errorMessage, lastText, lastUrl;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -85,25 +85,32 @@ class BrowserTab extends Tab {
 			dialog.setMessage(ControlExample.getResourceString("MozillaNotFound", new String [] {e.getMessage()}));
 			dialog.open();
 		}
-		
-        InputStream htmlStream= ControlExample.class.getResourceAsStream("browser-content.html");
-		BufferedReader br= new BufferedReader(new InputStreamReader(htmlStream));
-		StringBuffer sb= new StringBuffer(300);
-		try {
-			int read= 0;
-			while ((read= br.read()) != -1)
-				sb.append((char) read);
-		} catch (IOException e) {
-			log(e.getMessage());
-		} finally {
+
+		if (lastUrl != null) {
+			browser.setUrl(lastUrl);
+		} else if (lastText != null) {
+			browser.setText(lastText);
+		} else {
+	        InputStream htmlStream= ControlExample.class.getResourceAsStream("browser-content.html");
+			BufferedReader br= new BufferedReader(new InputStreamReader(htmlStream));
+			StringBuffer sb= new StringBuffer(300);
 			try {
-				br.close();
+				int read= 0;
+				while ((read= br.read()) != -1)
+					sb.append((char) read);
 			} catch (IOException e) {
 				log(e.getMessage());
+			} finally {
+				try {
+					br.close();
+				} catch (IOException e) {
+					log(e.getMessage());
+				}
 			}
+			String text= sb.toString();
+			browser.setText(text);
 		}
-		String text= sb.toString();
-		browser.setText(text);
+		lastText = lastUrl = null;
 	}
 	
 	/**
@@ -177,6 +184,25 @@ class BrowserTab extends Tab {
 		});
 		
 		return tabFolderPage;
+	}
+
+	/**
+	 * Disposes the "Example" widgets.
+	 */
+	void disposeExampleWidgets () {
+		/* store the state of the Browser if applicable */
+		if (browser != null) {
+			String url = browser.getUrl();
+			if (url.length() > 0 && !url.equals("about:blank")) { //$NON-NLS-1$
+				lastUrl = url;
+			} else {
+				String text = browser.getText();
+				if (text.length() > 0) {
+					lastText = text;
+				}
+			}
+		}
+		super.disposeExampleWidgets();	
 	}
 
 	public static String getContents(InputStream in) throws IOException {
