@@ -135,6 +135,17 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
+	if ((style & SWT.ARROW) != 0) {
+		// TODO use some OS metric instead of hardcoded values
+		int width = wHint != SWT.DEFAULT ? wHint : 23;
+		int height = hHint != SWT.DEFAULT ? hHint : 23;
+		return new Point (width, height);
+	}
+	return super.computeSize(wHint, hHint, changed);
+}
+
 NSAttributedString createString() {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	if (foreground != null) {
@@ -168,7 +179,7 @@ NSAttributedString createString() {
 void createHandle () {
 	NSButton widget = (NSButton)new SWTButton().alloc();
 	widget.initWithFrame(new NSRect());
-	int type = OS.NSMomentaryPushButton;
+	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
 		widget.setBezelStyle(OS.NSRoundedBezelStyle);
 	} else if ((style & SWT.CHECK) != 0) {
@@ -180,7 +191,7 @@ void createHandle () {
 		type = OS.NSPushOnPushOffButton;
 		widget.setBezelStyle(OS.NSRegularSquareBezelStyle);
 	} else if ((style & SWT.ARROW) != 0) {
-		widget.setBezelStyle(OS.NSRoundedDisclosureBezelStyle);
+		widget.setBezelStyle(OS.NSRegularSquareBezelStyle);
 	}
 	widget.setButtonType(type);
 	widget.setTitle(NSString.stringWith(""));
@@ -191,6 +202,48 @@ void createHandle () {
 	view = widget;	
 	parent.contentView().addSubview_(widget);
 	_setAlignment(style);
+}
+
+void drawRect(int id, NSRect rect) {
+	super.drawRect(id, rect);
+	if ((style & SWT.ARROW) == 0) return;
+
+	NSRect frame = view.frame();
+	int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
+	NSGraphicsContext context = NSGraphicsContext.currentContext();
+	context.saveGraphicsState();
+	NSPoint p1 = new NSPoint();
+	p1.x = (float)Math.floor(-arrowSize / 2);
+	p1.y = (float)Math.floor(-arrowSize / 2);
+	NSPoint p2 = new NSPoint();
+	p2.x = (float)Math.ceil(arrowSize / 2);
+	p2.y = p1.y;
+	NSPoint p3 = new NSPoint();
+	p3.y = (float)Math.ceil(arrowSize / 2);
+
+	NSBezierPath path = NSBezierPath.bezierPath();
+	path.moveToPoint(p1);
+	path.lineToPoint(p2);
+	path.lineToPoint(p3);
+	path.closePath();
+
+	NSAffineTransform transform = NSAffineTransform.transform();
+	if ((style & SWT.LEFT) != 0) {
+		transform.rotateByDegrees(90);
+	} else if ((style & SWT.UP) != 0) {
+		transform.rotateByDegrees(180);
+	} else if ((style & SWT.RIGHT) != 0) {
+		transform.rotateByDegrees(-90);
+	}
+	path.transformUsingAffineTransform(transform);
+	transform = NSAffineTransform.transform();
+	transform.translateXBy(frame.width / 2, frame.height / 2);
+	path.transformUsingAffineTransform(transform);
+
+	NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
+	color.set();
+	path.fill();
+	context.restoreGraphicsState();
 }
 
 /**
