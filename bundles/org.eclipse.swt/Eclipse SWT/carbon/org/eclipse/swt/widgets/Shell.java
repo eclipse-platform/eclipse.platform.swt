@@ -1690,10 +1690,7 @@ void setWindowVisible (boolean visible) {
 			int inUnavailableWindow = 0;
 			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
-			if (parent != null) {
-				Shell parentShell = parent.getShell ();
-				if (parentShell.minimized) OS.CollapseWindow (parentShell.shellHandle, false);
-			}
+			if (inUnavailableWindow != 0) OS.CollapseWindow (inUnavailableWindow, false);
 		}
 		int topHandle = topHandle ();
 		OS.SetControlVisibility (topHandle, true, false);
