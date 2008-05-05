@@ -1092,13 +1092,17 @@ int kEventWindowGetClickModality (int nextHandler, int theEvent, int userData) {
 	* Feature in the Macintosh. ON_TOP shells are in the kFloatingWindowClass window
 	* group and are not modal disabled by default. The fix is to detect that it should
 	* be disabled and update the event parameters.
+	* 
+	* Bug in Macintosh.  When a kWindowModalityWindowModal window is active the 
+	* default handler of kEventWindowGetClickModality does not properly set the 
+	* kEventParamModalClickResult. The fix is to set it ourselves.
 	*/
-	if ((style & SWT.ON_TOP) != 0) {
-		Shell modalShell = getModalShell ();
-		if (modalShell != null) {
-			int [] modality = new int [1];
+	Shell modalShell = getModalShell ();
+	if (modalShell != null) {
+		int [] modality = new int [1];
+		OS.GetWindowModality (modalShell.shellHandle, modality, null);
+		if ((style & SWT.ON_TOP) != 0 || modality [0] == OS.kWindowModalityWindowModal) {
 			int clickResult = OS.kHIModalClickIsModal | OS.kHIModalClickAnnounce;
-			OS.GetWindowModality (modalShell.shellHandle, modality, null);
 			OS.SetEventParameter (theEvent, OS.kEventParamWindowModality, OS.typeWindowModality, 4, modality);
 			OS.SetEventParameter (theEvent, OS.kEventParamModalClickResult, OS.typeModalClickResult, 4, new int[]{clickResult});
 			OS.SetEventParameter (theEvent, OS.kEventParamModalWindow, OS.typeWindowRef, 4, new int[]{modalShell.shellHandle});
