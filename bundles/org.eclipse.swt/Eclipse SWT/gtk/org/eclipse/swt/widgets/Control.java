@@ -922,7 +922,6 @@ public void setSize (Point size) {
 
 public void setRegion (Region region) {
 	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle ());
 	int /*long*/ shape_region = (region == null) ? 0 : region.handle;
