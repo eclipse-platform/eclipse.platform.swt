@@ -205,24 +205,7 @@ void createHandle (int index) {
 			OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
 		}
 	}
-	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
-		return;
-	}
-	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
-		return;
-	}
-	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
-		return;
-	}
+	setAlignment ();
 }
 
 void createWidget (int index) {
@@ -392,7 +375,20 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	setAlignment ();
+}
+
+void setAlignment () {
 	boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
+	if (text != null && text.length () != 0) {
+		int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
+		int /*long*/ linePtr = OS.pango_layout_get_line (layout, 0);
+		PangoLayoutLine line = new PangoLayoutLine ();
+		OS.memmove (line, linePtr, PangoLayoutLine.sizeof);
+		if (line.resolved_dir == OS.PANGO_DIRECTION_RTL) {
+			isRTL = !isRTL;
+		}
+	}
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, isRTL ? OS.GTK_JUSTIFY_RIGHT : OS.GTK_JUSTIFY_LEFT);
@@ -485,12 +481,6 @@ void setOrientation () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
 		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
-		if ((style & SWT.LEAD) != 0) {
-			if (labelHandle != 0) OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		}
-		if ((style & SWT.TRAIL) != 0) {
-			if (labelHandle != 0) OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		}
 	}
 }
 
@@ -565,6 +555,7 @@ public void setText (String string) {
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (imageHandle);
 	OS.gtk_widget_show (labelHandle);
+	setAlignment ();
 }
 
 void showWidget () {
