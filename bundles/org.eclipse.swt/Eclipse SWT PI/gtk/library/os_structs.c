@@ -2160,7 +2160,7 @@ void setPangoItemFields(JNIEnv *env, jobject lpObject, PangoItem *lpStruct)
 typedef struct PangoLayoutLine_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID layout, start_index, length, runs;
+	jfieldID layout, start_index, length, runs, is_paragraph_start, resolved_dir;
 } PangoLayoutLine_FID_CACHE;
 
 PangoLayoutLine_FID_CACHE PangoLayoutLineFc;
@@ -2173,6 +2173,8 @@ void cachePangoLayoutLineFields(JNIEnv *env, jobject lpObject)
 	PangoLayoutLineFc.start_index = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "start_index", "I");
 	PangoLayoutLineFc.length = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "length", "I");
 	PangoLayoutLineFc.runs = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "runs", "I");
+	PangoLayoutLineFc.is_paragraph_start = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "is_paragraph_start", "Z");
+	PangoLayoutLineFc.resolved_dir = (*env)->GetFieldID(env, PangoLayoutLineFc.clazz, "resolved_dir", "B");
 	PangoLayoutLineFc.cached = 1;
 }
 
@@ -2183,6 +2185,8 @@ PangoLayoutLine *getPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLa
 	lpStruct->start_index = (*env)->GetIntField(env, lpObject, PangoLayoutLineFc.start_index);
 	lpStruct->length = (*env)->GetIntField(env, lpObject, PangoLayoutLineFc.length);
 	lpStruct->runs = (GSList *)(*env)->GetIntField(env, lpObject, PangoLayoutLineFc.runs);
+	lpStruct->is_paragraph_start = (*env)->GetBooleanField(env, lpObject, PangoLayoutLineFc.is_paragraph_start);
+	lpStruct->resolved_dir = (*env)->GetByteField(env, lpObject, PangoLayoutLineFc.resolved_dir);
 	return lpStruct;
 }
 
@@ -2193,6 +2197,8 @@ void setPangoLayoutLineFields(JNIEnv *env, jobject lpObject, PangoLayoutLine *lp
 	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.start_index, (jint)lpStruct->start_index);
 	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.length, (jint)lpStruct->length);
 	(*env)->SetIntField(env, lpObject, PangoLayoutLineFc.runs, (jint)lpStruct->runs);
+	(*env)->SetBooleanField(env, lpObject, PangoLayoutLineFc.is_paragraph_start, (jboolean)lpStruct->is_paragraph_start);
+	(*env)->SetByteField(env, lpObject, PangoLayoutLineFc.resolved_dir, (jbyte)lpStruct->resolved_dir);
 }
 #endif
 
