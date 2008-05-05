@@ -2152,7 +2152,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 		OS.SetEventParameter (event [0], OS.kEventParamEventRef, OS.typeEventRef, 4, new int[]{theEvent});
 		OS.SendEventToEventTarget (event [0], OS.GetApplicationEventTarget ());
 		int [] clickResult = new int [1];
-		OS.GetEventParameter (event [0], OS.kEventParamModalClickResult, OS.typeModalClickResult, null, modifiers.length * 4, null, clickResult);
+		OS.GetEventParameter (event [0], OS.kEventParamModalClickResult, OS.typeModalClickResult, null, 4, null, clickResult);
 		OS.ReleaseEvent (event [0]);
 		if ((clickResult [0] & OS.kHIModalClickIsModal) != 0) {
 			if ((clickResult [0] & OS.kHIModalClickAllowEvent) == 0) {
