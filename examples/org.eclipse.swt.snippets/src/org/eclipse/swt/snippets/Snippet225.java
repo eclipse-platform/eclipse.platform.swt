@@ -33,7 +33,7 @@ public static void main(String[] args) {
 	Tray tray = display.getSystemTray();
 	if (tray != null) {
 		TrayItem item = new TrayItem(tray, SWT.NONE);
-		image = new Image(display, Snippet225.class.getResourceAsStream("eclipse.png"));
+		image = display.getSystemImage(SWT.ICON_INFORMATION);
 		item.setImage(image);
 		tip.setText("Notification from a tray item");
 		item.setToolTip(tip);

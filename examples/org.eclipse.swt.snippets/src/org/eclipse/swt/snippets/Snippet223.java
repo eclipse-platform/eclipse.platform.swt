@@ -31,7 +31,7 @@ public static void main (String [] args) {
 	shell.setLayout(new FillLayout());
 	shell.setText("ExpandBar Example");
 	ExpandBar bar = new ExpandBar (shell, SWT.V_SCROLL);
-	Image image = new Image(display, Snippet223.class.getResourceAsStream("eclipse.png")); 
+	Image image = display.getSystemImage(SWT.ICON_QUESTION);
 	
 	// First item
 	Composite composite = new Composite (bar, SWT.NONE);

@@ -33,7 +33,7 @@ public class Snippet258 {
 		final Text text = new Text(shell, SWT.SEARCH | SWT.CANCEL);
 		Image image = null;
 		if ((text.getStyle() & SWT.CANCEL) == 0) {
-			image = new Image (display, Snippet258.class.getResourceAsStream("cancel.gif"));
+			image = display.getSystemImage(SWT.ICON_ERROR);
 			ToolBar toolBar = new ToolBar (shell, SWT.FLAT);
 			ToolItem item = new ToolItem (toolBar, SWT.PUSH);
 			item.setImage (image);
