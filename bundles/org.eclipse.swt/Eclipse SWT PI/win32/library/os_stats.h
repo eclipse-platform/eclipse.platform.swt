@@ -743,6 +743,7 @@ typedef enum {
 	ScriptCPtoX_FUNC,
 	ScriptCacheGetHeight_FUNC,
 	ScriptFreeCache_FUNC,
+	ScriptGetCMap_FUNC,
 	ScriptGetFontProperties_FUNC,
 	ScriptGetLogicalWidths_FUNC,
 	ScriptGetProperties_FUNC,

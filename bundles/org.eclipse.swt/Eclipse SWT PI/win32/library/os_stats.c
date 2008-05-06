@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 936;
-int OS_nativeFunctionCallCount[936];
+int OS_nativeFunctionCount = 937;
+int OS_nativeFunctionCallCount[937];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -735,6 +735,7 @@ char * OS_nativeFunctionNames[] = {
 	"ScriptCPtoX",
 	"ScriptCacheGetHeight",
 	"ScriptFreeCache",
+	"ScriptGetCMap",
 	"ScriptGetFontProperties",
 	"ScriptGetLogicalWidths",
 	"ScriptGetProperties",

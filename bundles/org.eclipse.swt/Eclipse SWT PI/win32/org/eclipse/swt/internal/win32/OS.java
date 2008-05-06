@@ -3821,6 +3821,7 @@ public static final native int ScriptJustify (int /*long*/ psva, int /*long*/ pi
 public static final native int ScriptLayout (int cRuns, byte[] pbLevel, int[] piVisualToLogical, int[] piLogicalToVisual);
 public static final native int ScriptPlace (int /*long*/ hdc, int /*long*/ psc, int /*long*/ pwGlyphs, int cGlyphs, int /*long*/ psva, SCRIPT_ANALYSIS psa, int /*long*/ piAdvance, int /*long*/ pGoffset, int[] pABC);
 public static final native int ScriptRecordDigitSubstitution (int Locale, SCRIPT_DIGITSUBSTITUTE psds);
+public static final native int ScriptGetCMap (int /*long*/ hdc, int /*long*/ psc, char[] pwcChars, int cChars, int dwFlags, short[] pwOutGlyphs);
 public static final native int ScriptShape (int /*long*/ hdc, int /*long*/ psc, char[] pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS psa, int /*long*/ pwOutGlyphs, int /*long*/ pwLogClust, int /*long*/ psva, int[] pcGlyphs);
 public static final native int ScriptTextOut (int /*long*/ hdc, int /*long*/ psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, int /*long*/ pwcReserved, int iReserved, int /*long*/ pwGlyphs, int cGlyphs, int /*long*/ piAdvance, int /*long*/ piJustify, int /*long*/ pGoffset);
 public static final native int ScriptXtoCP (int iX, int cChars, int cGlyphs, int /*long*/ pwLogClust, int /*long*/ psva, int /*long*/ piAdvance, SCRIPT_ANALYSIS psa, int[] piCP, int[] piTrailing);

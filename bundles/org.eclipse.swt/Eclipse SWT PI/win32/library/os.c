@@ -11658,6 +11658,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScriptFreeCache)
 }
 #endif
 
+#ifndef NO_ScriptGetCMap
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptGetCMap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jshortArray arg5)
+{
+	jchar *lparg2=NULL;
+	jshort *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptGetCMap_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetShortArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)ScriptGetCMap((HDC)arg0, (SCRIPT_CACHE *)arg1, (const WCHAR *)lparg2, arg3, arg4, (WORD*)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseShortArrayElements(env, arg5, lparg5, 0);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, ScriptGetCMap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ScriptGetFontProperties
 JNIEXPORT jint JNICALL OS_NATIVE(ScriptGetFontProperties)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
