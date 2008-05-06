@@ -196,6 +196,15 @@ void _setVisible (boolean visible) {
 			OS.GetGlobalMouse (where);
 		}
 		/*
+		* Bug in the Macintosh.  When a menu is open with ContextualMenuSelect() the
+		* system will add other items before displaying it and remove the items before
+		* returning from the function.  If the menu is changed in kEventMenuOpening, the
+		* system will fail to remove those items.  The fix is to send SWT.Show before
+		* calling ContextualMenuSelect() instead of in kEventMenuOpening.
+		*/		
+		sendEvent (SWT.Show);
+		modified = false;
+		/*
 		* Feature in the Macintosh.  When the application FruitMenu is installed,
 		* the output parameters cannot be NULL or ContextualMenuSelect() crashes.
 		* The fix is to ensure they are not NULL.
@@ -649,6 +658,7 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	if (!(0 < index [0] && index [0] <= itemCount)) return result;
 	MenuItem item = items [index [0] - 1];
 	if (item.accelerator == 0) {
 		int accelIndex = item.text.indexOf ('\t');
@@ -731,6 +741,7 @@ int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	if (!(0 < index [0] && index [0] <= itemCount)) return result;
 	MenuItem item = items [index [0] - 1];
 	if (item.accelerator == 0) {
 		int accelIndex = item.text.indexOf ('\t');
@@ -761,8 +772,17 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuOpening (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	closed = false;
-	sendEvent (SWT.Show);
-	modified = false;
+	/*
+	* Bug in the Macintosh.  When a menu is open with ContextualMenuSelect() the
+	* system will add other items before displaying it and remove the items before
+	* returning from the function.  If the menu is changed in kEventMenuOpening, the
+	* system will fail to remove those items.  The fix is to send SWT.Show before
+	* calling ContextualMenuSelect() instead of in kEventMenuOpening.
+	*/	
+	if ((style & SWT.POP_UP) == 0) {
+		sendEvent (SWT.Show);
+		modified = false;
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -772,7 +792,7 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 	lastTarget = null;
 	short [] index = new short [1];
 	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index) == OS.noErr) {
-		if (index [0] > 0) lastTarget = items [index [0] - 1];
+		if (0 < index [0] && index [0] <= itemCount) lastTarget = items [index [0] - 1];
 		if (lastTarget != null) {
 			lastTarget.sendEvent (SWT.Arm);
 		}
