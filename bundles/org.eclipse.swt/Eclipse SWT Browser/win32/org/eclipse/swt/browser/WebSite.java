@@ -296,6 +296,12 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 					pVarResult.dispose();
 				}
 				break;
+			case OS.VK_TAB:
+				/* 
+				 * Do not interfere with tab traversal since it's not known
+				 * if it will be within IE or out to another Control.
+				 */
+				break;
 			default:
 				OS.TranslateMessage(msg);
 				frame.setData(CONSUME_KEY, "true"); //$NON-NLS-1$
