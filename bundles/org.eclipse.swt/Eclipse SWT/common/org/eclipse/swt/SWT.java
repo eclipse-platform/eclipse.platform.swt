@@ -405,7 +405,9 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
+	 * @see org.eclipse.swt.widgets.CCombo#addVerifyListener
 	 * @see org.eclipse.swt.widgets.Combo#addVerifyListener
+	 * @see org.eclipse.swt.widgets.StyledText#addVerifyListener
 	 * @see org.eclipse.swt.widgets.Text#addVerifyListener
 	 * @see org.eclipse.swt.events.VerifyListener#verifyText
 	 * @see org.eclipse.swt.events.VerifyEvent
