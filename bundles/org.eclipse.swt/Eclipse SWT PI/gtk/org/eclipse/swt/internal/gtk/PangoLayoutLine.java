@@ -19,7 +19,7 @@ public class PangoLayoutLine {
 	public int start_index;
 	public int length;
 	public int /*long*/ runs;
-	public boolean is_paragraph_start;
-	public byte resolved_dir;
+//	public boolean is_paragraph_start;
+//	public byte resolved_dir;
 	public static final int sizeof = OS.PangoLayoutLine_sizeof();
 }

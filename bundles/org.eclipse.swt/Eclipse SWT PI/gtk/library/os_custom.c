@@ -115,3 +115,28 @@ fail:
 	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
 }
 #endif
+
+struct _PangoLayoutLineSWT
+{
+  PangoLayout *layout;
+  gint         start_index;     /* start of line as byte index into layout->text */
+  gint         length;          /* length of line in bytes */
+  GSList      *runs;
+  guint        is_paragraph_start : 1;  /* TRUE if this is the first line of the paragraph */
+  guint        resolved_dir : 3;  /* Resolved PangoDirection of line */
+};
+typedef struct _PangoLayoutLineSWT  PangoLayoutLineSWT;
+
+#ifndef NO__1pango_1layout_1line_1get_1resolved_1dir
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1line_1get_1resolved_1dir)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1line_1get_1resolved_1dir_FUNC);
+	if (gtk_check_version(2,4,0) == NULL) {
+		rc = ((PangoLayoutLineSWT*)(arg0))->resolved_dir;
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1line_1get_1resolved_1dir_FUNC);
+	return rc;
+}
+#endif

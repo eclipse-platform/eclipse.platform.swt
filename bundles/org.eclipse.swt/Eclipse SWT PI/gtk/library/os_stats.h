@@ -1213,6 +1213,7 @@ typedef enum {
 	_1pango_1layout_1iter_1next_1line_FUNC,
 	_1pango_1layout_1iter_1next_1run_FUNC,
 	_1pango_1layout_1line_1get_1extents_FUNC,
+	_1pango_1layout_1line_1get_1resolved_1dir_FUNC,
 	_1pango_1layout_1line_1x_1to_1index_FUNC,
 	_1pango_1layout_1new_FUNC,
 	_1pango_1layout_1set_1alignment_FUNC,

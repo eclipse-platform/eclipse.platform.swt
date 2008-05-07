@@ -381,12 +381,13 @@ public void setAlignment (int alignment) {
 void setAlignment () {
 	boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 	if (text != null && text.length () != 0) {
-		int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
-		int /*long*/ linePtr = OS.pango_layout_get_line (layout, 0);
-		PangoLayoutLine line = new PangoLayoutLine ();
-		OS.memmove (line, linePtr, PangoLayoutLine.sizeof);
-		if (line.resolved_dir == OS.PANGO_DIRECTION_RTL) {
-			isRTL = !isRTL;
+		if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+			int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
+			int /*long*/ linePtr = OS.pango_layout_get_line (layout, 0);
+			int resolved_dir = OS.pango_layout_line_get_resolved_dir (linePtr);
+			if (resolved_dir == OS.PANGO_DIRECTION_RTL) {
+				isRTL = !isRTL;
+			}
 		}
 	}
 	if ((style & SWT.LEFT) != 0) {
