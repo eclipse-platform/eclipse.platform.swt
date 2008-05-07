@@ -796,7 +796,7 @@ public class Accessible {
 		event.result = osDescriptionAttribute;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-			listener.getName(event);
+			listener.getDescription(event);
 		}
 		if (event.result != null) {
 			stringRef [0] = stringToStringRef (event.result);
