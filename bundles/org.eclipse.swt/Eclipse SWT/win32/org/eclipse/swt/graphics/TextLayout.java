@@ -2694,13 +2694,27 @@ public void setWidth (int width) {
 	this.wrapWidth = width;
 }
 
-boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs) {
+boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs, SCRIPT_PROPERTIES sp) {
+	boolean useCMAPcheck = !sp.fComplex && !sp.fPrivateUseArea; 
+	SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
+	fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
+	OS.ScriptGetFontProperties(hdc, run.psc, fp);
+	if (useCMAPcheck) {
+		short[] glyphs = new short[chars.length];
+		if (OS.ScriptGetCMap(hdc, run.psc, chars, chars.length, 0, glyphs) != OS.S_OK) {
+			if (run.psc != 0) {
+				OS.ScriptFreeCache(run.psc);
+				glyphCount[0] = 0;
+				OS.MoveMemory(run.psc, new int /*long*/ [1], OS.PTR_SIZEOF);
+			}
+			return false;
+		}
+	}
 	int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, glyphCount);
 	run.glyphCount = glyphCount[0];
+	if (useCMAPcheck) return true;
+	
 	if (hr != OS.USP_E_SCRIPT_NOT_IN_FONT) {
-		SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
-		fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
-		OS.ScriptGetFontProperties(hdc, run.psc, fp);
 		short[] glyphs = new short[glyphCount[0]];
 		OS.MoveMemory(glyphs, run.glyphs, glyphs.length * 2);
 		int i;
@@ -2725,6 +2739,18 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	final int[] buffer = new int[1];
 	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
+	
+	
+	/*
+	* Feature in Uniscribe, the U+FEFF is not supported by
+	* some fonts in the system causing the remaining chars in
+	* the run not to draw, even though the font supports them.
+	* The fix is to replace U+FEFF by U+200B (ZERO-WIDTH SPACE).   
+	*/
+	for (int i = 0; i < chars.length; i++) {
+		if (chars[i] == '\uFEFF') chars[i] = '\u200B';
+	}
+
 	final int maxGlyphs = (chars.length * 3 / 2) + 16;
 	int /*long*/ hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
@@ -2735,8 +2761,10 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	if (run.visAttrs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.PTR_SIZEOF);
 	if (run.psc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
 	final short script = run.analysis.eScript;
+	final SCRIPT_PROPERTIES sp = new SCRIPT_PROPERTIES();
+	OS.MoveMemory(sp, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
+	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 	
 	if (!shapeSucceed) {
 		/* 
@@ -2744,11 +2772,9 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 		 * Try to shape with fNoGlyphIndex when the run is in the 
 		 * Private Use Area. This allows for end-user-defined character (EUDC).
 		 */
-		SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-		OS.MoveMemory(properties, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
-		if (properties.fPrivateUseArea) {
+		if (sp.fPrivateUseArea) {
 			run.analysis.fNoGlyphIndex = true;
-			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 		}
 	}
 	
@@ -2766,7 +2792,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			/* MapFont() */
 			if (OS.VtblCall(10, mLangFontLink2, hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
 				int /*long*/ hFont = OS.SelectObject(hdc, hNewFont[0]);
-				shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+				shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 				if (shapeSucceed) {
 					run.fallbackFont = hNewFont[0];
 					run.mlang = true;
@@ -2796,7 +2822,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			cachedLogFont.lfWidth = logFont.lfWidth;
 			int /*long*/ newFont = OS.CreateFontIndirect(cachedLogFont);
 			OS.SelectObject(hdc, newFont);
-			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
+			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 			if (shapeSucceed) {
 				run.fallbackFont = newFont;
 			} else {
@@ -2813,16 +2839,16 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			if (device.logFontsCache == null) device.logFontsCache = new LOGFONT[device.scripts.length];
 			final LOGFONT newLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
 			class EnumFontFamEx {
-				int EnumFontFamExProc(int lpelfe, int lpntme, int FontType, int lParam) {
-					OS.MoveMemory(newLogFont, lpelfe, LOGFONT.sizeof);
+				int /*long*/ EnumFontFamExProc (int /*long*/ lpelfe, int /*long*/ lpntme, int /*long*/ FontType, int /*long*/ lParam) {
 					if (FontType == OS.RASTER_FONTTYPE) return 1;
+					OS.MoveMemory(newLogFont, lpelfe, LOGFONT.sizeof);
 					newLogFont.lfHeight = logFont.lfHeight;
 					newLogFont.lfWeight = logFont.lfWeight;
 					newLogFont.lfItalic = logFont.lfItalic;
 					newLogFont.lfWidth = logFont.lfWidth;
 					int /*long*/ newFont = OS.CreateFontIndirect(newLogFont);
 					OS.SelectObject(hdc, newFont);
-					if (shape(hdc, run, chars, buffer, maxGlyphs)) {
+					if (shape(hdc, run, chars, buffer, maxGlyphs, sp)) {
 						run.fallbackFont = newFont;
 						LOGFONT cacheLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
 						OS.MoveMemory(cacheLogFont, lpelfe, LOGFONT.sizeof);
@@ -2840,9 +2866,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			Callback callback = new Callback(object, "EnumFontFamExProc", 4);
 			int /*long*/ address = callback.getAddress();
 			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-			SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-			OS.MoveMemory(properties, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
-			int charSet = properties.fAmbiguousCharSet ? OS.DEFAULT_CHARSET : properties.bCharSet;
+			int charSet = sp.fAmbiguousCharSet ? OS.DEFAULT_CHARSET : sp.bCharSet;
 			newLogFont.lfCharSet = (byte)charSet;
 			OS.EnumFontFamiliesEx(hdc, newLogFont, address, 0, 0);
 			callback.dispose();
