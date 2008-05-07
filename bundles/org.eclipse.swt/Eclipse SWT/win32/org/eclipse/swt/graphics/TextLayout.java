@@ -68,7 +68,7 @@ public final class TextLayout extends Resource {
 	class StyleItem {
 		TextStyle style;
 		int start, length;
-		boolean lineBreak, softBreak, tab;	
+		boolean lineBreak, softBreak, tab, mlang;
 		
 		/*Script cache and analysis */
 		SCRIPT_ANALYSIS analysis;
@@ -136,9 +136,13 @@ public final class TextLayout extends Resource {
 			psla = 0;
 		}
 		if (fallbackFont != 0) {
-			if (mLangFontLink2 != 0) {
-				/* ReleaseFont() */
-				OS.VtblCall(8, mLangFontLink2, fallbackFont);
+			if (mlang) {
+				if (mLangFontLink2 != 0) {
+					/* ReleaseFont() */
+					OS.VtblCall(8, mLangFontLink2, fallbackFont);
+				}
+			} else {
+				OS.DeleteObject(fallbackFont);
 			}
 			fallbackFont = 0;
 		}
@@ -2765,6 +2769,7 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 				shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs);
 				if (shapeSucceed) {
 					run.fallbackFont = hNewFont[0];
+					run.mlang = true;
 				} else {
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
