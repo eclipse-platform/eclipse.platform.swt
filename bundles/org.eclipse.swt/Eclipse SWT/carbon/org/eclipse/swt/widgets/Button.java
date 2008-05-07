@@ -428,6 +428,10 @@ Rect getInset () {
 	return display.buttonInset;
 }
 
+boolean isDescribedByLabel () {
+	return false;
+}
+
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 	int code = OS.CallNextEventHandler (nextHandler, theEvent);
 	if ((style & SWT.RADIO) != 0) {

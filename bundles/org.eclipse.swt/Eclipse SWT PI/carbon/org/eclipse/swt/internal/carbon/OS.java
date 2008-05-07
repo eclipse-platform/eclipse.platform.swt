@@ -2000,6 +2000,7 @@ public static final native int AXUIElementGetDataBrowserItemInfo(int inElement, 
 public static final native int AXValueCreate (int theType, CFRange range);
 public static final native boolean AXValueGetValue (int value, int theType, CFRange range);
 public static final native int HIObjectSetAccessibilityIgnored(int inObject, boolean inIgnored);
+public static final native int HIObjectSetAuxiliaryAccessibilityAttribute(int inHIObject, long inIdentifier, int inAttributeName, int inAttributeData);
 public static final native int AXUIElementCopyAttributeValue (int element, int attribute, int [] value);
 
 public static final int kEventClassAccessibility = ('a'<<24) + ('c'<<16) + ('c'<<8) + 'e';

@@ -85,6 +85,31 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+void addRelation (Control control) {
+	if (!control.isDescribedByLabel ()) return;
+	
+	int labelElement = OS.AXUIElementCreateWithHIObjectAndIdentifier (handle, 0);
+	String string = OS.kAXTitleUIElementAttribute;  // control LabeledBy this
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(control.focusHandle (), 0, stringRef, labelElement);
+	OS.CFRelease(labelElement);
+	OS.CFRelease(stringRef);
+	
+	int relatedElement = OS.AXUIElementCreateWithHIObjectAndIdentifier (control.focusHandle (), 0);
+	int array = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
+	OS.CFArrayAppendValue(array, relatedElement);
+	string = OS.kAXServesAsTitleForUIElementsAttribute;  // this LabelFor control
+	buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(handle, 0, stringRef, array);
+	OS.CFRelease(relatedElement);
+	OS.CFRelease(stringRef);
+	OS.CFRelease(array);
+}
+
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -230,6 +255,22 @@ public String getText () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
+}
+
+boolean isDescribedByLabel () {
+	return false;
+}
+
+/*
+ * Remove "Label for" relations from the receiver.
+ */
+void removeRelation () {
+	String string = OS.kAXServesAsTitleForUIElementsAttribute;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.HIObjectSetAuxiliaryAccessibilityAttribute(handle, 0, stringRef, 0);
+	OS.CFRelease(stringRef);
 }
 
 /**

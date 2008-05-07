@@ -552,6 +552,7 @@ typedef enum {
 	HIObjectCreate_FUNC,
 	HIObjectRegisterSubclass_FUNC,
 	HIObjectSetAccessibilityIgnored_FUNC,
+	HIObjectSetAuxiliaryAccessibilityAttribute_FUNC,
 	HIScrollViewCreate_FUNC,
 	HIScrollViewSetScrollBarAutoHide_FUNC,
 	HISearchFieldChangeAttributes_FUNC,

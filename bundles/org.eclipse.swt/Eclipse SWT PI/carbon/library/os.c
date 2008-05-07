@@ -7658,6 +7658,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIObjectSetAccessibilityIgnored)
 }
 #endif
 
+#ifndef NO_HIObjectSetAuxiliaryAccessibilityAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(HIObjectSetAuxiliaryAccessibilityAttribute)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIObjectSetAuxiliaryAccessibilityAttribute_FUNC);
+	rc = (jint)HIObjectSetAuxiliaryAccessibilityAttribute((HIObjectRef)arg0, (UInt64)arg1, (CFStringRef)arg2, (CFTypeRef)arg3);
+	OS_NATIVE_EXIT(env, that, HIObjectSetAuxiliaryAccessibilityAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIScrollViewCreate
 JNIEXPORT jint JNICALL OS_NATIVE(HIScrollViewCreate)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

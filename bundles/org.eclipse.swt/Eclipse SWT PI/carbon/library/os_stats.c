@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 969;
-int OS_nativeFunctionCallCount[969];
+int OS_nativeFunctionCount = 970;
+int OS_nativeFunctionCallCount[970];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -544,6 +544,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIObjectCreate",
 	"HIObjectRegisterSubclass",
 	"HIObjectSetAccessibilityIgnored",
+	"HIObjectSetAuxiliaryAccessibilityAttribute",
 	"HIScrollViewCreate",
 	"HIScrollViewSetScrollBarAutoHide",
 	"HISearchFieldChangeAttributes",
