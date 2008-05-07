@@ -5009,13 +5009,14 @@ void handleCompositionChanged(Event event) {
 	int length = text.length();
 	if (length == ime.getCommitCount()) {
 		content.replaceTextRange(start, end - start, "");
-		caretOffset = start;
+		caretOffset = ime.getCompositionOffset();
 		caretWidth = 0;
 		caretDirection = SWT.NULL;
 	} else {
 		content.replaceTextRange(start, end - start, text);
 		caretOffset = ime.getCaretOffset();
 		if (ime.getWideCaret()) {
+			start = ime.getCompositionOffset();
 			int lineIndex = getCaretLine();
 			int lineOffset = content.getOffsetAtLine(lineIndex);
 			TextLayout layout = renderer.getTextLayout(lineIndex);	
