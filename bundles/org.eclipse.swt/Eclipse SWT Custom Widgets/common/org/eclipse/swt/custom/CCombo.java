@@ -490,7 +490,7 @@ public void deselectAll () {
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
-	if (drop == isDropped ()) return;
+	if (drop == isDropped () || !isVisible()) return;
 	if (!drop) {
 		popup.setVisible (false);
 		if (!isDisposed () && isFocusControl()) {
