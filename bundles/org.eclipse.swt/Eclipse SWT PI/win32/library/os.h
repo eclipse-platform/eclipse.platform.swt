@@ -489,6 +489,7 @@
 #define NO_ScriptCacheGetHeight
 #define NO_ScriptCPtoX
 #define NO_ScriptFreeCache
+#define NO_ScriptGetCMap
 #define NO_ScriptGetLogicalWidths
 #define NO_ScriptGetFontProperties
 #define NO_ScriptGetProperties
