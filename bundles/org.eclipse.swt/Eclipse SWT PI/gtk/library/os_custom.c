@@ -119,11 +119,11 @@ fail:
 struct _PangoLayoutLineSWT
 {
   PangoLayout *layout;
-  gint         start_index;     /* start of line as byte index into layout->text */
-  gint         length;          /* length of line in bytes */
+  gint         start_index; 
+  gint         length;      
   GSList      *runs;
-  guint        is_paragraph_start : 1;  /* TRUE if this is the first line of the paragraph */
-  guint        resolved_dir : 3;  /* Resolved PangoDirection of line */
+  guint        is_paragraph_start : 1;
+  guint        resolved_dir : 3;
 };
 typedef struct _PangoLayoutLineSWT  PangoLayoutLineSWT;
 
