@@ -61,6 +61,7 @@ public class Accessible {
 		OS.kAXNumberOfCharactersAttribute,
 		OS.kAXSelectedTextAttribute,
 		OS.kAXSelectedTextRangeAttribute,
+		OS.kAXStringForRangeParameterizedAttribute,
 		OS.kAXInsertionPointLineNumberAttribute,
 	};
 
