@@ -220,7 +220,6 @@ public void create (Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
-					browser.getShell().removeListener(SWT.Activate, this);
 					OS.RemoveEventHandler(windowBoundsHandler);
 					windowBoundsHandler = 0;
 
@@ -235,6 +234,7 @@ public void create (Composite parent, int style) {
 					
 					Cocoa.objc_msgSend(delegate, Cocoa.S_release);
 					OS.DisposeControl(webViewHandle);
+					webView = webViewHandle = 0;
 					html = null;
 					lastHoveredLinkURL = null;
 					break;
