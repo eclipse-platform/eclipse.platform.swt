@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 28;
-int Cocoa_nativeFunctionCallCount[28];
+int Cocoa_nativeFunctionCount = 29;
+int Cocoa_nativeFunctionCallCount[29];
 char * Cocoa_nativeFunctionNames[] = {
 	"HICocoaViewCreate",
 	"HIJavaViewCreateWithCocoaView",
@@ -40,6 +40,7 @@ char * Cocoa_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2II",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2",
 	"objc_1msgSend__II_3IIIIIIIIIII",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II",

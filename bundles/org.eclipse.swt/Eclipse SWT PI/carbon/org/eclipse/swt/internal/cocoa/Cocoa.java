@@ -64,6 +64,7 @@ public static final int S_goForward = Cocoa.sel_registerName("goForward:"); //$N
 public static final int S_handleNotification = Cocoa.sel_registerName("handleNotification:"); //$NON-NLS-1$
 public static final int S_ignore = Cocoa.sel_registerName("ignore"); //$NON-NLS-1$
 public static final int S_initialRequest = Cocoa.sel_registerName("initialRequest"); //$NON-NLS-1$
+public static final int S_initWithFrame_frameName_groupName = Cocoa.sel_registerName("initWithFrame:frameName:groupName:"); //$NON-NLS-1$
 public static final int S_initWithProc = Cocoa.sel_registerName("initWithProc:user_data:"); //$NON-NLS-1$
 public static final int S_isSessionOnly = Cocoa.sel_registerName("isSessionOnly"); //$NON-NLS-1$
 public static final int S_loadHTMLStringbaseURL = Cocoa.sel_registerName("loadHTMLString:baseURL:"); //$NON-NLS-1$
@@ -191,6 +192,7 @@ public static final native int objc_msgSend(int object, int selector, float arg0
 public static final native int objc_msgSend(int object, int selector, float arg0, float arg1);
 public static final native int objc_msgSend(int object, int selector, NSSize arg0);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0);
+public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, NSRect arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, int arg1);
