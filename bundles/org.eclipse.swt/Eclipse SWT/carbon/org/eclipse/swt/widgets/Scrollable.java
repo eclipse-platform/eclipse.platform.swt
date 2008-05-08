@@ -120,27 +120,7 @@ ScrollBar createScrollBar (int style) {
 }
 
 ScrollBar createStandardBar (int style) {
-	int parentHandle = scrolledHandle != 0 ? scrolledHandle : handle;
-	short [] count = new short [1];
-	OS.CountSubControls (parentHandle, count);
-	if (count [0] == 0) return null;
-	int barHandle = 0;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-	int [] outControl = new int [1];
-	ControlKind kind = new ControlKind ();
-	for (int i = 0; i < count [0]; i++) {
-		OS.GetIndexedSubControl (parentHandle, (short) (i + 1), outControl);		
-		OS.GetControlKind (outControl [0], kind);
-		if (kind.kind == OS.kControlKindScrollBar) {
-			Point point = getControlSize (outControl [0]);
-			if ((style & SWT.H_SCROLL) != 0) {
-				if (point.y == outMetric [0]) barHandle = outControl [0];
-			} else {
-				if (point.x == outMetric [0]) barHandle = outControl [0];
-			}
-		}
-	}
+	int barHandle = findStandardBar (style);
 	if (barHandle == 0) return null;
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
@@ -166,6 +146,36 @@ void deregister () {
 void destroyScrollBar (ScrollBar bar) {
 	setScrollBarVisible (bar, false);
 	bar.destroyHandle ();
+}
+
+int findStandardBar (int style) {
+	int parentHandle = scrolledHandle != 0 ? scrolledHandle : handle;
+	short [] count = new short [1];
+	OS.CountSubControls (parentHandle, count);
+	if (count [0] == 0) return 0;
+	int barHandle = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+	int [] outControl = new int [1];
+	ControlKind kind = new ControlKind ();
+	int [] property = new int [1];
+	for (int i = 0; i < count [0]; i++) {
+		OS.GetIndexedSubControl (parentHandle, (short) (i + 1), outControl);		
+		OS.GetControlKind (outControl [0], kind);
+		if (kind.kind == OS.kControlKindScrollBar) {
+			property [0] = 0;
+			OS.GetControlProperty (outControl [0], Display.SWT0, Display.SWT0, 4, null, property);
+			if (property [0] == 0) {
+				Point point = getControlSize (outControl [0]);
+				if ((style & SWT.H_SCROLL) != 0) {
+					if (point.y == outMetric [0]) barHandle = outControl [0];
+				} else {
+					if (point.x == outMetric [0]) barHandle = outControl [0];
+				}
+			}
+		}
+	}
+	return barHandle;
 }
 
 public int getBorderWidth () {

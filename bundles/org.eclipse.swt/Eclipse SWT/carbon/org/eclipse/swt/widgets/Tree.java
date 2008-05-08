@@ -3166,7 +3166,26 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	OS.GetDataBrowserHasScrollBars (handle, horiz, vert);
 	if ((bar.style & SWT.H_SCROLL) != 0) horiz [0] = visible;
 	if ((bar.style & SWT.V_SCROLL) != 0) vert [0] = visible;
-	return OS.SetDataBrowserHasScrollBars (handle, horiz [0], vert [0]) == OS.noErr;
+	if (!visible) {
+		bar.redraw ();
+		bar.deregister ();
+	}
+	if (OS.SetDataBrowserHasScrollBars (handle, horiz [0], vert [0]) == OS.noErr) {
+		if (visible) {
+			bar.handle = findStandardBar (bar.style);
+			bar.register ();
+			bar.hookEvents ();
+			bar.redraw ();
+		} else {
+			bar.handle = 0;
+		}
+		return true;
+	} else {
+		if (!visible) {
+			bar.register ();
+		}
+	}
+	return false;
 }
 
 boolean setScrollWidth (boolean set) {
