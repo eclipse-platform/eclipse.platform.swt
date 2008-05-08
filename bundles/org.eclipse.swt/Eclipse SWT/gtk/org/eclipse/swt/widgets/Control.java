@@ -3537,18 +3537,17 @@ public void setEnabled (boolean enabled) {
 		OS.gtk_widget_realize (handle);
 		int /*long*/ parentHandle = parent.eventHandle ();
 		int /*long*/ window = parent.eventWindow ();
-		Rectangle rect = getBounds ();
+		int /*long*/ topHandle = topHandle ();
 		GdkWindowAttr attributes = new GdkWindowAttr ();
-		attributes.x = rect.x;
-		attributes.y = rect.y;
-		attributes.width = rect.width;
-		attributes.height = rect.height;
+		attributes.x = OS.GTK_WIDGET_X (topHandle);
+		attributes.y = OS.GTK_WIDGET_Y (topHandle);
+		attributes.width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		attributes.height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
 		attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
 		attributes.wclass = OS.GDK_INPUT_ONLY;
 		attributes.window_type = OS.GDK_WINDOW_CHILD;
 		enableWindow = OS.gdk_window_new (window, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
 		if (enableWindow != 0) {
-			int /*long*/ topHandle = topHandle ();
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
 			if (!OS.GDK_WINDOWING_X11 ()) {
 				OS.gdk_window_raise (enableWindow);
