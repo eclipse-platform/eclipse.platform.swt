@@ -78,8 +78,11 @@ public class Combo extends Composite {
 	}
 	
 	static final String [] AX_ATTRIBUTES = {
-		OS.kAXTitleAttribute,
 		OS.kAXValueAttribute,
+		OS.kAXNumberOfCharactersAttribute,
+		OS.kAXSelectedTextAttribute,
+		OS.kAXSelectedTextRangeAttribute,
+		OS.kAXStringForRangeParameterizedAttribute,
 	};
 
 /**
@@ -1024,15 +1027,54 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		range.length = length;
 		OS.CFStringGetCharacters (stringRef [0], range, buffer);
 		String attributeName = new String(buffer);
-		if (attributeName.equals (OS.kAXValueAttribute) || attributeName.equals (OS.kAXTitleAttribute)) {
-			String text = getText ();
-			buffer = new char [text.length ()];
-			text.getChars (0, buffer.length, buffer, 0);
+		if (attributeName.equals (OS.kAXValueAttribute)) {
+			buffer = getText(0, -1);
 			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 			if (stringRef [0] != 0) {
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 				OS.CFRelease(stringRef [0]);
 				return OS.noErr;
+			}
+		}
+		if (attributeName.equals (OS.kAXNumberOfCharactersAttribute)) {
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {getCharCount()});
+			return OS.noErr;
+		}
+		if (attributeName.equals (OS.kAXSelectedTextAttribute)) {
+			Point sel = getSelection ();
+			buffer = getText(sel.x, sel.y);
+			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (stringRef [0] != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+				OS.CFRelease(stringRef [0]);
+				return OS.noErr;
+			}
+		}
+		if (attributeName.equals (OS.kAXSelectedTextRangeAttribute)) {
+			Point sel = getSelection ();
+			range = new CFRange();
+			range.location = sel.x;
+			range.length = sel.y - sel.x;
+			int valueRef = OS.AXValueCreate(OS.kAXValueCFRangeType, range);
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFTypeRef, 4, new int [] {valueRef});
+			OS.CFRelease(valueRef);
+			return OS.noErr;
+		}
+		if (attributeName.equals (OS.kAXStringForRangeParameterizedAttribute)) {
+			int valueRef [] = new int [1];
+			int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeParameter, OS.typeCFTypeRef, null, 4, null, valueRef);
+			if (status == OS.noErr) {
+				range = new CFRange();
+				boolean ok = OS.AXValueGetValue(valueRef[0], OS.kAXValueCFRangeType, range);
+				if (ok) {
+					buffer = getText (range.location, range.location + range.length);
+					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					if (stringRef [0] != 0) {
+						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+						OS.CFRelease(stringRef [0]);
+						return OS.noErr;
+					}
+				}
 			}
 		}
 	}
@@ -1115,6 +1157,20 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	
+	String string = OS.kAXValueChangedNotification;
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.AXNotificationHIObjectNotify(stringRef, handle, 0);
+	OS.CFRelease(stringRef);
+	string = OS.kAXSelectedTextChangedNotification;
+	buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	stringRef = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	OS.AXNotificationHIObjectNotify(stringRef, handle, 0);
+	OS.CFRelease(stringRef);
+
 	if (hooks (SWT.Verify) || filters (SWT.Verify)
 			|| hooks (SWT.Modify) || filters (SWT.Modify)) {
 		int [] modifiers = new int [1];
