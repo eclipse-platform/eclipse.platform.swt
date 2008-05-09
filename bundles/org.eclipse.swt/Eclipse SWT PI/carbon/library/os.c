@@ -9925,6 +9925,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(NavDialogSetSaveFileName)
 }
 #endif
 
+#ifndef NO_NavDisposeReply
+JNIEXPORT jint JNICALL OS_NATIVE(NavDisposeReply)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	NavReplyRecord _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NavDisposeReply_FUNC);
+	if (arg0) if ((lparg0 = getNavReplyRecordFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)NavDisposeReply(lparg0);
+fail:
+	if (arg0 && lparg0) setNavReplyRecordFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, NavDisposeReply_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NavGetDefaultDialogCreationOptions
 JNIEXPORT jint JNICALL OS_NATIVE(NavGetDefaultDialogCreationOptions)
 	(JNIEnv *env, jclass that, jobject arg0)

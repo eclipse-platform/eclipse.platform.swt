@@ -699,6 +699,7 @@ typedef enum {
 	NavDialogRun_FUNC,
 	NavDialogSetFilterTypeIdentifiers_FUNC,
 	NavDialogSetSaveFileName_FUNC,
+	NavDisposeReply_FUNC,
 	NavGetDefaultDialogCreationOptions_FUNC,
 	NewControl_FUNC,
 	NewDrag_FUNC,

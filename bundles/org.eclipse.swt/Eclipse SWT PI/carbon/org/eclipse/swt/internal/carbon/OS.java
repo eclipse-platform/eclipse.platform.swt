@@ -1708,6 +1708,7 @@ public static final native int NavDialogSetSaveFileName(int dialogHandle, int fi
 public static final native int NavDialogSetFilterTypeIdentifiers(int inGetFileDialog, int inTypeIdentifiers);  
 public static final native int NavGetDefaultDialogCreationOptions(NavDialogCreationOptions outOptions);
 public static final native int NavDialogGetReply(int inDialog, NavReplyRecord outReply);
+public static final native int NavDisposeReply(NavReplyRecord reply); 
 public static final native int NewControl(int owningWindow, Rect boundsRect, byte[] controlTitle, boolean initiallyVisible, short initialValue, short minimumValue, short maximumValue, short procID, int controlReference);
 public static final native int NewDrag(int[] theDrag); 
 public static final native int NewGWorldFromPtr(int[] offscreenGWorld, int PixelFormat, Rect boundsRect, int cTable, int aGDevice, int flags, int newBuffer, int rowBytes);
