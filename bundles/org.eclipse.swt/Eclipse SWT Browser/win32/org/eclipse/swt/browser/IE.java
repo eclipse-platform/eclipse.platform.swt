@@ -254,14 +254,34 @@ public void create(Composite parent, int style) {
 				case SWT.MouseWheel: {
 					/* MouseWheel events come from the DOM */
 					e.doit = false;
+					break;
+				}
+				/* 
+				 * FocusIn and Traverse are hooked to handle traversal into
+				 * and out of the Browser when it has key listeners.
+				 */
+				case SWT.FocusIn: {
+					site.setFocus();
+					break;
+				}
+				case SWT.Traverse: {
+					if (browser.isListening(SWT.KeyDown) || browser.isListening(SWT.KeyUp)) {
+						if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
+							browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+							e.doit = false;
+						}
+					}
+					break;
 				}
 			}
 		}
 	};
 	browser.addListener(SWT.Dispose, listener);
+	browser.addListener(SWT.FocusIn, listener);
 	browser.addListener(SWT.Resize, listener);
 	site.addListener(SWT.MouseWheel, listener);
-	
+	site.addListener(SWT.Traverse, listener);
+
 	OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
 			/* callbacks are asynchronous, auto could be disposed */
