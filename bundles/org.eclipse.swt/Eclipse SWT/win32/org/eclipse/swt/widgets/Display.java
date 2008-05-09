@@ -1976,8 +1976,18 @@ int /*long*/ getMsgProc (int /*long*/ code, int /*long*/ wParam, int /*long*/ lP
 					int /*long*/ keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
 					OS.MoveMemory (keyMsg, msg, MSG.sizeof);
 					OS.PostMessage (hwndMessage, SWT_KEYMSG, wParam, keyMsg);
-					msg.message = OS.WM_NULL;
-					OS.MoveMemory (lParam, msg, MSG.sizeof);
+					switch ((int)/*64*/msg.wParam) {
+						case OS.VK_SHIFT:
+						case OS.VK_MENU:
+						case OS.VK_CONTROL:
+						case OS.VK_CAPITAL:
+						case OS.VK_NUMLOCK:
+						case OS.VK_SCROLL:
+							break;
+						default:
+							msg.message = OS.WM_NULL;
+							OS.MoveMemory (lParam, msg, MSG.sizeof);
+					}
 				}
 			}
 		}
@@ -2930,6 +2940,15 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 						}
 					}
 				}
+			}
+			switch ((int)/*64*/keyMsg.wParam) {
+				case OS.VK_SHIFT:
+				case OS.VK_MENU:
+				case OS.VK_CONTROL:
+				case OS.VK_CAPITAL:
+				case OS.VK_NUMLOCK:
+				case OS.VK_SCROLL:
+					consumed = true;
 			}
 			if (consumed) {
 				int /*long*/ hHeap = OS.GetProcessHeap ();
