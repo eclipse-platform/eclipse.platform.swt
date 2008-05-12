@@ -138,6 +138,7 @@ typedef enum {
 	CFURLCreateFromFSRef_FUNC,
 	CFURLCreateFromFileSystemRepresentation_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
+	CFURLCreateStringByReplacingPercentEscapes_FUNC,
 	CFURLCreateWithBytes_FUNC,
 	CFURLCreateWithFileSystemPath_FUNC,
 	CFURLCreateWithString_FUNC,

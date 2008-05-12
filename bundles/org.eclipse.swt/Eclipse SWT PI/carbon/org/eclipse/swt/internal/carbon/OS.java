@@ -1153,6 +1153,7 @@ public static final native int CFURLCreateWithFileSystemPath (int allocator, int
 public static final native int CFURLCreateFromFileSystemRepresentation(int allocator, int buffer, int bufLen, boolean isDirectory);
 public static final native int CFURLCreateWithString(int allocator, int URLString, int baseURL);
 public static final native int CFURLCreateStringByAddingPercentEscapes(int allocator, int originalString, int charactersToLeaveUnescaped, int legalURLCharactersToBeEscaped, int encoding);
+public static final native int CFURLCreateStringByReplacingPercentEscapes(int allocator, int originalString, int charactersToLeaveUnescaped);
 public static final native boolean CFURLGetFSRef(int url, byte[] fsRef);
 public static final native void CGAffineTransformConcat (float[] t1, float[] t2, float[] result);
 public static final native void CGAffineTransformMake (float a, float b, float c, float d, float tx, float ty, float[] result);

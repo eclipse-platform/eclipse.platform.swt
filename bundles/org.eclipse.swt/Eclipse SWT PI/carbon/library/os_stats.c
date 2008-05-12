@@ -130,6 +130,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFURLCreateFromFSRef",
 	"CFURLCreateFromFileSystemRepresentation",
 	"CFURLCreateStringByAddingPercentEscapes",
+	"CFURLCreateStringByReplacingPercentEscapes",
 	"CFURLCreateWithBytes",
 	"CFURLCreateWithFileSystemPath",
 	"CFURLCreateWithString",
