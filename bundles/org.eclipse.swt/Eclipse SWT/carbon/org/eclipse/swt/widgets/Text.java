@@ -1401,6 +1401,17 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventTextInputUpdateActiveInputArea (int nextHandler, int theEvent, int userData) {
+	int [] length = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, 0, length, (char [])null);
+	int [] fixed_length = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendFixLen, OS.typeLongInteger, null, 4, null, fixed_length);
+	if (fixed_length [0] == -1 || fixed_length [0] == length [0]) {
+		postEvent (SWT.Modify);
+	}
+	return OS.eventNotHandledErr;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
