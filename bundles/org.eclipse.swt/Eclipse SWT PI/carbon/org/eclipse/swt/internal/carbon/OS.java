@@ -1564,6 +1564,7 @@ public static final native int HIObjectCopyClassID(int inObject);
 public static final native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);
 public static final native int HIObjectRegisterSubclass(int inClassID, int inBaseClassID, int inOptions, int inConstructProc, int inNumEvents, int[] inEventList, int inConstructData, int[] outClassRef);
 public static final native int HIViewScrollRect(int inView, CGRect inRect, float inDX, float inDY);
+public static final native int HIViewRegionChanged(int inView, int inRegionCode);
 public static final native int HIShapeCreateWithQDRgn(int inRgn);
 public static final native int HIShapeReplacePathInCGContext(int inShape, int inContext);
 public static final native int HIScrollViewCreate(int inOptions, int[] outView);

@@ -3634,6 +3634,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.region = region;
+	OS.HIViewRegionChanged (handle, OS.kControlStructureMetaPart);
 	redrawWidget (handle, true);
 }
 

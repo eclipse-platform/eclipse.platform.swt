@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8775,6 +8775,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HIViewIsVisible)
 	OS_NATIVE_ENTER(env, that, HIViewIsVisible_FUNC);
 	rc = (jboolean)HIViewIsVisible((HIViewRef)arg0);
 	OS_NATIVE_EXIT(env, that, HIViewIsVisible_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewRegionChanged
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewRegionChanged)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewRegionChanged_FUNC);
+	rc = (jint)HIViewRegionChanged((HIViewRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, HIViewRegionChanged_FUNC);
 	return rc;
 }
 #endif
