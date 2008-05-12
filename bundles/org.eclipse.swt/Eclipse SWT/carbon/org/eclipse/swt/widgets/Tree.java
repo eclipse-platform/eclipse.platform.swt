@@ -1959,7 +1959,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					OS.memmove(pt, new int[] {inGlobalMouse}, 4);
 					pt.h -= windowLeft;
 					pt.v -= windowTop;
-					if (!contains (pt.h, pt.v)) break;
 					String toolTipText = null;
 					int tagSide = OS.kHMAbsoluteCenterAligned;
 					CGPoint inPt = new CGPoint ();
@@ -1981,6 +1980,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 							if (startX <= x && x < startX + width) {
 								toolTipText = column.toolTipText;
 								rect.left = (short) startX;
+								rect.top = (short) 0;
 								rect.right = (short) (rect.left + width);
 								rect.bottom = (short) (rect.top + headerHeight);
 								tagSide = OS.kHMOutsideBottomRightAligned;
