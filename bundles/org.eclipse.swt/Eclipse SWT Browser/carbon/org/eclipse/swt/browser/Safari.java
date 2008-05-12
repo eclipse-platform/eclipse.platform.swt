@@ -106,7 +106,8 @@ public void create (Composite parent, int style) {
 		webView = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.C_WebView, Cocoa.S_alloc), Cocoa.S_initWithFrame_frameName_groupName, new NSRect(), 0, 0);
 		if (webView != 0) {
 			Cocoa.HICocoaViewCreate(webView, 0, outControl);
-			webViewHandle = outControl[0];		
+			webViewHandle = outControl[0];
+			Cocoa.objc_msgSend(webView, Cocoa.S_release);
 		}
 	} else {
 		Cocoa.HIWebViewCreate(outControl);
@@ -535,7 +536,18 @@ int handleCallback(int nextHandler, int theEvent) {
 							}
 						}
 					}
-					break;
+					/*
+					* Bug in Carbon.  OSX crashes if a HICocoaView is disposed during a key event,
+					* presumably as a result of attempting to use it after its refcount has reached
+					* 0.  The workaround is to temporarily add an extra ref to the view while the
+					* DOM listener is handling the event, in case the Browser gets disposed in a
+					* callback.
+					*/
+					int webViewHandle = this.webViewHandle;
+					OS.CFRetain (webViewHandle);
+					int result = OS.CallNextEventHandler (nextHandler, theEvent);
+					OS.CFRelease (webViewHandle);
+					return result;
 				}
 			}
 		case OS.kEventClassTextInput:
@@ -1511,6 +1523,7 @@ void handleEvent(int evt) {
 		keyEvent.character = (char)charCode;
 		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		browser.notifyListeners(keyEvent.type, keyEvent);
+		if (browser.isDisposed()) return;
 
 		boolean doit = keyEvent.doit;
 		/*

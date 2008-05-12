@@ -81,8 +81,25 @@ static int eventProc3 (int nextHandler, int theEvent, int userData) {
 	Widget widget = Display.getCurrent ().findWidget (userData);
 	if (widget instanceof Browser) {
 		Browser browser = (Browser) widget;
-		browser.getShell ().forceActive ();
-		((Mozilla)browser.webBrowser).Activate ();
+		switch (OS.GetEventClass (theEvent)) {
+			case OS.kEventClassMouse:
+				browser.getShell ().forceActive ();
+				((Mozilla)browser.webBrowser).Activate ();
+				break;
+			case OS.kEventClassKeyboard:
+				/*
+				* Bug in Carbon.  OSX crashes if a HICocoaView is disposed during a key event,
+				* presumably as a result of attempting to use it after its refcount has reached
+				* 0.  The workaround is to temporarily add an extra ref to the view while the
+				* DOM listener is handling the event, in case the Browser gets disposed in a
+				* callback.
+				*/
+				int handle = browser.handle;
+				OS.CFRetain (handle);
+				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				OS.CFRelease (handle);
+				return result;
+		}
 	}
 	return OS.eventNotHandledErr;
 }
@@ -98,16 +115,18 @@ int getHandle () {
 	int rc;
 	int[] outControl = new int[1];
 	rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl); /* OSX >= 10.5 */
-	if (outControl[0] == 0) {
+	if (rc == OS.noErr && outControl[0] != 0) {
+		Cocoa.objc_msgSend (embedHandle, Cocoa.S_release);
+	} else {
 		/* will succeed on OSX 10.4 with an updated vm containing HIJavaViewCreateWithCocoaView */
 		try {
 			System.loadLibrary ("frameembedding"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {}
 		rc = Cocoa.HIJavaViewCreateWithCocoaView (outControl, embedHandle);
-	}
-	if (rc != OS.noErr || outControl[0] == 0) {
-		browser.dispose ();
-		SWT.error (SWT.ERROR_NO_HANDLES);
+		if (!(rc == OS.noErr && outControl[0] != 0)) {
+			browser.dispose ();
+			SWT.error (SWT.ERROR_NO_HANDLES);
+		}
 	}
 	int subHIView = outControl[0];
 	HILayoutInfo newLayoutInfo = new HILayoutInfo ();
@@ -148,6 +167,7 @@ int getHandle () {
 	}
 	int [] mask = new int [] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
+		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 	};
 	int controlTarget = OS.GetControlEventTarget (subHIView);
 	OS.InstallEventHandler (controlTarget, callback3Address, mask.length / 2, mask, browser.handle, null);
