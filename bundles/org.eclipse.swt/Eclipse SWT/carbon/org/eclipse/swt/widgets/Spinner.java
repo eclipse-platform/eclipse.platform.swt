@@ -731,6 +731,10 @@ public void paste () {
 	setText (text, selection [0], selection [1], true);
 }
 
+boolean pollTrackEvent() {
+	return true;
+}
+
 public void redraw () {
 	checkWidget();
 	super.redraw ();

@@ -616,6 +616,10 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	return result;
 }
 
+boolean pollTrackEvent() {
+	return ((style & SWT.DATE) != 0) || ((style & SWT.TIME) != 0);
+}
+
 void redraw(int cell, Point cellSize) {
 	Point location = getCellLocation(cell, cellSize);
 	redraw(location.x, location.y, cellSize.x, cellSize.y, false);	

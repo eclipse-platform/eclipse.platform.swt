@@ -2065,8 +2065,21 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	if (isDisposed ()) return OS.noErr;
 	display.lastState = OS.GetCurrentEventButtonState ();
 	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
-	display.grabControl = this;
+	display.grabControl = this; 
+	int timer = 0;
+	if (pollTrackEvent ()) {
+		if (display.pollingTimer == 0) {
+			int [] id = new int [1];
+			int eventLoop = OS.GetCurrentEventLoop ();
+			OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, display.pollingProc, 0, id);
+			display.pollingTimer = timer = id [0];
+		}
+	}
 	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	if (timer != 0) {
+		OS.RemoveEventLoopTimer (timer);
+		display.pollingTimer = 0;
+	}
 	display.grabControl = null;
 	if (isDisposed ()) return OS.noErr;
 	sendTrackEvents ();
@@ -2384,6 +2397,10 @@ public boolean print (GC gc) {
 		OS.CGImageRelease (outImage [0]);
 	}
 	return true;
+}
+
+boolean pollTrackEvent() {
+	return false;
 }
 
 /**

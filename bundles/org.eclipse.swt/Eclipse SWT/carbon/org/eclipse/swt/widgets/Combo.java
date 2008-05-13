@@ -1234,6 +1234,10 @@ public void paste () {
 	sendEvent (SWT.Modify);
 }
 
+boolean pollTrackEvent() {
+	return true;
+}
+
 void releaseHandle () {
 	/*
 	* Bug in the Macintosh.  Carbon segments fault if the combo box has
@@ -1566,6 +1570,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	return result;
 }
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument.

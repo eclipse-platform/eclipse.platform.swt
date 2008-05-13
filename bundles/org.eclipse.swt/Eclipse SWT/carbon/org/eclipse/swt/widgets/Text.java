@@ -1463,6 +1463,10 @@ public void paste () {
 	sendEvent (SWT.Modify);
 }
 
+boolean pollTrackEvent() {
+	return true;
+}
+
 void register () {
 	super.register ();
 	if (frameHandle != 0) display.addWidget (frameHandle, this);
@@ -2226,7 +2230,6 @@ public void setTopIndex (int index) {
 		OS.ReleaseEvent (event[0]);
 	}
 }
-
 /**
  * Shows the selection.
  * <p>

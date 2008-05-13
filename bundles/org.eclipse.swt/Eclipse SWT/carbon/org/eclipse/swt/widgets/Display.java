@@ -109,11 +109,11 @@ public class Display extends Device {
 	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, searchCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, observerCallback, sourceCallback;
-	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback, coreEventCallback;
+	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback, coreEventCallback, pollingCallback;
 	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, searchProc, trayItemProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, observerProc, sourceProc;
-	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc, coreEventProc;
+	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc, coreEventProc, pollingProc;
 	EventTable eventTable, filterTable;
 	int queue, runLoop, runLoopSource, runLoopObserver, lastModifiers, lastState, lastX, lastY;
 	boolean disposing;
@@ -167,6 +167,8 @@ public class Display extends Device {
 	Callback timerCallback;
 	int timerProc;
 	boolean allowTimers = true;
+	int pollingTimer;
+	static final int POLLING_TIMEOUT = 10;
 
 	/* Current caret */
 	Caret currentCaret;
@@ -2152,6 +2154,9 @@ void initializeCallbacks () {
 	coreEventCallback = new Callback (this, "coreEventProc", 3); //$NON-NLS-1$
 	coreEventProc = coreEventCallback.getAddress ();
 	if (coreEventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	pollingCallback = new Callback (this, "pollingProc", 2);
+	pollingProc = pollingCallback.getAddress ();
+	if (pollingProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -2403,6 +2408,12 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+int pollingProc (int inTimer, int inUserData) {
+	if (grabControl == null || grabControl.isDisposed ()) return 0;
+	grabControl.sendTrackEvents ();
+	return 0;
 }
 
 /**
@@ -3188,16 +3199,17 @@ void releaseDisplay () {
 	sourceCallback.dispose ();
 	searchCallback.dispose ();
 	coreEventCallback.dispose ();
+	pollingCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	accessibilityCallback = clockCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = searchCallback = trayItemCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = observerCallback = sourceCallback = null;
-	textInputCallback = coreEventCallback = releaseCallback = null;
+	textInputCallback = coreEventCallback = releaseCallback = pollingCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = searchProc = trayItemProc = 0;
 	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = observerProc = sourceProc = releaseProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = coreEventProc = 0;
-	textInputProc = 0;
+	textInputProc = pollingProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerList = null;
