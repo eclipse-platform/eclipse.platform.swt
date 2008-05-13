@@ -1017,6 +1017,7 @@ Rect getInset () {
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	int code = OS.eventNotHandledErr;
 	if ((style & SWT.READ_ONLY) == 0) {
 		int [] stringRef = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
@@ -1033,24 +1034,21 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			if (stringRef [0] != 0) {
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
+				code = OS.noErr;
 			}
-		}
-		if (attributeName.equals (OS.kAXNumberOfCharactersAttribute)) {
+		} else if (attributeName.equals (OS.kAXNumberOfCharactersAttribute)) {
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {getCharCount()});
-			return OS.noErr;
-		}
-		if (attributeName.equals (OS.kAXSelectedTextAttribute)) {
+			code = OS.noErr;
+		} else if (attributeName.equals (OS.kAXSelectedTextAttribute)) {
 			Point sel = getSelection ();
 			buffer = getText(sel.x, sel.y);
 			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 			if (stringRef [0] != 0) {
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
+				code = OS.noErr;
 			}
-		}
-		if (attributeName.equals (OS.kAXSelectedTextRangeAttribute)) {
+		} else if (attributeName.equals (OS.kAXSelectedTextRangeAttribute)) {
 			Point sel = getSelection ();
 			range = new CFRange();
 			range.location = sel.x;
@@ -1058,9 +1056,8 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			int valueRef = OS.AXValueCreate(OS.kAXValueCFRangeType, range);
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFTypeRef, 4, new int [] {valueRef});
 			OS.CFRelease(valueRef);
-			return OS.noErr;
-		}
-		if (attributeName.equals (OS.kAXStringForRangeParameterizedAttribute)) {
+			code = OS.noErr;
+		} else if (attributeName.equals (OS.kAXStringForRangeParameterizedAttribute)) {
 			int valueRef [] = new int [1];
 			int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeParameter, OS.typeCFTypeRef, null, 4, null, valueRef);
 			if (status == OS.noErr) {
@@ -1072,16 +1069,16 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 					if (stringRef [0] != 0) {
 						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 						OS.CFRelease(stringRef [0]);
-						return OS.noErr;
+						code = OS.noErr;
 					}
 				}
 			}
 		}
 	}
 	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
 	}
-	return OS.eventNotHandledErr;
+	return code;
 }
 
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {

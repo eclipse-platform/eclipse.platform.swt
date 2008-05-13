@@ -771,7 +771,6 @@ int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int use
 	String [] attributes = getAxAttributes ();
 	if (attributes != null) {
 		OS.CallNextEventHandler (nextHandler, theEvent);
-		nextHandler = 0;
 		int [] arrayRef = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
 		int attributesArrayRef = arrayRef [0];
@@ -799,13 +798,13 @@ int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int use
 		code = OS.noErr;
 	}
 	if (parent.accessible != null) {
-		code = parent.accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+		code = parent.accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, code);
 	}
 	return code;
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int code = OS.eventNotHandledErr;
 	int [] stringRef = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
 	int length = 0;
@@ -825,26 +824,19 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			buffer = new char [roleText.length ()];
 			roleText.getChars (0, buffer.length, buffer, 0);
 			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (attributeName.equals (OS.kAXRoleAttribute)) {
-				if (stringRef [0] != 0) {
+			if (stringRef [0] != 0) {
+				if (attributeName.equals (OS.kAXRoleAttribute)) {
 					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-					OS.CFRelease(stringRef [0]);
-					return OS.noErr;
-				}
-			}
-			if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-				if (stringRef [0] != 0) {
+				} else { // kAXRoleDescriptionAttribute
 					int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
 					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-					OS.CFRelease(stringRef [0]);
 					OS.CFRelease(stringRef2);
-					return OS.noErr;
 				}
+				OS.CFRelease(stringRef [0]);
+				code = OS.noErr;
 			}
 		}
-	}
-	if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
-		//TODO: TEMPORARY CODE: return the tooltip/text (should send getName to the app's accessible instead)
+	} else if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
 		String accessibleText = toolTipText;
 		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
 		if (!(accessibleText == null || accessibleText.equals(""))) {
@@ -853,16 +845,14 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			int ref = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {ref});
 			OS.CFRelease(ref);
-			return OS.noErr;
+			code = OS.noErr;
 		}
-		// END TEMPORARY CODE
-	}
-	if (attributeName.equals (OS.kAXValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+	} else if (attributeName.equals (OS.kAXValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {selection ? 1 : 0});
-		return OS.noErr;
+		code = OS.noErr;
 	}
 	if (parent.accessible != null) {
-		code = parent.accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		code = parent.accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
 	}
 	return code;
 }

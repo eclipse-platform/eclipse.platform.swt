@@ -161,7 +161,7 @@ String [] getAxAttributes () {
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int code = OS.eventNotHandledErr;
 	int [] stringRef = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
 	int length = 0;
@@ -176,24 +176,18 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		buffer = new char [roleText.length ()];
 		roleText.getChars (0, buffer.length, buffer, 0);
 		stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (attributeName.equals (OS.kAXRoleAttribute)) {
-			if (stringRef [0] != 0) {
+		if (stringRef [0] != 0) {
+			if (attributeName.equals (OS.kAXRoleAttribute)) {
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-				OS.CFRelease(stringRef [0]);
-				return OS.noErr;
-			}
-		}
-		if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-			if (stringRef [0] != 0) {
+			} else { // kAXRoleDescriptionAttribute
 				int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
 				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-				OS.CFRelease(stringRef [0]);
 				OS.CFRelease(stringRef2);
-				return OS.noErr;
 			}
+			OS.CFRelease(stringRef [0]);
+			code = OS.noErr;
 		}
-	}
-	if (attributeName.equals (OS.kAXOrientationAttribute)) {
+	} else if (attributeName.equals (OS.kAXOrientationAttribute)) {
 		String orientation = (style & SWT.VERTICAL) != 0 ? OS.kAXVerticalOrientationValue : OS.kAXHorizontalOrientationValue;
 		buffer = new char [orientation.length ()];
 		orientation.getChars (0, buffer.length, buffer, 0);
@@ -201,30 +195,27 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 		if (stringRef [0] != 0) {
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 			OS.CFRelease(stringRef [0]);
-			return OS.noErr;
+			code = OS.noErr;
 		}
-	}
-	if (attributeName.equals (OS.kAXValueAttribute)) {
+	} else if (attributeName.equals (OS.kAXValueAttribute)) {
 		Point location = getLocation();
 		int value = (style & SWT.VERTICAL) != 0 ? location.x : location.y;
 		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {value});
-		return OS.noErr;
-	}
-	if (attributeName.equals (OS.kAXMaxValueAttribute)) {
+		code = OS.noErr;
+	} else if (attributeName.equals (OS.kAXMaxValueAttribute)) {
 		Rect parentBounds = new Rect ();
 		OS.GetControlBounds (parent.handle, parentBounds);
 		int maxValue = (style & SWT.VERTICAL) != 0 ?
 				parentBounds.right - parentBounds.left :
 				parentBounds.bottom - parentBounds.top;
 		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {maxValue});
-		return OS.noErr;
-	}
-	if (attributeName.equals (OS.kAXMinValueAttribute)) {
+		code = OS.noErr;
+	} else if (attributeName.equals (OS.kAXMinValueAttribute)) {
 		OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {0});
-		return OS.noErr;
+		code = OS.noErr;
 	}
 	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
 	}
 	return code;
 }

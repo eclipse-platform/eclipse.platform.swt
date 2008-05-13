@@ -1888,7 +1888,6 @@ int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int use
 	String [] attributes = getAxAttributes ();
 	if (attributes != null) {
 		OS.CallNextEventHandler (nextHandler, theEvent);
-		nextHandler = 0;
 		int [] arrayRef = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeNames, OS.typeCFMutableArrayRef, null, 4, null, arrayRef);
 		int attributesArrayRef = arrayRef [0];
@@ -1916,14 +1915,14 @@ int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int use
 		code = OS.noErr;
 	}
 	if (accessible != null) {
-		code = accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+		code = accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, code);
 	}
 	return code;
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, OS.eventNotHandledErr);
 	}
 	return OS.eventNotHandledErr;
 }

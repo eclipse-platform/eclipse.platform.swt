@@ -433,7 +433,7 @@ boolean isDescribedByLabel () {
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int code = OS.eventNotHandledErr;
 	if ((style & SWT.RADIO) != 0) {
 		int [] stringRef = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
@@ -449,26 +449,21 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 			buffer = new char [roleText.length ()];
 			roleText.getChars (0, buffer.length, buffer, 0);
 			stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (attributeName.equals (OS.kAXRoleAttribute)) {
-				if (stringRef [0] != 0) {
+			if (stringRef [0] != 0) {
+				if (attributeName.equals (OS.kAXRoleAttribute)) {
 					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-					OS.CFRelease(stringRef [0]);
-					return OS.noErr;
-				}
-			}
-			if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-				if (stringRef [0] != 0) {
+				} else { // kAXRoleDescriptionAttribute
 					int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
 					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-					OS.CFRelease(stringRef [0]);
 					OS.CFRelease(stringRef2);
-					return OS.noErr;
 				}
+				OS.CFRelease(stringRef [0]);
+				code = OS.noErr;
 			}
 		}
 	}
 	if (accessible != null) {
-		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
 	}
 	return code;
 }

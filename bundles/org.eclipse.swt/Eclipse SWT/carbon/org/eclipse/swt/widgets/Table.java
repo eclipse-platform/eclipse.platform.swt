@@ -2181,7 +2181,7 @@ int itemNotificationProc (int browser, int id, int message) {
 }
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
-	int code = OS.CallNextEventHandler (nextHandler, theEvent);
+	int code = OS.eventNotHandledErr;
 	int [] ref = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleObject, OS.typeCFTypeRef, null, 4, null, ref);
 	int axuielementref = ref [0];
@@ -2205,46 +2205,43 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 				range.length = length;
 				OS.CFStringGetCharacters (stringRef [0], range, buffer);
 				String attributeName = new String(buffer);
-				if (attributeName.equals(OS.kAXChildrenAttribute)) {
+				if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+					String roleText = OS.kAXStaticTextRole;
+					buffer = new char [roleText.length ()];
+					roleText.getChars (0, buffer.length, buffer, 0);
+					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					if (stringRef [0] != 0) {
+						if (attributeName.equals (OS.kAXRoleAttribute)) {
+							OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+						} else { // kAXRoleDescriptionAttribute
+							int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+							OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+							OS.CFRelease(stringRef2);
+						}
+						OS.CFRelease(stringRef [0]);
+						code = OS.noErr;
+					}
+				} else if (attributeName.equals(OS.kAXChildrenAttribute)) {
 					int children = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
 					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFMutableArrayRef, 4, new int [] {children});
 					OS.CFRelease(children);
-					return OS.noErr;
-				}
-				String text = null;
-				if (attributeName.equals (OS.kAXRoleAttribute)) {
-					text = OS.kAXStaticTextRole;
-				}
-				if (attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-					buffer = new char [OS.kAXStaticTextRole.length ()];
-					OS.kAXStaticTextRole.getChars (0, buffer.length, buffer, 0);
-					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-					if (stringRef [0] != 0) {
-						int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
-						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-						OS.CFRelease(stringRef [0]);
-						OS.CFRelease(stringRef2);
-						return OS.noErr;
-					}
-				}
-				if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
-					text = tableItem.getText (columnIndex);
-				}
-				if (text != null) {
+					code = OS.noErr;
+				} else if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
+					String text = tableItem.getText (columnIndex);
 					buffer = new char [text.length ()];
 					text.getChars (0, buffer.length, buffer, 0);
 					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 					if (stringRef [0] != 0) {
 						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
 						OS.CFRelease(stringRef [0]);
-						return OS.noErr;
+						code = OS.noErr;
 					}
 				}
 			}
 		}
 	}
 	if (accessible != null) {
-		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+		code = accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, code);
 	}
 	return code;
 }
