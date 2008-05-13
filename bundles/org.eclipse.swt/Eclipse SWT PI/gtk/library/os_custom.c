@@ -129,7 +129,7 @@ typedef struct _PangoLayoutLineSWT  PangoLayoutLineSWT;
 
 #ifndef NO__1pango_1layout_1line_1get_1resolved_1dir
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1line_1get_1resolved_1dir)
-	(JNIEnv *env, jclass that, jint arg0)
+	(JNIEnv *env, jclass that, SWT_PTR arg0)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1line_1get_1resolved_1dir_FUNC);
