@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 972;
-int OS_nativeFunctionCallCount[972];
+int OS_nativeFunctionCount = 973;
+int OS_nativeFunctionCallCount[973];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",

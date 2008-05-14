@@ -1714,7 +1714,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateStringByReplacingPercentEscapes)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CFURLCreateStringByReplacingPercentEscapes_FUNC);
-	rc = (jint)CFURLCreateStringByReplacingPercentEscapes(arg0, arg1, arg2);
+	rc = (jint)CFURLCreateStringByReplacingPercentEscapes((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2);
 	OS_NATIVE_EXIT(env, that, CFURLCreateStringByReplacingPercentEscapes_FUNC);
 	return rc;
 }
