@@ -2631,7 +2631,7 @@ int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNod
 	event.x = aScreenX[0];
 	event.y = aScreenY[0];
 	browser.notifyListeners (SWT.MenuDetect, event);
-	if (!event.doit) return XPCOM.NS_OK;
+	if (!event.doit || browser.isDisposed ()) return XPCOM.NS_OK;
 	Menu menu = browser.getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
 		if (aScreenX[0] != event.x || aScreenY[0] != event.y) {
@@ -2886,7 +2886,7 @@ int HandleEvent (int /*long*/ event) {
 					keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 					keyEvent.stateMask &= ~keyCode;		/* remove current keydown if it's a state key */
 					browser.notifyListeners (keyEvent.type, keyEvent);
-					if (!keyEvent.doit) {
+					if (!keyEvent.doit || browser.isDisposed ()) {
 						domEvent.PreventDefault ();
 					}
 					break;
@@ -2918,7 +2918,7 @@ int HandleEvent (int /*long*/ event) {
 							keyEvent.keyCode = lastKeyCode;
 							keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0? SWT.CTRL : 0) | (aShiftKey[0] != 0? SWT.SHIFT : 0) | (aMetaKey[0] != 0? SWT.COMMAND : 0);
 							browser.notifyListeners (keyEvent.type, keyEvent);
-							if (!keyEvent.doit) {
+							if (!keyEvent.doit || browser.isDisposed ()) {
 								domEvent.PreventDefault ();
 							}
 						}
@@ -2992,7 +2992,7 @@ int HandleEvent (int /*long*/ event) {
 		keyEvent.character = (char)lastCharCode;
 		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 		browser.notifyListeners (keyEvent.type, keyEvent);
-		if (!keyEvent.doit) {
+		if (!keyEvent.doit || browser.isDisposed ()) {
 			domEvent.PreventDefault ();
 		}
 		return XPCOM.NS_OK;
@@ -3047,7 +3047,7 @@ int HandleEvent (int /*long*/ event) {
 			}
 		}
 		browser.notifyListeners (keyEvent.type, keyEvent);
-		if (!keyEvent.doit) {
+		if (!keyEvent.doit || browser.isDisposed ()) {
 			domEvent.PreventDefault ();
 		}
 		lastKeyCode = lastCharCode = 0;
@@ -3146,6 +3146,7 @@ int HandleEvent (int /*long*/ event) {
 	}
 
 	browser.notifyListeners (mouseEvent.type, mouseEvent);
+	if (browser.isDisposed ()) return XPCOM.NS_OK;
 	if (aDetail[0] == 2 && XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;

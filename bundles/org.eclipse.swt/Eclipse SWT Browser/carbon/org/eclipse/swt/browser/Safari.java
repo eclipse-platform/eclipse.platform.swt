@@ -311,7 +311,7 @@ public void create (Composite parent, int style) {
 	Cocoa.objc_msgSend(webView, Cocoa.S_setApplicationNameForUserAgent, sHandle);
 	OS.CFRelease(sHandle);
 
-	if (display.getActiveShell() == browser.getShell()) {
+	if (OS.VERSION < 0x1050 && display.getActiveShell() == browser.getShell()) {
 		Cocoa.objc_msgSend(Cocoa.objc_msgSend(webView, Cocoa.S_window), Cocoa.S_makeKeyWindow);
 	}
 
@@ -539,14 +539,16 @@ int handleCallback(int nextHandler, int theEvent) {
 					/*
 					* Bug in Carbon.  OSX crashes if a HICocoaView is disposed during a key event,
 					* presumably as a result of attempting to use it after its refcount has reached
-					* 0.  The workaround is to temporarily add an extra ref to the view while the
-					* DOM listener is handling the event, in case the Browser gets disposed in a
-					* callback.
+					* 0.  The workaround is to temporarily add an extra ref to the view and its
+					* ancestor while the DOM listener is handling the event, in case the
+					* Browser gets disposed in a callback.
 					*/
-					int webViewHandle = this.webViewHandle;
-					OS.CFRetain (webViewHandle);
+					int handle = webViewHandle, root = OS.HIViewGetSuperview (webViewHandle);
+					OS.CFRetain (handle);
+					OS.CFRetain (root);
 					int result = OS.CallNextEventHandler (nextHandler, theEvent);
-					OS.CFRelease (webViewHandle);
+					OS.CFRelease (root);
+					OS.CFRelease (handle);
 					return result;
 				}
 			}
@@ -1308,8 +1310,8 @@ int contextMenuItemsForElement(int element, int defaultMenuItems) {
 	event.x = pt.h;
 	event.y = pt.v;
 	browser.notifyListeners(SWT.MenuDetect, event);
+	if (!event.doit || browser.isDisposed()) return 0;
 	Menu menu = browser.getMenu();
-	if (!event.doit) return 0;
 	if (menu != null && !menu.isDisposed()) {
 		if (event.x != pt.h || event.y != pt.v) {
 			menu.setLocation(event.x, event.y);
@@ -1523,7 +1525,10 @@ void handleEvent(int evt) {
 		keyEvent.character = (char)charCode;
 		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		browser.notifyListeners(keyEvent.type, keyEvent);
-		if (browser.isDisposed()) return;
+		if (browser.isDisposed()) {
+			Cocoa.objc_msgSend(evt, Cocoa.S_preventDefault);
+			return;
+		}
 
 		boolean doit = keyEvent.doit;
 		/*
@@ -1590,6 +1595,7 @@ void handleEvent(int evt) {
 	}
 
 	browser.notifyListeners (mouseEvent.type, mouseEvent);
+	if (browser.isDisposed()) return;
 	if (detail == 2 && DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
 		mouseEvent = new Event ();
