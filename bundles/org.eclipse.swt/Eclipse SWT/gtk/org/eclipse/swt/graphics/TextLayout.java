@@ -160,6 +160,7 @@ void computeRuns () {
 		}
 	}
 	int strlen = OS.strlen(ptr);
+	Font defaultFont = font != null ? font : device.systemFont;
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem styleItem = styles[i];
 		TextStyle style = styleItem.style; 
@@ -171,7 +172,7 @@ void computeRuns () {
 		byteStart = Math.min(byteStart, strlen);
 		byteEnd = Math.min(byteEnd, strlen);
 		Font font = style.font;
-		if (font != null && !font.isDisposed()) {
+		if (font != null && !font.isDisposed() && !defaultFont.equals(font)) {
 			int /*long*/ attr = OS.pango_attr_font_desc_new (font.handle);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
@@ -1763,6 +1764,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Font oldFont = this.font;
 	if (oldFont == font) return;
+	freeRuns();
 	this.font = font;
 	if (oldFont != null && oldFont.equals(font)) return;
 	OS.pango_layout_set_font_description(layout, font != null ? font.handle : device.systemFont.handle);
