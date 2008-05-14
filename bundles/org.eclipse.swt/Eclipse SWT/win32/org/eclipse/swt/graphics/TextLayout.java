@@ -270,7 +270,10 @@ void computeRuns (GC gc) {
 					if (next.length != 0 && segmentsText.charAt(next.start) == '\n') {
 						run.length += 1;
 						next.free();
-						i++;
+						StyleItem[] newAllRuns = new StyleItem[allRuns.length - 1];
+						System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
+						System.arraycopy(allRuns, i + 2, newAllRuns, i + 1, allRuns.length - i - 2);
+						allRuns = newAllRuns;
 					}
 					break;
 				}
