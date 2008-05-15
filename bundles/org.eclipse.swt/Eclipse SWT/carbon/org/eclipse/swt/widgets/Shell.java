@@ -1699,15 +1699,7 @@ void setWindowVisible (boolean visible) {
 			OS.GetWindowActivationScope (shellHandle, scope);
 			OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
 		}
-		/*
-		* Bug in the Macintosh.  ShowWindow() does not activate the shell when an ON_TOP
-		* shell is active. The fix is to detect that the shell was not activated and
-		* activate it.
-		*/
-		Shell activeShell = null;
-		if ((style & SWT.ON_TOP) == 0) {
-			activeShell = display.getActiveShell ();
-		}
+
 		int shellHandle = this.shellHandle;
 		OS.RetainWindow (shellHandle);
 		OS.ShowWindow (shellHandle);
@@ -1720,8 +1712,20 @@ void setWindowVisible (boolean visible) {
 			OS.SetWindowActivationScope (shellHandle, scope [0]);
 			OS.BringToFront (shellHandle);
 		} else {
-			if (activeShell != null && activeShell == display.getActiveShell () && (activeShell.style & SWT.ON_TOP) != 0) {
-				bringToTop (false);
+			/*
+			* Bug in the Macintosh.  ShowWindow() does not activate the shell when an ON_TOP
+			* shell is visible. The fix is to detect that the shell was not activated and
+			* activate it.
+			*/
+			if (display.getActiveShell () != this) {
+				Shell[] shells = display.getShells();
+				for (int i = 0; i < shells.length; i++) {
+					Shell shell = shells [i];
+					if ((shell.style & SWT.ON_TOP) != 0 && shell.isVisible ()) {
+						bringToTop(false);
+						break;
+					}
+				}
 			}
 		}
 		opened = true;
