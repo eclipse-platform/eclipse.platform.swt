@@ -116,7 +116,7 @@ class GroupTab extends Tab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ToolTipText"};
+		return new String[] {"Text", "ToolTipText"};
 	}
 
 	/**
