@@ -262,6 +262,7 @@ public class OS extends C {
 	public static final int kControlSliderLiveFeedback = (1 << 0);
 	public static final int kControlSliderNonDirectional = (1 << 3);
 	public static final int kControlSliderProc = 48;
+	public static final int kControlClickableMetaPart = -4;
 	public static final int kControlStructureMetaPart = -1;
 	public static final int kControlSupportsEmbedding = 1 << 1;
 	public static final int kControlSupportsFocus = 1 << 2;

@@ -1976,7 +1976,7 @@ int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
 	if (region != null && this != getShell ()) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode , null, 2, null, part);
-		if (part [0] == OS.kControlStructureMetaPart) {
+		if (part [0] == OS.kControlStructureMetaPart || part [0] == OS.kControlClickableMetaPart) {
 			int [] rgn = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamControlRegion, OS.typeQDRgnHandle , null, 4, null, rgn);
 			OS.CopyRgn (region.handle, rgn[0]);
@@ -1991,6 +1991,15 @@ int kEventControlGetPartRegion (int nextHandler, int theEvent, int userData) {
 int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHitTest (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	if (region != null && this != getShell ()) {
+		result = OS.CallNextEventHandler (nextHandler, theEvent);
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		if (!region.contains ((int) pt.x, (int) pt.y)) {
+			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short []{0});
+			return result;
+		}
+	}
 	if ((state & GRAB) != 0) {
 		CGRect rect = new CGRect ();
 		OS.HIViewGetBounds (handle, rect);
@@ -2000,15 +2009,6 @@ int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{1});
 		}
 		return OS.noErr;
-	}
-	if (region != null && this != getShell ()) {
-		int code = OS.CallNextEventHandler (nextHandler, theEvent);
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		if (!region.contains ((int) pt.x, (int) pt.y)) {
-			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short [1]);
-		}
-		return code;
 	}
 	return result;
 }
