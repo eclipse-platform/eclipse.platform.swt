@@ -166,7 +166,27 @@ public void create (Composite parent, int style) {
 			 */
 			Initialized = true;
 		}
+
 		String mozillaPath = System.getProperty (XULRUNNER_PATH);
+		/*
+		* Browser clients that ship XULRunner in a plug-in must have an opportunity 
+		* to set the org.eclipse.swt.browser.XULRunnerPath system property to point
+		* at their XULRunner before the first Mozilla-based Browser is created.  To
+		* facilitate this, reflection is used to reference non-existent class
+		* org.eclipse.swt.browser.XULRunnerInitializer the first time a Mozilla-
+		* based Browser is created.   A client wishing to use this hook can do so
+		* by creating a fragment of org.eclipse.swt that implements this class and
+		* sets the system property in its static initializer.
+		*/
+		if (mozillaPath == null) {
+			try {
+				Class clazz = Class.forName ("org.eclipse.swt.browser.XULRunnerInitializer"); //$NON-NLS-1$
+				mozillaPath = System.getProperty (XULRUNNER_PATH);
+			} catch (ClassNotFoundException e) {
+				/* no fragment is providing this class, which is the typical case */
+			}
+		}
+
 		if (mozillaPath == null) {
 			try {
 				String libName = delegate.getSWTInitLibraryName ();
