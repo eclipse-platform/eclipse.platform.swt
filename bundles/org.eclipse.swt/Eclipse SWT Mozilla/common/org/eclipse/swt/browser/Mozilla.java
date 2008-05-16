@@ -180,7 +180,7 @@ public void create (Composite parent, int style) {
 		*/
 		if (mozillaPath == null) {
 			try {
-				Class clazz = Class.forName ("org.eclipse.swt.browser.XULRunnerInitializer"); //$NON-NLS-1$
+				Class.forName ("org.eclipse.swt.browser.XULRunnerInitializer"); //$NON-NLS-1$
 				mozillaPath = System.getProperty (XULRUNNER_PATH);
 			} catch (ClassNotFoundException e) {
 				/* no fragment is providing this class, which is the typical case */
