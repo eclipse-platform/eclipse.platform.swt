@@ -536,27 +536,42 @@ public class Accessible {
 	
 	int getTitleAttribute (int nextHandler, int theEvent, int userData) {
 		int code = userData != OS.eventNotHandledErr ? userData : OS.CallNextEventHandler (nextHandler, theEvent);
-		String osTitleAttribute = null;
-		int [] stringRef = new int [1];
-		if (code == OS.noErr) {
-			int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, null, 4, null, stringRef);
-			if (status == OS.noErr) {
-				osTitleAttribute = stringRefToString (stringRef [0]);
+		int childID = getChildIDFromEvent(theEvent);
+		
+		/*
+		* Feature of the Macintosh.  The text of a Label is returned in its value,
+		* not its title, so ensure that the role is not Label before asking for the title.
+		*/
+		AccessibleControlEvent roleEvent = new AccessibleControlEvent(this);
+		roleEvent.childID = childID;
+		roleEvent.detail = -1;
+		for (int i = 0; i < accessibleControlListeners.size(); i++) {
+			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			listener.getRole(roleEvent);
+		}
+		if (roleEvent.detail != ACC.ROLE_LABEL) {
+			String osTitleAttribute = null;
+			int [] stringRef = new int [1];
+			if (code == OS.noErr) {
+				int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, null, 4, null, stringRef);
+				if (status == OS.noErr) {
+					osTitleAttribute = stringRefToString (stringRef [0]);
+				}
 			}
-		}
-		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = getChildIDFromEvent(theEvent);
-		event.result = osTitleAttribute;
-		for (int i = 0; i < accessibleListeners.size(); i++) {
-			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-			listener.getName(event);
-		}
-		if (event.result != null) {
-			stringRef [0] = stringToStringRef (event.result);
-			if (stringRef [0] != 0) {
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-				OS.CFRelease(stringRef [0]);
-				code = OS.noErr;
+			AccessibleEvent event = new AccessibleEvent(this);
+			event.childID = childID;
+			event.result = osTitleAttribute;
+			for (int i = 0; i < accessibleListeners.size(); i++) {
+				AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+				listener.getName(event);
+			}
+			if (event.result != null) {
+				stringRef [0] = stringToStringRef (event.result);
+				if (stringRef [0] != 0) {
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+					OS.CFRelease(stringRef [0]);
+					code = OS.noErr;
+				}
 			}
 		}
 		return code;
