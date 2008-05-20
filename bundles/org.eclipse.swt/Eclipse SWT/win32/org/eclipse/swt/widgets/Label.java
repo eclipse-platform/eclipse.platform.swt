@@ -405,7 +405,7 @@ public void setText (String string) {
 	* contains an image, the image is misaligned.  The
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (OS.COMCTL32_MAJOR < 6) {
 		if (findImageControl () != null) OS.InvalidateRect (handle, null, true);
 	}
 }
@@ -451,7 +451,7 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	* contains an image, the image is misaligned.  The
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (OS.COMCTL32_MAJOR < 6) {
 		if (findImageControl () != null) {
 			drawBackground (wParam);
 			return LRESULT.ONE;
@@ -523,7 +523,7 @@ LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
 	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (OS.COMCTL32_MAJOR < 6) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
 			if (findImageControl () != null) {
