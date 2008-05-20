@@ -2429,58 +2429,73 @@ int itemNotificationProc (int browser, int id, int message) {
 
 int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 	int code = OS.eventNotHandledErr;
-	int [] ref = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleObject, OS.typeCFTypeRef, null, 4, null, ref);
-	int axuielementref = ref [0];
-	DataBrowserAccessibilityItemInfo itemInfo = new DataBrowserAccessibilityItemInfo ();
-	int err = OS.AXUIElementGetDataBrowserItemInfo (axuielementref, handle, 0, itemInfo);
-	if (err == OS.noErr && itemInfo.v0_columnProperty != OS.kDataBrowserItemNoProperty && itemInfo.v0_item != OS.kDataBrowserNoItem && itemInfo.v0_propertyPart == OS.kDataBrowserPropertyEnclosingPart) {
-		int columnIndex = 0;
-		for (columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-			if (columns [columnIndex].id == itemInfo.v0_columnProperty) break;
+	int [] stringRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
+	int length = 0;
+	if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
+	char [] buffer = new char [length];
+	CFRange range = new CFRange ();
+	range.length = length;
+	OS.CFStringGetCharacters (stringRef [0], range, buffer);
+	String attributeName = new String(buffer);
+	if (attributeName.equals(OS.kAXHeaderAttribute)) {
+		short [] height = new short [1];
+		OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+		if (height [0] == 0) {
+			/*
+			* Bug in the Macintosh.  Even when the header is not visible,
+			* VoiceOver still reports each column header's role for every row.
+			* This is confusing and overly verbose.  The fix is to return
+			* "no header" when the screen reader asks for the header, by
+			* returning noErr without setting the event parameter.
+			*/
+			code = OS.noErr;
 		}
-		if (columnIndex != columnCount || columnCount == 0) {
-			int id = itemInfo.v0_item;
-			TreeItem treeItem = _getItem (id, false);
-			int [] stringRef = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeName, OS.typeCFStringRef, null, 4, null, stringRef);
-			int length = 0;
-			if (stringRef [0] != 0) length = OS.CFStringGetLength (stringRef [0]);
-			char [] buffer = new char [length];
-			CFRange range = new CFRange ();
-			range.length = length;
-			OS.CFStringGetCharacters (stringRef [0], range, buffer);
-			String attributeName = new String(buffer);
-			if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
-				String roleText = OS.kAXStaticTextRole;
-				buffer = new char [roleText.length ()];
-				roleText.getChars (0, buffer.length, buffer, 0);
-				stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-				if (stringRef [0] != 0) {
-					if (attributeName.equals (OS.kAXRoleAttribute)) {
-						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-					} else { // kAXRoleDescriptionAttribute
-						int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
-						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
-						OS.CFRelease(stringRef2);
+	} else {
+		int [] ref = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAccessibleObject, OS.typeCFTypeRef, null, 4, null, ref);
+		int axuielementref = ref [0];
+		DataBrowserAccessibilityItemInfo itemInfo = new DataBrowserAccessibilityItemInfo ();
+		int err = OS.AXUIElementGetDataBrowserItemInfo (axuielementref, handle, 0, itemInfo);
+		if (err == OS.noErr && itemInfo.v0_columnProperty != OS.kDataBrowserItemNoProperty && itemInfo.v0_item != OS.kDataBrowserNoItem && itemInfo.v0_propertyPart == OS.kDataBrowserPropertyEnclosingPart) {
+			int columnIndex = 0;
+			for (columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+				if (columns [columnIndex].id == itemInfo.v0_columnProperty) break;
+			}
+			if (columnIndex != columnCount || columnCount == 0) {
+				int id = itemInfo.v0_item;
+				TreeItem treeItem = _getItem (id, false);
+				if (attributeName.equals (OS.kAXRoleAttribute) || attributeName.equals (OS.kAXRoleDescriptionAttribute)) {
+					String roleText = OS.kAXStaticTextRole;
+					buffer = new char [roleText.length ()];
+					roleText.getChars (0, buffer.length, buffer, 0);
+					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					if (stringRef [0] != 0) {
+						if (attributeName.equals (OS.kAXRoleAttribute)) {
+							OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+						} else { // kAXRoleDescriptionAttribute
+							int stringRef2 = OS.HICopyAccessibilityRoleDescription (stringRef [0], 0);
+							OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, new int [] {stringRef2});
+							OS.CFRelease(stringRef2);
+						}
+						OS.CFRelease(stringRef [0]);
+						code = OS.noErr;
 					}
-					OS.CFRelease(stringRef [0]);
+				} else if (attributeName.equals(OS.kAXChildrenAttribute)) {
+					int children = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFMutableArrayRef, 4, new int [] {children});
+					OS.CFRelease(children);
 					code = OS.noErr;
-				}
-			} else if (attributeName.equals(OS.kAXChildrenAttribute)) {
-				int children = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
-				OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFMutableArrayRef, 4, new int [] {children});
-				OS.CFRelease(children);
-				code = OS.noErr;
-			} else if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
-				String text = treeItem.getText (columnIndex);
-				buffer = new char [text.length ()];
-				text.getChars (0, buffer.length, buffer, 0);
-				stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-				if (stringRef [0] != 0) {
-					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
-					OS.CFRelease(stringRef [0]);
-					code = OS.noErr;
+				} else if (attributeName.equals (OS.kAXTitleAttribute) || attributeName.equals (OS.kAXDescriptionAttribute)) {
+					String text = treeItem.getText (columnIndex);
+					buffer = new char [text.length ()];
+					text.getChars (0, buffer.length, buffer, 0);
+					stringRef [0] = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					if (stringRef [0] != 0) {
+						OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, 4, stringRef);
+						OS.CFRelease(stringRef [0]);
+						code = OS.noErr;
+					}
 				}
 			}
 		}
