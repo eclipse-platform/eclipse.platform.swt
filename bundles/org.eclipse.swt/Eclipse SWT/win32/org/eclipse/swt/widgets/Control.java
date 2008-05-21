@@ -1944,7 +1944,7 @@ public boolean print (GC gc) {
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
 		}
-		printWidget (topHandle, gc.handle);
+		printWidget (topHandle, gc);
 		if ((bits & OS.WS_VISIBLE) == 0) {
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
 		}
@@ -1953,8 +1953,8 @@ public boolean print (GC gc) {
 	return false;
 }
 
-void printWidget (int /*long*/ hwnd, int /*long*/ hDC) {
-	OS.PrintWindow (hwnd, hDC, 0);
+void printWidget (int /*long*/ hwnd, GC gc) {
+	OS.PrintWindow (hwnd, gc.handle, 0);
 }
 
 /**

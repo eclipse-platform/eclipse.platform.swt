@@ -760,7 +760,7 @@ boolean mnemonicMatch (char key) {
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
-void printWidget (int /*long*/ hwnd, int /*long*/ hDC) {
+void printWidget (int /*long*/ hwnd, GC gc) {
 	/*
 	* Bug in Windows.  For some reason, PrintWindow() fails
 	* when it is called on a push button.  The fix is to
@@ -768,6 +768,7 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hDC) {
 	* that WM_PRINT cannot be used all the time because it
 	* fails for browser controls when the browser has focus.
 	*/
+	int /*long*/ hDC = gc.handle;
 	if (!OS.PrintWindow (hwnd, hDC, 0)) {
 		int flags = OS.PRF_CLIENT | OS.PRF_NONCLIENT | OS.PRF_ERASEBKGND | OS.PRF_CHILDREN;
 		OS.SendMessage (hwnd, OS.WM_PRINT, hDC, flags);
