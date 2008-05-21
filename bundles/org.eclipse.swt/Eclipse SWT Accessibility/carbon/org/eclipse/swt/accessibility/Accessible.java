@@ -63,6 +63,7 @@ public class Accessible {
 		OS.kAXSelectedTextRangeAttribute,
 		OS.kAXStringForRangeParameterizedAttribute,
 		OS.kAXInsertionPointLineNumberAttribute,
+		OS.kAXRangeForLineParameterizedAttribute,
 	};
 
 	Vector accessibleListeners = new Vector();
@@ -407,6 +408,8 @@ public class Accessible {
 			if (attributeName.equals(OS.kAXSelectedTextAttribute)) return getSelectedTextAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXSelectedTextRangeAttribute)) return getSelectedTextRangeAttribute(nextHandler, theEvent, userData);
 			if (attributeName.equals(OS.kAXStringForRangeParameterizedAttribute)) return getStringForRangeAttribute(nextHandler, theEvent, userData);
+			if (attributeName.equals(OS.kAXInsertionPointLineNumberAttribute)) return getInsertionPointLineNumberAttribute(nextHandler, theEvent, userData);
+			if (attributeName.equals(OS.kAXRangeForLineParameterizedAttribute)) return getRangeForLineParameterizedAttribute(nextHandler, theEvent, userData);
 			return getAttribute(nextHandler, theEvent, userData);
 		}
 		return userData;
@@ -837,6 +840,30 @@ public class Accessible {
 		return code;
 	}
 	
+	int getInsertionPointLineNumberAttribute (int nextHandler, int theEvent, int userData) {
+		int code = userData;
+		AccessibleControlEvent controlEvent = new AccessibleControlEvent(this);
+		controlEvent.childID = getChildIDFromEvent(theEvent);
+		controlEvent.result = null;
+		for (int i = 0; i < accessibleControlListeners.size(); i++) {
+			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			listener.getValue(controlEvent);
+		}
+		AccessibleTextEvent textEvent = new AccessibleTextEvent(this);
+		textEvent.childID = getChildIDFromEvent(theEvent);
+		textEvent.offset = -1;
+		for (int i = 0; i < accessibleTextListeners.size(); i++) {
+			AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+			listener.getCaretOffset(textEvent);
+		}
+		if (controlEvent.result != null && textEvent.offset != -1) {
+			int lineNumber = lineNumberForOffset (controlEvent.result, textEvent.offset);
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {lineNumber});
+			code = OS.noErr;
+		}
+		return code;
+	}
+	
 	int getNumberOfCharactersAttribute (int nextHandler, int theEvent, int userData) {
 		int code = userData;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -850,6 +877,31 @@ public class Accessible {
 		if (appValue != null) {
 			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeSInt32, 4, new int [] {appValue.length()});
 			code = OS.noErr;
+		}
+		return code;
+	}
+	
+	int getRangeForLineParameterizedAttribute (int nextHandler, int theEvent, int userData) {
+		int code = userData;
+		int lineNumber [] = new int [1];
+		int status = OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeParameter, OS.typeSInt32, null, 4, null, lineNumber);
+		if (status == OS.noErr) {
+			AccessibleControlEvent event = new AccessibleControlEvent(this);
+			event.childID = getChildIDFromEvent(theEvent);
+			event.result = null;
+			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				listener.getValue(event);
+			}
+			if (event.result != null) {
+				CFRange range = rangeForLineNumber (lineNumber [0], event.result);
+				if (range.location != -1) {
+					int valueRef = OS.AXValueCreate(OS.kAXValueCFRangeType, range);
+					OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFTypeRef, 4, new int [] {valueRef});
+					OS.CFRelease(valueRef);
+					code = OS.noErr;
+				}
+			}
 		}
 		return code;
 	}
@@ -938,6 +990,49 @@ public class Accessible {
 		return code;
 	}
 	
+	int lineNumberForOffset (String text, int offset) {
+		int lineNumber = 1;
+		int length = text.length();
+		for (int i = 0; i < offset; i++) {
+			switch (text.charAt (i)) {
+				case '\r': 
+					if (i + 1 < length) {
+						if (text.charAt (i + 1) == '\n') ++i;
+					}
+					// FALL THROUGH
+				case '\n':
+					lineNumber++;
+			}
+		}
+		return lineNumber;
+	}
+
+	CFRange rangeForLineNumber (int lineNumber, String text) {
+		CFRange range = new CFRange();
+		range.location = -1;
+		int line = 1;
+		int count = 0;
+		int length = text.length ();
+		for (int i = 0; i < length; i++) {
+			if (line == lineNumber) {
+				if (count == 0) {
+					range.location = i;
+				}
+				count++;
+			}
+			if (line > lineNumber) break;
+			switch (text.charAt (i)) {
+				case '\r': 
+					if (i + 1 < length && text.charAt (i + 1) == '\n') i++;
+					// FALL THROUGH
+				case '\n':
+					line++;
+			}
+		}
+		range.length = count;
+		return range;
+	}
+
 	/**
 	 * Removes the listener from the collection of listeners who will
 	 * be notified when an accessible client asks for certain strings,
@@ -1188,7 +1283,7 @@ public class Accessible {
 			case ACC.ROLE_CHECKBUTTON: return OS.kAXCheckBoxRole;
 			case ACC.ROLE_RADIOBUTTON: return OS.kAXRadioButtonRole;
 			case ACC.ROLE_COMBOBOX: return OS.kAXComboBoxRole;
-			case ACC.ROLE_TEXT: return OS.kAXTextFieldRole;
+			case ACC.ROLE_TEXT: return (control.getStyle () & SWT.MULTI) != 0 ? OS.kAXTextAreaRole : OS.kAXTextFieldRole;
 			case ACC.ROLE_TOOLBAR: return OS.kAXToolbarRole;
 			case ACC.ROLE_LIST: return OS.kAXOutlineRole;
 			case ACC.ROLE_LISTITEM: return OS.kAXStaticTextRole;
