@@ -5706,7 +5706,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 			int count = getSelection (hItem, tvItem, items, 0, 10, false, true);
-			RECT rect = items [0].getBounds (0, true, false, false);
+			RECT rect = items [0].getBounds (0, true, true, false);
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				int width = DRAG_IMAGE_SIZE;
 				rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
@@ -5721,7 +5721,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			for (int i = 1; i < count; i++) {
 				if (rect.bottom - rect.top > DRAG_IMAGE_SIZE) break;
 				if (rect.bottom > clientRect.bottom) break;
-				RECT itemRect = items[i].getBounds (0, true, false, false);
+				RECT itemRect = items[i].getBounds (0, true, true, false);
 				if ((style & SWT.FULL_SELECTION) != 0) {
 					itemRect.left = rect.left;
 					itemRect.right = rect.right;
