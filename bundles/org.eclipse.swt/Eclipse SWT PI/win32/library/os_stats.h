@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -539,6 +539,7 @@ typedef enum {
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVDISPINFO_2I_FUNC,
 	MoveMemory__ILorg_eclipse_swt_internal_win32_OPENFILENAME_2I_FUNC,
 	MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+	MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
 	MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I_FUNC,
 	MoveMemory__ILorg_eclipse_swt_internal_win32_UDACCEL_2I_FUNC,
 	MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I_FUNC,
@@ -591,6 +592,7 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II_FUNC,
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2II_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2II_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II_FUNC,

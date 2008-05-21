@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 937;
-int OS_nativeFunctionCallCount[937];
+int OS_nativeFunctionCount = 939;
+int OS_nativeFunctionCallCount[939];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -531,6 +531,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVDISPINFO_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_OPENFILENAME_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_UDACCEL_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I",
@@ -583,6 +584,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II",

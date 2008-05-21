@@ -96,6 +96,7 @@ public class Tree extends Composite {
 	static final int HEADER_EXTRA = 3;
 	static final int INCREMENT = 5;
 	static final int EXPLORER_EXTRA = 2;
+	static final int DRAG_IMAGE_SIZE = 301;
 	static final boolean EXPLORER_THEME = true;
 	static final int /*long*/ TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
@@ -5687,8 +5688,6 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
 	if (msg == Display.DI_GETDRAGIMAGE) {
-		//TEMPORARY CODE
-		if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) return 0;
 		/*
 		* When there is more than one item selected, DI_GETDRAGIMAGE
 		* returns the item under the cursor.  This happens because
@@ -5696,8 +5695,83 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		* is to disable DI_GETDRAGIMAGE when more than one item is
 		* selected.
 		*/
-		if ((style & SWT.MULTI) != 0) {
-			if (getSelectionCount () != 1) return 0;
+		if (getSelectionCount () != 1 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			POINT mousePos = new POINT ();
+			OS.POINTSTOPOINT (mousePos, OS.GetMessagePos ());
+			OS.MapWindowPoints (0, handle, mousePos, 1);
+			RECT clientRect = new RECT ();
+			OS.GetClientRect(handle, clientRect);
+			int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+			TreeItem [] items = new TreeItem [10];
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
+			int count = getSelection (hItem, tvItem, items, 0, 10, false, true);
+			RECT rect = items [0].getBounds (0, true, false, false);
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				int width = DRAG_IMAGE_SIZE;
+				rect.left = Math.max (clientRect.left, mousePos.x - width / 2);
+				if (clientRect.right > rect.left + width) {
+					rect.right = rect.left + width;
+				} else {
+					rect.right = clientRect.right;
+					rect.left = Math.max (clientRect.left, rect.right - width);
+				}
+			}
+			int /*long*/ hRgn = OS.CreateRectRgn (rect.left, rect.top, rect.right, rect.bottom);
+			for (int i = 1; i < count; i++) {
+				if (rect.bottom - rect.top > DRAG_IMAGE_SIZE) break;
+				if (rect.bottom > clientRect.bottom) break;
+				RECT itemRect = items[i].getBounds (0, true, false, false);
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					itemRect.left = rect.left;
+					itemRect.right = rect.right;
+				}
+				int /*long*/ rectRgn = OS.CreateRectRgn (itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
+				OS.CombineRgn (hRgn, hRgn, rectRgn, OS.RGN_OR);
+				OS.DeleteObject (rectRgn);
+				rect.bottom = itemRect.bottom;
+				
+			}
+			OS.GetRgnBox (hRgn, rect);
+			
+			/* Create resources */
+			int /*long*/ hdc = OS.GetDC (handle);
+			int /*long*/ memHdc = OS.CreateCompatibleDC (hdc);
+			BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
+			bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+			bmiHeader.biWidth = rect.right - rect.left;
+			bmiHeader.biHeight = -(rect.bottom - rect.top);
+			bmiHeader.biPlanes = 1;
+			bmiHeader.biBitCount = 32;
+			bmiHeader.biCompression = OS.BI_RGB;
+			byte []	bmi = new byte [BITMAPINFOHEADER.sizeof];
+			OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+			int /*long*/ [] pBits = new int /*long*/ [1];
+			int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+			if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+			int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
+			POINT pt = new POINT ();
+			OS.OffsetRgn (hRgn, -rect.left, -rect.top);
+			OS.SelectClipRgn (memHdc, hRgn);
+			OS.SetWindowOrgEx (memHdc, rect.left, rect.top, pt);
+			OS.PrintWindow (handle, memHdc, 0);
+			OS.SetWindowOrgEx (memHdc, pt.x, pt.y, null);
+			OS.SelectObject (memHdc, oldMemBitmap);
+			OS.DeleteDC (memHdc);
+			OS.ReleaseDC (0, hdc);
+			OS.DeleteObject (hRgn);
+
+			SHDRAGIMAGE shdi = new SHDRAGIMAGE ();
+			shdi.hbmpDragImage = memDib;
+			shdi.sizeDragImage.cx = bmiHeader.biWidth;
+			shdi.sizeDragImage.cy = -bmiHeader.biHeight;
+			shdi.ptOffset.x = mousePos.x - rect.left;
+			shdi.ptOffset.y = mousePos.y - rect.top;
+			if ((style & SWT.MIRRORED) != 0) {
+				shdi.ptOffset.x = shdi.sizeDragImage.cx - shdi.ptOffset.x; 
+			}
+			OS.MoveMemory (lParam, shdi, SHDRAGIMAGE.sizeof);
+			return 1;
 		}
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);

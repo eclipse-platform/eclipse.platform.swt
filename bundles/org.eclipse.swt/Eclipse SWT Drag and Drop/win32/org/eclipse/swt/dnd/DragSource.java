@@ -311,10 +311,10 @@ private void drag(Event dragEvent) {
 		 * area and use it during the drag to prevent the image from being inverted.
 		 * On XP if the shell is RTL, the image is not displayed.
 		 */
-		int offset = 0;
+		int offset = event.x - dragEvent.x;
 		hwndDrag = topControl.handle;
 		if ((topControl.getStyle() & SWT.RIGHT_TO_LEFT) != 0) {
-			offset = image.getBounds().width;
+			offset = image.getBounds().width - offset;
 			RECT rect = new RECT ();
 			OS.GetClientRect (topControl.handle, rect);
 			hwndDrag = OS.CreateWindowEx (
@@ -330,7 +330,7 @@ private void drag(Event dragEvent) {
 				null);
 			OS.ShowWindow (hwndDrag, OS.SW_SHOW);
 		}
-		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, offset, 0);
+		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, offset, event.y - dragEvent.y);
         /*
         * Feature in Windows. When ImageList_DragEnter() is called,
         * it takes a snapshot of the screen  If a drag is started

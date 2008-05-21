@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8404,6 +8404,19 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	SHDRAGIMAGE _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC);
+	if (arg1) if ((lparg1 = getSHDRAGIMAGEFields(env, arg1, &_arg1)) == NULL) goto fail;
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -9261,6 +9274,20 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SCR
 fail:
 	if (arg0 && lparg0) setSCRIPT_PROPERTIESFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	SHDRAGIMAGE _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setSHDRAGIMAGEFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II_FUNC);
 }
 #endif
 

@@ -3733,6 +3733,8 @@ public static final native void MoveMemory (NMTTCUSTOMDRAW Destination, int /*lo
 public static final native void MoveMemory (NMTTDISPINFOW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTTDISPINFOA Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (RECT Destination, int /*long*/[] Source, int Length);
+public static final native void MoveMemory (SHDRAGIMAGE Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (int /*long*/ Destination, SHDRAGIMAGE Source, int Length);
 public static final native void MoveMemory (TEXTMETRICW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (TEXTMETRICA Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (TVITEM Destination, int /*long*/ Source, int Length);
