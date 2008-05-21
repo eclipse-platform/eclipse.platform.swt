@@ -3411,15 +3411,13 @@ public void setTopItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	showItem (item, false);
-	int columnId = (style & SWT.CHECK) != 0 ? CHECK_COLUMN_ID : columnCount == 0 ? column_id : columns [0].id;
-	OS.RevealDataBrowserItem (handle, item.id, columnId, (byte) OS.kDataBrowserRevealWithoutSelecting);
-	Rect rect = new Rect ();
-	if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-		int border = getBorderWidth ();
-		int [] top = new int [1], left = new int [1];
-		OS.GetDataBrowserScrollPosition (handle, top, left);
-		OS.SetDataBrowserScrollPosition (handle, Math.max (0, top [0] + rect.top - border - getHeaderHeight ()), left [0]);
-	}
+	int itemHeight = getItemHeight ();
+    int [] top = new int [1], left = new int [1];
+    OS.GetDataBrowserScrollPosition (handle, top, left);
+    int [] index = new int [1];
+    OS.GetDataBrowserTableViewItemRow (handle, item.id, index);
+    top [0] = Math.max (0, Math.min (itemHeight * visibleCount + getHeaderHeight () - getClientArea ().height, index [0] * itemHeight));
+    OS.SetDataBrowserScrollPosition (handle, top [0], item.parentItem != null ? left [0] : 0);
 }
 
 /**
