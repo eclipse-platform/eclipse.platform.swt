@@ -6159,6 +6159,9 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		dragStarted = gestureCompleted = false;
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
 		int /*long*/ code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if (OS.GetFocus () != handle) OS.SetFocus (handle);
+		}
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
 		int /*long*/ hNewSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hOldSelection != hNewSelection) hAnchor = hNewSelection;
@@ -6277,6 +6280,9 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				return LRESULT.ZERO;
 			}
 			int /*long*/ code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if (OS.GetFocus () != handle) OS.SetFocus (handle);
+			}
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			}
@@ -6350,6 +6356,9 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int /*long*/ code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (OS.GetFocus () != handle) OS.SetFocus (handle);
+	}
 	int /*long*/ hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if (fakeSelection) {
 		if (hOldItem == 0 || (hNewItem == hOldItem && lpht.hItem != hOldItem)) {
@@ -6573,7 +6582,7 @@ LRESULT WM_RBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	* This code is intentionally commented.
 	*/
 //	if (OS.GetCapture () != handle) OS.SetCapture (handle);
-	setFocus ();
+	if (OS.GetFocus () != handle) OS.SetFocus (handle);
 	
 	/*
 	* Feature in Windows.  When the user selects a tree item
