@@ -81,7 +81,11 @@ public class TableDragSourceEffect extends DragSourceEffect {
 			SHDRAGIMAGE shdi = new SHDRAGIMAGE();
 			int DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
 			if (OS.SendMessage (control.handle, DI_GETDRAGIMAGE, 0, shdi) != 0) {
-				event.x += shdi.ptOffset.x;
+				if ((control.getStyle() & SWT.MIRRORED) != 0) {
+					event.x += shdi.sizeDragImage.cx - shdi.ptOffset.x;
+				} else {
+					event.x += shdi.ptOffset.x;
+				}
 				event.y += shdi.ptOffset.y;
 				int /*long*/ hImage = shdi.hbmpDragImage;
 				if (hImage != 0) {
@@ -118,20 +122,23 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				 	byte[] srcData = new byte [sizeInBytes];
 					OS.MoveMemory (srcData, dibBM.bmBits, sizeInBytes);
 
-					byte[] alphaData = new byte[srcWidth * srcHeight];
-					int spinc = dibBM.bmWidthBytes - srcWidth * 4;
-					int ap = 0, sp = 3;
-					for (int y = 0; y < srcHeight; ++y) {
-						for (int x = 0; x < srcWidth; ++x) {
-							alphaData [ap++] = srcData [sp];
-							sp += 4;
-						}
-						sp += spinc;
-					}
 					PaletteData palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 					ImageData data = new ImageData(srcWidth, srcHeight, bm.bmBitsPixel, palette, bm.bmWidthBytes, srcData);
-					data.alphaData = alphaData;
-					data.transparentPixel = shdi.crColorKey;
+					if (shdi.crColorKey == -1) {
+						byte[] alphaData = new byte[srcWidth * srcHeight];
+						int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+						int ap = 0, sp = 3;
+						for (int y = 0; y < srcHeight; ++y) {
+							for (int x = 0; x < srcWidth; ++x) {
+								alphaData [ap++] = srcData [sp];
+								sp += 4;
+							}
+							sp += spinc;
+						}
+						data.alphaData = alphaData;
+					} else {
+						data.transparentPixel = shdi.crColorKey << 8;
+					}
 					dragSourceImage = new Image(control.getDisplay(), data);
 					OS.SelectObject (memHdc, oldMemBitmap);
 					OS.DeleteDC (memHdc);

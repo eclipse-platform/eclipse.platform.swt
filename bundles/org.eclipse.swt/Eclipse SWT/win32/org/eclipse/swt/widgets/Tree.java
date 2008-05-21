@@ -5695,7 +5695,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		* is to disable DI_GETDRAGIMAGE when more than one item is
 		* selected.
 		*/
-		if (getSelectionCount () != 1 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+		if ((style & SWT.MULTI) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 			POINT mousePos = new POINT ();
 			OS.POINTSTOPOINT (mousePos, OS.GetMessagePos ());
 			OS.MapWindowPoints (0, handle, mousePos, 1);
