@@ -1381,6 +1381,9 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 				OS.CFRelease(stringRef [0]);
 				code = OS.noErr;
 			}
+		} else if (OS.VERSION < 0x1050 && attributeName.equals (OS.kAXFocusedAttribute)) {
+			OS.SetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeBoolean, 4, new boolean [] {hasFocus ()});
+			code = OS.noErr;
 		} else if (attributeName.equals (OS.kAXTitleAttribute)) {
 			/*
 			* Feature of the Macintosh.  For some reason, AXTextFields return their text contents
