@@ -1424,96 +1424,100 @@ void drawBitmapMask(Image srcImage, int /*long*/ srcColor, int /*long*/ srcMask,
 void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
  		
 	/* Find the RGB values for the transparent pixel. */
-	int transBlue = 0, transGreen = 0, transRed = 0;
 	boolean isDib = bm.bmBits != 0;
 	int /*long*/ hBitmap = srcImage.handle;
 	int /*long*/ srcHdc = OS.CreateCompatibleDC(handle);
 	int /*long*/ oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
 	byte[] originalColors = null;
-	if (bm.bmBitsPixel <= 8) {
-		if (isDib) {
-			/* Palette-based DIBSECTION */
-			if (OS.IsWinCE) {
-				byte[] pBits = new byte[1];
-				OS.MoveMemory(pBits, bm.bmBits, 1);
-				byte oldValue = pBits[0];			
-				int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
-				pBits[0] = (byte)((srcImage.transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
-				OS.MoveMemory(bm.bmBits, pBits, 1);
-				int color = OS.GetPixel(srcHdc, 0, 0);
-          		pBits[0] = oldValue;
-           		OS.MoveMemory(bm.bmBits, pBits, 1);				
-				transBlue = (color & 0xFF0000) >> 16;
-				transGreen = (color & 0xFF00) >> 8;
-				transRed = color & 0xFF;				
-			} else {
-				int maxColors = 1 << bm.bmBitsPixel;
-				byte[] oldColors = new byte[maxColors * 4];
-				OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
-				int offset = srcImage.transparentPixel * 4;				
-				boolean fixPalette = false;
-				for (int i = 0; i < oldColors.length; i += 4) {
-					if (i != offset) {
-						if (oldColors[offset] == oldColors[i] && oldColors[offset+1] == oldColors[i+1] && oldColors[offset+2] == oldColors[i+2]) {
-							fixPalette = true;
-							break;
+	int transparentColor = srcImage.transparentColor;
+	if (transparentColor == -1) {
+		int transBlue = 0, transGreen = 0, transRed = 0;		
+		boolean fixPalette = false;
+		if (bm.bmBitsPixel <= 8) {
+			if (isDib) {
+				/* Palette-based DIBSECTION */
+				if (OS.IsWinCE) {
+					byte[] pBits = new byte[1];
+					OS.MoveMemory(pBits, bm.bmBits, 1);
+					byte oldValue = pBits[0];			
+					int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
+					pBits[0] = (byte)((srcImage.transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
+					OS.MoveMemory(bm.bmBits, pBits, 1);
+					int color = OS.GetPixel(srcHdc, 0, 0);
+	          		pBits[0] = oldValue;
+	           		OS.MoveMemory(bm.bmBits, pBits, 1);				
+					transBlue = (color & 0xFF0000) >> 16;
+					transGreen = (color & 0xFF00) >> 8;
+					transRed = color & 0xFF;				
+				} else {
+					int maxColors = 1 << bm.bmBitsPixel;
+					byte[] oldColors = new byte[maxColors * 4];
+					OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
+					int offset = srcImage.transparentPixel * 4;		
+					for (int i = 0; i < oldColors.length; i += 4) {
+						if (i != offset) {
+							if (oldColors[offset] == oldColors[i] && oldColors[offset+1] == oldColors[i+1] && oldColors[offset+2] == oldColors[i+2]) {
+								fixPalette = true;
+								break;
+							}
 						}
 					}
+					if (fixPalette) {
+						byte[] newColors = new byte[oldColors.length];
+						transRed = transGreen = transBlue = 0xff;
+						newColors[offset] = (byte)transBlue;
+						newColors[offset+1] = (byte)transGreen;
+						newColors[offset+2] = (byte)transRed;
+						OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
+						originalColors = oldColors;
+					} else {
+						transBlue = oldColors[offset] & 0xFF;
+						transGreen = oldColors[offset+1] & 0xFF;
+						transRed = oldColors[offset+2] & 0xFF;
+					}
 				}
-				if (fixPalette) {
-					byte[] newColors = new byte[oldColors.length];
-					transRed = transGreen = transBlue = 0xff;
-					newColors[offset] = (byte)transBlue;
-					newColors[offset+1] = (byte)transGreen;
-					newColors[offset+2] = (byte)transRed;
-					OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
-					originalColors = oldColors;
-				} else {
-					transBlue = oldColors[offset] & 0xFF;
-					transGreen = oldColors[offset+1] & 0xFF;
-					transRed = oldColors[offset+2] & 0xFF;
-				}
+			} else {
+				/* Palette-based bitmap */
+				int numColors = 1 << bm.bmBitsPixel;
+				/* Set the few fields necessary to get the RGB data out */
+				BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+				bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+				bmiHeader.biPlanes = bm.bmPlanes;
+				bmiHeader.biBitCount = bm.bmBitsPixel;
+				byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
+				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+				OS.GetDIBits(srcHdc, srcImage.handle, 0, 0, 0, bmi, OS.DIB_RGB_COLORS);
+				int offset = BITMAPINFOHEADER.sizeof + 4 * srcImage.transparentPixel;
+				transRed = bmi[offset + 2] & 0xFF;
+				transGreen = bmi[offset + 1] & 0xFF;
+				transBlue = bmi[offset] & 0xFF;
 			}
 		} else {
-			/* Palette-based bitmap */
-			int numColors = 1 << bm.bmBitsPixel;
-			/* Set the few fields necessary to get the RGB data out */
-			BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
-			bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
-			bmiHeader.biPlanes = bm.bmPlanes;
-			bmiHeader.biBitCount = bm.bmBitsPixel;
-			byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
-			OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-			OS.GetDIBits(srcHdc, srcImage.handle, 0, 0, 0, bmi, OS.DIB_RGB_COLORS);
-			int offset = BITMAPINFOHEADER.sizeof + 4 * srcImage.transparentPixel;
-			transRed = bmi[offset + 2] & 0xFF;
-			transGreen = bmi[offset + 1] & 0xFF;
-			transBlue = bmi[offset] & 0xFF;
+			/* Direct color image */
+			int pixel = srcImage.transparentPixel;
+			switch (bm.bmBitsPixel) {
+				case 16:
+					transBlue = (pixel & 0x1F) << 3;
+					transGreen = (pixel & 0x3E0) >> 2;
+					transRed = (pixel & 0x7C00) >> 7;
+					break;
+				case 24:
+					transBlue = (pixel & 0xFF0000) >> 16;
+					transGreen = (pixel & 0xFF00) >> 8;
+					transRed = pixel & 0xFF;
+					break;
+				case 32:
+					transBlue = (pixel & 0xFF000000) >>> 24;
+					transGreen = (pixel & 0xFF0000) >> 16;
+					transRed = (pixel & 0xFF00) >> 8;
+					break;
+			}
 		}
-	} else {
-		/* Direct color image */
-		int pixel = srcImage.transparentPixel;
-		switch (bm.bmBitsPixel) {
-			case 16:
-				transBlue = (pixel & 0x1F) << 3;
-				transGreen = (pixel & 0x3E0) >> 2;
-				transRed = (pixel & 0x7C00) >> 7;
-				break;
-			case 24:
-				transBlue = (pixel & 0xFF0000) >> 16;
-				transGreen = (pixel & 0xFF00) >> 8;
-				transRed = pixel & 0xFF;
-				break;
-			case 32:
-				transBlue = (pixel & 0xFF000000) >>> 24;
-				transGreen = (pixel & 0xFF0000) >> 16;
-				transRed = (pixel & 0xFF00) >> 8;
-				break;
-		}
+		transparentColor = transBlue << 16 | transGreen << 8 | transRed;
+		if (!fixPalette) srcImage.transparentColor = transparentColor;
 	}
 
-	int transparentColor = transBlue << 16 | transGreen << 8 | transRed;
 	if (OS.IsWinCE) {
 		/*
 		* Note in WinCE. TransparentImage uses the first entry of a palette

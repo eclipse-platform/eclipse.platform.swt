@@ -94,7 +94,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * specifies the transparent pixel
 	 */
-	int transparentPixel = -1;
+	int transparentPixel = -1, transparentColor = -1;
 	
 	/**
 	 * the GC which is drawing on the image
@@ -2058,6 +2058,7 @@ public void setBackground(Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (transparentPixel == -1) return;
+	transparentColor = -1;
 
 	/* Get the HDC for the device */
 	int /*long*/ hDC = device.internal_new_GC(null);
