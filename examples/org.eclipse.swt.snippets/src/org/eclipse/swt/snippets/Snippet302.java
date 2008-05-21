@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Table example snippet: create a table with no scroll bars
+ * Tree example snippet: create a tree with no scroll bars
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -20,7 +20,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet301 {
+public class Snippet302 {
 	public static void main (String [] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display);
@@ -28,9 +28,9 @@ public class Snippet301 {
 		layout.marginHeight = 10;
 		layout.marginWidth = 10;
 		shell.setLayout(layout);
-		Table table = new Table (shell, SWT.BORDER | SWT.NO_SCROLL);
+		Tree tree = new Tree (shell, SWT.BORDER | SWT.NO_SCROLL);
 		for (int i=0; i<10; i++) {
-			TableItem item = new TableItem (table, SWT.NONE);
+			TreeItem item = new TreeItem (tree, SWT.NONE);
 			item.setText ("Item " + i);
 		}
 		shell.pack ();
