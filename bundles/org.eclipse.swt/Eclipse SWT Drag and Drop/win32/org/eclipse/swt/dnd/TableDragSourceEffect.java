@@ -139,6 +139,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 					OS.SelectObject (srcHdc, oldSrcBitmap);
 					OS.DeleteDC (srcHdc);
 					OS.ReleaseDC (0, hdc);
+					OS.DeleteObject (hImage);
 					return dragSourceImage;
 				}
 			}
