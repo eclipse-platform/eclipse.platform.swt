@@ -257,6 +257,10 @@ Rectangle [] getRectangles (int linkIndex) {
 	return rects;
 }
 
+int getClientWidth () {
+	return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (handle);
+}
+
 /**
  * Returns the receiver's text, which will be an empty
  * string if it has never been set.
@@ -282,6 +286,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		if (focusIndex != -1) setFocus ();
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
+		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 		int offset = layout.getOffset (x, y, null);
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
@@ -320,6 +325,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 	if (gdkEvent.button == 1) {
 		int x = (int) gdkEvent.x;
 		int y = (int) gdkEvent.y;
+		if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 		Rectangle [] rects = getRectangles (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
@@ -424,6 +430,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 	int x = (int) gdkEvent.x;
 	int y = (int) gdkEvent.y;	
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
 		selection.y = layout.getOffset (x, y, null);
