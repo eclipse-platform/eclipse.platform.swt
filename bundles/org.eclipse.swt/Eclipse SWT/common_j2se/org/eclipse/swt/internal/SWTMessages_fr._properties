@@ -1,0 +1,17 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Oui
+SWT_No=Non
+SWT_OK=OK
+SWT_Cancel=Annuler
+SWT_Ignore=Ignorer
+SWT_Selection=Selection
+SWT_Font=Police
+SWT_Color=Couleur
+SWT_Size=Taille
+SWT_Save=Sauver
+SWT_ColorDialog_Title=Couleurs
+SWT_Up=Haut
+SWT_Down=Bas
+SWT_Password=Mot de passe:
+SWT_Open=Ouvrir
+SWT_Close=Fermer
