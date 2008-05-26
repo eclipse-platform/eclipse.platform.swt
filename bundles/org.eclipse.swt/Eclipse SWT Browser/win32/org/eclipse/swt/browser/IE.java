@@ -1025,6 +1025,19 @@ void handleDOMEvent (OleEvent e) {
 		lastCharCode = pVarResult.getInt();
 		pVarResult.dispose();
 
+		/*
+		* WebSite.TranslateAccelerator() explicitly does not translate OS.VK_RETURN
+		* keys, so the PeekMessage check in the keydown handler always allows a
+		* KeyDown to be sent for this key.  However, keydown and keypress events are 
+		* both sometimes received for OS.VK_RETURN, depending on the page's focus
+		* control.  To handle this, do not send a KeyDown for OS.VK_RETURN here since
+		* one is always sent for it from the keydown handler. 
+		*/
+		if (lastCharCode == OS.VK_RETURN) {
+			event.dispose();
+			return;
+		}
+
 		Event keyEvent = new Event ();
 		keyEvent.widget = browser;
 		keyEvent.type = SWT.KeyDown;
