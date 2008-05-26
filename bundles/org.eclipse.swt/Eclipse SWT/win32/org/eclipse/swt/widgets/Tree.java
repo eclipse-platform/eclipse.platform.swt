@@ -5696,16 +5696,17 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		* selected.
 		*/
 		if ((style & SWT.MULTI) != 0 || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-			POINT mousePos = new POINT ();
-			OS.POINTSTOPOINT (mousePos, OS.GetMessagePos ());
-			OS.MapWindowPoints (0, handle, mousePos, 1);
-			RECT clientRect = new RECT ();
-			OS.GetClientRect(handle, clientRect);
 			int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 			TreeItem [] items = new TreeItem [10];
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 			int count = getSelection (hItem, tvItem, items, 0, 10, false, true);
+			if (count == 0) return 0;
+			POINT mousePos = new POINT ();
+			OS.POINTSTOPOINT (mousePos, OS.GetMessagePos ());
+			OS.MapWindowPoints (0, handle, mousePos, 1);
+			RECT clientRect = new RECT ();
+			OS.GetClientRect(handle, clientRect);
 			RECT rect = items [0].getBounds (0, true, true, false);
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				int width = DRAG_IMAGE_SIZE;
