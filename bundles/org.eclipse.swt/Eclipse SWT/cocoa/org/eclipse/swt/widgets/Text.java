@@ -722,7 +722,7 @@ int getPosition (int x, int y) {
 	return 0;
 }
 
-public int getPosition (Point point) {
+/*public*/ int getPosition (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return getPosition (point.x, point.y);

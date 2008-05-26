@@ -970,7 +970,7 @@ int getPosition (int x, int y) {
 	return OS.TXNHIPointToOffset (txnObject, iPoint, oOffset) == OS.noErr ? oOffset [0] : -1;
 }
 
-public int getPosition (Point point) {
+/*public*/ int getPosition (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return getPosition (point.x, point.y);
