@@ -5750,10 +5750,12 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 			if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 			int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
+			int colorKey = 0x0000FD;
 			POINT pt = new POINT ();
+			OS.SetWindowOrgEx (memHdc, rect.left, rect.top, pt);
+			OS.FillRect (memHdc, rect, findBrush (colorKey, OS.BS_SOLID));
 			OS.OffsetRgn (hRgn, -rect.left, -rect.top);
 			OS.SelectClipRgn (memHdc, hRgn);
-			OS.SetWindowOrgEx (memHdc, rect.left, rect.top, pt);
 			OS.PrintWindow (handle, memHdc, 0);
 			OS.SetWindowOrgEx (memHdc, pt.x, pt.y, null);
 			OS.SelectObject (memHdc, oldMemBitmap);
@@ -5763,6 +5765,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 
 			SHDRAGIMAGE shdi = new SHDRAGIMAGE ();
 			shdi.hbmpDragImage = memDib;
+			shdi.crColorKey = colorKey;
 			shdi.sizeDragImage.cx = bmiHeader.biWidth;
 			shdi.sizeDragImage.cy = -bmiHeader.biHeight;
 			shdi.ptOffset.x = mousePos.x - rect.left;
