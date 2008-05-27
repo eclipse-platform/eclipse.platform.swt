@@ -547,8 +547,8 @@ int handleCallback(int nextHandler, int theEvent) {
 					OS.CFRetain (handle);
 					OS.CFRetain (root);
 					int result = OS.CallNextEventHandler (nextHandler, theEvent);
-					OS.CFRelease (root);
 					OS.CFRelease (handle);
+					OS.CFRelease (root);
 					return result;
 				}
 			}
