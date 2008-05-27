@@ -32,7 +32,7 @@ public class nsIDocShell_1_9 extends nsISupports {
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 67;
 
 	public static final String NS_IDOCSHELL_IID_STR =
-		"4b00222a-8d0a-46d7-a1fe-43bd89d19324";
+		"7d1cf6b9-daa3-476d-8f9f-9eb2a971a95c";
 
 	public static final nsID NS_IDOCSHELL_IID =
 		new nsID(NS_IDOCSHELL_IID_STR);
