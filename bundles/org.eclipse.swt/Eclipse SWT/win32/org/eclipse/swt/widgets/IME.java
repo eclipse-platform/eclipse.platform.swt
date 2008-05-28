@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>(none)</dd>
+ * <dd>ImeComposition</dd>
  * </dl>
  * <p>
  * .
@@ -40,17 +40,17 @@ public class IME extends Widget {
 	int [] ranges;
 	TextStyle [] styles;
 	
-	static final int WM_MSIME_MOUSE = OS.RegisterWindowMessage (new TCHAR (0, "MSIMEMouseOperation", true));
+	static final int WM_MSIME_MOUSE = OS.RegisterWindowMessage (new TCHAR (0, "MSIMEMouseOperation", true)); //$NON-NLS-1$
 	
 	static final byte [] IID_ITfInputProcessorProfiles = new byte [16];
 	static final byte [] IID_ITfDisplayAttributeProvider = new byte [16];
 	static final byte [] CLSID_TF_InputProcessorProfiles = new byte [16];
 	static final byte [] GUID_TFCAT_TIP_KEYBOARD = new byte [16];
 	static {
-		OS.IIDFromString ("{1F02B6C5-7842-4EE6-8A0B-9A24183A95CA}\0".toCharArray (), IID_ITfInputProcessorProfiles);
-		OS.IIDFromString ("{fee47777-163c-4769-996a-6e9c50ad8f54}\0".toCharArray (), IID_ITfDisplayAttributeProvider);
-		OS.IIDFromString ("{33C53A50-F456-4884-B049-85FD643ECFED}\0".toCharArray (), CLSID_TF_InputProcessorProfiles);
-		OS.IIDFromString ("{34745C63-B2F0-4784-8B67-5E12C8701A31}\0".toCharArray (), GUID_TFCAT_TIP_KEYBOARD);
+		OS.IIDFromString ("{1F02B6C5-7842-4EE6-8A0B-9A24183A95CA}\0".toCharArray (), IID_ITfInputProcessorProfiles); //$NON-NLS-1$
+		OS.IIDFromString ("{fee47777-163c-4769-996a-6e9c50ad8f54}\0".toCharArray (), IID_ITfDisplayAttributeProvider); //$NON-NLS-1$
+		OS.IIDFromString ("{33C53A50-F456-4884-B049-85FD643ECFED}\0".toCharArray (), CLSID_TF_InputProcessorProfiles); //$NON-NLS-1$
+		OS.IIDFromString ("{34745C63-B2F0-4784-8B67-5E12C8701A31}\0".toCharArray (), GUID_TFCAT_TIP_KEYBOARD); //$NON-NLS-1$
 	}
 	
 	/* TextLayout has a copy of these constants */
@@ -75,7 +75,7 @@ public IME (Canvas parent, int style) {
 }
 
 void createWidget () {
-	text = "";
+	text = ""; //$NON-NLS-1$
 	startOffset = -1;
 	if (parent.getIME () == null) {
 		parent.setIME (this);
@@ -234,11 +234,11 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 				event.detail = SWT.COMPOSITION_CHANGED;
 				event.start = startOffset;
 				event.end = startOffset + text.length();
-				event.text = text = buffer != null ? buffer.toString () : "";
+				event.text = text = buffer != null ? buffer.toString () : ""; //$NON-NLS-1$
 				commitCount = text.length ();
 				sendEvent (SWT.ImeComposition, event);
 				String chars = text;
-				text = "";
+				text = ""; //$NON-NLS-1$
 				startOffset = -1;
 				commitCount = 0;
 				if (event.doit) {
@@ -353,7 +353,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 		event.detail = SWT.COMPOSITION_CHANGED;
 		event.start = startOffset;
 		event.end = end;
-		event.text = text = buffer != null ? buffer.toString () : "";
+		event.text = text = buffer != null ? buffer.toString () : ""; //$NON-NLS-1$
 		sendEvent (SWT.ImeComposition, event);
 		if (text.length() == 0) {
 			startOffset = -1;
