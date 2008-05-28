@@ -2698,10 +2698,7 @@ public void setWidth (int width) {
 }
 
 boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs, SCRIPT_PROPERTIES sp) {
-	boolean useCMAPcheck = !sp.fComplex && !sp.fPrivateUseArea; 
-	SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
-	fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
-	OS.ScriptGetFontProperties(hdc, run.psc, fp);
+	boolean useCMAPcheck = !sp.fComplex && !run.analysis.fNoGlyphIndex;
 	if (useCMAPcheck) {
 		short[] glyphs = new short[chars.length];
 		if (OS.ScriptGetCMap(hdc, run.psc, chars, chars.length, 0, glyphs) != OS.S_OK) {
@@ -2718,6 +2715,10 @@ boolean shape (int /*long*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 	if (useCMAPcheck) return true;
 	
 	if (hr != OS.USP_E_SCRIPT_NOT_IN_FONT) {
+		if (run.analysis.fNoGlyphIndex) return true;
+		SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
+		fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
+		OS.ScriptGetFontProperties(hdc, run.psc, fp);
 		short[] glyphs = new short[glyphCount[0]];
 		OS.MoveMemory(glyphs, run.glyphs, glyphs.length * 2);
 		int i;
@@ -2743,17 +2744,6 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
 	
-	
-	/*
-	* Feature in Uniscribe, the U+FEFF is not supported by
-	* some fonts in the system causing the remaining chars in
-	* the run not to draw, even though the font supports them.
-	* The fix is to replace U+FEFF by U+200B (ZERO-WIDTH SPACE).   
-	*/
-	for (int i = 0; i < chars.length; i++) {
-		if (chars[i] == '\uFEFF') chars[i] = '\u200B';
-	}
-
 	final int maxGlyphs = (chars.length * 3 / 2) + 16;
 	int /*long*/ hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
@@ -2770,14 +2760,42 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 	
 	if (!shapeSucceed) {
-		/* 
-		 * Shape failed.
-		 * Try to shape with fNoGlyphIndex when the run is in the 
-		 * Private Use Area. This allows for end-user-defined character (EUDC).
-		 */
-		if (sp.fPrivateUseArea) {
+		boolean useGDI = !sp.fComplex;
+		/*
+		* Bug in Windows.  There are non-complex scripts that are
+		* not supported by GDI. The fix is to detect these scripts
+		* by checking the Unicode ranges and use Uniscribe instead.
+		*   
+		* These are the scripts: 
+		* 	0x0530..0x058F is Armenian
+		*   0x10A0..0x10FF is Georgian
+		*   0xA000..0xA4CF is Yi
+		*/
+		char c = chars[0];
+		if (0x0530 <= c && c <= 0x058F || 0x10A0 <= c && c <= 0x10FF || 0xA000 <= c && c <= 0xA4CF) {
+			useGDI = false;
+		}
+		if (useGDI) {
+			int /*long*/ hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
+			LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+			OS.GetObject(hFont, LOGFONT.sizeof, logFont);
+			LOGFONT systemLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+			OS.GetObject(device.systemFont.handle, LOGFONT.sizeof, systemLogFont);
+			systemLogFont.lfHeight = logFont.lfHeight;
+			systemLogFont.lfWeight = logFont.lfWeight;
+			systemLogFont.lfItalic = logFont.lfItalic;
+			systemLogFont.lfWidth = logFont.lfWidth;
+			int /*long*/ newFont = OS.CreateFontIndirect (systemLogFont);
+			OS.SelectObject(hdc, newFont);
 			run.analysis.fNoGlyphIndex = true;
 			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
+			if (shapeSucceed) {
+				run.fallbackFont = newFont;
+			} else {
+				OS.SelectObject(hdc, hFont);
+				OS.DeleteObject(newFont);
+				run.analysis.fNoGlyphIndex = false;
+			}
 		}
 	}
 	
