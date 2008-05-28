@@ -280,9 +280,6 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 	OS.MoveMemory(msg, lpMsg, MSG.sizeof);
 	if (msg.message == OS.WM_KEYDOWN) {
 		switch ((int)/*64*/msg.wParam) {
-			case OS.VK_N:
-				if (OS.GetKeyState (OS.VK_CONTROL) < 0) result = COM.S_OK;
-				break;
 			case OS.VK_F5:
 				OleAutomation auto = new OleAutomation(this);
 				int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
@@ -311,6 +308,13 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				*/
 				frame.setData(CONSUME_KEY, "true"); //$NON-NLS-1$
 				break;
+			case OS.VK_N:
+				/* If the exact keypress is Ctrl+N, which opens a new external IE, then eat this key */
+				if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_MENU) >= 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
+					result = COM.S_OK;
+					break;
+				}
+				// FALL THROUGH
 			default:
 				OS.TranslateMessage(msg);
 				frame.setData(CONSUME_KEY, "true"); //$NON-NLS-1$
