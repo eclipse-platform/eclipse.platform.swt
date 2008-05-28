@@ -347,8 +347,8 @@ protected void checkWidget () {
 		* that the current thread is not the Display thread.
 		* 
 		* NOTE: Despite the fact that Thread.currentThread()
-		* is used in other places, the failure has only been
-		* observed here.
+		* is used in other places, the failure has not been
+		* observed in all places where it is called. 
 		*/
 		if (display.threadId != OS.GetCurrentThreadId ()) {
 			error (SWT.ERROR_THREAD_INVALID_ACCESS);
