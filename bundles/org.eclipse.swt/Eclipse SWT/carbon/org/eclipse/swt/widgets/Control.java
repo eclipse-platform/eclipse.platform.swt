@@ -2241,24 +2241,27 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	* send the event to the original focus widget and stop
 	* the chain of handlers.
 	*/
-	if (!isDisposed () && !hasFocus ()) {
+	if (!isDisposed ()) {
 		Control focusControl = display.getFocusControl ();
-		int focusHandle = focusHandle ();
-		int window = OS.GetControlOwner (focusHandle);
-		display.ignoreFocus = true;
-		OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
-		display.ignoreFocus = false;
-		result = OS.CallNextEventHandler (nextHandler, theEvent);
-		if (focusControl != null) {
-			focusHandle = focusControl.focusHandle ();
-			window = OS.GetControlOwner (focusHandle);
+		if (focusControl != this) {
+			int window = OS.GetControlOwner (handle), newWindow = 0;
+			if (focusControl != null) {
+				newWindow = OS.GetControlOwner (focusControl.handle);
+			}
 			display.ignoreFocus = true;
-			OS.SetKeyboardFocus (window, focusHandle, (short) focusControl.focusPart ());
+			if (window != newWindow) OS.SetUserFocusWindow (window);
+			OS.SetKeyboardFocus (window, focusHandle (), (short) focusPart ());
 			display.ignoreFocus = false;
-		} else {
+			result = OS.CallNextEventHandler (nextHandler, theEvent);
 			display.ignoreFocus = true;
-			OS.ClearKeyboardFocus (window);
+			if (window != newWindow && newWindow != 0) OS.SetUserFocusWindow (newWindow);
+			if (window == newWindow && focusControl != null) {
+				OS.SetKeyboardFocus (window, focusControl.focusHandle (), (short) focusControl.focusPart ());
+			} else {
+				OS.ClearKeyboardFocus (window);
+			}
 			display.ignoreFocus = false;
+			return OS.noErr;
 		}
 	}
 	return result;
