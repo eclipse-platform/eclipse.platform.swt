@@ -161,6 +161,10 @@ public void getElements(float[] elements) {
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
+public void identity() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
 /**
  * Modifies the receiver such that the matrix it represents becomes the
  * the mathematical inverse of the matrix it previously represented. 
@@ -270,6 +274,10 @@ public void scale(float scaleX, float scaleY) {
  * </ul>
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
+public void shear(float shearX, float shearY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 

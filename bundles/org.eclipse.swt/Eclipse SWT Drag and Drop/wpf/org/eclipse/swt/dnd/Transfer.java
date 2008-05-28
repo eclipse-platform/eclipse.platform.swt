@@ -176,4 +176,7 @@ static int getWPFFormat(int registeredType) {
 	return createDotNetString(registeredTypes[registeredType]);
 }
 
+protected boolean validate(Object object) {
+	return true;
+}
 }

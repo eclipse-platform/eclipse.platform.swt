@@ -1155,7 +1155,7 @@ int unformattedIntValue(int fieldName, String newText, boolean adjust, int max) 
 	return newValue;
 }
 
-public void updateControl() {
+void updateControl() {
 	if (text != null) {
 		String string = getFormattedString(style);
 		ignoreVerify = true;

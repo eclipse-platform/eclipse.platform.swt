@@ -1227,6 +1227,10 @@ Control [] getPath () {
 	}
 	return result;
 }
+public Region getRegion () {
+	checkWidget ();
+	return region;
+}
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
