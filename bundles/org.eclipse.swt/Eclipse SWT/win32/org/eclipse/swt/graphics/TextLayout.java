@@ -347,12 +347,14 @@ void computeRuns (GC gc) {
 				newRun.start = run.start + start;
 				newRun.length = run.length - start;
 				newRun.style = run.style;
-				newRun.analysis = run.analysis;
+				newRun.analysis = cloneScriptAnalysis(run.analysis);
 				run.free();
 				run.length = start;
 				OS.SelectObject(srcHdc, getItemFont(run));
+				run.analysis.fNoGlyphIndex = false;
 				shape (srcHdc, run);
 				OS.SelectObject(srcHdc, getItemFont(newRun));
+				newRun.analysis.fNoGlyphIndex = false;
 				shape (srcHdc, newRun);
 				StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
 				System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
@@ -470,6 +472,30 @@ void destroy () {
 		mLangFontLink2 = 0;
 	}
 	OS.OleUninitialize();
+}
+
+SCRIPT_ANALYSIS cloneScriptAnalysis (SCRIPT_ANALYSIS src) {
+	SCRIPT_ANALYSIS dst = new SCRIPT_ANALYSIS();
+	dst.eScript = src.eScript;
+	dst.fRTL = src.fRTL;
+	dst.fLayoutRTL = src.fLayoutRTL;
+	dst.fLinkBefore = src.fLinkBefore;
+	dst.fLinkAfter = src.fLinkAfter;
+	dst.fLogicalOrder = src.fLogicalOrder;
+	dst.fNoGlyphIndex = src.fNoGlyphIndex;
+	dst.s = new SCRIPT_STATE();
+	dst.s.uBidiLevel = src.s.uBidiLevel; 
+	dst.s.fOverrideDirection = src.s.fOverrideDirection;
+	dst.s.fInhibitSymSwap = src.s.fInhibitSymSwap;
+	dst.s.fCharShape = src.s.fCharShape;
+	dst.s.fDigitSubstitute = src.s.fDigitSubstitute;
+	dst.s.fInhibitLigate = src.s.fInhibitLigate;
+	dst.s.fDisplayZWG = src.s.fDisplayZWG;
+	dst.s.fArabicNumContext = src.s.fArabicNumContext;
+	dst.s.fGcpClusters = src.s.fGcpClusters;
+	dst.s.fReserved = src.s.fReserved;
+	dst.s.fEngineReserved = src.s.fEngineReserved;
+	return dst;
 }
 
 /**
