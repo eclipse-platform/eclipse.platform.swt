@@ -1536,7 +1536,9 @@ public void setVisible (boolean visible) {
 	 * If so then do not continue.
 	 */
 	if (isDisposed ()) return;
-	if (!visible) popup.setVisible(false);
+	// TEMPORARY CODE
+	if (popup == null || popup.isDisposed ()) return;
+	if (!visible) popup.setVisible (false);
 }
 /**
  * Sets the number of items that are visible in the drop
