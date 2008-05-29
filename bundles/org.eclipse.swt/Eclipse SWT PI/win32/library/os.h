@@ -61,6 +61,9 @@
 #define NO_COMBOBOXINFO
 #define NO_DOCINFO
 #define NO_DWM_BLURBEHIND
+#define NO_EMR
+#define NO_EMREXTCREATEFONTINDIRECTW
+#define NO_EXTLOGFONTW
 #define NO_EXTLOGPEN
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
@@ -89,6 +92,7 @@
 #define NO_OUTLINETEXTMETRIC
 #define NO_OUTLINETEXTMETRICA
 #define NO_OUTLINETEXTMETRICW
+#define NO_PANOSE
 #define NO_PRINTDLG
 #define NO_SCRIPT_ANALYSIS
 #define NO_SCRIPT_CONTROL
@@ -98,6 +102,7 @@
 #define NO_SCRIPT_FONTPROPERTIES
 #define NO_SCRIPT_PROPERTIES
 #define NO_SCRIPT_STATE
+#define NO_SCRIPT_STRING_ANALYSIS
 #define NO_SCROLLBARINFO
 #define NO_SHDRAGIMAGE
 #define NO_TF_DA_COLOR
@@ -168,6 +173,7 @@
 #define NO_ChooseColorA
 #define NO_ChooseFontA
 #define NO_ChooseFontW
+#define NO_CloseEnhMetaFile
 #define NO_CloseThemeData
 #define NO_CoCreateInstance
 #define NO_CoInternetIsFeatureEnabled
@@ -178,6 +184,8 @@
 #define NO_CreateActCtxW
 #define NO_CreateCursor
 #define NO_CreateDCA
+#define NO_CreateEnhMetaFileA
+#define NO_CreateEnhMetaFileW
 #define NO_CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2
 #define NO_CreateFontIndirectA__I
 #define NO_CreatePolygonRgn
@@ -189,6 +197,7 @@
 #define NO_DefMDIChildProcA
 #define NO_DefMDIChildProcW
 #define NO_DefWindowProcA
+#define NO_DeleteEnhMetaFile
 #define NO_DestroyCursor
 #define NO_DispatchMessageA
 #define NO_DPtoLP
@@ -213,6 +222,7 @@
 #define NO_EndPage
 #define NO_EndPath
 #define NO_EnumDisplayMonitors
+#define NO_EnumEnhMetaFile
 #define NO_EnumFontFamiliesA
 #define NO_EnumFontFamiliesExA
 #define NO_EnumFontFamiliesExW
@@ -353,6 +363,8 @@
 #define NO_MessageBoxA
 #define NO_MonitorFromWindow
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II
@@ -486,6 +498,7 @@
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I
 #define NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
+#define NO_SCRIPT_1STRING_1ANALYSIS_1sizeof
 #define NO_ScriptApplyDigitSubstitution
 #define NO_ScriptBreak
 #define NO_ScriptCacheGetHeight
@@ -501,6 +514,9 @@
 #define NO_ScriptPlace
 #define NO_ScriptRecordDigitSubstitution
 #define NO_ScriptShape
+#define NO_ScriptStringAnalyse
+#define NO_ScriptStringFree
+#define NO_ScriptStringOut
 #define NO_ScriptTextOut
 #define NO_ScriptXtoCP
 #define NO_StrokePath
