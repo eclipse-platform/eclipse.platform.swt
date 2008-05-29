@@ -889,7 +889,7 @@ abstract class Tab {
 		if (bounds.height > clientArea.height) {
 			dialog.setSize(bounds.width, clientArea.height - trim.height);
 		}
-		dialog.setLocation(bounds.x, 0);
+		dialog.setLocation(bounds.x, clientArea.y);
 		dialog.open ();
 		while (! dialog.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
