@@ -907,6 +907,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CloseClipboard)
 }
 #endif
 
+#ifndef NO_CloseEnhMetaFile
+JNIEXPORT jint JNICALL OS_NATIVE(CloseEnhMetaFile)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CloseEnhMetaFile_FUNC);
+	rc = (jint)CloseEnhMetaFile((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, CloseEnhMetaFile_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CloseHandle
 JNIEXPORT jboolean JNICALL OS_NATIVE(CloseHandle)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1441,6 +1453,50 @@ fail:
 }
 #endif
 
+#ifndef NO_CreateEnhMetaFileA
+JNIEXPORT jint JNICALL OS_NATIVE(CreateEnhMetaFileA)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2, jbyteArray arg3)
+{
+	jbyte *lparg1=NULL;
+	RECT _arg2, *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateEnhMetaFileA_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)CreateEnhMetaFileA((HDC)arg0, (LPCSTR)lparg1, lparg2, (LPCSTR)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CreateEnhMetaFileA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateEnhMetaFileW
+JNIEXPORT jint JNICALL OS_NATIVE(CreateEnhMetaFileW)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jobject arg2, jcharArray arg3)
+{
+	jchar *lparg1=NULL;
+	RECT _arg2, *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateEnhMetaFileW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)CreateEnhMetaFileW((HDC)arg0, (LPCWSTR)lparg1, lparg2, (LPCWSTR)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CreateEnhMetaFileW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateFontIndirectA__I
 JNIEXPORT jint JNICALL OS_NATIVE(CreateFontIndirectA__I)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1918,6 +1974,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(DeleteDC)
 	OS_NATIVE_ENTER(env, that, DeleteDC_FUNC);
 	rc = (jboolean)DeleteDC((HDC)arg0);
 	OS_NATIVE_EXIT(env, that, DeleteDC_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DeleteEnhMetaFile
+JNIEXPORT jboolean JNICALL OS_NATIVE(DeleteEnhMetaFile)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DeleteEnhMetaFile_FUNC);
+	rc = (jboolean)DeleteEnhMetaFile((HENHMETAFILE)arg0);
+	OS_NATIVE_EXIT(env, that, DeleteEnhMetaFile_FUNC);
 	return rc;
 }
 #endif
@@ -2522,6 +2590,42 @@ fail:
 }
 #endif
 
+#ifndef NO_EMREXTCREATEFONTINDIRECTW_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(EMREXTCREATEFONTINDIRECTW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, EMREXTCREATEFONTINDIRECTW_1sizeof_FUNC);
+	rc = (jint)EMREXTCREATEFONTINDIRECTW_sizeof();
+	OS_NATIVE_EXIT(env, that, EMREXTCREATEFONTINDIRECTW_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_EMR_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(EMR_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, EMR_1sizeof_FUNC);
+	rc = (jint)EMR_sizeof();
+	OS_NATIVE_EXIT(env, that, EMR_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_EXTLOGFONTW_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(EXTLOGFONTW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, EXTLOGFONTW_1sizeof_FUNC);
+	rc = (jint)EXTLOGFONTW_sizeof();
+	OS_NATIVE_EXIT(env, that, EXTLOGFONTW_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_EXTLOGPEN_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(EXTLOGPEN_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2702,6 +2806,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumDisplayMonitors)
 fail:
 	if (arg1 && lparg1) setRECTFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, EnumDisplayMonitors_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_EnumEnhMetaFile
+JNIEXPORT jboolean JNICALL OS_NATIVE(EnumEnhMetaFile)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	RECT _arg4, *lparg4=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, EnumEnhMetaFile_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jboolean)EnumEnhMetaFile((HDC)arg0, (HENHMETAFILE)arg1, (ENHMFENUMPROC)arg2, (LPVOID)arg3, lparg4);
+fail:
+	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, EnumEnhMetaFile_FUNC);
 	return rc;
 }
 #endif
@@ -8725,6 +8845,34 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	EMREXTCREATEFONTINDIRECTW _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setEMREXTCREATEFONTINDIRECTWFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	EMR _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setEMRFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -10245,6 +10393,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PAINTSTRUCT_1sizeof)
 }
 #endif
 
+#ifndef NO_PANOSE_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PANOSE_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PANOSE_1sizeof_FUNC);
+	rc = (jint)PANOSE_sizeof();
+	OS_NATIVE_EXIT(env, that, PANOSE_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_POINTSTOPOINT
 JNIEXPORT void JNICALL OS_NATIVE(POINTSTOPOINT)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
@@ -11213,6 +11373,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SCRIPT_1STATE_1sizeof)
 }
 #endif
 
+#ifndef NO_SCRIPT_1STRING_1ANALYSIS_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(SCRIPT_1STRING_1ANALYSIS_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SCRIPT_1STRING_1ANALYSIS_1sizeof_FUNC);
+	rc = (jint)SCRIPT_STRING_ANALYSIS_sizeof();
+	OS_NATIVE_EXIT(env, that, SCRIPT_1STRING_1ANALYSIS_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SCROLLBARINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(SCROLLBARINFO_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -11870,6 +12042,56 @@ fail:
 	if (arg5 && lparg5) setSCRIPT_ANALYSISFields(env, arg5, lparg5);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, ScriptShape_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ScriptStringAnalyse
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptStringAnalyse)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jobject arg7, jobject arg8, jint arg9, jint arg10, jint arg11, jint arg12)
+{
+	jchar *lparg1=NULL;
+	SCRIPT_CONTROL _arg7, *lparg7=NULL;
+	SCRIPT_STATE _arg8, *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptStringAnalyse_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getSCRIPT_CONTROLFields(env, arg7, &_arg7)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getSCRIPT_STATEFields(env, arg8, &_arg8)) == NULL) goto fail;
+	rc = (jint)ScriptStringAnalyse((HDC)arg0, (const void*)lparg1, arg2, arg3, arg4, arg5, arg6, lparg7, lparg8, (const int*)arg9, (SCRIPT_TABDEF*)arg10, (const BYTE*)arg11, (SCRIPT_STRING_ANALYSIS*)arg12);
+fail:
+	if (arg8 && lparg8) setSCRIPT_STATEFields(env, arg8, lparg8);
+	if (arg7 && lparg7) setSCRIPT_CONTROLFields(env, arg7, lparg7);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, ScriptStringAnalyse_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ScriptStringFree
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptStringFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptStringFree_FUNC);
+	rc = (jint)ScriptStringFree((SCRIPT_STRING_ANALYSIS*)arg0);
+	OS_NATIVE_EXIT(env, that, ScriptStringFree_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ScriptStringOut
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptStringOut)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jint arg6, jboolean arg7)
+{
+	RECT _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptStringOut_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jint)ScriptStringOut(*(SCRIPT_STRING_ANALYSIS*)arg0, arg1, arg2, arg3, lparg4, arg5, arg6, arg7);
+fail:
+	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, ScriptStringOut_FUNC);
 	return rc;
 }
 #endif

@@ -263,6 +263,42 @@ void setDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpSt
 #define DWM_BLURBEHIND_sizeof() 0
 #endif
 
+#ifndef NO_EMR
+void cacheEMRFields(JNIEnv *env, jobject lpObject);
+EMR *getEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct);
+void setEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct);
+#define EMR_sizeof() sizeof(EMR)
+#else
+#define cacheEMRFields(a,b)
+#define getEMRFields(a,b,c) NULL
+#define setEMRFields(a,b,c)
+#define EMR_sizeof() 0
+#endif
+
+#ifndef NO_EMREXTCREATEFONTINDIRECTW
+void cacheEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject);
+EMREXTCREATEFONTINDIRECTW *getEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject, EMREXTCREATEFONTINDIRECTW *lpStruct);
+void setEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject, EMREXTCREATEFONTINDIRECTW *lpStruct);
+#define EMREXTCREATEFONTINDIRECTW_sizeof() sizeof(EMREXTCREATEFONTINDIRECTW)
+#else
+#define cacheEMREXTCREATEFONTINDIRECTWFields(a,b)
+#define getEMREXTCREATEFONTINDIRECTWFields(a,b,c) NULL
+#define setEMREXTCREATEFONTINDIRECTWFields(a,b,c)
+#define EMREXTCREATEFONTINDIRECTW_sizeof() 0
+#endif
+
+#ifndef NO_EXTLOGFONTW
+void cacheEXTLOGFONTWFields(JNIEnv *env, jobject lpObject);
+EXTLOGFONTW *getEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct);
+void setEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct);
+#define EXTLOGFONTW_sizeof() sizeof(EXTLOGFONTW)
+#else
+#define cacheEXTLOGFONTWFields(a,b)
+#define getEXTLOGFONTWFields(a,b,c) NULL
+#define setEXTLOGFONTWFields(a,b,c)
+#define EXTLOGFONTW_sizeof() 0
+#endif
+
 #ifndef NO_EXTLOGPEN
 void cacheEXTLOGPENFields(JNIEnv *env, jobject lpObject);
 EXTLOGPEN *getEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct);
@@ -1137,6 +1173,18 @@ void setPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct);
 #define getPAINTSTRUCTFields(a,b,c) NULL
 #define setPAINTSTRUCTFields(a,b,c)
 #define PAINTSTRUCT_sizeof() 0
+#endif
+
+#ifndef NO_PANOSE
+void cachePANOSEFields(JNIEnv *env, jobject lpObject);
+PANOSE *getPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct);
+void setPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct);
+#define PANOSE_sizeof() sizeof(PANOSE)
+#else
+#define cachePANOSEFields(a,b)
+#define getPANOSEFields(a,b,c) NULL
+#define setPANOSEFields(a,b,c)
+#define PANOSE_sizeof() 0
 #endif
 
 #ifndef NO_POINT

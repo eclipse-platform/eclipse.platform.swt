@@ -1101,6 +1101,177 @@ void setDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpSt
 }
 #endif
 
+#ifndef NO_EMR
+typedef struct EMR_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iType, nSize;
+} EMR_FID_CACHE;
+
+EMR_FID_CACHE EMRFc;
+
+void cacheEMRFields(JNIEnv *env, jobject lpObject)
+{
+	if (EMRFc.cached) return;
+	EMRFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	EMRFc.iType = (*env)->GetFieldID(env, EMRFc.clazz, "iType", "I");
+	EMRFc.nSize = (*env)->GetFieldID(env, EMRFc.clazz, "nSize", "I");
+	EMRFc.cached = 1;
+}
+
+EMR *getEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct)
+{
+	if (!EMRFc.cached) cacheEMRFields(env, lpObject);
+	lpStruct->iType = (*env)->GetIntField(env, lpObject, EMRFc.iType);
+	lpStruct->nSize = (*env)->GetIntField(env, lpObject, EMRFc.nSize);
+	return lpStruct;
+}
+
+void setEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct)
+{
+	if (!EMRFc.cached) cacheEMRFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, EMRFc.iType, (jint)lpStruct->iType);
+	(*env)->SetIntField(env, lpObject, EMRFc.nSize, (jint)lpStruct->nSize);
+}
+#endif
+
+#ifndef NO_EMREXTCREATEFONTINDIRECTW
+typedef struct EMREXTCREATEFONTINDIRECTW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID emr, ihFont, elfw;
+} EMREXTCREATEFONTINDIRECTW_FID_CACHE;
+
+EMREXTCREATEFONTINDIRECTW_FID_CACHE EMREXTCREATEFONTINDIRECTWFc;
+
+void cacheEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject)
+{
+	if (EMREXTCREATEFONTINDIRECTWFc.cached) return;
+	EMREXTCREATEFONTINDIRECTWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	EMREXTCREATEFONTINDIRECTWFc.emr = (*env)->GetFieldID(env, EMREXTCREATEFONTINDIRECTWFc.clazz, "emr", "Lorg/eclipse/swt/internal/win32/EMR;");
+	EMREXTCREATEFONTINDIRECTWFc.ihFont = (*env)->GetFieldID(env, EMREXTCREATEFONTINDIRECTWFc.clazz, "ihFont", "I");
+	EMREXTCREATEFONTINDIRECTWFc.elfw = (*env)->GetFieldID(env, EMREXTCREATEFONTINDIRECTWFc.clazz, "elfw", "Lorg/eclipse/swt/internal/win32/EXTLOGFONTW;");
+	EMREXTCREATEFONTINDIRECTWFc.cached = 1;
+}
+
+EMREXTCREATEFONTINDIRECTW *getEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject, EMREXTCREATEFONTINDIRECTW *lpStruct)
+{
+	if (!EMREXTCREATEFONTINDIRECTWFc.cached) cacheEMREXTCREATEFONTINDIRECTWFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EMREXTCREATEFONTINDIRECTWFc.emr);
+	if (lpObject1 != NULL) getEMRFields(env, lpObject1, &lpStruct->emr);
+	}
+	lpStruct->ihFont = (*env)->GetIntField(env, lpObject, EMREXTCREATEFONTINDIRECTWFc.ihFont);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EMREXTCREATEFONTINDIRECTWFc.elfw);
+	if (lpObject1 != NULL) getEXTLOGFONTWFields(env, lpObject1, &lpStruct->elfw);
+	}
+	return lpStruct;
+}
+
+void setEMREXTCREATEFONTINDIRECTWFields(JNIEnv *env, jobject lpObject, EMREXTCREATEFONTINDIRECTW *lpStruct)
+{
+	if (!EMREXTCREATEFONTINDIRECTWFc.cached) cacheEMREXTCREATEFONTINDIRECTWFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EMREXTCREATEFONTINDIRECTWFc.emr);
+	if (lpObject1 != NULL) setEMRFields(env, lpObject1, &lpStruct->emr);
+	}
+	(*env)->SetIntField(env, lpObject, EMREXTCREATEFONTINDIRECTWFc.ihFont, (jint)lpStruct->ihFont);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EMREXTCREATEFONTINDIRECTWFc.elfw);
+	if (lpObject1 != NULL) setEXTLOGFONTWFields(env, lpObject1, &lpStruct->elfw);
+	}
+}
+#endif
+
+#ifndef NO_EXTLOGFONTW
+typedef struct EXTLOGFONTW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID elfLogFont, elfFullName, elfStyle, elfVersion, elfStyleSize, elfMatch, elfReserved, elfVendorId, elfCulture, elfPanose;
+} EXTLOGFONTW_FID_CACHE;
+
+EXTLOGFONTW_FID_CACHE EXTLOGFONTWFc;
+
+void cacheEXTLOGFONTWFields(JNIEnv *env, jobject lpObject)
+{
+	if (EXTLOGFONTWFc.cached) return;
+	EXTLOGFONTWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	EXTLOGFONTWFc.elfLogFont = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfLogFont", "Lorg/eclipse/swt/internal/win32/LOGFONTW;");
+	EXTLOGFONTWFc.elfFullName = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfFullName", "[C");
+	EXTLOGFONTWFc.elfStyle = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfStyle", "[C");
+	EXTLOGFONTWFc.elfVersion = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfVersion", "I");
+	EXTLOGFONTWFc.elfStyleSize = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfStyleSize", "I");
+	EXTLOGFONTWFc.elfMatch = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfMatch", "I");
+	EXTLOGFONTWFc.elfReserved = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfReserved", "I");
+	EXTLOGFONTWFc.elfVendorId = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfVendorId", "[B");
+	EXTLOGFONTWFc.elfCulture = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfCulture", "I");
+	EXTLOGFONTWFc.elfPanose = (*env)->GetFieldID(env, EXTLOGFONTWFc.clazz, "elfPanose", "Lorg/eclipse/swt/internal/win32/PANOSE;");
+	EXTLOGFONTWFc.cached = 1;
+}
+
+EXTLOGFONTW *getEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct)
+{
+	if (!EXTLOGFONTWFc.cached) cacheEXTLOGFONTWFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfLogFont);
+	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->elfLogFont);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfFullName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elfFullName) / 2, (jchar *)lpStruct->elfFullName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfStyle);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elfStyle) / 2, (jchar *)lpStruct->elfStyle);
+	}
+	lpStruct->elfVersion = (*env)->GetIntField(env, lpObject, EXTLOGFONTWFc.elfVersion);
+	lpStruct->elfStyleSize = (*env)->GetIntField(env, lpObject, EXTLOGFONTWFc.elfStyleSize);
+	lpStruct->elfMatch = (*env)->GetIntField(env, lpObject, EXTLOGFONTWFc.elfMatch);
+	lpStruct->elfReserved = (*env)->GetIntField(env, lpObject, EXTLOGFONTWFc.elfReserved);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfVendorId);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elfVendorId), (jbyte *)lpStruct->elfVendorId);
+	}
+	lpStruct->elfCulture = (*env)->GetIntField(env, lpObject, EXTLOGFONTWFc.elfCulture);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfPanose);
+	if (lpObject1 != NULL) getPANOSEFields(env, lpObject1, &lpStruct->elfPanose);
+	}
+	return lpStruct;
+}
+
+void setEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct)
+{
+	if (!EXTLOGFONTWFc.cached) cacheEXTLOGFONTWFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfLogFont);
+	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->elfLogFont);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfFullName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elfFullName) / 2, (jchar *)lpStruct->elfFullName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfStyle);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elfStyle) / 2, (jchar *)lpStruct->elfStyle);
+	}
+	(*env)->SetIntField(env, lpObject, EXTLOGFONTWFc.elfVersion, (jint)lpStruct->elfVersion);
+	(*env)->SetIntField(env, lpObject, EXTLOGFONTWFc.elfStyleSize, (jint)lpStruct->elfStyleSize);
+	(*env)->SetIntField(env, lpObject, EXTLOGFONTWFc.elfMatch, (jint)lpStruct->elfMatch);
+	(*env)->SetIntField(env, lpObject, EXTLOGFONTWFc.elfReserved, (jint)lpStruct->elfReserved);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfVendorId);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elfVendorId), (jbyte *)lpStruct->elfVendorId);
+	}
+	(*env)->SetIntField(env, lpObject, EXTLOGFONTWFc.elfCulture, (jint)lpStruct->elfCulture);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, EXTLOGFONTWFc.elfPanose);
+	if (lpObject1 != NULL) setPANOSEFields(env, lpObject1, &lpStruct->elfPanose);
+	}
+}
+#endif
+
 #ifndef NO_EXTLOGPEN
 typedef struct EXTLOGPEN_FID_CACHE {
 	int cached;
@@ -5434,6 +5605,64 @@ void setPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct)
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PAINTSTRUCTFc.rgbReserved);
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgbReserved), (jbyte *)lpStruct->rgbReserved);
 	}
+}
+#endif
+
+#ifndef NO_PANOSE
+typedef struct PANOSE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID bFamilyType, bSerifStyle, bWeight, bProportion, bContrast, bStrokeVariation, bArmStyle, bLetterform, bMidline, bXHeight;
+} PANOSE_FID_CACHE;
+
+PANOSE_FID_CACHE PANOSEFc;
+
+void cachePANOSEFields(JNIEnv *env, jobject lpObject)
+{
+	if (PANOSEFc.cached) return;
+	PANOSEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PANOSEFc.bFamilyType = (*env)->GetFieldID(env, PANOSEFc.clazz, "bFamilyType", "B");
+	PANOSEFc.bSerifStyle = (*env)->GetFieldID(env, PANOSEFc.clazz, "bSerifStyle", "B");
+	PANOSEFc.bWeight = (*env)->GetFieldID(env, PANOSEFc.clazz, "bWeight", "B");
+	PANOSEFc.bProportion = (*env)->GetFieldID(env, PANOSEFc.clazz, "bProportion", "B");
+	PANOSEFc.bContrast = (*env)->GetFieldID(env, PANOSEFc.clazz, "bContrast", "B");
+	PANOSEFc.bStrokeVariation = (*env)->GetFieldID(env, PANOSEFc.clazz, "bStrokeVariation", "B");
+	PANOSEFc.bArmStyle = (*env)->GetFieldID(env, PANOSEFc.clazz, "bArmStyle", "B");
+	PANOSEFc.bLetterform = (*env)->GetFieldID(env, PANOSEFc.clazz, "bLetterform", "B");
+	PANOSEFc.bMidline = (*env)->GetFieldID(env, PANOSEFc.clazz, "bMidline", "B");
+	PANOSEFc.bXHeight = (*env)->GetFieldID(env, PANOSEFc.clazz, "bXHeight", "B");
+	PANOSEFc.cached = 1;
+}
+
+PANOSE *getPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct)
+{
+	if (!PANOSEFc.cached) cachePANOSEFields(env, lpObject);
+	lpStruct->bFamilyType = (*env)->GetByteField(env, lpObject, PANOSEFc.bFamilyType);
+	lpStruct->bSerifStyle = (*env)->GetByteField(env, lpObject, PANOSEFc.bSerifStyle);
+	lpStruct->bWeight = (*env)->GetByteField(env, lpObject, PANOSEFc.bWeight);
+	lpStruct->bProportion = (*env)->GetByteField(env, lpObject, PANOSEFc.bProportion);
+	lpStruct->bContrast = (*env)->GetByteField(env, lpObject, PANOSEFc.bContrast);
+	lpStruct->bStrokeVariation = (*env)->GetByteField(env, lpObject, PANOSEFc.bStrokeVariation);
+	lpStruct->bArmStyle = (*env)->GetByteField(env, lpObject, PANOSEFc.bArmStyle);
+	lpStruct->bLetterform = (*env)->GetByteField(env, lpObject, PANOSEFc.bLetterform);
+	lpStruct->bMidline = (*env)->GetByteField(env, lpObject, PANOSEFc.bMidline);
+	lpStruct->bXHeight = (*env)->GetByteField(env, lpObject, PANOSEFc.bXHeight);
+	return lpStruct;
+}
+
+void setPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct)
+{
+	if (!PANOSEFc.cached) cachePANOSEFields(env, lpObject);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bFamilyType, (jbyte)lpStruct->bFamilyType);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bSerifStyle, (jbyte)lpStruct->bSerifStyle);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bWeight, (jbyte)lpStruct->bWeight);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bProportion, (jbyte)lpStruct->bProportion);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bContrast, (jbyte)lpStruct->bContrast);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bStrokeVariation, (jbyte)lpStruct->bStrokeVariation);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bArmStyle, (jbyte)lpStruct->bArmStyle);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bLetterform, (jbyte)lpStruct->bLetterform);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bMidline, (jbyte)lpStruct->bMidline);
+	(*env)->SetByteField(env, lpObject, PANOSEFc.bXHeight, (jbyte)lpStruct->bXHeight);
 }
 #endif
 

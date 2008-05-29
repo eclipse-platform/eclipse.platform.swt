@@ -589,6 +589,7 @@ public class OS extends C {
 	public static final int EDGE_SUNKEN = (BDR_SUNKENOUTER | BDR_SUNKENINNER);
 	public static final int EDGE_ETCHED = (BDR_SUNKENOUTER | BDR_RAISEDINNER);
 	public static final int EDGE_BUMP = (BDR_RAISEDOUTER | BDR_SUNKENINNER);
+	public static final int ELF_VENDOR_SIZE = 4;
 	public static final int EM_CANUNDO = 0xc6;
 	public static final int EM_CHARFROMPOS = 0xd7;
 	public static final int EM_DISPLAYBAND = 0x433;
@@ -619,6 +620,8 @@ public class OS extends C {
 	public static final int EM_SETSEL = 0xb1;
 	public static final int EM_SETTABSTOPS = 0xcb;
 	public static final int EM_UNDO = 199;
+	public static final int EMR_EXTCREATEFONTINDIRECTW = 82;
+	public static final int EMR_EXTTEXTOUTW = 84;
 	public static final int EN_ALIGN_LTR_EC = 0x0700;
 	public static final int EN_ALIGN_RTL_EC = 0x0701;
 	public static final int EN_CHANGE = 0x300;
@@ -886,6 +889,7 @@ public class OS extends C {
 	public static final int LB_SETHORIZONTALEXTENT = 0x194;
 	public static final int LB_SETSEL = 0x185;
 	public static final int LB_SETTOPINDEX = 0x197;
+	public static final int LF_FULLFACESIZE = 64;
 	public static final int LF_FACESIZE = 32;
 	public static final int LGRPID_ARABIC = 0xd;
 	public static final int LGRPID_HEBREW = 0xc;
@@ -1478,6 +1482,10 @@ public class OS extends C {
 	public static final int SS_OWNERDRAW = 0xd;
 	public static final int SS_REALSIZEIMAGE = 0x800;
 	public static final int SS_RIGHT = 0x2;
+	public static final int SSA_FALLBACK = 0x00000020;
+	public static final int SSA_GLYPHS = 0x00000080;
+	public static final int SSA_METAFILE = 0x00000800;
+	public static final int SSA_LINK = 0x00001000;
 	public static final int STANDARD_RIGHTS_READ = 0x20000;
 	public static final int STARTF_USESHOWWINDOW = 0x1;
 	public static final int STATE_SYSTEM_INVISIBLE = 0x00008000;
@@ -2119,6 +2127,9 @@ public static final native int DOCINFO_sizeof ();
 public static final native int DRAWITEMSTRUCT_sizeof ();
 public static final native int DROPFILES_sizeof ();
 public static final native int DWM_BLURBEHIND_sizeof ();
+public static final native int EMR_sizeof ();
+public static final native int EMREXTCREATEFONTINDIRECTW_sizeof ();
+public static final native int EXTLOGFONTW_sizeof ();
 public static final native int EXTLOGPEN_sizeof ();
 public static final native int FILETIME_sizeof ();
 public static final native int GCP_RESULTS_sizeof ();
@@ -2185,6 +2196,7 @@ public static final native int OSVERSIONINFOEXW_sizeof ();
 public static final native int OUTLINETEXTMETRICA_sizeof ();
 public static final native int OUTLINETEXTMETRICW_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
+public static final native int PANOSE_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
 public static final native int PROCESS_INFORMATION_sizeof ();
@@ -2198,6 +2210,7 @@ public static final native int SCRIPT_ITEM_sizeof ();
 public static final native int SCRIPT_LOGATTR_sizeof ();
 public static final native int SCRIPT_PROPERTIES_sizeof ();
 public static final native int SCRIPT_STATE_sizeof ();
+public static final native int SCRIPT_STRING_ANALYSIS_sizeof ();
 public static final native int SCROLLBARINFO_sizeof ();
 public static final native int SCROLLINFO_sizeof ();
 public static final native int SHACTIVATEINFO_sizeof ();
@@ -2300,6 +2313,17 @@ public static final int /*long*/ CreateDC (TCHAR lpszDriver, TCHAR lpszDevice, i
 	byte [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.bytes;
 	byte [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.bytes;
 	return CreateDCA (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
+}
+
+public static final int /*long*/ CreateEnhMetaFile (int /*long*/ hdcRef, TCHAR lpFilename, RECT lpRect, TCHAR lpDescription) {
+	if (IsUnicode) {
+		char [] lpFilename1 = lpFilename == null ? null : lpFilename.chars;
+		char [] lpDescription1 = lpDescription == null ? null : lpDescription.chars;
+		return CreateEnhMetaFileW (hdcRef, lpFilename1, lpRect, lpDescription1);
+	}
+	byte [] lpFilename1 = lpFilename == null ? null : lpFilename.bytes;
+	byte [] lpDescription1 = lpDescription == null ? null : lpDescription.bytes;
+	return CreateEnhMetaFileA (hdcRef, lpFilename1, lpRect, lpDescription1);
 }
 
 public static final int /*long*/ CreateFontIndirect (int /*long*/ lplf) {
@@ -3257,6 +3281,7 @@ public static final native boolean ChooseFontW (CHOOSEFONT chooseFont);
 public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 public static final native boolean ClientToScreen (int /*long*/ hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
+public static final native int /*long*/ CloseEnhMetaFile (int /*long*/ hdc);
 public static final native boolean CloseHandle (int /*long*/ hObject);
 public static final native int CloseThemeData (int /*long*/ hTheme);
 public static final native int CoCreateInstance (byte[] rclsid, int /*long*/ pUnkOuter, int dwClsContext, byte[] riid, int /*long*/[] ppv);
@@ -3285,6 +3310,8 @@ public static final native int /*long*/ CreateDCW (char [] lpszDriver, char [] l
 public static final native int /*long*/ CreateDCA (byte [] lpszDriver, byte [] lpszDevice, int /*long*/ lpszOutput, int /*long*/ lpInitData);  
 public static final native int /*long*/ CreateDIBSection(int /*long*/ hdc, byte[] pbmi, int iUsage, int /*long*/[] ppvBits, int /*long*/ hSection, int dwOffset);
 public static final native int /*long*/ CreateDIBSection(int /*long*/ hdc, int /*long*/ pbmi, int iUsage, int /*long*/[] ppvBits, int /*long*/ hSection, int dwOffset);
+public static final native int /*long*/ CreateEnhMetaFileW(int /*long*/ hdcRef, char[] lpFilename, RECT lpRect, char[] lpDescription);
+public static final native int /*long*/ CreateEnhMetaFileA(int /*long*/ hdcRef, byte[] lpFilename, RECT lpRect, byte[] lpDescription);
 public static final native int /*long*/ CreateFontIndirectW (int /*long*/ lplf);
 public static final native int /*long*/ CreateFontIndirectA (int /*long*/ lplf);
 public static final native int /*long*/ CreateFontIndirectW (LOGFONTW lplf);
@@ -3311,6 +3338,7 @@ public static final native int /*long*/ DefFrameProcA (int /*long*/ hWnd, int /*
 public static final native int /*long*/ DefWindowProcW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
 public static final native int /*long*/ DefWindowProcA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
 public static final native boolean DeleteDC (int /*long*/ hdc);
+public static final native boolean DeleteEnhMetaFile (int /*long*/ hemf);
 public static final native boolean DeleteMenu (int /*long*/ hMenu, int uPosition, int uFlags);
 public static final native boolean DeleteObject (int /*long*/ hGdiObj);
 public static final native boolean DestroyAcceleratorTable (int /*long*/ hAccel);
@@ -3358,6 +3386,7 @@ public static final native int EndPage (int /*long*/ hdc);
 public static final native int EndPaint (int /*long*/ hWnd, PAINTSTRUCT lpPaint);
 public static final native boolean EndPath(int /*long*/ hdc);
 public static final native boolean EnumDisplayMonitors (int /*long*/ hdc, RECT lprcClip, int /*long*/ lpfnEnum, int dwData);
+public static final native boolean EnumEnhMetaFile(int /*long*/ hdc, int /*long*/ hemf, int /*long*/ lpEnhMetaFunc, int /*long*/ lpData, RECT lpRect);
 public static final native int EnumFontFamiliesW (int /*long*/ hdc, char [] lpszFamily, int /*long*/ lpEnumFontFamProc, int /*long*/ lParam);
 public static final native int EnumFontFamiliesA (int /*long*/ hdc, byte [] lpszFamily, int /*long*/ lpEnumFontFamProc, int /*long*/ lParam);
 public static final native int EnumFontFamiliesExW (int /*long*/ hdc, LOGFONTW lpLogfont, int /*long*/ lpEnumFontFamExProc, int /*long*/ lParam, int dwFlags);
@@ -3734,6 +3763,8 @@ public static final native void MoveMemory (NMTTDISPINFOW Destination, int /*lon
 public static final native void MoveMemory (NMTTDISPINFOA Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (RECT Destination, int /*long*/[] Source, int Length);
 public static final native void MoveMemory (SHDRAGIMAGE Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (EMR Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (EMREXTCREATEFONTINDIRECTW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (int /*long*/ Destination, SHDRAGIMAGE Source, int Length);
 public static final native void MoveMemory (TEXTMETRICW Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (TEXTMETRICA Destination, int /*long*/ Source, int Length);
@@ -3825,6 +3856,9 @@ public static final native int ScriptPlace (int /*long*/ hdc, int /*long*/ psc, 
 public static final native int ScriptRecordDigitSubstitution (int Locale, SCRIPT_DIGITSUBSTITUTE psds);
 public static final native int ScriptGetCMap (int /*long*/ hdc, int /*long*/ psc, char[] pwcChars, int cChars, int dwFlags, short[] pwOutGlyphs);
 public static final native int ScriptShape (int /*long*/ hdc, int /*long*/ psc, char[] pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS psa, int /*long*/ pwOutGlyphs, int /*long*/ pwLogClust, int /*long*/ psva, int[] pcGlyphs);
+public static final native int ScriptStringAnalyse (int /*long*/ hdc, char[] pString, int cString, int cGlyphs, int iCharset, int dwFlags, int iReqWidth, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, int /*long*/ piDx, int /*long*/ pTabdef, int /*long*/ pbInClass, int /*long*/ pssa);
+public static final native int ScriptStringOut(int /*long*/ ssa, int iX, int iY, int uOptions, RECT prc, int iMinSel, int iMaxSel, boolean fDisabled);
+public static final native int ScriptStringFree(int /*long*/ pssa);
 public static final native int ScriptTextOut (int /*long*/ hdc, int /*long*/ psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, int /*long*/ pwcReserved, int iReserved, int /*long*/ pwGlyphs, int cGlyphs, int /*long*/ piAdvance, int /*long*/ piJustify, int /*long*/ pGoffset);
 public static final native int ScriptXtoCP (int iX, int cChars, int cGlyphs, int /*long*/ pwLogClust, int /*long*/ psva, int /*long*/ piAdvance, SCRIPT_ANALYSIS psa, int[] piCP, int[] piTrailing);
 public static final native int ScrollWindowEx (int /*long*/ hWnd, int dx, int dy, RECT prcScroll, RECT prcClip, int /*long*/ hrgnUpdate, RECT prcUpdate, int flags);

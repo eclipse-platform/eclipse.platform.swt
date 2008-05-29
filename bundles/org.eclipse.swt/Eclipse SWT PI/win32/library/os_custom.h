@@ -9,6 +9,9 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
+/* Special sizeof's */
+#define SCRIPT_STRING_ANALYSIS_sizeof() sizeof(SCRIPT_STRING_ANALYSIS)
+
 /* Libraries for dynamic loaded functions */
 #define ActivateActCtx_LIB "kernel32.dll"
 #define AddFontResourceExA_LIB "gdi32.dll"

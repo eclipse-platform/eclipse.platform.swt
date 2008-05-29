@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 939;
-int OS_nativeFunctionCallCount[939];
+int OS_nativeFunctionCount = 954;
+int OS_nativeFunctionCallCount[954];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -68,6 +68,7 @@ char * OS_nativeFunctionNames[] = {
 	"ChooseFontW",
 	"ClientToScreen",
 	"CloseClipboard",
+	"CloseEnhMetaFile",
 	"CloseHandle",
 	"CloseThemeData",
 	"CoCreateInstance",
@@ -96,6 +97,8 @@ char * OS_nativeFunctionNames[] = {
 	"CreateDCW",
 	"CreateDIBSection__III_3III",
 	"CreateDIBSection__I_3BI_3III",
+	"CreateEnhMetaFileA",
+	"CreateEnhMetaFileW",
 	"CreateFontIndirectA__I",
 	"CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2",
 	"CreateFontIndirectW__I",
@@ -130,6 +133,7 @@ char * OS_nativeFunctionNames[] = {
 	"DefWindowProcW",
 	"DeferWindowPos",
 	"DeleteDC",
+	"DeleteEnhMetaFile",
 	"DeleteMenu",
 	"DeleteObject",
 	"DestroyAcceleratorTable",
@@ -161,6 +165,9 @@ char * OS_nativeFunctionNames[] = {
 	"DrawThemeText",
 	"DwmEnableBlurBehindWindow",
 	"DwmExtendFrameIntoClientArea",
+	"EMREXTCREATEFONTINDIRECTW_1sizeof",
+	"EMR_1sizeof",
+	"EXTLOGFONTW_1sizeof",
 	"EXTLOGPEN_1sizeof",
 	"Ellipse",
 	"EnableMenuItem",
@@ -173,6 +180,7 @@ char * OS_nativeFunctionNames[] = {
 	"EndPaint",
 	"EndPath",
 	"EnumDisplayMonitors",
+	"EnumEnhMetaFile",
 	"EnumFontFamiliesA",
 	"EnumFontFamiliesExA",
 	"EnumFontFamiliesExW",
@@ -546,6 +554,8 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II",
@@ -645,6 +655,7 @@ char * OS_nativeFunctionNames[] = {
 	"OpenClipboard",
 	"OpenThemeData",
 	"PAINTSTRUCT_1sizeof",
+	"PANOSE_1sizeof",
 	"POINTSTOPOINT",
 	"POINT_1sizeof",
 	"PRIMARYLANGID",
@@ -704,6 +715,7 @@ char * OS_nativeFunctionNames[] = {
 	"SCRIPT_1LOGATTR_1sizeof",
 	"SCRIPT_1PROPERTIES_1sizeof",
 	"SCRIPT_1STATE_1sizeof",
+	"SCRIPT_1STRING_1ANALYSIS_1sizeof",
 	"SCROLLBARINFO_1sizeof",
 	"SCROLLINFO_1sizeof",
 	"SHACTIVATEINFO_1sizeof",
@@ -747,6 +759,9 @@ char * OS_nativeFunctionNames[] = {
 	"ScriptPlace",
 	"ScriptRecordDigitSubstitution",
 	"ScriptShape",
+	"ScriptStringAnalyse",
+	"ScriptStringFree",
+	"ScriptStringOut",
 	"ScriptTextOut",
 	"ScriptXtoCP",
 	"ScrollWindowEx",
