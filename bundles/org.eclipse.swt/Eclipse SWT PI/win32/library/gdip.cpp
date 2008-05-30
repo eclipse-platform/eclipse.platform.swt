@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1150,6 +1150,32 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__ILorg_eclipse_swt_internal
 fail:
 	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetClipPath__II
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClipPath__II_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetClip((GraphicsPath *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClipPath__II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetClipPath__III
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__III)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClipPath__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClipPath__III_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetClip((GraphicsPath *)arg1, (CombineMode)arg2);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClipPath__III_FUNC);
 	return rc;
 }
 #endif

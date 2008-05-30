@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -969,7 +969,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(SHDoDragDrop)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, SHDoDragDrop_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)SHDoDragDrop((HWND)arg0, (IDataObject *)arg1, (IDropSource *)arg2, arg3, lparg4);
+	rc = (jint)SHDoDragDrop((HWND)arg0, (IDataObject *)arg1, (IDropSource *)arg2, arg3, (DWORD *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, SHDoDragDrop_FUNC);
