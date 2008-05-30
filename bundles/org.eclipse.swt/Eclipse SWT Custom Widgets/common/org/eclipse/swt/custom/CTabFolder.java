@@ -3170,7 +3170,7 @@ public void setMRUVisible(boolean show) {
  * @param item the tab item to be selected
  * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * 
  * @exception SWTException <ul>
