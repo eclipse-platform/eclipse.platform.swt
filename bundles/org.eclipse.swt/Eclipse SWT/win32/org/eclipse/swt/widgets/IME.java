@@ -221,9 +221,9 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
  * Returns the ranges for the style that should be applied during the
  * in-line edit session.
  * <p>
- * The ranges array contains start and length pairs.  Each pair refers to
+ * The ranges array contains start and end pairs.  Each pair refers to
  * the corresponding style in the styles array.  For example, the pair
- * that starts at ranges[n] with length ranges[n+1] uses the style
+ * that starts at ranges[n] and ends at ranges[n+1] uses the style
  * at styles[n/2] returned by <code>getStyles()</code>.
  * </p>
  * @return the ranges for the styles
@@ -248,9 +248,9 @@ public int [] getRanges () {
 /**
  * Returns the styles for the ranges.
  * <p>
- * The ranges array contains start and length pairs.  Each pair refers to
+ * The ranges array contains start and end pairs.  Each pair refers to
  * the corresponding style in the styles array.  For example, the pair
- * that starts at ranges[n] with length ranges[n+1] uses the style
+ * that starts at ranges[n] and ends at ranges[n+1] uses the style
  * at styles[n/2].
  * </p>
  * 
