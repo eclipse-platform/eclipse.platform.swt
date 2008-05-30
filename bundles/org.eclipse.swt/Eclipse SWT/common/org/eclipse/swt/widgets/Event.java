@@ -163,7 +163,8 @@ public class Event {
 	
 	/**
 	 * depending on the event, the range of text being modified.
-	 * Setting these fields has no effect.
+	 * Setting these fields only has effect during ImeComposition 
+	 * events.
 	 */
 	public int start, end;
 	
