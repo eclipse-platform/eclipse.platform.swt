@@ -5405,7 +5405,6 @@ void handleTextChanged(TextChangedEvent event) {
 		int newLastLineBottom = getLinePixel(lastLine + 1);
 		if (lastLineBottom != newLastLineBottom) {
 			super.redraw();
-			if (wordWrap) setCaretLocation();
 		} else {
 			super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
 			redrawLinesBullet(renderer.redrawLines);
@@ -8300,6 +8299,7 @@ public void showSelection() {
 void updateSelection(int startOffset, int replacedLength, int newLength) {
 	if (selection.y <= startOffset) {
 		// selection ends before text change
+		if (wordWrap) setCaretLocation();
 		return;
 	}
 	if (selection.x < startOffset) {
