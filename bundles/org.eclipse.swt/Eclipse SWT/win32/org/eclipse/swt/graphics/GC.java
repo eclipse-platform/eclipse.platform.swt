@@ -2961,7 +2961,8 @@ public boolean getAdvanced() {
 }
 
 /**
- * Returns the receiver's alpha value.
+ * Returns the receiver's alpha value. The alpha value
+ * is between 0 (transparent) and 255 (opaque).
  *
  * @return the alpha value
  *
@@ -3886,7 +3887,8 @@ public void setAntialias(int antialias) {
 }
 
 /**
- * Sets the receiver's alpha value.
+ * Sets the receiver's alpha value which must be
+ * between 0 (transparent) and 255 (opaque).
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
