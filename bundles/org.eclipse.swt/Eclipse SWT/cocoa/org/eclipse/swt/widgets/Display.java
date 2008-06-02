@@ -1594,6 +1594,7 @@ void initClasses () {
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_windowDidResize_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidMove_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
