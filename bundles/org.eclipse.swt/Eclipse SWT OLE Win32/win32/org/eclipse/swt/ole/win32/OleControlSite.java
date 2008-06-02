@@ -500,10 +500,14 @@ protected int /*long*/ getLicenseInfo(GUID clsid) {
 }
 /**
  * 
- * Get the control site property specified by the dispIdMember.
+ * Get the control site property specified by the dispIdMember, or
+ * <code>null</code> if the dispId is not recognised.
+ * 
+ * @param dispId the dispId
+ * 
+ * @return the property value or <code>null</code>
  * 
  * @since 2.1
- * 
  */
 public Variant getSiteProperty(int dispId){
 	for (int i = 0; i < sitePropertyIds.length; i++) {
@@ -782,6 +786,7 @@ void removeEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListe
 /**	 
  * Removes the listener.
  *
+ * @param propertyID the identifier of the property
  * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
