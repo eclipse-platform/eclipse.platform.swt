@@ -21,11 +21,13 @@ import org.eclipse.swt.internal.win32.*;
  * a method on an OLE Control or OLE Document.
  *
  */
-public final class Variant
-{
+public final class Variant {
+	/**
+	* The size in bytes of a native VARIANT struct.
+	*/
 	public static final int sizeof = VARIANT.sizeof;
+
 	private short type; // OLE.VT_* type
-	
 	private boolean booleanData;
 	private byte    byteData;
 	private short   shortData;
