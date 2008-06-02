@@ -683,6 +683,14 @@ private SIZE getExtent() {
 	}
 	return xFormHimetricToPixels(sizel);
 }
+/**
+ * Returns the indent value that would be used to compute the clipping area
+ * of the active X object.
+ * 
+ * NOTE: The indent value is no longer being used by the client site.
+ * 
+ * @return the rectangle representing the indent
+ */
 public Rectangle getIndent() {
 	return new Rectangle(indent.left, indent.right, indent.top, indent.bottom);
 }
@@ -790,6 +798,14 @@ private int GetWindowContext(int /*long*/ ppFrame, int /*long*/ ppDoc, int /*lon
 	
 	return COM.S_OK;
 }
+/**
+ * Returns whether ole document is dirty by checking whether the content 
+ * of the file representing the document is dirty.
+ * 
+ * @return <code>true</code> if the document has been modified,
+ *         <code>false</code> otherwise.
+ * @since 3.1
+ */
 public boolean isDirty() {
 	/*
 	 *  Note: this method must return true unless it is absolutely clear that the
@@ -1065,6 +1081,17 @@ protected void releaseObjectInterfaces() {
 	
 	COM.CoFreeUnusedLibraries();
 }
+/**
+ * Saves the document to the specified file and includes OLE specific information if specified.  
+ * This method must <b>only</b> be used for files that have an OLE Storage format.  For example, 
+ * a word file edited with Word.Document should be saved using this method because there is 
+ * formating information that should be stored in the OLE specific Storage format.
+ *
+ * @param file the file to which the changes are to be saved
+ * @param includeOleInfo the flag to indicate whether OLE specific information should be saved.
+ *
+ * @return true if the save was successful
+ */
 public boolean save(File file, boolean includeOleInfo) {
 	if (includeOleInfo)
 		return saveToStorageFile(file);
@@ -1265,6 +1292,11 @@ private void setExtent(int width, int height){
 			objIOleObject.Close(COM.OLECLOSE_SAVEIFDIRTY);
 	}
 }
+/**
+ * The indent value is no longer being used by the client site.
+ * 
+ * @param newIndent the rectangle representing the indent amount
+ */
 public void setIndent(Rectangle newIndent) {
 	indent = new RECT();
 	indent.left = newIndent.x;
