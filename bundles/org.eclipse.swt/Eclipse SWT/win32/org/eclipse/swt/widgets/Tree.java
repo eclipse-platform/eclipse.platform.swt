@@ -3785,7 +3785,7 @@ void redrawSelection () {
 			}
 			RECT rect = new RECT ();
 			int index = 0, count = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0);
-			while (index < count && hItem != 0) {
+			while (index <= count && hItem != 0) {
 				int state = 0;
 				if (OS.IsWinCE) {
 					tvItem.hItem = hItem;
