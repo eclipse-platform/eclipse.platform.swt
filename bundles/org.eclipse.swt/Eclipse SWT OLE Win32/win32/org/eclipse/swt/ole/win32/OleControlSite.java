@@ -74,7 +74,7 @@ public class OleControlSite extends OleClientSite
  *               in the registry for this Control (for example, the VersionIndependentProgID for 
  *               Internet Explorer is Shell.Explorer)
  *
- *@exception IllegalArgumentException <ul>
+ * @exception IllegalArgumentException <ul>
  *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *</ul>
  * @exception SWTException <ul>

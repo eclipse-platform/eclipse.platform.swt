@@ -635,7 +635,7 @@ public void setMinWidth(int width) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- *  @since 3.4
+ * @since 3.4
  */
 public void setShowFocusedControl(boolean show) {
 	checkWidget();

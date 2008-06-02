@@ -165,7 +165,7 @@ public TextStyle (Font font, Color foreground, Color background) {
 /** 
  * Create a new text style from an existing text style.
  * 
- *@param style the style to copy 
+ * @param style the style to copy 
  *
  * @since 3.4
  */

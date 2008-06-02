@@ -56,9 +56,9 @@ public StyleRange() {
 /** 
  * Create a new style range from an existing text style.
  *
- *@param style the text style to copy
+ * @param style the text style to copy
  *
- *@since 3.4
+ * @since 3.4
  */
 public StyleRange(TextStyle style) {
 	super(style);

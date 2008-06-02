@@ -180,7 +180,7 @@ public Variant(IUnknown unknown) {
  *
  * @param val the Java long value that this Variant represents
  *
- *@since 3.2
+ * @since 3.2
  */
  public Variant(long val) {
 	type = COM.VT_I8;

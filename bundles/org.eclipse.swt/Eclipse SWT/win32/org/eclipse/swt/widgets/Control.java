@@ -1369,7 +1369,6 @@ Control [] getPath () {
  * </ul>
  *
  * @since 3.4
- *
  */
 public Region getRegion () {
 	checkWidget ();
@@ -3060,7 +3059,6 @@ public void setRedraw (boolean redraw) {
  * </ul>
  *
  * @since 3.4
- *
  */
 public void setRegion (Region region) {
 	checkWidget ();
