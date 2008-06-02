@@ -52,13 +52,17 @@ public final class GlyphMetrics {
  * Constructs an instance of this class with the given
  * ascent, descent and width values.
  *
+ * @param ascent the GlyphMetrics ascent
+ * @param descent the GlyphMetrics descent
+ * @param width the GlyphMetrics width
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the ascent, descent or width argument is negative</li>
  * </ul>
  */
 public GlyphMetrics(int ascent, int descent, int width) {
 	if (ascent < 0 || descent < 0 || width < 0) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.ascent = ascent;
 	this.descent = descent;

@@ -30,37 +30,54 @@ public class DropTargetAdapter implements DropTargetListener {
  * operation defined in <code>event.detail</code>to be performed on the current data type
  * defined in <code>event.currentDataType</code>.
  * For additional information see <code>DropTargetListener.dragEnter</code>.
+ * 
+ * @param event the information associated with the drag enter event
  */
 public void dragEnter(DropTargetEvent event){}
+
 /**
  * This implementation of <code>dragLeave</code> does nothing.
  * For additional information see <code>DropTargetListener.dragOperationChanged</code>.
+ * 
+ * @param event the information associated with the drag leave event
  */
 public void dragLeave(DropTargetEvent event){}
+
 /**
  * This implementation of <code>dragOperationChanged</code> permits the default 
  * operation defined in <code>event.detail</code>to be performed on the current data type
  * defined in <code>event.currentDataType</code>.
  * For additional information see <code>DropTargetListener.dragOperationChanged</code>.
+ * 
+ * @param event the information associated with the drag operation changed event
  */
 public void dragOperationChanged(DropTargetEvent event){}
+
 /**
  * This implementation of <code>dragOver</code> permits the default 
  * operation defined in <code>event.detail</code>to be performed on the current data type
  * defined in <code>event.currentDataType</code>.
  * For additional information see <code>DropTargetListener.dragOver</code>.
+ * 
+ * @param event the information associated with the drag over event
  */
 public void dragOver(DropTargetEvent event){}
+
 /**
  * This implementation of <code>drop</code> does nothing.
  * For additional information see <code>DropTargetListener.drop</code>.
+ * 
+ * @param event the information associated with the drop event
  */
 public void drop(DropTargetEvent event){}
+
 /**
  * This implementation of <code>dropAccept</code> permits the default 
  * operation defined in <code>event.detail</code>to be performed on the current data type
  * defined in <code>event.currentDataType</code>.
  * For additional information see <code>DropTargetListener.dropAccept</code>.
+ * 
+ * @param event the information associated with the drop accept event
  */
 public void dropAccept(DropTargetEvent event){}
 

@@ -473,6 +473,9 @@ private int GetData(int /*long*/ pFormatetc, int /*long*/ pmedium) {
  * operation is in progress, by sending it one of the messages defined in 
  * the <code>DragSourceListener</code> interface.
  *
+ * @return the listeners who will be notified when a drag and drop
+ * operation is in progress
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -654,7 +657,7 @@ private int Release() {
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be removed
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

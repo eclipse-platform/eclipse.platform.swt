@@ -1146,7 +1146,9 @@ String getClipboardText () {
  * When the mouse pointer passes over a control its appearance
  * is changed to match the control's cursor.
  * </p>
- * </ul>
+ *
+ * @return the receiver's cursor or <code>null</code>
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1922,6 +1924,7 @@ public void pack (boolean changed) {
  * Prints the receiver and all children.
  * 
  * @param gc the gc where the drawing occurs
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>

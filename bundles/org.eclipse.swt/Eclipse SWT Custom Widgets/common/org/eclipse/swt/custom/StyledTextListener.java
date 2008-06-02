@@ -22,6 +22,8 @@ StyledTextListener(SWTEventListener listener) {
 }
 /**
  * Process StyledText events by invoking the event's handler.
+ *
+ * @param e the event to handle
  */
 public void handleEvent(Event e) {
 	

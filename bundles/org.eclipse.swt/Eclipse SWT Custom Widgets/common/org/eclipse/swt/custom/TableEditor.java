@@ -218,6 +218,11 @@ public void setColumn(int column) {
 	tableColumn.addControlListener(columnListener);
 	resize();
 }
+/**
+* Specifies the <code>TableItem</code> that is to be edited.
+*
+* @param item the item to be edited
+*/
 public void setItem (TableItem item) {	
 	this.item = item;
 	resize();
