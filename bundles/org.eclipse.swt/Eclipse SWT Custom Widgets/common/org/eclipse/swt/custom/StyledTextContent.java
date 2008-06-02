@@ -138,7 +138,8 @@ public String getTextRange(int start, int length);
  * Remove the specified text changed listener.
  * <p>
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>

@@ -6141,7 +6141,8 @@ public void redrawRange(int start, int length, boolean clearBackground) {
 /**
  * Removes the specified bidirectional segment listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6149,6 +6150,7 @@ public void redrawRange(int start, int length, boolean clearBackground) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
+ * 
  * @since 2.0
  */
 public void removeBidiSegmentListener(BidiSegmentListener listener) {
@@ -6159,7 +6161,8 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
 /**
  * Removes the specified extended modify listener.
  *
- * @param extendedModifyListener the listener
+ * @param extendedModifyListener the listener which should no longer be notified
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6176,7 +6179,8 @@ public void removeExtendedModifyListener(ExtendedModifyListener extendedModifyLi
 /**
  * Removes the specified line background listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6193,7 +6197,8 @@ public void removeLineBackgroundListener(LineBackgroundListener listener) {
 /**
  * Removes the specified line style listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6210,7 +6215,8 @@ public void removeLineStyleListener(LineStyleListener listener) {
 /**
  * Removes the specified modify listener.
  *
- * @param modifyListener the listener
+ * @param modifyListener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6227,7 +6233,8 @@ public void removeModifyListener(ModifyListener modifyListener) {
 /**
  * Removes the specified listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6267,7 +6274,8 @@ public void removeSelectionListener(SelectionListener listener) {
 /**
  * Removes the specified verify listener.
  *
- * @param verifyListener the listener
+ * @param verifyListener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6284,7 +6292,8 @@ public void removeVerifyListener(VerifyListener verifyListener) {
 /**
  * Removes the specified key verify listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6300,7 +6309,8 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
 /**
  * Removes the specified word movement listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

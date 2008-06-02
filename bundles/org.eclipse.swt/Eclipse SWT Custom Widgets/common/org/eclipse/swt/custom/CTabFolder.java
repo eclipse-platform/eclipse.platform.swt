@@ -2334,7 +2334,7 @@ void redrawTabs() {
 /**	 
  * Removes the listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -2373,7 +2373,7 @@ public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
 /**	 
  * Removes the listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

@@ -681,7 +681,7 @@ protected void releaseObjectInterfaces() {
  *
  * @param eventID the event identifier
  * 
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
@@ -722,17 +722,15 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
 /**	 
  * Removes the listener.
  *
- * @since 2.0
- * 
  * @param automation the automation object that provides the event notification
- * 
  * @param eventID the event identifier
- * 
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
+ * 
+ * @since 2.0
  */
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	checkWidget();
@@ -784,7 +782,7 @@ void removeEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListe
 /**	 
  * Removes the listener.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>

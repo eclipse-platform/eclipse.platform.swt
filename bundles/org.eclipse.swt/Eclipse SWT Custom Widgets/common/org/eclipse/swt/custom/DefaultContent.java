@@ -720,7 +720,8 @@ public String getTextRange(int start, int length) {
  * Removes the specified <code>TextChangeListener</code>.
  * <p>
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
