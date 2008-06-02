@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
  * widgets gaining and losing focus.
  *
  * @see FocusListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class FocusEvent extends TypedEvent {

@@ -23,6 +23,8 @@ import org.eclipse.swt.events.*;
  * <dl>
  * <dt><b>Styles:</b><dd>VERTICAL, HORIZONTAL, BORDER
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class AnimatedProgress extends Canvas {
 

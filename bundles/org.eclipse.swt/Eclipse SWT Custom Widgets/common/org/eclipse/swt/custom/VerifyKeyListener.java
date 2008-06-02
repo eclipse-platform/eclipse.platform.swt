@@ -19,6 +19,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * key is pressed.
  *
  * @see VerifyEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public interface VerifyKeyListener extends SWTEventListener {
 /**

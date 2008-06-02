@@ -130,7 +130,8 @@ import org.eclipse.swt.events.*;
  * </dl>
  * 
  * @since 2.0
- * 
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
  */
 public class TableCursor extends Canvas {
 	Table table;

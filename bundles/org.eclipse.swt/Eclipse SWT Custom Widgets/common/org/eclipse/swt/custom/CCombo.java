@@ -40,6 +40,8 @@ import org.eclipse.swt.accessibility.*;
  * <dt><b>Events:</b>
  * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class CCombo extends Composite {
 

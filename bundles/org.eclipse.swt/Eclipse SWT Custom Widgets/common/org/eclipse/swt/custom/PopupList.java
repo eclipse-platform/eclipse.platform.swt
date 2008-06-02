@@ -14,6 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+
 /**
 * A PopupList is a list of selectable items that appears in its own shell positioned above
 * its parent shell.  It is used for selecting items when editing a Table cell (similar to the
@@ -22,6 +23,8 @@ import org.eclipse.swt.widgets.*;
 * The list will be positioned so that it does not run off the screen and the largest number of items
 * are visible.  It may appear above the current cursor location or below it depending how close you 
 * are to the edge of the screen.
+*
+* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class PopupList {
 	Shell  shell;

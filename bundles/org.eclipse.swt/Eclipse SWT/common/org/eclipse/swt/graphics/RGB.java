@@ -34,6 +34,7 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see Color
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class RGB implements SerializableCompatibility {

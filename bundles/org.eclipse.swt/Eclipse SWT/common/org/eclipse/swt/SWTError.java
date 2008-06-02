@@ -36,6 +36,7 @@ import org.eclipse.swt.internal.*;
  *
  * @see SWTException
  * @see SWT#error(int)
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class SWTError extends Error {

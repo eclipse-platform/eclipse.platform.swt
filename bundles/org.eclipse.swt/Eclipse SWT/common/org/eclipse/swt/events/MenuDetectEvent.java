@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
  * specific trigger for showing a context menu is detected.
  *
  * @see MenuDetectListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.3
  */

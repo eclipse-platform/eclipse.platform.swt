@@ -14,6 +14,8 @@ package org.eclipse.swt.accessibility;
 /**
  * Class ACC contains all the constants used in defining an
  * Accessible object.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */

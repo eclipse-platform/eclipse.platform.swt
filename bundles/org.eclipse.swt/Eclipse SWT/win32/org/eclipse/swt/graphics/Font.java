@@ -26,6 +26,7 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see FontData
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class Font extends Resource {

@@ -67,6 +67,8 @@ import org.eclipse.swt.widgets.*;
 *		}
 *	});
 * </pre></code>
+*
+* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class TreeEditor extends ControlEditor {	
 	Tree tree;

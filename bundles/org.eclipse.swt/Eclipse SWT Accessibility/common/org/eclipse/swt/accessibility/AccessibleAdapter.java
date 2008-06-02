@@ -27,6 +27,7 @@ package org.eclipse.swt.accessibility;
  *
  * @see AccessibleListener
  * @see AccessibleEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */

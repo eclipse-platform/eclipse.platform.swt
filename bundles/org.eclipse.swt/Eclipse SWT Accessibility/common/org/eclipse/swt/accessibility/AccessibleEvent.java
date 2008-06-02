@@ -24,6 +24,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  *
  * @see AccessibleListener
  * @see AccessibleAdapter
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */

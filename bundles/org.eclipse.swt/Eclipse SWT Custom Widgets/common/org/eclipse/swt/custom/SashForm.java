@@ -27,6 +27,8 @@ import org.eclipse.swt.graphics.*;
  * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * </dl>
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class SashForm extends Composite {
 

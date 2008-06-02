@@ -63,6 +63,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see ScrollBar
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Slider extends Control {
 	int increment, pageIncrement;

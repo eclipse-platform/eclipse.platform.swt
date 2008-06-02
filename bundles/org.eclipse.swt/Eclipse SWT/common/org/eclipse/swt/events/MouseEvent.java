@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Event;
  * @see MouseListener
  * @see MouseMoveListener
  * @see MouseTrackListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class MouseEvent extends TypedEvent {

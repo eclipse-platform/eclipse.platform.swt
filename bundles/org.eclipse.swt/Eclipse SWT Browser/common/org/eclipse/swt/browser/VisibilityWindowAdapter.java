@@ -19,6 +19,8 @@ package org.eclipse.swt.browser;
  * interested in.
  * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.0
  */
 public abstract class VisibilityWindowAdapter implements VisibilityWindowListener {

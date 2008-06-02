@@ -39,6 +39,8 @@ import org.eclipse.swt.widgets.*;
  * 		shell.setLayout(fillLayout);
  * </pre>
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FillLayout extends Layout {
 	/**

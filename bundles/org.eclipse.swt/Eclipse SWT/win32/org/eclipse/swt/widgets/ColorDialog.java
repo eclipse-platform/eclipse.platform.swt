@@ -29,6 +29,8 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class ColorDialog extends Dialog {

@@ -18,6 +18,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * is to be drawn.
  *
  * @see LineStyleEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public interface LineStyleListener extends SWTEventListener {
 

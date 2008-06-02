@@ -24,6 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * ByteArrayTransfer class.</p>
  * 
  * @see ByteArrayTransfer
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Transfer {
 	

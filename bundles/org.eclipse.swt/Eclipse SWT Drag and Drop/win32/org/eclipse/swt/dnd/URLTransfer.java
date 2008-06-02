@@ -26,6 +26,8 @@ import org.eclipse.swt.internal.win32.*;
  * <code><pre>
  *     String url = "http://www.eclipse.org";
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class URLTransfer extends ByteArrayTransfer {
 

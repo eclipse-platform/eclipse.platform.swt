@@ -26,6 +26,7 @@ import org.eclipse.swt.internal.*;
  *
  * @see AccessibleTextListener
  * @see AccessibleTextAdapter
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */

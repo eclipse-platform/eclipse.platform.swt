@@ -31,6 +31,7 @@ import org.eclipse.swt.*;
  *
  * @see #dispose
  * @see #isDisposed
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */

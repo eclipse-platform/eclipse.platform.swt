@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.SWTEventObject;
  * applicable to the event occurrence.
  *
  * @see org.eclipse.swt.widgets.Event
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TypedEvent extends SWTEventObject {
 	

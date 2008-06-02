@@ -19,6 +19,8 @@ import org.eclipse.swt.events.*;
  * loading of the current URL or when the loading of the current
  * URL has been completed.
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.0
  */
 public class ProgressEvent extends TypedEvent {

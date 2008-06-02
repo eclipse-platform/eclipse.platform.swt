@@ -15,6 +15,8 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * This event is sent when a line is about to be drawn.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class LineBackgroundEvent extends TypedEvent {
 	

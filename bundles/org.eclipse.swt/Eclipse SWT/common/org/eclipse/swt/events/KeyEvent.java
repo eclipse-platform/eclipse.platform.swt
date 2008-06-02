@@ -28,8 +28,10 @@ import org.eclipse.swt.widgets.Event;
  * not necessary to add traversal listeners for these controls,
  * unless you want to override the default traversal.
  * </p>
+ *
  * @see KeyListener
  * @see TraverseListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class KeyEvent extends TypedEvent {

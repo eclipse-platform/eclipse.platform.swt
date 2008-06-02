@@ -28,6 +28,8 @@ import org.eclipse.swt.graphics.*;
  *     Image image = new Image("C:\temp\img1.gif");
  *	   ImageData imgData = image.getImageData();
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.4
  */

@@ -19,6 +19,8 @@ import org.eclipse.swt.events.*;
  * The status text is typically displayed in the status bar of
  * a browser application.
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.0
  */
 public class StatusTextEvent extends TypedEvent {

@@ -56,6 +56,8 @@ import org.eclipse.swt.events.*;
  * 		"R4R5R6". 
  *		visual line = "R3R2R1" + "R6R5R4"
  * </pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class BidiSegmentEvent extends TypedEvent {
 	

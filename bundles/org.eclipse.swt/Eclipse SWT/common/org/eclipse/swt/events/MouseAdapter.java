@@ -23,6 +23,7 @@ package org.eclipse.swt.events;
  *
  * @see MouseListener
  * @see MouseEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class MouseAdapter implements MouseListener {
 

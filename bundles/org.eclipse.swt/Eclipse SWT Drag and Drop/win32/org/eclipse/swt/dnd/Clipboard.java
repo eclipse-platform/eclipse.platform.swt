@@ -21,6 +21,8 @@ import org.eclipse.swt.internal.ole.win32.*;
  * application to another or within an application.
  * 
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Clipboard {
 

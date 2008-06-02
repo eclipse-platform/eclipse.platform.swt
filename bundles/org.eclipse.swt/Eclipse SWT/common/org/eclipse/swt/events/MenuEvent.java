@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
  * menus being shown and hidden.
  *
  * @see MenuListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class MenuEvent extends TypedEvent {

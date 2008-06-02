@@ -118,6 +118,7 @@ import org.eclipse.swt.graphics.*;
  * @see CloseWindowListener
  * @see OpenWindowListener
  * @see VisibilityWindowListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */

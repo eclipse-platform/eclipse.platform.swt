@@ -31,6 +31,8 @@ import org.eclipse.swt.internal.*;
  * <em>HINT</em> may change from release to release, although we typically
  * will not withdraw support for a <em>HINT</em> once it is made available.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
  
 /* NOTE:

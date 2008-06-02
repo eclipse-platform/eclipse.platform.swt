@@ -27,6 +27,9 @@ package org.eclipse.swt.custom;
  * Runnable runnable = styledText.print(new Printer(), options); 
  * runnable.run();
  * </pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 2.1
  */
 public class StyledTextPrintOptions {

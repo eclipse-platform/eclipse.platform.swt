@@ -75,6 +75,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @see TraverseListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class TraverseEvent extends KeyEvent {

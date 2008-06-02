@@ -25,6 +25,8 @@ import org.eclipse.swt.internal.win32.*;
  * <code><pre>
  *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class HTMLTransfer extends ByteArrayTransfer {
 

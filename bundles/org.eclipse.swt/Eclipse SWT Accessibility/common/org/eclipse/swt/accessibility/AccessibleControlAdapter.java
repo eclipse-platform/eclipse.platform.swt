@@ -33,6 +33,7 @@ package org.eclipse.swt.accessibility;
  *
  * @see AccessibleControlListener
  * @see AccessibleControlEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */

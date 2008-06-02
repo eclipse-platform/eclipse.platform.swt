@@ -21,6 +21,8 @@ import org.eclipse.swt.events.*;
  * {@link Browser#setUrl(String)} or when the user activates a
  * hyperlink.
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.0
  */
 public class LocationEvent extends TypedEvent {

@@ -22,6 +22,7 @@ package org.eclipse.swt.events;
  *
  * @see SelectionListener
  * @see SelectionEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class SelectionAdapter implements SelectionListener {
 

@@ -22,6 +22,7 @@ package org.eclipse.swt.events;
  *
  * @see MenuListener
  * @see MenuEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class MenuAdapter implements MenuListener {
 

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
  * widgets being disposed.
  *
  * @see DisposeListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class DisposeEvent extends TypedEvent {

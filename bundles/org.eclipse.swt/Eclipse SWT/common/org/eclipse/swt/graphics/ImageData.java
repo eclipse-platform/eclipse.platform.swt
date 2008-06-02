@@ -29,6 +29,7 @@ import org.eclipse.swt.internal.CloneableCompatibility;
  *
  * @see Image
  * @see ImageLoader
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class ImageData implements CloneableCompatibility {

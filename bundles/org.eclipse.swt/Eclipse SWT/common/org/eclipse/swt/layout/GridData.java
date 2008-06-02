@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see GridLayout
  * @see Control#setLayoutData
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GridData {
 	/**

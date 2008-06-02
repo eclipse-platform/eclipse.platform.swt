@@ -22,6 +22,7 @@ package org.eclipse.swt.events;
  *
  * @see TreeListener
  * @see TreeEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class TreeAdapter implements TreeListener {
 

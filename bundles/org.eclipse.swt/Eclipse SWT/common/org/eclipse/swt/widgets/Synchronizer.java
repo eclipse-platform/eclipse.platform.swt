@@ -31,6 +31,7 @@ import org.eclipse.swt.internal.Compatibility;
  * </p>
  *
  * @see Display#setSynchronizer
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Synchronizer {
 	Display display;

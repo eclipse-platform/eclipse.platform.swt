@@ -27,6 +27,7 @@ import org.eclipse.swt.internal.*;
  * </p>
  *
  * @see SWTError
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class SWTException extends RuntimeException {

@@ -91,6 +91,7 @@ import org.eclipse.swt.graphics.*;
  * @see #getMaximized
  * @see Shell
  * @see SWT
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class Decorations extends Canvas {

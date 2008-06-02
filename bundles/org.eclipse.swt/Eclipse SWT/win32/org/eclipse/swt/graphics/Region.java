@@ -23,6 +23,8 @@ import org.eclipse.swt.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class Region extends Resource {

@@ -18,6 +18,8 @@ import org.eclipse.swt.graphics.*;
  * Instances of this class represent programs and
  * their associated file extensions in the operating
  * system.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Program {
 	String name;

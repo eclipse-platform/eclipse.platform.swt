@@ -16,6 +16,8 @@ import org.eclipse.swt.events.*;
  * This event is sent when a new offset is required based on the current
  * offset and a movement type.
  * 
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  * @since 3.3
  */
 public class MovementEvent extends TypedEvent {

@@ -18,8 +18,10 @@ import org.eclipse.swt.internal.SWTEventListener;
  * is modified.
  *
  * @see ExtendedModifyEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public interface ExtendedModifyListener extends SWTEventListener {
+
 /**
  * This method is called after a text change occurs.
  * <p>

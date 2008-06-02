@@ -15,7 +15,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * 
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
  */
 public class CTabFolderEvent extends TypedEvent {
 	/**

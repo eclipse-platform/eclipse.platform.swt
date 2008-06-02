@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.*;
  * Instances of this class are descriptions of monitors.
  *
  * @see Display
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */

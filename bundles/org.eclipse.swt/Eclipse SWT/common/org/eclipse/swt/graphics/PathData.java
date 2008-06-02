@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
  * Instances of this class describe device-independent paths.
  *
  * @see Path
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1
  */

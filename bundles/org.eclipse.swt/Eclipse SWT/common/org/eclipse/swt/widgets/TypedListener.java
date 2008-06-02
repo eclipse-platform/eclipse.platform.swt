@@ -27,6 +27,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see Listener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TypedListener implements Listener {
 	

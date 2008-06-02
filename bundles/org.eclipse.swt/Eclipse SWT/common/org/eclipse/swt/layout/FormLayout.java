@@ -80,9 +80,9 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see FormData
  * @see FormAttachment
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
  * 
  * @since 2.0
- * 
  */
 public final class FormLayout extends Layout {
 	

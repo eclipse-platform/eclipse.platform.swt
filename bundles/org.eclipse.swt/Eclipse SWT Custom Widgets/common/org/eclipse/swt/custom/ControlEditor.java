@@ -59,6 +59,8 @@ import org.eclipse.swt.widgets.*;
 * editor.minimumHeight = size.y;
 * editor.setEditor (button);
 * </pre></code>
+*
+* @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class ControlEditor {
 

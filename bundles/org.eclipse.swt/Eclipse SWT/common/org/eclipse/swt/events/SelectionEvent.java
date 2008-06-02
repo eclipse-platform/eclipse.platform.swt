@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  *
  * @see SelectionListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public class SelectionEvent extends TypedEvent {

@@ -24,6 +24,8 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public abstract class Item extends Widget {

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
  * controls being moved or resized.
  *
  * @see ControlListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class ControlEvent extends TypedEvent {

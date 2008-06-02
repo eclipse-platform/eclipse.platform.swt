@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.GC;
  * visible areas of controls requiring re-painting.
  *
  * @see PaintListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class PaintEvent extends TypedEvent {

@@ -19,7 +19,8 @@ import org.eclipse.swt.graphics.*;
  * This class is the abstract base class for
  * layouts.
  * 
- *  @see Composite#setLayout(Layout)
+ * @see Composite#setLayout(Layout)
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Layout {
 

@@ -23,6 +23,8 @@ import org.eclipse.swt.internal.CloneableCompatibility;
  * class in hashed collections, do not modify these fields after the
  * object has been inserted.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class StyleRange extends TextStyle implements CloneableCompatibility {
 	

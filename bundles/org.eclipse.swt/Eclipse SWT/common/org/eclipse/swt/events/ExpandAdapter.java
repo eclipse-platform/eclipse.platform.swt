@@ -22,6 +22,7 @@ package org.eclipse.swt.events;
  *
  * @see ExpandListener
  * @see ExpandEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
  */

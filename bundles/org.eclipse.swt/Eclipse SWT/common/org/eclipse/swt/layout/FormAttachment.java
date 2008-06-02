@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see FormLayout
  * @see FormData
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */

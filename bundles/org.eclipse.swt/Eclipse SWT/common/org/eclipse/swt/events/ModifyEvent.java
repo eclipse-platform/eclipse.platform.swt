@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Event;
  * text being modified.
  *
  * @see ModifyListener
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
 public final class ModifyEvent extends TypedEvent {

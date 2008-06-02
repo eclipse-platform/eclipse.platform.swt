@@ -21,6 +21,7 @@ package org.eclipse.swt.custom;
  *
  * @see CTabFolder2Listener
  * @see CTabFolderEvent
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.0
  */

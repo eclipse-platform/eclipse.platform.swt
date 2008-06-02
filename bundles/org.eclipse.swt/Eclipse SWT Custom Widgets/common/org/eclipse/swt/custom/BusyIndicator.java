@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * Support for showing a Busy Cursor during a long running process.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class BusyIndicator {
 
