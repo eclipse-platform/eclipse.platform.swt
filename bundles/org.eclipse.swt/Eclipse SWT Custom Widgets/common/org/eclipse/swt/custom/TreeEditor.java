@@ -259,6 +259,11 @@ public void setColumn(int column) {
 	resize();
 }
 
+/**
+* Specifies the <code>TreeItem</code> that is to be edited.
+*
+* @param item the item to be edited
+*/
 public void setItem (TreeItem item) {
 	this.item = item;
 	resize();
