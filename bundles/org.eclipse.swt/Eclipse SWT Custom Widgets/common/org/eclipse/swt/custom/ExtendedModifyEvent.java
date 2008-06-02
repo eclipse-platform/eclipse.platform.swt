@@ -24,7 +24,13 @@ public final class ExtendedModifyEvent extends TypedEvent {
 	public String replacedText;
 	
 	static final long serialVersionUID = 3258696507027830832L;
-	
+
+/**
+ * Constructs a new instance of this class based on the
+ * information in the given event.
+ *
+ * @param e the event containing the information
+ */
 public ExtendedModifyEvent(StyledTextEvent e) {
 	super(e);
 	start = e.start;

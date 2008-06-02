@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide a method
- * that deals with the events that are generated when a
+ * that deals with the event that is generated when a
  * key is pressed.
  *
  * @see VerifyEvent

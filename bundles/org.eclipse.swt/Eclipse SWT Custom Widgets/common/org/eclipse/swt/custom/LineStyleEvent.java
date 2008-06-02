@@ -79,7 +79,13 @@ public class LineStyleEvent extends TypedEvent {
 	public int bulletIndex;
 	
 	static final long serialVersionUID = 3906081274027192884L;
-	
+
+/**
+ * Constructs a new instance of this class based on the
+ * information in the given event.
+ *
+ * @param e the event containing the information
+ */
 public LineStyleEvent(StyledTextEvent e) {
 	super(e);
 	styles = e.styles;

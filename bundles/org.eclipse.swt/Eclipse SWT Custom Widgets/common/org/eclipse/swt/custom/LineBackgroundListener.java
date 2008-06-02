@@ -12,6 +12,13 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.internal.SWTEventListener;
 
+/**
+ * Classes which implement this interface provide a method
+ * that can provide the background color for a line that
+ * is to be drawn.
+ *
+ * @see LineBackgroundEvent
+ */
 public interface LineBackgroundListener extends SWTEventListener {
 	
 /**

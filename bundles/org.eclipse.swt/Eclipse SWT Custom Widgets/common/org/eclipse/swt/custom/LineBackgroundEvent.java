@@ -34,7 +34,13 @@ public class LineBackgroundEvent extends TypedEvent {
 	public Color lineBackground; 
 	
 	static final long serialVersionUID = 3978711687853324342L;
-	
+
+/**
+ * Constructs a new instance of this class based on the
+ * information in the given event.
+ *
+ * @param e the event containing the information
+ */
 public LineBackgroundEvent(StyledTextEvent e) {
 	super(e);
 	lineOffset = e.detail;

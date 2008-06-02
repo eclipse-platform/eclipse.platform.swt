@@ -12,6 +12,13 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.internal.SWTEventListener;
 
+/**
+ * Classes which implement this interface provide a method
+ * that deals with the event that is generated when text
+ * is modified.
+ *
+ * @see ExtendedModifyEvent
+ */
 public interface ExtendedModifyListener extends SWTEventListener {
 /**
  * This method is called after a text change occurs.
