@@ -14,6 +14,16 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.CloneableCompatibility;
 
+/**
+ * <code>StyleRange</code> defines a set of styles for a specified
+ * range of text.
+ * <p>
+ * The hashCode() method in this class uses the values of the public
+ * fields to compute the hash value. When storing instances of the
+ * class in hashed collections, do not modify these fields after the
+ * object has been inserted.
+ * </p>
+ */
 public class StyleRange extends TextStyle implements CloneableCompatibility {
 	
 	/**

@@ -12,7 +12,15 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.internal.SWTEventListener;
 
+/**
+ * Classes which implement this interface provide a method
+ * that can provide the style information for a line that
+ * is to be drawn.
+ *
+ * @see LineStyleEvent
+ */
 public interface LineStyleListener extends SWTEventListener {
+
 /**
  * This method is called when a line is about to be drawn in order to get the
  * line's style information.

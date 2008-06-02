@@ -13,6 +13,13 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.SWTEventListener;
 
+/**
+ * Classes which implement this interface provide a method
+ * that deals with the events that are generated when a
+ * key is pressed.
+ *
+ * @see VerifyEvent
+ */
 public interface VerifyKeyListener extends SWTEventListener {
 /**
  * The following event fields are used:<ul>

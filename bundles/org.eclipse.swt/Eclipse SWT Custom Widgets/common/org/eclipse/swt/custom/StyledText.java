@@ -3704,7 +3704,9 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
  *  
  * @param lineIndex the line index, the max value is lineCount. If
  * lineIndex == lineCount it returns the bottom pixel of the last line.
- * It means this function can be used to retrieve the bottom pixel of any line. 
+ * It means this function can be used to retrieve the bottom pixel of any line.
+ * 
+ * @return the top pixel of a given line index
  * 
  * @since 3.2
  */
@@ -3732,6 +3734,10 @@ public int getLinePixel(int lineIndex) {
 /**
  * Returns the line index for a y, relative to the client area.
  * The line index returned is always in the range 0..lineCount - 1.
+ * 
+ * @param y the y-coordinate pixel
+ * 
+ * @return the line index for a given y-coordinate pixel
  *
  * @since 3.2
  */
@@ -5942,6 +5948,9 @@ public void print() {
  * </p>
  * 
  * @param printer the printer to print to
+ *
+ * @return a <code>Runnable</code> for printing the receiver's text
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -5971,6 +5980,9 @@ public Runnable print(Printer printer) {
  * 
  * @param printer the printer to print to
  * @param options print options to use during printing
+ *
+ * @return a <code>Runnable</code> for printing the receiver's text
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6986,9 +6998,6 @@ public void setFont(Font font) {
 	setCaretLocation();
 	super.redraw();
 }
-/**
- * @see org.eclipse.swt.widgets.Control#setForeground
- */
 public void setForeground(Color color) {
 	checkWidget();
 	foreground = color;

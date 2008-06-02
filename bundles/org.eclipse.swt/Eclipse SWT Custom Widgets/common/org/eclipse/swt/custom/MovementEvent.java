@@ -52,7 +52,13 @@ public class MovementEvent extends TypedEvent {
 	public int movement;
 	
 	static final long serialVersionUID = 3978765487853324342L;
-	
+
+/**
+ * Constructs a new instance of this class based on the
+ * information in the given event.
+ *
+ * @param e the event containing the information
+ */
 public MovementEvent(StyledTextEvent e) {
 	super(e);
 	lineOffset = e.detail;
