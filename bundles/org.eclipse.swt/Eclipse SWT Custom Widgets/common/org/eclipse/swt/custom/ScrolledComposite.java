@@ -298,6 +298,8 @@ public Control getContent() {
  * Returns <code>true</code> if the receiver automatically scrolls to a focused child control 
  * to make it visible. Otherwise, returns <code>false</code>.
  * 
+ * @return a boolean indicating whether focused child controls are automatically scrolled into the viewport
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

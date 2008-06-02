@@ -31,14 +31,34 @@ import org.eclipse.swt.*;
  * @since 3.2
  */
 public class Bullet {
+	/**
+	* The bullet type.  Possible values are:
+	* <ul>
+	* <li><code>ST.BULLET_DOT</code></li>
+	* <li><code>ST.BULLET_NUMBER</code></li>
+	* <li><code>ST.BULLET_LETTER_LOWER</code></li>
+	* <li><code>ST.BULLET_LETTER_UPPER</code></li>
+	* <li><code>ST.BULLET_TEXT</code></li>
+	* <li><code>ST.BULLET_CUSTOM</code></li>
+	* </ul>
+	*/
 	public int type;
+
+	/**
+	* The bullet style.
+	*/
 	public StyleRange style;
-	public String text;	
+
+	/**
+	* The bullet text.
+	*/
+	public String text;
+
 	int[] linesIndices;
 	int count;
 
 /** 
- * Create a new bullet the specified style, the type is set to ST.BULLET_DOT. 
+ * Create a new bullet with the specified style, and type <code>ST.BULLET_DOT</code>. 
  * The style must have a glyph metrics set.
  *
  * @param style the style 
@@ -54,6 +74,7 @@ public Bullet(StyleRange style) {
  * Create a new bullet the specified style and type. 
  * The style must have a glyph metrics set.
  *
+ * @param type the bullet type
  * @param style the style 
  * 
  * @exception IllegalArgumentException <ul>

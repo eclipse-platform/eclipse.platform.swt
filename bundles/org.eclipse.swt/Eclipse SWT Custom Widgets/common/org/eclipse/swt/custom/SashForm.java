@@ -30,6 +30,9 @@ import org.eclipse.swt.graphics.*;
  */
 public class SashForm extends Composite {
 
+	/**
+	* The width of all sashes in the form.
+	*/
 	public int SASH_WIDTH = 3;
 
 	int sashStyle;
