@@ -143,6 +143,13 @@ public void dispose() {
 int /*long*/ getAddress() {	
 	return objIDispatch.getAddress();
 }
+/**
+ * Returns the fully qualified name of the Help file for the given member ID.
+ * 
+ * @param dispId the member ID whose Help file is being retrieved.
+ * @return a string representing the fully qualified name of a Help 
+ * file or null.
+ */
 public String getHelpFile(int dispId) {
 	if (objITypeInfo == null) return null;
 	String[] file = new String[1];
@@ -150,6 +157,12 @@ public String getHelpFile(int dispId) {
 	if (rc == OLE.S_OK) return file[0];
 	return null;	
 }
+/**
+ * Returns the documentation string for the given member ID.
+ * 
+ * @param dispId the member ID in which the documentation is being retrieved.
+ * @return the documentation string if it exists; otherwise return null.
+ */
 public String getDocumentation(int dispId) {
 	if (objITypeInfo == null) return null;
 	String[] doc = new String[1];
@@ -157,6 +170,12 @@ public String getDocumentation(int dispId) {
 	if (rc == OLE.S_OK) return doc[0];
 	return null;
 }
+/**
+ * Returns the property description of a variable at the given index.
+ * 
+ * @param index the index of a variable whose property is being retrieved.
+ * @return an OlePropertyDescription for a variable at the given index.
+ */
 public OlePropertyDescription getPropertyDescription(int index) {
 	if (objITypeInfo == null) return null;
 	int /*long*/[] ppVarDesc = new int /*long*/[1];
@@ -182,6 +201,12 @@ public OlePropertyDescription getPropertyDescription(int index) {
 	objITypeInfo.ReleaseVarDesc(ppVarDesc[0]);
 	return data;
 }
+/**
+ * Returns the description of a function at the given index.
+ * 
+ * @param index the index of a function whose property is being retrieved.
+ * @return an OleFunctionDescription for a function at the given index.
+ */
 public OleFunctionDescription getFunctionDescription(int index) {
 	if (objITypeInfo == null) return null;
 	int /*long*/[] ppFuncDesc = new int /*long*/[1];
@@ -237,6 +262,13 @@ public OleFunctionDescription getFunctionDescription(int index) {
 	objITypeInfo.ReleaseFuncDesc(ppFuncDesc[0]);
 	return data;
 }
+/**
+ * Returns the type info of the current object referenced by the automation.
+ * The type info contains information about the object such as the function descriptions,
+ * the member descriptions and attributes of the type.
+ * 
+ * @return the type info of the receiver
+ */
 public TYPEATTR getTypeInfoAttributes() {
 	if (objITypeInfo == null) return null;
 	int /*long*/ [] ppTypeAttr = new int /*long*/ [1];
@@ -247,6 +279,12 @@ public TYPEATTR getTypeInfoAttributes() {
 	objITypeInfo.ReleaseTypeAttr(ppTypeAttr[0]);
 	return typeattr;
 }
+/**
+ * Returns the name of the given member ID.
+ * 
+ * @param dispId the member ID in which the name is being retrieved.
+ * @return the name if it exists; otherwise return null.
+ */
 public String getName(int dispId) {
 	if (objITypeInfo == null) return null;
 	String[] name = new String[1];
@@ -254,6 +292,13 @@ public String getName(int dispId) {
 	if (rc == OLE.S_OK) return name[0];
 	return null;
 }
+/**
+ * Returns the name of a function and parameter names for the specified function ID.
+ * 
+ * @param dispId the function ID in which the name and parameters are being retrieved.
+ * @param maxSize the maximum number of names to retrieve.
+ * @return an array of name containing the function name and the parameter names
+ */
 public String[] getNames(int dispId, int maxSize) {
 	if (objITypeInfo == null) return new String[0];
 	String[] names = new String[maxSize];
