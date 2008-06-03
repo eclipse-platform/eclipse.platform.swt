@@ -3020,7 +3020,7 @@ void setItemCount (TreeItem parentItem, int count) {
 					item.dispose ();
 				} else {
 					if (parentItem == null || parentItem.getExpanded ()) {
-						removeIds [removeIds.length - removeCount] = id;
+						removeIds [removeIds.length - removeCount - 1] = id;
 						removeCount++;
 						visibleCount--;
 					}
