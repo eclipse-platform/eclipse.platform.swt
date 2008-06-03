@@ -3009,9 +3009,9 @@ void setItemCount (TreeItem parentItem, int count) {
 	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	int removeCount = 0;
 	if (count < itemCount) {
 		int [] removeIds = new int [itemCount - count];
-		int removeCount = 0;
 		for (int index = ids.length - 1; index >= count; index--) {
 			int id = ids [index];
 			if (id != 0) {
@@ -3096,6 +3096,7 @@ void setItemCount (TreeItem parentItem, int count) {
 	}
 	setRedraw (true);
 	if (itemCount == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
+	if (removeCount != 0) fixScrollBar ();
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
