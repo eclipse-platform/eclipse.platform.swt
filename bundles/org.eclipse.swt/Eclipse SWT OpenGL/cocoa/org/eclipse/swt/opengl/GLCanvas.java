@@ -110,18 +110,19 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	glView.initWithFrame(parent.view.frame(), pixelFormat);
+	glView.initWithFrame(parent.view.bounds(), pixelFormat);
 	glView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+	parent.view.addSubview_(glView);
 
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
-			case SWT.Dispose:
-				if (glView != null) glView.release();
-				glView = null;
-				if (pixelFormat != null) pixelFormat.release();
-				pixelFormat = null;
-				break;
+				case SWT.Dispose:
+					if (glView != null) glView.release();
+					glView = null;
+					if (pixelFormat != null) pixelFormat.release();
+					pixelFormat = null;
+					break;
 			}
 		}
 	};
