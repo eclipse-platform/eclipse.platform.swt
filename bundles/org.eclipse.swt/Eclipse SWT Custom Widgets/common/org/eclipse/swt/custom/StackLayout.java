@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.*;
  * </code></pre>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#stacklayout">StackLayout snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

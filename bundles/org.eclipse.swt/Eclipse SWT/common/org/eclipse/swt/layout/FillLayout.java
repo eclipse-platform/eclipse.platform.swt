@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.*;
  * </pre>
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FillLayout extends Layout {

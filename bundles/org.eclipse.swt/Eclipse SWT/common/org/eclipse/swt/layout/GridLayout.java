@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see GridData
  * @see <a href="http://www.eclipse.org/swt/snippets/#gridlayout">GridLayout snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: LayoutExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GridLayout extends Layout {
