@@ -95,6 +95,7 @@ import org.eclipse.swt.internal.win32.*;
  * </dl>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class DragSource extends Widget {

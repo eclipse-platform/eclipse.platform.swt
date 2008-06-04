@@ -45,6 +45,7 @@ import org.eclipse.swt.internal.win32.*;
  * </dl>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public class OleClientSite extends Composite {
 		

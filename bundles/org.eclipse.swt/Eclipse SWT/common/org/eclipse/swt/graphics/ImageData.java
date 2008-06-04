@@ -30,6 +30,7 @@ import org.eclipse.swt.internal.CloneableCompatibility;
  * @see Image
  * @see ImageLoader
  * @see <a href="http://www.eclipse.org/swt/snippets/#image">ImageData snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ImageAnalyzer</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

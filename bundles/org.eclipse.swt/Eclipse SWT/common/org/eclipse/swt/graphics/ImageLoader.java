@@ -39,6 +39,7 @@ import org.eclipse.swt.internal.image.*;
  * <li>load progressive JPEG images</li>
  * </ul>
  *
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ImageAnalyzer</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
  

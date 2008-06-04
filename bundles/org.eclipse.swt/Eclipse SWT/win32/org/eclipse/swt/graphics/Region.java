@@ -24,6 +24,7 @@ import org.eclipse.swt.*;
  * when those instances are no longer required.
  * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

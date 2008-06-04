@@ -80,6 +80,7 @@ import org.eclipse.swt.internal.win32.*;
  * </pre></code>
  * 
  * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 public final class OleAutomation {
 	private IDispatch objIDispatch;

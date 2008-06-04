@@ -36,6 +36,7 @@ import java.util.Vector;
  * </dl>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: OLEExample, OleWebBrowser</a>
  */
 final public class OleFrame extends Composite
 {	
