@@ -46,9 +46,8 @@ public class ToolItem extends Item {
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 6;
-	static final int INSET = 5;
+	static final int INSET = 3;
 	static final int ARROW_WIDTH = 5;
-	static final int ARROW_INSET = 2;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -188,14 +187,21 @@ Point computeSize () {
 			height = Math.max (height, control.getMininumHeight ());
 		}
 	} else {
-		((NSButton)button).sizeToFit ();
-		NSRect frame = button.frame();
-		width = (int)frame.width + INSET;
-		height = (int)frame.height;
-		if (arrow != null) {
-			width += ARROW_INSET + ARROW_WIDTH;
+		if (text.length () != 0 || image != null) {
+			((NSButton)button).sizeToFit ();
+			NSRect frame = button.frame();
+			width = (int)frame.width;
+			height = (int)frame.height;
+			view.setNeedsDisplay(true);
+		} else {
+			width = DEFAULT_WIDTH;
+			height = DEFAULT_HEIGHT;
 		}
-		view.setNeedsDisplay(true);
+		if (arrow != null) {
+			width += ARROW_WIDTH;
+		}
+		width += INSET * 2;
+		height += INSET * 2;
 	}
 	return new Point (width, height);
 }
@@ -211,7 +217,7 @@ void createWidget() {
 	} else {
 		SWTView widget = (SWTView)new SWTView().alloc();
 		widget.initWithFrame(new NSRect());
-		widget.setTag(parent.jniRef);
+		widget.setTag(jniRef);
 		parent.contentView().addSubview_(widget);
 		button = (NSButton)new SWTButton().alloc();
 		button.initWithFrame(new NSRect());
@@ -219,8 +225,11 @@ void createWidget() {
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);
 		button.setTag(jniRef);
+		Font font = parent.font != null ? parent.font : parent.defaultFont ();
+		button.setFont(font.handle);
 		button.setImagePosition(OS.NSImageOverlaps);
-		button.setTitle(NSString.stringWith(""));
+		NSString emptyStr = NSString.stringWith("");
+		button.setTitle(emptyStr);
 		button.setEnabled(parent.getEnabled());
 		widget.addSubview_(button);
 		if ((style & SWT.DROP_DOWN) != 0) {
@@ -230,6 +239,7 @@ void createWidget() {
 			arrow.setAction(OS.sel_sendArrowSelection);
 			arrow.setTarget(arrow);
 			arrow.setTag(jniRef);
+			arrow.setTitle(emptyStr);
 			arrow.setEnabled(parent.getEnabled());
 			widget.addSubview_(arrow);
 		}
@@ -243,7 +253,7 @@ void destroyWidget() {
 
 void drawRect(int id, NSRect rect) {
 	super.drawRect(id, rect);
-	if (getSelection ()) {
+	if (id == view.id && getSelection ()) {
 		NSRect bounds = view.bounds();
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
@@ -561,10 +571,17 @@ void setBounds (int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	view.setFrame(rect);
+	if (button != null) {
+		rect.x = 0;
+		rect.y = 0;
+		rect.width = width - (arrow != null ? ARROW_WIDTH : 0);
+		rect.height = height;
+		button.setFrame(rect);
+	}
 	if (arrow != null) {
 		rect = button.frame();
 		NSRect arrowRect = new NSRect();
-		arrowRect.x = rect.width + ARROW_INSET;
+		arrowRect.x = width - ARROW_WIDTH;
 		arrowRect.width = ARROW_WIDTH;
 		arrowRect.height = rect.height;
 		arrow.setFrame(arrowRect);
@@ -758,7 +775,7 @@ public void setText (String string) {
 			((NSButton)button).setImagePosition(OS.NSImageAbove);		
 		}
 	} else {
-		((NSButton)button).setImagePosition(OS.NSImageOverlaps);			
+		((NSButton)button).setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);			
 	}
 }
 
@@ -827,8 +844,8 @@ void updateImage (boolean layout) {
 		} else {
 			((NSButton)button).setImagePosition(OS.NSImageAbove);		
 		}
-	} else {
-		((NSButton)button).setImagePosition(OS.NSImageOverlaps);			
+	} else {	
+		((NSButton)button).setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
 	}
 	parent.relayout();
 }
