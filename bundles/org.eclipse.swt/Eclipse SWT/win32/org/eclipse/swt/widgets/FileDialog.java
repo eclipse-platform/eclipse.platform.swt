@@ -525,6 +525,8 @@ public void setFileName (String string) {
  * The strings are platform specific. For example, on
  * Windows, an extension filter string is typically of
  * the form "*.extension", where "*.*" matches all files.
+ * For filters with multiple extensions, use semicolon as
+ * a separator, e.g. "*.jpg;*.png".
  * </p>
  *
  * @param extensions the file extension filter
