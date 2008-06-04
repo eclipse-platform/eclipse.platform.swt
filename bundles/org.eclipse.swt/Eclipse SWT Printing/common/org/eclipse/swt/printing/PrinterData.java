@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.*;
  * @see Printer
  * @see Printer#getPrinterList
  * @see PrintDialog#open
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @see RowData
+ * @see <a href="http://www.eclipse.org/swt/snippets/#rowlayout">RowLayout snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class RowLayout extends Layout {

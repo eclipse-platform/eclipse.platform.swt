@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.*;
  * </dl>
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#sashform">SashForm snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class SashForm extends Composite {

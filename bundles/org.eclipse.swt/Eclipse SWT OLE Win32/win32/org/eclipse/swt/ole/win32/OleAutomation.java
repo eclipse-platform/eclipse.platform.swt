@@ -78,6 +78,8 @@ import org.eclipse.swt.internal.win32.*;
  *	automation.dispose();
  *
  * </pre></code>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
  */
 public final class OleAutomation {
 	private IDispatch objIDispatch;

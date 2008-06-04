@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.ole.win32.*;
  * 
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#clipboard">Clipboard snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Clipboard {

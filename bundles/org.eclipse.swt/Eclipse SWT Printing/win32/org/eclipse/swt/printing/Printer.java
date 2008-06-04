@@ -34,6 +34,7 @@ import org.eclipse.swt.internal.win32.*;
  *
  * @see PrinterData
  * @see PrintDialog
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Printer extends Device {

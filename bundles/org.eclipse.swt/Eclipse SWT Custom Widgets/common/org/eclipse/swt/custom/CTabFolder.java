@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ctabfolder">CTabFolder, CTabItem snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
  

@@ -41,6 +41,7 @@ import org.eclipse.swt.accessibility.*;
  * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ccombo">CCombo snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class CCombo extends Composite {

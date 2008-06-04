@@ -67,6 +67,7 @@ import org.eclipse.swt.internal.win32.*;
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class DropTarget extends Widget {

@@ -29,6 +29,7 @@ import org.eclipse.swt.internal.win32.*;
  * which may not be available on some platforms.
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#path">Path, Pattern snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1

@@ -70,6 +70,7 @@ import org.eclipse.swt.widgets.*;
 *	});
 * </pre></code>
 *
+* @see <a href="http://www.eclipse.org/swt/snippets/#tableeditor">TableEditor snippets</a>
 * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
 */
 public class TableEditor extends ControlEditor {

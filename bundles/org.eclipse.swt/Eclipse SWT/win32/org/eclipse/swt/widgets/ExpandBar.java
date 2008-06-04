@@ -36,6 +36,7 @@ import org.eclipse.swt.events.*;
  * @see ExpandEvent
  * @see ExpandListener
  * @see ExpandAdapter
+ * @see <a href="http://www.eclipse.org/swt/snippets/#expandbar">ExpandBar snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2

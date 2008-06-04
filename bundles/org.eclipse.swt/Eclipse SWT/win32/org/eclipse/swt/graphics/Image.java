@@ -63,6 +63,7 @@ import java.io.*;
  * @see Color
  * @see ImageData
  * @see ImageLoader
+ * @see <a href="http://www.eclipse.org/swt/snippets/#image">Image snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

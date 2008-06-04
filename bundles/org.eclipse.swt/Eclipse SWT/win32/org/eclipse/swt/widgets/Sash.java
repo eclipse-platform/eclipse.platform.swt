@@ -33,6 +33,7 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#sash">Sash snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Sash extends Control {

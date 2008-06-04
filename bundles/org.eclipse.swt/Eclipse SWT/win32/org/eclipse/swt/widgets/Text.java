@@ -40,6 +40,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#text">Text snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Text extends Scrollable {

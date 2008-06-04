@@ -35,6 +35,7 @@ import java.util.Vector;
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
  */
 final public class OleFrame extends Composite
 {	

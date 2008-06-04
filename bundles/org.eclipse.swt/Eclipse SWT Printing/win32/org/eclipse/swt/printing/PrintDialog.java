@@ -24,6 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * within the SWT implementation.
  * </p>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

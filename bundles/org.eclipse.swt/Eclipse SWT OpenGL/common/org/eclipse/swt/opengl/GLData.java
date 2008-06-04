@@ -15,6 +15,7 @@ package org.eclipse.swt.opengl;
  * of the pixel format attributes of a GL drawable.
  *
  * @see GLCanvas
+ * @see <a href="http://www.eclipse.org/swt/snippets/#opengl">OpenGL snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2

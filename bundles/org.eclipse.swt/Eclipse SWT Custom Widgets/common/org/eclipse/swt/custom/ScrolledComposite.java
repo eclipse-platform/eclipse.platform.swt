@@ -98,6 +98,7 @@ import org.eclipse.swt.widgets.*;
  * <dt><b>Styles:</b><dd>H_SCROLL, V_SCROLL
  * </dl>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#scrolledcomposite">ScrolledComposite snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class ScrolledComposite extends Composite {

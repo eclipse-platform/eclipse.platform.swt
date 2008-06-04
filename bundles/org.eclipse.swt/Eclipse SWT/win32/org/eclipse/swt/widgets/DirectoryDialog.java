@@ -29,6 +29,7 @@ import org.eclipse.swt.*;
  * within the SWT implementation.
  * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

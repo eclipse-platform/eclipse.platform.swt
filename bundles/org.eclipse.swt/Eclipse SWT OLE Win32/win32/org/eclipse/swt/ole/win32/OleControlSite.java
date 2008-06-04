@@ -38,6 +38,7 @@ import org.eclipse.swt.internal.win32.*;
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
  * </dl>
  *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#ole">OLE and ActiveX snippets</a>
  */
 public class OleControlSite extends OleClientSite
 {

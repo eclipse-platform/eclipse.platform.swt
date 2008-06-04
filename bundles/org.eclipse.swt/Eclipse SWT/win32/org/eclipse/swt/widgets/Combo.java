@@ -51,6 +51,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see List
+ * @see <a href="http://www.eclipse.org/swt/snippets/#combo">Combo snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
