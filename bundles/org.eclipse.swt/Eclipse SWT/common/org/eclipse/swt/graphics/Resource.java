@@ -42,7 +42,7 @@ public abstract class Resource {
 	 */
 	Device device;
 
-Resource() {
+public Resource() {
 }
 
 Resource(Device device) {
