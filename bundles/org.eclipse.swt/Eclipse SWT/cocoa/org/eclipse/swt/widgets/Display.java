@@ -1657,6 +1657,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTScrollView";
@@ -1677,6 +1678,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendArrowSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTableView";
@@ -1690,6 +1692,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1, proc6, "@:@@@i");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTOutlineView";
@@ -1705,6 +1708,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTreeItem";
@@ -1723,6 +1727,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTBox";
@@ -1732,6 +1737,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTProgressIndicator";
@@ -1741,12 +1747,14 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
@@ -1762,6 +1770,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTDatePicker";
@@ -1769,6 +1778,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
@@ -1779,6 +1789,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTStepper";
@@ -1786,6 +1797,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTScroller";
@@ -1793,6 +1805,7 @@ void initClasses () {
 //	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTMenuItem";
@@ -1810,11 +1823,13 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_1clickedOnLink_1atIndex_1, proc5, "@:@@i");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTWindow";
@@ -3175,6 +3190,10 @@ int windowDelegateProc(int delegate, int sel) {
 	}
 	if (sel == OS.sel_resignFirstResponder) {
 		return widget.resignFirstResponder() ? 1 : 0;
+	}
+	if (sel == OS.sel_resetCursorRects) {
+		widget.resetCursorRects(delegate, sel);
+		return 0;
 	}
 	return 0;
 }

@@ -2099,6 +2099,12 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+void resetCursorRects (int id, int sel) {
+	super.resetCursorRects (id, sel);
+	Cursor cursor = findCursor();
+	if (cursor != null)	view.addCursorRect(view.visibleRect(), cursor.handle);
+}
+
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
@@ -2422,8 +2428,7 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	//TODO null
-//	view.addCursorRect(view.frame(), cursor.handle);
+	view.window().invalidateCursorRectsForView(view);
 }
 
 void setDefaultFont () {

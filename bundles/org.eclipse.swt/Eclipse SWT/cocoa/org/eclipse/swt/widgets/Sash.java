@@ -311,6 +311,15 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
+void resetCursorRects (int id, int sel) {
+	super.resetCursorRects (id, sel);
+	Cursor cursor = findCursor();
+	if (cursor == null)	{
+		cursor = display.getSystemCursor((style & SWT.HORIZONTAL) != 0 ? SWT.CURSOR_SIZENS : SWT.CURSOR_SIZEWE);
+		view.addCursorRect(view.visibleRect(), cursor.handle);
+	}
+}
+
 int traversalCode (int key, NSEvent theEvent) {
 	return 0;
 }
