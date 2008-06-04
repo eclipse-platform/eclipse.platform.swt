@@ -15,6 +15,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
+ * This event is sent when an event is generated in the CTabFolder.
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a> 
  */
