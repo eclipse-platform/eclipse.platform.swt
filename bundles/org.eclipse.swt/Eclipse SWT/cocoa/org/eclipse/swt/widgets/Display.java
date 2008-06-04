@@ -110,6 +110,7 @@ public class Display extends Device {
 	Menu menuBar;
 
 	NSApplication application;
+	NSWindow screenWindow;
 	NSAutoreleasePool pool;
 
 	NSPoint cascade = new NSPoint();
@@ -215,7 +216,6 @@ public class Display extends Device {
 	};
 
 	static String APP_NAME = "SWT";
-	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -1835,7 +1835,13 @@ void initClasses () {
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	NSGraphicsContext context = application.context();
+	if (screenWindow == null) {
+		NSWindow window = (NSWindow) new NSWindow ().alloc ();
+		NSRect rect = new NSRect();
+		window = window.initWithContentRect_styleMask_backing_defer_(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		screenWindow = window;
+	}
+	NSGraphicsContext context = screenWindow.graphicsContext();
 //	NSAffineTransform transform = NSAffineTransform.transform();
 //	NSSize size = handle.size();
 //	transform.translateXBy(0, size.height);
@@ -2425,6 +2431,9 @@ void releaseDisplay () {
 		if (cursors [i] != null) cursors [i].dispose ();
 	}
 	cursors = null;
+	
+	if (screenWindow != null) screenWindow.release();
+	screenWindow = null;
 
 	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
