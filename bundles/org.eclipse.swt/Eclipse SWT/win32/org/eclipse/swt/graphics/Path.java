@@ -124,7 +124,7 @@ public Path (Device device, Path path, float flatness) {
 }
 
 /**
- * Constructs a new with the specifed PathData.
+ * Constructs a new Path with the specifed PathData.
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some
