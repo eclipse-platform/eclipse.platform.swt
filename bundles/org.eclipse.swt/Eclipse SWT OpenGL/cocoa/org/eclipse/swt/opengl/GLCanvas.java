@@ -118,7 +118,10 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose:
-					if (glView != null) glView.release();
+					if (glView != null) {
+						glView.clearGLContext();
+						glView.release();
+					}
 					glView = null;
 					if (pixelFormat != null) pixelFormat.release();
 					pixelFormat = null;
