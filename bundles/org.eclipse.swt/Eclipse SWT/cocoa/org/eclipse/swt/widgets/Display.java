@@ -112,6 +112,8 @@ public class Display extends Device {
 	NSApplication application;
 	NSWindow screenWindow;
 	NSAutoreleasePool pool;
+	boolean idle;
+	static final short SWT_IDLE_TYPE = 1;
 
 	NSPoint cascade = new NSPoint();
 
@@ -119,6 +121,7 @@ public class Display extends Device {
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	Callback windowDelegateCallback6;
 	Callback dialogCallback3;
+	Callback applicationCallback3;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -630,7 +633,18 @@ void createDisplay (DeviceData data) {
 	}
 	
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	application = NSApplication.sharedApplication();
+	
+	applicationCallback3 = new Callback(this, "applicationProc", 3);
+	int proc3 = applicationCallback3.getAddress();
+	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	Callback callback = new Callback(this, "applicationProc", 3);
+	int appProc3 = callback.getAddress();
+	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	String className = "SWTApplication";
+	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
+	OS.class_addMethod(cls, OS.sel_sendEvent_1, appProc3, "@:@");
+	OS.objc_registerClassPair(cls);
+	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
 }
 
 static void deregister (Display display) {
@@ -2327,11 +2341,11 @@ public boolean readAndDispatch () {
 	try {
 		boolean events = false;
 		events |= runTimers ();
-		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
-		if (event != null) {
-			events = true;
-			application.sendEvent(event);
-		}
+		NSEvent event = NSEvent.otherEventWithType(OS.NSApplicationDefined, new NSPoint(), 0, 0, 0, null, SWT_IDLE_TYPE, 0, 0);
+		application.postEvent(event, false);
+		idle = true;
+		application.run();
+		events |= !idle;
 		if (events) {
 			runDeferredEvents ();
 			return true;
@@ -2435,6 +2449,8 @@ void releaseDisplay () {
 	if (screenWindow != null) screenWindow.release();
 	screenWindow = null;
 
+	if (applicationCallback3 != null) applicationCallback3.dispose ();
+	if (applicationDelegateCallback3 != null) applicationDelegateCallback3.dispose();
 	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
 	if (windowDelegateCallback4 != null) windowDelegateCallback4.dispose ();
@@ -2443,6 +2459,7 @@ void releaseDisplay () {
 	if (dialogCallback3 != null) dialogCallback3.dispose ();
 	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = null;
 	windowDelegateCallback6 = windowDelegateCallback5 = null;
+	applicationCallback3 = dialogCallback3 = applicationDelegateCallback3 = null;
 }
 
 /**
@@ -3024,6 +3041,25 @@ void wakeThread () {
 	object.performSelectorOnMainThread_withObject_waitUntilDone_(OS.sel_release, null, false);
 }
 
+int applicationProc(int id, int sel, int event) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, event);
+	if (sel == OS.sel_sendEvent_1) {
+		if (event != 0) {
+			NSEvent nsEvent = new NSEvent(event);
+			if (nsEvent.type() == OS.NSApplicationDefined && nsEvent.subtype() == SWT_IDLE_TYPE) {
+				idle = true;
+			} else {
+				idle = false;
+			}
+		}
+		application.stop(null);
+	}
+	return 0;
+}
+
 int applicationDelegateProc(int id, int sel, int arg0) {
 	if (sel == OS.sel_applicationWillFinishLaunching_1) {
 		id dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
@@ -3047,8 +3083,8 @@ int applicationDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_terminate_1) {
 		application.terminate(application);
 	} else if (sel == OS.sel_orderFrontStandardAboutPanel_1) {
-		Event event = new Event ();
-		sendEvent (SWT.ABORT, event);
+//		Event event = new Event ();
+//		sendEvent (SWT.ABORT, event);
 	} else if (sel == OS.sel_hideOtherApplications_1) {
 		application.hideOtherApplications(application);
 	} else if (sel == OS.sel_hide_1) {
@@ -3069,7 +3105,6 @@ int applicationDelegateProc(int id, int sel, int arg0) {
 	} 
 	return 0;
 }
-
 
 int dialogProc(int id, int sel, int arg0) {
 	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
