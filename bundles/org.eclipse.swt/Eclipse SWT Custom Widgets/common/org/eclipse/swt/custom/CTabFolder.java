@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#ctabfolder">CTabFolder, CTabItem snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: CustomControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
  
