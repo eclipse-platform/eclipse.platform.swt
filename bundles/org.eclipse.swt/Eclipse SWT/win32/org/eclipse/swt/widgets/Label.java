@@ -27,7 +27,6 @@ import org.eclipse.swt.graphics.*;
  * do not specify a shadow style.
  * </p>
  * <dl>
- * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SEPARATOR, HORIZONTAL, VERTICAL</dd>
  * <dd>SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>

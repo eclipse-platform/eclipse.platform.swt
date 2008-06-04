@@ -36,6 +36,9 @@ import org.eclipse.swt.graphics.*;
  * @see ExpandEvent
  * @see ExpandListener
  * @see ExpandAdapter
+ * @see <a href="http://www.eclipse.org/swt/snippets/#expandbar">ExpandBar snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
  */
@@ -661,6 +664,8 @@ void setScrollbar () {
 /**
  * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around 
  * each item.
+ * 
+ * @param spacing the spacing around each item
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

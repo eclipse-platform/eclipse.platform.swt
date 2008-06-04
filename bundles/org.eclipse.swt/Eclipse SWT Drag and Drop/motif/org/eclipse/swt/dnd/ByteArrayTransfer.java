@@ -115,6 +115,8 @@ import org.eclipse.swt.internal.motif.*;
  * }
  * }
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class ByteArrayTransfer extends Transfer {
 

@@ -16,15 +16,17 @@ import org.eclipse.swt.internal.gtk.*;
  * The class <code>URLTransfer</code> provides a platform specific mechanism 
  * for converting text in URL format represented as a java <code>String</code> 
  * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information. The string  
- * must be a fully specified url.
+ * <code>Transfer</code> for additional information. The string 
+ * must contain a fully specified url.
  * 
- * <p>An example of a java <code>String[]</code> containing a URL is shown 
+ * <p>An example of a java <code>String</code> containing a URL is shown 
  * below:</p>
  * 
  * <code><pre>
- *     String urlData = "http://www.eclipse.org";
+ *     String url = "http://www.eclipse.org";
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class URLTransfer extends ByteArrayTransfer {
 
@@ -46,7 +48,7 @@ public static URLTransfer getInstance () {
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts a URL 
+ * This implementation of <code>javaToNative</code> converts a URL
  * represented by a java <code>String</code> to a platform specific representation.
  * For additional information see <code>Transfer#javaToNative</code>.
  * 
@@ -75,7 +77,7 @@ public void javaToNative (Object object, TransferData transferData){
 
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of a URL <code>String</code>.
+ * representation of a URL to a java <code>String</code>.
  * For additional information see <code>Transfer#nativeToJava</code>.
  * 
  * @param transferData the platform specific representation of the data to be 

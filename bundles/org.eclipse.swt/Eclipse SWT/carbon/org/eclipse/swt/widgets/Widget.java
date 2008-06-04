@@ -49,6 +49,7 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see #checkSubclass
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
 	int style, state;
@@ -160,6 +161,7 @@ int actionProc (int theControl, int partCode) {
  *
  * @see Listener
  * @see SWT
+ * @see #getListeners(int)
  * @see #removeListener(int, Listener)
  * @see #notifyListeners
  */
@@ -1349,6 +1351,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
  * 
  * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
  * @see #removeListener(int, Listener)
  */
 public void notifyListeners (int eventType, Event event) {
@@ -1466,7 +1469,7 @@ void releaseWidget () {
  * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1479,6 +1482,7 @@ void releaseWidget () {
  * @see Listener
  * @see SWT
  * @see #addListener
+ * @see #getListeners(int)
  * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener handler) {
@@ -1499,7 +1503,7 @@ public void removeListener (int eventType, Listener handler) {
  * </p>
  *
  * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1523,7 +1527,7 @@ protected void removeListener (int eventType, SWTEventListener handler) {
  * Removes the listener from the collection of listeners who will
  * be notified when the widget is disposed.
  *
- * @param listener the listener which should no longer be notified when the receiver is disposed
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

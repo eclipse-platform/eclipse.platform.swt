@@ -30,6 +30,9 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#table">Table, TableItem, TableColumn snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TableColumn extends Item {
 	Table parent;
@@ -88,7 +91,10 @@ public TableColumn (Table parent, int style) {
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the zero-relative index to store the receiver in its parent
@@ -398,7 +404,10 @@ public void removeSelectionListener(SelectionListener listener) {
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
  * or <code>CENTER</code>.
- *
+ * <p>
+ * Note that due to a restriction on some platforms, the first column
+ * is always left aligned.
+ * </p>
  * @param alignment the new alignment 
  *
  * @exception SWTException <ul>

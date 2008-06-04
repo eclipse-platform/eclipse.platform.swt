@@ -29,6 +29,7 @@ import org.eclipse.swt.*;
  * </p>
  * 
  * @see ExpandBar
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.2
  */

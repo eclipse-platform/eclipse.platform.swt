@@ -22,6 +22,7 @@ import org.eclipse.swt.*;
  * within the packages provided by SWT. It is not available on all
  * platforms, and should never be called from application code.
  * </p>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GCData {
 	public Device device;

@@ -30,6 +30,10 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @see <a href="http://www.eclipse.org/swt/snippets/#filedialog">FileDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
@@ -271,8 +275,10 @@ public void setFileName (String string) {
  * which may be null.
  * <p>
  * The strings are platform specific. For example, on
- * Windows, an extension filter string is typically of
- * the form "*.extension", where "*.*" matches all files.
+ * some platforms, an extension filter string is typically
+ * of the form "*.extension", where "*.*" matches all files.
+ * For filters with multiple extensions, use semicolon as
+ * a separator, e.g. "*.jpg;*.png".
  * </p>
  *
  * @param extensions the file extension filter
@@ -305,7 +311,7 @@ public void setFilterIndex (int index) {
 }
 
 /**
- * Sets the the names that describe the filter extensions
+ * Sets the names that describe the filter extensions
  * which the dialog will use to filter the files it shows
  * to the argument, which may be null.
  * <p>

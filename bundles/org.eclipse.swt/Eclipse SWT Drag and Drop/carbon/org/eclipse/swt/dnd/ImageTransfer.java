@@ -17,21 +17,22 @@ import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * The class <code>ImageTransfer</code> provides a platform specific mechanism
- * for converting an Image represented as a java <code>ImageData</code> to a
- * platform specific representation of the data and vice versa. The
- * <code>ImageData</code> contains infomration about the Image. See
- * <code>Transfer</code> for additional information.
+ * The class <code>ImageTransfer</code> provides a platform specific mechanism 
+ * for converting a Image represented as a java <code>ImageData</code> to a 
+ * platform specific representation of the data and vice versa.  
+ * See <code>Transfer</code> for additional information.
  * 
- * <p>
- * An example of a java <code>Image</code> containing an ImageData is shown
- * below:
- * </p>
+ * <p>An example of a java <code>ImageData</code> is shown 
+ * below:</p>
  * 
  * <code><pre>
- * Image image = new Image(display, fileName);
- * ImageData imgData = image.getImageData();
+ *     Image image = new Image("C:\temp\img1.gif");
+ *	   ImageData imgData = image.getImageData();
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
+ * @since 3.4
  */
 public class ImageTransfer extends ByteArrayTransfer {
 
@@ -46,7 +47,7 @@ ImageTransfer() {
 
 /**
  * Returns the singleton instance of the ImageTransfer class.
- * 
+ *
  * @return the singleton instance of the ImageTransfer class
  */
 public static ImageTransfer getInstance() {
@@ -54,17 +55,14 @@ public static ImageTransfer getInstance() {
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts an ImageData
- * object represented by a java <code>ImageData</code> to a platform
- * specific representation. For additional information see
- * <code>Transfer#javaToNative</code>.
+ * This implementation of <code>javaToNative</code> converts an ImageData object represented
+ * by java <code>ImageData</code> to a platform specific representation.
+ * For additional information see <code>Transfer#javaToNative</code>.
  * 
- * @param object
- *            a java <code>ImageData</code>
- * @param transferData
- *            an empty <code>TransferData</code> object; this object will
- *            be filled in on return with the platform specific format of
- *            the data
+ * @param object a java <code>ImageData</code> containing the ImageData to be 
+ * converted
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkImage(object) || !isSupportedType(transferData)) {
@@ -117,15 +115,14 @@ public void javaToNative(Object object, TransferData transferData) {
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform
- * specific representation of an ImageData <code>ImageData</code>. For
- * additional information see <code>Transfer#nativeToJava</code>.
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of an image to java <code>ImageData</code>.  
+ * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData
- *            the platform specific representation of the data to be been
- *            converted
- * @return a java <code>ImageData</code> object if the conversion was
- *         successful; otherwise null
+ * @param transferData the platform specific representation of the data to be 
+ * been converted
+ * @return a java <code>ImageData</code> of the image if
+ * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null)

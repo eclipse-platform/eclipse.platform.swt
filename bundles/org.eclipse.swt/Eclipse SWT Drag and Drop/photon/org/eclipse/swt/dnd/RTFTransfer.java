@@ -26,6 +26,8 @@ import org.eclipse.swt.internal.photon.OS;
  * <code><pre>
  *     String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class RTFTransfer extends ByteArrayTransfer {
 

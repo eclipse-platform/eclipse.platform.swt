@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.photon.*;
  * using the <code>getFontMetrics()</code> method.
  *
  * @see GC#getFontMetrics
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class FontMetrics {
 

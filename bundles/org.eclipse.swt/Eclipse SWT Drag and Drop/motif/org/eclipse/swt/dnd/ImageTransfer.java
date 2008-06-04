@@ -28,6 +28,10 @@ import org.eclipse.swt.widgets.Display;
  *     Image image = new Image("C:\temp\img1.gif");
  *	   ImageData imgData = image.getImageData();
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
+ * @since 3.4
  */
 public class ImageTransfer extends ByteArrayTransfer {
 	
@@ -76,12 +80,12 @@ public void javaToNative(Object object, TransferData transferData) {
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of an <code>ImageData</code> to java.  
+ * representation of an image to java <code>ImageData</code>.  
  * For additional information see <code>Transfer#nativeToJava</code>.
  * 
  * @param transferData the platform specific representation of the data to be 
  * been converted
- * @return a java <code>ImageData</code> the imageData of the image if
+ * @return a java <code>ImageData</code> of the image if
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {	

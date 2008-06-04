@@ -23,6 +23,10 @@ package org.eclipse.swt.dnd;
  *     Image image = new Image("C:\temp\img1.gif");
  *	   ImageData imgData = image.getImageData();
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
+ * @since 3.4
  */
 public class ImageTransfer extends ByteArrayTransfer {
 	

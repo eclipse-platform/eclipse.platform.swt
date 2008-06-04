@@ -26,6 +26,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * which may not be available on some platforms.
  * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: GraphicsExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
  * @since 3.1
  */
 public class Transform extends Resource {
@@ -172,6 +175,16 @@ public void getElements(float[] elements) {
 	elements[5] = struct.tY;
 }
 
+/**
+ * Modifies the receiver such that the matrix it represents becomes the
+ * identity matrix. 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
 public void identity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAffineTransformStruct struct = new NSAffineTransformStruct();
@@ -181,7 +194,7 @@ public void identity() {
 }
 
 /**
- * Modifies the receiver such that the matrix it represents becomes the
+ * Modifies the receiver such that the matrix it represents becomes
  * the mathematical inverse of the matrix it previously represented. 
  *
  * @exception SWTException <ul>
@@ -307,6 +320,19 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
 	handle.setTransformStruct(struct);
 }
 
+/**
+ * Modifies the receiver so that it represents a transformation that is
+ * equivalent to its previous transformation sheared by (shearX, shearY).
+ * 
+ * @param shearX the shear factor in the X direction
+ * @param shearY the shear factor in the Y direction
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
 public void shear(float shearX, float shearY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAffineTransformStruct struct = new NSAffineTransformStruct();

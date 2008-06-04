@@ -29,6 +29,8 @@ package org.eclipse.swt.dnd;
  *     fileData[0] = file1.getAbsolutePath();
  *     fileData[1] = file2.getAbsolutePath();
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class FileTransfer extends ByteArrayTransfer {
 	

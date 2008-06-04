@@ -23,6 +23,10 @@ import org.eclipse.swt.widgets.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class PrintDialog extends Dialog {
 	PrinterData printerData;
@@ -126,11 +130,11 @@ public PrinterData open() {
  * before pressing OK in the dialog. This will be one
  * of the following values:
  * <dl>
- * <dt><code>ALL_PAGES</code></dt>
+ * <dt><code>PrinterData.ALL_PAGES</code></dt>
  * <dd>Print all pages in the current document</dd>
- * <dt><code>PAGE_RANGE</code></dt>
+ * <dt><code>PrinterData.PAGE_RANGE</code></dt>
  * <dd>Print the range of pages specified by startPage and endPage</dd>
- * <dt><code>SELECTION</code></dt>
+ * <dt><code>PrinterData.SELECTION</code></dt>
  * <dd>Print the current selection</dd>
  * </dl>
  *
@@ -144,11 +148,11 @@ public int getScope() {
  * setting when the dialog is opened. This can have one of
  * the following values:
  * <dl>
- * <dt><code>ALL_PAGES</code></dt>
+ * <dt><code>PrinterData.ALL_PAGES</code></dt>
  * <dd>Print all pages in the current document</dd>
- * <dt><code>PAGE_RANGE</code></dt>
+ * <dt><code>PrinterData.PAGE_RANGE</code></dt>
  * <dd>Print the range of pages specified by startPage and endPage</dd>
- * <dt><code>SELECTION</code></dt>
+ * <dt><code>PrinterData.SELECTION</code></dt>
  * <dd>Print the current selection</dd>
  * </dl>
  *
@@ -162,7 +166,7 @@ public void setScope(int scope) {
  * before pressing OK in the dialog.
  * <p>
  * This value can be from 1 to the maximum number of pages for the platform.
- * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  *
  * @return the start page setting that the user selected
@@ -175,7 +179,7 @@ public int getStartPage() {
  * is opened.
  * <p>
  * This value can be from 1 to the maximum number of pages for the platform.
- * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  * 
  * @param startPage the startPage setting when the dialog is opened
@@ -188,7 +192,7 @@ public void setStartPage(int startPage) {
  * before pressing OK in the dialog.
  * <p>
  * This value can be from 1 to the maximum number of pages for the platform.
- * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  *
  * @return the end page setting that the user selected
@@ -201,7 +205,7 @@ public int getEndPage() {
  * is opened.
  * <p>
  * This value can be from 1 to the maximum number of pages for the platform.
- * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
+ * Note that it is only valid if the scope is <code>PrinterData.PAGE_RANGE</code>.
  * </p>
  * 
  * @param endPage the end page setting when the dialog is opened

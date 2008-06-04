@@ -37,6 +37,9 @@ import org.eclipse.swt.internal.gtk.*;
  * <p>
  * Note: Only one of the above styles may be specified.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#cursor">Cursor snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Cursor extends Resource {
 	/**

@@ -44,6 +44,9 @@ import org.eclipse.swt.*;
  * </p>
  *
  * @see org.eclipse.swt.events.PaintEvent
+ * @see <a href="http://www.eclipse.org/swt/snippets/#gc">GC snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class GC extends Resource {
 	/**
@@ -2396,7 +2399,8 @@ public boolean getAdvanced() {
 	return data.cairo != 0;
 }
 /**
- * Returns the receiver's alpha value.
+ * Returns the receiver's alpha value. The alpha value
+ * is between 0 (transparent) and 255 (opaque).
  *
  * @return the alpha value
  *
@@ -3469,7 +3473,8 @@ public void setAdvanced(boolean advanced) {
 	}
 }
 /**
- * Sets the receiver's alpha value.
+ * Sets the receiver's alpha value which must be
+ * between 0 (transparent) and 255 (opaque).
  * <p>
  * This operation requires the operating system's advanced
  * graphics subsystem which may not be available on some

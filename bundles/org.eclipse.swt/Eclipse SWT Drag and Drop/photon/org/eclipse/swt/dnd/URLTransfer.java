@@ -21,8 +21,10 @@ package org.eclipse.swt.dnd;
  * below:</p>
  * 
  * <code><pre>
- *     String urlData = "http://www.eclipse.org";
+ *     String url = "http://www.eclipse.org";
  * </code></pre>
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class URLTransfer extends ByteArrayTransfer {
 
@@ -55,8 +57,8 @@ public void javaToNative (Object object, TransferData transferData){
  * For additional information see <code>Transfer#nativeToJava</code>.
  * 
  * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String[]</code> containing a URL if the 
+ * converted
+ * @return a java <code>String</code> containing a URL if the 
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){

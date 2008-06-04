@@ -34,6 +34,8 @@ import org.eclipse.swt.internal.carbon.*;
  * @see AccessibleEvent
  * @see AccessibleControlListener
  * @see AccessibleControlEvent
+ * @see <a href="http://www.eclipse.org/swt/snippets/#accessibility">Accessibility snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 2.0
  */

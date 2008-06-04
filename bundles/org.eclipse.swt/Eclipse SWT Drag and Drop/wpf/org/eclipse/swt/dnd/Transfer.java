@@ -24,6 +24,9 @@ import org.eclipse.swt.*;
  * ByteArrayTransfer class.</p>
  * 
  * @see ByteArrayTransfer
+ * @see <a href="http://www.eclipse.org/swt/snippets/#dnd">Drag and Drop snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: DNDExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Transfer {
 
@@ -176,6 +179,15 @@ static int getWPFFormat(int registeredType) {
 	return createDotNetString(registeredTypes[registeredType]);
 }
 
+/**
+ * Test that the object is of the correct format for this Transfer class.
+ * 
+ * @param object a java representation of the data to be converted
+ * 
+ * @return true if object is of the correct form for this transfer type
+ * 
+ * @since 3.1
+ */
 protected boolean validate(Object object) {
 	return true;
 }

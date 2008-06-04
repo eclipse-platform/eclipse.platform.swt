@@ -30,6 +30,10 @@ import org.eclipse.swt.internal.gtk.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ *
+ * @see <a href="http://www.eclipse.org/swt/snippets/#progressbar">ProgressBar snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class ProgressBar extends Control {
 	int timerId, minimum = 0, maximum = 100, selection = 0;
@@ -134,6 +138,19 @@ public int getSelection () {
 	return selection;
 }
 
+/**
+ * Returns the state of the receiver. The value will be one of
+ * <code>NORMAL</code>, <code>ERROR</code> or <code>PAUSED</code>.
+ *
+ * @return the state 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
 public int getState () {
 	checkWidget ();
 	return SWT.NORMAL;
@@ -227,6 +244,19 @@ public void setSelection (int value) {
 	updateBar (selection, minimum, maximum);
 }
 
+/**
+ * Sets the state of the receiver. The state is be one of
+ * <code>NORMAL</code>, <code>ERROR</code> or <code>PAUSED</code>.
+ *
+ * @param state the new state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.4
+ */
 public void setState (int state) {
 	checkWidget ();
 	//NOT IMPLEMENTED

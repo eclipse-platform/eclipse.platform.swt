@@ -24,6 +24,7 @@ package org.eclipse.swt.dnd;
  * </code></pre>
  * 
  * @see Transfer
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TextTransfer extends ByteArrayTransfer {
 
