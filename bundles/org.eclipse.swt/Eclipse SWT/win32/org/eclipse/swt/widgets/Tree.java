@@ -193,11 +193,14 @@ void _addListener (int eventType, Listener listener) {
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if (eventType == SWT.MeasureItem) {
-				if (explorerTheme) {
-					int bits1 = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-					bits1 &= ~OS.TVS_EX_AUTOHSCROLL;
-					OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits1);
-				}
+				/*
+				* This code is intentionally commented.
+				*/
+//				if (explorerTheme) {
+//					int bits1 = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+//					bits1 &= ~OS.TVS_EX_AUTOHSCROLL;
+//					OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits1);
+//				}
 				bits |= OS.TVS_NOHSCROLL;
 			}
 			/*
@@ -1825,7 +1828,10 @@ void createHandle () {
 			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
-			if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
+			/*
+			* This code is intentionally commented.
+			*/
+//			if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
 			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
 			/*
 			* Bug in Windows.  When the tree is using the explorer
