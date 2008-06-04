@@ -362,7 +362,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	//TODO - SWT.CHECK	
 	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
 	scrollWidget.initWithFrame(new NSRect ());
 	scrollWidget.setHasHorizontalScroller(true);
