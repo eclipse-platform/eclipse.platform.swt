@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

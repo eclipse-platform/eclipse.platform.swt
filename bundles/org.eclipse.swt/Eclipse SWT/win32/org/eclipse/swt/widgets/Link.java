@@ -32,6 +32,7 @@ import org.eclipse.swt.accessibility.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#link">Link snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
  * @since 3.1

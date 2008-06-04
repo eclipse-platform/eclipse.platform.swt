@@ -30,6 +30,7 @@ import org.eclipse.swt.*;
  * </p>
  * 
  * @see <a href="http://www.eclipse.org/swt/snippets/#directorydialog">DirectoryDialog snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

@@ -112,6 +112,7 @@ import org.eclipse.swt.events.*;
  * @see Decorations
  * @see SWT
  * @see <a href="http://www.eclipse.org/swt/snippets/#shell">Shell snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Shell extends Decorations {

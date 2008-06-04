@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
  *
  * @see Composite
  * @see <a href="http://www.eclipse.org/swt/snippets/#canvas">Canvas snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

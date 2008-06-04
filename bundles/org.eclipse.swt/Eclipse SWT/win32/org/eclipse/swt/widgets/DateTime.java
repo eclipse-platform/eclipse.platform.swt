@@ -40,6 +40,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  * 
  * @see <a href="http://www.eclipse.org/swt/snippets/#datetime">DateTime snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.3

@@ -71,6 +71,7 @@ import org.eclipse.swt.*;
  * </p>
  * 
  * @see Shell
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

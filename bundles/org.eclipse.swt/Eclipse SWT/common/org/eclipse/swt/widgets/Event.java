@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.*;
  * 
  * @see Listener
  * @see org.eclipse.swt.events.TypedEvent
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Listeners</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 

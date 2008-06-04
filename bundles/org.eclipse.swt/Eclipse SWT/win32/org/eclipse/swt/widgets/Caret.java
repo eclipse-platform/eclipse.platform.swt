@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  * 
  * @see <a href="http://www.eclipse.org/swt/snippets/#caret">Caret snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Canvas tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 
