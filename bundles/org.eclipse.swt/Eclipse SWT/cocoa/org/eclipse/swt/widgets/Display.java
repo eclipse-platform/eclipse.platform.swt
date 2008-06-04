@@ -634,17 +634,18 @@ void createDisplay (DeviceData data) {
 	
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	
-	applicationCallback3 = new Callback(this, "applicationProc", 3);
-	int proc3 = applicationCallback3.getAddress();
-	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	Callback callback = new Callback(this, "applicationProc", 3);
-	int appProc3 = callback.getAddress();
-	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	String className = "SWTApplication";
-	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-	OS.class_addMethod(cls, OS.sel_sendEvent_1, appProc3, "@:@");
-	OS.objc_registerClassPair(cls);
-	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
+//	applicationCallback3 = new Callback(this, "applicationProc", 3);
+//	int proc3 = applicationCallback3.getAddress();
+//	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+//	Callback callback = new Callback(this, "applicationProc", 3);
+//	int appProc3 = callback.getAddress();
+//	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+//	String className = "SWTApplication";
+//	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
+//	OS.class_addMethod(cls, OS.sel_sendEvent_1, appProc3, "@:@");
+//	OS.objc_registerClassPair(cls);
+//	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
+	application = NSApplication.sharedApplication();
 }
 
 static void deregister (Display display) {
@@ -2341,11 +2342,16 @@ public boolean readAndDispatch () {
 	try {
 		boolean events = false;
 		events |= runTimers ();
-		NSEvent event = NSEvent.otherEventWithType(OS.NSApplicationDefined, new NSPoint(), 0, 0, 0, null, SWT_IDLE_TYPE, 0, 0);
-		application.postEvent(event, false);
-		idle = true;
-		application.run();
-		events |= !idle;
+		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+		if (event != null) {
+			events = true;
+			application.sendEvent(event);
+		}
+//		NSEvent event = NSEvent.otherEventWithType(OS.NSApplicationDefined, new NSPoint(), 0, 0, 0, null, SWT_IDLE_TYPE, 0, 0);
+//		application.postEvent(event, false);
+//		idle = true;
+//		application.run();
+//		events |= !idle;
 		if (events) {
 			runDeferredEvents ();
 			return true;
