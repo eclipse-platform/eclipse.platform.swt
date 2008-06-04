@@ -16,8 +16,7 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
  * for converting text in RTF format represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information.
+ * to a platform specific representation of the data and vice versa.
  * 
  * <p>An example of a java <code>String</code> containing RTF text is shown 
  * below:</p>
@@ -26,7 +25,7 @@ import org.eclipse.swt.internal.win32.*;
  *     String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
  * </code></pre>
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see Transfer
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
@@ -48,11 +47,12 @@ public static RTFTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts RTF-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
  * 
  * @param object a java <code>String</code> containing RTF text
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
@@ -83,12 +83,12 @@ public void javaToNative (Object object, TransferData transferData){
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of RTF text to a java <code>String</code>.
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>String</code> containing RTF text if the 
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String</code> containing RTF text if the conversion was successful;
+ * 		otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;

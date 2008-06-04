@@ -43,7 +43,7 @@ public class TreeItem extends Item {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 */	
+	 */
 	public int /*long*/ handle;
 	Tree parent;
 	String [] strings;
