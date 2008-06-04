@@ -17,19 +17,17 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * The class <code>ImageTransfer</code> provides a platform specific mechanism 
- * for converting a Image represented as a java <code>ImageData</code> to a 
+ * for converting an Image represented as a java <code>ImageData</code> to a 
  * platform specific representation of the data and vice versa.  
- * See <code>Transfer</code> for additional information.
  * 
- * <p>An example of a java <code>ImageData</code> is shown 
- * below:</p>
+ * <p>An example of a java <code>ImageData</code> is shown below:</p>
  * 
  * <code><pre>
- *     Image image = new Image("C:\temp\img1.gif");
+ *     Image image = new Image(display, "C:\temp\img1.gif");
  *	   ImageData imgData = image.getImageData();
  * </code></pre>
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see Transfer
  * 
  * @since 3.4
  */
@@ -54,12 +52,12 @@ public static ImageTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts an ImageData object represented
  * by java <code>ImageData</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
  * 
- * @param object a java <code>ImageData</code> containing the ImageData to be 
- * converted
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param object a java <code>ImageData</code> containing the ImageData to be converted
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative(Object object, TransferData transferData) {
 	if (!checkImage(object) || !isSupportedType(transferData)) {
@@ -81,12 +79,12 @@ public void javaToNative(Object object, TransferData transferData) {
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of an image to java <code>ImageData</code>.  
- * For additional information see <code>Transfer#nativeToJava</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * been converted
- * @return a java <code>ImageData</code> of the image if
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>ImageData</code> of the image if the conversion was successful;
+ * 		otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData) {	
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;		

@@ -148,8 +148,12 @@ public int getSelection () {
 }
 
 /**
- * Returns the state of the receiver. The value will be one of
- * <code>NORMAL</code>, <code>ERROR</code> or <code>PAUSED</code>.
+ * Returns the state of the receiver. The value will be one of:
+ * <ul>
+ * 	<li>{@link SWT#NORMAL}</li>
+ * 	<li>{@link SWT#ERROR}</li>
+ * 	<li>{@link SWT#PAUSED}</li>
+ * </ul>
  *
  * @return the state 
  *
@@ -232,8 +236,12 @@ public void setSelection (int value) {
 }
 
 /**
- * Sets the state of the receiver. The state is be one of
- * <code>NORMAL</code>, <code>ERROR</code> or <code>PAUSED</code>.
+ * Sets the state of the receiver. The state must be one of these values:
+ * <ul>
+ * 	<li>{@link SWT#NORMAL}</li>
+ * 	<li>{@link SWT#ERROR}</li>
+ * 	<li>{@link SWT#PAUSED}</li>
+ * </ul>
  *
  * @param state the new state
  *

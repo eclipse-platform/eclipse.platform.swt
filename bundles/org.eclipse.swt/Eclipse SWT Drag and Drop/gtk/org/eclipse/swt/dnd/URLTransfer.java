@@ -15,18 +15,16 @@ import org.eclipse.swt.internal.gtk.*;
 /**
  * The class <code>URLTransfer</code> provides a platform specific mechanism 
  * for converting text in URL format represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.  See 
- * <code>Transfer</code> for additional information. The string 
+ * to a platform specific representation of the data and vice versa. The string
  * must contain a fully specified url.
  * 
- * <p>An example of a java <code>String</code> containing a URL is shown 
- * below:</p>
+ * <p>An example of a java <code>String</code> containing a URL is shown below:</p>
  * 
  * <code><pre>
  *     String url = "http://www.eclipse.org";
  * </code></pre>
  *
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @see Transfer
  */
 public class URLTransfer extends ByteArrayTransfer {
 
@@ -50,11 +48,12 @@ public static URLTransfer getInstance () {
 /**
  * This implementation of <code>javaToNative</code> converts a URL
  * represented by a java <code>String</code> to a platform specific representation.
- * For additional information see <code>Transfer#javaToNative</code>.
  * 
  * @param object a java <code>String</code> containing a URL
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
+ * 
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
@@ -76,14 +75,14 @@ public void javaToNative (Object object, TransferData transferData){
 }
 
 /**
- * This implementation of <code>nativeToJava</code> converts a platform specific 
- * representation of a URL to a java <code>String</code>.
- * For additional information see <code>Transfer#nativeToJava</code>.
+ * This implementation of <code>nativeToJava</code> converts a platform 
+ * specific representation of a URL to a java <code>String</code>.
  * 
- * @param transferData the platform specific representation of the data to be 
- * converted
- * @return a java <code>String</code> containing a URL if the 
- * conversion was successful; otherwise null
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String</code> containing a URL if the conversion was successful;
+ * 		otherwise null
+ * 
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;

@@ -24,7 +24,6 @@ package org.eclipse.swt.dnd;
  * </code></pre>
  * 
  * @see Transfer
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class TextTransfer extends ByteArrayTransfer {
 
@@ -51,10 +50,10 @@ public static TextTransfer getInstance () {
  * represented by a java <code>String</code> to a platform specific representation.
  * 
  * @param object a java <code>String</code> containing text
- * @param transferData an empty <code>TransferData</code> object; this object
- *  will be filled in on return with the platform specific format of the data
+ * @param transferData an empty <code>TransferData</code> object that will
+ *  	be filled in on return with the platform specific format of the data
  *  
- * @see Transfer#javaToNative
+ * @see Transfer#nativeToJava
  */
 public void javaToNative (Object object, TransferData transferData){
 }
@@ -65,7 +64,7 @@ public void javaToNative (Object object, TransferData transferData){
  * @param transferData the platform specific representation of the data to be converted
  * @return a java <code>String</code> containing text if the conversion was successful; otherwise null
  * 
- * @see Transfer#nativeToJava
+ * @see Transfer#javaToNative
  */
 public Object nativeToJava(TransferData transferData){
 	return null;
