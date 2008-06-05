@@ -71,6 +71,7 @@ public final class TextLayout extends Resource {
  */
 public TextLayout (Device device) {
 	super(device);
+	device = this.device;
 	context = OS.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_context_set_language(context, OS.gtk_get_default_language());
@@ -80,7 +81,7 @@ public TextLayout (Device device) {
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_layout_set_font_description(layout, device.systemFont.handle);
 	OS.pango_layout_set_wrap(layout, OS.PANGO_WRAP_WORD_CHAR);
-	OS.pango_layout_set_tabs(layout, this.device.emptyTab);
+	OS.pango_layout_set_tabs(layout, device.emptyTab);
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
 		OS.pango_layout_set_auto_dir(layout, false);
 	}
