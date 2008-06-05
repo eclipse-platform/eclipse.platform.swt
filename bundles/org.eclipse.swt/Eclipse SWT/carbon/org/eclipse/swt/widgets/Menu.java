@@ -640,7 +640,18 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 //		MenuItem item = items [i];
 //		item.x = item.y = item.width = item.height = 0;
 //	}
-	sendEvent (SWT.Hide);
+	/*
+	* Feature in the Macintosh.  In order to populate the search field of
+	* the help menu, the events kEventMenuOpening, kEventMenuClosed and
+	* others are sent to sub menus even when the cascade item of the submenu
+	* is disabled.  Normally, the user can never get to these submenus.
+	* This means that application code does not expect SWT.Show and SWT.Hide
+	* events.  The fix is to avoid the events when the cascade item is
+	* disabled.
+	*/
+	boolean send = true;
+	if (cascade != null && !cascade.getEnabled ()) send = false;
+	if (send) sendEvent (SWT.Hide);
 	return OS.eventNotHandledErr;
 }
 
@@ -800,8 +811,21 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	* calling ContextualMenuSelect() instead of in kEventMenuOpening.
 	*/	
 	if ((style & SWT.POP_UP) == 0) {
-		sendEvent (SWT.Show);
-		modified = false;
+		/*
+		* Feature in the Macintosh.  In order to populate the search field of
+		* the help menu, the events kEventMenuOpening, kEventMenuClosed and
+		* others are sent to sub menus even when the cascade item of the submenu
+		* is disabled.  Normally, the user can never get to these submenus.
+		* This means that application code does not expect SWT.Show and SWT.Hide
+		* events.  The fix is to avoid the events when the cascade item is
+		* disabled.
+		*/
+		boolean send = true;
+		if (cascade != null && !cascade.getEnabled ()) send = false;
+		if (send) {
+			sendEvent (SWT.Show);
+			modified = false;
+		}
 	}
 	return OS.eventNotHandledErr;
 }
