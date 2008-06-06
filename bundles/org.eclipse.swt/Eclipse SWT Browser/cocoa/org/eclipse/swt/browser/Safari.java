@@ -94,7 +94,7 @@ public void create (Composite parent, int style) {
 		int proc7 = Callback7.getAddress();
 		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		
-		int cls = OS.objc_allocateClassPair(OS.class_WebView, className, 0);
+		int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 		OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
