@@ -258,11 +258,10 @@ void drawRect (int id, NSRect rect) {
 	if ((state & CANVAS) != 0) {
 		if (background != null && !background.isDisposed ()) {
 			float [] color = background.handle;
-			NSRect bounds = view.bounds();
 			NSGraphicsContext context = NSGraphicsContext.currentContext();
 			context.saveGraphicsState();
 			NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
-			NSBezierPath.fillRect(bounds);
+			NSBezierPath.fillRect(rect);
 			context.restoreGraphicsState();
 		}
 	}
