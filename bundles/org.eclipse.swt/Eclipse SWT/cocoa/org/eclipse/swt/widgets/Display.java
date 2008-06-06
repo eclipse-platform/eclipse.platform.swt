@@ -639,12 +639,9 @@ void createDisplay (DeviceData data) {
 //	applicationCallback3 = new Callback(this, "applicationProc", 3);
 //	int proc3 = applicationCallback3.getAddress();
 //	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//	Callback callback = new Callback(this, "applicationProc", 3);
-//	int appProc3 = callback.getAddress();
-//	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 //	String className = "SWTApplication";
 //	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-//	OS.class_addMethod(cls, OS.sel_sendEvent_1, appProc3, "@:@");
+//	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
 //	OS.objc_registerClassPair(cls);
 //	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
 	application = NSApplication.sharedApplication();
