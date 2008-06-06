@@ -146,7 +146,6 @@ void createHandle () {
 	widget.initWithFrame (new NSRect());
 	widget.setTag(jniRef);
 	view = widget;
-	parent.contentView().addSubview_(view);
 }
 
 boolean sendKeyEvent(NSEvent nsEvent, int type) {
@@ -208,8 +207,8 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	return true;
 }
 
-void mouseDown(int theEvent) {
-	super.mouseDown(theEvent);
+void mouseDown(int id, int sel, int theEvent) {
+	super.mouseDown(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent(theEvent);
 	if (nsEvent.clickCount() != 1) return;
 	NSPoint location = nsEvent.locationInWindow();
@@ -232,8 +231,8 @@ void mouseDown(int theEvent) {
 	}
 }
 
-void mouseDragged(int theEvent) {
-	super.mouseDragged(theEvent);
+void mouseDragged(int id, int sel, int theEvent) {
+	super.mouseDragged(id, sel, theEvent);
 	if (!dragging) return;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint location = nsEvent.locationInWindow();
@@ -261,14 +260,8 @@ void mouseDragged(int theEvent) {
 	}
 }
 
-void mouseEntered(int theEvent) {
-	//TODO need to add tracking area
-	super.mouseEntered(theEvent);
-	sizeCursor.handle.set();
-}
-
-void mouseUp(int theEvent) {
-	super.mouseUp(theEvent);
+void mouseUp(int id, int sel, int theEvent) {
+	super.mouseUp(id, sel, theEvent);
 	if (!dragging) return;
 	dragging = false;
 	NSRect frame = view.frame();

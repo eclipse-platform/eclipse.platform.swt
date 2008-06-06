@@ -492,7 +492,7 @@ void createHandle () {
 		}
 	}
 	
-	createHandle (null);
+	super.createHandle ();
 	
 	window.setContentView (topView());
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
@@ -1331,7 +1331,6 @@ void setWindowVisible (boolean visible, boolean key) {
 }
 
 void setZOrder () {
-//	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
 void setZOrder (Control control, boolean above) {

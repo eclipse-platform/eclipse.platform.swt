@@ -356,7 +356,6 @@ void createHandle () {
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
 		view = widget;
-		parent.contentView().addSubview_(widget);
 	} else {
 		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
 		scrollWidget.initWithFrame(new NSRect());
@@ -396,7 +395,6 @@ void createHandle () {
 		view = widget;
 		scrollView = scrollWidget;
 		scrollView.setDocumentView(widget);
-		parent.contentView().addSubview_(scrollView);
 	}
 }
 

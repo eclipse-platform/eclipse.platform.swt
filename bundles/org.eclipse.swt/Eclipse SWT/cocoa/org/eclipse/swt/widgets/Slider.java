@@ -180,7 +180,6 @@ void createHandle () {
 	widget.setAction(OS.sel_sendSelection);
 	widget.setTag(jniRef);
 	view = widget;
-	parent.contentView().addSubview_(widget);
 	updateBar(0, minimum, maximum, thumb);
 }
 

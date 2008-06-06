@@ -170,8 +170,7 @@ void createHandle () {
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
 	widget.setTag(jniRef);
-	view = widget;	
-	parent.contentView().addSubview_(widget);
+	view = widget;
 }
 
 /**

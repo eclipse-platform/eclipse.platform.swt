@@ -260,8 +260,7 @@ void createHandle () {
 	widget.addSubview_(buttonWidget);
 	buttonView = buttonWidget;
 	textView = textWidget;
-	view = widget;	
-	parent.contentView().addSubview_(widget);
+	view = widget;
 	setSelection (0, false, true, false);
 }
 

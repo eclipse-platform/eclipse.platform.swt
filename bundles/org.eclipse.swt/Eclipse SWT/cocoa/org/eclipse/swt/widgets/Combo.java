@@ -369,14 +369,12 @@ void createHandle () {
 		widget.setAction(OS.sel_sendSelection);
 		widget.setTag(jniRef);
 		view = widget;
-		parent.view.addSubview_(widget);
 	} else {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setTag(jniRef);
 		widget.setDelegate(widget);
 		view = widget;
-		parent.contentView().addSubview_(widget);
 	}
 }
 

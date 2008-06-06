@@ -425,7 +425,6 @@ void createHandle () {
 	scrollView = scrollWidget;
 	view = widget;
 	scrollView.setDocumentView(widget);
-	parent.contentView().addSubview_(scrollView);
 }
 
 void createItem (TreeColumn column, int index) {
@@ -1208,13 +1207,13 @@ public TreeItem [] getSelection () {
 	int count = selection.count();
 	int [] indexBuffer = new int [count];
 	selection.getIndexes(indexBuffer, count, 0);
-	TreeItem [] result = new TreeItem  [count];
+	TreeItem [] result = new TreeItem [count];
 	for (int i=0; i<count; i++) {
-		id item = widget.itemAtRow(indexBuffer [i]);
-		int jniRef = OS.objc_msgSend(item.id, OS.sel_tag);
-		if (jniRef != -1 && jniRef != 0) {
+		id id = widget.itemAtRow(indexBuffer [i]);
+		Widget item = display.getWidget(id.id);
+		if (item != null && item instanceof TreeItem) {
 			//TODO virtual
-			result[i] = (TreeItem)OS.JNIGetObject(jniRef);
+			result[i] = (TreeItem)item;
 		}
 	}
 	return result;
@@ -1369,14 +1368,13 @@ public int indexOf (TreeItem item) {
 }
 
 int outlineView_child_ofItem(int outlineView, int index, int ref) {
-	TreeItem parent = null;
-	if (ref != 0) parent = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	TreeItem parent = (TreeItem)display.getWidget(ref);
 	TreeItem item = _getItem(parent, index);
 	return item.handle.id;
 }
 
 int outlineView_objectValueForTableColumn_byItem(int outlineView, int tableColumn, int ref) {
-	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	TreeItem item = (TreeItem)display.getWidget(ref);
 	if (checkColumn != null && tableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
@@ -1396,17 +1394,17 @@ int outlineView_objectValueForTableColumn_byItem(int outlineView, int tableColum
 
 boolean outlineView_isItemExpandable(int outlineView, int ref) {
 	if (ref == 0) return true;
-	return ((TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag))).itemCount != 0;
+	return ((TreeItem)display.getWidget(ref)).itemCount != 0;
 }
 
 int outlineView_numberOfChildrenOfItem(int outlineView, int ref) {
 	if (ref == 0) return itemCount;
-	return ((TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag))).itemCount;
+	return ((TreeItem)display.getWidget(ref)).itemCount;
 }
 
 void outlineView_willDisplayCell_forTableColumn_item(int outlineView, int cell, int tableColumn, int ref) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
-	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	TreeItem item = (TreeItem)display.getWidget(ref);
 	Image image = item.image;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
@@ -1425,7 +1423,7 @@ void outlineViewSelectionDidChange(int notification) {
 		postEvent(SWT.Selection);
 	else {
 		id _id = widget.itemAtRow(row);
-		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(_id.id, OS.sel_tag));
+		TreeItem item = (TreeItem)display.getWidget(_id.id);
 		Event event = new Event();
 		event.item = item;
 		event.index = row;
@@ -1435,7 +1433,7 @@ void outlineViewSelectionDidChange(int notification) {
 
 boolean outlineView_shouldCollapseItem(int outlineView, int ref) {
 	if (!ignoreExpand) {
-		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+		TreeItem item = (TreeItem)display.getWidget(ref);
 		Event event = new Event();
 		event.item = item;
 		sendEvent(SWT.Collapse, event);
@@ -1446,7 +1444,7 @@ boolean outlineView_shouldCollapseItem(int outlineView, int ref) {
 
 boolean outlineView_shouldExpandItem(int outlineView, int ref) {
 	if (!ignoreExpand) {
-		TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+		TreeItem item = (TreeItem)display.getWidget(ref);
 		Event event = new Event();
 		event.item = item;
 		sendEvent(SWT.Expand, event);
@@ -1456,7 +1454,7 @@ boolean outlineView_shouldExpandItem(int outlineView, int ref) {
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int ref) {
-	TreeItem item = (TreeItem)OS.JNIGetObject(OS.objc_msgSend(ref, OS.sel_tag));
+	TreeItem item = (TreeItem)display.getWidget(ref);
 	if (checkColumn != null && tableColumn == checkColumn.id)  {
 		item.checked = !item.checked;
 		Event event = new Event();

@@ -179,7 +179,6 @@ void createHandle () {
 		widget.setTabViewType(OS.NSBottomTabsBezelBorder);
 	}
 	view = widget;
-	parent.contentView().addSubview_(view);
 }
 
 void createItem (TabItem item, int index) {

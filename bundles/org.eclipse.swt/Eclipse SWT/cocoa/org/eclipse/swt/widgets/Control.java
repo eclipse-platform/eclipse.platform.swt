@@ -1538,17 +1538,20 @@ void sendMouseEvent (NSEvent nsEvent, int type, int button) {
 	sendEvent (type, event);
 }
 
-void mouseDown(int theEvent) {
+void mouseDown(int id, int sel, int theEvent) {
+	super.mouseDown(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent (theEvent);
 	sendMouseEvent (nsEvent, SWT.MouseDown, 1);
 }
 
-void mouseDragged(int theEvent) {
+void mouseDragged(int id, int sel, int theEvent) {
+	super.mouseDragged(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent (theEvent);
 	sendMouseEvent (nsEvent, SWT.MouseMove, 1);
 }
 
-void mouseUp(int theEvent) {
+void mouseUp(int id, int sel, int theEvent) {
+	super.mouseUp(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent (theEvent);
 	sendMouseEvent (nsEvent, SWT.MouseUp, 1);
 }
@@ -2137,7 +2140,6 @@ public void removeTraverseListener(TraverseListener listener) {
 
 void resetCursorRects (int id, int sel) {
 	super.resetCursorRects (id, sel);
-	Cursor cursor = findCursor();
 	if (cursor != null)	view.addCursorRect(view.visibleRect(), cursor.handle);
 }
 
@@ -2960,14 +2962,8 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder () {
-//	int topHandle = topHandle ();
-//	int parentHandle = parent.handle;
-//	OS.HIViewAddSubview (parentHandle, topHandle);
-//	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
-//	Rect rect = getInset ();
-//	rect.right = rect.left;
-//	rect.bottom = rect.top;
-//	OS.SetControlBounds (topHandle, rect);
+	NSView topView = topView ();
+	parent.contentView().addSubview_positioned_relativeTo_(topView, OS.NSWindowBelow, null);
 }
 
 void setZOrder (Control control, boolean above) {

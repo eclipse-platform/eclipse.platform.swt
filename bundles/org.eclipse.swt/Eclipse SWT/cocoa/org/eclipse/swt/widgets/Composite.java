@@ -94,16 +94,12 @@ Control [] _getChildren () {
 	NSArray views = contentView().subviews();
 	int count = views.count();
 	Control [] children = new Control [count];
+	if (count == 0) return children;
 	int j = 0;
 	for (int i=0; i<count; i++){
-		int tag = new NSView(views.objectAtIndex(i)).tag();
-		if (tag != 0 && tag != -1) {
-			Object widget = OS.JNIGetObject(tag);
-			if (widget != null && widget != this) {
-				if (widget instanceof Control) {
-					children [j++] = (Control) widget;
-				}
-			}
+		Widget widget = display.getWidget (views.objectAtIndex (count - i - 1));
+		if (widget != null && widget != this && widget instanceof Control) {
+			children [j++] = (Control) widget;
 		}
 	}
 	if (j == count) return children;
@@ -233,10 +229,6 @@ NSView contentView () {
 }
 
 void createHandle () {
-	createHandle (parent.contentView());
-}
-
-void createHandle (NSView parent) {
 	state |= CANVAS;
 	NSRect rect = new NSRect();
 	if ((style & (SWT.V_SCROLL | SWT.H_SCROLL)) != 0 || hasBorder ()) {
@@ -258,9 +250,21 @@ void createHandle (NSView parent) {
 	if (scrollView != null) {
 //		view.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 		scrollView.setDocumentView(view);
-		if (parent != null) parent.addSubview_(scrollView);
-	} else {
-		if (parent != null) parent.addSubview_(view);
+	}
+}
+
+void drawRect (int id, NSRect rect) {
+	super.drawRect (id, rect);
+	if ((state & CANVAS) != 0) {
+		if (background != null && !background.isDisposed ()) {
+			float [] color = background.handle;
+			NSRect bounds = view.bounds();
+			NSGraphicsContext context = NSGraphicsContext.currentContext();
+			context.saveGraphicsState();
+			NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
+			NSBezierPath.fillRect(bounds);
+			context.restoreGraphicsState();
+		}
 	}
 }
 

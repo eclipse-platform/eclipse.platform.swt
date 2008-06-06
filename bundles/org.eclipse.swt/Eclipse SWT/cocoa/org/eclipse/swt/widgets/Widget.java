@@ -613,22 +613,47 @@ boolean isValidThread () {
 void flagsChanged(int event) {
 }
 
-void mouseDragged(int event) {
+void mouseDown(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
-void mouseDown(int event) {
+void mouseUp(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
-void rightMouseDown(int event) {
+void rightMouseDown(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
-void mouseEntered(int event) {
+void rightMouseUp(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
-void mouseUp(int event) {
+void otherMouseDown(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
-int menuForEvent (int event) {
+void otherMouseUp(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void mouseMoved(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void mouseDragged(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void mouseEntered(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+void mouseExited(int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
+}
+
+int menuForEvent (int id, int sel, int event) {
 	return 0;
 }
 

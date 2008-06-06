@@ -742,16 +742,7 @@ boolean filters (int eventType) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-	if (handle != 0 && OS.objc_msgSend(handle, OS.sel_respondsToSelector_1, OS.sel_tag) != 0) {
-		int tag = OS.objc_msgSend(handle, OS.sel_tag);
-		if (tag != -1) {
-			Object object = OS.JNIGetObject(tag);
-			if (object instanceof Widget) {
-				return (Widget)object;
-			}
-		}
-	}
-	return null;
+	return getWidget (handle);
 }
 
 /**
@@ -841,15 +832,9 @@ public Shell getActiveShell () {
 	checkDevice ();
 	NSWindow window = application.keyWindow();
 	if (window != null) {
-		NSView view = window.contentView();
-		if (view != null && view.respondsToSelector(OS.sel_tag)) {
-			int tag = OS.objc_msgSend(view.id, OS.sel_tag);
-			if (tag != -1) {
-				Object object = OS.JNIGetObject(tag);
-				if (object instanceof Shell) {
-					return (Shell)object;
-				}
-			}
+		Widget widget = getWidget(window.contentView());
+		if (widget instanceof Shell) {
+			return (Shell)widget;
 		}
 	}
 	return null;
@@ -1093,34 +1078,23 @@ public Control getFocusControl () {
 	NSWindow window = application.keyWindow();
 	if (window != null) {
 		NSResponder view = window.firstResponder();
-		if (view != null && view.respondsToSelector(OS.sel_tag)) {
-			int tag = OS.objc_msgSend(view.id, OS.sel_tag);
-			if (tag != -1) {
-				Object object = OS.JNIGetObject(tag);
-				if (object instanceof Control) {
-					//TODO go up hierarchy
-					return (Control)object;
-				}
-			} else {
-				/*
-				* If the first responder is the shared field editor then answer its
-				* delegate as the focus control.
-				*/
-				if (view.isKindOfClass(NSText.static_class())) {
-					NSText text = new NSText(view.id);
-					if (text.isFieldEditor()) {
-						id delegateId = text.delegate();
-						if (delegateId != null) {
-							NSObject delegate = new NSObject(delegateId.id);
-							if (delegate.respondsToSelector(OS.sel_tag)) {
-								tag = OS.objc_msgSend(delegate.id, OS.sel_tag);
-								if (tag != 0 && tag != -1) {
-									Object object = OS.JNIGetObject(tag);
-									if (object instanceof Control) {
-										return (Control)object;
-									}
-								}
-							}
+		Widget widget = getWidget (view.id);
+		if (widget != null && widget instanceof Control) {
+			//TODO go up hierarchy
+			return (Control)widget;
+		} else {
+			/*
+			* If the first responder is the shared field editor then answer its
+			* delegate as the focus control.
+			*/
+			if (view.isKindOfClass(NSText.static_class())) {
+				NSText text = new NSText(view.id);
+				if (text.isFieldEditor()) {
+					id delegateId = text.delegate();
+					if (delegateId != null) {
+						widget = getWidget (delegateId.id);
+						if (widget != null && widget instanceof Control) {
+							return (Control)widget;
 						}
 					}
 				}
@@ -1305,15 +1279,9 @@ public Shell [] getShells () {
 	Shell [] result = new Shell [windows.count()];
 	for (int i = 0; i < result.length; i++) {
 		NSWindow window = new NSWindow(windows.objectAtIndex(i));
-		NSView view = window.contentView();
-		if (view != null) {
-			int jniRef = OS.objc_msgSend(view.id, OS.sel_tag);
-			if (jniRef != 0 && jniRef != -1) {
-				Object object = OS.JNIGetObject(jniRef);
-				if (object instanceof Shell) {
-					result[index++] = (Shell)object;
-				}
-			}
+		Widget widget = getWidget(window.contentView());
+		if (widget instanceof Shell) {
+			result[index++] = (Shell)widget;
 		}
 	}
 	if (index == result.length) return result;
@@ -1548,6 +1516,20 @@ public Thread getThread () {
 	}
 }
 
+Widget getWidget (int id) {
+	if (id == 0) return null;
+	if (OS.objc_msgSend(id, OS.sel_respondsToSelector_1, OS.sel_tag) == 0) return null;
+	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
+	if (jniRef == 0 || jniRef == -1) return null;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	return widget;
+}
+
+Widget getWidget (NSView view) {
+	if (view == null) return null;
+	return getWidget(view.id);
+}
+
 /**
  * Initializes any internal resources needed by the
  * device.
@@ -1583,6 +1565,21 @@ void initApplicationDelegate() {
 	
 	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
 	application.setDelegate(applicationDelegate);
+}
+
+void addEventMethods (int cls, int proc2, int proc3) {
+	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_rightMouseUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_otherMouseDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_otherMouseUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseMoved_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseExited_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 }
 
 void initClasses () {
@@ -1652,15 +1649,10 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
-	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTScrollView";
@@ -1670,32 +1662,27 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
-//	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
-//	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendArrowSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTableView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1, proc6, "@:@@@i");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1, proc6, "@:@@@i");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTOutlineView";
@@ -1710,13 +1697,11 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_1objectValueForTableColumn_1byItem_1, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTreeItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
@@ -1724,115 +1709,89 @@ void initClasses () {
 
 	className = "SWTTabView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tabView_1willSelectTabViewItem_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSBox, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTComboBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
-	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTStepper";
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTScroller";
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTMenuItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-//	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 //	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textView_1clickedOnLink_1atIndex_1, proc5, "@:@@i");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
+	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTWindow";
@@ -3158,9 +3117,7 @@ int windowDelegateProc(int delegate, int sel) {
 		OS.object_getInstanceVariable(delegate, "tag", tag);	
 		return tag[0];
 	}
-	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
 	if (sel == OS.sel_isFlipped) {
 		return widget.isFlipped() ? 1 : 0;
@@ -3209,9 +3166,7 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		OS.object_setInstanceVariable(id, "tag", arg0);
 		return 0;
 	}
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_1) {
 		widget.windowWillClose(arg0);
@@ -3222,15 +3177,27 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_windowShouldClose_1) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {
-		widget.mouseDown(arg0);
-	} else if (sel == OS.sel_rightMouseDown_1) {
-		widget.rightMouseDown(arg0);
-	} else if (sel == OS.sel_mouseDragged_1) {
-		widget.mouseDragged(arg0);
+		widget.mouseDown(id, sel, arg0);
 	} else if (sel == OS.sel_mouseUp_1) {
-		widget.mouseUp(arg0);
+		widget.mouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_rightMouseDown_1) {
+		widget.rightMouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_rightMouseUp_1) {
+		widget.rightMouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_otherMouseDown_1) {
+		widget.otherMouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_otherMouseUp_1) {
+		widget.otherMouseUp(id, sel, arg0);
+	} else if (sel == OS.sel_mouseMoved_1) {
+		widget.mouseMoved(id, sel, arg0);
+	} else if (sel == OS.sel_mouseDragged_1) {
+		widget.mouseDragged(id, sel, arg0);
 	} else if (sel == OS.sel_mouseEntered_1) {
-		widget.mouseEntered(arg0);
+		widget.mouseEntered(id, sel, arg0);
+	} else if (sel == OS.sel_mouseExited_1) {
+		widget.mouseExited(id, sel, arg0);
+	} else if (sel == OS.sel_menuForEvent_1) {
+		return widget.menuForEvent(id, sel, arg0);
 	} else if (sel == OS.sel_flagsChanged_1) {
 		widget.flagsChanged(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
@@ -3247,8 +3214,6 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.windowDidResize(arg0);
 	} else if (sel == OS.sel_windowDidMove_1) {
 		widget.windowDidMove(arg0);
-	} else if (sel == OS.sel_menuForEvent_1) {
-		return widget.menuForEvent(arg0);
 	} else if (sel == OS.sel_menuWillOpen_1) {
 		widget.menuWillOpen(arg0);
 	} else if (sel == OS.sel_menuWillClose_1) {
@@ -3265,11 +3230,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	return 0;
 }
 
-
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
-	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_1willSelectTabViewItem_1) {
 		widget.willSelectTabViewItem(arg0, arg1);
@@ -3288,9 +3250,7 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 }
 
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
-	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_1objectValueForTableColumn_1row_1) {
 		return widget.tableView_objectValueForTableColumn_row(arg0, arg1, arg2);
@@ -3308,9 +3268,7 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 }
 
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2, int arg3) {
-	int jniRef = OS.objc_msgSend(delegate, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1) {
 		widget.tableView_willDisplayCell_forTableColumn_row(arg0, arg1, arg2, arg3);

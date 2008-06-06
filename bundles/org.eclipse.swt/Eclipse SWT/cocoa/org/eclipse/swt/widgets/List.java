@@ -231,7 +231,6 @@ void createHandle () {
 	scrollView = scrollWidget;
 	view = widget;
 	scrollView.setDocumentView(widget);
-	parent.contentView().addSubview_(scrollView);
 }
 
 void createWidget () {

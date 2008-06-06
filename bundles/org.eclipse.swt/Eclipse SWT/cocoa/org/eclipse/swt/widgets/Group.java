@@ -119,8 +119,7 @@ void createHandle () {
 //	contentWidget.setDrawsBackground(false);
 	widget.setContentView(contentWidget);
 	contentView = contentWidget;
-	view = widget;	
-	parent.contentView().addSubview_(widget);
+	view = widget;
 }
 
 public Rectangle getClientArea () {

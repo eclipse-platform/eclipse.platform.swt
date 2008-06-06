@@ -645,13 +645,10 @@ public boolean isVisible () {
 }
 
 void menu_willHighlightItem(int menu, int itemID) {
-	int jniRef = OS.objc_msgSend(itemID, OS.sel_tag);
-	if (jniRef != -1 && jniRef != 0) {
-		Object object = OS.JNIGetObject(jniRef);
-		if (object instanceof MenuItem) {
-			MenuItem item = (MenuItem)object;
-			item.sendEvent (SWT.Arm);
-		}
+	Widget widget = display.getWidget(itemID);
+	if (widget instanceof MenuItem) {
+		MenuItem item = (MenuItem)widget;
+		item.sendEvent (SWT.Arm);
 	}
 }
 

@@ -107,7 +107,6 @@ void createHandle () {
 	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
 	widget.setTag(jniRef);
 	view = widget;
-	parent.contentView().addSubview_(widget);
 }
 
 /**

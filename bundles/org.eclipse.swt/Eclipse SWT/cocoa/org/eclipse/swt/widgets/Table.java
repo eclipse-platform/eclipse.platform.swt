@@ -417,7 +417,6 @@ void createHandle () {
 	scrollView = scrollWidget;
 	view = widget;
 	scrollView.setDocumentView(widget);
-	parent.contentView().addSubview_(scrollView);
 }
 
 void createItem (TableColumn column, int index) {

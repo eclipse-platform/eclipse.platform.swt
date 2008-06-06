@@ -169,7 +169,6 @@ void createHandle () {
 		_setAlignment();
 	}
 	view = widget;
-	parent.contentView().addSubview_(widget);
 }
 
 NSAttributedString createString() {

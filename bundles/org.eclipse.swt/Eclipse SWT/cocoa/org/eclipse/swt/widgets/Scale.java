@@ -143,7 +143,6 @@ void createHandle () {
 	widget.setMaxValue(100);
 	widget.setTag(jniRef);
 	view = widget;
-	parent.contentView().addSubview_(widget);
 }
 
 /**
