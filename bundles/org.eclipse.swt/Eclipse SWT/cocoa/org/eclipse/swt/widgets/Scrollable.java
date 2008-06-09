@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Scrollable extends Control {
- 	SWTScrollView scrollView;
+ 	NSScrollView scrollView;
 	ScrollBar horizontalBar, verticalBar;
 	
 Scrollable () {
@@ -125,11 +125,19 @@ ScrollBar createScrollBar (int style) {
 	bar.display = display;
 	NSScroller scroller;
 	int actionSelector;
+	NSRect rect = new NSRect();
 	if ((style & SWT.H_SCROLL) != 0) {
-		scroller = scrollView.horizontalScroller();
+		rect.width = 1;
+	} else {
+		rect.height = 1;
+	}
+	scroller = (SWTScroller)new SWTScroller().alloc();
+	scroller.initWithFrame(rect);
+	if ((style & SWT.H_SCROLL) != 0) {
+		scrollView.setHorizontalScroller(scroller);
 		actionSelector = OS.sel_sendHorizontalSelection;
 	} else {
-		scroller = scrollView.verticalScroller();
+		scrollView.setVerticalScroller(scroller);
 		actionSelector = OS.sel_sendVerticalSelection;
 	}
 	bar.view = scroller;

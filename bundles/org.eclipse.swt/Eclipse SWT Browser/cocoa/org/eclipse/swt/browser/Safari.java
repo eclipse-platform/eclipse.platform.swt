@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.*;
 class Safari extends WebBrowser {
 	WebView webView;
 	SWTWebViewDelegate delegate;
-	int jniRef;
 	boolean changingLocation;
 	String lastHoveredLinkURL;
 	String html;
@@ -34,7 +33,7 @@ class Safari extends WebBrowser {
 //	boolean doit;
 
 	static boolean Initialized;
-	static Callback Callback2, Callback3, Callback4, Callback5, Callback6, Callback7;
+	static Callback Callback3, Callback4, Callback5, Callback6, Callback7;
 
 	static final int MIN_SIZE = 16;
 	static final int MAX_PROGRESS = 100;
@@ -44,7 +43,9 @@ class Safari extends WebBrowser {
 	static final String PROTOCOL_FILE = "file:"; //$NON-NLS-1$
 	static final String PROTOCOL_HTTP = "http:"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	static final String SWT_OBJECT = "SWT_OBJECT"; //$NON-NLS-1$
 
 	/* event strings */
 	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
@@ -75,9 +76,6 @@ public void create (Composite parent, int style) {
 	String className = "SWTWebViewDelegate";
 	if (OS.objc_lookUpClass(className) == 0) {
 		Class safaryClass = this.getClass();
-		Callback2 = new Callback(safaryClass, "browserProc", 2);
-		int proc2 = Callback2.getAddress();
-		if (proc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback3 = new Callback(safaryClass, "browserProc", 3);
 		int proc3 = Callback3.getAddress();
 		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -95,9 +93,7 @@ public void create (Composite parent, int style) {
 		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		
 		int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-		OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-		OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-		OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+		OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 		OS.class_addMethod(cls, OS.sel_webView_1didChangeLocationWithinPageForFrame_1, proc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1, proc5, "@:@@@");
 		OS.class_addMethod(cls, OS.sel_webView_1didFinishLoadForFrame_1, proc4, "@:@@");
@@ -144,10 +140,9 @@ public void create (Composite parent, int style) {
 	if (webView == null) SWT.error(SWT.ERROR_NO_HANDLES);
 	webView.initWithFrame(browser.view.frame(), null, null);
 	webView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-	jniRef = OS.NewGlobalRef(this);
-	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	final SWTWebViewDelegate delegate = (SWTWebViewDelegate)new SWTWebViewDelegate().alloc().init();
-	delegate.setTag(jniRef);
+	Display display = browser.getDisplay();
+	display.setData(ADD_WIDGET_KEY, new Object[] {delegate, browser});
 	this.delegate = delegate;
 	this.webView = webView;
 	browser.view.addSubview_(webView);
@@ -166,6 +161,8 @@ public void create (Composite parent, int style) {
 					ignoreDispose = true;
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
+					
+					e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
 
 					Safari.this.webView.setFrameLoadDelegate(null);
 					Safari.this.webView.setResourceLoadDelegate(null);
@@ -178,8 +175,6 @@ public void create (Composite parent, int style) {
 					Safari.this.webView = null;
 					Safari.this.delegate.release();
 					Safari.this.delegate = null;
-					OS.DeleteGlobalRef(jniRef);
-					jniRef = 0;
 					html = null;
 					lastHoveredLinkURL = null;
 					break;
@@ -209,126 +204,108 @@ public boolean back() {
 	return webView.goBack();
 }
 
-static int browserProc(int delegate, int sel) {
-	if (sel == OS.sel_tag) {
-		int[] tag = new int[1];
-		OS.object_getInstanceVariable(delegate, "tag", tag);	
-		return tag[0];
-	}
-	return 0;
-}
-
 static int browserProc(int id, int sel, int arg0) {
-	if (sel == OS.sel_setTag_1) {
-		OS.object_setInstanceVariable(id, "tag", arg0);
-		return 0;
-	}
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Safari widget = (Safari)OS.JNIGetObject(jniRef);
+	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
+	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_handleNotification_1) {
-		widget.handleNotification(arg0);
+		safari.handleNotification(arg0);
 	} else if (sel == OS.sel_webViewShow_1) {
-		widget.webViewShow(arg0);
+		safari.webViewShow(arg0);
 	} else if (sel == OS.sel_webViewClose_1) {
-		widget.webViewClose(arg0);
+		safari.webViewClose(arg0);
 	} else if (sel == OS.sel_webViewFocus_1) {
-		widget.webViewFocus(arg0);
+		safari.webViewFocus(arg0);
 	} else if (sel == OS.sel_webViewUnfocus_1) {
-		widget.webViewUnfocus(arg0);
+		safari.webViewUnfocus(arg0);
 	} else if (sel == OS.sel_handleEvent_1) {
-		widget.handleEvent(arg0);
+		safari.handleEvent(arg0);
 	}
 	return 0;
 }
 
 static int browserProc(int id, int sel, int arg0, int arg1) {
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Safari widget = (Safari)OS.JNIGetObject(jniRef);
+	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
+	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_1didChangeLocationWithinPageForFrame_1) {
-		widget.webView_didChangeLocationWithinPageForFrame(arg0, arg1);
+		safari.webView_didChangeLocationWithinPageForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_1didFinishLoadForFrame_1) {
-		widget.webView_didFinishLoadForFrame(arg0, arg1);
+		safari.webView_didFinishLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_1didStartProvisionalLoadForFrame_1) {
-		widget.webView_didStartProvisionalLoadForFrame(arg0, arg1);
+		safari.webView_didStartProvisionalLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_1didCommitLoadForFrame_1) {
-		widget.webView_didCommitLoadForFrame(arg0, arg1);
+		safari.webView_didCommitLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_1setFrame_1) {
-		widget.webView_setFrame(arg0, arg1);
+		safari.webView_setFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_1createWebViewWithRequest_1) {
-		return widget.webView_createWebViewWithRequest(arg0, arg1);		
+		return safari.webView_createWebViewWithRequest(arg0, arg1);		
 	} else if (sel == OS.sel_webView_1setStatusBarVisible_1) {
-		widget.webView_setStatusBarVisible(arg0, arg1);
+		safari.webView_setStatusBarVisible(arg0, arg1);
 	} else if (sel == OS.sel_webView_1setResizable_1) {
-		widget.webView_setResizable(arg0, arg1);
+		safari.webView_setResizable(arg0, arg1);
 	} else if (sel == OS.sel_webView_1setStatusText_1) {
-		widget.webView_setStatusText(arg0, arg1);
+		safari.webView_setStatusText(arg0, arg1);
 	} else if (sel == OS.sel_webView_1setToolbarsVisible_1) {
-		widget.webView_setToolbarsVisible(arg0, arg1);
+		safari.webView_setToolbarsVisible(arg0, arg1);
 	} else if (sel == OS.sel_webView_1runJavaScriptAlertPanelWithMessage_1) {
-		widget.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
+		safari.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_1runJavaScriptConfirmPanelWithMessage_1) {
-		return widget.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
+		return safari.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_1runOpenPanelForFileButtonWithResultListener_1) {
-		widget.webView_runOpenPanelForFileButtonWithResultListener(arg0, arg1);
+		safari.webView_runOpenPanelForFileButtonWithResultListener(arg0, arg1);
 	} else if (sel == OS.sel_download_1decideDestinationWithSuggestedFilename_1) {
-		widget.download_decideDestinationWithSuggestedFilename(arg0, arg1);
+		safari.download_decideDestinationWithSuggestedFilename(arg0, arg1);
 	} else if (sel == OS.sel_webView_1printFrameView_1) {
-		widget.webView_printFrameView(arg0, arg1);
+		safari.webView_printFrameView(arg0, arg1);
 	}
 	return 0;
 }
 
 static int browserProc(int id, int sel, int arg0, int arg1, int arg2) {
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Safari widget = (Safari)OS.JNIGetObject(jniRef);
+	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
+	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1) {
-		widget.webView_didFailProvisionalLoadWithError_forFrame(arg0, arg1, arg2);
+		safari.webView_didFailProvisionalLoadWithError_forFrame(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_1didReceiveTitle_1forFrame_1) {
-		widget.webView_didReceiveTitle_forFrame(arg0, arg1, arg2);
+		safari.webView_didReceiveTitle_forFrame(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_1resource_1didFinishLoadingFromDataSource_1) {
-		widget.webView_resource_didFinishLoadingFromDataSource(arg0, arg1, arg2);
+		safari.webView_resource_didFinishLoadingFromDataSource(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_1identifierForInitialRequest_1fromDataSource_1) {
-		return widget.webView_identifierForInitialRequest_fromDataSource(arg0, arg1, arg2);
+		return safari.webView_identifierForInitialRequest_fromDataSource(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_1contextMenuItemsForElement_1defaultMenuItems_1) {
-		return widget.webView_contextMenuItemsForElement_defaultMenuItems(arg0, arg1, arg2);
+		return safari.webView_contextMenuItemsForElement_defaultMenuItems(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_1mouseDidMoveOverElement_1modifierFlags_1) {
-		widget.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
+		safari.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_1unableToImplementPolicyWithError_1frame_1) {
-		widget.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
+		safari.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
 	}
 	return 0;
 }
 
 static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) {
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Safari widget = (Safari)OS.JNIGetObject(jniRef);
+	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
+	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_1resource_1didFailLoadingWithError_1fromDataSource_1) {
-		widget.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
+		safari.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
 	}	
 	return 0;
 }
 
 static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3, int arg4) {
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
-	Safari widget = (Safari)OS.JNIGetObject(jniRef);
+	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
+	Safari safari = (Safari)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_1resource_1willSendRequest_1redirectResponse_1fromDataSource_1) {
-		return widget.webView_resource_willSendRequest_redirectResponse_fromDataSource(arg0, arg1, arg2, arg3, arg4);
+		return safari.webView_resource_willSendRequest_redirectResponse_fromDataSource(arg0, arg1, arg2, arg3, arg4);
 	} else if (sel == OS.sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1) {
-		widget.webView_decidePolicyForMIMEType_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
+		safari.webView_decidePolicyForMIMEType_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	} else if (sel == OS.sel_webView_1decidePolicyForNavigationAction_1request_1frame_1decisionListener_1) {
-		widget.webView_decidePolicyForNavigationAction_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
+		safari.webView_decidePolicyForNavigationAction_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	} else if (sel == OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1) {
-		widget.webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(arg0, arg1, arg2, arg3, arg4);
+		safari.webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	}
 	return 0;
 }

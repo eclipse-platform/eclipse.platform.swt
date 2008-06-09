@@ -214,7 +214,7 @@ public FontData open () {
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
 	int jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	delegate.setTag(jniRef);
+	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
 	fontData = null;
 	panel.orderFront(null);
@@ -224,7 +224,7 @@ public FontData open () {
 	OS.DeleteGlobalRef(jniRef);
 	NSFont font = NSFontManager.sharedFontManager().selectedFont();
 	if (font != null) {
-		//TODO - this does work
+		//TODO - this does not work
 		fontData = Font.cocoa_new(display, font).getFontData()[0];
 	}
 	return fontData;

@@ -221,6 +221,8 @@ public class Display extends Device {
 	};
 
 	static String APP_NAME = "SWT";
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
+	static final String SWT_OBJECT = "SWT_OBJECT"; //$NON-NLS-1$
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -400,7 +402,7 @@ public void addListener (int eventType, Listener listener) {
 
 void addWidget (NSObject view, Widget widget) {
 	if (view == null) return;
-	OS.objc_msgSend (view.id, OS.sel_setTag_1, widget.jniRef);
+	OS.object_setInstanceVariable (view.id, SWT_OBJECT, widget.jniRef);
 }
 
 /**
@@ -1520,11 +1522,10 @@ public Thread getThread () {
 
 Widget getWidget (int id) {
 	if (id == 0) return null;
-	if (OS.objc_msgSend(id, OS.sel_respondsToSelector_1, OS.sel_tag) == 0) return null;
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return null;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
-	return widget;
+	int [] jniRef = new int [1];
+	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	if (jniRef[0] == 0) return null;
+	return (Widget)OS.JNIGetObject(jniRef[0]);
 }
 
 Widget getWidget (NSView view) {
@@ -1609,7 +1610,7 @@ void initClasses () {
 
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_windowDidResize_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidMove_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
@@ -1617,38 +1618,28 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidResignKey_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.class_addMethod(cls, OS.sel_timerProc_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTPanelDelegate";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_1, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeColor_1, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeFont_1, dialogProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTMenu";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenu, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
-//	OS.class_addMethod(cls, OS.sel_menuWillOpen_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuWillClose_1, proc3, "@:@");
-//	OS.class_addMethod(cls, OS.sel_numberOfItemsInMenu_1, proc3, "@:@");	
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_menuWillClose_1, proc3, "@:@");	
 	OS.class_addMethod(cls, OS.sel_menu_1willHighlightItem_1, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
@@ -1659,9 +1650,7 @@ void initClasses () {
 	
 	className = "SWTScrollView";
 	cls = OS.objc_allocateClassPair(OS.class_NSScrollView, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
@@ -1669,6 +1658,7 @@ void initClasses () {
 	
 	className = "SWTButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendArrowSelection, proc2, "@:");
@@ -1677,6 +1667,7 @@ void initClasses () {
 	
 	className = "SWTTableView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
@@ -1689,6 +1680,7 @@ void initClasses () {
 	
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_1shouldCollapseItem_1, proc4, "@:@@");
@@ -1704,49 +1696,44 @@ void initClasses () {
 
 	className = "SWTTreeItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTabView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_tabView_1willSelectTabViewItem_1, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSBox, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTComboBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
@@ -1754,53 +1741,68 @@ void initClasses () {
 	
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, OS.drawRect_CALLBACK(proc3), "@:i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTStepper";
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTScroller";
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTMenuItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-//	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
-
+	
+	className = "SWTSearchField";
+	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
+	addEventMethods(cls, proc2, proc3);
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTSecureTextField";
+	cls = OS.objc_allocateClassPair(OS.class_NSSecureTextField, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
+	addEventMethods(cls, proc2, proc3);
+	OS.objc_registerClassPair(cls);
+	
 	className = "SWTWindow";
 	cls = OS.objc_allocateClassPair(OS.class_NSWindow, className, 0);
-	OS.class_addIvar(cls, "tag", OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tag, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_setTag_1, proc3, "@:i");
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_1, proc3, "@:@");
@@ -2509,10 +2511,11 @@ public void removeListener (int eventType, Listener listener) {
 
 Widget removeWidget (NSObject view) {
 	if (view == null) return null;
-	int jniRef = OS.objc_msgSend(view.id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return null;
-	Widget widget = (Widget)OS.JNIGetObject(jniRef);
-	OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
+	int [] jniRef = new int [1];
+	OS.object_getInstanceVariable(view.id, SWT_OBJECT, jniRef);
+	if (jniRef[0] == 0) return null;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef[0]);
+	OS.object_setInstanceVariable(view.id, SWT_OBJECT, 0);
 	return widget;
 }
 
@@ -2708,6 +2711,17 @@ public void setCursorLocation (Point point) {
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	
+	if (key.equals (ADD_WIDGET_KEY)) {
+		Object [] data = (Object [])value;
+		NSObject object = (NSObject)data [0];
+		Widget widget = (Widget)data [1];
+		if (widget == null) {
+			removeWidget (object);
+		} else {
+			addWidget (object, widget);
+		}
+	}
 	
 	/* Remove the key/value pair */
 	if (value == null) {
@@ -3101,18 +3115,19 @@ int applicationDelegateProc(int id, int sel, int arg0) {
 }
 
 int dialogProc(int id, int sel, int arg0) {
-	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
-	if (jniRef == 0 || jniRef == -1) return 0;
+	int [] jniRef = new int [1];
+	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	if (jniRef[0] == 0) return 0;
 	if (sel == OS.sel_changeColor_1) {
-		ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef);
+		ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.changeColor(arg0);
 	} else if (sel == OS.sel_changeFont_1) {
-		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef);
+		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.changeFont(arg0);
 	} else if (sel == OS.sel_windowWillClose_1) {
-		Object object = OS.JNIGetObject(jniRef);
+		Object object = OS.JNIGetObject(jniRef[0]);
 		if (object instanceof FontDialog) {
 			((FontDialog)object).windowWillClose(arg0);
 		} else if (object instanceof ColorDialog) {
@@ -3123,11 +3138,6 @@ int dialogProc(int id, int sel, int arg0) {
 }
 
 int windowDelegateProc(int delegate, int sel) {
-	if (sel == OS.sel_tag) {
-		int[] tag = new int[1];
-		OS.object_getInstanceVariable(delegate, "tag", tag);	
-		return tag[0];
-	}
 	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
 	if (sel == OS.sel_isFlipped) {
@@ -3172,10 +3182,6 @@ int windowDelegateProc(int delegate, int sel) {
 int windowDelegateProc(int id, int sel, int arg0) {
 	if (sel == OS.sel_timerProc_1) {
 		return timerProc (arg0);
-	}
-	if (sel == OS.sel_setTag_1) {
-		OS.object_setInstanceVariable(id, "tag", arg0);
-		return 0;
 	}
 	Widget widget = getWidget(id);
 	if (widget == null) return 0;

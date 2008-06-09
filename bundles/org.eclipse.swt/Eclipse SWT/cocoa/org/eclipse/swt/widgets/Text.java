@@ -338,9 +338,9 @@ void createHandle () {
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget;
 		if ((style & SWT.PASSWORD) != 0) {
-			widget = (NSTextField)new NSSecureTextField().alloc();
+			widget = (NSTextField)new SWTSecureTextField().alloc();
 		} else if ((style & SWT.SEARCH) != 0) {
-			widget = (NSTextField)new NSSearchField().alloc();
+			widget = (NSTextField)new SWTSearchField().alloc();
 		} else {
 			widget = (NSTextField)new SWTTextField().alloc();
 		}

@@ -390,6 +390,7 @@ void register () {
 
 void releaseHandle () {
 	super.releaseHandle ();
+	if (view != null) view.release();
 	view = null;
 }
 
