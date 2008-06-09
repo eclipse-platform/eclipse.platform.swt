@@ -281,13 +281,11 @@ void createHandle () {
 	SWTMenu widget = (SWTMenu)new SWTMenu().alloc();
 	widget.initWithTitle(NSString.stringWith(""));
 	widget.setAutoenablesItems(false);
-	widget.setTag(jniRef);
 	widget.setDelegate(widget);	
 	nsMenu = widget;	
 }
 
 void createItem (MenuItem item, int index) {
-	checkWidget ();
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	NSMenuItem nsItem = null;
 	if ((item.style & SWT.SEPARATOR) != 0) {
@@ -298,10 +296,10 @@ void createItem (MenuItem item, int index) {
 		nsItem.initWithTitle(NSString.stringWith(""), 0, NSString.stringWith(""));
 		nsItem.setTarget(nsItem);
 		nsItem.setAction(OS.sel_sendSelection);
-		item.createJNIRef();
-		nsItem.setTag(item.jniRef);
 	}
 	item.nsItem = nsItem;
+	item.createJNIRef();
+	item.register();
 	nsMenu.insertItem(nsItem, index);
 	if (itemCount == items.length) {
 		MenuItem [] newItems = new MenuItem [items.length + 4];
@@ -321,6 +319,11 @@ void createWidget () {
 	checkOrientation (parent);
 	super.createWidget ();
 	items = new MenuItem [4];
+}
+
+void deregister () {
+	super.deregister ();
+	display.removeWidget (nsMenu);
 }
 
 void destroyItem (MenuItem item) {
@@ -686,6 +689,11 @@ int modifierIndex (String accelText) {
 int numberOfItemsInMenu(int menu) {
 	System.out.println("numver");
 	return 4;
+}
+
+void register () {
+	super.register ();
+	display.addWidget (nsMenu, this);
 }
 
 void releaseChildren (boolean destroy) {

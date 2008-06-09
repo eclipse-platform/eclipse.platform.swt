@@ -144,7 +144,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame (new NSRect());
-	widget.setTag(jniRef);
 	view = widget;
 }
 

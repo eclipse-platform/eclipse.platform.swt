@@ -129,7 +129,6 @@ void createHandle () {
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame(new NSRect());
 //	widget.setDrawsBackground(false);
-	widget.setTag(jniRef);
 	view = widget;
 }
 

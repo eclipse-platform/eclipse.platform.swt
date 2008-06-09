@@ -169,7 +169,6 @@ void createHandle () {
 	widget.setDateValue(date);
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
-	widget.setTag(jniRef);
 	view = widget;
 }
 

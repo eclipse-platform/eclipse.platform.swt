@@ -146,7 +146,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-void createWidget () {
+void createHandle () {
 	NSStatusBar statusBar = NSStatusBar.systemStatusBar();
 	item = statusBar.statusItemWithLength(0);
 	if (item == null) error (SWT.ERROR_NO_HANDLES);
@@ -157,8 +157,6 @@ void createWidget () {
 	if (view == null) error (SWT.ERROR_NO_HANDLES);
 	view.initWithFrame(rect);
 	item.setView(view);
-	createJNIRef();
-	view.setTag(jniRef);
 }
 
 void destroyWidget () {
@@ -248,10 +246,7 @@ void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 	if (item != null) item.release();
-	if (view != null) {
-		view.setTag(-1);
-		view.release();
-	}
+	if (view != null) view.release();
 	item = null;
 	view = null;
 }

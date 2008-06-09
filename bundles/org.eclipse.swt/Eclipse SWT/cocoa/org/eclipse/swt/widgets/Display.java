@@ -398,6 +398,11 @@ public void addListener (int eventType, Listener listener) {
 //	popups [index] = menu;
 //}
 
+void addWidget (NSObject view, Widget widget) {
+	if (view == null) return;
+	OS.objc_msgSend (view.id, OS.sel_setTag_1, widget.jniRef);
+}
+
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
@@ -2500,6 +2505,15 @@ public void removeListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, listener);
+}
+
+Widget removeWidget (NSObject view) {
+	if (view == null) return null;
+	int jniRef = OS.objc_msgSend(view.id, OS.sel_tag);
+	if (jniRef == 0 || jniRef == -1) return null;
+	Widget widget = (Widget)OS.JNIGetObject(jniRef);
+	OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
+	return widget;
 }
 
 //void removeMenu (Menu menu) {

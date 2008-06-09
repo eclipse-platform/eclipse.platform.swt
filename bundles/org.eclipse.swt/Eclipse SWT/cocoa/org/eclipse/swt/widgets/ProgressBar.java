@@ -105,7 +105,6 @@ void createHandle () {
 	widget.setUsesThreadedAnimation(false);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);
 	if ((style & SWT.INDETERMINATE) != 0) widget.startAnimation(null);
-	widget.setTag(jniRef);
 	view = widget;
 }
 

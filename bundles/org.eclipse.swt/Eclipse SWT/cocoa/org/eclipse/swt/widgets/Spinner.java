@@ -244,17 +244,14 @@ void createHandle () {
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame(new NSRect());
 //	widget.setDrawsBackground(false);
-	widget.setTag(jniRef);
 	NSStepper buttonWidget = (NSStepper)new SWTStepper().alloc();
 	buttonWidget.initWithFrame(new NSRect());
 	buttonWidget.setValueWraps((style & SWT.WRAP) != 0);
 	buttonWidget.setTarget(buttonWidget);
 	buttonWidget.setAction(OS.sel_sendSelection);
-	buttonWidget.setTag(jniRef);
 	NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
 	textWidget.initWithFrame(new NSRect());
 //	textWidget.setTarget(widget);
-	textWidget.setTag(jniRef);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
 	widget.addSubview_(textWidget);
 	widget.addSubview_(buttonWidget);
@@ -286,6 +283,12 @@ public void cut () {
 //	if (buffer != null) {
 //		copyToClipboard (buffer);
 //	}
+}
+
+void deregister () {
+	super.deregister ();
+	if (textView != null) display.removeWidget (textView);
+	if (buttonView != null) display.removeWidget (buttonView);
 }
 
 void enableWidget (boolean enabled) {
@@ -410,16 +413,16 @@ public void paste () {
 //	setText (text, selection [0], selection [1], true);
 }
 
+void register () {
+	super.register ();
+	if (textView != null) display.addWidget (textView, this);
+	if (buttonView != null) display.addWidget (buttonView, this);
+}
+
 void releaseHandle () {
 	super.releaseHandle();
-	if (buttonView != null) {
-		buttonView.setTag(-1);
-		buttonView.release();
-	}
-	if (textView != null) {
-		textView.setTag(-1);
-		textView.release();
-	}
+	if (buttonView != null) buttonView.release();
+	if (textView != null) textView.release();
 	buttonView = null;
 	textView = null;
 }

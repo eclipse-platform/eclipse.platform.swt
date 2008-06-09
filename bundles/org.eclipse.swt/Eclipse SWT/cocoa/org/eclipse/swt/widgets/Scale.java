@@ -141,7 +141,6 @@ void createHandle () {
 	}
 	widget.initWithFrame(rect);
 	widget.setMaxValue(100);
-	widget.setTag(jniRef);
 	view = widget;
 }
 

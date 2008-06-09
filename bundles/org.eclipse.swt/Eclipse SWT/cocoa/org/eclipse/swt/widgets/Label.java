@@ -138,7 +138,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	SWTBox widget = (SWTBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
-	widget.setTag(jniRef);
 	widget.setTitle(NSString.stringWith(""));
 	if ((style & SWT.SEPARATOR) != 0) {
 		widget.setBoxType(OS.NSBoxSeparator);
@@ -147,14 +146,12 @@ void createHandle () {
 
 		NSImageView imageWidget = (NSImageView)new SWTImageView().alloc();
 		imageWidget.initWithFrame(new NSRect());
-		imageWidget.setTag(jniRef);
 		
 		SWTTextField textWidget = (SWTTextField)new SWTTextField().alloc();
 		textWidget.initWithFrame(new NSRect());
 		textWidget.setBordered(false);
 		textWidget.setEditable(false);
 		textWidget.setDrawsBackground(false);
-		textWidget.setTag(jniRef);
 		if ((style & SWT.WRAP) != 0) {
 			NSTextFieldCell cell = new NSTextFieldCell(textWidget.cell());
 			cell.setWraps(true);
@@ -188,6 +185,12 @@ NSAttributedString createString() {
 	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
 	attribStr.autorelease();
 	return attribStr;
+}
+
+void deregister () {
+	super.deregister ();
+	if (textView != null) display.removeWidget (textView);
+	if (imageView != null) display.removeWidget (imageView);
 }
 
 /**
@@ -248,6 +251,20 @@ public String getText () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
+}
+
+void register () {
+	super.register ();
+	if (textView != null) display.addWidget (textView, this);
+	if (imageView != null) display.addWidget (imageView, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (textView != null) textView.release();
+	if (imageView != null) imageView.release();
+	textView = null;
+	imageView = null;
 }
 
 /**

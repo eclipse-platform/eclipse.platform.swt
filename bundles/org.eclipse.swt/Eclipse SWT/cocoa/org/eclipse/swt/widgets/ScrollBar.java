@@ -85,7 +85,7 @@ import org.eclipse.swt.graphics.*;
 public class ScrollBar extends Widget {
 	NSScroller view;
 	Scrollable parent;
-	int minimum, maximum, thumb;
+	int minimum, maximum = 100, thumb = 10;
 	int increment = 1;
 	int pageIncrement = 10;
 	id target;
@@ -139,10 +139,9 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-void createWidget () {
-	maximum = 100;
-	thumb = 10;
-	super.createWidget();
+void deregister () {
+	super.deregister ();
+	display.removeWidget (view);
 }
 
 /**
@@ -382,6 +381,11 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+void register () {
+	super.register ();
+	display.addWidget (view, this);
 }
 
 void releaseHandle () {

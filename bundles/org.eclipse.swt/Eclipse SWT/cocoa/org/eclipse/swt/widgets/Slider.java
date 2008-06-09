@@ -178,7 +178,6 @@ void createHandle () {
 	widget.setEnabled(true);
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
-	widget.setTag(jniRef);
 	view = widget;
 	updateBar(0, minimum, maximum, thumb);
 }

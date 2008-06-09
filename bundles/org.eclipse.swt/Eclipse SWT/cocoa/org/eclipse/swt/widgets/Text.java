@@ -354,7 +354,6 @@ void createHandle () {
 		widget.setAlignment(align);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
-		widget.setTag(jniRef);
 		view = widget;
 	} else {
 		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
@@ -362,7 +361,6 @@ void createHandle () {
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
 		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
 		scrollWidget.setAutoresizesSubviews(true);
-		scrollWidget.setTag(jniRef);
 		
 		SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
 		widget.initWithFrame(new NSRect());
@@ -389,12 +387,10 @@ void createHandle () {
 
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
-		widget.setTag(jniRef);
 		widget.setRichText(false);
 		
 		view = widget;
 		scrollView = scrollWidget;
-		scrollView.setDocumentView(widget);
 	}
 }
 

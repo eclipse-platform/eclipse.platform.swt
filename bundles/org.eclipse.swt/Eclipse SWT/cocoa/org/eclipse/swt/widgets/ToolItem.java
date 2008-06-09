@@ -209,25 +209,21 @@ Point computeSize () {
 	return new Point (width, height);
 }
 
-void createWidget() {
-	createJNIRef ();
+void createHandle () {
 	if ((style & SWT.SEPARATOR) != 0) {
 		SWTBox widget = (SWTBox)new SWTBox().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setBoxType(OS.NSBoxSeparator);
-		widget.setTag(jniRef);
 		view = widget;
 	} else {
 		SWTView widget = (SWTView)new SWTView().alloc();
 		widget.initWithFrame(new NSRect());
-		widget.setTag(jniRef);
 		parent.contentView().addSubview_(widget);
 		button = (NSButton)new SWTButton().alloc();
 		button.initWithFrame(new NSRect());
 		button.setBordered(false);
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);
-		button.setTag(jniRef);
 		Font font = parent.font != null ? parent.font : parent.defaultFont ();
 		button.setFont(font.handle);
 		button.setImagePosition(OS.NSImageOverlaps);
@@ -241,7 +237,6 @@ void createWidget() {
 			arrow.setBordered(false);
 			arrow.setAction(OS.sel_sendArrowSelection);
 			arrow.setTarget(arrow);
-			arrow.setTag(jniRef);
 			arrow.setTitle(emptyStr);
 			arrow.setEnabled(parent.getEnabled());
 			widget.addSubview_(arrow);
@@ -249,6 +244,14 @@ void createWidget() {
 		view = widget;
 	}
 }
+
+void deregister () {
+	super.deregister ();
+	display.removeWidget(view);
+	if (button != null) display.removeWidget (button);
+	if (arrow != null) display.removeWidget (arrow);
+}
+
 void destroyWidget() {
 	parent.destroyItem(this);
 	super.destroyWidget();
@@ -482,6 +485,13 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+void register () {
+	super.register ();
+	display.addWidget (view, this);
+	if (button != null) display.addWidget (button, this);
+	if (arrow != null) display.addWidget (arrow, this);
+}
+
 void releaseParent () {
 	super.releaseParent ();
 	setVisible (false);
@@ -489,18 +499,9 @@ void releaseParent () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (view != null) {
-		OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
-		view.release();
-	}
-	if (button != null) {
-		OS.objc_msgSend(button.id, OS.sel_setTag_1, -1);
-		button.release();
-	}
-	if (arrow != null) {
-		OS.objc_msgSend(arrow.id, OS.sel_setTag_1, -1);
-		arrow.release();
-	}
+	if (view != null) view.release();
+	if (button != null) button.release();
+	if (arrow != null) arrow.release();
 	view = button = arrow = null;
 	parent = null;
 }

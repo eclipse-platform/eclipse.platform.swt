@@ -108,14 +108,17 @@ NSView contentView () {
 	return contentView;
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (contentView);
+}
+
 void createHandle () {
 	SWTBox widget = (SWTBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setTitle(NSString.stringWith(""));
-	widget.setTag(jniRef);
 	SWTView contentWidget = (SWTView)new SWTView().alloc();
 	contentWidget.initWithFrame(new NSRect());
-	contentWidget.setTag(jniRef);
 //	contentWidget.setDrawsBackground(false);
 	widget.setContentView(contentWidget);
 	contentView = contentWidget;
@@ -149,12 +152,14 @@ public String getText () {
 	return text;
 }
 
+void register () {
+	super.register ();
+	display.addWidget (contentView, this);
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
-	if (contentView != null) {
-		contentView.setTag(-1);
-		contentView.release();
-	}
+	if (contentView != null) contentView.release();
 	contentView = null;
 }
 

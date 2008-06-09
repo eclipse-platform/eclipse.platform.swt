@@ -222,6 +222,11 @@ NSMenu createEmptyMenu () {
 	return null;
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (nsItem);
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -403,6 +408,11 @@ public boolean isEnabled () {
 //	}
 //	return OS.kMenuNullGlyph;
 //}
+
+void register () {
+	super.register ();
+	display.addWidget (nsItem, this);
+}
 
 void releaseHandle () {
 	super.releaseHandle ();

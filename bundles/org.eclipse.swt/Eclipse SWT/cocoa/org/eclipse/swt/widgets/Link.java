@@ -143,7 +143,6 @@ void createHandle () {
 	scrollWidget.initWithFrame(new NSRect ());
 	scrollWidget.setDrawsBackground(false);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
-	scrollWidget.setTag(jniRef);
 
 	SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
 	widget.initWithFrame(new NSRect());
@@ -151,17 +150,20 @@ void createHandle () {
 	widget.setDrawsBackground(false);
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-	widget.setTag(jniRef);
 	widget.textContainer().setLineFragmentPadding(0);
 	
 	scrollView = scrollWidget;
 	view = widget;
-	scrollView.setDocumentView(view);
 }
 
 void createWidget () {
 	super.createWidget ();
 	text = "";
+}
+
+void deregister () {
+	super.deregister ();
+	if (scrollView != null) display.removeWidget (scrollView);
 }
 
 String getNameText () {
@@ -183,6 +185,11 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	return text;
+}
+
+void register () {
+	super.register ();
+	if (scrollView != null) display.addWidget (scrollView, this);
 }
 
 void releaseWidget () {
@@ -404,6 +411,11 @@ public void setText (String string) {
 		range.length = offsets[i].y - offsets[i].x + 1;
 		textStorage.addAttribute(OS.NSLinkAttributeName(), NSString.stringWith(ids[i]), range);
 	}
+}
+
+void setZOrder () {
+	super.setZOrder ();
+	if (scrollView != null) scrollView.setDocumentView (view);
 }
 
 NSView topView () {

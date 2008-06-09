@@ -330,6 +330,15 @@ void createJNIRef () {
 void createWidget () {
 	createJNIRef ();
 	createHandle ();
+	register ();
+}
+	
+void deregister () {
+}
+
+void destroyJNIRef () {
+	if (jniRef != 0) OS.DeleteGlobalRef (jniRef);
+	jniRef = 0;
 }
 
 void destroyWidget () {
@@ -740,6 +749,9 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
+void register () {
+}
+
 void release (boolean destroy) {
 	if ((state & DISPOSE_SENT) == 0) {
 		state |= DISPOSE_SENT;
@@ -767,8 +779,7 @@ void releaseChildren (boolean destroy) {
 void releaseHandle () {
 	state |= DISPOSED;
 	display = null;
-	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
-	jniRef = 0;
+	destroyJNIRef ();
 }
 
 void releaseParent () {
@@ -776,6 +787,7 @@ void releaseParent () {
 }
 
 void releaseWidget () {
+	deregister ();
 	eventTable = null;
 	data = null;
 }

@@ -470,7 +470,6 @@ void createHandle () {
 		return;
 	} else {
 		SWTWindow swtWindow = (SWTWindow) new SWTWindow ().alloc ();
-		swtWindow.setTag(jniRef);
 		window = (NSWindow)swtWindow;
 		NSRect rect = new NSRect();
 		Monitor monitor = getMonitor ();
@@ -496,8 +495,13 @@ void createHandle () {
 	
 	window.setContentView (topView());
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
-	windowDelegate.setTag(jniRef);
 	window.setDelegate(windowDelegate);
+}
+
+void deregister () {
+	super.deregister ();
+	if (window != null) display.removeWidget (window);
+	if (windowDelegate != null) display.removeWidget (windowDelegate);
 }
 
 void destroyWidget () {
@@ -870,6 +874,12 @@ public boolean print (GC gc) {
 //	}
 //	return true;
 	return false;
+}
+
+void register () {
+	super.register ();
+	if (window != null) display.addWidget (window, this);
+	if (windowDelegate != null) display.addWidget (windowDelegate, this);
 }
 
 void releaseChildren (boolean destroy) {

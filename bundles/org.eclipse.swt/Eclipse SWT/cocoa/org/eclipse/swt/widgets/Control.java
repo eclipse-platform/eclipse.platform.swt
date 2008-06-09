@@ -638,6 +638,11 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_WIDGET_FOREGROUND);
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (view);
+}
+
 void destroyWidget () {
 	NSView view = topView ();
 	view.removeFromSuperview ();
@@ -1807,12 +1812,14 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	view.setNeedsDisplayInRect(rect);
 }
 
+void register () {
+	super.register ();
+	display.addWidget (view, this);
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
-	if (view != null) {
-		OS.objc_msgSend(view.id, OS.sel_setTag_1, -1);
-		view.release();
-	}
+	if (view != null) view.release();
 	view = null;
 	parent = null;
 }

@@ -134,7 +134,7 @@ ScrollBar createScrollBar (int style) {
 	}
 	bar.view = scroller;
 	bar.createJNIRef();
-	scroller.setTag(bar.jniRef);
+	bar.register();
 	if ((state & CANVAS) == 0) {
 		bar.target = scroller.target();
 		bar.actionSelector = scroller.action();
@@ -148,6 +148,11 @@ void createWidget () {
 	super.createWidget ();
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+}
+
+void deregister () {
+	super.deregister ();
+	if (scrollView != null) display.removeWidget (scrollView);
 }
 
 /**
@@ -211,13 +216,14 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
+void register () {
+	super.register ();
+	if (scrollView != null) display.addWidget (scrollView, this);
+}
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (scrollView != null)  {
-		scrollView.setTag(-1);
-		scrollView.release();
-	}
+	if (scrollView != null) scrollView.release();
 	scrollView = null;
 }
 
@@ -297,6 +303,11 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
 	return true;
+}
+
+void setZOrder () {
+	super.setZOrder ();
+	if (scrollView != null) scrollView.setDocumentView (view);
 }
 
 NSView topView () {

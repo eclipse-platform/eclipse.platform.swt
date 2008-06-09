@@ -212,7 +212,6 @@ void createHandle () {
 	if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
 	scrollWidget.setAutohidesScrollers(true);
 	scrollWidget.setBorderType((style & SWT.BORDER) != 0 ? OS.NSBezelBorder : OS.NSNoBorder);
-	scrollWidget.setTag(jniRef);
 	
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.initWithFrame(new NSRect());
@@ -222,7 +221,6 @@ void createHandle () {
 	widget.setDelegate(widget);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
-	widget.setTag(jniRef);
 	
 	column = (NSTableColumn)new NSTableColumn().alloc();
 	column.initWithIdentifier(NSString.stringWith(""));
@@ -230,7 +228,6 @@ void createHandle () {
 	
 	scrollView = scrollWidget;
 	view = widget;
-	scrollView.setDocumentView(widget);
 }
 
 void createWidget () {

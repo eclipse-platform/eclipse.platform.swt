@@ -238,33 +238,29 @@ void createHandle () {
 		if ((style & SWT.H_SCROLL) != 0) scrollWidget.setHasHorizontalScroller(true);
 		if ((style & SWT.V_SCROLL) != 0) scrollWidget.setHasVerticalScroller(true);
 		scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
-		scrollWidget.setTag(jniRef);
 		scrollView = scrollWidget;
 		rect.width = rect.height = 100000;
 	}
 	SWTView widget = (SWTView)new SWTView().alloc();
 	widget.initWithFrame (rect);
 //	widget.setFocusRingType(OS.NSFocusRingTypeExterior);
-	widget.setTag(jniRef);
 	view = widget;
-	if (scrollView != null) {
-//		view.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-		scrollView.setDocumentView(view);
-	}
 }
 
 void drawRect (int id, NSRect rect) {
-	super.drawRect (id, rect);
 	if ((state & CANVAS) != 0) {
-		if (background != null && !background.isDisposed ()) {
-			float [] color = background.handle;
-			NSGraphicsContext context = NSGraphicsContext.currentContext();
-			context.saveGraphicsState();
-			NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
-			NSBezierPath.fillRect(rect);
-			context.restoreGraphicsState();
+		if ((style & SWT.NO_BACKGROUND) == 0) {
+			if (background != null && !background.isDisposed ()) {
+				float [] color = background.handle;
+				NSGraphicsContext context = NSGraphicsContext.currentContext();
+				context.saveGraphicsState();
+				NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
+				NSBezierPath.fillRect(rect);
+				context.restoreGraphicsState();
+			}
 		}
 	}
+	super.drawRect (id, rect);
 }
 
 Composite findDeferredControl () {

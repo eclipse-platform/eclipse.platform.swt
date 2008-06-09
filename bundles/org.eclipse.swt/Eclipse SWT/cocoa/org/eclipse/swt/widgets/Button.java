@@ -202,7 +202,6 @@ void createHandle () {
 	widget.setImagePosition(OS.NSImageLeft);
 	widget.setTarget(widget);
 	widget.setAction(OS.sel_sendSelection);
-	widget.setTag(jniRef);
 	view = widget;
 	_setAlignment(style);
 }

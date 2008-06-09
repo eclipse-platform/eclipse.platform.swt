@@ -377,7 +377,6 @@ void createHandle () {
 	scrollWidget.setHasVerticalScroller(true);
 	scrollWidget.setAutohidesScrollers(true);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
-	scrollWidget.setTag(jniRef);
 	
 	NSOutlineView widget = (NSOutlineView)new SWTOutlineView().alloc();
 	widget.initWithFrame(new NSRect());
@@ -388,7 +387,6 @@ void createHandle () {
 	widget.setDelegate(widget);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
-	widget.setTag(jniRef);
 	
 	headerView = widget.headerView();
 	headerView.retain();
@@ -424,7 +422,6 @@ void createHandle () {
 	
 	scrollView = scrollWidget;
 	view = widget;
-	scrollView.setDocumentView(widget);
 }
 
 void createItem (TreeColumn column, int index) {
@@ -535,10 +532,10 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	System.arraycopy (items, index, items, index + 1, count++ - index);
 	items [index] = item;
 	item.items = new TreeItem[4];
-	item.createJNIRef();
 	SWTTreeItem handle = (SWTTreeItem)new SWTTreeItem().alloc().init();
-	handle.setTag(item.jniRef);
 	item.handle = handle;
+	item.createJNIRef();
+	item.register();
 	if (parentItem != null) {
 		parentItem.itemCount = count;
 	} else {

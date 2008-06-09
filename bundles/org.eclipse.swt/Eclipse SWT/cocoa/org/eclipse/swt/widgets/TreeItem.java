@@ -352,6 +352,11 @@ NSAttributedString createString(int index) {
 	return attribStr;
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (handle);
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -881,6 +886,11 @@ public int indexOf (TreeItem item) {
 		if (item == items[i]) return i;
 	}
 	return -1;
+}
+
+void register () {
+	super.register ();
+	display.addWidget (handle, this);
 }
 
 void releaseChildren (boolean destroy) {
