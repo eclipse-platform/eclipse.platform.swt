@@ -250,6 +250,9 @@ void createHandle () {
 void drawRect (int id, NSRect rect) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
+			Control control = findBackgroundControl();
+			if (control == null) control = this;
+			Color background = control.background;
 			if (background != null && !background.isDisposed ()) {
 				float [] color = background.handle;
 				NSGraphicsContext context = NSGraphicsContext.currentContext();
