@@ -107,31 +107,21 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	int width = 0, height = 0;
-	if ((style & SWT.SEPARATOR) != 0) {
-		if ((style & SWT.HORIZONTAL) != 0) {
-			width = DEFAULT_WIDTH;
-			height = 3;
-		} else {
-			width = 3;
-			height = DEFAULT_HEIGHT;
-		}
+	NSRect oldRect = view.frame ();
+	int width = DEFAULT_WIDTH;
+	int height = DEFAULT_HEIGHT;
+	if (!isImage) {
+		((NSBox) view).sizeToFit ();
+		NSRect newRect = view.frame ();
+		width = (int) newRect.width;
+		height = (int) newRect.height;
+		view.setFrame (oldRect);
 	} else {
-		if (image != null && isImage) {
-			Rectangle bounds = image.getBounds();
-			width = bounds.width;
-			height = bounds.height;
-		} else {
-			NSRect oldRect = textView.frame();
-			textView.sizeToFit();
-			NSRect newRect = textView.frame();
-			textView.setFrame (oldRect);
-			width = (int)newRect.width;
-			height = (int)newRect.height;
-		}
+		NSImage nsimage = image.handle;
+		NSSize size = nsimage.size ();
+		width = (int) size.width;
+		height = (int) size.height;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
@@ -143,9 +133,15 @@ void createHandle () {
 		widget.setBoxType(OS.NSBoxSeparator);
 	} else {
 		widget.setBorderType(OS.NSNoBorder);
+		widget.setBorderWidth (0);
+		widget.setBoxType (OS.NSBoxCustom);
+		NSSize offsetSize = new NSSize ();
+		widget.setContentViewMargins (offsetSize);
 
-		NSImageView imageWidget = (NSImageView)new SWTImageView().alloc();
-		imageWidget.initWithFrame(new NSRect());
+		NSImageView imageWidget = (NSImageView) new SWTImageView ().alloc ();
+		imageWidget.initWithFrame(new NSRect ());
+		imageWidget.setTag (jniRef);
+		imageWidget.setImageScaling (OS.NSScaleNone);
 		
 		SWTTextField textWidget = (SWTTextField)new SWTTextField().alloc();
 		textWidget.initWithFrame(new NSRect());
@@ -313,18 +309,6 @@ void _setAlignment() {
 	}
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds(x, y, width, height, move, resize);
-	if ((result & RESIZED) != 0) {
-		if (imageView != null || textView != null) {
-			NSRect rect = view.bounds();
-			imageView.setFrame(rect);
-			textView.setFrame(rect);
-		}
-	}
-	return result;
-}
-
 void setForeground (float [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSCell cell = new NSCell(textView.cell());
@@ -398,5 +382,6 @@ public void setText (String string) {
 	cell.setAttributedStringValue(createString());
 	((NSBox)view).setContentView(textView);
 }
+
 
 }
