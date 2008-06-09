@@ -244,10 +244,6 @@ static int browserProc(int id, int sel, int arg0) {
 }
 
 static int browserProc(int id, int sel, int arg0, int arg1) {
-	if (sel == OS.sel_setTag_1) {
-		OS.object_setInstanceVariable(id, "tag", arg0);
-		return 0;
-	}
 	int jniRef = OS.objc_msgSend(id, OS.sel_tag);
 	if (jniRef == 0 || jniRef == -1) return 0;
 	Safari widget = (Safari)OS.JNIGetObject(jniRef);
