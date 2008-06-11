@@ -110,17 +110,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSRect oldRect = view.frame ();
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
-	if (!isImage) {
+	if (isImage && image != null) {
+		NSImage nsimage = image.handle;
+		NSSize size = nsimage.size ();
+		width = (int) size.width;
+		height = (int) size.height;
+	} else {
 		((NSBox) view).sizeToFit ();
 		NSRect newRect = view.frame ();
 		width = (int) newRect.width;
 		height = (int) newRect.height;
 		view.setFrame (oldRect);
-	} else {
-		NSImage nsimage = image.handle;
-		NSSize size = nsimage.size ();
-		width = (int) size.width;
-		height = (int) size.height;
 	}
 	return new Point (width, height);
 }
