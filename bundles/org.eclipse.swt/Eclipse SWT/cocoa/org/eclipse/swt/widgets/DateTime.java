@@ -172,6 +172,11 @@ void createHandle () {
 	view = widget;
 }
 
+NSCalendarDate getCalendarDate () {
+	NSDate date = ((NSDatePicker)view).dateValue();
+	return date.dateWithCalendarFormat(null, null);
+}
+
 /**
  * Returns the receiver's date, or day of the month.
  * <p>
@@ -187,9 +192,7 @@ void createHandle () {
  */
 public int getDay () {
 	checkWidget ();
-	NSDate date = ((NSDatePicker)view).dateValue();
-	NSCalendarDate calendarDate = date.dateWithCalendarFormat(null, null);
-	return calendarDate.dayOfMonth();
+	return getCalendarDate().dayOfMonth();
 }
 
 /**
@@ -207,7 +210,7 @@ public int getDay () {
  */
 public int getHours () {
 	checkWidget ();
-	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).hourOfDay();
+	return getCalendarDate().hourOfDay();
 }
 
 /**
@@ -225,7 +228,7 @@ public int getHours () {
  */
 public int getMinutes () {
 	checkWidget ();
-	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).minuteOfHour();
+	return getCalendarDate().minuteOfHour();
 }
 
 /**
@@ -243,7 +246,7 @@ public int getMinutes () {
  */
 public int getMonth () {
 	checkWidget ();
-	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).monthOfYear() - 1;
+	return getCalendarDate().monthOfYear() - 1;
 }
 
 String getNameText() {
@@ -266,7 +269,7 @@ String getNameText() {
  */
 public int getSeconds () {
 	checkWidget ();
-	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).secondOfMinute();
+	return getCalendarDate().secondOfMinute();
 }
 
 /**
@@ -284,7 +287,7 @@ public int getSeconds () {
  */
 public int getYear () {
 	checkWidget ();
-	return new NSCalendarDate(((NSDatePicker)view).dateValue().id).yearOfCommonEra();
+	return getCalendarDate().yearOfCommonEra();
 }
 
 /**
@@ -346,7 +349,7 @@ void setBackground (float [] color) {
  */
 public void setDate (int year, int month, int day) {
 	checkWidget ();
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(year, month + 1, day,
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
 	if (newDate.yearOfCommonEra() == year && newDate.monthOfYear() == month + 1 && newDate.dayOfMonth() == day) {
@@ -369,7 +372,7 @@ public void setDate (int year, int month, int day) {
  */
 public void setDay (int day) {
 	checkWidget ();
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), date.monthOfYear(), day,
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
 	if (newDate.yearOfCommonEra() == date.yearOfCommonEra() && newDate.monthOfYear() == date.monthOfYear() && newDate.dayOfMonth() == day) {
@@ -403,7 +406,7 @@ void setForeground (float [] color) {
 public void setHours (int hours) {
 	checkWidget ();
 	if (hours < 0 || hours > 23) return;
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), date.monthOfYear(), date.dayOfMonth(),
 			hours, date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
 	((NSDatePicker)view).setDateValue(newDate);
@@ -425,7 +428,7 @@ public void setHours (int hours) {
 public void setMinutes (int minutes) {
 	checkWidget ();
 	if (minutes < 0 || minutes > 59) return;
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), date.monthOfYear(), date.dayOfMonth(),
 			date.hourOfDay(), minutes, date.secondOfMinute(), date.timeZone());
 	((NSDatePicker)view).setDateValue(newDate);
@@ -446,7 +449,7 @@ public void setMinutes (int minutes) {
  */
 public void setMonth (int month) {
 	checkWidget ();
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), month + 1, date.dayOfMonth(),
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
 	if (newDate.yearOfCommonEra() == date.yearOfCommonEra() && newDate.monthOfYear() == month + 1 && newDate.dayOfMonth() == date.dayOfMonth()) {
@@ -470,7 +473,7 @@ public void setMonth (int month) {
 public void setSeconds (int seconds) {
 	checkWidget ();
 	if (seconds < 0 || seconds > 59) return;
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), date.monthOfYear(), date.dayOfMonth(),
 			date.hourOfDay(), date.minuteOfHour(), seconds, date.timeZone());
 	((NSDatePicker)view).setDateValue(newDate);
@@ -493,7 +496,7 @@ public void setSeconds (int seconds) {
 public void setTime (int hours, int minutes, int seconds) {
 	checkWidget ();
 	if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) return;
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(date.yearOfCommonEra(), date.monthOfYear(), date.dayOfMonth(),
 			hours, minutes, seconds, date.timeZone());
 	((NSDatePicker)view).setDateValue(newDate);
@@ -514,7 +517,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
-	NSCalendarDate date = new NSCalendarDate(((NSDatePicker)view).dateValue().id);
+	NSCalendarDate date = getCalendarDate();
 	NSCalendarDate newDate = NSCalendarDate.dateWithYear(year, date.monthOfYear(), date.dayOfMonth(),
 			date.hourOfDay(), date.minuteOfHour(), date.secondOfMinute(), date.timeZone());
 	if (newDate.yearOfCommonEra() == year && newDate.monthOfYear() == date.monthOfYear() && newDate.dayOfMonth() == date.dayOfMonth()) {
