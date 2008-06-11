@@ -656,6 +656,7 @@ void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	boolean add = drawCount == 0 || index != itemCount;
 	if (add) {
+		checkItems (false);
 		int [] id = new int [] {itemCount + 1};
 		if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -2441,6 +2442,7 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget();
+	checkItems (true);
 	if (start > end) return;
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
@@ -2472,6 +2474,7 @@ public void remove (int start, int end) {
  */
 public void remove (int [] indices) {
 	checkWidget ();
+	checkItems (true);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
