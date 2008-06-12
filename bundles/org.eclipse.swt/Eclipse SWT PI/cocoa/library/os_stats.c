@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 320;
-int OS_nativeFunctionCallCount[320];
+int OS_nativeFunctionCount = 322;
+int OS_nativeFunctionCallCount[322];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -246,6 +246,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__II_3III",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II",
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSend_1fpret__II",
 	"objc_1msgSend_1fpret__IID",
@@ -337,6 +338,7 @@ char * OS_nativeFunctionNames[] = {
 	"object_1getInstanceVariable",
 	"object_1setInstanceVariable",
 	"sel_1registerName",
+	"setFrame_1CALLBACK",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

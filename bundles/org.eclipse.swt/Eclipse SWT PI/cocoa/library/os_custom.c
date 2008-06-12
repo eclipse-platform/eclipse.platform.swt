@@ -365,3 +365,17 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(drawRect_1CALLBACK)
 	return (SWT_PTR)drawRect;
 }
 #endif
+
+#ifndef NO_setFrame_1CALLBACK
+static SWT_PTR setFrame_1CALLBACK;
+static void setFrame(id obj, SEL sel, NSRect rect)
+{
+	return ((void (*)(id, SEL, NSRect*))setFrame_1CALLBACK)(obj, sel, &rect);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setFrame_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	setFrame_1CALLBACK = func;
+	return (SWT_PTR)setFrame;
+}
+#endif

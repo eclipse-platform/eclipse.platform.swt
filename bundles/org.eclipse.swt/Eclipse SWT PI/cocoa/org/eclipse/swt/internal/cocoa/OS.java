@@ -356,10 +356,12 @@ public static final native int objc_msgSend_struct(NSRange result, int object, i
 public static final native int objc_msgSend_struct(NSRange result, int object, int selector, int arg0);
 
 public static final native int drawRect_CALLBACK(int func);
+public static final native int setFrame_CALLBACK(int func);
 
 public static final native int objc_msgSendSuper(objc_super superId, int sel);
 public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);
 public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0, int arg1, int arg2, int arg3);
 public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
 public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove (NSPoint dest, int /*long*/ src, int /*long*/ size);

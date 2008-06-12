@@ -254,6 +254,7 @@ typedef enum {
 	objc_1msgSend__II_3III_FUNC,
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC,
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC,
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII_FUNC,
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 	objc_1msgSend_1fpret__II_FUNC,
 	objc_1msgSend_1fpret__IID_FUNC,
@@ -345,4 +346,5 @@ typedef enum {
 	object_1getInstanceVariable_FUNC,
 	object_1setInstanceVariable_FUNC,
 	sel_1registerName_FUNC,
+	setFrame_1CALLBACK_FUNC,
 } OS_FUNCS;
