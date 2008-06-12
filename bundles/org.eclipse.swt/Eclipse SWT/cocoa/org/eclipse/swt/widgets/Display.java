@@ -147,10 +147,10 @@ public class Display extends Device {
 	static int [] [] KeyTable = {
 
 		/* Keyboard and Mouse Masks */
-//		{58,	SWT.ALT},
-//		{56,	SWT.SHIFT},
-//		{59,	SWT.CONTROL},
-//		{55,	SWT.COMMAND},
+		{58,	SWT.ALT},
+		{56,	SWT.SHIFT},
+		{59,	SWT.CONTROL},
+		{55,	SWT.COMMAND},
 
 		/* Non-Numeric Keypad Keys */
 		{OS.NSUpArrowFunctionKey, SWT.ARROW_UP},
@@ -1657,6 +1657,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	

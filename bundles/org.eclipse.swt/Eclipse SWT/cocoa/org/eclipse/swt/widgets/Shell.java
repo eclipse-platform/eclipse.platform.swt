@@ -531,42 +531,6 @@ void fixShell (Shell newShell, Control control) {
 //	if (control == lastActive) setActiveControl (null);
 }
 
-void flagsChanged(int theEvent) {
-	Display display = this.display;
-	NSEvent nsEvent = new NSEvent(theEvent);
-	int modifiers = nsEvent.modifierFlags();
-	int lastModifiers = display.lastModifiers;
-//	int chord = OS.GetCurrentEventButtonState ();
-	int type = SWT.KeyUp;	
-	if ((modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSAlternateKeyMask) != 0 && (lastModifiers & OS.NSAlternateKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSShiftKeyMask) != 0 && (lastModifiers & OS.NSShiftKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSControlKeyMask) != 0 && (lastModifiers & OS.NSControlKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSCommandKeyMask) != 0 && (lastModifiers & OS.NSCommandKeyMask) == 0) type = SWT.KeyDown;
-	Control target = display.getFocusControl();
-	if (type == SWT.KeyUp && (modifiers & OS.NSAlphaShiftKeyMask) == 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) != 0) {
-		if (target != null) {
-			Event event = new Event ();
-			event.keyCode = SWT.CAPS_LOCK;
-	//		setInputState (event, SWT.KeyDown, chord, modifiers);
-			target.sendKeyEvent (SWT.KeyDown, event);
-		}
-	}
-	Event event = new Event ();
-//	setInputState (event, type, chord, modifiers);
-	if (event.keyCode == 0 && event.character == 0) return;
-	boolean result = sendKeyEvent (type, event);
-	if (type == SWT.KeyDown && (modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) {
-		if (target != null) {
-			event = new Event ();
-			event.keyCode = SWT.CAPS_LOCK;
-	//		setInputState (event, SWT.KeyUp, chord, modifiers);
-			target.sendKeyEvent (SWT.KeyUp, event);
-		}
-	}
-	display.lastModifiers = modifiers;
-}
-
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
