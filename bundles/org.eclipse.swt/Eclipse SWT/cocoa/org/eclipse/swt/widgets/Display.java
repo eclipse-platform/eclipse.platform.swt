@@ -1573,6 +1573,7 @@ void initApplicationDelegate() {
 void addEventMethods (int cls, int proc2, int proc3) {
 	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_scrollWheel_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_rightMouseUp_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_otherMouseDown_1, proc3, "@:@");
@@ -3243,6 +3244,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.windowSendEvent(id, arg0);
 	} else if (sel == OS.sel_helpRequested_1) {
 		widget.helpRequested(arg0);
+	} else if (sel == OS.sel_scrollWheel_1) {
+		widget.scrollWheel(id, sel, arg0);
 	}
 	return 0;
 }

@@ -876,6 +876,9 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
+void scrollWheel (int id, int sel, int theEvent) {
+}
+
 void sendArrowSelection () {
 }
 
