@@ -1432,6 +1432,10 @@ boolean isTabItem () {
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 
+boolean isTrim (NSView view) {
+	return false;
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible and all
  * ancestors up to and including the receiver's nearest ancestor
@@ -1480,6 +1484,7 @@ Decorations menuShell () {
 }
 
 boolean setInputState (Event event, NSEvent nsEvent, int type) {
+	if (nsEvent == null) return true;
 	int modifierFlags = nsEvent.modifierFlags();
 	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) event.stateMask |= SWT.ALT;
 	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;
@@ -1530,35 +1535,11 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	return true;
 }
 
-void sendMouseEvent (NSEvent nsEvent, int type, int button) {
-	Event event = new Event ();
-	event.button = button;
-//	event.detail = detail;
-	event.count = nsEvent.clickCount();
-	NSPoint location = nsEvent.locationInWindow();
-	NSPoint point = view.convertPoint_fromView_(location, null);
-	event.x = (int) point.x;
-	event.y = (int) point.y;
-	setInputState (event, nsEvent, type);
-	sendEvent (type, event);
-}
-
 void mouseDown(int id, int sel, int theEvent) {
+	Display display = this.display;
+	display.trackingControl = this;
 	super.mouseDown(id, sel, theEvent);
-	NSEvent nsEvent = new NSEvent (theEvent);
-	sendMouseEvent (nsEvent, SWT.MouseDown, 1);
-}
-
-void mouseDragged(int id, int sel, int theEvent) {
-	super.mouseDragged(id, sel, theEvent);
-	NSEvent nsEvent = new NSEvent (theEvent);
-	sendMouseEvent (nsEvent, SWT.MouseMove, 1);
-}
-
-void mouseUp(int id, int sel, int theEvent) {
-	super.mouseUp(id, sel, theEvent);
-	NSEvent nsEvent = new NSEvent (theEvent);
-	sendMouseEvent (nsEvent, SWT.MouseUp, 1);
+	display.trackingControl = null;
 }
 
 boolean sendKeyEvent (Event event) {
@@ -1831,6 +1812,13 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (display.currentControl == this) {
+		display.currentControl = null;
+		display.timerExec(-1, display.hoverTimer);
+	}
+	if (display.grabControl == this) {
+		display.grabControl = null;
+	}
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
@@ -2145,11 +2133,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-void resetCursorRects (int id, int sel) {
-	super.resetCursorRects (id, sel);
-	if (cursor != null)	view.addCursorRect(view.visibleRect(), cursor.handle);
-}
-
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
@@ -2214,41 +2197,32 @@ void sendFocusEvent (int type, boolean post) {
 //	display.focusControl = null;
 }
 
-boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
-//	CGPoint pt = new CGPoint ();
-//	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-//	OS.HIViewConvertPoint (pt, 0, handle);
-//	int x = (int) pt.x;
-//	int y = (int) pt.y;
-//	display.lastX = x;
-//	display.lastY = y;
-//	int [] chord = new int [1];
-//	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-//	int [] modifiers = new int [1];
-//	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//	return sendMouseEvent (type, button, count, detail, send, chord [0], (short) x, (short) y, modifiers [0]);
-	return false;
-}
-
-boolean sendMouseEvent (int type, short button, int count, boolean send, int chord, short x, short y, int modifiers) {
-	return sendMouseEvent (type, button, count, 0, send, chord, x, y, modifiers);
-}
-
-boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
-	if (!hooks (type) && !filters (type)) return true;
-	Event event = new Event ();
-	switch (button) {
-		case 1: event.button = 1; break;
-		case 2: event.button = 3; break;
-		case 3: event.button = 2; break;
-		case 4: event.button = 4; break;
-		case 5: event.button = 5; break;
+boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	int button = 0;
+	switch (type) {
+		case SWT.MouseDown:
+		case SWT.MouseUp:
+			button = nsEvent.buttonNumber();
+			switch (button) {
+				case 0: button = 1; break;
+				case 1: button = 3; break;
+				case 2: button = 2; break;
+				case 3: button = 4; break;
+				case 4: button = 5; break;
+			}
+			break;
 	}
-	event.x = x;
-	event.y = y;
-	event.count = count;
-	event.detail = detail;
-	setInputState (event, type, chord, modifiers);
+	Event event = new Event ();
+	event.button = button;
+//	event.detail = detail;
+	if (button != 0) {
+		event.count = nsEvent.clickCount();
+	}
+	NSPoint windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation());
+	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
+	event.x = (int) point.x;
+	event.y = (int) point.y;
+	setInputState (event, nsEvent, type);
 	if (send) {
 		sendEvent (type, event);
 		if (isDisposed ()) return false;

@@ -109,6 +109,8 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
+	Control currentControl, grabControl, trackingControl;
+
 	Menu menuBar;
 
 	NSApplication application;
@@ -123,7 +125,7 @@ public class Display extends Device {
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	Callback windowDelegateCallback6;
 	Callback dialogCallback3;
-	Callback applicationCallback3;
+	Callback applicationCallback3, applicationCallback6;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -643,15 +645,19 @@ void createDisplay (DeviceData data) {
 	
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	
-//	applicationCallback3 = new Callback(this, "applicationProc", 3);
-//	int proc3 = applicationCallback3.getAddress();
-//	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//	String className = "SWTApplication";
-//	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-//	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
-//	OS.objc_registerClassPair(cls);
-//	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
-	application = NSApplication.sharedApplication();
+	applicationCallback3 = new Callback(this, "applicationProc", 3);
+	int proc3 = applicationCallback3.getAddress();
+	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	applicationCallback6 = new Callback(this, "applicationProc", 6);
+	int proc6 = applicationCallback6.getAddress();
+	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	String className = "SWTApplication";
+	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
+	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_1untilDate_1inMode_1dequeue_1, proc6, "@:i@@B");
+	OS.objc_registerClassPair(cls);
+	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
+//	application = NSApplication.sharedApplication();
 }
 
 static void deregister (Display display) {
@@ -1108,7 +1114,6 @@ public Control getFocusControl () {
 	return null;
 }
 
-
 /**
  * Returns true when the high contrast mode is enabled.
  * Otherwise, false is returned.
@@ -1520,6 +1525,12 @@ public Thread getThread () {
 	}
 }
 
+int getToolTipTime () {
+	checkDevice ();
+	//TODO get OS value (NSTooltipManager?)
+	return 560;
+}
+
 Widget getWidget (int id) {
 	if (id == 0) return null;
 	int [] jniRef = new int [1];
@@ -1582,7 +1593,6 @@ void addEventMethods (int cls, int proc2, int proc3) {
 	OS.class_addMethod(cls, OS.sel_mouseMoved_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseExited_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 }
 
@@ -1606,7 +1616,7 @@ void initClasses () {
 	windowDelegateCallback6 = new Callback(this, "windowDelegateProc", 6);
 	int proc6 = windowDelegateCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
 	int drawRectProc = OS.drawRect_CALLBACK(proc3);
 
 	String className = "SWTWindowDelegate";
@@ -1646,6 +1656,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	addEventMethods(cls, proc2, proc3);
 	OS.objc_registerClassPair(cls);
 	
@@ -2438,6 +2449,7 @@ void releaseDisplay () {
 	screenWindow = null;
 
 	if (applicationCallback3 != null) applicationCallback3.dispose ();
+	if (applicationCallback6 != null) applicationCallback6.dispose ();
 	if (applicationDelegateCallback3 != null) applicationDelegateCallback3.dispose();
 	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
 	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
@@ -2448,6 +2460,7 @@ void releaseDisplay () {
 	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = null;
 	windowDelegateCallback6 = windowDelegateCallback5 = null;
 	applicationCallback3 = dialogCallback3 = applicationDelegateCallback3 = null;
+	applicationCallback6 = null;
 }
 
 /**
@@ -2616,6 +2629,14 @@ public static void setAppName (String name) {
 	APP_NAME = name;
 }
 
+//TODO use custom timer instead of timerExec
+Runnable hoverTimer = new Runnable () {
+	public void run () {
+		if (currentControl != null && currentControl != null) {
+			currentControl.sendMouseEvent (null, SWT.MouseHover, trackingControl != null);
+		}		
+	}
+};
 //TODO - use custom timer instead of timerExec
 Runnable caretTimer = new Runnable () {
 	public void run () {
@@ -3050,21 +3071,130 @@ void wakeThread () {
 	object.performSelectorOnMainThread_withObject_waitUntilDone_(OS.sel_release, null, false);
 }
 
-int applicationProc(int id, int sel, int event) {
+Control findControl (NSEvent nsEvent) {
+	if (grabControl != null && !grabControl.isDisposed()) return grabControl;
+	NSPoint point = NSEvent.mouseLocation();
+	NSView view = null;
+	NSWindow window = nsEvent.window();
+	if (window != null) {
+		view = window.contentView().hitTest (window.convertScreenToBase(point));
+	}
+	if (view == null) {
+		NSArray windows = application.windows();
+		for (int i = 0; i < windows.count() && view == null; i++) {
+			window = new NSWindow(windows.objectAtIndex(i));
+			view = window.contentView().hitTest (window.convertScreenToBase(point));
+		}
+	}
+	Control control = null;
+	if (view != null) {
+		do {
+			Widget widget = getWidget (view);
+			if (widget instanceof Control) {
+				control = (Control)widget;
+				break;
+			}
+			view = view.superview();
+		} while (view != null);
+	}
+	if (control != null && control.isTrim (view)) control = null;
+	return control;
+}
+
+int applicationNextEventMatchingMask (int id, int sel, int mask, int expiration, int mode, int dequeue) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	int result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue);
+	if (result != 0) {
+		if (trackingControl != null && dequeue != 0) {
+			NSEvent nsEvent = new NSEvent(result);
+			applicationSendMouseEvent(nsEvent, true);
+		}
+	}
+	return result;
+}
+
+void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
+	if (send) runDeferredEvents();
+	boolean up = false;
+	int type = nsEvent.type();
+	switch (type) {
+		case OS.NSLeftMouseDown:
+		case OS.NSRightMouseDown:
+		case OS.NSOtherMouseDown: {
+			Control control = grabControl = findControl(nsEvent);
+			if (control != null) {
+				control.sendMouseEvent (nsEvent, SWT.MouseDown, send);
+			}
+			break;
+		}
+		case OS.NSLeftMouseUp:
+		case OS.NSRightMouseUp:
+		case OS.NSOtherMouseUp: {
+			Control control = findControl(nsEvent);
+			if (control != null) {
+				control.sendMouseEvent (nsEvent, SWT.MouseUp, send);
+			}
+			grabControl = null;
+			up = true;
+			//FALL THROUGH
+		}
+		case OS.NSLeftMouseDragged:
+		case OS.NSRightMouseDragged:
+		case OS.NSOtherMouseDragged:
+		case OS.NSMouseMoved: {
+			Control control = findControl(nsEvent);
+			if (control != currentControl) {
+				Cursor cursor = null;
+				if (control != null) cursor = control.findCursor ();
+				if (cursor == null) cursor = getSystemCursor (SWT.CURSOR_ARROW);
+				System.out.println("set");
+				cursor.handle.set ();
+				if (currentControl != null) {
+					currentControl.sendMouseEvent (nsEvent, SWT.MouseExit, send);
+				}
+				if (control != null) {
+					control.sendMouseEvent (nsEvent, SWT.MouseEnter, send);
+					if (up) timerExec (getToolTipTime (), hoverTimer);
+				}
+				currentControl = control;
+			}
+			if (!up && control != null) {
+				timerExec (getToolTipTime (), hoverTimer);
+				control.sendMouseEvent (nsEvent, SWT.MouseMove, send);
+			}
+			break;
+		}
+	}
+}
+
+void applicationSendEvent (int id, int sel, int event) {
+	NSEvent nsEvent = new NSEvent(event);
+	applicationSendMouseEvent(nsEvent, false);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, event);
+//	if (nsEvent.type() == OS.NSApplicationDefined && nsEvent.subtype() == SWT_IDLE_TYPE) {
+//		idle = true;
+//	} else {
+//		idle = false;
+//	}
+//	application.stop(null);
+}
+
+int applicationProc(int id, int sel, int event) {
 	if (sel == OS.sel_sendEvent_1) {
-		if (event != 0) {
-			NSEvent nsEvent = new NSEvent(event);
-			if (nsEvent.type() == OS.NSApplicationDefined && nsEvent.subtype() == SWT_IDLE_TYPE) {
-				idle = true;
-			} else {
-				idle = false;
-			}
-		}
-		application.stop(null);
+		applicationSendEvent (id, sel, event);
+		return 0;
+	}
+	return 0;
+}
+
+int applicationProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) {
+	if (sel == OS.sel_nextEventMatchingMask_1untilDate_1inMode_1dequeue_1) {
+		return applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
@@ -3138,8 +3268,8 @@ int dialogProc(int id, int sel, int arg0) {
 	return 0;
 }
 
-int windowDelegateProc(int delegate, int sel) {
-	Widget widget = getWidget(delegate);
+int windowDelegateProc(int id, int sel) {
+	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_isFlipped) {
 		return widget.isFlipped() ? 1 : 0;
@@ -3173,9 +3303,8 @@ int windowDelegateProc(int delegate, int sel) {
 	if (sel == OS.sel_resignFirstResponder) {
 		return widget.resignFirstResponder() ? 1 : 0;
 	}
-	if (sel == OS.sel_resetCursorRects) {
-		widget.resetCursorRects(delegate, sel);
-		return 0;
+	if (sel == OS.sel_isOpaque) {
+		return widget.isOpaque(id, sel) ? 1 : 0;
 	}
 	return 0;
 }

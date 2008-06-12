@@ -147,6 +147,30 @@ void createHandle () {
 	view = widget;
 }
 
+void drawRect (int id, NSRect rect) {
+	Control control = findBackgroundControl();
+	if (control == null) control = this;
+	Color background = control.background;
+	if (background != null && !background.isDisposed ()) {
+		float [] color = background.handle;
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		context.saveGraphicsState();
+		NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
+		NSBezierPath.fillRect(rect);
+		context.restoreGraphicsState();
+	}
+	super.drawRect (id, rect);
+}
+
+Cursor findCursor () {
+	Cursor cursor = super.findCursor ();
+	if (cursor == null)	{
+		int cursorType = (style & SWT.HORIZONTAL) != 0 ? SWT.CURSOR_SIZENS : SWT.CURSOR_SIZEWE;
+		cursor = display.getSystemCursor (cursorType);
+	}
+	return cursor;
+}
+
 boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	//TODO consumed
 	int keyCode = nsEvent.keyCode();
@@ -207,7 +231,8 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 }
 
 void mouseDown(int id, int sel, int theEvent) {
-	super.mouseDown(id, sel, theEvent);
+	//TODO use sendMouseEvent
+//	super.mouseDown(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent(theEvent);
 	if (nsEvent.clickCount() != 1) return;
 	NSPoint location = nsEvent.locationInWindow();
@@ -231,7 +256,8 @@ void mouseDown(int id, int sel, int theEvent) {
 }
 
 void mouseDragged(int id, int sel, int theEvent) {
-	super.mouseDragged(id, sel, theEvent);
+	//TODO use sendMouseEvent
+//	super.mouseDragged(id, sel, theEvent);
 	if (!dragging) return;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint location = nsEvent.locationInWindow();
@@ -260,7 +286,8 @@ void mouseDragged(int id, int sel, int theEvent) {
 }
 
 void mouseUp(int id, int sel, int theEvent) {
-	super.mouseUp(id, sel, theEvent);
+	//TODO use sendMouseEvent
+//	super.mouseUp(id, sel, theEvent);
 	if (!dragging) return;
 	dragging = false;
 	NSRect frame = view.frame();
@@ -305,15 +332,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
-}
-
-void resetCursorRects (int id, int sel) {
-	super.resetCursorRects (id, sel);
-	Cursor cursor = findCursor();
-	if (cursor == null)	{
-		cursor = display.getSystemCursor((style & SWT.HORIZONTAL) != 0 ? SWT.CURSOR_SIZENS : SWT.CURSOR_SIZEWE);
-		view.addCursorRect(view.visibleRect(), cursor.handle);
-	}
 }
 
 int traversalCode (int key, NSEvent theEvent) {

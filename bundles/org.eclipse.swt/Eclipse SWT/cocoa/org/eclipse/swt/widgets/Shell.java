@@ -489,6 +489,7 @@ void createHandle () {
 		if ((style & SWT.ON_TOP) != 0) {
 			window.setLevel(OS.NSFloatingWindowLevel);
 		}
+		window.setAcceptsMouseMovedEvents(true);
 	}
 	
 	super.createHandle ();
@@ -632,11 +633,6 @@ public Rectangle getClientArea () {
 		height = (int)size.height;
 	}
 	return new Rectangle (0, 0, width, height);
-}
-
-int getDrawCount (int control) {
-	if (!isTrimHandle (control)) return drawCount;
-	return 0;
 }
 
 /**

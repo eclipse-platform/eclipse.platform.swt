@@ -144,13 +144,6 @@ boolean becomeFirstResponder () {
 	return true;
 }
 
-void resetCursorRects (int id, int sel) {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel);
-}
-
 boolean resignFirstResponder () {
 	return true;
 }
@@ -607,7 +600,7 @@ public boolean isListening (int eventType) {
 	return hooks (eventType);
 }
 
-boolean isTrimHandle (int trimHandle) {
+boolean isOpaque(int id, int sel) {
 	return false;
 }
 

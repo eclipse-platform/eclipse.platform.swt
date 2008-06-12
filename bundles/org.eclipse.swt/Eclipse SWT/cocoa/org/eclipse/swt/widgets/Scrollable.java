@@ -224,6 +224,15 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
+boolean isTrim (NSView view) {
+	if (scrollView != null) {
+		if (scrollView.id == view.id) return true;
+		if (horizontalBar != null && horizontalBar.view.id == view.id) return true;
+		if (verticalBar != null && verticalBar.view.id == view.id) return true;
+	}
+	return super.isTrim (view);
+}
+
 void register () {
 	super.register ();
 	if (scrollView != null) display.addWidget (scrollView, this);

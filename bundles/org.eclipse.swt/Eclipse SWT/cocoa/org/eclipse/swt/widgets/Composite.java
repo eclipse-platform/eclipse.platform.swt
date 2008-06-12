@@ -472,6 +472,15 @@ public boolean isLayoutDeferred () {
 	return findDeferredControl () != null;
 }
 
+boolean isOpaque (int id, int sel) {
+	if ((state & CANVAS) != 0) {
+		if (id == view.id) {
+			if (background != null && background.handle[3] == 1) return true;
+		}
+	}
+	return super.isOpaque (id, sel);
+}
+
 boolean isTabGroup () {
 	if ((state & CANVAS) != 0) return true;
 	return super.isTabGroup ();
