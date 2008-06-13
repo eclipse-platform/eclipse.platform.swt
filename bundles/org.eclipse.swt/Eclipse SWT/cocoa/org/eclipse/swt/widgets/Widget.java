@@ -662,7 +662,7 @@ void mouseExited(int id, int sel, int theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-int menuForEvent (int id, int sel, int event) {
+int menuForEvent (int event) {
 	return 0;
 }
 

@@ -3387,7 +3387,7 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_mouseExited_1) {
 		widget.mouseExited(id, sel, arg0);
 	} else if (sel == OS.sel_menuForEvent_1) {
-		return widget.menuForEvent(id, sel, arg0);
+		return widget.menuForEvent(id);
 	} else if (sel == OS.sel_flagsChanged_1) {
 		widget.flagsChanged(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
