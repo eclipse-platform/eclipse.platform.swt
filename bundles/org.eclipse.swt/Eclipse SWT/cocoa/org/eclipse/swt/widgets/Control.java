@@ -1524,11 +1524,13 @@ Decorations menuShell () {
 }
 
 void scrollWheel (int id, int sel, int theEvent) {
-	if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
-		NSEvent nsEvent = new NSEvent(theEvent);
-		if (nsEvent.deltaY() != 0) {
-			if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
-				return;
+	if (id == view.id) {
+		if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+			NSEvent nsEvent = new NSEvent(theEvent);
+			if (nsEvent.deltaY() != 0) {
+				if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
+					return;
+				}
 			}
 		}
 	}

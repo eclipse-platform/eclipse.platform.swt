@@ -724,36 +724,41 @@ void resized () {
 
 void scrollWheel (int id, int sel, int theEvent) {
 	if ((state & CANVAS) != 0) {
-		NSEvent nsEvent = new NSEvent(theEvent);
-		float delta = nsEvent.deltaY();
-		if (delta != 0) {
-			if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
-				if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
-					return;
+		NSView view = scrollView != null ? scrollView : this.view;
+		if (id == view.id) {
+			NSEvent nsEvent = new NSEvent(theEvent);
+			float delta = nsEvent.deltaY();
+			if (delta != 0) {
+				if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+					if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
+						return;
+					}
 				}
 			}
+			boolean handled = false;
+			ScrollBar bar = verticalBar;
+			if (delta != 0 && bar != null && bar.getEnabled ()) {
+				int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
+				bar.setSelection (selection);
+				Event event = new Event ();
+			    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+				bar.sendEvent (SWT.Selection, event);
+				handled = true;
+			}
+			bar = horizontalBar;
+			delta = nsEvent.deltaX ();
+			if (delta != 0 && bar != null && bar.getEnabled ()) {
+				int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
+				bar.setSelection (selection);
+				Event event = new Event ();
+			    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+				bar.sendEvent (SWT.Selection, event);
+				handled = true;
+			}
+			if (!handled) view.superview().scrollWheel(nsEvent);
+			return;
 		}
-		boolean handled = false;
-		ScrollBar bar = verticalBar;
-		if (delta != 0 && bar != null && bar.getEnabled ()) {
-			int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
-			bar.setSelection (selection);
-			Event event = new Event ();
-		    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-			bar.sendEvent (SWT.Selection, event);
-			handled = true;
-		}
-		bar = horizontalBar;
-		delta = nsEvent.deltaX ();
-		if (delta != 0 && bar != null && bar.getEnabled ()) {
-			int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
-			bar.setSelection (selection);
-			Event event = new Event ();
-		    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-			bar.sendEvent (SWT.Selection, event);
-			handled = true;
-		}
-		if (!handled) view.superview().scrollWheel(nsEvent);
+		callSuper(id, sel, theEvent);
 		return;
 	}
 	super.scrollWheel (id, sel, theEvent);
