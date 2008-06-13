@@ -2247,6 +2247,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	switch (type) {
 		case SWT.MouseDown:
 		case SWT.MouseUp:
+		case SWT.MouseDoubleClick:
 			button = nsEvent.buttonNumber();
 			switch (button) {
 				case 0: button = 1; break;
