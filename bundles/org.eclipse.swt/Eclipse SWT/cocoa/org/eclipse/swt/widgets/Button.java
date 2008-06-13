@@ -185,7 +185,12 @@ void createHandle () {
 	widget.initWithFrame(new NSRect());
 	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
-		widget.setBezelStyle(OS.NSRoundedBezelStyle);
+		if ((style & SWT.FLAT) != 0) {
+			widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
+//			if ((style & SWT.BORDER) == 0) widget.setShowsBorderOnlyWhileMouseInside(true);
+		} else {
+			widget.setBezelStyle(OS.NSRoundedBezelStyle);
+		}
 	} else if ((style & SWT.CHECK) != 0) {
 		type = OS.NSSwitchButton;
 		widget.setAllowsMixedState (true);
@@ -193,7 +198,12 @@ void createHandle () {
 		type = OS.NSRadioButton;		
 	} else if ((style & SWT.TOGGLE) != 0) {
 		type = OS.NSPushOnPushOffButton;
-		widget.setBezelStyle(OS.NSRegularSquareBezelStyle);
+		if ((style & SWT.FLAT) != 0) {
+			widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
+//			if ((style & SWT.BORDER) == 0) widget.setShowsBorderOnlyWhileMouseInside(true);
+		} else {
+			widget.setBezelStyle(OS.NSRoundedBezelStyle);
+		}
 	} else if ((style & SWT.ARROW) != 0) {
 		widget.setBezelStyle(OS.NSRegularSquareBezelStyle);
 	}
