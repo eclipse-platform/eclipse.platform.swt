@@ -683,6 +683,16 @@ Point minimumSize (int wHint, int Hint, boolean changed) {
 	return new Point (width, height);
 }
 
+void pageDown(int id, int sel, int sender) {
+	if ((state & CANVAS) != 0) return;
+	super.pageDown(id, sel, sender);
+}
+
+void pageUp(int id, int sel, int sender) {
+	if ((state & CANVAS) != 0) return;
+	super.pageUp(id, sel, sender);
+}
+
 void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -712,6 +722,42 @@ void resized () {
 	}
 }
 
+void scrollWheel (int id, int sel, int theEvent) {
+	if ((state & CANVAS) != 0) {
+		NSEvent nsEvent = new NSEvent(theEvent);
+		float delta = nsEvent.deltaY();
+		if (delta != 0) {
+			if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+				if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
+					return;
+				}
+			}
+		}
+		boolean handled = false;
+		ScrollBar bar = verticalBar;
+		if (delta != 0 && bar != null && bar.getEnabled ()) {
+			int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
+			bar.setSelection (selection);
+			Event event = new Event ();
+		    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+			bar.sendEvent (SWT.Selection, event);
+			handled = true;
+		}
+		bar = horizontalBar;
+		delta = nsEvent.deltaX ();
+		if (delta != 0 && bar != null && bar.getEnabled ()) {
+			int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
+			bar.setSelection (selection);
+			Event event = new Event ();
+		    event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+			bar.sendEvent (SWT.Selection, event);
+			handled = true;
+		}
+		if (!handled) view.superview().scrollWheel(nsEvent);
+		return;
+	}
+	super.scrollWheel (id, sel, theEvent);
+}
 
 /**
  * Sets the background drawing mode to the argument which should

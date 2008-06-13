@@ -1523,6 +1523,18 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
+void scrollWheel (int id, int sel, int theEvent) {
+	if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+		NSEvent nsEvent = new NSEvent(theEvent);
+		if (nsEvent.deltaY() != 0) {
+			if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
+				return;
+			}
+		}
+	}
+	super.scrollWheel(id, sel, theEvent);
+}
+
 boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	if (nsEvent == null) return true;
 	int modifierFlags = nsEvent.modifierFlags();
@@ -2246,27 +2258,27 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	int button = 0;
+	Event event = new Event ();
 	switch (type) {
 		case SWT.MouseDown:
 		case SWT.MouseUp:
 		case SWT.MouseDoubleClick:
-			button = nsEvent.buttonNumber();
+			int button = nsEvent.buttonNumber();
 			switch (button) {
-				case 0: button = 1; break;
-				case 1: button = 3; break;
-				case 2: button = 2; break;
-				case 3: button = 4; break;
-				case 4: button = 5; break;
+				case 0: event.button = 1; break;
+				case 1: event.button = 3; break;
+				case 2: event.button = 2; break;
+				case 3: event.button = 4; break;
+				case 4: event.button = 5; break;
 			}
 			break;
+		case SWT.MouseWheel:
+			event.detail = SWT.SCROLL_LINE;
+			float delta = nsEvent.deltaY();
+			event.count = delta > 0 ? Math.max (1, (int)delta) : Math.min (-1, (int)delta);
+			break;
 	}
-	Event event = new Event ();
-	event.button = button;
-//	event.detail = detail;
-	if (button != 0) {
-		event.count = nsEvent.clickCount();
-	}
+	if (event.button != 0) event.count = nsEvent.clickCount();
 	NSPoint windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation());
 	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
 	event.x = (int) point.x;
@@ -2279,10 +2291,6 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 		postEvent (type, event);
 	}
 	return event.doit;
-}
-
-boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
-	return false;
 }
 
 void setBackground () {

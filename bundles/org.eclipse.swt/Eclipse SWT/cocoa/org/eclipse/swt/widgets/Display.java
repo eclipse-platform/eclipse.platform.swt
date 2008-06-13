@@ -1677,6 +1677,8 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_pageDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_pageUp_1, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3420,6 +3422,10 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.helpRequested(arg0);
 	} else if (sel == OS.sel_scrollWheel_1) {
 		widget.scrollWheel(id, sel, arg0);
+	} else if (sel == OS.sel_pageDown_1) {
+		widget.pageDown(id, sel, arg0);
+	} else if (sel == OS.sel_pageUp_1) {
+		widget.pageUp(id, sel, arg0);
 	}
 	return 0;
 }

@@ -749,6 +749,14 @@ public void notifyListeners (int eventType, Event event) {
 	sendEvent (eventType, event);
 }
 
+void pageDown (int id, int sel, int sender) {
+	callSuper(id, sel, sender);
+}
+
+void pageUp (int id, int sel, int sender) {
+	callSuper(id, sel, sender);
+}
+
 void postEvent (int eventType) {
 	sendEvent (eventType, null, false);
 }
