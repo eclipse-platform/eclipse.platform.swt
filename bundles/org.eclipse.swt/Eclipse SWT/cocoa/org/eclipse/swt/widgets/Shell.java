@@ -494,7 +494,6 @@ void createHandle () {
 	
 	super.createHandle ();
 	
-	window.setContentView (topView());
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	window.setDelegate(windowDelegate);
 }
@@ -1300,6 +1299,7 @@ void setWindowVisible (boolean visible, boolean key) {
 }
 
 void setZOrder () {
+	window.setContentView (topView());
 }
 
 void setZOrder (Control control, boolean above) {
