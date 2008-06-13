@@ -2489,22 +2489,8 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	NSWindow window = view.window();
-	NSPoint location = window.convertScreenToBase(NSEvent.mouseLocation());
-	NSView view = window.contentView().hitTest(location);
-	Control control = null;
-	if (view != null) {
-		do {
-			Widget widget = display.getWidget (view);
-			if (widget instanceof Control) {
-				control = (Control)widget;
-				break;
-			}
-			view = view.superview();
-		} while (view != null);
-	}
-	if (control != null && control.isTrim (view)) control = null;
-	display.setCursor (control);
+	if (!isEnabled()) return;
+	display.setCursor (display.currentControl);
 }
 
 void setDefaultFont () {
