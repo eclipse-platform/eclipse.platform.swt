@@ -3153,6 +3153,9 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 			Control control = grabControl = findControl(nsEvent);
 			if (control != null) {
 				control.sendMouseEvent (nsEvent, SWT.MouseDown, send);
+				if (nsEvent.clickCount() == 2) {
+					control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, send);
+				}
 			}
 			break;
 		}
