@@ -877,6 +877,7 @@ public void removeDisposeListener (DisposeListener listener) {
 }
 
 void scrollWheel (int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
 void sendArrowSelection () {
