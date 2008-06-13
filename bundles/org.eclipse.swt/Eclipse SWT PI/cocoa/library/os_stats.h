@@ -72,6 +72,7 @@ typedef enum {
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
 	drawRect_1CALLBACK_FUNC,
+	hitTest_1CALLBACK_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC,

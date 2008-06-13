@@ -394,7 +394,6 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setFrameOrigin_1CALLBACK)
 }
 #endif
 
-
 #ifndef NO_setFrameSize_1CALLBACK
 static SWT_PTR setFrameSize_1CALLBACK;
 static void setFrameSize(id obj, SEL sel, NSSize size)
@@ -406,5 +405,19 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setFrameSize_1CALLBACK)
 {
 	setFrameSize_1CALLBACK = func;
 	return (SWT_PTR)setFrameSize;
+}
+#endif
+
+#ifndef NO_hitTest_1CALLBACK
+static SWT_PTR hitTest_1CALLBACK;
+static void hitTest(id obj, SEL sel, NSPoint point)
+{
+	return ((void (*)(id, SEL, NSPoint*))hitTest_1CALLBACK)(obj, sel, &point);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(hitTest_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	hitTest_1CALLBACK = func;
+	return (SWT_PTR)hitTest;
 }
 #endif

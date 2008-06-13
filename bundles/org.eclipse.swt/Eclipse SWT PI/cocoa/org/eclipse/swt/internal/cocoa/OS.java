@@ -359,6 +359,7 @@ public static final native int drawRect_CALLBACK(int func);
 public static final native int setFrame_CALLBACK(int func);
 public static final native int setFrameOrigin_CALLBACK(int func);
 public static final native int setFrameSize_CALLBACK(int func);
+public static final native int hitTest_CALLBACK(int func);
 
 public static final native int objc_msgSendSuper(objc_super superId, int sel);
 public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);

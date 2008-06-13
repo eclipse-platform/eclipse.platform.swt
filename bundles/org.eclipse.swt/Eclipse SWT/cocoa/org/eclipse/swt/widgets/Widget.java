@@ -555,6 +555,13 @@ public int getStyle () {
 void helpRequested(int theEvent) {
 }
 
+int hitTest (int id, int sel, NSPoint point) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, point);
+}
+
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);

@@ -1625,6 +1625,7 @@ void initClasses () {
 	int drawRectProc = OS.drawRect_CALLBACK(proc3);
 	int setFrameOriginProc = OS.setFrame_CALLBACK(proc3);
 	int setFrameSizeProc = OS.setFrame_CALLBACK(proc3);
+	int hitTestProc = OS.hitTest_CALLBACK(proc3);
 
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
@@ -1664,6 +1665,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
 	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -3358,6 +3360,10 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		NSSize size = new NSSize();
 		OS.memmove(size, arg0, NSSize.sizeof);
 		widget.setFrameSize(id, sel, size);
+	} else if (sel == OS.sel_hitTest_1) {
+		NSPoint point = new NSPoint();
+		OS.memmove(point, arg0, NSPoint.sizeof);
+		return widget.hitTest(id, sel, point);
 	} else if (sel == OS.sel_windowShouldClose_1) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {

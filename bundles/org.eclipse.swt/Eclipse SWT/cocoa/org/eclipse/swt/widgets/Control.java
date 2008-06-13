@@ -780,7 +780,6 @@ void drawRect(int id, NSRect rect) {
 }
 
 void enableWidget (boolean enabled) {
-	//TODO - other views
 	if (view instanceof NSControl) {
 		((NSControl)view).setEnabled(enabled);
 	}
@@ -1305,6 +1304,11 @@ boolean hasBorder () {
 
 boolean hasFocus () {
 	return this == display.getFocusControl ();
+}
+
+int hitTest (int id, int sel, NSPoint point) {
+	if ((state & DISABLED) != 0) return 0;
+	return super.hitTest(id, sel, point);
 }
 
 /**	 
