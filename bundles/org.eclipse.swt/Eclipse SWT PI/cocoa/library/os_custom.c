@@ -379,3 +379,32 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setFrame_1CALLBACK)
 	return (SWT_PTR)setFrame;
 }
 #endif
+
+#ifndef NO_setFrameOrigin_1CALLBACK
+static SWT_PTR setFrameOrigin_1CALLBACK;
+static void setFrameOrigin(id obj, SEL sel, NSPoint point)
+{
+	return ((void (*)(id, SEL, NSPoint*))setFrameOrigin_1CALLBACK)(obj, sel, &point);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setFrameOrigin_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	setFrameOrigin_1CALLBACK = func;
+	return (SWT_PTR)setFrameOrigin;
+}
+#endif
+
+
+#ifndef NO_setFrameSize_1CALLBACK
+static SWT_PTR setFrameSize_1CALLBACK;
+static void setFrameSize(id obj, SEL sel, NSSize size)
+{
+	return ((void (*)(id, SEL, NSSize*))setFrameSize_1CALLBACK)(obj, sel, &size);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setFrameSize_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	setFrameSize_1CALLBACK = func;
+	return (SWT_PTR)setFrameSize;
+}
+#endif

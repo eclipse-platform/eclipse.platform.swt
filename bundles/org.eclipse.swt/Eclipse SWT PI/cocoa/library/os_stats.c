@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 322;
-int OS_nativeFunctionCallCount[322];
+int OS_nativeFunctionCount = 327;
+int OS_nativeFunctionCallCount[327];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -68,6 +68,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II",
+	"memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",
 	"objc_1allocateClassPair",
 	"objc_1getClass",
 	"objc_1lookUpClass",
@@ -247,7 +248,9 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII",
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSSize_2",
 	"objc_1msgSend_1fpret__II",
 	"objc_1msgSend_1fpret__IID",
 	"objc_1msgSend_1fpret__IIF",
@@ -338,6 +341,8 @@ char * OS_nativeFunctionNames[] = {
 	"object_1getInstanceVariable",
 	"object_1setInstanceVariable",
 	"sel_1registerName",
+	"setFrameOrigin_1CALLBACK",
+	"setFrameSize_1CALLBACK",
 	"setFrame_1CALLBACK",
 };
 
