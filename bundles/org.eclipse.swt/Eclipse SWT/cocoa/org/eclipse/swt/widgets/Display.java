@@ -2693,6 +2693,13 @@ void setCurrentCaret (Caret caret) {
 	}
 }
 
+void setCursor (Control control) {
+	Cursor cursor = null;
+	if (control != null) cursor = control.findCursor ();
+	if (cursor == null) cursor = getSystemCursor (SWT.CURSOR_ARROW);
+	cursor.handle.set ();
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -3180,18 +3187,15 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSMouseMoved: {
 			Control control = findControl(nsEvent);
 			if (control != currentControl) {
-				Cursor cursor = null;
-				if (control != null) cursor = control.findCursor ();
-				if (cursor == null) cursor = getSystemCursor (SWT.CURSOR_ARROW);
-				cursor.handle.set ();
 				if (currentControl != null) {
 					currentControl.sendMouseEvent (nsEvent, SWT.MouseExit, send);
 				}
+				currentControl = control;
 				if (control != null) {
 					control.sendMouseEvent (nsEvent, SWT.MouseEnter, send);
 					if (up) timerExec (getToolTipTime (), hoverTimer);
 				}
-				currentControl = control;
+				setCursor (control);
 			}
 			if (!up && control != null) {
 				timerExec (getToolTipTime (), hoverTimer);
