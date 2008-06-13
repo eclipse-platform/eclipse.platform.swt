@@ -528,6 +528,13 @@ void setDefault (boolean value) {
 //	OS.SetWindowDefaultButton (window, value ? handle : 0);
 }
 
+void setFont (NSFont font) {
+	super.setFont(font);
+	if (text != null) {
+		((NSButton)view).setAttributedTitle(createString());
+	}
+}
+
 void setForeground (float [] color) {
 	((NSButton)view).setAttributedTitle(createString());
 }
