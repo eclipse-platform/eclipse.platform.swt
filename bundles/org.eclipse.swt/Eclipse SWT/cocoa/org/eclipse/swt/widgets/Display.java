@@ -2663,9 +2663,9 @@ public static void setAppName (String name) {
 //TODO use custom timer instead of timerExec
 Runnable hoverTimer = new Runnable () {
 	public void run () {
-		if (currentControl != null && currentControl != null) {
+		if (currentControl != null && !currentControl.isDisposed()) {
 			currentControl.sendMouseEvent (null, SWT.MouseHover, trackingControl != null);
-		}		
+		}
 	}
 };
 //TODO - use custom timer instead of timerExec

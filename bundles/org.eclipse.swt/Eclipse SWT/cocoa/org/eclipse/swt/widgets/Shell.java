@@ -1007,6 +1007,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		} else {
 			if (resize) {
 				NSRect rect = window.frame();
+				rect.y += rect.height - height;
 				rect.width = width;
 				rect.height = height;
 				window.setFrame_display_(rect, false);
