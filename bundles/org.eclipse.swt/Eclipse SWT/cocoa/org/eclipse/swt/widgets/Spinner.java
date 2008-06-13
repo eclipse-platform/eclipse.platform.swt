@@ -500,25 +500,22 @@ void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
-void sendSelection () {	
-	setSelection (getSelection(), false, true, true);
+void resized () {
+	super.resized ();
+	buttonView.sizeToFit();
+	NSRect buttonFrame = buttonView.bounds();
+	NSRect frame = view.frame();
+	buttonFrame.x = frame.width - buttonFrame.width;
+	buttonFrame.y = 0;
+	frame.x = 0;
+	frame.y = 0;
+	frame.width -= buttonFrame.width + GAP;
+	textView.setFrame(frame);
+	buttonView.setFrame(buttonFrame);
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds(x, y, width, height, move, resize);
-	if ((result & RESIZED) != 0) {
-		buttonView.sizeToFit();
-		NSRect buttonFrame = buttonView.bounds();
-		NSRect frame = view.frame();
-		buttonFrame.x = frame.width - buttonFrame.width;
-		buttonFrame.y = 0;
-		frame.x = 0;
-		frame.y = 0;
-		frame.width -= buttonFrame.width + GAP;
-		textView.setFrame(frame);
-		buttonView.setFrame(buttonFrame);
-	}
-	return result;
+void sendSelection () {	
+	setSelection (getSelection(), false, true, true);
 }
 
 /**

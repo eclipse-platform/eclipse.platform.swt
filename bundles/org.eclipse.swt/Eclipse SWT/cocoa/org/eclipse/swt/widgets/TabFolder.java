@@ -467,21 +467,6 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds(x, y, width, height, move, resize);
-	if ((result & RESIZED) != 0) {
-		int index = getSelectionIndex ();
-		if (index != -1) {
-			TabItem item = items [index];
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea ());
-			}
-		}
-	}
-	return result;
-}
-
 void setFont (NSFont font) {
 	((NSTabView)view).setFont(font);
 }
@@ -577,7 +562,6 @@ void setSelection (int index, boolean notify, boolean force) {
 		if (item != null) {
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea ());
 				control.setVisible (true);
 			}
 			if (notify) {
@@ -620,7 +604,6 @@ void willSelectTabViewItem(int tabView, int tabViewItem) {
 			}
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea ());
 				control.setVisible (true);
 			}
 			Event event = new Event ();

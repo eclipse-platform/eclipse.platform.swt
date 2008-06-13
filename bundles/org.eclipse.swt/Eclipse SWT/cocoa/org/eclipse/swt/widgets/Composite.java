@@ -704,6 +704,15 @@ void removeControl (Control control) {
 	fixTabList (control);
 }
 
+void resized () {
+	super.resized ();
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false);
+	}
+}
+
+
 /**
  * Sets the background drawing mode to the argument which should
  * be one of the following constants defined in class <code>SWT</code>:
@@ -728,15 +737,6 @@ public void setBackgroundMode (int mode) {
 	for (int i = 0; i < children.length; i++) {
 		children [i].updateBackgroundMode ();
 	}
-}
-
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = super.setBounds (x, y, width, height, move, resize);
-	if (layout != null && (result & RESIZED) != 0) {
-		markLayout (false, false);
-		updateLayout (false);
-	}
-	return result;
 }
 
 public boolean setFocus () {

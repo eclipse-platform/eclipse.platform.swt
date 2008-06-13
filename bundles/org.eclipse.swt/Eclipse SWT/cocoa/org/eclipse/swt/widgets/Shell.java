@@ -986,7 +986,7 @@ public void setAlpha (int alpha) {
 	window.setAlphaValue (alpha / 255f);
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 //	if (fullScreen) setFullScreen (false);
 	if (move && resize) {
 		NSRect rect = new NSRect ();
@@ -1014,7 +1014,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			}
 		}
 	}
-	return 0;
 }
 
 public void setEnabled (boolean enabled) {

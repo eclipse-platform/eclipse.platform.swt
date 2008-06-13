@@ -1579,6 +1579,10 @@ void mouseDown(int id, int sel, int theEvent) {
 	display.trackingControl = null;
 }
 
+void moved () {
+	sendEvent (SWT.Move);
+}
+
 boolean sendKeyEvent (Event event) {
 	sendEvent (event);
 	return event.doit;
@@ -2170,6 +2174,10 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+void resized () {
+	sendEvent (SWT.Resize);
+}
+
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
@@ -2381,44 +2389,26 @@ public void setBounds (int x, int y, int width, int height) {
 	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int result = 0;
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	NSView topView = topView();
-	NSRect rect = topView.frame();
 	if (move && resize) {
-		if (rect.x != x || rect.y != y) result |= MOVED;
-		if (rect.width != width || rect.height != height) result |= RESIZED;
-		if (result != 0) {
-			rect.x = x;
-			rect.y = y;
-			rect.width = width;
-			rect.height = height;
-			topView.setFrame (rect);
-		}
+		NSRect rect = new NSRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+		topView.setFrame (rect);
 	} else if (move) {
-		if (rect.x != x || rect.y != y) {
-			result |= MOVED;
-			NSPoint point = new NSPoint();
-			point.x = x;
-			point.y = y;
-			topView.setFrameOrigin(point);
-		}
+		NSPoint point = new NSPoint();
+		point.x = x;
+		point.y = y;
+		topView.setFrameOrigin(point);
 	} else if (resize) {
-		if (rect.width != width || rect.height != height) {
-			result |= RESIZED;
-			NSSize size = new NSSize();
-			size.width = width;
-			size.height = height;
-			topView.setFrameSize(size);
-		}
+		NSSize size = new NSSize();
+		size.width = width;
+		size.height = height;
+		topView.setFrameSize(size);
 	}
-	if ((result & MOVED) != 0) {
-		sendEvent(SWT.Move);
-	}
-	if ((result & RESIZED) != 0) {
-		sendEvent(SWT.Resize);
-	}
-	return result;
 }
 
 /**
@@ -2642,6 +2632,32 @@ void setForeground (int control, float [] color) {
 //		fontStyle.flags &= ~OS.kControlUseForeColorMask;
 //	}
 //	OS.SetControlFontStyle (control, fontStyle);
+}
+
+void setFrameOrigin (int id, int sel, NSPoint point) {
+	NSView topView = topView ();
+	if (topView.id != id) {
+		super.setFrameOrigin(id, sel, point);
+		return;
+	}
+	NSRect frame = topView.frame();
+	super.setFrameOrigin(id, sel, point);
+	if (frame.x != point.x || frame.y != point.y) {
+		moved ();
+	}
+}
+
+void setFrameSize (int id, int sel, NSSize size) {
+	NSView topView = topView ();
+	if (topView.id != id) {
+		super.setFrameSize(id, sel, size);
+		return;
+	}
+	NSRect frame = topView.frame();
+	super.setFrameSize(id, sel, size);
+	if (frame.width != size.width || frame.height != size.height) {
+		resized ();
+	}
 }
 
 /**

@@ -252,14 +252,21 @@ public void setControl (Control control) {
 	int index = parent.indexOf (this);
 	if (index != parent.getSelectionIndex ()) {
 		if (newControl != null) newControl.setVisible (false);
-		return;
+	} else {
+		if (newControl != null) {
+			newControl.setVisible (true);
+		}
+		if (oldControl != null) oldControl.setVisible (false);
 	}
+	NSView view;
 	if (newControl != null) {
-//		nsItem.setView(control.topView ());
-		newControl.setBounds (parent.getClientArea ());
-		newControl.setVisible (true);
+		view = newControl.topView();
+	} else {
+		view = (NSView)new NSView().alloc();
+		view.initWithFrame (new NSRect());
+		view.autorelease();
 	}
-	if (oldControl != null) oldControl.setVisible (false);
+	nsItem.setView (view);
 }
 
 public void setImage (Image image) {

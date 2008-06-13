@@ -1068,6 +1068,20 @@ public void setData (String key, Object value) {
 	}
 }
 
+void setFrameOrigin (int id, int sel, NSPoint point) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, point);
+}
+
+void setFrameSize (int id, int sel, NSSize size) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, size);
+}
+
 boolean setInputState (Event event, int type, int chord, int modifiers) {
 //	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
 //	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
