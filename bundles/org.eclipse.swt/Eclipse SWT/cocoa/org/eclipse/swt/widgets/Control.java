@@ -832,27 +832,22 @@ void flagsChanged(int theEvent) {
 	if ((modifiers & OS.NSShiftKeyMask) != 0 && (lastModifiers & OS.NSShiftKeyMask) == 0) type = SWT.KeyDown;
 	if ((modifiers & OS.NSControlKeyMask) != 0 && (lastModifiers & OS.NSControlKeyMask) == 0) type = SWT.KeyDown;
 	if ((modifiers & OS.NSCommandKeyMask) != 0 && (lastModifiers & OS.NSCommandKeyMask) == 0) type = SWT.KeyDown;
-	Control target = display.getFocusControl();
 	if (type == SWT.KeyUp && (modifiers & OS.NSAlphaShiftKeyMask) == 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) != 0) {
-		if (target != null) {
-			Event event = new Event ();
-			event.keyCode = SWT.CAPS_LOCK;
-			setInputState(event, nsEvent, type);
-			target.sendKeyEvent (SWT.KeyDown, event);
-		}
+		Event event = new Event ();
+		event.keyCode = SWT.CAPS_LOCK;
+		setInputState(event, nsEvent, type);
+		sendKeyEvent (SWT.KeyDown, event);
 	}
 	Event event = new Event ();
 	event.keyCode = Display.translateKey(nsEvent.keyCode());
 	setInputState(event, nsEvent, type);
 	if (event.keyCode == 0 && event.character == 0) return;
-	boolean result = sendKeyEvent (type, event);
+	sendKeyEvent (type, event);
 	if (type == SWT.KeyDown && (modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) {
-		if (target != null) {
-			event = new Event ();
-			event.keyCode = SWT.CAPS_LOCK;
-	//		setInputState (event, SWT.KeyUp, chord, modifiers);
-			target.sendKeyEvent (SWT.KeyUp, event);
-		}
+		event = new Event ();
+		event.keyCode = SWT.CAPS_LOCK;
+//		setInputState (event, SWT.KeyUp, chord, modifiers);
+		sendKeyEvent (SWT.KeyUp, event);
 	}
 	display.lastModifiers = modifiers;
 }

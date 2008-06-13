@@ -1666,7 +1666,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
-	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3);
@@ -1847,7 +1846,6 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSWindow, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_1, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
@@ -3394,8 +3392,6 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.mouseExited(id, sel, arg0);
 	} else if (sel == OS.sel_menuForEvent_1) {
 		return widget.menuForEvent(id);
-	} else if (sel == OS.sel_flagsChanged_1) {
-		widget.flagsChanged(arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
 		return widget.numberOfRowsInTableView(arg0);
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_1) {

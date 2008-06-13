@@ -1400,7 +1400,12 @@ void windowWillClose(int notification) {
 void windowSendEvent(int id, int event) {
 	NSEvent nsEvent = new NSEvent(event);
 	int type = nsEvent.type();
-	if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
+	if (type == OS.NSFlagsChanged) {
+		Control eventTarget = display.getFocusControl();
+		if (eventTarget != null) {
+			eventTarget.flagsChanged(event);
+		}
+	} else if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
 		Control eventTarget = display.getFocusControl();
 		if (eventTarget != null) {
 			if (type == OS.NSKeyDown) {
