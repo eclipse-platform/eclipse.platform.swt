@@ -485,6 +485,10 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+int menuForEvent (int event) {
+	return parent.menuForEvent(event);
+}
+
 void register () {
 	super.register ();
 	display.addWidget (view, this);
