@@ -622,6 +622,14 @@ boolean isValidThread () {
 void flagsChanged(int event) {
 }
 
+void keyDown (int theEvent) {
+	/* keyDown handler that prevents error bell */
+}
+
+void keyUp (int theEvent) {
+	/* keyUp handler that prevents error bell */
+}
+
 void mouseDown(int id, int sel, int theEvent) {
 	callSuper(id, sel, theEvent);
 }

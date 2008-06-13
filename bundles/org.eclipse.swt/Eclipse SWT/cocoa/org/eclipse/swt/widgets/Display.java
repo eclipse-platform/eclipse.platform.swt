@@ -1667,6 +1667,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
 	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3368,6 +3370,10 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_1) {
 		widget.mouseDown(id, sel, arg0);
+	} else if (sel == OS.sel_keyDown_1) {
+		widget.keyDown(arg0);
+	} else if (sel == OS.sel_keyUp_1) {
+		widget.keyUp(arg0);
 	} else if (sel == OS.sel_mouseUp_1) {
 		widget.mouseUp(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseDown_1) {
