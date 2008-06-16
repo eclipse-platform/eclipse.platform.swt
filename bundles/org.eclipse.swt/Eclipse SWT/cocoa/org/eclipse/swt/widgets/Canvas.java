@@ -114,7 +114,12 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Control control = findBackgroundControl ();
 	if (control != null) {
-//		control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height));
+		NSRect rect = new NSRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+		control.fillBackground (view, gc.handle, rect);
 	} else {
 		gc.fillRectangle (x, y, width, height);
 	}

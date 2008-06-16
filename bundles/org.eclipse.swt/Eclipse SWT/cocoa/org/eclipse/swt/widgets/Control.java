@@ -789,6 +789,34 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
+	Control control = findBackgroundControl();
+	if (control == null) control = this;
+	Image image = control.backgroundImage;
+	if (image != null && !image.isDisposed()) {
+		context.saveGraphicsState();
+		NSColor.colorWithPatternImage(image.handle).setFill();
+		NSPoint phase = new NSPoint();
+		NSView controlView = control.view;
+		NSView contentView = controlView.window().contentView();
+		phase = controlView.convertPoint_toView_(phase, contentView);
+		phase.y = contentView.bounds().height - phase.y;
+		context.setPatternPhase(phase);
+		NSBezierPath.fillRect(rect);
+		context.restoreGraphicsState();
+		return;
+	}
+	Color background = control.background;
+	if (background != null && !background.isDisposed ()) {
+		float [] color = background.handle;
+		context.saveGraphicsState();
+		NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
+		NSBezierPath.fillRect(rect);
+		context.restoreGraphicsState();
+		return;
+	}
+}
+
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
