@@ -895,7 +895,6 @@ void flagsChanged(int theEvent) {
  */
 public boolean forceFocus () {
 	checkWidget();
-//	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
@@ -1437,10 +1436,6 @@ boolean isFocusAncestor (Control control) {
  */
 public boolean isFocusControl () {
 	checkWidget();
-//	Control focusControl = display.focusControl;
-//	if (focusControl != null && !focusControl.isDisposed ()) {
-//		return this == focusControl;
-//	}
 	return hasFocus ();
 }
 
@@ -2200,19 +2195,11 @@ boolean sendDragEvent (int button, int chord, int modifiers, int x, int y) {
 void sendFocusEvent (int type, boolean post) {
 	Display display = this.display;
 	Shell shell = getShell ();
-	/*
-	* Feature in the Macintosh.  GetKeyboardFocus() returns NULL during
-	* kEventControlSetFocusPart if the focus part is not kControlFocusNoPart.
-	* The fix is to remember the focus control and return it during
-	* kEventControlSetFocusPart.
-	*/
-//	display.focusControl = this;
-//	display.focusEvent = type;
 	if (post) {
 		postEvent (type);
 	} else {
 		sendEvent (type);
-	}	
+	}
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
@@ -2231,8 +2218,6 @@ void sendFocusEvent (int type, boolean post) {
 				break;
 		}
 	}
-//	display.focusEvent = SWT.None;
-//	display.focusControl = null;
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
@@ -2519,10 +2504,8 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-//		if (display.focusEvent != SWT.FocusOut) {
-			control = display.getFocusControl ();
-			fixFocus = isFocusAncestor (control);
-//		}
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
 	}
 	if (enabled) {
 		state &= ~DISABLED;
@@ -2972,10 +2955,8 @@ public void setVisible (boolean visible) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!visible) {
-//		if (display.focusEvent != SWT.FocusOut) {
-			control = display.getFocusControl ();
-			fixFocus = isFocusAncestor (control);
-//		}
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
 	}
 	topView().setHidden(!visible);
 	if (!visible) {
