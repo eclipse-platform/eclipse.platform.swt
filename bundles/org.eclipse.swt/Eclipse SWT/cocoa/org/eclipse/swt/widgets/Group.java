@@ -97,10 +97,11 @@ protected void checkSubclass () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
-	NSSize margins = widget.contentViewMargins();
+	NSRect titleRect = widget.titleRect();
+	float borderWidth = widget.borderWidth();
 	NSRect frame = contentView.frame();
-	width += margins.width * 2;
-	height += margins.height * 2 + frame.y;
+	width += borderWidth * 2 + frame.x;
+	height += borderWidth * 2 + titleRect.height + frame.y;
 	return super.computeTrim(x, y, width, height);
 }
 
@@ -116,7 +117,8 @@ void deregister () {
 void createHandle () {
 	SWTBox widget = (SWTBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
-	widget.setTitle(NSString.stringWith(""));
+	widget.setTitlePosition(OS.NSNoTitle);
+	widget.setContentViewMargins(new NSSize());
 	SWTView contentWidget = (SWTView)new SWTView().alloc();
 	contentWidget.initWithFrame(new NSRect());
 //	contentWidget.setDrawsBackground(false);
@@ -194,7 +196,9 @@ public void setText (String string) {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
-	((NSBox)view).setTitle(NSString.stringWithCharacters(buffer, length));
+	NSBox box = (NSBox)view;
+	box.setTitlePosition(length == 0 ? OS.NSNoTitle : OS.NSAtTop);
+	box.setTitle(NSString.stringWithCharacters(buffer, length));
 }
 
 }
