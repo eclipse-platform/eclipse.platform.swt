@@ -113,21 +113,21 @@ boolean acceptsFirstResponder () {
 }
 
 boolean becomeFirstResponder () {
-//TODO - query focusControl() in SWT.FocusIn/Out is the control
-	sendEvent (SWT.FocusIn);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = view.id;
 	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
-	return OS.objc_msgSendSuper(super_struct, OS.sel_becomeFirstResponder) != 0;
+	boolean result = OS.objc_msgSendSuper(super_struct, OS.sel_becomeFirstResponder) != 0;
+	if (result) sendFocusEvent (SWT.FocusIn, false);
+	return result;
 }
 
 boolean resignFirstResponder () {
-//TODO - query focusControl() in SWT.FocusIn/Out is the control
-	sendEvent (SWT.FocusOut);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = view.id;
 	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
-	return OS.objc_msgSendSuper(super_struct, OS.sel_resignFirstResponder) != 0;
+	boolean result = OS.objc_msgSendSuper(super_struct, OS.sel_resignFirstResponder) != 0;
+	if (result) sendFocusEvent (SWT.FocusOut, false);
+	return result;
 }
 
 /**
@@ -2236,9 +2236,12 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	Shell shell = null;
 	Event event = new Event ();
 	switch (type) {
 		case SWT.MouseDown:
+			shell = getShell ();
+			//FALL THROUGH
 		case SWT.MouseUp:
 		case SWT.MouseDoubleClick:
 			int button = nsEvent.buttonNumber();
@@ -2268,6 +2271,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	} else {
 		postEvent (type, event);
 	}
+	if (shell != null) shell.setActiveControl(this);
 	return event.doit;
 }
 

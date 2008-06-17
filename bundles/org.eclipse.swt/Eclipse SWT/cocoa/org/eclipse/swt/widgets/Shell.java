@@ -539,7 +539,7 @@ Cursor findCursor () {
 
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
-//	if (control == lastActive) setActiveControl (null);
+	if (control == lastActive) setActiveControl (null);
 }
 
 /**

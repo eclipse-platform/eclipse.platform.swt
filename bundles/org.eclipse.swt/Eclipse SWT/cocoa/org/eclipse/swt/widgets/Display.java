@@ -1594,6 +1594,8 @@ void addEventMethods (int cls, int proc2, int proc3) {
 	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseExited_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 }
 
 void addFrameMethods(int cls, int setFrameOriginProc, int setFrameSizeProc) {
@@ -1662,8 +1664,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
 	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
