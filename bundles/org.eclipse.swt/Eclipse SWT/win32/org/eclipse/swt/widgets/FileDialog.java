@@ -192,7 +192,7 @@ public boolean getOverwrite () {
 	return overwrite;
 }
 
-int OFNHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ wParam, int /*long*/ lParam) {
+int /*long*/ OFNHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ wParam, int /*long*/ lParam) {
 	switch ((int)/*64*/uiMsg) {
 		case OS.WM_NOTIFY:
 			OFNOTIFY ofn = new OFNOTIFY ();
