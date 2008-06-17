@@ -1106,94 +1106,56 @@ void setFrameSize (int id, int sel, NSSize size) {
 	OS.objc_msgSendSuper(super_struct, sel, size);
 }
 
-boolean setInputState (Event event, int type, int chord, int modifiers) {
-//	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
-//	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
-//	if ((chord & 0x04) != 0) event.stateMask |= SWT.BUTTON2;
-//	if ((chord & 0x08) != 0) event.stateMask |= SWT.BUTTON4;
-//	if ((chord & 0x10) != 0) event.stateMask |= SWT.BUTTON5;
-//	
-//	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
-//	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
-//	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
-//	if ((modifiers & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
-//	switch (type) {
-//		case SWT.MouseDown:
-//		case SWT.MouseDoubleClick:
-//			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
-//			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
-//			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
-//			if (event.button == 4)  event.stateMask &= ~SWT.BUTTON4;
-//			if (event.button == 5)  event.stateMask &= ~SWT.BUTTON5;
-//			break;
-//		case SWT.MouseUp:
-//			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
-//			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
-//			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
-//			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
-//			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
-//			break;
-//		case SWT.KeyDown:
-//		case SWT.Traverse: {
-//			if (event.keyCode != 0 || event.character != 0) return true;
-//			int lastModifiers = display.lastModifiers;
-//			if ((modifiers & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
-//				event.keyCode = SWT.CAPS_LOCK;
-//				return true;
-//			}
-//			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
-//				event.stateMask &= ~SWT.SHIFT;
-//				event.keyCode = SWT.SHIFT;
-//				return true;
-//			}
-//			if ((modifiers & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
-//				event.stateMask &= ~SWT.CONTROL;
-//				event.keyCode = SWT.CONTROL;
-//				return true;
-//			}
-//			if ((modifiers & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
-//				event.stateMask &= ~SWT.COMMAND;
-//				event.keyCode = SWT.COMMAND;
-//				return true;
-//			}	
-//			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
-//				event.stateMask &= ~SWT.ALT;
-//				event.keyCode = SWT.ALT;
-//				return true;
-//			}
-//			break;
-//		}
-//		case SWT.KeyUp: {
-//			if (event.keyCode != 0 || event.character != 0) return true;
-//			int lastModifiers = display.lastModifiers;
-//			if ((modifiers & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
-//				event.keyCode = SWT.CAPS_LOCK;
-//				return true;
-//			}
-//			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
-//				event.stateMask |= SWT.SHIFT;
-//				event.keyCode = SWT.SHIFT;
-//				return true;
-//			}
-//			if ((modifiers & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
-//				event.stateMask |= SWT.CONTROL;
-//				event.keyCode = SWT.CONTROL;
-//				return true;
-//			}
-//			if ((modifiers & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
-//				event.stateMask |= SWT.COMMAND;
-//				event.keyCode = SWT.COMMAND;
-//				return true;
-//			}
-//			if ((modifiers & OS.optionKey) == 0 && (lastModifiers & OS.optionKey) != 0) {
-//				event.stateMask |= SWT.ALT;
-//				event.keyCode = SWT.ALT;
-//				return true;
-//			}
-//			break;
-//		}
-//	}
-	return true; 
+boolean setInputState (Event event, NSEvent nsEvent, int type) {
+	if (nsEvent == null) return true;
+	int modifierFlags = nsEvent.modifierFlags();
+	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) event.stateMask |= SWT.ALT;
+	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSControlKeyMask) != 0) event.stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) event.stateMask |= SWT.COMMAND;
+	//TODO multiple mouse buttons pressed
+	switch (nsEvent.type()) {
+		case OS.NSLeftMouseDragged:
+		case OS.NSRightMouseDragged:
+		case OS.NSOtherMouseDragged:
+			switch (nsEvent.buttonNumber()) {
+				case 0: event.stateMask |= SWT.BUTTON1; break;
+				case 1: event.stateMask |= SWT.BUTTON3; break;
+				case 2: event.stateMask |= SWT.BUTTON2; break;
+				case 3: event.stateMask |= SWT.BUTTON4; break;
+				case 4: event.stateMask |= SWT.BUTTON5; break;
+			}
+			break;
+	}
+	switch (type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
+			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
+			if (event.button == 3) event.stateMask &= ~SWT.BUTTON3;
+			if (event.button == 4) event.stateMask &= ~SWT.BUTTON4;
+			if (event.button == 5) event.stateMask &= ~SWT.BUTTON5;
+			break;
+		case SWT.MouseUp:
+			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
+			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
+			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
+			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
+			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
+			break;
+		case SWT.KeyDown:
+		case SWT.Traverse:
+			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			break;
+		case SWT.KeyUp:
+			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			break;
+	}		
+	return true;
 }
 
 boolean setKeyState (Event event, int type, NSEvent nsEvent) {

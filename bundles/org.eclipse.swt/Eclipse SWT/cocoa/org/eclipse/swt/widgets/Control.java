@@ -1565,58 +1565,6 @@ void scrollWheel (int id, int sel, int theEvent) {
 	super.scrollWheel(id, sel, theEvent);
 }
 
-boolean setInputState (Event event, NSEvent nsEvent, int type) {
-	if (nsEvent == null) return true;
-	int modifierFlags = nsEvent.modifierFlags();
-	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) event.stateMask |= SWT.ALT;
-	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;
-	if ((modifierFlags & OS.NSControlKeyMask) != 0) event.stateMask |= SWT.CONTROL;
-	if ((modifierFlags & OS.NSCommandKeyMask) != 0) event.stateMask |= SWT.COMMAND;
-	
-	//WRONG
-	if ((modifierFlags & OS.NSLeftMouseDownMask) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((modifierFlags & OS.NSLeftMouseDraggedMask) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((modifierFlags & OS.NSLeftMouseUpMask) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((modifierFlags & OS.NSOtherMouseDownMask) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((modifierFlags & OS.NSOtherMouseDraggedMask) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((modifierFlags & OS.NSOtherMouseUpMask) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((modifierFlags & OS.NSRightMouseDownMask) != 0) event.stateMask |= SWT.BUTTON3;
-	if ((modifierFlags & OS.NSRightMouseDraggedMask) != 0) event.stateMask |= SWT.BUTTON3;
-	if ((modifierFlags & OS.NSRightMouseUpMask) != 0) event.stateMask |= SWT.BUTTON3;
-	
-//	if (OS.GetKeyState (OS.VK_XBUTTON1) < 0) event.stateMask |= SWT.BUTTON4;
-//	if (OS.GetKeyState (OS.VK_XBUTTON2) < 0) event.stateMask |= SWT.BUTTON5;
-//	switch (type) {
-//		case SWT.MouseDown:
-//		case SWT.MouseDoubleClick:
-//			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
-//			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
-//			if (event.button == 3) event.stateMask &= ~SWT.BUTTON3;
-//			if (event.button == 4) event.stateMask &= ~SWT.BUTTON4;
-//			if (event.button == 5) event.stateMask &= ~SWT.BUTTON5;
-//			break;
-//		case SWT.MouseUp:
-//			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
-//			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
-//			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
-//			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
-//			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
-//			break;
-//		case SWT.KeyDown:
-//		case SWT.Traverse:
-//			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
-//			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
-//			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
-//			break;
-//		case SWT.KeyUp:
-//			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
-//			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
-//			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
-//			break;
-//	}		
-	return true;
-}
-
 void mouseDown(int id, int sel, int theEvent) {
 	Display display = this.display;
 	display.trackingControl = this;
@@ -2244,7 +2192,7 @@ boolean sendDragEvent (int button, int chord, int modifiers, int x, int y) {
 	}
 	event.x = x;
 	event.y = y;
-	setInputState (event, SWT.DragDetect, chord, modifiers);
+//	setInputState (event, SWT.DragDetect, chord, modifiers);
 	postEvent (SWT.DragDetect, event);
 	return event.doit;
 }
