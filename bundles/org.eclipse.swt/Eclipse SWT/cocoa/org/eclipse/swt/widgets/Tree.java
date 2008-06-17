@@ -82,6 +82,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
+	float levelIndent;
 	boolean ignoreExpand, ignoreSelect;
 
 /**
@@ -419,6 +420,7 @@ void createHandle () {
 	cell.setLeaf(true);
 	firstColumn.setDataCell(cell);
 	cell.release();
+	levelIndent = widget.indentationPerLevel();
 	
 	scrollView = scrollWidget;
 	view = widget;
@@ -965,6 +967,11 @@ public int getHeaderHeight () {
 public boolean getHeaderVisible () {
 	checkWidget ();
 	return ((NSTableView)view).headerView() != null;
+}
+
+int getInsetWidth () {
+	//TODO - wrong
+	return 20;
 }
 
 /**

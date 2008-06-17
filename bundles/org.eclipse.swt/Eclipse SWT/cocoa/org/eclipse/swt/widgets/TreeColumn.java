@@ -324,16 +324,18 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget ();
-//	GC gc = new GC (parent);
-//	int width = gc.stringExtent (text).x;
-	//TODO extra header
-//	int index = parent.indexOf (this);
-//	width = Math.max (width, calculateWidth (parent.childIds, index, gc, width));
-//
-//	gc.dispose ();
-//	setWidth (width + parent.getInsetWidth (id, true));
-	//TODO this only takes care of the header
-	nsColumn.sizeToFit();
+	GC gc = new GC (parent);
+	int width = gc.stringExtent (text).x;
+	//TODO header extra
+	int index = parent.indexOf (this);
+	for (int i=0; i<parent.itemCount; i++) {
+		TreeItem item = parent.items [i];
+		if (item != null && item.cached) {
+			width = Math.max (width, item.calculateWidth (index, gc, true));
+		}
+	}
+	gc.dispose ();
+	setWidth (width + parent.getInsetWidth ());
 }
 
 void releaseHandle () {

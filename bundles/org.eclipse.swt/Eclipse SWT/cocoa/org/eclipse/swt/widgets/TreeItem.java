@@ -221,31 +221,46 @@ static int checkIndex (int index) {
 	return index;
 }
 
-int calculateWidth (int index, GC gc) {
-	if (index == 0 && width != -1) return width;
+int calculateWidth (int index, GC gc, boolean recurse) {
 	int width = 0;
-	Image image = getImage (index);
-	String text = getText (index);
-	gc.setFont (getFont (index));
-//	if (image != null) width += image.getBounds ().width + parent.getGap ();
-	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
-//	if (parent.hooks (SWT.MeasureItem)) {
-//		Event event = new Event ();
-//		event.item = this;
-//		event.index = index;
-//		event.gc = gc;
-//		short [] height = new short [1];
-//		OS.GetDataBrowserTableViewRowHeight (parent.handle, height);
-//		event.width = width;
-//		event.height = height [0];
-//		parent.sendEvent (SWT.MeasureItem, event);
-//		if (parent.itemHeight < event.height) {
-//			parent.itemHeight = event.height;
-//			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
-//		}
-//		width = event.width;
-//	}
-	if (index == 0) this.width = width;
+	if (index == 0 && this.width != -1) {
+		width = this.width;
+	} else {
+		Image image = getImage (index);
+		String text = getText (index);
+		gc.setFont (getFont (index));
+	//	if (image != null) width += image.getBounds ().width + parent.getGap ();
+		if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	//	if (parent.hooks (SWT.MeasureItem)) {
+	//		Event event = new Event ();
+	//		event.item = this;
+	//		event.index = index;
+	//		event.gc = gc;
+	//		short [] height = new short [1];
+	//		OS.GetDataBrowserTableViewRowHeight (parent.handle, height);
+	//		event.width = width;
+	//		event.height = height [0];
+	//		parent.sendEvent (SWT.MeasureItem, event);
+	//		if (parent.itemHeight < event.height) {
+	//			parent.itemHeight = event.height;
+	//			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
+	//		}
+	//		width = event.width;
+	//	}
+		if (index == 0) {
+			int level = ((NSOutlineView)parent.view).levelForItem(handle);
+			width += parent.levelIndent * level;
+			this.width = width;
+		}
+	}
+	if (recurse && expanded) {
+		for (int i = 0; i < items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null && item.cached) {
+				width = Math.max(width, item.calculateWidth(index, gc, recurse));
+			}
+		}
+	}
 	return width;
 }
 
