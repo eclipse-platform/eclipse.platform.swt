@@ -801,7 +801,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	view.setToolTip(NSString.stringWith(string));
+	view.setToolTip(string != null ? NSString.stringWith(string) : null);
 }
 
 void setVisible (boolean visible) {
