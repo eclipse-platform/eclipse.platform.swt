@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -117,10 +118,10 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
+	NSBezierPath regionPath;
 	boolean opened, moved, resized, fullScreen;
 //	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen;
 	Control lastActive;
-	Region region;
 	Rectangle normalBounds;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
@@ -513,6 +514,18 @@ void destroyWidget () {
 	}
 }
 
+void drawRect(int id, NSRect rect) {
+	if (regionPath != null && background == null) {
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		context.saveGraphicsState();
+		NSColor.windowBackgroundColor().setFill();
+		NSBezierPath.fillRect(rect);
+		context.restoreGraphicsState();
+		return;
+	}
+	super.drawRect(id, rect);
+}
+
 Control findBackgroundControl () {
 	return background != null || backgroundImage != null ? this : null;
 }
@@ -868,6 +881,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 //	disposed = true;
 	lastActive = null;
+	if (regionPath != null) regionPath.release();
+	regionPath = null;
 }
 
 /**
@@ -987,33 +1002,22 @@ public void setAlpha (int alpha) {
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 //	if (fullScreen) setFullScreen (false);
-	if (move && resize) {
-		NSRect rect = new NSRect ();
-		rect.x = x;
-		//TODO - get the screen for the point
-		int screenHeight = (int) window.screen().frame().height;
-		rect.y = screenHeight - y;
-		rect.width = width;
-		rect.height = height;
-		window.setFrame_display_(rect, false);
-	} else {
-		if (move) {
-			NSPoint point = new NSPoint();
-			point.x = x;
-			//TODO - get the screen for the point
-			int screenHeight = (int) window.screen().frame().height;
-			point.y = screenHeight - y;
-			window.setFrameTopLeftPoint (point);
-		} else {
-			if (resize) {
-				NSRect rect = window.frame();
-				rect.y += rect.height - height;
-				rect.width = width;
-				rect.height = height;
-				window.setFrame_display_(rect, false);
-			}
-		}
+	//TODO - get the screen for the point
+	int screenHeight = (int) window.screen().frame().height;
+	NSRect frame = window.frame();
+	if (!move) {
+		x = (int)frame.x;
+		y = screenHeight - (int)(frame.y + frame.height);
 	}
+	if (!resize) {
+		width = (int)frame.width;
+		height = (int)frame.height;
+	}
+	frame.x = x;
+	frame.y = screenHeight - (int)(y + height);
+	frame.width = width;
+	frame.height = height;
+	window.setFrame_display_(frame, false);
 }
 
 public void setEnabled (boolean enabled) {
@@ -1230,28 +1234,49 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-//	if (region == null) {
-//		rgnRect = null;
-//	} else {
-//		if (rgnRect == null) {
-//			rgnRect = new Rect ();
-//			OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rgnRect);
-//			OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));	
-//		}
-//	}
-//	this.region = region;
-//	/*
-//	* Bug in the Macintosh.  Calling ReshapeCustomWindow() from a
-//	* kEventWindowDrawContent handler originating from ShowWindow()
-//	* will deadlock.  The fix is to detected this case and only call
-//	* ReshapeCustomWindow() after the default handler is done.
-//	*/
-//	if (drawing) {
-//		reshape = true;
-//	} else {
-//		OS.ReshapeCustomWindow (shellHandle);
-//		redrawWidget (handle, true);
-//	}
+	this.region = region;
+	if (regionPath != null) regionPath.release();
+	regionPath = getPath(region);
+	if (region != null) {
+		window.setBackgroundColor(NSColor.clearColor());
+		window.setOpaque(false);
+	} else {
+		window.setBackgroundColor(NSColor.windowBackgroundColor());
+		window.setOpaque(true);
+	}
+	window.contentView().setNeedsDisplay(true);
+}
+
+NSBezierPath getPath(Region region) {
+	if (region == null) return null;
+	Callback callback = new Callback(this, "regionToRects", 4);
+	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	NSBezierPath path = NSBezierPath.bezierPath();
+	path.retain();
+	OS.QDRegionToRects(region.handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
+	callback.dispose();
+	if (path.isEmpty()) path.appendBezierPathWithRect(new NSRect());
+	return path;
+}
+
+int regionToRects(int message, int rgn, int r, int path) {
+	NSPoint pt = new NSPoint();
+	short[] rect = new short[4];
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		OS.memmove(rect, r, rect.length * 2);
+		pt.x = rect[1];
+		pt.y = rect[0];
+		OS.objc_msgSend(path, OS.sel_moveToPoint_1, pt);
+		pt.x = rect[3];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		pt.x = rect[3];
+		pt.y = rect[2];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		pt.x = rect[1];
+		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_closePath);
+	}
+	return 0;
 }
 
 public void setText (String string) {

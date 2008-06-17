@@ -3357,7 +3357,16 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_drawRect_1) {
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
+		Shell shell = (Shell)getWidget(new NSView(id).window().contentView());
+		NSBezierPath path = shell != null ? shell.regionPath : null;
+		if (path != null) {
+			NSGraphicsContext.static_saveGraphicsState();
+			path.addClip();
+		}
 		widget.drawRect(id, rect);
+		if (path != null) {
+			NSGraphicsContext.static_restoreGraphicsState();
+		}
 	} else if (sel == OS.sel_setFrameOrigin_1) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg0, NSPoint.sizeof);
