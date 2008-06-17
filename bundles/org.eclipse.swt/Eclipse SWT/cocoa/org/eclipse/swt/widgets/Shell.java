@@ -521,7 +521,6 @@ void drawRect(int id, NSRect rect) {
 		NSColor.windowBackgroundColor().setFill();
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
-		return;
 	}
 	super.drawRect(id, rect);
 }
