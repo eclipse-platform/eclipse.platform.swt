@@ -39,7 +39,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Group extends Composite {
-	SWTView contentView;
+	NSView contentView;
 	String text = "";
 	
 /**
@@ -97,11 +97,10 @@ protected void checkSubclass () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
-	NSRect titleRect = widget.titleRect();
-	float borderWidth = widget.borderWidth();
+	NSSize margins = widget.contentViewMargins();
 	NSRect frame = contentView.frame();
-	width += borderWidth * 2 + frame.x;
-	height += borderWidth * 2 + titleRect.height + frame.y;
+	width += margins.width * 2;
+	height += margins.height * 2 + frame.y;
 	return super.computeTrim(x, y, width, height);
 }
 
@@ -118,7 +117,6 @@ void createHandle () {
 	SWTBox widget = (SWTBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setTitlePosition(OS.NSNoTitle);
-	widget.setContentViewMargins(new NSSize());
 	SWTView contentWidget = (SWTView)new SWTView().alloc();
 	contentWidget.initWithFrame(new NSRect());
 //	contentWidget.setDrawsBackground(false);
