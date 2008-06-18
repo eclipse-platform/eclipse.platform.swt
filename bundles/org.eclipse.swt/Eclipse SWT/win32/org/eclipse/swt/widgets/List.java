@@ -1564,7 +1564,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.LBS_EXTENDEDSEL) != 0) {
-			int location = -1;
+			int newIndex = -1;
 			switch ((int)/*64*/wParam) {
 				case OS.VK_SPACE: {
 					/*
@@ -1577,88 +1577,81 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				}
 				case OS.VK_UP:
 				case OS.VK_DOWN: {
-					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
-					location = Math.max (0, index + (((int)/*64*/wParam) == OS.VK_UP ? -1 : 1));
+					int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					newIndex = Math.max (0, oldIndex + (((int)/*64*/wParam) == OS.VK_UP ? -1 : 1));
 					break;
 				}
 				case OS.VK_PRIOR: {
-					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 					int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
-					if (index != topIndex) {
-						location = topIndex;
+					int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					if (oldIndex != topIndex) {
+						newIndex = topIndex;
 					} else {
 						forceResize ();
 						RECT rect = new RECT ();
 						OS.GetClientRect (handle, rect);
 						int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 						int pageSize = Math.max (2, (rect.bottom / itemHeight));
-						location = Math.max (0, topIndex - (pageSize - 1));
+						newIndex = Math.max (0, topIndex - (pageSize - 1));
 					}
 					break;
 				}
 				case OS.VK_NEXT: {
-					int index = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 					int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+					int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 					forceResize ();
 					RECT rect = new RECT ();
 					OS.GetClientRect (handle, rect);
 					int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 					int pageSize = Math.max (2, (rect.bottom / itemHeight));
 					int bottomIndex = topIndex + pageSize - 1;
-					if (index != bottomIndex) {
-						location = bottomIndex;
+					if (oldIndex != bottomIndex) {
+						newIndex = bottomIndex;
 					} else {
-						location = bottomIndex + pageSize - 1;
+						newIndex = bottomIndex + pageSize - 1;
 					}
 					int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-					if (count != OS.LB_ERR) location = Math.min (count - 1, location);
+					if (count != OS.LB_ERR) newIndex = Math.min (count - 1, newIndex);
 					break;
 				}
 				case OS.VK_HOME: {
-					location = 0;
+					newIndex = 0;
 					break;
 				}
 				case OS.VK_END: {
 					int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 					if (count == OS.LB_ERR) break;
-					location = count - 1;
+					newIndex = count - 1;
 					break;
 				}
 			}
-			if (location != -1) {
-				OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
-				OS.SendMessage (handle, OS.LB_SETCARETINDEX, location, 0);
+			if (newIndex != -1) {
+				/*
+				* Feature in Windows.  When the user changes focus using
+				* the keyboard, the focus indicator does not draw.  The
+				* fix is to update the UI state for the control whenever
+				* the focus indicator changes as a result of something
+				* the user types.
+				*/
+				int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
+					OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+					/*
+					* Bug in Windows.  When the WM_CHANGEUISTATE is used
+					* to update the UI state for a list that has been
+					* selected using Shift+Arrow, the focus indicator
+					* has pixel corruption.  The fix is to redraw the
+					* control.
+					*/
+					RECT itemRect = new RECT ();
+					int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+					OS.SendMessage (handle, OS.LB_GETITEMRECT, oldIndex, itemRect);
+					OS.InvalidateRect (handle, itemRect, true);
+				}
+				OS.SendMessage (handle, OS.LB_SETCARETINDEX, newIndex, 0);
 				return LRESULT.ZERO;
 			}
 		}
-	}
-	
-	/*
-	* Feature in Windows.  When the user changes focus using
-	* the keyboard, the focus indicator does not draw.  The
-	* fix is to update the UI state for the control whenever
-	* the focus indicator changes as a result of something
-	* the user types.
-	*/
-	int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-	if ((uiState & OS.UISF_HIDEFOCUS) != 0) {
-		int oldIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
-		int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
-		int newIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
-		if (oldIndex != newIndex) {
-			OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
-			/*
-			* Bug in Windows.  When the WM_CHANGEUISTATE is used
-			* to update the UI state for a list that has been
-			* selected using Shift+Arrow, the focus indicator
-			* has pixel corruption.  The fix is to redraw the
-			* focus item.
-			*/
-			RECT itemRect = new RECT ();
-			OS.SendMessage (handle, OS.LB_GETITEMRECT, newIndex, itemRect);
-			OS.InvalidateRect (handle, itemRect, true);
-		}
-		return new LRESULT (code);
 	}
 	return result;
 }
