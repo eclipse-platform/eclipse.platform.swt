@@ -1086,29 +1086,20 @@ public int getDoubleClickTime () {
 public Control getFocusControl () {
 	checkDevice ();
 	NSWindow window = application.keyWindow();
+	return getFocusControl(window);
+}
+
+Control getFocusControl(NSWindow window) {
 	if (window != null) {
-		NSResponder view = window.firstResponder();
-		Widget widget = getWidget (view.id);
-		if (widget != null && widget instanceof Control) {
-			//TODO go up hierarchy
-			return (Control)widget;
-		} else {
-			/*
-			* If the first responder is the shared field editor then answer its
-			* delegate as the focus control.
-			*/
-			if (view.isKindOfClass(NSText.static_class())) {
-				NSText text = new NSText(view.id);
-				if (text.isFieldEditor()) {
-					id delegateId = text.delegate();
-					if (delegateId != null) {
-						widget = getWidget (delegateId.id);
-						if (widget != null && widget instanceof Control) {
-							return (Control)widget;
-						}
-					}
+		NSView view = new NSView(window.firstResponder().id);
+		if (view != null) {
+			do {
+				Widget widget = getWidget (view);
+				if (widget instanceof Control) {
+					return (Control)widget;
 				}
-			}
+				view = view.superview();
+			} while (view != null);
 		}
 	}
 	return null;
@@ -1596,6 +1587,8 @@ void addEventMethods (int cls, int proc2, int proc3) {
 	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 }
 
 void addFrameMethods(int cls, int setFrameOriginProc, int setFrameSizeProc) {
@@ -1666,8 +1659,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3384,9 +3375,9 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_mouseDown_1) {
 		widget.mouseDown(id, sel, arg0);
 	} else if (sel == OS.sel_keyDown_1) {
-		widget.keyDown(arg0);
+		widget.keyDown(id, sel, arg0);
 	} else if (sel == OS.sel_keyUp_1) {
-		widget.keyUp(arg0);
+		widget.keyUp(id, sel, arg0);
 	} else if (sel == OS.sel_mouseUp_1) {
 		widget.mouseUp(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseDown_1) {

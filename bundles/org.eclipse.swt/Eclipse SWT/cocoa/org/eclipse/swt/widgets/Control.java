@@ -1571,42 +1571,6 @@ void moved () {
 	sendEvent (SWT.Move);
 }
 
-boolean sendKeyEvent (Event event) {
-	sendEvent (event);
-	return event.doit;
-}
-
-//TODO - missing modifier keys (see flagsChanged:)
-boolean sendKeyEvent (NSEvent nsEvent, int type) {
-	if ((state & SAFARI_EVENTS_FIX) != 0) return false;
-	int count = 0;
-	NSString keys = nsEvent.characters();
-	//TODO - check lowercase doesn't mangle char codes
-	NSString keyCodes = nsEvent.charactersIgnoringModifiers().lowercaseString();
-	char [] chars = new char [keys.length()];
-	for (int i=0; i<keys.length(); i++) {
-		Event event = new Event ();
-		int keyCode = Display.translateKey (keys.characterAtIndex (i) & 0xFFFF);
-		if (keyCode != 0) {
-			event.keyCode = keyCode;
-		} else {
-			event.character = (char) keys.characterAtIndex (i);
-			//TODO - get unshifted values for Shift+1
-			event.keyCode = keyCodes.characterAtIndex (i);
-		}
-		setInputState (event, nsEvent, type);
-		if (!setKeyState(event, type, nsEvent)) return false;
-		if (sendKeyEvent (type, event)) {
-			chars [count++] = chars [i];
-		}
-	}
-//	if (count == 0) return false;
-	if (count != keys.length () - 1) {
-//		OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
-	}
-	return count == keys.length ();
-}
-
 void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }

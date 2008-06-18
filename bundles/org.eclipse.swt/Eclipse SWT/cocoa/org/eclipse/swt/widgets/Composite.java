@@ -479,6 +479,14 @@ boolean isTabGroup () {
 	return super.isTabGroup ();
 }
 
+void keyDown(int id, int sel, int theEvent) {
+	/* needed to avoid bells */
+	if (hasFocus () && (state & CANVAS) != 0) {
+		return;
+	}
+	super.keyDown(id, sel, theEvent);
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 

@@ -622,12 +622,12 @@ boolean isValidThread () {
 void flagsChanged(int event) {
 }
 
-void keyDown (int theEvent) {
-	/* keyDown handler that prevents error bell */
+void keyDown (int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
-void keyUp (int theEvent) {
-	/* keyUp handler that prevents error bell */
+void keyUp (int id, int sel, int theEvent) {
+	callSuper(id, sel, theEvent);
 }
 
 void mouseDown(int id, int sel, int theEvent) {
@@ -899,6 +899,9 @@ void scrollWheel (int id, int sel, int theEvent) {
 void sendArrowSelection () {
 }
 
+void sendDoubleSelection() {
+}
+
 void sendEvent (Event event) {
 	Display display = event.display;
 	if (!display.filterEvent (event)) {
@@ -932,34 +935,35 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-boolean sendKeyEvent (int type, int theEvent) {
-//	int [] length = new int [1];
-//	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
-//	if (status == OS.noErr && length [0] > 2) {
-//		int count = 0;
-//		int [] chord = new int [1];
-//		OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-//		int [] modifiers = new int [1];
-//		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//		char [] chars = new char [length [0] / 2];
-//		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
-//		for (int i=0; i<chars.length; i++) {
-//			Event event = new Event ();
-//			event.character = chars [i];
-//			setInputState (event, type, chord [0], modifiers [0]);
-//			if (sendKeyEvent (type, event)) chars [count++] = chars [i];
-//		}
-//		if (count == 0) return false;
-//		if (count != chars.length - 1) {
-//			OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
-//		}
-//		return true;
-//	} else {
-//		Event event = new Event ();
-//		if (!setKeyState (event, type, theEvent)) return true;
-//		return sendKeyEvent (type, event);
-//	}
-	return false;
+//TODO - missing modifier keys (see flagsChanged:)
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
+	int count = 0;
+	NSString keys = nsEvent.characters();
+	//TODO - check lowercase doesn't mangle char codes
+	NSString keyCodes = nsEvent.charactersIgnoringModifiers().lowercaseString();
+	char [] chars = new char [keys.length()];
+	for (int i=0; i<keys.length(); i++) {
+		Event event = new Event ();
+		int keyCode = Display.translateKey (keys.characterAtIndex (i) & 0xFFFF);
+		if (keyCode != 0) {
+			event.keyCode = keyCode;
+		} else {
+			event.character = (char) keys.characterAtIndex (i);
+			//TODO - get unshifted values for Shift+1
+			event.keyCode = keyCodes.characterAtIndex (i);
+		}
+		setInputState (event, nsEvent, type);
+		if (!setKeyState(event, type, nsEvent)) return false;
+		if (sendKeyEvent (type, event)) {
+			chars [count++] = chars [i];
+		}
+	}
+//	if (count == 0) return false;
+	if (count != keys.length () - 1) {
+//		OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
+	}
+	return count == keys.length ();
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -974,9 +978,6 @@ boolean sendKeyEvent (int type, Event event) {
 	*/
 	if (isDisposed ()) return false;
 	return event.doit;
-}
-
-void sendDoubleSelection() {
 }
 
 void sendHorizontalSelection () {
