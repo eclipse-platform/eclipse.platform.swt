@@ -441,7 +441,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
-	if (caret != null) caret.setFocus ();
+	if (caret != null && caret.isFocusCaret ()) caret.setFocus ();
 	return result;
 }
 
