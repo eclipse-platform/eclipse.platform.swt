@@ -1610,7 +1610,8 @@ static int checkStyle(int style) {
 		}
 	}
 	style |= SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND;
-	return style;
+	/* Clear SWT.CENTER to avoid the conflict with SWT.EMBEDDED */
+	return style & ~SWT.CENTER;
 }
 /**
  * Scrolls down the text to use new space made available by a resize or by 
