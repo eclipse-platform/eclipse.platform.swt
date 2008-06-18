@@ -37,16 +37,11 @@ static BufferedImage convertToAWT(ImageData data) {
 	if (palette.isDirect) {
 		colorModel = new DirectColorModel(data.depth, palette.redMask, palette.greenMask, palette.blueMask);
 		BufferedImage bufferedImage = new BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(data.width, data.height), false, null);
-		WritableRaster raster = bufferedImage.getRaster();
-		int[] pixelArray = new int[3];
 		for (int y = 0; y < data.height; y++) {
 			for (int x = 0; x < data.width; x++) {
 				int pixel = data.getPixel(x, y);
 				RGB rgb = palette.getRGB(pixel);
-				pixelArray[0] = rgb.red;
-				pixelArray[1] = rgb.green;
-				pixelArray[2] = rgb.blue;
-				raster.setPixels(x, y, 1, 1, pixelArray);
+				bufferedImage.setRGB(x, y,  rgb.red << 16 | rgb.green << 8 | rgb.blue);
 			}
 		}
 		return bufferedImage;
@@ -85,12 +80,10 @@ static ImageData convertToSWT(BufferedImage bufferedImage) {
 		DirectColorModel colorModel = (DirectColorModel)bufferedImage.getColorModel();
 		PaletteData palette = new PaletteData(colorModel.getRedMask(), colorModel.getGreenMask(), colorModel.getBlueMask());
 		ImageData data = new ImageData(bufferedImage.getWidth(), bufferedImage.getHeight(), colorModel.getPixelSize(), palette);
-		WritableRaster raster = bufferedImage.getRaster();
-		int[] pixelArray = new int[3];
 		for (int y = 0; y < data.height; y++) {
 			for (int x = 0; x < data.width; x++) {
-				raster.getPixel(x, y, pixelArray);
-				int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
+				int rgb = bufferedImage.getRGB(x, y);
+				int pixel = palette.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF)); 
 				data.setPixel(x, y, pixel);
 			}
 		}		
