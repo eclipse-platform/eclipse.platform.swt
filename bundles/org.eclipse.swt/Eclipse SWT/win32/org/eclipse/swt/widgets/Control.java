@@ -2973,7 +2973,7 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
-boolean setRadioFocus () {
+boolean setRadioFocus (boolean tabbing) {
 	return false;
 }
 

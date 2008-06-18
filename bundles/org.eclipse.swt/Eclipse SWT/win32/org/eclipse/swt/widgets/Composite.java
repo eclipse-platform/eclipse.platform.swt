@@ -904,7 +904,7 @@ boolean setFixedFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.setRadioFocus ()) return true;
+		if (child.setRadioFocus (false)) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -918,7 +918,7 @@ public boolean setFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.setRadioFocus ()) return true;
+		if (child.setRadioFocus (false)) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -1032,7 +1032,7 @@ boolean setTabGroupFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setRadioFocus ()) return true;
+		if (child.isTabItem () && child.setRadioFocus (true)) return true;
 	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];

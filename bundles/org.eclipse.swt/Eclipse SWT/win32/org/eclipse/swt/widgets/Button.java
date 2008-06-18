@@ -1013,9 +1013,9 @@ public void setGrayed (boolean grayed) {
 	}
 }
 
-boolean setRadioFocus () {
+boolean setRadioFocus (boolean tabbing) {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
-	return setFocus ();
+	return tabbing ? setTabItemFocus () : setFocus ();
 }
 
 boolean setRadioSelection (boolean value) {
