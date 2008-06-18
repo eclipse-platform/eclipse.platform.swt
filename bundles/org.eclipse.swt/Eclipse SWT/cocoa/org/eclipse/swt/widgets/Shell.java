@@ -590,8 +590,12 @@ public int getAlpha () {
 
 public Rectangle getBounds () {
 	checkWidget();
-	NSRect frame = window.frame ();
-	return new Rectangle ((int)frame.x, (int) frame.y, (int) frame.width, (int) frame.height);
+	NSRect frame = window.frame();
+	NSScreen screen = window.screen();
+	if (screen == null) screen = NSScreen.mainScreen();
+	int screenHeight = (int) screen.frame().height;
+	int y = screenHeight - (int)(frame.y + frame.height);
+	return new Rectangle ((int)frame.x, y, (int) frame.width, (int) frame.height);
 }
 
 public Rectangle getClientArea () {
@@ -653,8 +657,12 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget();
-	NSRect frame = window.frame ();
-	return new Point ((int) frame.x, (int) frame.y);
+	NSRect frame = window.frame();
+	NSScreen screen = window.screen();
+	if (screen == null) screen = NSScreen.mainScreen();
+	int screenHeight = (int) screen.frame().height;
+	int y = screenHeight - (int)(frame.y + frame.height);
+	return new Point ((int)frame.x, y);
 }
 
 public boolean getMaximized () {
@@ -1002,7 +1010,9 @@ public void setAlpha (int alpha) {
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 //	if (fullScreen) setFullScreen (false);
 	//TODO - get the screen for the point
-	int screenHeight = (int) window.screen().frame().height;
+	NSScreen screen = window.screen();
+	if (screen == null) screen = NSScreen.mainScreen();
+	int screenHeight = (int) screen.frame().height;
 	NSRect frame = window.frame();
 	if (!move) {
 		x = (int)frame.x;
