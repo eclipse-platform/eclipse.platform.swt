@@ -1624,11 +1624,21 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
 		event.index = index;
 		TreeItem oldItem = currentItem;
 		currentItem = item;
+		/*
+		* Bug in Windows.  If the tree scrolls during WM_NOTIFY
+		* with TVN_GETDISPINFO, pixel corruption occurs.  The fix
+		* is to detect that the top item has changed and redraw
+		* the entire tree.
+		*/
+		int /*long*/ hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
 		currentItem = oldItem;
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) item.redraw ();
+		if (hTopItem != OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0)) {
+			OS.InvalidateRect (handle, null, true);
+		}
 	}
 	return true;
 }
