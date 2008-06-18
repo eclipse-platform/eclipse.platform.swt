@@ -1354,6 +1354,7 @@ public void addLineStyleListener(LineStyleListener listener) {
 		renderer.clearLineStyle(0, content.getLineCount());
 	}
 	addListener(LineGetStyle, new StyledTextListener(listener));
+	setCaretLocation();
 }
 /**	 
  * Adds a modify listener. A Modify event is sent by the widget when the widget text 
@@ -6214,6 +6215,7 @@ public void removeLineStyleListener(LineStyleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(LineGetStyle, listener);
+	setCaretLocation();
 }
 /**
  * Removes the specified modify listener.
