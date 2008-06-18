@@ -905,7 +905,18 @@ void setImageList (ImageList imageList) {
 public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (!super.setParent (parent)) return false;
-	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
+	int /*long*/ hwndParent = parent.handle;
+	OS.SendMessage (handle, OS.TB_SETPARENT, hwndParent, 0);
+	/*
+	* Bug in Windows.  When a tool bar is reparented, the tooltip
+	* control that is automatically created for the item is not
+	* reparented to the new shell.  The fix is to move the tooltip
+	* over using SetWindowLongPtr().  Note that for some reason,
+	* SetParent() does not work.
+	*/
+	int /*long*/ hwndShell = parent.getShell ().handle;
+	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
+	OS.SetWindowLongPtr (hwndToolTip, OS.GWLP_HWNDPARENT, hwndShell);
 	return true;
 }
 
