@@ -544,7 +544,9 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		this.itemCount = count;
 	}
 	//TODO ?
+	ignoreExpand = true;
 	((NSTableView)view).reloadData();
+	ignoreExpand = false;
 }
 
 void createWidget () {
@@ -1436,25 +1438,33 @@ void outlineViewSelectionDidChange(int notification) {
 }
 
 boolean outlineView_shouldCollapseItem(int outlineView, int ref) {
+	TreeItem item = (TreeItem)display.getWidget(ref);
 	if (!ignoreExpand) {
-		TreeItem item = (TreeItem)display.getWidget(ref);
 		Event event = new Event();
 		event.item = item;
 		sendEvent(SWT.Collapse, event);
 		item.expanded = false;
+		ignoreExpand = true;
+		((NSOutlineView)view).collapseItem_(item.handle);
+		ignoreExpand = false;
+		return false;
 	}
-	return true;
+	return !item.expanded;
 }
 
 boolean outlineView_shouldExpandItem(int outlineView, int ref) {
+	final TreeItem item = (TreeItem)display.getWidget(ref);
 	if (!ignoreExpand) {
-		TreeItem item = (TreeItem)display.getWidget(ref);
 		Event event = new Event();
 		event.item = item;
 		sendEvent(SWT.Expand, event);
 		item.expanded = true;
+		ignoreExpand = true;
+		((NSOutlineView)view).expandItem_(item.handle);
+		ignoreExpand = false;
+		return false;
 	}
-	return true;
+	return item.expanded;
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem(int outlineView, int object, int tableColumn, int ref) {
@@ -2346,3 +2356,4 @@ public void showSelection () {
 }
 
 }
+
