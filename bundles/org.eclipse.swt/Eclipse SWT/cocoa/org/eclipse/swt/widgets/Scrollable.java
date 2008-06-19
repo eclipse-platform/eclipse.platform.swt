@@ -302,7 +302,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 		bar.state |= HIDDEN;
 	}
 	resizeClientArea ();
-//	setVisible (bar.handle, visible);
+	bar.view.setHidden(!visible);
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
 	return true;
