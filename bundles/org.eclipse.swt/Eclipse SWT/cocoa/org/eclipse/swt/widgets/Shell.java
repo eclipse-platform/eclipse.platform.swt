@@ -465,7 +465,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= CANVAS;// | HIDDEN | GRAB;
+	state |= CANVAS | HIDDEN;// | GRAB;
 	if (window != null) {
 		view = window.contentView();
 	} else {
@@ -1289,11 +1289,14 @@ public void setText (String string) {
 	super.setText (string);
 	NSString str = NSString.stringWith(string);
 	window.setTitle(str);
-//	str.release();
 }
 
 public void setVisible (boolean visible) {
 	checkWidget();
+	setWindowVisible (visible, false);
+}
+
+void setWindowVisible (boolean visible, boolean key) {
 	if (visible) {
 		if ((state & HIDDEN) == 0) return;
 		state &= ~HIDDEN;
@@ -1301,10 +1304,6 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	setWindowVisible (visible, false);
-}
-
-void setWindowVisible (boolean visible, boolean key) {
 	if (window.isVisible() == visible) return;
 	if (visible) {
 		sendEvent (SWT.Show);
