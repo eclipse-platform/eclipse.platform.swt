@@ -1136,7 +1136,11 @@ public Control getFocusControl () {
 
 Control getFocusControl(NSWindow window) {
 	if (window != null) {
-		NSView view = new NSView(window.firstResponder().id);
+		NSResponder responder = window.firstResponder();
+		if (responder != null && !responder.respondsToSelector(OS.sel_superview)) {
+			return null;
+		}
+		NSView view = new NSView(responder.id);
 		if (view != null) {
 			do {
 				Widget widget = getWidget (view);
