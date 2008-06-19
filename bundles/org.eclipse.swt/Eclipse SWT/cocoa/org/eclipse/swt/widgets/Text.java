@@ -361,6 +361,7 @@ void createHandle () {
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
 		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
 		scrollWidget.setAutoresizesSubviews(true);
+		if ((style & SWT.BORDER) != 0) scrollWidget.setBorderType(OS.NSBezelBorder);
 		
 		SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
 		widget.initWithFrame(new NSRect());
