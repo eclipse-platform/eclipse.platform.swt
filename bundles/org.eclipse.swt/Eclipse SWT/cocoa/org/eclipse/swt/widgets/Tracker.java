@@ -426,7 +426,7 @@ void mouse (NSEvent nsEvent) {
 	} else {
 		NSWindow eventWindow = nsEvent.window();
 		location = eventWindow.convertBaseToScreen(location);
-		location.y = eventWindow.screen().frame().height - location.y;
+		location.y = display.getPrimaryFrame().height - location.y;
 	}
 	int newX = (int)location.x, newY = (int)location.y;
 	if (newX != oldX || newY != oldY) {
@@ -702,13 +702,36 @@ public boolean open () {
 	cancelled = false;
 	tracking = true;
 	window = (NSWindow)new NSWindow().alloc();
-	NSRect frame = NSScreen.mainScreen().frame();
+	NSArray screens = NSScreen.screens();
+	float minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+	float minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;	
+	int count = screens.count();
+	for (int i = 0; i < count; i++) {
+		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
+		NSRect frame = screen.frame();
+		float x1 = frame.x, x2 = frame.x + frame.width;
+		float y1 = frame.y, y2 = frame.y + frame.height;
+		if (x1 < minX) minX = x1;
+		if (x2 < minX) minX = x2;
+		if (x1 > maxX) maxX = x1;
+		if (x2 > maxX) maxX = x2;
+		if (y1 < minY) minY = y1;
+		if (y2 < minY) minY = y2;
+		if (y1 > maxY) maxY = y1;
+		if (y2 > maxY) maxY = y2;
+	}	
+	NSRect frame = new NSRect();
+	frame.x = minX;
+	frame.y = minY;
+	frame.width = maxX - minX;
+	frame.height = maxY - minY;
 	window = window.initWithContentRect_styleMask_backing_defer_(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 	window.setOpaque(false);
 	window.setContentView(null);
 	NSGraphicsContext context = window.graphicsContext();
 	NSGraphicsContext.setCurrentContext(context);
 	context.setCompositingOperation(OS.NSCompositeClear);
+	frame.x = frame.y = 0;
 	NSBezierPath.fillRect(frame);
 	window.orderFrontRegardless();
 

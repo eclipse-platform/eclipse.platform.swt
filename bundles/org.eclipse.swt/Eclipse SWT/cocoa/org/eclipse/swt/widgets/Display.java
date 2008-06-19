@@ -119,7 +119,8 @@ public class Display extends Device {
 	boolean idle;
 	static final short SWT_IDLE_TYPE = 1;
 
-	NSPoint cascade = new NSPoint();
+	int[] screenID = new int[32];
+	NSPoint[] screenCascade = new NSPoint[32];
 
 	Callback applicationDelegateCallback3;
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
@@ -447,6 +448,22 @@ public void asyncExec (Runnable runnable) {
  */
 public void beep () {
 	checkDevice ();
+}
+
+void cascadeWindow (NSWindow window, NSScreen screen) {
+	NSDictionary dictionary = screen.deviceDescription();
+	int screenNumber = new NSNumber(dictionary.objectForKey(NSString.stringWith("NSScreenNumber")).id).intValue();
+	int index = 0;
+	while (screenID[index] != 0 && screenID[index] != screenNumber) index++;
+	screenID[index] = screenNumber;
+	NSPoint cascade = screenCascade[index];
+	if (cascade == null) {
+		NSRect frame = screen.frame();
+		cascade = new NSPoint();
+		cascade.x = frame.x;
+		cascade.y = frame.y + frame.height;
+	}
+	screenCascade[index] = window.cascadeTopLeftFromPoint(cascade);
 }
 
 protected void checkDevice () {
@@ -863,7 +880,30 @@ public Shell getActiveShell () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	return super.getBounds ();
+	NSArray screens = NSScreen.screens();
+	return getBounds (screens);
+}
+
+Rectangle getBounds (NSArray screens) {
+	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
+	float minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+	float minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
+	int count = screens.count();
+	for (int i = 0; i < count; i++) {
+		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
+		NSRect frame = screen.frame();
+		float x1 = frame.x, x2 = frame.x + frame.width;
+		float y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
+		if (x1 < minX) minX = x1;
+		if (x2 < minX) minX = x2;
+		if (x1 > maxX) maxX = x1;
+		if (x2 > maxX) maxX = x2;
+		if (y1 < minY) minY = y1;
+		if (y2 < minY) minY = y2;
+		if (y1 > maxY) maxY = y1;
+		if (y2 > maxY) maxY = y2;
+	}
+	return new Rectangle ((int)minX, (int)minY, (int)(maxX - minX), (int)(maxY - minY));
 }
 
 /**
@@ -897,7 +937,13 @@ int getCaretBlinkTime () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	return super.getClientArea ();
+	NSArray screens = NSScreen.screens();
+	if (screens.count() != 1) return getBounds (screens);
+	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
+	NSRect frame = screen.frame();
+	NSRect visibleFrame = screen.visibleFrame();
+	float y = frame.height - (visibleFrame.y + visibleFrame.height);
+	return new Rectangle((int)visibleFrame.x, (int)y, (int)visibleFrame.width, (int)visibleFrame.height);
 }
 
 /**
@@ -931,9 +977,8 @@ public Control getCursorControl () {
 public Point getCursorLocation () {
 	checkDevice ();
 	NSPoint location = NSEvent.mouseLocation();
-	//TODO bad for other screens
-	NSRect rect = NSScreen.mainScreen().frame();
-	return new Point ((int) location.x, (int) (rect.height - location.y));
+	NSRect primaryFrame = getPrimaryFrame();
+	return new Point ((int) location.x, (int) (primaryFrame.height - location.y));
 }
 
 /**
@@ -1217,6 +1262,7 @@ int getMessageCount () {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
+	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
 	int count = screens.count();
 	Monitor [] monitors = new Monitor [count];
 	for (int i=0; i<count; i++) {
@@ -1224,17 +1270,22 @@ public Monitor [] getMonitors () {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
 		monitor.x = (int)frame.x;
-		monitor.y = (int)frame.y;
+		monitor.y = (int)(primaryFrame.height - (frame.y + frame.height));
 		monitor.width = (int)frame.width;
 		monitor.height = (int)frame.height;
 		NSRect visibleFrame = screen.visibleFrame();
 		monitor.clientX = (int)visibleFrame.x;
-		monitor.clientY = (int)visibleFrame.y;
+		monitor.clientY = (int)(primaryFrame.height - (visibleFrame.y + visibleFrame.height));
 		monitor.clientWidth = (int)visibleFrame.width;
 		monitor.clientHeight = (int)visibleFrame.height;
 		monitors [i] = monitor;
 	}
 	return monitors;
+}
+
+NSRect getPrimaryFrame () {
+	NSArray screens = NSScreen.screens();
+	return new NSScreen(screens.objectAtIndex(0)).frame();
 }
 
 /**
@@ -1247,15 +1298,16 @@ public Monitor [] getMonitors () {
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
 	Monitor monitor = new Monitor ();
-	NSScreen screen = NSScreen.mainScreen();
+	NSArray screens = NSScreen.screens();
+	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect frame = screen.frame();
 	monitor.x = (int)frame.x;
-	monitor.y = (int)frame.y;
+	monitor.y = (int)(frame.height - (frame.y + frame.height));
 	monitor.width = (int)frame.width;
 	monitor.height = (int)frame.height;
 	NSRect visibleFrame = screen.visibleFrame();
 	monitor.clientX = (int)visibleFrame.x;
-	monitor.clientY = (int)visibleFrame.y;
+	monitor.clientY = (int)(frame.height - (visibleFrame.y + visibleFrame.height));
 	monitor.clientWidth = (int)visibleFrame.width;
 	monitor.clientHeight = (int)visibleFrame.height;
 	return monitor;
@@ -2201,13 +2253,14 @@ public Point map (Control from, Control to, int x, int y) {
 	if (toWindow != null && fromWindow != null && toWindow.id == fromWindow.id) {
 		pt = from.view.convertPoint_toView_(pt, to.view);
 	} else {
+		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
 			pt = from.view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
-			pt.y = fromWindow.screen().frame().height - pt.y;
+			pt.y = primaryFrame.height - pt.y;
 		}
 		if (to != null) {
-			pt.y = toWindow.screen().frame().height - pt.y;
+			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = to.view.convertPoint_fromView_(pt, null);
 		}
@@ -2311,13 +2364,14 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (toWindow != null && fromWindow != null && toWindow.id == fromWindow.id) {
 		pt = from.view.convertPoint_toView_(pt, to.view);
 	} else {
+		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
 			pt = from.view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
-			pt.y = fromWindow.screen().frame().height - pt.y;
+			pt.y = primaryFrame.height - pt.y;
 		}
 		if (to != null) {
-			pt.y = toWindow.screen().frame().height - pt.y;
+			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
 			pt = to.view.convertPoint_fromView_(pt, null);
 		}

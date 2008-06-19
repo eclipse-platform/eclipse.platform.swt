@@ -142,7 +142,7 @@ public Rectangle getBounds() {
 		NSValue val = new NSValue (posValue);
 		NSPoint pt = val.pointValue ();
 		NSWindow window = parent.view.window ();
-		pt.y = window.screen ().frame ().height - pt.y;
+		pt.y = display.getPrimaryFrame().height - pt.y;
 		pt = parent.view.convertPoint_fromView_ (pt, null);
 		pt = window.convertScreenToBase (pt);
 		result.x = (int) pt.x;

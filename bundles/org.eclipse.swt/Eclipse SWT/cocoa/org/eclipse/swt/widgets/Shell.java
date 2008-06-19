@@ -465,18 +465,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= CANVAS;// | GRAB | HIDDEN;
+	state |= CANVAS | HIDDEN;// | GRAB;
 	if (window != null) {
 		view = window.contentView();
-		return;
 	} else {
 		SWTWindow swtWindow = (SWTWindow) new SWTWindow ().alloc ();
 		window = (NSWindow)swtWindow;
-		NSRect rect = new NSRect();
-		Monitor monitor = getMonitor ();
-		Rectangle clientArea = monitor.getClientArea ();
-		rect.width = clientArea.width * 5 / 8;
-		rect.height = clientArea.height * 5 / 8;
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {
 			styleMask = OS.NSTitledWindowMask;
@@ -485,16 +479,26 @@ void createHandle () {
 			if ((style & SWT.MAX) != 0) styleMask |= OS.NSResizableWindowMask;
 			if ((style & SWT.RESIZE) != 0) styleMask |= OS.NSResizableWindowMask;
 		}
-		window = window.initWithContentRect_styleMask_backing_defer_(rect, styleMask, OS.NSBackingStoreBuffered, false);
-		display.cascade = window.cascadeTopLeftFromPoint(display.cascade);
+		NSScreen screen = null;
+		NSScreen primaryScreen = new NSScreen(NSScreen.screens().objectAtIndex(0));
+		if (parent != null) screen = parent.getShell().window.screen();
+		if (screen == null) screen = primaryScreen;
+		window = window.initWithContentRect_styleMask_backing_defer_screen_(new NSRect(), styleMask, OS.NSBackingStoreBuffered, false, screen);
+		display.cascadeWindow(window, screen);
+		NSRect screenFrame = screen.frame();
+		float width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
+		NSRect frame = window.frame();
+		NSRect primaryFrame = primaryScreen.frame();
+		frame.y = primaryFrame.height - ((primaryFrame.height - (frame.y + frame.height)) + height);
+		frame.width = width;
+		frame.height = height;
+		window.setFrame_display_(frame, false);
 		if ((style & SWT.ON_TOP) != 0) {
 			window.setLevel(OS.NSFloatingWindowLevel);
 		}
-		window.setAcceptsMouseMovedEvents(true);
+		super.createHandle ();
 	}
-	
-	super.createHandle ();
-	
+	window.setAcceptsMouseMovedEvents(true);
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	window.setDelegate(windowDelegate);
 }
@@ -591,11 +595,8 @@ public int getAlpha () {
 public Rectangle getBounds () {
 	checkWidget();
 	NSRect frame = window.frame();
-	NSScreen screen = window.screen();
-	if (screen == null) screen = NSScreen.mainScreen();
-	int screenHeight = (int) screen.frame().height;
-	int y = screenHeight - (int)(frame.y + frame.height);
-	return new Rectangle ((int)frame.x, y, (int) frame.width, (int) frame.height);
+	float y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+	return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 }
 
 public Rectangle getClientArea () {
@@ -658,11 +659,8 @@ public int getImeInputMode () {
 public Point getLocation () {
 	checkWidget();
 	NSRect frame = window.frame();
-	NSScreen screen = window.screen();
-	if (screen == null) screen = NSScreen.mainScreen();
-	int screenHeight = (int) screen.frame().height;
-	int y = screenHeight - (int)(frame.y + frame.height);
-	return new Point ((int)frame.x, y);
+	float y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+	return new Point ((int)frame.x, (int)y);
 }
 
 public boolean getMaximized () {
@@ -1008,11 +1006,8 @@ public void setAlpha (int alpha) {
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-//	if (fullScreen) setFullScreen (false);
-	//TODO - get the screen for the point
-	NSScreen screen = window.screen();
-	if (screen == null) screen = NSScreen.mainScreen();
-	int screenHeight = (int) screen.frame().height;
+	if (fullScreen) setFullScreen (false);
+	int screenHeight = (int) display.getPrimaryFrame().height;
 	NSRect frame = window.frame();
 	if (!move) {
 		x = (int)frame.x;

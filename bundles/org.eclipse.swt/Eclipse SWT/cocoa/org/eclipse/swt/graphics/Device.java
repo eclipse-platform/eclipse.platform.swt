@@ -223,9 +223,8 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	NSScreen screen = NSScreen.mainScreen();
-	NSRect rect = screen.frame();
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	NSRect frame = getPrimaryScreen().frame();
+	return new Rectangle((int)frame.x, (int)frame.y, (int)frame.width, (int)frame.height);
 }
 
 /**
@@ -284,9 +283,7 @@ public DeviceData getDeviceData () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	NSScreen screen = NSScreen.mainScreen();
-	NSRect rect = screen.visibleFrame();
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	return getBounds ();
 }
 
 /**
@@ -303,7 +300,7 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();	
-	return OS.NSBitsPerPixelFromDepth(NSScreen.mainScreen().depth());
+	return OS.NSBitsPerPixelFromDepth(getPrimaryScreen().depth());
 }
 
 /**
@@ -319,10 +316,15 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	NSDictionary dictionary = NSScreen.mainScreen().deviceDescription();
+	NSDictionary dictionary = getPrimaryScreen().deviceDescription();
 	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
 	NSSize size = value.sizeValue();
 	return new Point((int)size.width, (int)size.height);
+}
+
+NSScreen getPrimaryScreen () {
+	NSArray screens = NSScreen.screens();
+	return new NSScreen(screens.objectAtIndex(0));
 }
 
 /**

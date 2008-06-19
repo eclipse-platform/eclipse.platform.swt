@@ -1519,9 +1519,8 @@ public boolean isVisible () {
 }
 
 int menuForEvent (int nsEvent) {
-	NSPoint pt = NSEvent.mouseLocation(); 	
-	NSWindow window = view.window();
-	pt.y = (int) (window.screen().frame().height - pt.y);
+	NSPoint pt = NSEvent.mouseLocation();
+	pt.y = (int) (display.getPrimaryFrame().height - pt.y);
 	int x = (int) pt.x;
 	int y = (int) pt.y;
 	Event event = new Event ();
