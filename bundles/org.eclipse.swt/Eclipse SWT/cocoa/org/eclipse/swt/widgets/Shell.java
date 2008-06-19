@@ -1300,6 +1300,13 @@ public void setText (String string) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	setWindowVisible (visible, false);
+	if (visible) {
+		if ((state & HIDDEN) == 0) return;
+		state &= ~HIDDEN;
+	} else {
+		if ((state & HIDDEN) != 0) return;
+		state |= HIDDEN;
+	}
 }
 
 void setWindowVisible (boolean visible, boolean key) {
