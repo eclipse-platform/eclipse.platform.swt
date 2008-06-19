@@ -465,7 +465,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= CANVAS | HIDDEN;// | GRAB;
+	state |= CANVAS;// | HIDDEN | GRAB;
 	if (window != null) {
 		view = window.contentView();
 	} else {
@@ -1294,7 +1294,6 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
-	setWindowVisible (visible, false);
 	if (visible) {
 		if ((state & HIDDEN) == 0) return;
 		state &= ~HIDDEN;
@@ -1302,6 +1301,7 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
+	setWindowVisible (visible, false);
 }
 
 void setWindowVisible (boolean visible, boolean key) {
