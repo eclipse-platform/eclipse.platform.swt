@@ -96,6 +96,10 @@ public class Accessible {
 			public int /*long*/ method27(int /*long*/[] args) {return put_accValue(args[0], args[1]);}
 		};
 
+		/* If the callback takes a struct parameter (for example, a variant),
+		 * then create a custom callback that dereferences the struct and
+		 * passes a pointer to the original callback.
+		 */
 		int /*long*/ ppVtable = objIAccessible.ppVtable;
 		int /*long*/[] pVtable = new int /*long*/[1];
 		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
