@@ -513,8 +513,9 @@ void destroyWidget () {
 	NSWindow window = this.window;
 	releaseHandle ();
 	if (window != null) {
-		NSArray array = new NSArray(NSArray.arrayWithObject(OS.NSDefaultRunLoopMode).id);
-		NSRunLoop.currentRunLoop().performSelector(OS.sel_close, window, null, 0, array);
+//		NSArray array = new NSArray(NSArray.arrayWithObject(OS.NSDefaultRunLoopMode).id);
+//		NSRunLoop.currentRunLoop().performSelector(OS.sel_close, window, null, 0, array);
+		window.close();
 	}
 }
 
