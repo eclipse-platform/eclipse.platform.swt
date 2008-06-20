@@ -600,6 +600,10 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
+NSView contentView () {
+	return view;
+}
+
 void createWidget () {
 	state |= DRAG_DETECT;
 	checkOrientation (parent);

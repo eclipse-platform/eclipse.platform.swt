@@ -2259,14 +2259,16 @@ public Point map (Control from, Control to, int x, int y) {
 	} else {
 		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
-			pt = from.view.convertPoint_toView_(pt, null);
+			NSView view = from.contentView ();
+			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
 		}
 		if (to != null) {
+			NSView view = to.contentView ();
 			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
-			pt = to.view.convertPoint_fromView_(pt, null);
+			pt = view.convertPoint_fromView_(pt, null);
 		}
 	}
 	point.x = (int)pt.x;
@@ -2370,14 +2372,16 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	} else {
 		NSRect primaryFrame = getPrimaryFrame();
 		if (from != null) {
-			pt = from.view.convertPoint_toView_(pt, null);
+			NSView view = from.contentView ();
+			pt = view.convertPoint_toView_(pt, null);
 			pt = fromWindow.convertBaseToScreen(pt);
 			pt.y = primaryFrame.height - pt.y;
 		}
 		if (to != null) {
+			NSView view = to.contentView ();
 			pt.y = primaryFrame.height - pt.y;
 			pt = toWindow.convertScreenToBase(pt);
-			pt = to.view.convertPoint_fromView_(pt, null);
+			pt = view.convertPoint_fromView_(pt, null);
 		}
 	}
 	rectangle.x = (int)pt.x;

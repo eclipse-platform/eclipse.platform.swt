@@ -224,10 +224,6 @@ Control [] computeTabList () {
 	return result;
 }
 
-NSView contentView () {
-	return view;
-}
-
 void createHandle () {
 	state |= CANVAS;
 	NSRect rect = new NSRect();
