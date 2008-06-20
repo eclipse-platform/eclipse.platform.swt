@@ -152,6 +152,9 @@ public void create (Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
+				case SWT.FocusIn:
+					Safari.this.webView.window().makeFirstResponder(Safari.this.webView);
+					break;
 				case SWT.Dispose: {
 					/* make this handler run after other dispose listeners */
 					if (ignoreDispose) {
@@ -183,6 +186,9 @@ public void create (Composite parent, int style) {
 		}
 	};
 	browser.addListener(SWT.Dispose, listener);
+	/* Needed to be able to tab into the browser */
+	browser.addListener(SWT.KeyDown, listener);
+	browser.addListener(SWT.FocusIn, listener);
 				
 	webView.setFrameLoadDelegate(delegate);
 	webView.setResourceLoadDelegate(delegate);
