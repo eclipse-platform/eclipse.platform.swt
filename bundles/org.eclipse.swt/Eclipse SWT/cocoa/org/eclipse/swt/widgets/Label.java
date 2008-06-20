@@ -310,8 +310,10 @@ void _setAlignment() {
 }
 
 void setFont(NSFont font) {
-	NSCell cell = new NSCell(textView.cell());
-	cell.setAttributedStringValue(createString());
+	if (textView != null) {
+		NSCell cell = new NSCell(textView.cell());
+		cell.setAttributedStringValue(createString());
+	}
 }
 
 void setForeground (float [] color) {
