@@ -1624,14 +1624,13 @@ int traversalCode (int key, NSEvent theEvent) {
 	if ((style & SWT.READ_ONLY) != 0) return bits;
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
-//		if (key == 48 /* Tab */ && theEvent != 0) {
-//			int [] modifiers = new int [1];
-//			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//			boolean next = (modifiers [0] & OS.shiftKey) == 0;
-//			if (next && (modifiers [0] & OS.controlKey) == 0) {
-//				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
-//			}
-//		}
+		if (key == 48 /* Tab */ && theEvent != null) {
+			int modifiers = theEvent.modifierFlags ();
+			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
+			if (next && (modifiers & OS.NSControlKeyMask) == 0) {
+				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
+		}
 	}
 	return bits;
 }
