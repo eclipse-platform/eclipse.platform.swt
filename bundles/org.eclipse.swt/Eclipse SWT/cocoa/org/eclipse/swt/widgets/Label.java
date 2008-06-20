@@ -309,6 +309,11 @@ void _setAlignment() {
 	}
 }
 
+void setFont(NSFont font) {
+	NSCell cell = new NSCell(textView.cell());
+	cell.setAttributedStringValue(createString());
+}
+
 void setForeground (float [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSCell cell = new NSCell(textView.cell());

@@ -180,7 +180,7 @@ NSAttributedString createString(int index) {
 	}
 	Font font = cellFont != null ? cellFont [index] : null;
 	if (font == null) font = this.font;
-//	if (font == null) font = parent.font;
+	if (font == null) font = parent.font;
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName());
 	}

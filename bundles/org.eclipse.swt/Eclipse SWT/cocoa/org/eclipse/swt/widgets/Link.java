@@ -374,6 +374,10 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
+void setFont(NSFont font) {
+	((NSTextView) view).setFont_(font);
+}
+
 /**
  * Sets the receiver's text.
  * <p>

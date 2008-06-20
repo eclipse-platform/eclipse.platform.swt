@@ -1304,6 +1304,14 @@ public void setEditable (boolean editable) {
 	}
 }
 
+void setFont(NSFont font) {
+	if ((style & SWT.MULTI) !=  0) {
+		((NSTextView) view).setFont_(font);
+		return;
+	}
+	super.setFont(font);
+}
+
 void setForeground (float [] color) {
 	NSColor nsColor;
 	if (color == null) {

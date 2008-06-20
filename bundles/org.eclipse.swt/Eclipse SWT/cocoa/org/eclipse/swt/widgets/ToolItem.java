@@ -245,6 +245,32 @@ void createHandle () {
 	}
 }
 
+NSAttributedString createString() {
+	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+	Color foreground = parent.foreground;
+	if (foreground != null) {
+		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
+		dict.setObject(color, OS.NSForegroundColorAttributeName());
+	}
+	Font font = parent.font;
+	if (font != null) {
+		dict.setObject(font.handle, OS.NSFontAttributeName());
+	}
+	char [] chars = new char [text.length ()];
+	text.getChars (0, chars.length, chars, 0);
+	int length = fixMnemonic (chars);
+
+	NSMutableParagraphStyle pStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
+	pStyle.autorelease();
+	pStyle.setAlignment(OS.NSCenterTextAlignment);
+	dict.setObject(pStyle, OS.NSParagraphStyleAttributeName());
+	
+	NSString str = NSString.stringWithCharacters(chars, length);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	attribStr.autorelease();
+	return attribStr;
+}
+
 void deregister () {
 	super.deregister ();
 	display.removeWidget(view);
@@ -773,8 +799,8 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	NSString str = NSString.stringWith(string);
-	((NSButton)button).setTitle(str);
+	((NSButton)button).setAttributedTitle(createString());
+	
 	parent.relayout ();
 	if (text.length() != 0 && image != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {

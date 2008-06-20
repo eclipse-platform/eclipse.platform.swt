@@ -163,6 +163,10 @@ void releaseHandle () {
 	contentView = null;
 }
 
+void setFont(NSFont font) {
+	((NSBox) view).setTitleFont(font);
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

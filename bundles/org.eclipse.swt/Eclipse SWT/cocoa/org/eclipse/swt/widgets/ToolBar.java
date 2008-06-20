@@ -431,6 +431,13 @@ void resized () {
 	relayout ();
 }
 
+void setFont(NSFont font) {
+	for (int i = 0; i < itemCount; i++) {
+		ToolItem item = items[i];
+		if (item.button != null) ((NSButton)item.button).setAttributedTitle(item.createString());
+	}
+}
+
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);

@@ -529,7 +529,6 @@ void setDefault (boolean value) {
 }
 
 void setFont (NSFont font) {
-	super.setFont(font);
 	if (text != null) {
 		((NSButton)view).setAttributedTitle(createString());
 	}

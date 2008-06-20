@@ -556,6 +556,10 @@ public void setDigits (int value) {
 //	setSelection (pos, false, true, false);
 }
 
+void setFont(NSFont font) {
+	textView.setFont(font);
+}
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down arrows are pressed to

@@ -1762,6 +1762,10 @@ public void setColumnOrder (int [] order) {
 	}
 }
 
+void setFont(NSFont font) {
+	view.setNeedsDisplay(true);
+}
+
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
