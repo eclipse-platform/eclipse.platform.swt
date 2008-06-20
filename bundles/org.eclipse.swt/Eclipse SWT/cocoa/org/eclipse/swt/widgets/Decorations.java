@@ -386,17 +386,16 @@ void releaseChildren (boolean destroy) {
 	} 
 	Display display = this.display;
 	super.releaseChildren (destroy);
-	//TODO
-//	Menu [] menus = display.getMenus (this);
-//	if (menus != null) {
-//		for (int i=0; i<menus.length; i++) {
-//			Menu menu = menus [i];
-//			if (menu != null && !menu.isDisposed ()) {
-//				menu.dispose ();
-//			}
-//		}
-//		menus = null;
-//	}
+	Menu [] menus = display.getMenus (this);
+	if (menus != null) {
+		for (int i=0; i<menus.length; i++) {
+			Menu menu = menus [i];
+			if (menu != null && !menu.isDisposed ()) {
+				menu.dispose ();
+			}
+		}
+		menus = null;
+	}
 }
 void releaseWidget () {
 	super.releaseWidget ();

@@ -1793,7 +1793,6 @@ void releaseHandle () {
 }
 
 void releaseParent () {
-//	setVisible (topHandle (), false);
 	parent.removeControl (this);
 }
 
@@ -2708,10 +2707,11 @@ public boolean setParent (Composite parent) {
 		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
-//	int topHandle = topHandle ();
-//	OS.HIViewAddSubview (parent.handle, topHandle);
-//	OS.HIViewSetVisible (topHandle, (state & HIDDEN) == 0);
-//	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+	NSView topView = topView ();
+	topView.retain();
+	topView.removeFromSuperview();
+	parent.contentView().addSubview_positioned_relativeTo_(topView, OS.NSWindowBelow, null);
+	topView.release();
 	this.parent = parent;
 	return true;
 }

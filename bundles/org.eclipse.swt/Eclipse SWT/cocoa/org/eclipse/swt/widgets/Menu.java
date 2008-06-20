@@ -277,7 +277,7 @@ public void addMenuListener (MenuListener listener) {
 }
 
 void createHandle () {
-//	display.addMenu (this);
+	display.addMenu (this);
 	SWTMenu widget = (SWTMenu)new SWTMenu().alloc();
 	widget.initWithTitle(NSString.stringWith(""));
 	widget.setAutoenablesItems(false);
@@ -724,7 +724,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-//	display.removeMenu (this);
+	display.removeMenu (this);
 	parent = null;
 	cascade = defaultItem = lastTarget = null;
 }

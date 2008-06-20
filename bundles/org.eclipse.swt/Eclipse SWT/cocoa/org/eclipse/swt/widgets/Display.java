@@ -113,6 +113,7 @@ public class Display extends Device {
 	Control currentControl, grabControl, trackingControl;
 
 	Menu menuBar;
+	Menu[] menus;
 
 	NSApplication application;
 	NSWindow screenWindow;
@@ -369,22 +370,20 @@ public void addListener (int eventType, Listener listener) {
 	eventTable.hook (eventType, listener);
 }
 
-//void addMenu (Menu menu) {
-//	if (menus == null) menus = new Menu [12];
-//	for (int i=0; i<menus.length; i++) {
-//		if (menus [i] == null) {
-//			menu.id = (short)(ID_START + i);
-//			menus [i] = menu;
-//			return;
-//		}
-//	}
-//	Menu [] newMenus = new Menu [menus.length + 12];
-//	menu.id = (short)(ID_START + menus.length);
-//	newMenus [menus.length] = menu;
-//	System.arraycopy (menus, 0, newMenus, 0, menus.length);
-//	menus = newMenus;
-//}
-//
+void addMenu (Menu menu) {
+	if (menus == null) menus = new Menu [12];
+	for (int i=0; i<menus.length; i++) {
+		if (menus [i] == null) {
+			menus [i] = menu;
+			return;
+		}
+	}
+	Menu [] newMenus = new Menu [menus.length + 12];
+	newMenus [menus.length] = menu;
+	System.arraycopy (menus, 0, newMenus, 0, menus.length);
+	menus = newMenus;
+}
+
 //void addPopup (Menu menu) {
 //	if (popups == null) popups = new Menu [4];
 //	int length = popups.length;
@@ -1224,34 +1223,23 @@ int getLastEventTime () {
 	return (int) System.currentTimeMillis ();
 }
 
-//Menu [] getMenus (Decorations shell) {
-//	if (menus == null) return new Menu [0];
-//	int count = 0;
-//	for (int i = 0; i < menus.length; i++) {
-//		Menu menu = menus[i];
-//		if (menu != null && menu.parent == shell) count++;
-//	}
-//	int index = 0;
-//	Menu[] result = new Menu[count];
-//	for (int i = 0; i < menus.length; i++) {
-//		Menu menu = menus[i];
-//		if (menu != null && menu.parent == shell) {
-//			result[index++] = menu;
-//		}
-//	}
-//	return result;
-//}
-//
-//Menu getMenu (int id) {
-//	if (menus == null) return null;
-//	int index = id - ID_START;
-//	if (0 <= index && index < menus.length) return menus [index];
-//	return null;
-//}
-//
-//Menu getMenuBar () {
-//	return menuBar;
-//}
+Menu [] getMenus (Decorations shell) {
+	if (menus == null) return new Menu [0];
+	int count = 0;
+	for (int i = 0; i < menus.length; i++) {
+		Menu menu = menus[i];
+		if (menu != null && menu.parent == shell) count++;
+	}
+	int index = 0;
+	Menu[] result = new Menu[count];
+	for (int i = 0; i < menus.length; i++) {
+		Menu menu = menus[i];
+		if (menu != null && menu.parent == shell) {
+			result[index++] = menu;
+		}
+	}
+	return result;
+}
 
 int getMessageCount () {
 	return synchronizer.getMessageCount ();
@@ -2509,14 +2497,14 @@ void releaseDisplay () {
 	if (warningImage != null) warningImage.dispose ();
 	errorImage = infoImage = warningImage = null;
 	
-	//TODO - stop caret
+	if (caretTimer != null) timerExec(-1, caretTimer);
+	caretTimer = null;
 	currentCaret = null;
 	
 	/* Release Timers */
 	if (nsTimers != null) {
 		for (int i=0; i<nsTimers.length; i++) {
-			//TODO - check -1 as sentinal
-			if (nsTimers [i] != null /*&& timerIds [i] != -1*/) {
+			if (nsTimers [i] != null) {
 				nsTimers [i].invalidate();
 				nsTimers [i].release();
 			}
@@ -2532,6 +2520,9 @@ void releaseDisplay () {
 	
 	if (screenWindow != null) screenWindow.release();
 	screenWindow = null;
+	
+	menuBar = null;
+	menus = null;
 
 	if (applicationCallback3 != null) applicationCallback3.dispose ();
 	if (applicationCallback6 != null) applicationCallback6.dispose ();
@@ -2618,11 +2609,16 @@ Widget removeWidget (NSObject view) {
 	return widget;
 }
 
-//void removeMenu (Menu menu) {
-//	if (menus == null) return;
-//	menus [menu.id - ID_START] = null;
-//}
-//
+void removeMenu (Menu menu) {
+	if (menus == null) return;
+	for (int i = 0; i < menus.length; i++) {
+		if (menus [i] == menu) {
+			menus[i] = null;
+			break;
+		}
+	}
+}
+
 //void removePopup (Menu menu) {
 //	if (popups == null) return;
 //	for (int i=0; i<popups.length; i++) {
@@ -3175,7 +3171,8 @@ Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim) {
 		NSArray windows = application.windows();
 		for (int i = 0; i < windows.count() && view == null; i++) {
 			window = new NSWindow(windows.objectAtIndex(i));
-			view = window.contentView().hitTest (window.convertScreenToBase(point));
+			NSView contentView = window.contentView();
+			if (contentView != null) view = contentView.hitTest (window.convertScreenToBase(point));
 		}
 	}
 	Control control = null;
