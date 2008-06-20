@@ -4453,6 +4453,7 @@ protected void testRtfCopy() {
 	// cause StyledText to call the listener. 
 	text.setSelection(0, text.getCharCount());
 	text.addLineStyleListener(listener);
+	linesCalled[0] = 0;
 	text.copy();
 	assertTrue("not all lines tested for RTF copy", linesCalled[0] == text.getLineCount());
 	
