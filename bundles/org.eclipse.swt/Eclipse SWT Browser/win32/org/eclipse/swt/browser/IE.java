@@ -106,6 +106,7 @@ class IE extends WebBrowser {
 	static final String EVENT_MOUSEDOWN = "mousedown";	//$NON-NLS-1$
 	static final String EVENT_MOUSEOUT = "mouseout";	//$NON-NLS-1$
 	static final String EVENT_MOUSEOVER = "mouseover";	//$NON-NLS-1$
+	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROPERTY_ALTKEY = "altKey"; //$NON-NLS-1$
 	static final String PROPERTY_BUTTON = "button"; //$NON-NLS-1$
 	static final String PROPERTY_CLIENTX = "clientX"; //$NON-NLS-1$
@@ -290,6 +291,15 @@ public void create(Composite parent, int style) {
 					case BeforeNavigate2: {
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
+						/*
+						* Bug in IE.  For navigations on the local machine, BeforeNavigate2's url
+						* field contains a string representing the file path in a non-URL format.
+						* In order to be consistent with the other Browser implementations, this
+						* case is detected and the file protocol is prepended to the url string.
+						*/
+						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
+							url = PROTOCOL_FILE + url;
+						}
 						LocationEvent newEvent = new LocationEvent(browser);
 						newEvent.display = browser.getDisplay();
 						newEvent.widget = browser;
@@ -339,6 +349,15 @@ public void create(Composite parent, int style) {
 	
 						varResult = event.arguments[1];
 						String url = varResult.getString();
+						/*
+						* Bug in IE.  For navigations on the local machine, DocumentComplete's URL
+						* field contains a string representing the file path in a non-URL format.
+						* In order to be consistent with the other Browser implementations, this
+						* case is detected and the file protocol is prepended to the url string.
+						*/
+						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
+							url = PROTOCOL_FILE + url;
+						}
 						if (html != null && url.equals(ABOUT_BLANK)) {
 							Runnable runnable = new Runnable () {
 								public void run() {
@@ -774,8 +793,7 @@ public String getText() {
 public String getUrl() {
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
 	Variant pVarResult = auto.getProperty(rgdispid[0]);
-	if (pVarResult == null || pVarResult.getType() != OLE.VT_BSTR)
-		return "";
+	if (pVarResult == null || pVarResult.getType() != OLE.VT_BSTR) return ""; //$NON-NLS-1$
 	String result = pVarResult.getString();
 	pVarResult.dispose();
 	return result;
