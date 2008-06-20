@@ -109,6 +109,7 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
+	boolean dragging;
 	Control currentControl, grabControl, trackingControl;
 
 	Menu menuBar;
@@ -960,7 +961,7 @@ public Rectangle getClientArea () {
  */
 public Control getCursorControl () {
 	checkDevice();
-	return null;
+	return findControl(null, false, false);
 }
 
 /**
@@ -3162,11 +3163,11 @@ void wakeThread () {
 	object.performSelectorOnMainThread_withObject_waitUntilDone_(OS.sel_release, null, false);
 }
 
-Control findControl (NSEvent nsEvent) {
-	if (grabControl != null && !grabControl.isDisposed()) return grabControl;
+Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim) {
+	if (checkGrab && grabControl != null && !grabControl.isDisposed()) return grabControl;
 	NSPoint point = NSEvent.mouseLocation();
 	NSView view = null;
-	NSWindow window = nsEvent.window();
+	NSWindow window = nsEvent != null ? nsEvent.window() : null;
 	if (window != null) {
 		view = window.contentView().hitTest (window.convertScreenToBase(point));
 	}
@@ -3188,7 +3189,9 @@ Control findControl (NSEvent nsEvent) {
 			view = view.superview();
 		} while (view != null);
 	}
-	if (control != null && control.isTrim (view)) control = null;
+	if (checkTrim) {
+		if (control != null && control.isTrim (view)) control = null;
+	}
 	return control;
 }
 
@@ -3214,8 +3217,11 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown: {
-			Control control = grabControl = findControl(nsEvent);
+			Control control = grabControl = findControl(nsEvent, true, true);
 			if (control != null) {
+				if (type == OS.NSLeftMouseDown && nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect)) {
+					dragging = true;
+				}
 				control.sendMouseEvent (nsEvent, SWT.MouseDown, send);
 				if (nsEvent.clickCount() == 2) {
 					control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, send);
@@ -3226,7 +3232,7 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp: {
-			Control control = findControl(nsEvent);
+			Control control = findControl(nsEvent, true, true);
 			if (control != null) {
 				control.sendMouseEvent (nsEvent, SWT.MouseUp, send);
 			}
@@ -3238,7 +3244,11 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
 		case OS.NSMouseMoved: {
-			Control control = findControl(nsEvent);
+			Control control = findControl(nsEvent, true, true);
+			if (dragging) {
+				dragging = false;
+				control.sendDragEvent(nsEvent);
+			}
 			if (control != currentControl) {
 				if (currentControl != null) {
 					currentControl.sendMouseEvent (nsEvent, SWT.MouseExit, send);

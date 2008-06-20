@@ -2134,20 +2134,8 @@ boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	return event.doit;
 }
 
-boolean sendDragEvent (int button, int chord, int modifiers, int x, int y) {
-	Event event = new Event ();
-	switch (button) {
-		case 1: event.button = 1; break;
-		case 2: event.button = 3; break;
-		case 3: event.button = 2; break;
-		case 4: event.button = 4; break;
-		case 5: event.button = 5; break;
-	}
-	event.x = x;
-	event.y = y;
-//	setInputState (event, SWT.DragDetect, chord, modifiers);
-	postEvent (SWT.DragDetect, event);
-	return event.doit;
+boolean sendDragEvent (NSEvent nsEvent) {
+	return sendMouseEvent(nsEvent, SWT.DragDetect, true);
 }
 
 void sendFocusEvent (int type, boolean post) {
