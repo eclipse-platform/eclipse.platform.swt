@@ -80,6 +80,11 @@ public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+boolean acceptsFirstResponder(int id, int sel) {
+	if (id == view.id) return false;
+	return super.acceptsFirstResponder (id, sel);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending
@@ -294,6 +299,10 @@ void deregister () {
 void enableWidget (boolean enabled) {
 	buttonView.setEnabled(enabled);
 	textView.setEnabled(enabled);
+}
+
+NSView focusView () {
+	return textView;
 }
 
 /**

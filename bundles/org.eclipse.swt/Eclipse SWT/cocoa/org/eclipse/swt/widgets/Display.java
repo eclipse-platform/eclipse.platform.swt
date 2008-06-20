@@ -3381,13 +3381,13 @@ int windowDelegateProc(int id, int sel) {
 		return 0;
 	}
 	if (sel == OS.sel_acceptsFirstResponder) {
-		return widget.acceptsFirstResponder() ? 1 : 0;
+		return widget.acceptsFirstResponder(id, sel) ? 1 : 0;
 	}
 	if (sel == OS.sel_becomeFirstResponder) {
-		return widget.becomeFirstResponder() ? 1 : 0;
+		return widget.becomeFirstResponder(id, sel) ? 1 : 0;
 	}
 	if (sel == OS.sel_resignFirstResponder) {
-		return widget.resignFirstResponder() ? 1 : 0;
+		return widget.resignFirstResponder(id, sel) ? 1 : 0;
 	}
 	if (sel == OS.sel_isOpaque) {
 		return widget.isOpaque(id, sel) ? 1 : 0;

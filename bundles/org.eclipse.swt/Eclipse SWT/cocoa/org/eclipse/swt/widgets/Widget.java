@@ -136,16 +136,23 @@ void callSuper(int id, int selector, int arg0) {
 	OS.objc_msgSendSuper(super_struct, selector, arg0);
 }
 
-boolean acceptsFirstResponder () {
-	return false;
+boolean callSuperBoolean(int id, int sel) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel) != 0;
 }
 
-boolean becomeFirstResponder () {
-	return true;
+boolean acceptsFirstResponder (int id, int sel) {
+	return callSuperBoolean(id, sel);
 }
 
-boolean resignFirstResponder () {
-	return true;
+boolean becomeFirstResponder (int id, int sel) {
+	return callSuperBoolean(id, sel);
+}
+
+boolean resignFirstResponder (int id, int sel) {
+	return callSuperBoolean(id, sel);
 }
 
 /**

@@ -105,28 +105,15 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
-boolean acceptsFirstResponder () {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = view.id;
-	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
-	return OS.objc_msgSendSuper(super_struct, OS.sel_acceptsFirstResponder) != 0;
-}
-
-boolean becomeFirstResponder () {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = view.id;
-	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
-	boolean result = OS.objc_msgSendSuper(super_struct, OS.sel_becomeFirstResponder) != 0;
-	if (result) sendFocusEvent (SWT.FocusIn, false);
+boolean becomeFirstResponder (int id, int sel) {
+	boolean result = super.becomeFirstResponder (id, sel);
+	if (result && id == focusView ().id) sendFocusEvent (SWT.FocusIn, false);
 	return result;
 }
 
-boolean resignFirstResponder () {
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = view.id;
-	super_struct.cls = OS.objc_msgSend(view.id, OS.sel_superclass);
-	boolean result = OS.objc_msgSendSuper(super_struct, OS.sel_resignFirstResponder) != 0;
-	if (result) sendFocusEvent (SWT.FocusOut, false);
+boolean resignFirstResponder (int id, int sel) {
+	boolean result = super.resignFirstResponder (id, sel);
+	if (result && id == focusView ().id) sendFocusEvent (SWT.FocusOut, false);
 	return result;
 }
 
@@ -880,6 +867,10 @@ void flagsChanged(int theEvent) {
 	display.lastModifiers = modifiers;
 }
 
+NSView focusView () {
+	return view;
+}
+
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.
@@ -902,7 +893,7 @@ public boolean forceFocus () {
 	shell.setSavedFocus (null);
 	shell.bringToTop (false);
 	if (isDisposed ()) return false;
-	view.window ().makeFirstResponder (view);
+	view.window ().makeFirstResponder (focusView ());
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	return hasFocus ();

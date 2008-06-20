@@ -120,8 +120,8 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-boolean becomeFirstResponder () {
-	boolean result = super.becomeFirstResponder();
+boolean becomeFirstResponder (int id, int sel) {
+	boolean result = super.becomeFirstResponder(id, sel);
 	NSRect frame = view.frame();
 	lastX = (int)frame.x;
 	lastY = (int)frame.y;

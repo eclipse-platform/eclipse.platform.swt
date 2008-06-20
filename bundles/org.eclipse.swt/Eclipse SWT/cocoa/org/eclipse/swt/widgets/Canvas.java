@@ -45,14 +45,14 @@ Canvas () {
 	/* Do nothing */
 }
 
-boolean becomeFirstResponder () {
+boolean becomeFirstResponder (int id, int sel) {
 	if (caret != null) caret.setFocus ();
-	return super.becomeFirstResponder();
+	return super.becomeFirstResponder(id, sel);
 }
 
-boolean resignFirstResponder () {
+boolean resignFirstResponder (int id, int sel) {
 	if (caret != null) caret.killFocus ();
-	return super.resignFirstResponder();
+	return super.resignFirstResponder(id, sel);
 }
 
 

@@ -126,11 +126,11 @@ Control [] _getTabList () {
 	return tabList;
 }
 
-boolean acceptsFirstResponder () {
+boolean acceptsFirstResponder (int id, int sel) {
 	if ((state & CANVAS) != 0) {
 		return ((style & SWT.NO_FOCUS) == 0);
 	}
-	return super.acceptsFirstResponder ();
+	return super.acceptsFirstResponder (id, sel);
 }
 
 
