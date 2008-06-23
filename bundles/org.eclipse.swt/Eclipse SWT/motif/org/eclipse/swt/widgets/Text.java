@@ -895,8 +895,9 @@ public String getText (int start, int end) {
 	boolean hasEcho = echoCharacter != '\0';
 	int length = hasEcho ? hiddenText.length () : OS.XmTextGetLastPosition (handle);
 	if (length == 0) return "";
-	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
+	if (start > end) return "";
+	start = Math.max (0, start);
 	if (hasEcho) return hiddenText.substring (start, end + 1);
 	int numChars = end - start + 1;
 	int bufLength = numChars * OS.MB_CUR_MAX () + 1;
