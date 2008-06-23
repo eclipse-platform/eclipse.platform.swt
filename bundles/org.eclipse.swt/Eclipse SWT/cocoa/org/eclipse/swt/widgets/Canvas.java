@@ -291,6 +291,11 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
+boolean sendKeyEvent(NSEvent nsEvent, int type) {
+	if (caret != null) NSCursor.setHiddenUntilMouseMoves(true);
+	return super.sendKeyEvent(nsEvent, type);
+}
+
 /**
  * Sets the receiver's caret.
  * <p>
