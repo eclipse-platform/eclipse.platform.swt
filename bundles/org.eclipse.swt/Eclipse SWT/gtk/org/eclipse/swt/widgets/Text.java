@@ -972,13 +972,15 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
-	start = Math.max (0, start);
 	int /*long*/ address;
 	if ((style & SWT.SINGLE) != 0) {
+		start = Math.max (0, start);
 		address = OS.gtk_editable_get_chars (handle, start, end + 1);
 	} else {
 		int length = OS.gtk_text_buffer_get_char_count (bufferHandle);
 		end = Math.min (end, length - 1);
+		if (start > end) return "";
+		start = Math.max (0, start);
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
