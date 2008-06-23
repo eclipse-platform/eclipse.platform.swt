@@ -1084,8 +1084,9 @@ public String getText (int start, int end) {
 	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
-	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
+	if (start > end) return "";
+	start = Math.max (0, start);
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character

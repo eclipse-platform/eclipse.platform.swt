@@ -599,6 +599,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(-1,0));
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
@@ -608,12 +609,14 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(-1,0));
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
 	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
 	
 	text.setText("");
 	text.setEchoChar('*');
@@ -626,6 +629,7 @@ public void test_getTextII() {
 	assertEquals("", text.getText(-1,0));
 	assertEquals("", text.getText(0,0));
 	assertEquals("", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("a");
 	assertEquals("", text.getText(-4,-4));
@@ -635,12 +639,14 @@ public void test_getTextII() {
 	assertEquals("a", text.getText(-1,0));
 	assertEquals("a", text.getText(0,0));
 	assertEquals("a", text.getText(0,1));
+	assertEquals("", text.getText(10,20));
 	
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
 	assertEquals("012", text.getText(-1, 2));
 	assertEquals("34567890", text.getText(3, 100));
-	assertEquals("", text.getText(5, 3));	
+	assertEquals("", text.getText(5, 3));
+	assertEquals("0", text.getText(10,20));
 }
 
 public void test_getTextLimit() {

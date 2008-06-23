@@ -1134,8 +1134,9 @@ public String getText (int start, int end) {
 	} else {
 		if (!(start <= end && 0 <= end)) return "";
 		int length = OS.TXNDataSize (txnObject) / 2;
-		start = Math.max (0, start);
 		end = Math.min (end, length - 1);
+		if (start > end) return "";
+		start = Math.max (0, start);
 		return getTXNText (start, end + 1);
 	}
 }
@@ -1146,8 +1147,10 @@ char [] getEditText (int start, int end) {
 	int result = OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
 	if (result != OS.noErr) return new char [0];
 	int length = OS.CFStringGetLength (ptr [0]);
+	end = Math.min (end, length - 1);
+	if (start > end) return new char [0];
+	start = Math.max (0, start);
 	CFRange range = new CFRange ();
-	start = Math.min (Math.max (0, start), length);
 	range.location = start;
 	if (end == -1) {
 		range.length = Math.max (0, length - start);
