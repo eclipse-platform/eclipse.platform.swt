@@ -42,9 +42,9 @@ public class TreeItem extends Item {
 	Image [] images;
 	boolean checked, grayed, cached, expanded;
 	Color foreground, background;
-	Color[] cellForeground, cellBackground;
+	Color [] cellForeground, cellBackground;
 	Font font;
-	Font[] cellFont;
+	Font [] cellFont;
 	int width = -1;
 	/**
 	 * the handle to the OS resource 
@@ -248,7 +248,7 @@ int calculateWidth (int index, GC gc, boolean recurse) {
 	//		width = event.width;
 	//	}
 		if (index == 0) {
-			int level = ((NSOutlineView)parent.view).levelForItem(handle);
+			int level = ((NSOutlineView) parent.view).levelForItem (handle);
 			width += parent.levelIndent * level;
 			this.width = width;
 		}
@@ -257,7 +257,7 @@ int calculateWidth (int index, GC gc, boolean recurse) {
 		for (int i = 0; i < items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null && item.cached) {
-				width = Math.max(width, item.calculateWidth(index, gc, recurse));
+				width = Math.max (width, item.calculateWidth (index, gc, recurse));
 			}
 		}
 	}
@@ -342,28 +342,28 @@ NSAttributedString createString(int index) {
 	if (foreground == null) foreground = this.foreground;
 	if (foreground == null) foreground = parent.foreground;
 	if (foreground != null) {
-		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName());
+		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+		dict.setObject (color, OS.NSForegroundColorAttributeName());
 	}
 	Font font = cellFont != null ? cellFont [index] : null;
 	if (font == null) font = this.font;
 	if (font == null) font = parent.font;
 	if (font != null) {
-		dict.setObject(font.handle, OS.NSFontAttributeName());
+		dict.setObject(font.handle, OS.NSFontAttributeName ());
 	}
 	Color background = cellBackground != null ? cellBackground [index] : null;
 	if (background == null) background = this.background;
 	if (background != null) {
-		NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
-		dict.setObject(color, OS.NSBackgroundColorAttributeName());
+		NSColor color = NSColor.colorWithDeviceRed (background.handle [0], background.handle [1], background.handle [2], 1);
+		dict.setObject (color, OS.NSBackgroundColorAttributeName ());
 	}
 	String text = getText (index);
-	int length = text.length();
-	char[] chars = new char[length];
-	text.getChars(0, length, chars, 0);
-	NSString str = NSString.stringWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
-	attribStr.autorelease();
+	int length = text.length ();
+	char [] chars = new char [length];
+	text.getChars (0, length, chars, 0);
+	NSString str = NSString.stringWithCharacters (chars, length);
+	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString_attributes_ (str, dict);
+	attribStr.autorelease ();
 	return attribStr;
 }
 
@@ -433,7 +433,7 @@ public Rectangle getBounds () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	int row = outlineView.rowForItem(handle);
+	int row = outlineView.rowForItem (handle);
 	NSRect rect = outlineView.rectOfRow (row);
 	rect = outlineView.convertRect_toView_ (rect, parent.scrollView);
 	Rectangle result = new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
@@ -459,11 +459,11 @@ public Rectangle getBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	int row = outlineView.rowForItem(handle);
+	int row = outlineView.rowForItem (handle);
 	if ((parent.style & SWT.CHECK) != 0) index ++;
-	NSRect rect = outlineView.frameOfCellAtColumn(index, row);
+	NSRect rect = outlineView.frameOfCellAtColumn (index, row);
 	rect = outlineView.convertRect_toView_ (rect, parent.scrollView);
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 /**
@@ -922,7 +922,7 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (handle != null) handle.release();
+	if (handle != null) handle.release ();
 	handle = null;
 	parentItem = null;
 	parent = null;
@@ -986,7 +986,7 @@ public void setBackground (Color color) {
 	background = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 /**
@@ -1024,7 +1024,7 @@ public void setBackground (int index, Color color) {
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true; 
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 /**
@@ -1044,7 +1044,7 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	cached = true;
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 /**
@@ -1062,10 +1062,11 @@ public void setExpanded (boolean expanded) {
 	checkWidget ();
 	if (expanded == getExpanded ()) return;
 	parent.ignoreExpand = true;
+	this.expanded = expanded;
 	if (expanded) {
-		((NSOutlineView)parent.view).expandItem_(handle);
+		((NSOutlineView) parent.view).expandItem_ (handle);
 	} else {
-		((NSOutlineView)parent.view).collapseItem_(handle);
+		((NSOutlineView) parent.view).collapseItem_ (handle);
 	}
 	parent.ignoreExpand = false;
 	cached = true;
@@ -1104,9 +1105,9 @@ public void setFont (Font font) {
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	NSOutlineView view = (NSOutlineView)parent.view;
-	NSRect rect = view.rectOfRow(parent.indexOf(this));
-	view.setNeedsDisplayInRect(rect);
+	NSOutlineView view = (NSOutlineView) parent.view;
+	NSRect rect = view.rectOfRow (parent.indexOf (this));
+	view.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -1144,9 +1145,9 @@ public void setFont (int index, Font font) {
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	NSOutlineView view = (NSOutlineView)parent.view;
-	NSRect rect = view.rectOfRow(parent.indexOf(this));
-	view.setNeedsDisplayInRect(rect);
+	NSOutlineView view = (NSOutlineView) parent.view;
+	NSRect rect = view.rectOfRow (parent.indexOf (this));
+	view.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -1179,7 +1180,7 @@ public void setForeground (Color color) {
 	foreground = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 /**
@@ -1217,7 +1218,7 @@ public void setForeground (int index, Color color){
 	cellForeground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 /**
@@ -1237,7 +1238,7 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	cached = true;
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 /**
@@ -1283,7 +1284,7 @@ public void setImage (Image [] images) {
 public void setImage (int index, Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 //	if (parent.imageBounds == null && image != null) {
 //		parent.setItemHeight (image);
@@ -1305,7 +1306,7 @@ public void setImage (int index, Image image) {
 	}
 //	cached = true;
 //	if (index == 0) parent.setScrollWidth (this);
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_ (handle);
 }
 
 public void setImage (Image image) {
@@ -1387,7 +1388,7 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	((NSOutlineView)parent.view).reloadItem_(handle);
+	((NSOutlineView) parent.view).reloadItem_(handle);
 }
 
 public void setText (String string) {
