@@ -220,7 +220,9 @@ public FontData open () {
 	NSApplication.sharedApplication().runModalForWindow_(panel);
 	if (selected) {
 		NSFont nsFont = panel.panelConvertFont(font.handle);
-		fontData = Font.cocoa_new(display, nsFont).getFontData()[0];
+		if (nsFont != null) {
+			fontData = Font.cocoa_new(display, nsFont).getFontData()[0];
+		}
 	}
 	panel.setDelegate(null);
 	delegate.release();
