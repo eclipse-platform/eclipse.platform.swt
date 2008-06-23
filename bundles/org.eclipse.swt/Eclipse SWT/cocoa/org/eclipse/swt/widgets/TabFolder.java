@@ -171,7 +171,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	SWTTabView widget = (SWTTabView)new SWTTabView().alloc();
+	NSTabView widget = (NSTabView)new SWTTabView().alloc();
 	widget.initWithFrame (new NSRect());
 	widget.setDelegate(widget);
 	if ((style & SWT.BOTTOM) != 0) {

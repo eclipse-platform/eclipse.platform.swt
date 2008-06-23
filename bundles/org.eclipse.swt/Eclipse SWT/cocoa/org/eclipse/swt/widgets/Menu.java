@@ -278,7 +278,7 @@ public void addMenuListener (MenuListener listener) {
 
 void createHandle () {
 	display.addMenu (this);
-	SWTMenu widget = (SWTMenu)new SWTMenu().alloc();
+	NSMenu widget = (NSMenu)new SWTMenu().alloc();
 	widget.initWithTitle(NSString.stringWith(""));
 	widget.setAutoenablesItems(false);
 	widget.setDelegate(widget);	

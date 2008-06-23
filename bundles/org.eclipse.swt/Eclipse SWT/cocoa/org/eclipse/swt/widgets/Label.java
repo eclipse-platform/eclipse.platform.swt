@@ -126,7 +126,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	SWTBox widget = (SWTBox)new SWTBox().alloc();
+	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setTitle(NSString.stringWith(""));
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -143,7 +143,7 @@ void createHandle () {
 		imageWidget.setTag (jniRef);
 		imageWidget.setImageScaling (OS.NSScaleNone);
 		
-		SWTTextField textWidget = (SWTTextField)new SWTTextField().alloc();
+		NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
 		textWidget.initWithFrame(new NSRect());
 		textWidget.setBordered(false);
 		textWidget.setEditable(false);

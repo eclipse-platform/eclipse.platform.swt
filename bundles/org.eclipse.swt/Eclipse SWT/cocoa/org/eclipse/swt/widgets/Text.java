@@ -356,14 +356,14 @@ void createHandle () {
 //		widget.setAction(OS.sel_sendSelection);
 		view = widget;
 	} else {
-		SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+		NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 		scrollWidget.initWithFrame(new NSRect());
 		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
 		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
 		scrollWidget.setAutoresizesSubviews(true);
 		if ((style & SWT.BORDER) != 0) scrollWidget.setBorderType(OS.NSBezelBorder);
 		
-		SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
+		NSTextView widget = (NSTextView)new SWTTextView().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.BORDER) == 0) widget.setFocusRingType(OS.NSFocusRingTypeNone);

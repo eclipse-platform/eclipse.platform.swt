@@ -469,8 +469,7 @@ void createHandle () {
 	if (window != null) {
 		view = window.contentView();
 	} else {
-		SWTWindow swtWindow = (SWTWindow) new SWTWindow ().alloc ();
-		window = (NSWindow)swtWindow;
+		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {
 			styleMask = OS.NSTitledWindowMask;

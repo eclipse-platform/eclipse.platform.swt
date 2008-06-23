@@ -131,7 +131,7 @@ ScrollBar createScrollBar (int style) {
 	} else {
 		rect.height = 1;
 	}
-	scroller = (SWTScroller)new SWTScroller().alloc();
+	scroller = (NSScroller)new SWTScroller().alloc();
 	scroller.initWithFrame(rect);
 	if ((style & SWT.H_SCROLL) != 0) {
 		scrollView.setHorizontalScroller(scroller);

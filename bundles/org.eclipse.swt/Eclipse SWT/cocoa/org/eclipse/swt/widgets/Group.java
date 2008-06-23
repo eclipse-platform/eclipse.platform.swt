@@ -114,10 +114,10 @@ void deregister () {
 }
 
 void createHandle () {
-	SWTBox widget = (SWTBox)new SWTBox().alloc();
+	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setTitlePosition(OS.NSNoTitle);
-	SWTView contentWidget = (SWTView)new SWTView().alloc();
+	NSView contentWidget = (NSView)new SWTView().alloc();
 	contentWidget.initWithFrame(new NSRect());
 //	contentWidget.setDrawsBackground(false);
 	widget.setContentView(contentWidget);

@@ -139,12 +139,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.initWithFrame(new NSRect ());
 	scrollWidget.setDrawsBackground(false);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 
-	SWTTextView widget = (SWTTextView)new SWTTextView().alloc();
+	NSTextView widget = (NSTextView)new SWTTextView().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setEditable(false);
 	widget.setDrawsBackground(false);

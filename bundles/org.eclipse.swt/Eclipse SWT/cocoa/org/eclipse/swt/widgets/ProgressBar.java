@@ -100,7 +100,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	SWTProgressIndicator widget = (SWTProgressIndicator)new SWTProgressIndicator().alloc();
+	NSProgressIndicator widget = (NSProgressIndicator)new SWTProgressIndicator().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setUsesThreadedAnimation(false);
 	widget.setIndeterminate((style & SWT.INDETERMINATE) != 0);

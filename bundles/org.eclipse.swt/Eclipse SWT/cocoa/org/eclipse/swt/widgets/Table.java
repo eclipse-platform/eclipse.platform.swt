@@ -368,7 +368,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	SWTScrollView scrollWidget = (SWTScrollView)new SWTScrollView().alloc();
+	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.initWithFrame(new NSRect ());
 	scrollWidget.setHasHorizontalScroller(true);
 	scrollWidget.setHasVerticalScroller(true);

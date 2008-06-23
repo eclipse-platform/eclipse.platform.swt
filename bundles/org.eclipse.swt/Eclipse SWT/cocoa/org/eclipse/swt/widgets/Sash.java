@@ -142,7 +142,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	SWTView widget = (SWTView)new SWTView().alloc();
+	NSView widget = (NSView)new SWTView().alloc();
 	widget.initWithFrame (new NSRect());
 	view = widget;
 }
