@@ -702,8 +702,6 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
-	if (pool != null) pool.release();
-	pool = null;
 	application = null;
 }
 
@@ -2523,6 +2521,10 @@ void releaseDisplay () {
 	
 	menuBar = null;
 	menus = null;
+
+	/* The release pool needs to be released before the call backs. */
+	if (pool != null) pool.release();
+	pool = null;
 
 	if (applicationCallback3 != null) applicationCallback3.dispose ();
 	if (applicationCallback6 != null) applicationCallback6.dispose ();
