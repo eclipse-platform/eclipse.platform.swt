@@ -109,7 +109,7 @@ public Cursor(Device device, int style) {
 	switch (style) {
 		case SWT.CURSOR_HAND: 			handle = NSCursor.pointingHandCursor(); break;
 		case SWT.CURSOR_ARROW: 			handle = NSCursor.arrowCursor(); break;
-		case SWT.CURSOR_WAIT: 			handle = NSCursor.crosshairCursor(); break;
+		case SWT.CURSOR_WAIT: 			handle = NSCursor.arrowCursor(); break;
 		case SWT.CURSOR_CROSS:	 		handle = NSCursor.crosshairCursor(); break;
 		case SWT.CURSOR_APPSTARTING: 	handle = NSCursor.arrowCursor(); break;
 		case SWT.CURSOR_HELP: 			handle = NSCursor.crosshairCursor(); break;
