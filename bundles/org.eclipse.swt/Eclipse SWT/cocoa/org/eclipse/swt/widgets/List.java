@@ -833,7 +833,7 @@ public void select (int index) {
 		indexes.initWithIndex(index);
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		((NSTableView)view).selectRowIndexes(indexes, true);
+		widget.selectRowIndexes(indexes, true);
 		ignoreSelect = false;
 	}
 }
