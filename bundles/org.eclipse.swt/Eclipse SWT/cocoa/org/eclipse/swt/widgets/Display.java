@@ -239,7 +239,7 @@ public class Display extends Device {
 	/* Timer */
 	Runnable timerList [];
 	NSTimer nsTimers [];
-	SWTWindowDelegate timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	SWTWindowDelegate timerDelegate;
 	SWTApplicationDelegate applicationDelegate;
 	
 	/* Display Data */
@@ -1592,6 +1592,7 @@ protected void init () {
 	initClasses ();
 	initApplicationDelegate();	
 	application.finishLaunching();
+	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 }
 
 void initApplicationDelegate() {
@@ -2495,11 +2496,13 @@ void releaseDisplay () {
 	if (warningImage != null) warningImage.dispose ();
 	errorImage = infoImage = warningImage = null;
 	
-	if (caretTimer != null) timerExec(-1, caretTimer);
-	caretTimer = null;
 	currentCaret = null;
 	
 	/* Release Timers */
+	if (hoverTimer != null) timerExec(-1, hoverTimer);
+	hoverTimer = null;
+	if (caretTimer != null) timerExec(-1, caretTimer);
+	caretTimer = null;
 	if (nsTimers != null) {
 		for (int i=0; i<nsTimers.length; i++) {
 			if (nsTimers [i] != null) {
@@ -2509,6 +2512,8 @@ void releaseDisplay () {
 		}
 	}
 	nsTimers = null;
+	if (timerDelegate != null) timerDelegate.release();
+	timerDelegate = null;
 	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
