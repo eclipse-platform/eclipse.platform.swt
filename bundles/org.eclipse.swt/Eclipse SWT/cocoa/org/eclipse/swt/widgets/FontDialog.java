@@ -35,7 +35,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class FontDialog extends Dialog {
 	FontData fontData;
 	RGB rgb;
-	boolean open;
+	boolean selected;
 	int fontID, fontSize;
 
 /**
@@ -85,6 +85,7 @@ public FontDialog (Shell parent, int style) {
 }
 
 void changeFont(int arg0) {
+	selected = true;
 }
 
 /**
@@ -202,31 +203,29 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	Display display = parent != null ? parent.display : Display.getCurrent ();
-	
+	Display display = parent != null ? parent.display : Display.getCurrent ();	
 	NSFontPanel panel = NSFontPanel.sharedFontPanel();
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
-	if (fontData != null) {
-		Font font = new Font(display, fontData);
-		NSFontManager.sharedFontManager().setSelectedFont(font.handle, false);
-		font.dispose();
-	}
+	boolean create = fontData != null;
+	Font font = create ? new Font(display, fontData) : display.getSystemFont();
+	panel.setPanelFont(font.handle, false);
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
 	int jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
 	fontData = null;
+	selected = false;
 	panel.orderFront(null);
 	NSApplication.sharedApplication().runModalForWindow_(panel);
+	if (selected) {
+		NSFont nsFont = panel.panelConvertFont(font.handle);
+		fontData = Font.cocoa_new(display, nsFont).getFontData()[0];
+	}
 	panel.setDelegate(null);
 	delegate.release();
 	OS.DeleteGlobalRef(jniRef);
-	NSFont font = NSFontManager.sharedFontManager().selectedFont();
-	if (font != null) {
-		//TODO - this does not work
-		fontData = Font.cocoa_new(display, font).getFontData()[0];
-	}
+	if (create) font.dispose();
 	return fontData;
 }
 
