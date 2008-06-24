@@ -203,7 +203,14 @@ TreeItem (Tree parent, TreeItem parentItem, int style, int index, boolean create
 	super (parent, style);
 	this.parent = parent;
 	this.parentItem = parentItem;
-	if (create) parent.createItem (this, parentItem, index);
+	if (create) {
+		parent.createItem (this, parentItem, index);
+	} else {
+		handle = (SWTTreeItem) new SWTTreeItem ().alloc ().init ();
+		createJNIRef ();
+		register ();
+		items = new TreeItem[4];
+	}
 }
 
 static TreeItem checkNull (TreeItem item) {
@@ -307,7 +314,8 @@ void clear () {
 public void clear (int index, boolean all) {
 	checkWidget ();
 	int count = getItemCount ();
-	if (index < 0 || index >= count) SWT.error (SWT.ERROR_INVALID_RANGE);
+	if (index < 0 || index >= count) 
+		SWT.error (SWT.ERROR_INVALID_RANGE);
 	parent.clear (this, index, all);
 }
 
@@ -697,7 +705,7 @@ public TreeItem getItem (int index) {
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
-	return parent._getItem (this, index);
+	return parent._getItem (this, index, true);
 }
 
 /**
@@ -738,7 +746,7 @@ public TreeItem [] getItems () {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	TreeItem [] result = new TreeItem [itemCount];
 	for (int i=0; i<itemCount; i++) {
-		result [i] = parent._getItem (this, i);
+		result [i] = parent._getItem (this, i, true);
 	}
 	return result;
 }
@@ -898,7 +906,7 @@ public int indexOf (TreeItem item) {
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parentItem != this) return -1;
 	for (int i = 0; i < itemCount; i++) {
-		if (item == items[i]) return i;
+		if (item == items [i]) return i;
 	}
 	return -1;
 }

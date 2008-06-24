@@ -10,12 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -129,7 +127,7 @@ void _addListener (int eventType, Listener listener) {
 	}
 }
 
-TreeItem _getItem (TreeItem parentItem, int index) {
+TreeItem _getItem (TreeItem parentItem, int index, boolean create) {
 	int count;
 	TreeItem[] items;
 	if (parentItem != null) {
@@ -141,7 +139,7 @@ TreeItem _getItem (TreeItem parentItem, int index) {
 	}
 	if (index < 0 || index >= count) return null;
 	TreeItem item = items [index]; 
-	if (item != null || (style & SWT.VIRTUAL) == 0) return item;
+	if (item != null || (style & SWT.VIRTUAL) == 0 || !create) return item;
 	item = new TreeItem (this, parentItem, SWT.NONE, index, false);
 	items [index] = item;
 	return item;
@@ -250,36 +248,28 @@ protected void checkSubclass () {
 }
 
 void clear (TreeItem parentItem, int index, boolean all) {
-//	int [] ids = parentItem == null ? childIds : parentItem.childIds;
-//	TreeItem item = _getItem (ids [index], false);
-//	if (item != null) {
-//		item.clear();
-//		if (all) {
-//			clearAll (item, true);
-//		} else {
-//			int container = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
-//			OS.UpdateDataBrowserItems (handle, container, 1, new int[] {item.id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-//		}
-//	}
+	TreeItem item = _getItem (parentItem, index, false);
+	if (item != null) {
+		item.clear();
+		((NSOutlineView) view).reloadItem_ (item.handle);
+		if (all) {
+			clearAll (item, true);
+		}
+	}
 }
 
 void clearAll (TreeItem parentItem, boolean all) {
-//	boolean update = !inClearAll;
-//	int count = getItemCount (parentItem);
-//	if (count == 0) return;
-//	inClearAll = true;
-//	int [] ids = parentItem == null ? childIds : parentItem.childIds;
-//	for (int i=0; i<count; i++) {
-//		TreeItem item = _getItem (ids [i], false);
-//		if (item != null) {
-//			item.clear ();
-//			if (all) clearAll (item, true);
-//		}
-//	}
-//	if (update) {
-//		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-//		inClearAll = false;
-//	}
+	int count = getItemCount (parentItem);
+	if (count == 0) return;
+	TreeItem [] children = parentItem == null ? items : parentItem.items; 
+	for (int i=0; i<count; i++) {
+		TreeItem item = children [i];
+		if (item != null) {
+			item.clear ();
+			((NSOutlineView) view).reloadItem_ (item.handle);
+			if (all) clearAll (item, true);
+		}
+	}
 }
 
 /**
@@ -997,7 +987,7 @@ public TreeItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount ();
 	if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
-	return _getItem (null, index);
+	return _getItem (null, index, true);
 }
 
 /**
@@ -1099,6 +1089,10 @@ public int getItemCount () {
 	return itemCount;
 }
 
+int getItemCount (TreeItem item) {
+	return item == null ? itemCount : item.itemCount;
+}
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the tree.
@@ -1136,7 +1130,7 @@ public TreeItem [] getItems () {
 	checkWidget ();
 	TreeItem [] result = new TreeItem [itemCount];
 	for (int i=0; i<itemCount; i++) {
-		result [i] = _getItem (null, i);
+		result [i] = _getItem (null, i, true);
 	}
 	return result;
 }
@@ -1375,12 +1369,13 @@ public int indexOf (TreeItem item) {
 
 int outlineView_child_ofItem (int outlineView, int index, int ref) {
 	TreeItem parent = (TreeItem) display.getWidget (ref);
-	TreeItem item = _getItem (parent, index);
+	TreeItem item = _getItem (parent, index, true);
+	checkData (item, false);
 	return item.handle.id;
 }
 
 int outlineView_objectValueForTableColumn_byItem (int outlineView, int tableColumn, int ref) {
-	TreeItem item = (TreeItem)display.getWidget (ref);
+	TreeItem item = (TreeItem) display.getWidget (ref);
 	if (checkColumn != null && tableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
@@ -1788,91 +1783,37 @@ public void setItemCount (int count) {
 }
 
 void setItemCount (TreeItem parentItem, int count) {
-//	int itemCount = getItemCount (parentItem);
-//	if (count == itemCount) return;
-//	setRedraw (false);
-//	int [] top = new int [1], left = new int [1];
-//    OS.GetDataBrowserScrollPosition (handle, top, left);
-//    DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-//	OS.GetDataBrowserCallbacks (handle, callbacks);
-//	callbacks.v1_itemNotificationCallback = 0;
-//	callbacks.v1_itemCompareCallback = 0;
-//	OS.SetDataBrowserCallbacks (handle, callbacks);
-//	int[] ids = parentItem == null ? childIds : parentItem.childIds;
-//	if (count < itemCount) {
-//		for (int index = ids.length - 1; index >= count; index--) {
-//			int id = ids [index];
-//			if (id != 0) {
-//				TreeItem item = _getItem (id, false);
-//				if (item != null && !item.isDisposed ()) {
-//					item.dispose ();
-//				} else {
-//					if (parentItem == null || parentItem.getExpanded ()) {
-//						if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
-//							error (SWT.ERROR_ITEM_NOT_REMOVED);
-//							break;
-//						}
-//						visibleCount--;
-//					}
-//				}
-//			}
-//		}
-//		//TODO - move shrink to paint event
-//		// shrink items array
-//		int lastIndex = items.length;
-//		for (int i=items.length; i>0; i--) {
-//			if (items [i-1] != null) {
-//				lastIndex = i;
-//				break;
-//			}
-//		}
-//		if (lastIndex < items.length - 4) {
-//			int length = Math.max (4, (lastIndex + 3) / 4 * 4);
-//			TreeItem [] newItems = new TreeItem [length];
-//			System.arraycopy(items, 0, newItems, 0, Math.min(items.length, lastIndex));
-//		}
-//	}
-//	
-//	if (parentItem != null) parentItem.itemCount = count;
-//	int length = Math.max (4, (count + 3) / 4 * 4);
-//	int [] newIds = new int [length];
-//	if (ids != null) {
-//		System.arraycopy (ids, 0, newIds, 0, Math.min (count, itemCount));
-//	}
-//	ids = newIds;
-//	if (parentItem == null) {
-//		childIds = newIds;
-//	} else {
-//		parentItem.childIds = newIds;
-//	}
-//	
-//	if (count > itemCount) {
-//		if ((getStyle() & SWT.VIRTUAL) == 0) {
-//			int delta = Math.max (4, (count - itemCount + 3) / 4 * 4);
-//			TreeItem [] newItems = new TreeItem [items.length + delta];
-//			System.arraycopy (items, 0, newItems, 0, items.length);
-//			items = newItems;
-//			for (int i=itemCount; i<count; i++) {
-//				items [i] = new TreeItem (this, parentItem, SWT.NONE, i, true);
-//			}
-//		} else {
-//			if (parentItem == null || parentItem.getExpanded ()) {
-//				int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
-//				int [] addIds = _getIds (count - itemCount);
-//				if (OS.AddDataBrowserItems (handle, parentID, addIds.length, addIds, OS.kDataBrowserItemNoProperty) != OS.noErr) {
-//					error (SWT.ERROR_ITEM_NOT_ADDED);
-//				}
-//				visibleCount += (count - itemCount);
-//				System.arraycopy (addIds, 0, ids, itemCount, addIds.length);
-//			}
-//		}
-//	}
-//	
-//	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-//	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-//	OS.SetDataBrowserCallbacks (handle, callbacks);
-//	setRedraw (true);
-//	if (itemCount == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
+	int itemCount = getItemCount (parentItem);
+	if (count == itemCount) return;
+	TreeItem [] children = parentItem == null ? items : parentItem.items;
+	if (count < itemCount) {
+		for (int index = count; index < itemCount; index ++) {
+			TreeItem item = children [index];
+			if (item != null && !item.isDisposed()) item.release (false);
+		}
+	}
+	if (count > itemCount) {
+		if ((getStyle() & SWT.VIRTUAL) == 0) {
+			for (int i=itemCount; i<count; i++) {
+				new TreeItem (this, parentItem, SWT.NONE, i, true);
+			}
+			return;
+		} 
+	}
+	int length = Math.max (4, (count + 3) / 4 * 4);
+	TreeItem [] newItems = new TreeItem [length];
+	if (children != null) {
+		System.arraycopy (items, 0, children, 0, Math.min (count, itemCount));
+	}
+	children = newItems;
+	if (parentItem == null) {
+		this.items = newItems;
+		this.itemCount = count;
+	} else {
+		parentItem.items = newItems;
+		parentItem.itemCount = count;
+	}
+	((NSOutlineView) view).reloadItem_ (parentItem != null ? parentItem.handle : null);
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
