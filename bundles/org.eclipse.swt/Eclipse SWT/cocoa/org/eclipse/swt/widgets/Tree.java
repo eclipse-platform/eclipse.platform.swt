@@ -432,6 +432,7 @@ void createItem (TreeColumn column, int index) {
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
+		nsColumn.retain();
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
@@ -676,32 +677,13 @@ void destroyItem (TreeColumn column) {
 			}
 		}
 	}
-//	if (columnCount == 1) {
-//		column_id = column.id; idCount = 0;
-//		DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
-//		desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
-//		short [] width = new short [1];
-//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-//		desc.minimumWidth = desc.maximumWidth = width [0];
-//		int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
-//		desc.titleString = str;
-//		OS.SetDataBrowserListViewHeaderDesc (handle, column_id, desc);
-//		OS.CFRelease (str);
-//	} else {
-//		int [] disclosure = new int [1];
-//		boolean [] expandableRows = new boolean [1];
-//		OS.GetDataBrowserListViewDisclosureColumn (handle, disclosure, expandableRows);
-//		if (disclosure [0] == column.id) {
-//			TreeColumn firstColumn = columns [1];
-//			firstColumn.style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-//			firstColumn.style |= SWT.LEFT;
-//			firstColumn.updateHeader();
-//			OS.SetDataBrowserListViewDisclosureColumn (handle, firstColumn.id, expandableRows [0]);
-//		}
-//		if (OS.RemoveDataBrowserTableViewColumn (handle, column.id) != OS.noErr) {
-//			error (SWT.ERROR_ITEM_NOT_REMOVED);
-//		}
-//	}
+	if (columnCount == 1) {
+		//TODO - reset attributes
+		firstColumn = column.nsColumn;
+		firstColumn.setWidth (0);
+	} else {
+		((NSTableView)view).removeTableColumn(column.nsColumn);
+	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
 	for (int i=index; i<columnCount; i++) {

@@ -427,6 +427,7 @@ void createItem (TableColumn column, int index) {
 	if (columnCount == 0) {
 		//TODO - clear attributes, alignment etc.
 		nsColumn = firstColumn;
+		nsColumn.retain();
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
