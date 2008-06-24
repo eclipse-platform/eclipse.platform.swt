@@ -120,7 +120,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	widget.setFrame (oldRect);
 	int width = 0, height = 0;
 	if ((style & SWT.HORIZONTAL) != 0) {		
-		height = (int)newRect.width;
+		height = (int)newRect.height;
 		width = height * 10;
 	} else {
 		width = (int)newRect.width;
