@@ -427,3 +427,17 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(hitTest_1CALLBACK)
 	return (SWT_PTR)hitTest;
 }
 #endif
+
+#ifndef NO_webView_1setFrame_1CALLBACK
+static SWT_PTR webView_1setFrame_1CALLBACK;
+static void webView_1setFrame(id obj, SEL sel, WebView *sender, NSRect rect)
+{
+	return ((void (*)(id, SEL, WebView*, NSRect*))webView_1setFrame_1CALLBACK)(obj, sel, sender, &rect);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(webView_1setFrame_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	webView_1setFrame_1CALLBACK = func;
+	return (SWT_PTR)webView_1setFrame;
+}
+#endif

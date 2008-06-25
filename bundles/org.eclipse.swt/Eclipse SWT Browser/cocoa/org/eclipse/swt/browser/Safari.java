@@ -24,7 +24,7 @@ class Safari extends WebBrowser {
 	String html;
 	int identifier;
 	int resourceCount;
-	String url = "";
+	String url = ""; //$NON-NLS-1$
 	Point location;
 	Point size;
 	boolean statusBar = true, toolBar = true, ignoreDispose;
@@ -72,61 +72,62 @@ class Safari extends WebBrowser {
 	}
 
 public void create (Composite parent, int style) {
-	
-	String className = "SWTWebViewDelegate";
+	String className = "SWTWebViewDelegate"; //$NON-NLS-1$
 	if (OS.objc_lookUpClass(className) == 0) {
-		Class safaryClass = this.getClass();
-		Callback3 = new Callback(safaryClass, "browserProc", 3);
+		Class safariClass = this.getClass();
+		Callback3 = new Callback(safariClass, "browserProc", 3); //$NON-NLS-1$
 		int proc3 = Callback3.getAddress();
 		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback4 = new Callback(safaryClass, "browserProc", 4);
+		Callback4 = new Callback(safariClass, "browserProc", 4); //$NON-NLS-1$
 		int proc4 = Callback4.getAddress();
 		if (proc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback5 = new Callback(safaryClass, "browserProc", 5);
+		Callback5 = new Callback(safariClass, "browserProc", 5); //$NON-NLS-1$
 		int proc5 = Callback5.getAddress();
 		if (proc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback6 = new Callback(safaryClass, "browserProc", 6);
+		Callback6 = new Callback(safariClass, "browserProc", 6); //$NON-NLS-1$
 		int proc6 = Callback6.getAddress();
 		if (proc6 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback7 = new Callback(safaryClass, "browserProc", 7);
+		Callback7 = new Callback(safariClass, "browserProc", 7); //$NON-NLS-1$
 		int proc7 = Callback7.getAddress();
 		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		
+		int setFrameProc = OS.webView_setFrame_CALLBACK(proc4);
+		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 		int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-		OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
-		OS.class_addMethod(cls, OS.sel_webView_1didChangeLocationWithinPageForFrame_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1, proc5, "@:@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1didFinishLoadForFrame_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1didReceiveTitle_1forFrame_1, proc5, "@:@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1didStartProvisionalLoadForFrame_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1didCommitLoadForFrame_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1resource_1didFinishLoadingFromDataSource_1, proc5, "@:@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1resource_1didFailLoadingWithError_1fromDataSource_1, proc6, "@:@@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1identifierForInitialRequest_1fromDataSource_1, proc5, "@:@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1resource_1willSendRequest_1redirectResponse_1fromDataSource_1, proc7, "@:@@@@@");
-		OS.class_addMethod(cls, OS.sel_handleNotification_1, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_webView_1createWebViewWithRequest_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webViewShow_1, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_webView_1setFrame_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webViewClose_1, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_webView_1contextMenuItemsForElement_1defaultMenuItems_1, proc5, "@:@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1setStatusBarVisible_1, proc4, "@:@B");
-		OS.class_addMethod(cls, OS.sel_webView_1setResizable_1, proc4, "@:@B");
-		OS.class_addMethod(cls, OS.sel_webView_1setToolbarsVisible_1, proc4, "@:@B");
-		OS.class_addMethod(cls, OS.sel_webView_1setStatusText_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webViewFocus_1, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_webViewUnfocus_1, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptAlertPanelWithMessage_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptConfirmPanelWithMessage_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1runOpenPanelForFileButtonWithResultListener_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1mouseDidMoveOverElement_1modifierFlags_1, proc5, "@:@@I");
-		OS.class_addMethod(cls, OS.sel_webView_1printFrameView_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1, proc7, "@:@@@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNavigationAction_1request_1frame_1decisionListener_1, proc7, "@:@@@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1, proc7, "@:@@@@@");
-		OS.class_addMethod(cls, OS.sel_webView_1unableToImplementPolicyWithError_1frame_1, proc5, "@:@@@");
-		OS.class_addMethod(cls, OS.sel_download_1decideDestinationWithSuggestedFilename_1, proc4, "@:@@");
-		OS.class_addMethod(cls, OS.sel_handleEvent_1, proc3, "@:@");
+		OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1didChangeLocationWithinPageForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1didFinishLoadForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1didReceiveTitle_1forFrame_1, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1didStartProvisionalLoadForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1didCommitLoadForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1resource_1didFinishLoadingFromDataSource_1, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1resource_1didFailLoadingWithError_1fromDataSource_1, proc6, "@:@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1identifierForInitialRequest_1fromDataSource_1, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1resource_1willSendRequest_1redirectResponse_1fromDataSource_1, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_handleNotification_1, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1createWebViewWithRequest_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewShow_1, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewClose_1, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1contextMenuItemsForElement_1defaultMenuItems_1, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1setStatusBarVisible_1, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1setResizable_1, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1setToolbarsVisible_1, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1setStatusText_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewFocus_1, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewUnfocus_1, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptAlertPanelWithMessage_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptConfirmPanelWithMessage_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1runOpenPanelForFileButtonWithResultListener_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1mouseDidMoveOverElement_1modifierFlags_1, proc5, "@:@@I"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1printFrameView_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNavigationAction_1request_1frame_1decisionListener_1, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1unableToImplementPolicyWithError_1frame_1, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_download_1decideDestinationWithSuggestedFilename_1, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_handleEvent_1, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_1setFrame_1, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
 		OS.objc_registerClassPair(cls);
 	}
 
@@ -146,7 +147,7 @@ public void create (Composite parent, int style) {
 	this.delegate = delegate;
 	this.webView = webView;
 	browser.view.addSubview_(webView);
-	
+
 	final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
 	Listener listener = new Listener() {
@@ -164,7 +165,7 @@ public void create (Composite parent, int style) {
 					ignoreDispose = true;
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
-					
+
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
 
 					Safari.this.webView.setFrameLoadDelegate(null);
@@ -173,7 +174,7 @@ public void create (Composite parent, int style) {
 					Safari.this.webView.setPolicyDelegate(null);
 					Safari.this.webView.setDownloadDelegate(null);
 					notificationCenter.removeObserver(delegate);
-					
+
 					Safari.this.webView.release();
 					Safari.this.webView = null;
 					Safari.this.delegate.release();
@@ -189,7 +190,7 @@ public void create (Composite parent, int style) {
 	/* Needed to be able to tab into the browser */
 	browser.addListener(SWT.KeyDown, listener);
 	browser.addListener(SWT.FocusIn, listener);
-				
+
 	webView.setFrameLoadDelegate(delegate);
 	webView.setResourceLoadDelegate(delegate);
 	webView.setUIDelegate(delegate);	
@@ -630,7 +631,7 @@ void webView_didCommitLoadForFrame(int sender, int frameID) {
 		/* reset resource status variables */
 		resourceCount = 0;		
 		this.url = url2;
-		
+
 		final ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;
 		progress.widget = browser;
@@ -656,7 +657,7 @@ void webView_didCommitLoadForFrame(int sender, int frameID) {
 				}
 			);
 		}
-		
+
 		StatusTextEvent statusText = new StatusTextEvent(browser);
 		statusText.display = display;
 		statusText.widget = browser;
@@ -761,6 +762,7 @@ void handleNotification(int notification) {
 }
 
 /* UIDelegate */
+
 int webView_createWebViewWithRequest(int sender, int request) {
 	WindowEvent newEvent = new WindowEvent(browser);
 	newEvent.display = browser.getDisplay();
@@ -771,17 +773,19 @@ int webView_createWebViewWithRequest(int sender, int request) {
 			openWindowListeners[i].open(newEvent);
 		}
 	}
+	WebView result = null;
 	Browser browser = null;
 	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof Safari) {
 		browser = newEvent.browser;
 	}
-	if (browser != null && !browser.isDisposed()) {		
+	if (browser != null && !browser.isDisposed()) {
+		result = ((Safari)browser.webBrowser).webView;
 		if (request != 0) {
 			WebFrame mainFrame = webView.mainFrame();
 			mainFrame.loadRequest(new NSURLRequest(request));
 		}
 	}
-	return webView.id;
+	return result != null ? result.id : 0;
 }
 
 void webViewShow(int sender) {
@@ -825,12 +829,12 @@ void webViewShow(int sender) {
 }
 
 void webView_setFrame(int sender, int frame) {
-	float[] dest = new float[4];
-	OS.memmove(dest, frame, 16);
+	NSRect rect = new NSRect();
+	OS.memmove(rect, frame, NSRect.sizeof);
 	/* convert to SWT system coordinates */
 	Rectangle bounds = browser.getDisplay().getBounds();
-	location = new Point((int)dest[0], bounds.height - (int)dest[1] - (int)dest[3]);
-	size = new Point((int)dest[2], (int)dest[3]);
+	location = new Point((int)rect.x, bounds.height - (int)rect.y - (int)rect.height);
+	size = new Point((int)rect.width, (int)rect.height);
 }
 
 void webViewFocus(int sender) {

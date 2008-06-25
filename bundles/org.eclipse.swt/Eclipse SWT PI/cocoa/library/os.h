@@ -15,6 +15,7 @@
 /*#define NDEBUG*/
 
 #include <Cocoa/Cocoa.h>
+#include <WebKit/WebView.h>
 #import <objc/objc-runtime.h>
 
 #include "os_custom.h"
