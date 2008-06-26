@@ -151,7 +151,7 @@ class Mozilla extends WebBrowser {
 
 public void create (Composite parent, int style) {
 	delegate = new MozillaDelegate (browser);
-	Display display = parent.getDisplay ();
+	final Display display = parent.getDisplay ();
 
 	int /*long*/[] result = new int /*long*/[1];
 	if (!Initialized) {
@@ -974,7 +974,17 @@ public void create (Composite parent, int style) {
 				serviceManager.Release ();
 
 				if (XPCOMWasGlued) {
-					XPCOM.XPCOMGlueShutdown ();
+					/*
+					* XULRunner 1.9 can crash on Windows if XPCOMGlueShutdown is invoked here,
+					* presumably because one or more of its unloaded symbols are referenced when
+					* this callback returns.  The workaround is to delay invoking XPCOMGlueShutdown
+					* so that its symbols are still available once this callback returns.
+					*/
+					display.asyncExec (new Runnable () {
+						public void run () {
+							XPCOM.XPCOMGlueShutdown ();
+						}
+					});
 					XPCOMWasGlued = false;
 				}
 				if (XPCOMInitWasGlued) {
