@@ -110,6 +110,10 @@ public boolean forward() {
 	return OS.WebBrowser_GoForward(webBrowser);
 }
 
+public String getBrowserType () {
+	return "ie"; //$NON-NLS-1$
+}
+
 public String getText () {
 	// TODO
 	return ""; //$NON-NLS-1$

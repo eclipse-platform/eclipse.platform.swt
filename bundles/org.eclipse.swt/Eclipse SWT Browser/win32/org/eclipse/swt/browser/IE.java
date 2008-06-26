@@ -758,6 +758,10 @@ public boolean forward() {
 	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
 }
 
+public String getBrowserType () {
+	return "ie"; //$NON-NLS-1$
+}
+
 public String getText() {
 	/* get the document object */
 	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$

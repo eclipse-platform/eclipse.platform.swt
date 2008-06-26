@@ -224,6 +224,8 @@ public abstract boolean execute (String script);
 
 public abstract boolean forward ();
 
+public abstract String getBrowserType ();
+
 public abstract String getText ();
 
 public abstract String getUrl ();

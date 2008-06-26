@@ -360,6 +360,10 @@ public boolean forward() {
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goForward) != 0;
 }
 
+public String getBrowserType () {
+	return "safari"; //$NON-NLS-1$
+}
+
 public String getText() {
 	int mainFrame = Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
 	int dataSource = Cocoa.objc_msgSend(mainFrame, Cocoa.S_dataSource);

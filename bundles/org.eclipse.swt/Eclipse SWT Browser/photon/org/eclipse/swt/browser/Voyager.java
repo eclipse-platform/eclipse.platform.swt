@@ -165,6 +165,10 @@ public boolean forward() {
 	return true;
 }
 
+public String getBrowserType () {
+	return "voyager"; //$NON-NLS-1$
+}
+
 public String getText () {
 	// TODO
 	return ""; //$NON-NLS-1$

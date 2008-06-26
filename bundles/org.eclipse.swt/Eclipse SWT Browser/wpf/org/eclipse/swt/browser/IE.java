@@ -113,6 +113,10 @@ public boolean forward() {
 	return true;
 }
 
+public String getBrowserType () {
+	return "ie"; //$NON-NLS-1$
+}
+
 public String getUrl() {
 	int uri = OS.Frame_Source(frame);
 	int str = OS.Object_ToString(uri);

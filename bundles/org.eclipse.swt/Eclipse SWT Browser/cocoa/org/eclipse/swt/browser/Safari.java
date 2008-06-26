@@ -326,6 +326,10 @@ public boolean forward() {
 	return webView.goForward();
 }
 
+public String getBrowserType () {
+	return "safari"; //$NON-NLS-1$
+}
+
 public String getText() {
 	WebFrame mainFrame = webView.mainFrame();
 	WebDataSource dataSource = mainFrame.dataSource();

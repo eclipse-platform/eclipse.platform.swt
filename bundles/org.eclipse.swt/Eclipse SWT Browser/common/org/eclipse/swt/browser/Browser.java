@@ -422,6 +422,19 @@ public boolean forward () {
 	return webBrowser.forward ();
 }
 
+/**
+ * Returns the type of native browser being used by this instance.
+ * Examples: "mozilla", "ie", "safari", "voyager"
+ *
+ * @return the type of the native browser
+ * 
+ * @since 3.5
+ */
+public String getBrowserType () {
+	checkWidget();
+	return webBrowser.getBrowserType ();
+}
+
 public int getStyle () {
 	/*
 	* If SWT.BORDER was specified at creation time then getStyle() should answer

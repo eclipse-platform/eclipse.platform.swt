@@ -1449,6 +1449,10 @@ public boolean forward () {
 	return rc == XPCOM.NS_OK;
 }
 
+public String getBrowserType () {
+	return "mozilla"; //$NON-NLS-1$
+}
+
 public String getText () {
 	if (awaitingNavigate) return ""; //$NON-NLS-1$
 
