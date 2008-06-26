@@ -1522,7 +1522,16 @@ void handleEvent(int evt) {
 			keyEvent.type = SWT.KeyUp;
 		}
 		keyEvent.keyCode = translateKey(keyCode);
-		keyEvent.character = (char)charCode;
+		/*
+		* Safari maps the Delete key's character to 0xf728.  Detect
+		* this key and set its character to SWT.DEL so that the
+		* Browser's key events are consistent with other controls.
+		*/
+		if (keyEvent.keyCode == SWT.DEL) {
+			keyEvent.character = SWT.DEL;
+		} else {
+			keyEvent.character = (char)charCode;
+		}
 		keyEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		browser.notifyListeners(keyEvent.type, keyEvent);
 		if (browser.isDisposed()) {

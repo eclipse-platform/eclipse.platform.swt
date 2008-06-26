@@ -985,6 +985,17 @@ void handleDOMEvent (OleEvent e) {
 		keyEvent.keyCode = lastKeyCode;
 		keyEvent.stateMask = mask;
 		keyEvent.stateMask &= ~lastKeyCode;		/* remove current keydown if it's a state key */
+		/*
+		* keypress events are not received for Enter, Delete and Tab, so
+		* KeyDown events are sent for them here.  Set the KeyDown event's
+		* character field and IE's lastCharCode field for these keys so
+		* that the Browser's key events are consistent with other controls.
+		*/
+		switch (lastKeyCode) {
+			case SWT.CR: lastCharCode = keyEvent.character = SWT.CR; break;
+			case SWT.DEL: lastCharCode = keyEvent.character = SWT.DEL; break;
+			case SWT.TAB: lastCharCode = keyEvent.character = SWT.TAB; break;
+		}
 		browser.notifyListeners (keyEvent.type, keyEvent);
 		if (!keyEvent.doit) {
 			rgdispid = event.getIDsOfNames(new String[] { PROPERTY_RETURNVALUE });
