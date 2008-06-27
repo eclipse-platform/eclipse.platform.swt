@@ -9912,7 +9912,7 @@ public static final native int NSDefaultRunLoopMode();
 //public static final native int NSDistinctUnionOfArraysKeyValueOperator();
 //public static final native int NSDistinctUnionOfObjectsKeyValueOperator();
 //public static final native int NSDistinctUnionOfSetsKeyValueOperator();
-//public static final native int NSErrorFailingURLStringKey();
+public static final native int NSErrorFailingURLStringKey();
 //public static final native int NSFailedAuthenticationException();
 //public static final native int NSFileAppendOnly();
 //public static final native int NSFileBusy();

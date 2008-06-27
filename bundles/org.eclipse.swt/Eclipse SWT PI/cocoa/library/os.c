@@ -384,6 +384,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSDeviceResolution)
 }
 #endif
 
+#ifndef NO_NSErrorFailingURLStringKey
+JNIEXPORT jint JNICALL OS_NATIVE(NSErrorFailingURLStringKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSErrorFailingURLStringKey_FUNC);
+	rc = (jint)NSErrorFailingURLStringKey;
+	OS_NATIVE_EXIT(env, that, NSErrorFailingURLStringKey_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSFileTypeForHFSTypeCode
 JNIEXPORT jint JNICALL OS_NATIVE(NSFileTypeForHFSTypeCode)
 	(JNIEnv *env, jclass that, jint arg0)

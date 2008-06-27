@@ -12,7 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
@@ -467,6 +467,34 @@ void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int
 		* event) or failed (didFailProvisionalLoadWithError).
 		*/
 		identifier = 0;
+	}
+
+	NSError nserror = new NSError(error);
+	int errorCode = nserror.code();
+	if (errorCode <= OS.NSURLErrorBadURL) {
+		NSString description = nserror.localizedDescription();
+		if (description != null) {
+			char[] buffer = new char[description.length()];
+			description.getCharacters_(buffer);
+			String descriptionString = new String(buffer);
+			String urlString = null;
+			NSDictionary info = nserror.userInfo();
+			if (info != null) {
+				NSString key = new NSString(OS.NSErrorFailingURLStringKey());
+				id id = info.valueForKey(key);
+				if (id != null) {
+					NSString url = new NSString(id.id);
+					buffer = new char[url.length()];
+					url.getCharacters_(buffer);
+					urlString = new String(buffer);
+				}
+			}
+			String message = urlString != null ? urlString + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+			message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {descriptionString}); //$NON-NLS-1$
+			MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_ERROR);
+			messageBox.setMessage(message);
+			messageBox.open();
+		}
 	}
 }
 

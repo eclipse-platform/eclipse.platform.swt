@@ -46,6 +46,7 @@ typedef enum {
 	NSDefaultRunLoopMode_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
 	NSDeviceResolution_FUNC,
+	NSErrorFailingURLStringKey_FUNC,
 	NSFileTypeForHFSTypeCode_FUNC,
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
