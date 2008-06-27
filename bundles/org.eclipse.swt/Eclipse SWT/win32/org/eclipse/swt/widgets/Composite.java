@@ -886,7 +886,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 		defer = false;
 	}
 	if (!defer && (state & CANVAS) != 0) {
-		state &= ~RESIZE_OCCURRED | MOVE_OCCURRED;
+		state &= ~(RESIZE_OCCURRED | MOVE_OCCURRED);
 		state |= RESIZE_DEFERRED | MOVE_DEFERRED;
 	}
 	super.setBounds (x, y, width, height, flags, defer);
