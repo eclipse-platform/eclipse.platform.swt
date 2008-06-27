@@ -1470,10 +1470,18 @@ public void setImeInputMode (int mode) {
 
 void setInitialBounds () {
 	if ((state & FOREIGN_HANDLE) != 0) return;
-	Monitor monitor = getMonitor ();
-	Rectangle rect = monitor.getClientArea ();
-	int width = rect.width * 5 / 8;
-	int height = rect.height * 5 / 8;
+	int width = OS.gdk_screen_width () * 5 / 8;
+	int height = OS.gdk_screen_height () * 5 / 8;
+	int /*long*/ screen = OS.gdk_screen_get_default ();
+	if (screen != 0) {
+		if (OS.gdk_screen_get_n_monitors (screen) > 1) {
+			int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
+			GdkRectangle dest = new GdkRectangle ();
+			OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+			width = dest.width * 5 / 8;
+			height = dest.height * 5 / 8;
+		}
+	}
 	if ((style & SWT.RESIZE) != 0) {
 		OS.gtk_window_resize (shellHandle, width, height);
 	}
