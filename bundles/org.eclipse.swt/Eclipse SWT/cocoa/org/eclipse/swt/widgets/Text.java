@@ -330,7 +330,7 @@ public void copy () {
 	if ((style & SWT.SINGLE) != 0) {
 		
 	} else {
-		((NSTextView)view).copy();
+		((NSText)view).copy(view);
 	}
 }
 
