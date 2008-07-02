@@ -232,7 +232,7 @@ void checkGC (int mask) {
 			NSRect rect = data.windowRect;
 			transform.translateXBy(rect.x, rect.y + rect.height);
 			transform.scaleXBy(1, -1);
-			transform.set();
+			transform.concat();
 			NSBezierPath.bezierPathWithRect(data.visibleRect).addClip();
 		}
 		if (data.clipPath != null) data.clipPath.addClip();
@@ -883,7 +883,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	transform.concat();
  	NSRect srcRect = new NSRect();
  	srcRect.x = srcX;
- 	srcRect.y = srcY;
+ 	srcRect.y = imgHeight - (srcY + srcHeight);
  	srcRect.width = srcWidth;
  	srcRect.height = srcHeight;
  	NSRect destRect = new NSRect();
@@ -892,8 +892,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	destRect.width = destWidth;
  	destRect.height = destHeight;
  	imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
+ 	handle.restoreGraphicsState();
 	uncheckGC();
-	handle.restoreGraphicsState();
 }
 
 /** 
