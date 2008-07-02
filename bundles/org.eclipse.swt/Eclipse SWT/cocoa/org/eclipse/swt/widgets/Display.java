@@ -104,6 +104,8 @@ public class Display extends Device {
 	Synchronizer synchronizer;
 	Thread thread;
 	boolean allowTimers, runAsyncMessages;
+
+	NSGraphicsContext[] contexts;
 	
 	int lastModifiers;
 
@@ -294,6 +296,20 @@ static int untranslateKey (int key) {
 		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
 	}
 	return 0;
+}
+
+void addContext (NSGraphicsContext context) {
+	if (contexts == null) contexts = new NSGraphicsContext [12];
+	for (int i=0; i<contexts.length; i++) {
+		if (contexts[i] != null && contexts [i].id == context.id) {
+			contexts [i] = context;
+			return;
+		}
+	}
+	NSGraphicsContext [] newContexts = new NSGraphicsContext [contexts.length + 12];
+	newContexts [contexts.length] = context;
+	System.arraycopy (contexts, 0, newContexts, 0, contexts.length);
+	contexts = newContexts;
 }
 
 /**
@@ -2407,6 +2423,7 @@ public boolean readAndDispatch () {
 	try {
 		boolean events = false;
 		events |= runTimers ();
+		events |= runContexts ();
 		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
 		if (event != null) {
 			events = true;
@@ -2546,6 +2563,21 @@ void releaseDisplay () {
 	applicationCallback6 = null;
 }
 
+void removeContext (NSGraphicsContext context) {
+	if (contexts == null) return;
+	int count = 0;
+	for (int i = 0; i < contexts.length; i++) {
+		if (contexts[i] != null) {
+			if (contexts [i].id == context.id) {
+				contexts[i] = null;
+			} else {
+				count++;
+			}
+		}
+	}
+	if (count == 0) contexts = null;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when an event of the given type occurs anywhere in
@@ -2638,6 +2670,15 @@ void removeMenu (Menu menu) {
 
 boolean runAsyncMessages (boolean all) {
 	return synchronizer.runAsyncMessages (all);
+}
+
+boolean runContexts () {
+	if (contexts != null) {
+		for (int i = 0; i < contexts.length; i++) {
+			if (contexts[i] != null) contexts[i].flushGraphics();
+		}
+	}
+	return false;
 }
 
 boolean runDeferredEvents () {

@@ -56,4 +56,6 @@ public final class GCData {
 	public NSBezierPath clipPath;
 	public NSView view;
 	public NSSize size;
+	public NSRect windowRect, visibleRect;
+	public Thread thread;
 }

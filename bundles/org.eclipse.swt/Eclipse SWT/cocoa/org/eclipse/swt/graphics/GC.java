@@ -209,9 +209,32 @@ public static GC carbon_new(int context, GCData data) {
 }
 
 void checkGC (int mask) {
+	NSGraphicsContext.setCurrentContext(handle);		
+	NSView view = data.view;
+	if (view != null && data.paintRect == null) {
+		NSRect rect = view.convertRect_toView_(view.bounds(), null);
+		NSRect visibleRect = view.visibleRect();
+		if (data.windowRect == null || rect.x != data.windowRect.x || rect.y != data.windowRect.y ||
+			rect.width != data.windowRect.width || rect.height != data.windowRect.height ||
+			visibleRect.x != data.visibleRect.x || visibleRect.y != data.visibleRect.y ||
+			visibleRect.width != data.visibleRect.width || visibleRect.height != data.visibleRect.height)
+		{
+			data.state &= ~CLIPPING;
+			data.windowRect = rect;
+			data.visibleRect = visibleRect;
+		}
+	}
 	if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0) {
 		handle.restoreGraphicsState();
 		handle.saveGraphicsState();
+		if (view != null && data.paintRect == null) {
+			NSAffineTransform transform = NSAffineTransform.transform();
+			NSRect rect = data.windowRect;
+			transform.translateXBy(rect.x, rect.y + rect.height);
+			transform.scaleXBy(1, -1);
+			transform.set();
+			NSBezierPath.bezierPathWithRect(data.visibleRect).addClip();
+		}
 		if (data.clipPath != null) data.clipPath.addClip();
 		if (data.transform != null) data.transform.concat();
 		mask &= ~(TRANSFORM | CLIPPING);
@@ -706,9 +729,6 @@ void destroy() {
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -718,6 +738,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
+	checkGC(DRAW);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
 	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
@@ -732,7 +753,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	path.stroke();
 	path.removeAllPoints();
 	handle.restoreGraphicsState();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -754,8 +775,6 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(CLIPPING | TRANSFORM);
 //	int[] metric = new int[1];
 //	OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
@@ -765,8 +784,7 @@ public void drawFocus(int x, int y, int width, int height) {
 //	rect.width = width - metric[0] * 2;
 //	rect.height = height - metric[0] * 2;
 //	OS.HIThemeDrawFocusRect(rect, true, handle, OS.kHIThemeOrientationNormal);
-//	flush();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /**
@@ -839,9 +857,6 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(CLIPPING | TRANSFORM);
 	NSImage imageHandle = srcImage.handle;
 	NSSize size = imageHandle.size();
  	int imgWidth = (int)size.width;
@@ -854,16 +869,13 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  			srcWidth == destWidth && destWidth == imgWidth &&
  			srcHeight == destHeight && destHeight == imgHeight;
 		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
-			NSGraphicsContext.setCurrentContext(context);
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
  	}
- 	if (srcImage.memGC != null) srcImage.createAlpha();
- 	handle.saveGraphicsState();
- 	NSAffineTransform transform = NSAffineTransform.transform();
- 	transform.scaleXBy(1, -1);
- 	transform.translateXBy(0, -(destHeight + 2 * destY));
- 	transform.concat();
+	checkGC(CLIPPING | TRANSFORM);
+ 	if (srcImage.memGC != null) {
+ 		srcImage.createAlpha();
+ 	}
  	NSRect srcRect = new NSRect();
  	srcRect.x = srcX;
  	srcRect.y = srcY;
@@ -875,8 +887,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	destRect.width = destWidth;
  	destRect.height = destHeight;
  	imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
-	handle.restoreGraphicsState();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -894,8 +905,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(DRAW);
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
@@ -907,7 +916,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 	path.lineToPoint(pt);
 	path.stroke();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -933,8 +942,6 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  */
 public void drawOval(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
@@ -953,7 +960,7 @@ public void drawOval(int x, int y, int width, int height) {
 	path.appendBezierPathWithOvalInRect(rect);
 	path.stroke();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -983,8 +990,6 @@ public void drawPath(Path path) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(DRAW);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
@@ -995,7 +1000,7 @@ public void drawPath(Path path) {
 	drawPath.stroke();
 	drawPath.removeAllPoints();
 	handle.restoreGraphicsState();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1017,8 +1022,6 @@ public void drawPath(Path path) {
  */
 public void drawPoint(int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(FOREGROUND_FILL);
 	NSRect rect = new NSRect();
 	rect.x = x;
@@ -1029,7 +1032,7 @@ public void drawPoint(int x, int y) {
 	path.appendBezierPathWithRect(rect);
 	path.fill();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1052,10 +1055,8 @@ public void drawPoint(int x, int y) {
 public void drawPolygon(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(DRAW);
 	if (pointArray.length < 4) return;
+	checkGC(DRAW);
 	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
@@ -1071,7 +1072,7 @@ public void drawPolygon(int[] pointArray) {
 	path.closePath();
 	path.stroke();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1094,10 +1095,8 @@ public void drawPolygon(int[] pointArray) {
 public void drawPolyline(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(DRAW);
 	if (pointArray.length < 4) return;
+	checkGC(DRAW);
 	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
@@ -1112,7 +1111,7 @@ public void drawPolyline(int[] pointArray) {
 	}
 	path.stroke();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1132,8 +1131,6 @@ public void drawPolyline(int[] pointArray) {
  */
 public void drawRectangle(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
@@ -1152,7 +1149,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 	path.appendBezierPathWithRect(rect);
 	path.stroke();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1200,14 +1197,11 @@ public void drawRectangle(Rectangle rect) {
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(DRAW);
 	if (arcWidth == 0 || arcHeight == 0) {
 		drawRectangle(x, y, width, height);
-		NSGraphicsContext.setCurrentContext(context);
     	return;
 	}
+	checkGC(DRAW);
 	NSBezierPath path = data.path;
 	NSRect rect = new NSRect();
 	rect.x = x + data.drawXOffset;
@@ -1217,7 +1211,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	path.appendBezierPathWithRoundedRect(rect, arcWidth, arcHeight);
 	path.stroke();
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1351,8 +1345,6 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
 	NSAttributedString str = createString(string, flags);
 	if (data.paintRect == null) {
@@ -1370,7 +1362,7 @@ public void drawText (String string, int x, int y, int flags) {
 	if (data.paintRect == null) {
 		handle.restoreGraphicsState();
 	}
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /**
@@ -1423,9 +1415,6 @@ public boolean equals(Object object) {
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1435,6 +1424,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
+	checkGC(FILL);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
 	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
@@ -1451,7 +1441,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	path.fill();
 	path.removeAllPoints();
 	handle.restoreGraphicsState();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /**
@@ -1476,10 +1466,8 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(CLIPPING | TRANSFORM);
 	if ((width == 0) || (height == 0)) return;
+	checkGC(CLIPPING | TRANSFORM);
 
 	RGB backgroundRGB, foregroundRGB;
 	backgroundRGB = getBackground().getRGB();
@@ -1515,7 +1503,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		gradient.drawInRect_angle_(rect, vertical ? 90 : 0);
 		gradient.release();
 	}
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1536,8 +1524,6 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  */
 public void fillOval(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
@@ -1561,15 +1547,14 @@ public void fillOval(int x, int y, int width, int height) {
 		path.fill();
 	}
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 void fillPattern(NSBezierPath path, Pattern pattern) {
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
+	handle.saveGraphicsState();
 	path.addClip();
 	pattern.gradient.drawFromPoint(pattern.pt1, pattern.pt2, OS.NSGradientDrawsAfterEndingLocation | OS.NSGradientDrawsBeforeStartingLocation);
-	NSGraphicsContext.setCurrentContext(context);
+	handle.restoreGraphicsState();
 }
 
 /** 
@@ -1599,8 +1584,6 @@ public void fillPath(Path path) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(FILL);
 	NSBezierPath drawPath = data.path;
 	drawPath.appendBezierPath(path.handle);
@@ -1611,7 +1594,7 @@ public void fillPath(Path path) {
 		drawPath.fill();
 	}
 	drawPath.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1636,10 +1619,8 @@ public void fillPath(Path path) {
 public void fillPolygon(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(FILL);
 	if (pointArray.length < 4) return;
+	checkGC(FILL);
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
 	pt.x = pointArray[0];
@@ -1659,7 +1640,7 @@ public void fillPolygon(int[] pointArray) {
 		path.fill();
 	}
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1679,8 +1660,6 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
 	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
@@ -1704,7 +1683,7 @@ public void fillRectangle(int x, int y, int width, int height) {
 		path.fill();
 	}
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 /** 
@@ -1747,13 +1726,11 @@ public void fillRectangle(Rectangle rect) {
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	NSGraphicsContext.setCurrentContext(handle);
-	checkGC(FILL);
 	if (arcWidth == 0 || arcHeight == 0) {
 		fillRectangle(x, y, width, height);
     	return;
 	}
+	checkGC(FILL);
 	NSBezierPath path = data.path;
 	NSRect rect = new NSRect();
 	rect.x = x;
@@ -1768,10 +1745,11 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		path.fill();
 	}
 	path.removeAllPoints();
-	NSGraphicsContext.setCurrentContext(context);
+	uncheckGC();
 }
 
 void flush () {
+	handle.flushGraphics();
 }
 
 /**
@@ -1934,7 +1912,7 @@ public Rectangle getClipping() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSRect rect = null;
 	if (data.view != null) {
-		rect = data.view.bounds();
+		rect = data.view.visibleRect();
 	} else {
 		rect = new NSRect();
 		if (data.image != null) {
@@ -1993,7 +1971,7 @@ public void getClipping(Region region) {
 	region.subtract(region);
 	NSRect rect = null;
 	if (data.view != null) {
-		rect = data.view.bounds();
+		rect = data.view.visibleRect();
 	} else {
 		rect = new NSRect();
 		if (data.image != null) {
@@ -3406,6 +3384,13 @@ public Point textExtent(String string, int flags) {
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
 	return "GC {" + handle + "}";
+}
+
+void uncheckGC() {
+	NSView view = data.view;
+	if (view != null && data.paintRect == null) {
+		if (data.thread != Thread.currentThread()) flush();
+	}
 }
 
 }

@@ -1351,7 +1351,9 @@ public int internal_new_GC (GCData data) {
 	if (data != null && data.paintRect != null) {
 		context = NSGraphicsContext.currentContext().id;
 	} else {
-		context = NSGraphicsContext.graphicsContextWithWindow(view.window()).id;
+		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (view.window ());
+		display.addContext (graphicsContext);
+		context = graphicsContext.id;
 	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1359,6 +1361,7 @@ public int internal_new_GC (GCData data) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
 		data.device = display;
+		data.thread = display.thread;
 		data.view = view;
 		data.foreground = getForegroundColor ().handle;
 		Control control = findBackgroundControl ();
@@ -1383,7 +1386,16 @@ public int internal_new_GC (GCData data) {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
-	checkWidget ();	
+	checkWidget ();
+	NSGraphicsContext graphicsContext = new NSGraphicsContext (context);
+	display.removeContext (graphicsContext);
+	if (data != null) {
+		if (data.paintRect != null) {
+			NSGraphicsContext.setCurrentContext (graphicsContext);
+		} else {
+			graphicsContext.flushGraphics ();
+		}
+	}
 }
 
 /**
@@ -3244,7 +3256,7 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	//TODO - not all
-//	OS.HIViewRender (handle);
+	view.displayIfNeeded ();
 }
 
 void updateBackgroundMode () {
