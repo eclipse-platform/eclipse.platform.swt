@@ -8281,7 +8281,7 @@ public void showSelection() {
 			endBounds = getBoundsAtOffset(endOffset);
 		}
 		// the character at endOffset is not part of the selection
-		endBounds.width = 0;
+		endBounds.width = endOffset == caretOffset ? getCaretWidth() : 0;
 		showLocation(endBounds, false);
 	} else {
 		// just show the end of the selection since the selection start 
