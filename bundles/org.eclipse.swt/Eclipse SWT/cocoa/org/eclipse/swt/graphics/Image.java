@@ -860,6 +860,12 @@ public int internal_new_GC (GCData data) {
 	}
 	handle.setCacheMode(OS.NSImageCacheNever);
 	NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
+	NSGraphicsContext.setCurrentContext(context);
+	NSAffineTransform transform = NSAffineTransform.transform();
+	NSSize size = handle.size();
+	transform.translateXBy(0, size.height);
+	transform.scaleXBy(1, -1);
+	transform.set();
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
