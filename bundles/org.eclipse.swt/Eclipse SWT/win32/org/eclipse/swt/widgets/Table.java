@@ -2411,7 +2411,8 @@ public TableItem [] getItems () {
 
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. Note that some platforms draw 
+ * grid lines while others may draw alternating row colors.
  * <p>
  * If one of the receiver's ancestors is not visible or some
  * other condition makes the receiver not visible, this method
