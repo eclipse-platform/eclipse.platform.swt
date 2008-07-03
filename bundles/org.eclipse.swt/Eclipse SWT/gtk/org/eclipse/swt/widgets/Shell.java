@@ -1988,7 +1988,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			int [] x = new int [1], y = new int [1];
 			int /*long*/ window = OS.gdk_window_at_pointer (x, y);
 			int /*long*/ [] user_data = new int /*long*/ [1];
-			OS.gdk_window_get_user_data (window, user_data);
+			if (window != 0) OS.gdk_window_get_user_data (window, user_data);
 			if (tipWidget == user_data [0]) {
 				eventPtr = OS.gdk_event_new (OS.GDK_MOTION_NOTIFY);
 				GdkEventMotion event = new GdkEventMotion ();
