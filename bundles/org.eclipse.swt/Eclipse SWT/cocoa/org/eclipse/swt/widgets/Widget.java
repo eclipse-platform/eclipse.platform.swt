@@ -979,11 +979,13 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			sendKeyEvent (type, event);
 		}
 		return true;
-	} else {
+	} else if (length == 1) {
 		Event event = new Event ();
 		if (!setKeyState (event, type, nsEvent)) return true;
 		return sendKeyEvent (type, event);
 	}
+	//TODO dead keys
+	return true;
 }
 
 boolean sendKeyEvent (int type, Event event) {
