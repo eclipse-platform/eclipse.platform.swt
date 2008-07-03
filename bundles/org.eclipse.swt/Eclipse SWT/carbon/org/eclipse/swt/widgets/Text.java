@@ -1103,7 +1103,7 @@ public int getTabs () {
 public String getText () {
 	checkWidget();
 	if (txnObject == 0) {
-		return new String (getEditText (0, -1));
+		return new String (getEditText ());
 	} else {
 		return getTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset);
 	}
@@ -1141,6 +1141,24 @@ public String getText (int start, int end) {
 	}
 }
 
+char [] getEditText () {
+	int [] ptr = new int [1];
+	int [] actualSize = new int [1];
+	int result = OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+	if (result != OS.noErr) return new char [0];
+	int length = OS.CFStringGetLength (ptr [0]);
+	CFRange range = new CFRange ();
+	range.length = length;
+	char [] buffer = new char [range.length];
+	if (hiddenText != null) {
+		hiddenText.getChars (0, range.length, buffer, 0);
+	} else {
+		OS.CFStringGetCharacters (ptr [0], range, buffer);
+	}
+	OS.CFRelease (ptr [0]);
+	return buffer;
+}
+
 char [] getEditText (int start, int end) {
 	int [] ptr = new int [1];
 	int [] actualSize = new int [1];
@@ -1152,12 +1170,7 @@ char [] getEditText (int start, int end) {
 	start = Math.max (0, start);
 	CFRange range = new CFRange ();
 	range.location = start;
-	if (end == -1) {
-		range.length = Math.max (0, length - start);
-	} else {
-		end = Math.min (Math.max (0, end), length - 1);
-		range.length = Math.max (0, end - start + 1);
-	}
+	range.length = Math.max (0, end - start + 1);
 	char [] buffer = new char [range.length];
 	if (hiddenText != null) {
 		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
@@ -1732,7 +1745,7 @@ boolean sendKeyEvent (int type, Event event) {
 	boolean result = newText == oldText;
 	if (newText != oldText || hiddenText != null) {
 		if (txnObject == 0) {
-			String text = new String (getEditText (0, -1));
+			String text = new String (getEditText ());
 			String leftText = text.substring (0, start);
 			String rightText = text.substring (end, text.length ());
 			setEditText (leftText + newText + rightText);
