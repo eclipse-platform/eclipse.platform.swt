@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.cocoa;
+package org.eclipse.swt.tools.internal;
 
 
 import java.io.BufferedOutputStream;
