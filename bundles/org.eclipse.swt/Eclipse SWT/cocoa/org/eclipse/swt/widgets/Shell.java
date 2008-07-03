@@ -1442,7 +1442,7 @@ void windowSendEvent(int id, int event) {
 	if (type == OS.NSFlagsChanged) {
 		Control eventTarget = display.getFocusControl();
 		if (eventTarget != null) {
-			eventTarget.flagsChanged(event);
+			if (eventTarget.flagsChanged(event)) return;
 		}
 	} else if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
 		Control eventTarget = display.getFocusControl();

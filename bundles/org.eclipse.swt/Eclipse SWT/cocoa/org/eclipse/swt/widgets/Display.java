@@ -106,8 +106,6 @@ public class Display extends Device {
 	boolean allowTimers, runAsyncMessages;
 
 	NSGraphicsContext[] contexts;
-	
-	int lastModifiers;
 
 	Caret currentCaret;
 	
@@ -155,75 +153,75 @@ public class Display extends Device {
 		{58,	SWT.ALT},
 		{56,	SWT.SHIFT},
 		{59,	SWT.CONTROL},
-		{55,	SWT.COMMAND},
+		{55,	SWT.COMMAND},		
+		{61,	SWT.ALT},
+		{62,	SWT.CONTROL},
+		{60,	SWT.SHIFT},
+		{54,	SWT.COMMAND},
 
 		/* Non-Numeric Keypad Keys */
-		{OS.NSUpArrowFunctionKey, SWT.ARROW_UP},
-		{OS.NSDownArrowFunctionKey, SWT.ARROW_DOWN},
-		{OS.NSLeftArrowFunctionKey, SWT.ARROW_LEFT},
-		{OS.NSRightArrowFunctionKey, SWT.ARROW_RIGHT},
-		{OS.NSPageUpFunctionKey, SWT.PAGE_UP},
-		{OS.NSPageDownFunctionKey, SWT.PAGE_DOWN},
-		{OS.NSHomeFunctionKey, SWT.HOME},
-		{OS.NSEndFunctionKey, SWT.END},
-		
+		{126, SWT.ARROW_UP},
+		{125, SWT.ARROW_DOWN},
+		{123, SWT.ARROW_LEFT},
+		{124, SWT.ARROW_RIGHT},
+		{116, SWT.PAGE_UP},
+		{121, SWT.PAGE_DOWN},
+		{115, SWT.HOME},
+		{119, SWT.END},
 //		{??,	SWT.INSERT},
 
 		/* Virtual and Ascii Keys */
-		{OS.NSDeleteCharacter, SWT.BS},
-//		{36,	SWT.CR},
-		{OS.NSDeleteFunctionKey, SWT.DEL},
-//		{53,	SWT.ESC},
-//		{76,	SWT.LF},
-//		{48,	SWT.TAB},	
+		{51,	SWT.BS},
+		{36,	SWT.CR},
+		{117, 	SWT.DEL},
+		{53,	SWT.ESC},
+		{76,	SWT.LF},
+		{48,	SWT.TAB},	
 		
 		/* Functions Keys */
-		{OS.NSF1FunctionKey, SWT.F1},
-		{OS.NSF2FunctionKey, SWT.F2},
-		{OS.NSF3FunctionKey, SWT.F3},
-		{OS.NSF4FunctionKey, SWT.F4},
-		{OS.NSF5FunctionKey, SWT.F5},
-		{OS.NSF6FunctionKey, SWT.F6},
-		{OS.NSF7FunctionKey, SWT.F7},
-		{OS.NSF8FunctionKey, SWT.F8},
-		{OS.NSF9FunctionKey, SWT.F9},
-		{OS.NSF10FunctionKey, SWT.F10},
-		{OS.NSF11FunctionKey, SWT.F11},
-		{OS.NSF12FunctionKey, SWT.F12},
-		{OS.NSF13FunctionKey, SWT.F13},
-		{OS.NSF14FunctionKey, SWT.F14},
-		{OS.NSF15FunctionKey, SWT.F15},
+		{122, SWT.F1},
+		{120, SWT.F2},
+		{99,	SWT.F3},
+		{118, SWT.F4},
+		{96,	SWT.F5},
+		{97,	SWT.F6},
+		{98,	SWT.F7},
+		{100, SWT.F8},
+		{101, SWT.F9},
+		{109, SWT.F10},
+		{103, SWT.F11},
+		{111, SWT.F12},
+		{105, SWT.F13},
+		{107, SWT.F14},
+		{113, SWT.F15},
 		
 		/* Numeric Keypad Keys */
-//		{67, SWT.KEYPAD_MULTIPLY},
-//		{69, SWT.KEYPAD_ADD},
-//		{76, SWT.KEYPAD_CR},
-//		{78, SWT.KEYPAD_SUBTRACT},
-//		{65, SWT.KEYPAD_DECIMAL},
-//		{75, SWT.KEYPAD_DIVIDE},
-//		{82, SWT.KEYPAD_0},
-//		{83, SWT.KEYPAD_1},
-//		{84, SWT.KEYPAD_2},
-//		{85, SWT.KEYPAD_3},
-//		{86, SWT.KEYPAD_4},
-//		{87, SWT.KEYPAD_5},
-//		{88, SWT.KEYPAD_6},
-//		{89, SWT.KEYPAD_7},
-//		{91, SWT.KEYPAD_8},
-//		{92, SWT.KEYPAD_9},
-//		{81, SWT.KEYPAD_EQUAL},
+		{67, SWT.KEYPAD_MULTIPLY},
+		{69, SWT.KEYPAD_ADD},
+		{76, SWT.KEYPAD_CR},
+		{78, SWT.KEYPAD_SUBTRACT},
+		{65, SWT.KEYPAD_DECIMAL},
+		{75, SWT.KEYPAD_DIVIDE},
+		{82, SWT.KEYPAD_0},
+		{83, SWT.KEYPAD_1},
+		{84, SWT.KEYPAD_2},
+		{85, SWT.KEYPAD_3},
+		{86, SWT.KEYPAD_4},
+		{87, SWT.KEYPAD_5},
+		{88, SWT.KEYPAD_6},
+		{89, SWT.KEYPAD_7},
+		{91, SWT.KEYPAD_8},
+		{92, SWT.KEYPAD_9},
+		{81, SWT.KEYPAD_EQUAL},
 
 		/* Other keys */
-//		{??,	SWT.CAPS_LOCK},
-		
-//		{71,	SWT.NUM_LOCK},
-		
+		{57,	SWT.CAPS_LOCK},
+		{71,	SWT.NUM_LOCK},
 //		{??,	SWT.SCROLL_LOCK},
 //		{??,	SWT.PAUSE},
 //		{??,	SWT.BREAK},
 //		{??,	SWT.PRINT_SCREEN},
-		
-		{OS.NSHelpFunctionKey, SWT.HELP},
+		{114, SWT.HELP},
 		
 	};
 

@@ -839,38 +839,6 @@ void fixFocus (Control focusControl) {
 //	OS.ClearKeyboardFocus (window);
 }
 
-void flagsChanged(int theEvent) {
-	Display display = this.display;
-	NSEvent nsEvent = new NSEvent(theEvent);
-	int modifiers = nsEvent.modifierFlags();
-	int lastModifiers = display.lastModifiers;
-//	int chord = OS.GetCurrentEventButtonState ();
-	int type = SWT.KeyUp;	
-	if ((modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSAlternateKeyMask) != 0 && (lastModifiers & OS.NSAlternateKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSShiftKeyMask) != 0 && (lastModifiers & OS.NSShiftKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSControlKeyMask) != 0 && (lastModifiers & OS.NSControlKeyMask) == 0) type = SWT.KeyDown;
-	if ((modifiers & OS.NSCommandKeyMask) != 0 && (lastModifiers & OS.NSCommandKeyMask) == 0) type = SWT.KeyDown;
-	if (type == SWT.KeyUp && (modifiers & OS.NSAlphaShiftKeyMask) == 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) != 0) {
-		Event event = new Event ();
-		event.keyCode = SWT.CAPS_LOCK;
-		setInputState(event, nsEvent, type);
-		sendKeyEvent (SWT.KeyDown, event);
-	}
-	Event event = new Event ();
-	event.keyCode = Display.translateKey(nsEvent.keyCode());
-	setInputState(event, nsEvent, type);
-	if (event.keyCode == 0 && event.character == 0) return;
-	sendKeyEvent (type, event);
-	if (type == SWT.KeyDown && (modifiers & OS.NSAlphaShiftKeyMask) != 0 && (lastModifiers & OS.NSAlphaShiftKeyMask) == 0) {
-		event = new Event ();
-		event.keyCode = SWT.CAPS_LOCK;
-//		setInputState (event, SWT.KeyUp, chord, modifiers);
-		sendKeyEvent (SWT.KeyUp, event);
-	}
-	display.lastModifiers = modifiers;
-}
-
 NSView focusView () {
 	return view;
 }
@@ -3065,7 +3033,7 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 			break;
 		}
 		case 48: /* Tab */ {
-			int modifiers = display.lastModifiers;
+			int modifiers = theEvent.modifierFlags ();
 			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
@@ -3081,10 +3049,9 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 		case 116: /* Page up */
 		case 121: /* Page down */ {
 			all = true;
-//			int [] modifiers = new int [1];
-//			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//			if ((modifiers [0] & OS.controlKey) == 0) return false;
-//			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+			int modifiers = theEvent.modifierFlags ();
+			if ((modifiers & OS.NSControlKeyMask) == 0) return false;
+			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
 		default:

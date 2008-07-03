@@ -626,7 +626,32 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-void flagsChanged(int event) {
+boolean flagsChanged (int theEvent) {
+	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
+	int mask = 0;
+	NSEvent nsEvent = new NSEvent (theEvent);
+	int modifiers = nsEvent.modifierFlags ();
+	int keyCode = Display.translateKey (nsEvent.keyCode ());
+	if (keyCode == 0) return true;
+	switch (keyCode) {
+		case SWT.ALT: mask = OS.NSAlternateKeyMask; break;
+		case SWT.CONTROL: mask = OS.NSControlKeyMask; break;
+		case SWT.COMMAND: mask = OS.NSCommandKeyMask; break;
+		case SWT.SHIFT: mask = OS.NSShiftKeyMask; break;
+		case SWT.CAPS_LOCK:
+			Event event = new Event();
+			event.keyCode = keyCode;
+			setInputState (event, nsEvent, SWT.KeyDown);
+			sendKeyEvent (SWT.KeyDown, event);
+			setInputState (event, nsEvent, SWT.KeyUp);
+			sendKeyEvent (SWT.KeyUp, event);
+			return true;
+	}
+	int type = (mask & modifiers) != 0 ? SWT.KeyDown : SWT.KeyUp;
+	Event event = new Event();
+	event.keyCode = keyCode;
+	setInputState (event, nsEvent, type);
+	return sendKeyEvent (type, event);
 }
 
 void keyDown (int id, int sel, int theEvent) {
@@ -942,35 +967,23 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-//TODO - missing modifier keys (see flagsChanged:)
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
-	int count = 0;
-	NSString keys = nsEvent.characters();
-	//TODO - check lowercase doesn't mangle char codes
-	NSString keyCodes = nsEvent.charactersIgnoringModifiers().lowercaseString();
-	char [] chars = new char [keys.length()];
-	for (int i=0; i<keys.length(); i++) {
+	NSString chars = nsEvent.characters ();
+	int length = chars.length();
+	if (length > 1) {
+		for (int i = 0; i < length; i++) {
+			Event event = new Event ();
+			event.character = (char) chars.characterAtIndex (i);
+			setInputState (event, nsEvent, type);
+			sendKeyEvent (type, event);
+		}
+		return true;
+	} else {
 		Event event = new Event ();
-		int keyCode = Display.translateKey (keys.characterAtIndex (i) & 0xFFFF);
-		if (keyCode != 0) {
-			event.keyCode = keyCode;
-		} else {
-			event.character = (char) keys.characterAtIndex (i);
-			//TODO - get unshifted values for Shift+1
-			event.keyCode = keyCodes.characterAtIndex (i);
-		}
-		setInputState (event, nsEvent, type);
-		if (!setKeyState(event, type, nsEvent)) return false;
-		if (sendKeyEvent (type, event)) {
-			chars [count++] = chars [i];
-		}
+		if (!setKeyState (event, type, nsEvent)) return true;
+		return sendKeyEvent (type, event);
 	}
-//	if (count == 0) return false;
-	if (count != keys.length () - 1) {
-//		OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
-	}
-	return count == keys.length ();
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -1156,102 +1169,54 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
 			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			if (event.keyCode == SWT.COMMAND) event.stateMask &= ~SWT.COMMAND;
 			break;
 		case SWT.KeyUp:
 			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
 			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			if (event.keyCode == SWT.COMMAND) event.stateMask |= SWT.COMMAND;
 			break;
 	}		
 	return true;
 }
 
 boolean setKeyState (Event event, int type, NSEvent nsEvent) {
-//	boolean isNull = false;
-//	int [] keyCode = new int [1];
-//	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-//	event.keyCode = Display.translateKey (keyCode [0]);
+	boolean isNull = false;
+	int keyCode = nsEvent.keyCode ();
+	event.keyCode = Display.translateKey (keyCode);
 	switch (event.keyCode) {
-//		case SWT.LF: {
-//			/*
-//			* Feature in the Macintosh.  When the numeric key pad
-//			* Enter key is pressed, it generates '\n'.  This is the
-//			* correct platform behavior but is not portable.  The
-//			* fix is to convert the '\n' into '\r'.
-//			*/
-//			event.keyCode = SWT.KEYPAD_CR;
-//			event.character = '\r';
-//			break;
-//		}
+		case SWT.LF: {
+			/*
+			* Feature in the Macintosh.  When the numeric key pad
+			* Enter key is pressed, it generates '\n'.  This is the
+			* correct platform behavior but is not portable.  The
+			* fix is to convert the '\n' into '\r'.
+			*/
+			event.keyCode = SWT.KEYPAD_CR;
+			event.character = '\r';
+			break;
+		}
 		case SWT.BS: event.character = '\b'; break;
-//		case SWT.CR: event.character = '\r'; break;
+		case SWT.CR: event.character = '\r'; break;
 		case SWT.DEL: event.character = 0x7F; break;
-//		case SWT.ESC: event.character = 0x1B; break;
-//		case SWT.TAB: event.character = '\t'; break;
-//		default: {
-//			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
-//				int [] length = new int [1];
-//				int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
-//				if (status == OS.noErr && length [0] != 0) {
-//					char [] chars = new char [1];
-//					OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
-//					event.character = chars [0];
-//				}
-//				/*
-//				* Bug in the Mactonish.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
-//				* fail to give 0x0 (^@ or ASCII NUL) and 0x1e (^^).  Other control character
-//				* key sequences such as ^A or even Ctrl+Shift+'-' (^_ or 0x1f) are correctly
-//				* translated to control characters.  Since it is not possible to know which
-//				* key combination gives '@' on an international keyboard, there is no way to
-//				* test for either character and convert it to a control character (Shift+'2'
-//				* gives '@' only on an English keyboard) to work around the problem.
-//				*
-//				* There is no fix at this time.
-//				*/
-//			}
-//			if (event.keyCode == 0) {
-//				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
-//				if (display.kchrPtr != kchrPtr) {
-//					display.kchrPtr = kchrPtr;
-//					display.kchrState [0] = 0;
-//				}
-//				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
-//				if (result <= 0x7f) {
-//					event.keyCode = result & 0x7f;
-//				} else {
-//					int [] encoding = new int [1];
-//					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
-//					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-//					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
-//						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
-//							encoding [0] = OS.kTextEncodingMacRoman;
-//						}
-//					}
-//					int [] encodingInfo = new int [1];
-//					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
-//					if (encodingInfo [0] != 0) {
-//						char [] chars = new char [1];
-//						int [] nchars = new int [1];
-//						byte [] buffer = new byte [2];
-//						buffer [0] = 1;
-//						buffer [1] = (byte) (result & 0xFF);
-//						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
-//						OS.DisposeTextToUnicodeInfo (encodingInfo);
-//						event.keyCode = chars [0];
-//					}
-//				}
-//			}
-//			break;
-//		}
+		case SWT.ESC: event.character = 0x1B; break;
+		case SWT.TAB: event.character = '\t'; break;
+		default:
+			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
+				NSString chars = nsEvent.characters ();
+				event.character = (char)chars.characterAtIndex (0);
+			}
+			if (event.keyCode == 0) {
+				//TODO this is wrong for shifted keys like ';', '1' and non-english keyboards
+				NSString chars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
+				event.keyCode = (char)chars.characterAtIndex(0);
+			}
 	}
-//	if (event.keyCode == 0 && event.character == 0) {
-//		if (!isNull) return false;
-//	}
-//	int [] chord = new int [1];
-//	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
-//	int [] modifiers = new int [1];
-//	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//	return setInputState (event, type, chord [0], modifiers [0]);
+	if (event.keyCode == 0 && event.character == 0) {
+		if (!isNull) return false;
+	}
+	setInputState (event, nsEvent, type);
 	return true;
 }
 
