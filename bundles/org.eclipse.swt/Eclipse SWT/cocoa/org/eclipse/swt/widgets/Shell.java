@@ -472,7 +472,7 @@ void createHandle () {
 		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {
-			styleMask = OS.NSTitledWindowMask;
+			if ((style & SWT.TITLE) != 0) styleMask |= OS.NSTitledWindowMask;
 			if ((style & SWT.CLOSE) != 0) styleMask |= OS.NSClosableWindowMask;
 			if ((style & SWT.MIN) != 0) styleMask |= OS.NSMiniaturizableWindowMask;
 			if ((style & SWT.MAX) != 0) styleMask |= OS.NSResizableWindowMask;
@@ -483,6 +483,9 @@ void createHandle () {
 		if (parent != null) screen = parent.getShell().window.screen();
 		if (screen == null) screen = primaryScreen;
 		window = window.initWithContentRect_styleMask_backing_defer_screen_(new NSRect(), styleMask, OS.NSBackingStoreBuffered, false, screen);
+		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+			window.setHasShadow (true);
+		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
 		float width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
