@@ -517,8 +517,15 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	//TODO - check empty selection case
-	return ((NSTableView)view).selectedRow();
+	NSTableView widget = (NSTableView)view;
+	if (widget.numberOfSelectedRows() == 0) {
+		return -1;
+	}
+	NSIndexSet selection = widget.selectedRowIndexes();
+	int count = selection.count();
+	int [] result = new int [count];
+	selection.getIndexes(result, count, 0);
+	return result [0];
 }
 
 /**
@@ -831,7 +838,7 @@ public void select (int index) {
 		indexes.initWithIndex(index);
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		widget.selectRowIndexes(indexes, true);
+		widget.selectRowIndexes(indexes, (style & SWT.MULTI) != 0);
 		ignoreSelect = false;
 	}
 }
@@ -875,7 +882,7 @@ public void select (int start, int end) {
 		indexes.initWithIndexesInRange(range);
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		widget.selectRowIndexes(indexes, true);
+		widget.selectRowIndexes(indexes, (style & SWT.MULTI) != 0);
 		ignoreSelect = false;
 	}
 }
@@ -919,7 +926,7 @@ public void select (int [] indices) {
 	if (count > 0) {
 		NSTableView widget = (NSTableView)view;
 		ignoreSelect = true;
-		widget.selectRowIndexes(indexes, true);
+		widget.selectRowIndexes(indexes, (style & SWT.MULTI) != 0);
 		ignoreSelect = false;
 	}
 }
