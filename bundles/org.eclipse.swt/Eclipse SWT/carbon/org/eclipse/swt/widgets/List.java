@@ -254,6 +254,9 @@ void createHandle () {
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserTableViewHiliteStyle (handle, OS.kDataBrowserTableViewFillHilite);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
+	if (OS.VERSION >= 0x1050) {
+		OS.DataBrowserChangeAttributes (handle, OS.kDataBrowserAttributeAutoHideScrollBars, 0);
+	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 	column.propertyDesc_propertyID = COLUMN_ID;

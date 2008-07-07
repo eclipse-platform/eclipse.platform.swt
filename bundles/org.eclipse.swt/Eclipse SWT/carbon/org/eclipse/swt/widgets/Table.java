@@ -519,6 +519,9 @@ void createHandle () {
 	if (OS.VERSION >= 0x1040) {
 		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricCellContentInset, false, 4);
 	}
+	if (OS.VERSION >= 0x1050) {
+		OS.DataBrowserChangeAttributes (handle, OS.kDataBrowserAttributeAutoHideScrollBars, 0);
+	}
 	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
 		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();

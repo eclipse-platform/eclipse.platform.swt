@@ -350,6 +350,7 @@ public class OS extends C {
 	public static final int kDataBrowserUserToggledContainer = 16;
 	public static final int kDataBrowserTextType = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kDataBrowserTableViewFillHilite = 1;
+	public static final int kDataBrowserAttributeAutoHideScrollBars = 1 << 3;
 	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
 	public static final int kDocumentWindowClass = 6;
 	public static final int kDragActionNothing = 0;
