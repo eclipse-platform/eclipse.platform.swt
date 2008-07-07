@@ -592,6 +592,11 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
 	((NSMenuItem)nsItem).setEnabled(enabled);
 }
 
