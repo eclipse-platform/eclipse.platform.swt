@@ -9743,7 +9743,7 @@ public static final native int NSParagraphStyleAttributeName();
 //public static final native int NSSplitViewWillResizeSubviewsNotification();
 public static final native int NSStrikethroughColorAttributeName();
 public static final native int NSStrikethroughStyleAttributeName();
-//public static final native int NSStringPboardType();
+public static final native int NSStringPboardType();
 //public static final native int NSStrokeColorAttributeName();
 //public static final native int NSStrokeWidthAttributeName();
 //public static final native int NSSubjectDocumentAttribute();

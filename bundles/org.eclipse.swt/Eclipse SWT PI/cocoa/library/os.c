@@ -480,6 +480,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughStyleAttributeName)
 }
 #endif
 
+#ifndef NO_NSStringPboardType
+JNIEXPORT jint JNICALL OS_NATIVE(NSStringPboardType)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSStringPboardType_FUNC);
+	rc = (jint)NSStringPboardType;
+	OS_NATIVE_EXIT(env, that, NSStringPboardType_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSUnderlineColorAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSUnderlineColorAttributeName)
 	(JNIEnv *env, jclass that)

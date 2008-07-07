@@ -55,6 +55,7 @@ typedef enum {
 	NSParagraphStyleAttributeName_FUNC,
 	NSStrikethroughColorAttributeName_FUNC,
 	NSStrikethroughStyleAttributeName_FUNC,
+	NSStringPboardType_FUNC,
 	NSUnderlineColorAttributeName_FUNC,
 	NSUnderlineStyleAttributeName_FUNC,
 	NewGlobalRef_FUNC,
@@ -354,4 +355,5 @@ typedef enum {
 	setFrameOrigin_1CALLBACK_FUNC,
 	setFrameSize_1CALLBACK_FUNC,
 	setFrame_1CALLBACK_FUNC,
+	webView_1setFrame_1CALLBACK_FUNC,
 } OS_FUNCS;

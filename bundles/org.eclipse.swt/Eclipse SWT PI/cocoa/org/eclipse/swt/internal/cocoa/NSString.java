@@ -629,9 +629,9 @@ public static id stringWithString(NSString string) {
 	return result != 0 ? new id(result) : null;
 }
 
-public static id stringWithUTF8String(int nullTerminatedCString) {
+public static NSString stringWithUTF8String(int nullTerminatedCString) {
 	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithUTF8String_1, nullTerminatedCString);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSString(result) : null;
 }
 
 public NSArray stringsByAppendingPaths(NSArray paths) {

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 329;
-int OS_nativeFunctionCallCount[329];
+int OS_nativeFunctionCount = 331;
+int OS_nativeFunctionCallCount[331];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -47,6 +47,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSParagraphStyleAttributeName",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
+	"NSStringPboardType",
 	"NSUnderlineColorAttributeName",
 	"NSUnderlineStyleAttributeName",
 	"NewGlobalRef",
@@ -346,6 +347,7 @@ char * OS_nativeFunctionNames[] = {
 	"setFrameOrigin_1CALLBACK",
 	"setFrameSize_1CALLBACK",
 	"setFrame_1CALLBACK",
+	"webView_1setFrame_1CALLBACK",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
