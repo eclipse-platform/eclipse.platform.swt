@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser example snippet: use javascript to listen for mousedown events in the DOM
+ * Browser example snippet: listen for DOM mousedown events with javascript
  *
  * This snippet works for all supported browser types (ie.- Browsers created with style
  * SWT.NONE).  For a Browser created with style SWT.MOZILLA the cleaner approach would
