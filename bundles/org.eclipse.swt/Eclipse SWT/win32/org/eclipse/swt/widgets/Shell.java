@@ -1770,7 +1770,7 @@ public void setVisible (boolean visible) {
 		}
 	}
 	
-	/* Make the splash screen appear in the task bar */
+	/* Make the foreign window parent appear in the task bar */
 	if (visible) {
 		if (parent != null && (parent.state & FOREIGN_HANDLE) != 0) {
 			int /*long*/ hwndParent = parent.handle;
