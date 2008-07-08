@@ -494,7 +494,7 @@ public void deselectAll () {
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
-	if (drop == isDropped () || !isVisible()) return;
+	if (drop == isDropped ()) return;
 	if (!drop) {
 		popup.setVisible (false);
 		if (!isDisposed () && isFocusControl()) {
@@ -502,7 +502,7 @@ void dropDown (boolean drop) {
 		}
 		return;
 	}
-
+	if (!isVisible()) return;
 	if (getShell() != popup.getParent ()) {
 		String[] items = list.getItems ();
 		int selectionIndex = list.getSelectionIndex ();
