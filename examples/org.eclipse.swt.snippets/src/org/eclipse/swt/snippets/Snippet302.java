@@ -40,6 +40,4 @@ public class Snippet302 {
 		}
 		display.dispose ();
 	}
-
-
 }
