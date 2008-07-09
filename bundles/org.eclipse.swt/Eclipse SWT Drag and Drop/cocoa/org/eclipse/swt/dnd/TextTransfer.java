@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
  
 /**
  * The class <code>TextTransfer</code> provides a platform specific mechanism 
@@ -30,10 +29,9 @@ import org.eclipse.swt.internal.carbon.OS;
 public class TextTransfer extends ByteArrayTransfer {
 
 	static TextTransfer _instance = new TextTransfer();
-	static final String TEXT = "TEXT"; //$NON-NLS-1$
-	static final String UTEXT = "utxt"; //$NON-NLS-1$
-	static final int TEXTID = OS.kScrapFlavorTypeText;
-	static final int UTEXTID = OS.kScrapFlavorTypeUnicode;
+	
+	static final String ID_NAME = getString(OS.NSStringPboardType);
+	static final int ID = registerType(ID_NAME);
 
 TextTransfer() {}
 
@@ -60,42 +58,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-	String string = (String)object;
-	char[] chars = new char[string.length()];
-	string.getChars (0, chars.length, chars, 0);
-	transferData.result = -1;
-	switch (transferData.type) {
-		case TEXTID: {
-			int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-			if (cfstring == 0) return;
-			byte[] buffer = null;
-			try {
-				CFRange range = new CFRange();
-				range.length = chars.length;
-				int encoding = OS.CFStringGetSystemEncoding();
-				int[] size = new int[1];
-				int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);
-				if (numChars == 0) return;
-				buffer = new byte[size[0]];
-				numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);
-				if (numChars == 0) return;
-			} finally {
-				OS.CFRelease(cfstring);
-			}
-			transferData.data = new byte[1][];
-			transferData.data[0] = buffer;
-			transferData.result = OS.noErr;
-			break;
-		}
-		case UTEXTID: {
-			byte[] buffer = new byte[chars.length * 2];
-			OS.memmove(buffer, chars, buffer.length);
-			transferData.data = new byte[1][];
-			transferData.data[0] = buffer;
-			transferData.result = OS.noErr;
-			break;
-		}
-	}
+	transferData.data = NSString.stringWith((String) object);
 }
 
 /**
@@ -109,40 +72,18 @@ public void javaToNative (Object object, TransferData transferData) {
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
-	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
-	byte[] buffer = transferData.data[0];
-	switch (transferData.type) {
-		case TEXTID: {
-			int encoding = OS.CFStringGetSystemEncoding();
-			int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
-			if (cfstring == 0) return null;
-			try {
-				int length = OS.CFStringGetLength(cfstring);
-				if (length == 0) return null;
-				char[] chars = new char[length];
-				CFRange range = new CFRange();
-				range.length = length;
-				OS.CFStringGetCharacters(cfstring, range, chars);
-				return new String(chars);
-			} finally {
-				OS.CFRelease(cfstring);
-			}
-		}
-		case UTEXTID: {
-			char[] chars = new char[(buffer.length + 1) / 2];
-			OS.memmove(chars, buffer, buffer.length);
-			return new String(chars);
-		}
-	}
-	return null;
+	NSString string = (NSString) transferData.data;
+	char[] chars = new char[string.length()];
+	string.getCharacters_(chars);
+	return new String(chars);
 }
 
 protected int[] getTypeIds() {
-	return new int[] {UTEXTID, TEXTID};
+	return new int[] {ID};
 }
 
 protected String[] getTypeNames() {
-	return new String[] {UTEXT, TEXT};
+	return new String[] {ID_NAME};
 }
 
 boolean checkText(Object object) {

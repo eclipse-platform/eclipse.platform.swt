@@ -29,9 +29,14 @@ public static id data() {
 	return result != 0 ? new id(result) : null;
 }
 
-public static id dataWithBytes(int bytes, int length) {
+public static NSData dataWithBytes(int bytes, int length) {
 	int result = OS.objc_msgSend(OS.class_NSData, OS.sel_dataWithBytes_1length_1, bytes, length);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSData(result) : null;
+}
+
+public static NSData dataWithBytes(byte[] bytes, int length) {
+	int result = OS.objc_msgSend(OS.class_NSData, OS.sel_dataWithBytes_1length_1, bytes, length);
+	return result != 0 ? new NSData(result) : null;
 }
 
 public static id static_dataWithBytesNoCopy_length_(int bytes, int length) {
@@ -80,6 +85,10 @@ public NSString description() {
 }
 
 public void getBytes_(int buffer) {
+	OS.objc_msgSend(this.id, OS.sel_getBytes_1, buffer);
+}
+
+public void getBytes_(byte[] buffer) {
 	OS.objc_msgSend(this.id, OS.sel_getBytes_1, buffer);
 }
 

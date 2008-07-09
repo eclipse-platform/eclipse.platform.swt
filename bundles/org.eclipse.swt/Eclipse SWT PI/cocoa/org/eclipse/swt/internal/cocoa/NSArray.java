@@ -58,9 +58,9 @@ public static id arrayWithContentsOfURL(NSURL url) {
 	return result != 0 ? new id(result) : null;
 }
 
-public static id arrayWithObject(id anObject) {
+public static NSArray arrayWithObject(id anObject) {
 	int result = OS.objc_msgSend(OS.class_NSArray, OS.sel_arrayWithObject_1, anObject != null ? anObject.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSArray(result) : null;
 }
 
 public static id static_arrayWithObjects_(id arrayWithObjects) {

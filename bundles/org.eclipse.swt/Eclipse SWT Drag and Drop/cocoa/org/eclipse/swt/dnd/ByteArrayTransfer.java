@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.cocoa.*;
+
  
 /**
  * The class <code>ByteArrayTransfer</code> provides a platform specific 
@@ -119,20 +121,20 @@ package org.eclipse.swt.dnd;
 public abstract class ByteArrayTransfer extends Transfer {
 
 public TransferData[] getSupportedTypes() {
-	int[] types = getTypeIds();
-	TransferData[] data = new TransferData[types.length];
-	for (int i = 0; i < types.length; i++) {
+	String[] registeredTypes = registeredTypes();
+	TransferData[] data = new TransferData[registeredTypes.length];
+	for (int i = 0; i < registeredTypes.length; i++) {
 		data[i] = new TransferData();
-		data[i].type = types[i];
+		data[i].type = registeredTypes[i];
 	}
 	return data;
 }
 
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
-	int[] types = getTypeIds();
-	for (int i = 0; i < types.length; i++) {
-		if (transferData.type == types[i]) return true;
+	String[] registeredTypes = registeredTypes();
+	for (int i = 0; i < registeredTypes.length; i++) {
+		if (transferData.type.equals(registeredTypes[i])) return true;
 	}
 	return false;
 }
@@ -152,11 +154,8 @@ protected void javaToNative (Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	byte[] orig = (byte[])object;
-	byte[] buffer = new byte[orig.length];
-	System.arraycopy(orig, 0, buffer, 0, orig.length);
-	transferData.data = new byte[1][];
-	transferData.data[0] = buffer;
-	transferData.result = 0;
+	NSData data = NSData.dataWithBytes(orig, orig.length);
+	transferData.data = data;
 }
 
 /**
@@ -171,8 +170,12 @@ protected void javaToNative (Object object, TransferData transferData) {
  */
 protected Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
-	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
-	return transferData.data[0];
+	if (transferData.data == null) return null;
+	NSData data = (NSData) transferData.data;
+	if (data.length() == 0) return null;
+	byte[] bytes = new byte[data.length()];
+	data.getBytes_(bytes);
+	return bytes;
 }
 boolean checkByteArray(Object object) {
 	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);

@@ -13,8 +13,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -66,33 +65,33 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	TreeItem expandItem;
 	long expandBeginTime;
 	
-	DataBrowserCallbacks callbacks = null;
+//	DataBrowserCallbacks callbacks = null;
 	
 	int acceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
 		return (currentEffect & DND.FEEDBACK_SELECT) != 0 ? 1 : 0;
 	}
 
-	static Callback AcceptDragProc;
-	static {
-		AcceptDragProc = new Callback(TreeDropTargetEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
-		int acceptDragProc = AcceptDragProc.getAddress();
-		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	}
+//	static Callback AcceptDragProc;
+//	static {
+//		AcceptDragProc = new Callback(TreeDropTargetEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
+//		int acceptDragProc = AcceptDragProc.getAddress();
+//		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//	}
 
-	static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
-		DropTarget target = FindDropTarget(theControl, theDrag);
-		if (target == null) return 0;
-		return (target.feedback & DND.FEEDBACK_SELECT) != 0 ? 1 : 0;
-	}
+//	static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
+//		DropTarget target = FindDropTarget(theControl, theDrag);
+//		if (target == null) return 0;
+//		return (target.feedback & DND.FEEDBACK_SELECT) != 0 ? 1 : 0;
+//	}
 	
-	static DropTarget FindDropTarget(int theControl, int theDrag) {
-		if (theControl == 0) return null;
-		Display display = Display.findDisplay(Thread.currentThread());
-		if (display == null || display.isDisposed()) return null;
-		Widget widget = display.findWidget(theControl);
-		if (widget == null) return null;
-		return (DropTarget)widget.getData(DND.DROP_TARGET_KEY); 
-	}
+//	static DropTarget FindDropTarget(int theControl, int theDrag) {
+//		if (theControl == 0) return null;
+//		Display display = Display.findDisplay(Thread.currentThread());
+//		if (display == null || display.isDisposed()) return null;
+//		Widget widget = display.findWidget(theControl);
+//		if (widget == null) return null;
+//		return (DropTarget)widget.getData(DND.DROP_TARGET_KEY); 
+//	}
 
 	/**
 	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified 
@@ -126,13 +125,13 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetEvent
 	 */
 	public void dragEnter(DropTargetEvent event) {
-		if (callbacks == null) {
-			Tree table = (Tree) control;
-			DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-			OS.GetDataBrowserCallbacks (table.handle, callbacks);
-			callbacks.v1_acceptDragCallback = AcceptDragProc.getAddress();
-			OS.SetDataBrowserCallbacks(table.handle, callbacks);
-		}
+//		if (callbacks == null) {
+//			Tree table = (Tree) control;
+//			DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+//			OS.GetDataBrowserCallbacks (table.handle, callbacks);
+//			callbacks.v1_acceptDragCallback = AcceptDragProc.getAddress();
+//			OS.SetDataBrowserCallbacks(table.handle, callbacks);
+//		}
 		insertItem = null;
 		expandBeginTime = 0;
 		expandItem = null;

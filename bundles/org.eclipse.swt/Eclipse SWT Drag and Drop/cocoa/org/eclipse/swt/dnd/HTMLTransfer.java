@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
  
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.carbon.OS;
 public class HTMLTransfer extends ByteArrayTransfer {
 
 	static HTMLTransfer _instance = new HTMLTransfer();
-	static final String HTML = "HTML"; //$NON-NLS-1$
+	static final String HTML = getString(OS.NSStringPboardType);
 	static final int HTMLID = registerType(HTML);
 
 HTMLTransfer() {}
@@ -57,15 +57,7 @@ public void javaToNative (Object object, TransferData transferData){
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-	String string = (String)object;
-	int count = string.length();
-	char[] chars = new char[count];
-	string.getChars(0, count, chars, 0);
-	byte[] buffer = new byte[chars.length * 2];
-	OS.memmove(buffer, chars, buffer.length);
-	transferData.data = new byte[1][];
-	transferData.data[0] = buffer;
-	transferData.result = OS.noErr;
+	transferData.data = NSString.stringWith((String) object);
 }
 
 /**
@@ -80,10 +72,9 @@ public void javaToNative (Object object, TransferData transferData){
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
-	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
-	byte[] buffer = transferData.data[0];
-	char[] chars = new char[(buffer.length + 1) / 2];
-	OS.memmove(chars, buffer, buffer.length);
+	NSString string = (NSString) transferData.data;
+	char[] chars = new char[string.length()];
+	string.getCharacters_(chars);
 	return new String(chars);
 }
 

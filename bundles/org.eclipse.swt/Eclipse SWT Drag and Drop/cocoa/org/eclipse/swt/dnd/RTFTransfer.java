@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
  
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
@@ -30,7 +29,7 @@ import org.eclipse.swt.internal.carbon.CFRange;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	static RTFTransfer _instance = new RTFTransfer();
-	static final String RTF = "RTF "; //$NON-NLS-1$
+	static final String RTF = getString(OS.NSRTFPboardType);
 	static final int RTFID = registerType(RTF);
 
 RTFTransfer() {}
@@ -58,29 +57,7 @@ public void javaToNative (Object object, TransferData transferData){
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-	transferData.result = -1;
-	String string = (String)object;
-	int count = string.length();
-	char[] chars = new char[count];
-	string.getChars(0, count, chars, 0);
-	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, count);
-	if (cfstring == 0) return;
-	try {
-		CFRange range = new CFRange();
-		range.length = chars.length;
-		int encoding = OS.CFStringGetSystemEncoding();
-		int[] size = new int[1];
-		int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);
-		if (numChars == 0 || size[0] == 0) return;
-		byte[] buffer = new byte[size[0]];
-		numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);
-		if (numChars == 0) return;
-		transferData.data = new byte[1][];
-		transferData.data[0] = buffer;
-		transferData.result = 0;
-	} finally {
-		OS.CFRelease(cfstring);
-	}
+	transferData.data = NSString.stringWith((String) object);
 }
 
 /**
@@ -95,22 +72,10 @@ public void javaToNative (Object object, TransferData transferData){
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
-	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
-	byte[] buffer = transferData.data[0];
-	int encoding = OS.CFStringGetSystemEncoding();
-	int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
-	if (cfstring == 0) return null;
-	try {
-		int length = OS.CFStringGetLength(cfstring);
-		if (length == 0) return null;
-		char[] chars = new char[length];
-		CFRange range = new CFRange();
-		range.length = length;
-		OS.CFStringGetCharacters(cfstring, range, chars);
-		return new String(chars);
-	} finally {
-		OS.CFRelease(cfstring);
-	}
+	NSString string = (NSString) transferData.data;
+	char[] chars = new char[string.length()];
+	string.getCharacters_(chars);
+	return new String(chars);
 }
 
 protected int[] getTypeIds() {

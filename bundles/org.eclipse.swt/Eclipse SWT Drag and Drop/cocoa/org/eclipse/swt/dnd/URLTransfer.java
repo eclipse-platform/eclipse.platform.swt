@@ -1,4 +1,4 @@
-/******************************************************************************* * Copyright (c) 20007 IBM Corporation and others. * All rights reserved. This program and the accompanying materials * are made available under the terms of the Eclipse Public License v1.0 * which accompanies this distribution, and is available at * http://www.eclipse.org/legal/epl-v10.html * * Contributors: *     IBM Corporation - initial API and implementation *******************************************************************************/package org.eclipse.swt.dnd;import org.eclipse.swt.internal.carbon.*;/**
+/******************************************************************************* * Copyright (c) 20007 IBM Corporation and others. * All rights reserved. This program and the accompanying materials * are made available under the terms of the Eclipse Public License v1.0 * which accompanies this distribution, and is available at * http://www.eclipse.org/legal/epl-v10.html * * Contributors: *     IBM Corporation - initial API and implementation *******************************************************************************/package org.eclipse.swt.dnd;import org.eclipse.swt.internal.cocoa.*;/**
  * The class <code>URLTransfer</code> provides a platform specific mechanism 
  * for converting text in URL format represented as a java <code>String</code> 
  * to a platform specific representation of the data and vice versa. The string
@@ -11,7 +11,7 @@
  * </code></pre>
  *
  * @see Transfer
- */public class URLTransfer extends ByteArrayTransfer {	static URLTransfer _instance = new URLTransfer();	static final String URL = "url "; //$NON-NLS-1$	static final int URL_ID = registerType(URL);	static final String URLN = "urln"; //$NON-NLS-1$	static final int URLN_ID = registerType(URLN);private URLTransfer() {}/**
+ */public class URLTransfer extends ByteArrayTransfer {	static URLTransfer _instance = new URLTransfer();	static final String URL = "url "; //$NON-NLS-1$	static final int URL_ID = registerType(URL);private URLTransfer() {}/**
  * Returns the singleton instance of the URLTransfer class.
  *
  * @return the singleton instance of the URLTransfer class
@@ -24,7 +24,7 @@
  *  	be filled in on return with the platform specific format of the data
  * 
  * @see Transfer#nativeToJava
- */public void javaToNative (Object object, TransferData transferData){	if (!checkURL(object) || !isSupportedType(transferData)) {		DND.error(DND.ERROR_INVALID_DATA);	}	transferData.result = -1;	String url = (String)object;	int count = url.length();	char[] chars = new char[count];	url.getChars(0, count, chars, 0);	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, count);	if (cfstring == 0) return;	try {		CFRange range = new CFRange();		range.length = chars.length;		int encoding = OS.CFStringGetSystemEncoding();		int[] size = new int[1];		int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);		if (numChars == 0 || size[0] == 0) return;		byte[] buffer = new byte[size[0]];		numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);		if (numChars == 0) return;		transferData.data = new byte[][] {buffer};		transferData.result = 0;	} finally {		OS.CFRelease(cfstring);	}}/**
+ */public void javaToNative (Object object, TransferData transferData){	if (!checkURL(object) || !isSupportedType(transferData)) {		DND.error(DND.ERROR_INVALID_DATA);	}	String url = (String)object;	NSString nsString = NSString.stringWith(url);	transferData.data = NSURL.static_URLWithString_(nsString);}/**
  * This implementation of <code>nativeToJava</code> converts a platform 
  * specific representation of a URL to a java <code>String</code>.
  * 
@@ -33,4 +33,4 @@
  * 		otherwise null
  * 
  * @see Transfer#javaToNative
- */public Object nativeToJava(TransferData transferData){	if (!isSupportedType(transferData) || transferData.data == null) return null;	if (transferData.data.length == 0) return null;	byte[] buffer = transferData.data[0];	int encoding = OS.CFStringGetSystemEncoding();	int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);	if (cfstring == 0) return null;	try {		int length = OS.CFStringGetLength(cfstring);		if (length == 0) return null;		char[] chars = new char[length];		CFRange range = new CFRange();		range.length = length;		OS.CFStringGetCharacters(cfstring, range, chars);		return new String(chars);	} finally {		OS.CFRelease(cfstring);	}}protected int[] getTypeIds(){	return new int[] {URL_ID, URLN_ID};}protected String[] getTypeNames(){	return new String[] {URL, URLN}; }boolean checkURL(Object object) {	return object != null && (object instanceof String) && ((String)object).length() > 0;}protected boolean validate(Object object) {	return checkURL(object);}}
+ */public Object nativeToJava(TransferData transferData){	if (!isSupportedType(transferData) || transferData.data == null) return null;	NSURL nsUrl = (NSURL) transferData.data;	NSString nsString = nsUrl.absoluteString();	return getString(nsString);}protected int[] getTypeIds(){	return new int[] {URL_ID};}protected String[] getTypeNames(){	return new String[] {URL}; }boolean checkURL(Object object) {	return object != null && (object instanceof String) && ((String)object).length() > 0;}protected boolean validate(Object object) {	return checkURL(object);}}

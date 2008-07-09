@@ -13,7 +13,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -169,13 +169,9 @@ public void clearContents() {
 public void clearContents(int clipboards) {
 	checkWidget();
 	if ((clipboards & DND.CLIPBOARD) == 0 || scrap == 0) return;
-	int oldScrap = scrap;
-	scrap = 0;
-	int[] currentScrap = new int[1];
-	if (OS.GetCurrentScrap(currentScrap) != OS.noErr) return;
-	if (currentScrap[0] == oldScrap) {
-		OS.ClearCurrentScrap();
-	}
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	//TODO
+//	A declareTypes:owner: message essentially changes the contents of the receiver: It invalidates the current contents of the receiver and increments its change count.
 }
 
 /**
@@ -279,23 +275,24 @@ public Object getContents(Transfer transfer, int clipboards) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	if ((clipboards & DND.CLIPBOARD) == 0) return null;
-	int[] scrap = new int[1];
-	if (OS.GetCurrentScrap(scrap) != OS.noErr) return null;
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
 	int[] typeIds = transfer.getTypeIds();
-	int[] size = new int[1];	
 	// get data from system clipboard
 	for (int i=0; i<typeIds.length; i++) {
-		int type = typeIds[i];
-		size[0] = 0;
-		if (OS.GetScrapFlavorSize(scrap[0], type, size) == OS.noErr && size[0] > 0) {
-			byte[] buffer = new byte[size[0]];
-			if (OS.GetScrapFlavorData(scrap[0], type, size, buffer) == OS.noErr) {
-				TransferData tdata = new TransferData();
-				tdata.type = type;		
-				tdata.data = new byte[1][];
-				tdata.data[0] = buffer;
-				return transfer.nativeToJava(tdata);
-			}
+		TransferData tdata = new TransferData();
+		String type = Transfer.types[typeIds[i]];
+		NSString dataType = NSString.stringWith(type);
+		if (dataType.isEqual(OS.NSStringPboardType) ||
+				dataType.isEqual(OS.NSRTFPboardType)) {
+			tdata.data = pasteboard.stringForType(dataType);
+		} else if (dataType.isEqual(OS.NSFilenamesPboardType)) {
+			tdata.data = new NSArray(pasteboard.propertyListForType(dataType).id);
+		} else {
+			tdata.data = pasteboard.dataForType(dataType);
+		}
+		if (tdata.data != null) {
+			tdata.type = type;		
+			return transfer.nativeToJava(tdata);
 		}
 	}
 	return null;	// No data available for this transfer
@@ -439,33 +436,41 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 		}
 	}
 	if ((clipboards & DND.CLIPBOARD) == 0) return;
-	if (OS.ClearCurrentScrap() != OS.noErr) {
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	if (pasteboard == null) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	scrap = 0;
-	int[] currentScrap = new int[1];
-	if (OS.GetCurrentScrap(currentScrap) != OS.noErr) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	}
-	scrap = currentScrap[0];
-	// copy data directly over to System clipboard (not deferred)
 	for (int i=0; i<dataTypes.length; i++) {
 		int[] typeIds = dataTypes[i].getTypeIds();
 		for (int j=0; j<typeIds.length; j++) {
 			TransferData transferData = new TransferData();
-			transferData.type = typeIds[j];
-			dataTypes[i].javaToNative(data[i], transferData); 
-			if (transferData.result != OS.noErr) {
-				DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-			}
-			//Drag and Drop can handle multiple items in one transfer but the
-			//Clipboard can not.
-			byte[] datum = transferData.data[0];
-			if (OS.PutScrapFlavor(scrap, transferData.type, 0, datum.length, datum) != OS.noErr){
-				DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+			transferData.type = Transfer.types[typeIds[j]];
+			dataTypes[i].javaToNative(data[i], transferData);
+			NSObject tdata = transferData.data;
+			NSString dataType = NSString.stringWith(transferData.type);
+			declareTypes(pasteboard);
+			if (dataType.isEqual(OS.NSStringPboardType) ||
+					dataType.isEqual(OS.NSRTFPboardType)) {
+				pasteboard.setString((NSString) tdata, dataType);
+			} else if (dataType.isEqual(OS.NSFilenamesPboardType)) {
+				pasteboard.setPropertyList((NSArray) tdata, dataType);
+			} else {
+				pasteboard.setData((NSData) tdata, dataType);
 			}
 		}
 	}
+}
+
+private void declareTypes(NSPasteboard pasteboard) {
+	String[] typeNames = getAvailableTypeNames();
+	NSMutableArray declaredTypes = NSMutableArray.arrayWithCapacity(typeNames.length);
+	for (int i = 0; i < typeNames.length; i++) {
+		String typeName = typeNames[i];
+		if (typeName != null) {
+			declaredTypes.addObject(NSString.stringWith(typeName));
+		}
+	}
+	pasteboard.declareTypes(declaredTypes, null);
 }
 
 /**
@@ -512,12 +517,12 @@ public TransferData[] getAvailableTypes() {
  */
 public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
-	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0]; 
-	int[] types = _getAvailableTypes();
-	TransferData[] result = new TransferData[types.length];
-	for (int i = 0; i < types.length; i++) {
+	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0];
+	String[] registeredTypes = Transfer.registeredTypes();
+	TransferData[] result = new TransferData[registeredTypes.length];
+	for (int i = 0; i < result.length; i++) { 
 		result[i] = new TransferData();
-		result[i].type = types[i];
+		result[i].type = registeredTypes[i];
 	}
 	return result;
 }
@@ -540,32 +545,6 @@ public TransferData[] getAvailableTypes(int clipboards) {
  */
 public String[] getAvailableTypeNames() {
 	checkWidget();
-	int[] types = _getAvailableTypes();
-	String[] names = new String[types.length];
-	for (int i = 0; i < types.length; i++) {
-		int type = types[i];
-		StringBuffer sb = new StringBuffer();
-		sb.append((char)((type & 0xff000000) >> 24));
-		sb.append((char)((type & 0x00ff0000) >> 16));
-		sb.append((char)((type & 0x0000ff00) >> 8));
-		sb.append((char)((type & 0x000000ff) >> 0));
-		names[i] = sb.toString();
-	}
-	return names;
-}
-
-int[] _getAvailableTypes() {
-	int[] types = new int[0];
-	int[] scrap = new int[1];
-	if (OS.GetCurrentScrap(scrap) != OS.noErr) return types;
-	int[] count = new int[1];
-	if (OS.GetScrapFlavorCount(scrap[0], count) != OS.noErr || count[0] == 0) return types;
-	int[] info = new int[count[0] * 2];
-	if (OS.GetScrapFlavorInfoList(scrap[0], count, info) != OS.noErr) return types;
-	types = new int[count[0]];
-	for (int i= 0; i < count [0]; i++) {
-		types[i] = info[i*2];
-	}
-	return types;
+	return Transfer.registeredTypes();
 }
 }

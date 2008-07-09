@@ -28,9 +28,9 @@ public void addObjectsFromArray(NSArray otherArray) {
 	OS.objc_msgSend(this.id, OS.sel_addObjectsFromArray_1, otherArray != null ? otherArray.id : 0);
 }
 
-public static id arrayWithCapacity(int numItems) {
+public static NSMutableArray arrayWithCapacity(int numItems) {
 	int result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_arrayWithCapacity_1, numItems);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSMutableArray(result) : null;
 }
 
 public void exchangeObjectAtIndex(int idx1, int idx2) {

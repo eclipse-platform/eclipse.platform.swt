@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.cocoa.*;
+
  
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
@@ -27,7 +29,16 @@ package org.eclipse.swt.dnd;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Transfer {
-	
+
+static String[] types = new String[4];
+static int typeCount;
+
+static String getString (NSString str) {
+	char[] chars = new char[str.length()];
+	str.getCharacters_(chars);
+	return new String(chars);
+}
+
 /**
  * Returns a list of the platform specific data types that can be converted using 
  * this transfer agent.
@@ -131,15 +142,25 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName) {
-	int length = formatName.length();
-	// TODO - hashcode may not be unique - need another way
-	if (length > 4) return formatName.hashCode();
-	int type = 0;
-	if (length > 0) type |= (formatName.charAt(0) & 0xff) << 24;
-	if (length > 1) type |= (formatName.charAt(1) & 0xff) << 16;
-	if (length > 2) type |= (formatName.charAt(2) & 0xff) << 8;
-	if (length > 3) type |= formatName.charAt(3) & 0xff; 
-	return type;
+	for (int i = 0; i < typeCount; i++) {
+		String type = types[i];
+		if (type != null && formatName.equals(type)) {
+			return i;
+		}
+	}
+	if (typeCount + 1 == types.length) { // types[0] is null
+		String[] newTypes = new String[types.length + 4];
+		System.arraycopy(types, 0, newTypes, 0, types.length);
+		types = newTypes;
+	}
+	types[++typeCount] = formatName;
+	return typeCount;
+}
+
+static String[] registeredTypes() {
+	String[] result = new String[typeCount];
+	System.arraycopy(types, 1, result, 0, typeCount);
+	return result;
 }
 
 /**

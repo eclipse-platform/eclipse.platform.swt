@@ -12,7 +12,8 @@
 package org.eclipse.swt.dnd;
 
 import java.io.*;
-import org.eclipse.swt.internal.carbon.*;
+
+import org.eclipse.swt.internal.cocoa.*;
  
 /**
  * The class <code>FileTransfer</code> provides a platform specific mechanism 
@@ -37,10 +38,8 @@ import org.eclipse.swt.internal.carbon.*;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	static FileTransfer _instance = new FileTransfer();
-	static final String HFS = "hfs "; //$NON-NLS-1$
-	static final String FURL = "furl"; //$NON-NLS-1$
-	static final int HFSID = registerType(HFS);
-	static final int FURLID = registerType(FURL);
+	static final String ID_NAME = getString(OS.NSFilenamesPboardType);
+	static final int ID = registerType(ID_NAME);
 	
 FileTransfer() {}
 
@@ -70,56 +69,14 @@ public void javaToNative(Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String[] files = (String[])object;
-	transferData.result = -1;
-	byte[][] data = new byte[files.length][];
-	for (int i = 0; i < data.length; i++) {
-		File file = new File(files[i]);
-		boolean isDirectory = file.isDirectory();
+	int length = files.length;
+	NSMutableArray array = NSMutableArray.arrayWithCapacity(length);
+	for (int i = 0; i < length; i++) {
 		String fileName = files[i];
-		char [] chars = new char [fileName.length ()];
-		fileName.getChars (0, chars.length, chars, 0);
-		int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-		if (cfstring == 0) return;
-		try {
-			int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, cfstring, OS.kCFURLPOSIXPathStyle, isDirectory);
-			if (url == 0) return;
-			try {
-				if (transferData.type == HFSID) {
-					byte[] fsRef = new byte[80];
-					if (!OS.CFURLGetFSRef(url, fsRef)) return;
-					byte[] fsSpec = new byte[70];
-					if (OS.FSGetCatalogInfo(fsRef, 0, null, null, fsSpec, null) != OS.noErr) return;
-					byte[] hfsflavor = new byte[10 + fsSpec.length];
-					byte[] finfo = new byte[16];
-					OS.FSpGetFInfo(fsSpec, finfo);
-					System.arraycopy(finfo, 0, hfsflavor, 0, 10);
-					System.arraycopy(fsSpec, 0, hfsflavor, 10, fsSpec.length);
-					data[i] = hfsflavor;
-				}
-				if (transferData.type == FURLID) {
-					int encoding = OS.CFStringGetSystemEncoding();
-					int theData = OS.CFURLCreateData(OS.kCFAllocatorDefault, url, encoding, true);
-					if (theData == 0) return;
-					try {
-						int length = OS.CFDataGetLength(theData);
-						byte[] buffer = new byte[length];
-						CFRange range = new CFRange();
-						range.length = length;
-						OS.CFDataGetBytes(theData, range, buffer);
-						data[i] = buffer;
-					} finally {
-						OS.CFRelease(theData);
-					}
-				}
-			} finally {
-				OS.CFRelease(url);
-			}
-		} finally {
-			OS.CFRelease(cfstring);
-		}
+		NSString string = NSString.stringWith(fileName);
+		array.addObject(string);
 	}
-	transferData.data = data;
-	transferData.result = 0;
+	transferData.data = array;
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
@@ -134,52 +91,25 @@ public void javaToNative(Object object, TransferData transferData) {
  */
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
-	if (transferData.data.length == 0) return null;
-	int count = transferData.data.length;
+	NSArray array = (NSArray) transferData.data;
+	if (array.count() == 0) return null;
+	int count = array.count();
 	String[] fileNames = new String[count];
 	for (int i=0; i<count; i++) {
-		byte[] data = transferData.data[i];
-		int url = 0;
-		if (transferData.type == HFSID) {
-			byte[] fsspec = new byte[data.length - 10];
-			System.arraycopy(data, 10, fsspec, 0, fsspec.length);
-			byte[] fsRef = new byte[80];
-			if (OS.FSpMakeFSRef(fsspec, fsRef) != OS.noErr) return null;
-			url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
-			if (url == 0) return null;
-		}
-		if (transferData.type == FURLID) {
-			int encoding = OS.kCFStringEncodingUTF8;
-			url = OS.CFURLCreateWithBytes(OS.kCFAllocatorDefault, data, data.length, encoding, 0);
-			if (url == 0) return null;
-		}
-		try {
-			int path = OS.CFURLCopyFileSystemPath(url, OS.kCFURLPOSIXPathStyle);
-			if (path == 0) return null;
-			try {
-				int length = OS.CFStringGetLength(path);
-				if (length == 0) return null;
-				char[] buffer= new char[length];
-				CFRange range = new CFRange();
-				range.length = length;
-				OS.CFStringGetCharacters(path, range, buffer);
-				fileNames[i] = new String(buffer);
-			} finally {
-				OS.CFRelease(path);
-			}
-		} finally {
-			OS.CFRelease(url);
-		}
+		NSString string = new NSString(array.objectAtIndex(i));
+		char[] chars = new char[string.length()];
+		string.getCharacters_(chars);
+		fileNames[i] = new String(chars);
 	}
 	return fileNames;
 }
 
 protected int[] getTypeIds(){
-	return new int[] {FURLID, HFSID};
+	return new int[] {ID};
 }
 
 protected String[] getTypeNames(){
-	return new String[] {FURL, HFS};
+	return new String[] {ID_NAME};
 }
 
 boolean checkFile(Object object) {

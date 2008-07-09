@@ -15,11 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.carbon.CGPoint;
-import org.eclipse.swt.internal.carbon.EventRecord;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Point;
-
+import org.eclipse.swt.internal.cocoa.*;
 /**
  *
  * <code>DragSource</code> defines the source object for a drag and drop transfer.
@@ -111,11 +107,11 @@ public class DragSource extends Widget {
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static Callback DragSendDataProc;
 	
-	static {
-		DragSendDataProc = new Callback(DragSource.class, "DragSendDataProc", 4); //$NON-NLS-1$
-		int dragSendDataProcAddress = DragSendDataProc.getAddress();
-		if (dragSendDataProcAddress == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	}
+//	static {
+//		DragSendDataProc = new Callback(DragSource.class, "DragSendDataProc", 4); //$NON-NLS-1$
+//		int dragSendDataProcAddress = DragSendDataProc.getAddress();
+//		if (dragSendDataProcAddress == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//	}
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -192,20 +188,20 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static int DragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
-	DragSource source = FindDragSource(dragSendRefCon, theDrag);
-	if (source == null) return OS.cantGetFlavorErr;
-	return source.dragSendDataProc(theType, dragSendRefCon, theItemRef, theDrag);
-}
+//static int DragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
+//	DragSource source = FindDragSource(dragSendRefCon, theDrag);
+//	if (source == null) return OS.cantGetFlavorErr;
+//	return source.dragSendDataProc(theType, dragSendRefCon, theItemRef, theDrag);
+//}
 
-static DragSource FindDragSource(int dragSendRefCon, int theDrag) {
-	if (dragSendRefCon == 0) return null;
-	Display display = Display.findDisplay(Thread.currentThread());
-	if (display == null || display.isDisposed()) return null;
-	Widget widget = display.findWidget(dragSendRefCon);
-	if (widget == null) return null;
-	return (DragSource)widget.getData(DND.DRAG_SOURCE_KEY); 
-}
+//static DragSource FindDragSource(int dragSendRefCon, int theDrag) {
+//	if (dragSendRefCon == 0) return null;
+//	Display display = Display.findDisplay(Thread.currentThread());
+//	if (display == null || display.isDisposed()) return null;
+//	Widget widget = display.findWidget(dragSendRefCon);
+//	if (widget == null) return null;
+//	return (DragSource)widget.getData(DND.DRAG_SOURCE_KEY); 
+//}
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -255,145 +251,145 @@ protected void checkSubclass () {
 }
 
 void drag(Event dragEvent) {
-	DNDEvent event = new DNDEvent();
-	event.widget = this;
-	event.x = dragEvent.x;
-	event.y = dragEvent.y;
-	event.time = dragEvent.time;
-	event.doit = true;
-	notifyListeners(DND.DragStart, event);
-	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
-	
-	int[] theDrag = new int[1];
-	if (OS.NewDrag(theDrag) != OS.noErr) {
-		event = new DNDEvent();
-		event.widget = this;
-		event.time = (int)System.currentTimeMillis();
-		event.doit = false;
-		event.detail = DND.DROP_NONE; 
-		notifyListeners(DND.DragEnd, event);
-		return;
-	}
-	
-	Point pt = new Point();
-	OS.GetGlobalMouse (pt);
-
-	for (int i = 0; i < transferAgents.length; i++) {
-		Transfer transfer = transferAgents[i];
-		if (transfer != null) {
-			int[] types = transfer.getTypeIds();
-			if (transfer instanceof FileTransfer) {
-				TransferData transferData = new TransferData();
-				transferData.type = types[0];
-				DNDEvent event2 = new DNDEvent();
-				event2.widget = this;
-				event2.time = (int)System.currentTimeMillis(); 
-				event2.dataType = transferData; 
-				notifyListeners(DND.DragSetData, event2);
-				if (event2.data != null) {
-					for (int j = 0; j < types.length; j++) {
-						transferData.type = types[j];
-						transfer.javaToNative(event2.data, transferData);
-						if (transferData.result == OS.noErr) {
-							for (int k = 0; k < transferData.data.length; k++) {
-								byte[] datum = transferData.data[k];
-								OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
-							}
-						}
-					}
-				}
-			} else {
-				for (int j = 0; j < types.length; j++) {
-					OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);	
-				}	
-			}
-		}
-	}
-	
-	OS.SetDragSendProc(theDrag[0], DragSendDataProc.getAddress(), control.handle);
-	
-	int theRegion = 0;
-	Image newImage = null;
-	try {	
-		theRegion = OS.NewRgn();
-		OS.SetRectRgn(theRegion, (short)(pt.h), (short)(pt.v), (short)(pt.h+20), (short)(pt.v+20));
-		
-		int operations = opToOsOp(getStyle());
-		//set operations twice - local and not local
-		OS.SetDragAllowableActions(theDrag[0], operations, true);
-		OS.SetDragAllowableActions(theDrag[0], operations, false);
-		
-		Image image = event.image;
-		if (image != null) {
-			CGPoint imageOffsetPt = new CGPoint();
-			imageOffsetPt.x = 0;
-			imageOffsetPt.y = 0;
-			/*
-			* Bug in the Macintosh.  For  some reason, it seems that SetDragImageWithCGImage() 
-			* expects an image with the alpha, otherwise the image does not draw.  The fix is
-			* to make sure that the image has an alpha by creating a new image with alpha
-			* when necessary.
-			*/
-			if (OS.CGImageGetAlphaInfo(image.handle) == OS.kCGImageAlphaNoneSkipFirst) {
-				ImageData data = image.getImageData();
-				data.alpha = 0xFF;
-				newImage = new Image(image.getDevice(), data);
-				image = newImage;
-			}
-			OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, 0);
-		}
-		EventRecord theEvent = new EventRecord();
-		theEvent.message = OS.kEventMouseMoved;
-		theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
-		theEvent.what = (short)OS.osEvt;
-		theEvent.where_h = pt.h;
-		theEvent.where_v = pt.v;	
-		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
-		int operation = DND.DROP_NONE;
-		if (result == OS.noErr) { 
-			int[] outAction = new int[1];
-			OS.GetDragDropAction(theDrag[0], outAction);
-			operation = osOpToOp(outAction[0]);
-		}	
-		event = new DNDEvent();
-		event.widget = this;
-		event.time = (int)System.currentTimeMillis();
-		event.doit = result == OS.noErr;
-		event.detail = operation; 
-		notifyListeners(DND.DragEnd, event);
-	} finally {	
-		if (theRegion != 0) OS.DisposeRgn(theRegion);
-		if (newImage != null) newImage.dispose();
-	}
-	OS.DisposeDrag(theDrag[0]);
+//	DNDEvent event = new DNDEvent();
+//	event.widget = this;
+//	event.x = dragEvent.x;
+//	event.y = dragEvent.y;
+//	event.time = dragEvent.time;
+//	event.doit = true;
+//	notifyListeners(DND.DragStart, event);
+//	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
+//	
+//	int[] theDrag = new int[1];
+//	if (OS.NewDrag(theDrag) != OS.noErr) {
+//		event = new DNDEvent();
+//		event.widget = this;
+//		event.time = (int)System.currentTimeMillis();
+//		event.doit = false;
+//		event.detail = DND.DROP_NONE; 
+//		notifyListeners(DND.DragEnd, event);
+//		return;
+//	}
+//	
+//	Point pt = new Point();
+//	OS.GetGlobalMouse (pt);
+//
+//	for (int i = 0; i < transferAgents.length; i++) {
+//		Transfer transfer = transferAgents[i];
+//		if (transfer != null) {
+//			int[] types = transfer.getTypeIds();
+//			if (transfer instanceof FileTransfer) {
+//				TransferData transferData = new TransferData();
+//				transferData.type = types[0];
+//				DNDEvent event2 = new DNDEvent();
+//				event2.widget = this;
+//				event2.time = (int)System.currentTimeMillis(); 
+//				event2.dataType = transferData; 
+//				notifyListeners(DND.DragSetData, event2);
+//				if (event2.data != null) {
+//					for (int j = 0; j < types.length; j++) {
+//						transferData.type = types[j];
+//						transfer.javaToNative(event2.data, transferData);
+//						if (transferData.result == OS.noErr) {
+//							for (int k = 0; k < transferData.data.length; k++) {
+//								byte[] datum = transferData.data[k];
+//								OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
+//							}
+//						}
+//					}
+//				}
+//			} else {
+//				for (int j = 0; j < types.length; j++) {
+//					OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);	
+//				}	
+//			}
+//		}
+//	}
+//	
+//	OS.SetDragSendProc(theDrag[0], DragSendDataProc.getAddress(), control.handle);
+//	
+//	int theRegion = 0;
+//	Image newImage = null;
+//	try {	
+//		theRegion = OS.NewRgn();
+//		OS.SetRectRgn(theRegion, (short)(pt.h), (short)(pt.v), (short)(pt.h+20), (short)(pt.v+20));
+//		
+//		int operations = opToOsOp(getStyle());
+//		//set operations twice - local and not local
+//		OS.SetDragAllowableActions(theDrag[0], operations, true);
+//		OS.SetDragAllowableActions(theDrag[0], operations, false);
+//		
+//		Image image = event.image;
+//		if (image != null) {
+//			CGPoint imageOffsetPt = new CGPoint();
+//			imageOffsetPt.x = 0;
+//			imageOffsetPt.y = 0;
+//			/*
+//			* Bug in the Macintosh.  For  some reason, it seems that SetDragImageWithCGImage() 
+//			* expects an image with the alpha, otherwise the image does not draw.  The fix is
+//			* to make sure that the image has an alpha by creating a new image with alpha
+//			* when necessary.
+//			*/
+//			if (OS.CGImageGetAlphaInfo(image.handle) == OS.kCGImageAlphaNoneSkipFirst) {
+//				ImageData data = image.getImageData();
+//				data.alpha = 0xFF;
+//				newImage = new Image(image.getDevice(), data);
+//				image = newImage;
+//			}
+//			OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, 0);
+//		}
+//		EventRecord theEvent = new EventRecord();
+//		theEvent.message = OS.kEventMouseMoved;
+//		theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
+//		theEvent.what = (short)OS.osEvt;
+//		theEvent.where_h = pt.h;
+//		theEvent.where_v = pt.v;	
+//		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
+//		int operation = DND.DROP_NONE;
+//		if (result == OS.noErr) { 
+//			int[] outAction = new int[1];
+//			OS.GetDragDropAction(theDrag[0], outAction);
+//			operation = osOpToOp(outAction[0]);
+//		}	
+//		event = new DNDEvent();
+//		event.widget = this;
+//		event.time = (int)System.currentTimeMillis();
+//		event.doit = result == OS.noErr;
+//		event.detail = operation; 
+//		notifyListeners(DND.DragEnd, event);
+//	} finally {	
+//		if (theRegion != 0) OS.DisposeRgn(theRegion);
+//		if (newImage != null) newImage.dispose();
+//	}
+//	OS.DisposeDrag(theDrag[0]);
 }
 
-int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
-	if (theType == 0) return OS.badDragFlavorErr;
-	TransferData transferData = new TransferData();
-	transferData.type = theType;
-	DNDEvent event = new DNDEvent();
-	event.widget = this;
-	event.time = (int)System.currentTimeMillis(); 
-	event.dataType = transferData; 
-	notifyListeners(DND.DragSetData, event);
-	Transfer transfer = null;
-	for (int i = 0; i < transferAgents.length; i++) {
-		Transfer transferAgent = transferAgents[i];
-		if (transferAgent != null && transferAgent.isSupportedType(transferData)) {
-			transfer = transferAgent;
-			break;
-		}
-	}
-	if (transfer == null) return OS.badDragFlavorErr;
-	transfer.javaToNative(event.data, transferData);
-	if (transferData.result != OS.noErr) return transferData.result;
-	// Except for FileTransfer (see #drag), only one item can be transferred
-	// in a Drag operation
-	byte[] datum = transferData.data[0];
-	if (datum == null) return OS.cantGetFlavorErr;
-	return OS.SetDragItemFlavorData(theDrag, theItemRef, theType, datum, datum.length, 0);
-}
+//int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
+//	if (theType == 0) return OS.badDragFlavorErr;
+//	TransferData transferData = new TransferData();
+//	transferData.type = theType;
+//	DNDEvent event = new DNDEvent();
+//	event.widget = this;
+//	event.time = (int)System.currentTimeMillis(); 
+//	event.dataType = transferData; 
+//	notifyListeners(DND.DragSetData, event);
+//	Transfer transfer = null;
+//	for (int i = 0; i < transferAgents.length; i++) {
+//		Transfer transferAgent = transferAgents[i];
+//		if (transferAgent != null && transferAgent.isSupportedType(transferData)) {
+//			transfer = transferAgent;
+//			break;
+//		}
+//	}
+//	if (transfer == null) return OS.badDragFlavorErr;
+//	transfer.javaToNative(event.data, transferData);
+//	if (transferData.result != OS.noErr) return transferData.result;
+//	// Except for FileTransfer (see #drag), only one item can be transferred
+//	// in a Drag operation
+//	byte[] datum = transferData.data[0];
+//	if (datum == null) return OS.cantGetFlavorErr;
+//	return OS.SetDragItemFlavorData(theDrag, theItemRef, theType, datum, datum.length, 0);
+//}
 
 /**
  * Returns the Control which is registered for this DragSource.  This is the control that the 
@@ -477,42 +473,42 @@ void onDispose() {
 	transferAgents = null;
 }
 
-int opToOsOp(int operation) {
-	int osOperation = 0;
-	if ((operation & DND.DROP_COPY) != 0){
-		osOperation |= OS.kDragActionCopy;
-	}
-	if ((operation & DND.DROP_LINK) != 0) {
-		osOperation |= OS.kDragActionAlias;
-	}
-	if ((operation & DND.DROP_MOVE) != 0) {
-		osOperation |= OS.kDragActionMove;
-	}
-	if ((operation & DND.DROP_TARGET_MOVE) != 0) {
-		osOperation |= OS.kDragActionDelete;
-	}
-	return osOperation;
-}
+//int opToOsOp(int operation) {
+//	int osOperation = 0;
+//	if ((operation & DND.DROP_COPY) != 0){
+//		osOperation |= OS.kDragActionCopy;
+//	}
+//	if ((operation & DND.DROP_LINK) != 0) {
+//		osOperation |= OS.kDragActionAlias;
+//	}
+//	if ((operation & DND.DROP_MOVE) != 0) {
+//		osOperation |= OS.kDragActionMove;
+//	}
+//	if ((operation & DND.DROP_TARGET_MOVE) != 0) {
+//		osOperation |= OS.kDragActionDelete;
+//	}
+//	return osOperation;
+//}
 
-int osOpToOp(int osOperation){
-	int operation = 0;
-	if ((osOperation & OS.kDragActionCopy) != 0){
-		operation |= DND.DROP_COPY;
-	}
-	if ((osOperation & OS.kDragActionAlias) != 0) {
-		operation |= DND.DROP_LINK;
-	}
-	if ((osOperation & OS.kDragActionDelete) != 0) {
-		operation |= DND.DROP_TARGET_MOVE;
-	}
-	if ((osOperation & OS.kDragActionMove) != 0) {
-		operation |= DND.DROP_MOVE;
-	}
-	if (osOperation == OS.kDragActionAll) {
-		operation = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
-	}
-	return operation;
-}
+//int osOpToOp(int osOperation){
+//	int operation = 0;
+//	if ((osOperation & OS.kDragActionCopy) != 0){
+//		operation |= DND.DROP_COPY;
+//	}
+//	if ((osOperation & OS.kDragActionAlias) != 0) {
+//		operation |= DND.DROP_LINK;
+//	}
+//	if ((osOperation & OS.kDragActionDelete) != 0) {
+//		operation |= DND.DROP_TARGET_MOVE;
+//	}
+//	if ((osOperation & OS.kDragActionMove) != 0) {
+//		operation |= DND.DROP_MOVE;
+//	}
+//	if (osOperation == OS.kDragActionAll) {
+//		operation = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+//	}
+//	return operation;
+//}
 
 /**
  * Removes the listener from the collection of listeners who will

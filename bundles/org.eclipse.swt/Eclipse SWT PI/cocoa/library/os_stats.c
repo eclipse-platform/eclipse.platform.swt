@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 331;
-int OS_nativeFunctionCallCount[331];
+int OS_nativeFunctionCount = 337;
+int OS_nativeFunctionCallCount[337];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -40,14 +40,18 @@ char * OS_nativeFunctionNames[] = {
 	"NSDeviceResolution",
 	"NSErrorFailingURLStringKey",
 	"NSFileTypeForHFSTypeCode",
+	"NSFilenamesPboardType",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
 	"NSParagraphStyleAttributeName",
+	"NSRTFPboardType",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
 	"NSStringPboardType",
+	"NSTIFFPboardType",
+	"NSURLPboardType",
 	"NSUnderlineColorAttributeName",
 	"NSUnderlineStyleAttributeName",
 	"NewGlobalRef",
@@ -241,6 +245,8 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIZLorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSend__IIZLorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"objc_1msgSend__IIZZ",
+	"objc_1msgSend__II_3B",
+	"objc_1msgSend__II_3BI",
 	"objc_1msgSend__II_3C",
 	"objc_1msgSend__II_3CI",
 	"objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2",

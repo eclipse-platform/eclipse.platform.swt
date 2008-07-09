@@ -408,6 +408,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSFileTypeForHFSTypeCode)
 }
 #endif
 
+#ifndef NO_NSFilenamesPboardType
+JNIEXPORT jint JNICALL OS_NATIVE(NSFilenamesPboardType)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSFilenamesPboardType_FUNC);
+	rc = (jint)NSFilenamesPboardType;
+	OS_NATIVE_EXIT(env, that, NSFilenamesPboardType_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSFontAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSFontAttributeName)
 	(JNIEnv *env, jclass that)
@@ -456,6 +468,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 }
 #endif
 
+#ifndef NO_NSRTFPboardType
+JNIEXPORT jint JNICALL OS_NATIVE(NSRTFPboardType)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSRTFPboardType_FUNC);
+	rc = (jint)NSRTFPboardType;
+	OS_NATIVE_EXIT(env, that, NSRTFPboardType_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSStrikethroughColorAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughColorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -488,6 +512,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSStringPboardType)
 	OS_NATIVE_ENTER(env, that, NSStringPboardType_FUNC);
 	rc = (jint)NSStringPboardType;
 	OS_NATIVE_EXIT(env, that, NSStringPboardType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSTIFFPboardType
+JNIEXPORT jint JNICALL OS_NATIVE(NSTIFFPboardType)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSTIFFPboardType_FUNC);
+	rc = (jint)NSTIFFPboardType;
+	OS_NATIVE_EXIT(env, that, NSTIFFPboardType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSURLPboardType
+JNIEXPORT jint JNICALL OS_NATIVE(NSURLPboardType)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSURLPboardType_FUNC);
+	rc = (jint)NSURLPboardType;
+	OS_NATIVE_EXIT(env, that, NSURLPboardType_FUNC);
 	return rc;
 }
 #endif
@@ -3550,6 +3598,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IIZZ)
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIZZ_FUNC);
 	rc = (jint)((jint (*)(id, SEL, jboolean, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIZZ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__II_3B
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3B)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3B_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jbyte *))objc_msgSend)((id)arg0, (SEL)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__II_3BI
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__II_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3BI_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (*)(id, SEL, jbyte *, jint))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3BI_FUNC);
 	return rc;
 }
 #endif
