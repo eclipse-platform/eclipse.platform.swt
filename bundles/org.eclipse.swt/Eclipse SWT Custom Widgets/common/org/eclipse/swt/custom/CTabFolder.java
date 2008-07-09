@@ -545,6 +545,15 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		color.dispose();
 	}
 }
+//We should have checkSubclass() but adding it now will cause existing 
+//subclasses to break.
+//protected void checkSubclass () {
+//	String name = getClass ().getName ();
+//	int index = name.lastIndexOf ('.');
+//	if (!name.substring (0, index + 1).equals ("org.eclipse.swt.custom.")) {
+//		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
+//	}
+//}
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int trimX = x - marginWidth - highlight_margin - borderLeft;

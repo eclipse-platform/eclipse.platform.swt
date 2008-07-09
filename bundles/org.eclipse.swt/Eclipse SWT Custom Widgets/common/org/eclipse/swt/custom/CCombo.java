@@ -47,6 +47,8 @@ import org.eclipse.swt.accessibility.*;
  */
 public class CCombo extends Composite {
 
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
+
 	Text text;
 	List list;
 	int visibleItemCount = 5;
@@ -317,6 +319,13 @@ void arrowEvent (Event event) {
 			dropDown (!isDropped ());
 			break;
 		}
+	}
+}
+protected void checkSubclass () {
+	String name = getClass ().getName ();
+	int index = name.lastIndexOf ('.');
+	if (!name.substring (0, index + 1).equals (PACKAGE_PREFIX)) {
+		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
 /**
