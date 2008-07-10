@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 337;
-int OS_nativeFunctionCallCount[337];
+int OS_nativeFunctionCount = 348;
+int OS_nativeFunctionCallCount[348];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -35,6 +35,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSBackgroundColorAttributeName",
 	"NSBaselineOffsetAttributeName",
 	"NSBitsPerPixelFromDepth",
+	"NSCalibratedRGBColorSpace",
 	"NSDefaultRunLoopMode",
 	"NSDeviceRGBColorSpace",
 	"NSDeviceResolution",
@@ -67,10 +68,16 @@ char * OS_nativeFunctionNames[] = {
 	"SetRect",
 	"TransformProcessType",
 	"UnionRgn",
+	"attributedSubstringFromRange_1CALLBACK",
+	"characterIndexForPoint_1CALLBACK",
 	"class_1addIvar",
 	"class_1addMethod",
+	"class_1addProtocol",
 	"drawRect_1CALLBACK",
+	"firstRectForCharacterRange_1CALLBACK",
 	"hitTest_1CALLBACK",
+	"markedRange_1CALLBACK",
+	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
@@ -78,6 +85,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",
 	"objc_1allocateClassPair",
 	"objc_1getClass",
+	"objc_1getProtocol",
 	"objc_1lookUpClass",
 	"objc_1msgSend__II",
 	"objc_1msgSend__IIB",
@@ -348,11 +356,14 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1registerClassPair",
 	"object_1getClassName",
 	"object_1getInstanceVariable",
+	"object_1setClass",
 	"object_1setInstanceVariable",
 	"sel_1registerName",
+	"selectedRange_1CALLBACK",
 	"setFrameOrigin_1CALLBACK",
 	"setFrameSize_1CALLBACK",
 	"setFrame_1CALLBACK",
+	"setMarkedText_1selectedRange_1CALLBACK",
 	"webView_1setFrame_1CALLBACK",
 };
 

@@ -85,13 +85,16 @@ public static final int kQDRegionToRectsMsgParse = 2;
 	
 public static final native boolean class_addIvar(int cls, String name, int size, byte alignment, String types);
 public static final native boolean class_addMethod(int cls, int name, int imp, String types);
+public static final native boolean class_addProtocol(int cls, int protocol);
 public static final native int objc_allocateClassPair(int superclass, String name, int extraBytes);
 public static final native int objc_getClass(String className);
+public static final native int objc_getProtocol(String name);
 public static final native int objc_lookUpClass(String className);
 public static final native void objc_registerClassPair(int cls);
 public static final native int object_getClassName(int obj);
 public static final native int object_getInstanceVariable(int obj, String name, int[] outValue);
 public static final native int object_setInstanceVariable(int obj, String name, int value);
+public static final native int object_setClass(int obj, int clazz);
 public static final native int sel_registerName(String selectorName);
 
 
@@ -363,6 +366,12 @@ public static final native int setFrameOrigin_CALLBACK(int func);
 public static final native int setFrameSize_CALLBACK(int func);
 public static final native int hitTest_CALLBACK(int func);
 public static final native int webView_setFrame_CALLBACK(int func);
+public static final native int markedRange_CALLBACK(int func);
+public static final native int selectedRange_CALLBACK(int func);
+public static final native int attributedSubstringFromRange_CALLBACK(int func);
+public static final native int setMarkedText_selectedRange_CALLBACK(int func);
+public static final native int characterIndexForPoint_CALLBACK(int func);
+public static final native int firstRectForCharacterRange_CALLBACK(int func);
 
 public static final native int objc_msgSendSuper(objc_super superId, int sel);
 public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);
@@ -375,6 +384,7 @@ public static final native void memmove (NSRect dest, int /*long*/ src, int /*lo
 public static final native void memmove (NSPoint dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove (NSSize dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove (NSRange dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (int /*long*/ dest, NSRange src, int /*long*/ size);
 
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");
@@ -9320,7 +9330,8 @@ public static final native int NSBaselineOffsetAttributeName();
 //public static final native int NSBrowserColumnConfigurationDidChangeNotification();
 //public static final native int NSBrowserIllegalDelegateException();
 //public static final native int NSCalibratedBlackColorSpace();
-//public static final native int NSCalibratedRGBColorSpace();
+public static final NSString NSCalibratedRGBColorSpace = new NSString(NSCalibratedRGBColorSpace());
+public static final native int NSCalibratedRGBColorSpace();
 //public static final native int NSCalibratedWhiteColorSpace();
 //public static final native int NSCharacterEncodingDocumentAttribute();
 //public static final native int NSCharacterEncodingDocumentOption();

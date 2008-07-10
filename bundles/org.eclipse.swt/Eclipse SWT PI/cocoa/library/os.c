@@ -348,6 +348,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 }
 #endif
 
+#ifndef NO_NSCalibratedRGBColorSpace
+JNIEXPORT jint JNICALL OS_NATIVE(NSCalibratedRGBColorSpace)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSCalibratedRGBColorSpace_FUNC);
+	rc = (jint)NSCalibratedRGBColorSpace;
+	OS_NATIVE_EXIT(env, that, NSCalibratedRGBColorSpace_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSDefaultRunLoopMode
 JNIEXPORT jint JNICALL OS_NATIVE(NSDefaultRunLoopMode)
 	(JNIEnv *env, jclass that)
@@ -931,6 +943,32 @@ fail:
 }
 #endif
 
+#ifndef NO_class_1addProtocol
+JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addProtocol)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, class_1addProtocol_FUNC);
+	rc = (jboolean)class_addProtocol((Class)arg0, (Protocol *)arg1);
+	OS_NATIVE_EXIT(env, that, class_1addProtocol_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	NSRange _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
+	if (arg1) if ((lparg1 = getNSRangeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (void *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setNSRangeFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -1029,6 +1067,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1getClass)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1getClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1getProtocol
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1getProtocol)
+	(JNIEnv *env, jclass that, jstring arg0)
+{
+	const char *lparg0= NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1getProtocol_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)objc_getProtocol(lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, objc_1getProtocol_FUNC);
 	return rc;
 }
 #endif
@@ -5080,6 +5134,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, object_1getInstanceVariable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_object_1setClass
+JNIEXPORT jint JNICALL OS_NATIVE(object_1setClass)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, object_1setClass_FUNC);
+	rc = (jint)object_setClass((id)arg0, (Class)arg1);
+	OS_NATIVE_EXIT(env, that, object_1setClass_FUNC);
 	return rc;
 }
 #endif

@@ -441,3 +441,96 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(webView_1setFrame_1CALLBACK)
 	return (SWT_PTR)webView_1setFrame;
 }
 #endif
+
+#ifndef NO_setMarkedText_1selectedRange_1CALLBACK
+static SWT_PTR setMarkedText_1selectedRange_1CALLBACK;
+static void setMarkedText_1selectedRange(id obj, SEL sel, id *arg0, NSRange arg1)
+{
+	((void (*)(id, SEL, id*, NSRange*))setMarkedText_1selectedRange_1CALLBACK)(obj, sel, arg0, &arg1);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(setMarkedText_1selectedRange_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	setMarkedText_1selectedRange_1CALLBACK = func;
+	return (SWT_PTR)setMarkedText_1selectedRange;
+}
+#endif
+
+#ifndef NO_selectedRange_1CALLBACK
+static SWT_PTR selectedRange_1CALLBACK;
+static NSRange selectedRangeProc(id obj, SEL sel)
+{
+	NSRange* ptr = ((NSRange* (*)(id, SEL))selectedRange_1CALLBACK)(obj, sel);
+	NSRange range = *ptr;
+	free(ptr);
+	return range;
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(selectedRange_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	selectedRange_1CALLBACK = func;
+	return (SWT_PTR)selectedRangeProc;
+}
+#endif
+
+#ifndef NO_markedRange_1CALLBACK
+static SWT_PTR markedRange_1CALLBACK;
+static NSRange markedRangeProc(id obj, SEL sel)
+{
+	NSRange* ptr = ((NSRange* (*)(id, SEL))markedRange_1CALLBACK)(obj, sel);
+	NSRange range = *ptr;
+	free(ptr);
+	return range;
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(markedRange_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	markedRange_1CALLBACK = func;
+	return (SWT_PTR)markedRangeProc;
+}
+#endif
+
+#ifndef NO_characterIndexForPoint_1CALLBACK
+static SWT_PTR characterIndexForPoint_1CALLBACK;
+static int characterIndexForPoint(id obj, SEL sel, NSPoint point)
+{
+	return ((int (*)(id, SEL, NSPoint*))characterIndexForPoint_1CALLBACK)(obj, sel, &point);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(characterIndexForPoint_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	characterIndexForPoint_1CALLBACK = func;
+	return (SWT_PTR)characterIndexForPoint;
+}
+#endif
+
+#ifndef NO_firstRectForCharacterRange_1CALLBACK
+static SWT_PTR firstRectForCharacterRange_1CALLBACK;
+static NSRect firstRectForCharacterRangeProc(id obj, SEL sel, NSRange arg0)
+{
+	NSRect* ptr = ((NSRect* (*)(id, SEL, NSRange*))firstRectForCharacterRange_1CALLBACK)(obj, sel, &arg0);
+	NSRect result = *ptr;
+	free(ptr);
+	return result;
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(firstRectForCharacterRange_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	firstRectForCharacterRange_1CALLBACK = func;
+	return (SWT_PTR)firstRectForCharacterRangeProc;
+}
+#endif
+
+#ifndef NO_attributedSubstringFromRange_1CALLBACK
+static SWT_PTR attributedSubstringFromRange_1CALLBACK;
+static id attributedSubstringFromRangeProc(id obj, SEL sel, NSRange arg0)
+{
+	return ((id (*)(id, SEL, NSRange*))attributedSubstringFromRange_1CALLBACK)(obj, sel, &arg0);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(attributedSubstringFromRange_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	attributedSubstringFromRange_1CALLBACK = func;
+	return (SWT_PTR)attributedSubstringFromRangeProc;
+}
+#endif
