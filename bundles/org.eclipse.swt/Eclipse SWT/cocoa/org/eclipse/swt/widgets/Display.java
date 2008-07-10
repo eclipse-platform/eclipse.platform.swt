@@ -112,6 +112,8 @@ public class Display extends Device {
 	boolean dragging;
 	Control currentControl, grabControl, trackingControl;
 
+	NSDictionary markedAttributes;
+
 	Menu menuBar;
 	Menu[] menus;
 
@@ -1607,6 +1609,12 @@ protected void init () {
 	initApplicationDelegate();	
 	application.finishLaunching();
 	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	
+	NSTextView textView = (NSTextView)new NSTextView().alloc();
+	textView.initWithFrame (new NSRect ());
+	markedAttributes = textView.markedTextAttributes ();
+	markedAttributes.retain ();
+	textView.release ();
 }
 
 void initApplicationDelegate() {
@@ -1647,6 +1655,7 @@ void addEventMethods (int cls, int proc2, int proc3) {
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
 }
 
 void addFrameMethods(int cls, int setFrameOriginProc, int setFrameSizeProc) {
@@ -1679,7 +1688,13 @@ void initClasses () {
 	int setFrameOriginProc = OS.setFrame_CALLBACK(proc3);
 	int setFrameSizeProc = OS.setFrame_CALLBACK(proc3);
 	int hitTestProc = OS.hitTest_CALLBACK(proc3);
-
+	int markedRangeProc = OS.markedRange_CALLBACK(proc2);
+	int selectedRangeProc = OS.selectedRange_CALLBACK(proc2);
+	int setMarkedText_selectedRangeProc = OS.setMarkedText_selectedRange_CALLBACK(proc4);
+	int attributedSubstringFromRangeProc = OS.attributedSubstringFromRange_CALLBACK(proc3);
+	int characterIndexForPointProc = OS.characterIndexForPoint_CALLBACK(proc3);
+	int firstRectForCharacterRangeProc = OS.firstRectForCharacterRange_CALLBACK(proc3);	
+	
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
@@ -1711,12 +1726,27 @@ void initClasses () {
 
 	className = "SWTView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
+	
+	//NSTextInput protocol
+	OS.class_addMethod(cls, OS.sel_hasMarkedText, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_markedRange, markedRangeProc, "@:");
+	OS.class_addMethod(cls, OS.sel_selectedRange, selectedRangeProc, "@:");
+	OS.class_addMethod(cls, OS.sel_setMarkedText_1selectedRange_1, setMarkedText_selectedRangeProc, "@:@{NSRange}");
+	OS.class_addMethod(cls, OS.sel_unmarkText, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_validAttributesForMarkedText, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_attributedSubstringFromRange_1, attributedSubstringFromRangeProc, "@:{NSRange}");
+	OS.class_addMethod(cls, OS.sel_insertText_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_characterIndexForPoint_1, characterIndexForPointProc, "@:{NSPoint}");
+	OS.class_addMethod(cls, OS.sel_firstRectForCharacterRange_1, firstRectForCharacterRangeProc, "@:{NSRange}");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_1, proc3, "@::");
+	
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -1867,6 +1897,17 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	OS.class_addMethod(cls, OS.sel_insertText_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_1, proc3, "@::");
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTEditorView";
+	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_insertText_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_1, proc3, "@::");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
@@ -2541,6 +2582,9 @@ void releaseDisplay () {
 	
 	menuBar = null;
 	menus = null;
+	
+	if (markedAttributes != null) markedAttributes.release();
+	markedAttributes = null;
 
 	/* The release pool needs to be released before the call backs. */
 	if (pool != null) pool.release();
@@ -3416,38 +3460,42 @@ int windowDelegateProc(int id, int sel) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_isFlipped) {
 		return widget.isFlipped() ? 1 : 0;
-	}
-	if (sel == OS.sel_sendSelection) {
+	} else if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
-		return 0;
-	}
-	if (sel == OS.sel_sendArrowSelection) {
+	} else if (sel == OS.sel_sendArrowSelection) {
 		widget.sendArrowSelection();
-		return 0;
-	}
-	if (sel == OS.sel_sendDoubleSelection) {
+	} else if (sel == OS.sel_sendDoubleSelection) {
 		widget.sendDoubleSelection();
-		return 0;
-	}
-	if (sel == OS.sel_sendVerticalSelection) {
+	} else if (sel == OS.sel_sendVerticalSelection) {
 		widget.sendVerticalSelection();
-		return 0;
-	}
-	if (sel == OS.sel_sendHorizontalSelection) {
+	} else if (sel == OS.sel_sendHorizontalSelection) {
 		widget.sendHorizontalSelection();
-		return 0;
-	}
-	if (sel == OS.sel_acceptsFirstResponder) {
+	} else if (sel == OS.sel_acceptsFirstResponder) {
 		return widget.acceptsFirstResponder(id, sel) ? 1 : 0;
-	}
-	if (sel == OS.sel_becomeFirstResponder) {
+	} else if (sel == OS.sel_becomeFirstResponder) {
 		return widget.becomeFirstResponder(id, sel) ? 1 : 0;
-	}
-	if (sel == OS.sel_resignFirstResponder) {
+	} else if (sel == OS.sel_resignFirstResponder) {
 		return widget.resignFirstResponder(id, sel) ? 1 : 0;
-	}
-	if (sel == OS.sel_isOpaque) {
+	} else if (sel == OS.sel_isOpaque) {
 		return widget.isOpaque(id, sel) ? 1 : 0;
+	} else if (sel == OS.sel_unmarkText) {
+		//TODO not called?
+	} else if (sel == OS.sel_validAttributesForMarkedText) {
+		return widget.validAttributesForMarkedText (id, sel);
+	} else if (sel == OS.sel_markedRange) {
+		NSRange range = widget.markedRange (id, sel);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRange.sizeof);
+		OS.memmove (result, range, NSRange.sizeof);
+		return result;
+	} else if (sel == OS.sel_selectedRange) {
+		NSRange range = widget.selectedRange (id, sel);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRange.sizeof);
+		OS.memmove (result, range, NSRange.sizeof);
+		return result;
+	} else if (sel == OS.sel_hasMarkedText) {
+		return widget.hasMarkedText (id, sel) ? 1 : 0;
 	}
 	return 0;
 }
@@ -3457,6 +3505,9 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		return timerProc (arg0);
 	}
 	Widget widget = getWidget(id);
+	if (widget == null && (sel == OS.sel_keyDown_1 ||sel == OS.sel_keyUp_1 ||sel == OS.sel_insertText_1 ||sel == OS.sel_doCommandBySelector_1))  {
+		widget = getFocusControl (new NSView (id).window ());
+	}
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_1) {
 		widget.windowWillClose(arg0);
@@ -3493,6 +3544,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.keyDown(id, sel, arg0);
 	} else if (sel == OS.sel_keyUp_1) {
 		widget.keyUp(id, sel, arg0);
+	} else if (sel == OS.sel_flagsChanged_1) {
+		widget.flagsChanged(id, sel, arg0);
 	} else if (sel == OS.sel_mouseUp_1) {
 		widget.mouseUp(id, sel, arg0);
 	} else if (sel == OS.sel_rightMouseDown_1) {
@@ -3512,7 +3565,7 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	} else if (sel == OS.sel_mouseExited_1) {
 		widget.mouseExited(id, sel, arg0);
 	} else if (sel == OS.sel_menuForEvent_1) {
-		return widget.menuForEvent(id);
+		return widget.menuForEvent(id, sel, arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
 		return widget.numberOfRowsInTableView(arg0);
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_1) {
@@ -3545,6 +3598,20 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.pageDown(id, sel, arg0);
 	} else if (sel == OS.sel_pageUp_1) {
 		widget.pageUp(id, sel, arg0);
+	} else if (sel == OS.sel_attributedSubstringFromRange_1) {
+		return widget.attributedSubstringFromRange (id, sel, arg0);
+	} else if (sel == OS.sel_characterIndexForPoint_1) {
+		return widget.characterIndexForPoint (id, sel, arg0);
+	} else if (sel == OS.sel_firstRectForCharacterRange_1) {
+		NSRect rect = widget.firstRectForCharacterRange (id, sel, arg0);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
+	} else if (sel == OS.sel_insertText_1) {
+		widget.insertText (id, sel, arg0);
+	} else if (sel == OS.sel_doCommandBySelector_1) {
+		widget.doCommandBySelector (id, sel, arg0);
 	}
 	return 0;
 }
@@ -3564,6 +3631,9 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 		return widget.outlineView_shouldExpandItem(arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_menu_1willHighlightItem_1) {
 		widget.menu_willHighlightItem(arg0, arg1);
+	} else if (sel == OS.sel_setMarkedText_1selectedRange_1) {
+		widget.setMarkedText_selectedRange (delegate, sel, arg0, arg1);
+		return 0;
 	}
 	return 0;
 }
@@ -3573,8 +3643,7 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_1objectValueForTableColumn_1row_1) {
 		return widget.tableView_objectValueForTableColumn_row(arg0, arg1, arg2);
-	}
-	if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
+	} else if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
 		return widget.tableView_shouldEditTableColumn_row(arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
 		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;

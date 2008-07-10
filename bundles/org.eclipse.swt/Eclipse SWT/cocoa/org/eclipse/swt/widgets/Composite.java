@@ -475,12 +475,13 @@ boolean isTabGroup () {
 	return super.isTabGroup ();
 }
 
-void keyDown(int id, int sel, int theEvent) {
-	/* needed to avoid bells */
-	if (hasFocus () && (state & CANVAS) != 0) {
+void keyDown (int id, int sel, int theEvent) {
+	if ((state & CANVAS) != 0) {
+		NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
+		view.interpretKeyEvents (array);
 		return;
 	}
-	super.keyDown(id, sel, theEvent);
+	super.keyDown (id, sel, theEvent);
 }
 
 /**

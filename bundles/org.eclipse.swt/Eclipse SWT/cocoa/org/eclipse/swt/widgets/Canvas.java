@@ -45,6 +45,11 @@ Canvas () {
 	/* Do nothing */
 }
 
+int attributedSubstringFromRange (int id, int sel, int range) {
+	if (ime != null) return ime.attributedSubstringFromRange (id, sel, range);
+	return super.attributedSubstringFromRange(id, sel, range);
+}
+
 boolean becomeFirstResponder (int id, int sel) {
 	if (caret != null) caret.setFocus ();
 	return super.becomeFirstResponder(id, sel);
@@ -85,6 +90,11 @@ boolean resignFirstResponder (int id, int sel) {
  */
 public Canvas (Composite parent, int style) {
 	super (parent, style);
+}
+
+int characterIndexForPoint (int id, int sel, int point) {
+	if (ime != null) return ime.characterIndexForPoint (id, sel, point);
+	return super.characterIndexForPoint (id, sel, point);
 }
 
 /** 
@@ -158,6 +168,11 @@ void drawRect(int id, NSRect rect) {
 	}
 }
 
+NSRect firstRectForCharacterRange (int id, int sel, int range) {
+	if (ime != null) return ime.firstRectForCharacterRange (id, sel, range);
+	return super.firstRectForCharacterRange (id, sel, range);
+}
+
 /**
  * Returns the caret.
  * <p>
@@ -196,6 +211,23 @@ public Caret getCaret () {
 public IME getIME () {
 	checkWidget();
     return ime;
+}
+
+boolean hasMarkedText (int id, int sel) {
+	if (ime != null) return ime.hasMarkedText (id, sel);
+	return super.hasMarkedText (id, sel);
+}
+
+boolean insertText (int id, int sel, int string) {
+	if (ime != null) {
+		if (!ime.insertText (id, sel, string)) return false;
+	}
+	return super.insertText (id, sel, string);
+}
+
+NSRange markedRange (int id, int sel) {
+	if (ime != null) return ime.markedRange (id, sel);
+	return super.markedRange (id, sel);
 }
 
 //void redrawWidget (int control, boolean children) {
@@ -291,9 +323,14 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
-boolean sendKeyEvent(NSEvent nsEvent, int type) {
-	if (caret != null) NSCursor.setHiddenUntilMouseMoves(true);
-	return super.sendKeyEvent(nsEvent, type);
+NSRange selectedRange (int id, int sel) {
+	if (ime != null) return ime.selectedRange (id, sel);
+	return super.selectedRange (id, sel);
+}
+
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	if (caret != null) NSCursor.setHiddenUntilMouseMoves (true);
+	return super.sendKeyEvent (nsEvent, type);
 }
 
 /**
@@ -355,6 +392,18 @@ public void setIME (IME ime) {
 	checkWidget ();
 	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.ime = ime;
+}
+
+boolean setMarkedText_selectedRange (int id, int sel, int string, int range) {
+	if (ime != null) {
+		if (!ime.setMarkedText_selectedRange (id, sel, string, range)) return false;
+	}
+	return super.setMarkedText_selectedRange (id, sel, string, range);
+}
+
+int validAttributesForMarkedText (int id, int sel) {
+	if (ime != null) return ime.validAttributesForMarkedText (id, sel);
+	return super.validAttributesForMarkedText(id, sel);
 }
 
 }

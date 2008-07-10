@@ -1143,67 +1143,68 @@ public void selectAll () {
 	}
 }
 
-boolean sendKeyEvent (int type, Event event) {
-	if (!super.sendKeyEvent (type, event)) {
-		return false;
-	}
-	if (type != SWT.KeyDown) return true;
-	if ((style & SWT.READ_ONLY) != 0) return true;
-	if (event.character == 0) return true;
-	if ((event.stateMask & SWT.COMMAND) != 0) return true;
-	String oldText = "";
-	int charCount = getCharCount ();
-	Point selection = getSelection ();
-	int start = selection.x, end = selection.y;
-	switch (event.character) {
-		case SWT.BS:
-			if (start == end) {
-				if (start == 0) return true;
-				start = Math.max (0, start - 1);
-			}
-			break;
-		case SWT.DEL:
-			if (start == end) {
-				if (start == charCount) return true;
-				end = Math.min (end + 1, charCount);
-			}
-			break;
-		case SWT.CR:
-			if ((style & SWT.SINGLE) != 0) return true;
-			oldText = DELIMITER;
-			break;
-		default:
-			if (event.character != '\t' && event.character < 0x20) return true;
-			oldText = new String (new char [] {event.character});
-	}
-	String newText = verifyText (oldText, start, end, event);
-	if (newText == null) return false;
-	if (charCount - (end - start) + newText.length () > textLimit) {
-		return false;
-	}
-	boolean result = newText == oldText;
-	if (newText != oldText || hiddenText != null) {
-//		if (txnObject == 0) {
-//			String text = new String (getEditText (0, -1));
-//			String leftText = text.substring (0, start);
-//			String rightText = text.substring (end, text.length ());
-//			setEditText (leftText + newText + rightText);
-//			start += newText.length ();
-//			setSelection (new Point (start, start));
-//			result = false;
-//		} else {
-//			setTXNText (start, end, newText);
-//		}
-	}
-	/*
-	* Post the modify event so that the character will be inserted
-	* into the widget when the modify event is delivered.  Normally,
-	* modify events are sent but it is safe to post the event here
-	* because this method is called from the event loop.
-	*/
-	postEvent (SWT.Modify);
-	return result;
-}
+//boolean sendKeyEvent (int type, Event event) {
+//	//TODO
+//	if (!super.sendKeyEvent (type, event)) {
+//		return false;
+//	}
+//	if (type != SWT.KeyDown) return true;
+//	if ((style & SWT.READ_ONLY) != 0) return true;
+//	if (event.character == 0) return true;
+//	if ((event.stateMask & SWT.COMMAND) != 0) return true;
+//	String oldText = "";
+//	int charCount = getCharCount ();
+//	Point selection = getSelection ();
+//	int start = selection.x, end = selection.y;
+//	switch (event.character) {
+//		case SWT.BS:
+//			if (start == end) {
+//				if (start == 0) return true;
+//				start = Math.max (0, start - 1);
+//			}
+//			break;
+//		case SWT.DEL:
+//			if (start == end) {
+//				if (start == charCount) return true;
+//				end = Math.min (end + 1, charCount);
+//			}
+//			break;
+//		case SWT.CR:
+//			if ((style & SWT.SINGLE) != 0) return true;
+//			oldText = DELIMITER;
+//			break;
+//		default:
+//			if (event.character != '\t' && event.character < 0x20) return true;
+//			oldText = new String (new char [] {event.character});
+//	}
+//	String newText = verifyText (oldText, start, end, event);
+//	if (newText == null) return false;
+//	if (charCount - (end - start) + newText.length () > textLimit) {
+//		return false;
+//	}
+//	boolean result = newText == oldText;
+//	if (newText != oldText || hiddenText != null) {
+////		if (txnObject == 0) {
+////			String text = new String (getEditText (0, -1));
+////			String leftText = text.substring (0, start);
+////			String rightText = text.substring (end, text.length ());
+////			setEditText (leftText + newText + rightText);
+////			start += newText.length ();
+////			setSelection (new Point (start, start));
+////			result = false;
+////		} else {
+////			setTXNText (start, end, newText);
+////		}
+//	}
+//	/*
+//	* Post the modify event so that the character will be inserted
+//	* into the widget when the modify event is delivered.  Normally,
+//	* modify events are sent but it is safe to post the event here
+//	* because this method is called from the event loop.
+//	*/
+//	postEvent (SWT.Modify);
+//	return result;
+//}
 
 void setBackground (float [] color) {
 	NSColor nsColor;

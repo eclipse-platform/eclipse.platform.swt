@@ -511,8 +511,8 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int menuForEvent (int event) {
-	return parent.menuForEvent(event);
+int menuForEvent (int id, int sel, int theEvent) {
+	return parent.menuForEvent (id, sel, theEvent);
 }
 
 void register () {

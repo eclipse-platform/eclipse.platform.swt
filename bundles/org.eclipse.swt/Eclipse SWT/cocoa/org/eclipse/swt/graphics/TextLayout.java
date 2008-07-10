@@ -50,6 +50,8 @@ public final class TextLayout extends Resource {
 	
 	int[] lineOffsets;
 	NSRect[] lineBounds;
+	
+	static final int UNDERLINE_THICK = 1 << 16;
 
 	static class StyleItem {
 		TextStyle style;
@@ -169,7 +171,6 @@ void computeRuns() {
 			}
 		}
 		if (style.underline) {
-			//TODO - IME - thick
 			int underlineStyle = 0;
 			switch (style.underlineStyle) {
 				case SWT.UNDERLINE_SINGLE:
@@ -177,6 +178,9 @@ void computeRuns() {
 					break;
 				case SWT.UNDERLINE_DOUBLE:
 					underlineStyle = OS.NSUnderlineStyleDouble;
+					break;
+				case UNDERLINE_THICK:
+					underlineStyle = OS.NSUnderlineStyleThick;
 					break;
 			}
 			if (underlineStyle != 0) {

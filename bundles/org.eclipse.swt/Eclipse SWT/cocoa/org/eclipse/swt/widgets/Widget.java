@@ -129,6 +129,10 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+int attributedSubstringFromRange (int id, int sel, int range) {
+	return 0;
+}
+
 void callSuper(int id, int selector, int arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -141,6 +145,10 @@ boolean callSuperBoolean(int id, int sel) {
 	super_struct.receiver = id;
 	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel) != 0;
+}
+
+int characterIndexForPoint (int id, int sel, int point) {
+	return OS.NSNotFound;
 }
 
 boolean acceptsFirstResponder (int id, int sel) {
@@ -378,6 +386,11 @@ public void dispose () {
 	release (true);
 }
 
+boolean doCommandBySelector (int id, int sel, int aSelector) {
+	callSuper (id, sel, aSelector);
+	return true;
+}
+
 void drawBackground (int control, int context) {
 	/* Do nothing */
 }
@@ -398,6 +411,10 @@ void error (int code) {
 
 boolean filters (int eventType) {
 	return display.filters (eventType);
+}
+
+NSRect firstRectForCharacterRange(int id, int sel, int range) {
+	return new NSRect ();
 }
 
 int fixMnemonic (char [] buffer) {
@@ -559,6 +576,10 @@ public int getStyle () {
 	return style;
 }
 
+boolean hasMarkedText (int id, int sel) {
+	return false;
+}
+
 void helpRequested(int theEvent) {
 }
 
@@ -572,6 +593,11 @@ int hitTest (int id, int sel, NSPoint point) {
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
+}
+
+boolean insertText (int id, int sel, int string) {
+	callSuper (id, sel, string);
+	return true;
 }
 
 /**
@@ -626,32 +652,8 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-boolean flagsChanged (int theEvent) {
-	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
-	int mask = 0;
-	NSEvent nsEvent = new NSEvent (theEvent);
-	int modifiers = nsEvent.modifierFlags ();
-	int keyCode = Display.translateKey (nsEvent.keyCode ());
-	if (keyCode == 0) return true;
-	switch (keyCode) {
-		case SWT.ALT: mask = OS.NSAlternateKeyMask; break;
-		case SWT.CONTROL: mask = OS.NSControlKeyMask; break;
-		case SWT.COMMAND: mask = OS.NSCommandKeyMask; break;
-		case SWT.SHIFT: mask = OS.NSShiftKeyMask; break;
-		case SWT.CAPS_LOCK:
-			Event event = new Event();
-			event.keyCode = keyCode;
-			setInputState (event, nsEvent, SWT.KeyDown);
-			sendKeyEvent (SWT.KeyDown, event);
-			setInputState (event, nsEvent, SWT.KeyUp);
-			sendKeyEvent (SWT.KeyUp, event);
-			return true;
-	}
-	int type = (mask & modifiers) != 0 ? SWT.KeyDown : SWT.KeyUp;
-	Event event = new Event();
-	event.keyCode = keyCode;
-	setInputState (event, nsEvent, type);
-	return sendKeyEvent (type, event);
+void flagsChanged (int id, int sel, int theEvent) {
+	callSuper (id, sel, theEvent);
 }
 
 void keyDown (int id, int sel, int theEvent) {
@@ -702,11 +704,18 @@ void mouseExited(int id, int sel, int theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-int menuForEvent (int event) {
-	return 0;
+int menuForEvent (int id, int sel, int theEvent) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, theEvent);
 }
 
 void menuNeedsUpdate(int menu) {
+}
+
+NSRange markedRange (int id, int sel) {
+	return new NSRange ();
 }
 
 void menu_willHighlightItem(int menu, int item) {
@@ -928,6 +937,10 @@ void scrollWheel (int id, int sel, int theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
+NSRange selectedRange (int id, int sel) {
+	return new NSRange ();
+}
+
 void sendArrowSelection () {
 }
 
@@ -969,23 +982,9 @@ void sendEvent (int eventType, Event event, boolean send) {
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
-	NSString chars = nsEvent.characters ();
-	int length = chars.length();
-	if (length > 1) {
-		for (int i = 0; i < length; i++) {
-			Event event = new Event ();
-			event.character = (char) chars.characterAtIndex (i);
-			setInputState (event, nsEvent, type);
-			sendKeyEvent (type, event);
-		}
-		return true;
-	} else if (length == 1) {
-		Event event = new Event ();
-		if (!setKeyState (event, type, nsEvent)) return true;
-		return sendKeyEvent (type, event);
-	}
-	//TODO dead keys
-	return true;
+	Event event = new Event ();
+	if (!setKeyState (event, type, nsEvent)) return true;
+	return sendKeyEvent (type, event);
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -1207,18 +1206,22 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 		default:
 			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
 				NSString chars = nsEvent.characters ();
-				event.character = (char)chars.characterAtIndex (0);
+				if (chars.length() > 0) event.character = (char)chars.characterAtIndex (0);
 			}
 			if (event.keyCode == 0) {
 				//TODO this is wrong for shifted keys like ';', '1' and non-english keyboards
-				NSString chars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
-				event.keyCode = (char)chars.characterAtIndex(0);
+				NSString unmodifiedChars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
+				if (unmodifiedChars.length() > 0) event.keyCode = (char)unmodifiedChars.characterAtIndex(0);
 			}
 	}
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!isNull) return false;
 	}
 	setInputState (event, nsEvent, type);
+	return true;
+}
+
+boolean setMarkedText_selectedRange (int id, int sel, int string, int range) {
 	return true;
 }
 
@@ -1252,6 +1255,10 @@ public String toString () {
 		if (isValidThread ()) string = getNameText ();
 	}
 	return getName () + " {" + string + "}";
+}
+
+int validAttributesForMarkedText (int id, int sel) {
+	return 0;
 }
 
 void willSelectTabViewItem(int tabView, int tabViewItem) {

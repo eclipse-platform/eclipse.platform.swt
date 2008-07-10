@@ -503,6 +503,11 @@ void createHandle () {
 	window.setAcceptsMouseMovedEvents(true);
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	window.setDelegate(windowDelegate);
+	
+	id id = window.fieldEditor (true, null);
+	if (id != null) {
+		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+	}
 }
 
 void deregister () {
@@ -1338,7 +1343,8 @@ void setWindowVisible (boolean visible, boolean key) {
 }
 
 void setZOrder () {
-	window.setContentView (topView());
+	if (scrollView != null) scrollView.setDocumentView (view);
+	window.setContentView (scrollView != null ? scrollView : view);
 }
 
 void setZOrder (Control control, boolean above) {
@@ -1434,30 +1440,6 @@ boolean windowShouldClose(int window) {
 }
 
 void windowWillClose(int notification) {
-}
-
-void windowSendEvent(int id, int event) {
-	NSEvent nsEvent = new NSEvent(event);
-	int type = nsEvent.type();
-	if (type == OS.NSFlagsChanged) {
-		Control eventTarget = display.getFocusControl();
-		if (eventTarget != null) {
-			if (eventTarget.flagsChanged(event)) return;
-		}
-	} else if (type == OS.NSKeyDown || type == OS.NSKeyUp) {
-		Control eventTarget = display.getFocusControl();
-		if (eventTarget != null) {
-			if (type == OS.NSKeyDown) {
-				boolean[] consume = new boolean[1];
-				int key = nsEvent.keyCode();
-				if (eventTarget.translateTraversal(key, nsEvent, consume)) return;
-				if (consume[0]) return;
-				if (eventTarget.isDisposed()) return;
-			}
-			if (!eventTarget.sendKeyEvent(nsEvent, type == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp)) return;
-		}
-	}
-	super.windowSendEvent(id, event);
 }
 
 }
