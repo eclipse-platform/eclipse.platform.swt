@@ -587,12 +587,12 @@ public void setGrayed(boolean grayed) {
  */
 public void setImage (Image image) {
 	checkWidget();
-	if ((style & SWT.ARROW) != 0) return;
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if ((style & SWT.ARROW) != 0) return;
 	this.image = image;
-	((NSButton)view).setImage(image.handle);
+	((NSButton)view).setImage(image != null ? image.handle : null);
 }
 
 boolean setRadioSelection (boolean value){
