@@ -3827,7 +3827,7 @@ static {
 	* to stop the compiler from inlining.
 	*/
 	String platform = getPlatform ();
-	if ("carbon".equals (platform)) { //$NON-NLS-1$
+	if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
 		MOD1 = COMMAND;
 		MOD2 = SHIFT;
 		MOD3 = ALT;
