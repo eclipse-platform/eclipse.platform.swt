@@ -545,8 +545,8 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		color.dispose();
 	}
 }
-//We should have checkSubclass() but adding it now will cause existing 
-//subclasses to break.
+//The checkSubclass() method should be implemented but adding it now 
+//will cause existing subclasses to break.
 //protected void checkSubclass () {
 //	String name = getClass ().getName ();
 //	int index = name.lastIndexOf ('.');

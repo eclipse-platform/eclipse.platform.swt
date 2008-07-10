@@ -47,8 +47,6 @@ import org.eclipse.swt.accessibility.*;
  */
 public class CCombo extends Composite {
 
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
-
 	Text text;
 	List list;
 	int visibleItemCount = 5;
@@ -59,6 +57,8 @@ public class CCombo extends Composite {
 	Color foreground, background;
 	Font font;
 	
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.custom."; //$NON-NLS-1$
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

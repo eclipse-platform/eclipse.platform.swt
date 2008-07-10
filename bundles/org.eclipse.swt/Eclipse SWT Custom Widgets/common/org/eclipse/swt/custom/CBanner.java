@@ -151,8 +151,8 @@ static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int 
 static int checkStyle (int style) {
 	return SWT.NONE;
 }
-// We should have checkSubclass() but adding it now will cause existing 
-// subclasses to break.
+//The checkSubclass() method should be implemented but adding it now 
+//will cause existing subclasses to break.
 //protected void checkSubclass () {
 //	String name = getClass ().getName ();
 //	int index = name.lastIndexOf ('.');
