@@ -175,6 +175,10 @@ public void cancelAuthenticationChallenge(NSURLAuthenticationChallenge challenge
 	OS.objc_msgSend(this.id, OS.sel_cancelAuthenticationChallenge_1, challenge != null ? challenge.id : 0);
 }
 
+public boolean conformsToProtocol (int protocol) {
+	return OS.objc_msgSend (id, OS.sel_conformsToProtocol_1, protocol) != 0;
+}
+
 public static void static_cancelPreviousPerformRequestsWithTarget_(id aTarget) {
 	OS.objc_msgSend(OS.class_NSObject, OS.sel_cancelPreviousPerformRequestsWithTarget_1, aTarget != null ? aTarget.id : 0);
 }
