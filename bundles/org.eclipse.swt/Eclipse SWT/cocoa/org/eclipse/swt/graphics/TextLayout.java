@@ -327,18 +327,33 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	range.length = layoutManager.numberOfGlyphs();
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	NSRange selectionRange = null;
+	NSColor selectionColor = null;
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
+		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
+	}
 	if (hasSelection) {
 		selectionRange = new NSRange();
 		selectionRange.location = selectionStart;
 		selectionRange.length = selectionEnd - selectionStart + 1;
-		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
-		NSColor selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
 		layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
 	}
-	//TODO draw selection for flags (LAST_LINE_SELECTION and FULL_SELECTION)
+	//TODO draw selection for flags (DELIMITER_SELECTION)
 	if (range.length > 0) {
 		layoutManager.drawBackgroundForGlyphRange(range, pt);
 		layoutManager.drawGlyphsForGlyphRange(range, pt);
+	}
+	if ((flags & SWT.LAST_LINE_SELECTION) != 0) {
+		NSRect bounds = lineBounds[lineBounds.length - 1];
+		NSRect rect = new NSRect();
+		rect.x = pt.x + bounds.x + bounds.width;
+		rect.y = y + bounds.y;
+		rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : bounds.height / 3;
+		rect.height = bounds.height;
+		selectionColor.setFill();
+		NSBezierPath path = NSBezierPath.bezierPath();
+		path.appendBezierPathWithRect(rect);
+		path.fill();
 	}
 	if (selectionRange != null) {
 		layoutManager.removeTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionRange);

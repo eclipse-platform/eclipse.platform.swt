@@ -681,6 +681,7 @@ void destroy() {
 		image.memGC = null;
 		image.createAlpha();
 	}
+	if (data.path != null) data.path.release();
 	if (data.clipPath != null) data.clipPath.release();
 	if (data.transform != null) data.transform.release();
 	if (data.inverseTransform != null) data.inverseTransform.release();
