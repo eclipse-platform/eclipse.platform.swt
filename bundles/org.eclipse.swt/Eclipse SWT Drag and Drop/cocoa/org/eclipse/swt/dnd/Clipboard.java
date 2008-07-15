@@ -28,7 +28,6 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Clipboard {
 
 	Display display;
-	int scrap = 0;
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -168,7 +167,7 @@ public void clearContents() {
  */
 public void clearContents(int clipboards) {
 	checkWidget();
-	if ((clipboards & DND.CLIPBOARD) == 0 || scrap == 0) return;
+	if ((clipboards & DND.CLIPBOARD) == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
 	//TODO
 //	A declareTypes:owner: message essentially changes the contents of the receiver: It invalidates the current contents of the receiver and increments its change count.
@@ -518,11 +517,13 @@ public TransferData[] getAvailableTypes() {
 public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
 	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0];
-	String[] registeredTypes = Transfer.registeredTypes();
-	TransferData[] result = new TransferData[registeredTypes.length];
-	for (int i = 0; i < result.length; i++) { 
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	NSArray types = pasteboard.types();
+	int count = types.count();
+	TransferData[] result = new TransferData[count];
+	for (int i = 0; i < count; i++) {
 		result[i] = new TransferData();
-		result[i].type = registeredTypes[i];
+		result[i].type = Transfer.getString(new NSString(types.objectAtIndex(i)));
 	}
 	return result;
 }
@@ -545,6 +546,13 @@ public TransferData[] getAvailableTypes(int clipboards) {
  */
 public String[] getAvailableTypeNames() {
 	checkWidget();
-	return Transfer.registeredTypes();
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+	NSArray types = pasteboard.types();
+	int count = types.count();
+	String[] result = new String[count];
+	for (int i = 0; i < count; i++) {
+		result[i] = Transfer.getString(new NSString(types.objectAtIndex(i)));
+	}
+	return result;
 }
 }

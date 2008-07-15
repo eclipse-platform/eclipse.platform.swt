@@ -121,20 +121,20 @@ import org.eclipse.swt.internal.cocoa.*;
 public abstract class ByteArrayTransfer extends Transfer {
 
 public TransferData[] getSupportedTypes() {
-	String[] registeredTypes = registeredTypes();
-	TransferData[] data = new TransferData[registeredTypes.length];
-	for (int i = 0; i < registeredTypes.length; i++) {
+	String[] types = getTypeNames();
+	TransferData[] data = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
 		data[i] = new TransferData();
-		data[i].type = registeredTypes[i];
+		data[i].type = types[i];
 	}
 	return data;
 }
 
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
-	String[] registeredTypes = registeredTypes();
-	for (int i = 0; i < registeredTypes.length; i++) {
-		if (transferData.type.equals(registeredTypes[i])) return true;
+	String[] types = getTypeNames();
+	for (int i = 0; i < types.length; i++) {
+		if (types[i] != null && types[i].equals(transferData.type)) return true;
 	}
 	return false;
 }
