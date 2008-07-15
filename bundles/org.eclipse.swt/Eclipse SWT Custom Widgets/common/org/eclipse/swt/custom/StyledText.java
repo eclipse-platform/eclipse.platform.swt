@@ -161,10 +161,10 @@ public class StyledText extends Canvas {
 	int indent;
 	int lineSpacing;
 
-	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
+	final static boolean IS_MAC, IS_GTK, IS_MOTIF;
 	static {
 		String platform = SWT.getPlatform();
-		IS_CARBON = "carbon".equals(platform);
+		IS_MAC = "carbon".equals(platform) || "cocoa".equals(platform);
 		IS_GTK = "gtk".equals(platform);
 		IS_MOTIF = "motif".equals(platform);
 	}
@@ -1887,7 +1887,7 @@ void createKeyBindings() {
 	// Navigation
 	setKeyBinding(SWT.ARROW_UP, ST.LINE_UP);	
 	setKeyBinding(SWT.ARROW_DOWN, ST.LINE_DOWN);
-	if (IS_CARBON) {
+	if (IS_MAC) {
 		setKeyBinding(previousKey | SWT.MOD1, ST.LINE_START);
 		setKeyBinding(nextKey | SWT.MOD1, ST.LINE_END);
 		setKeyBinding(SWT.HOME, ST.TEXT_START);
@@ -1914,7 +1914,7 @@ void createKeyBindings() {
 	// Selection
 	setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);	
 	setKeyBinding(SWT.ARROW_DOWN | SWT.MOD2, ST.SELECT_LINE_DOWN);
-	if (IS_CARBON) {
+	if (IS_MAC) {
 		setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_LINE_START);
 		setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_LINE_END);
 		setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_TEXT_START);	
@@ -1943,7 +1943,7 @@ void createKeyBindings() {
 	setKeyBinding('X' | SWT.MOD1, ST.CUT);
 	setKeyBinding('C' | SWT.MOD1, ST.COPY);
 	setKeyBinding('V' | SWT.MOD1, ST.PASTE);
-	if (IS_CARBON) {
+	if (IS_MAC) {
 		setKeyBinding(SWT.DEL | SWT.MOD2, ST.DELETE_NEXT);
 		setKeyBinding(SWT.BS | SWT.MOD3, ST.DELETE_WORD_PREVIOUS);
 		setKeyBinding(SWT.DEL | SWT.MOD3, ST.DELETE_WORD_NEXT);
@@ -5115,7 +5115,7 @@ void handleKey(Event event) {
 	if (action == SWT.NULL) {
 		boolean ignore = false;
 		
-		if (IS_CARBON) {
+		if (IS_MAC) {
 			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Do not  
 			// ignore COMMAND+ALT combinations since that key sequence
@@ -5224,7 +5224,7 @@ void handleMouseDown(Event event) {
 	}
 	
 	//set selection
-	if ((event.button != 1) || (IS_CARBON && (event.stateMask & SWT.MOD4) != 0)) {
+	if ((event.button != 1) || (IS_MAC && (event.stateMask & SWT.MOD4) != 0)) {
 		return;	
 	}
 	clickCount = event.count;
@@ -5784,7 +5784,7 @@ public void invokeAction(int action) {
  * Temporary until SWT provides this
  */
 boolean isBidi() {
-	return IS_GTK || IS_CARBON || BidiUtil.isBidiPlatform() || isMirrored;
+	return IS_GTK || IS_MAC || BidiUtil.isBidiPlatform() || isMirrored;
 }
 boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
