@@ -57,7 +57,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Combo extends Composite {
 	int textLimit = LIMIT;
 	boolean receivingFocus;
-	NSRange selection;
+	NSRange selectionRange;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -627,8 +627,8 @@ public Point getSelection () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, getCharCount ());
 	} else {
-		if (selection == null) return new Point(0, 0);
-		return new Point(selection.location, selection.location + selection.length);
+		if (selectionRange == null) return new Point(0, 0);
+		return new Point(selectionRange.location, selectionRange.location + selectionRange.length);
 	}
 }
 
@@ -843,7 +843,7 @@ public void paste () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	selection = null;
+	selectionRange = null;
 }
 
 /**
@@ -1256,16 +1256,21 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) == 0) {
-//		int length = getCharCount ();
-//		int start = selection.x, end = selection.y;
-//		ControlEditTextSelectionRec sel = new ControlEditTextSelectionRec ();
-//		sel.selStart = (short) Math.min (Math.max (Math.min (start, end), 0), length);
-//		sel.selEnd = (short) Math.min (Math.max (Math.max (start, end), 0), length);
-//		if (hasFocus ()) {
-//			OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, sel);
-//		} else {
-//			this.selection = sel;
-//		}
+		int length = 0;
+		NSString str = new NSCell(((NSComboBox)view).cell()).title();
+		if (str != null) {
+			length = str.length();
+		}
+		int start = selection.x, end = selection.y;
+		start = Math.min (Math.max (Math.min (start, end), 0), length);
+		end = Math.min (Math.max (Math.max (start, end), 0), length);
+		selectionRange = new NSRange();
+		selectionRange.location = start;
+		selectionRange.length = end - start;
+		if (this == display.getFocusControl ()) {
+			NSText editor = view.window().fieldEditor(false, view);
+			editor.setSelectedRange(selectionRange);
+		}
 	}
 }
 
@@ -1371,7 +1376,7 @@ public void setVisibleItemCount (int count) {
 void textViewDidChangeSelection(int aNotification) {
 	NSNotification notification = new NSNotification(aNotification);
 	NSText editor = new NSText(notification.object().id);
-	selection = editor.selectedRange();
+	selectionRange = editor.selectedRange();
 }
 
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
@@ -1380,7 +1385,7 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTex
 	* then return the receiver's last selection range, otherwise the full
 	* text will be automatically selected.
 	*/
-	if (receivingFocus && selection != null) return selection;
+	if (receivingFocus && selectionRange != null) return selectionRange;
 
 	/* allow the selection change to proceed */
 	NSRange result = new NSRange();
