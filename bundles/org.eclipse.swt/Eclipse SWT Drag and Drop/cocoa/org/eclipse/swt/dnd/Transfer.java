@@ -157,12 +157,6 @@ public static int registerType(String formatName) {
 	return typeCount;
 }
 
-static String[] registeredTypes() {
-	String[] result = new String[typeCount];
-	System.arraycopy(types, 1, result, 0, typeCount);
-	return result;
-}
-
 /**
  * Test that the object is of the correct format for this Transfer class.
  * 

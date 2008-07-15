@@ -169,8 +169,7 @@ public void clearContents(int clipboards) {
 	checkWidget();
 	if ((clipboards & DND.CLIPBOARD) == 0) return;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
-	//TODO
-//	A declareTypes:owner: message essentially changes the contents of the receiver: It invalidates the current contents of the receiver and increments its change count.
+	pasteboard.declareTypes(NSMutableArray.arrayWithCapacity(0), null);
 }
 
 /**
@@ -275,26 +274,27 @@ public Object getContents(Transfer transfer, int clipboards) {
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	if ((clipboards & DND.CLIPBOARD) == 0) return null;
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
-	int[] typeIds = transfer.getTypeIds();
-	// get data from system clipboard
-	for (int i=0; i<typeIds.length; i++) {
+	String[] typeNames = transfer.getTypeNames();
+	NSMutableArray types = NSMutableArray.arrayWithCapacity(typeNames.length);
+	for (int i = 0; i < typeNames.length; i++) {
+		types.addObject(NSString.stringWith(typeNames[i]));
+	}
+	NSString type = pasteboard.availableTypeFromArray(types);
+	if (type != null) {
 		TransferData tdata = new TransferData();
-		String type = Transfer.types[typeIds[i]];
-		NSString dataType = NSString.stringWith(type);
-		if (dataType.isEqual(OS.NSStringPboardType) ||
-				dataType.isEqual(OS.NSRTFPboardType)) {
-			tdata.data = pasteboard.stringForType(dataType);
-		} else if (dataType.isEqual(OS.NSFilenamesPboardType)) {
-			tdata.data = new NSArray(pasteboard.propertyListForType(dataType).id);
+		if (type.isEqual(OS.NSStringPboardType) || type.isEqual(OS.NSRTFPboardType)) {
+			tdata.data = pasteboard.stringForType(type);
+		} else if (type.isEqual(OS.NSFilenamesPboardType)) {
+			tdata.data = new NSArray(pasteboard.propertyListForType(type).id);
 		} else {
-			tdata.data = pasteboard.dataForType(dataType);
+			tdata.data = pasteboard.dataForType(type);
 		}
 		if (tdata.data != null) {
-			tdata.type = type;		
+			tdata.type = Transfer.getString(type);		
 			return transfer.nativeToJava(tdata);
 		}
 	}
-	return null;	// No data available for this transfer
+	return null;
 }
 
 /**
@@ -439,15 +439,16 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 	if (pasteboard == null) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
+	pasteboard.declareTypes(NSMutableArray.arrayWithCapacity(0), null);
 	for (int i=0; i<dataTypes.length; i++) {
-		int[] typeIds = dataTypes[i].getTypeIds();
-		for (int j=0; j<typeIds.length; j++) {
+		String[] typeNames = dataTypes[i].getTypeNames();
+		for (int j=0; j<typeNames.length; j++) {
 			TransferData transferData = new TransferData();
-			transferData.type = Transfer.types[typeIds[j]];
+			transferData.type = typeNames[j];
 			dataTypes[i].javaToNative(data[i], transferData);
 			NSObject tdata = transferData.data;
 			NSString dataType = NSString.stringWith(transferData.type);
-			declareTypes(pasteboard);
+			pasteboard.addTypes(NSArray.arrayWithObject(dataType), null);
 			if (dataType.isEqual(OS.NSStringPboardType) ||
 					dataType.isEqual(OS.NSRTFPboardType)) {
 				pasteboard.setString((NSString) tdata, dataType);
@@ -458,18 +459,6 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 			}
 		}
 	}
-}
-
-private void declareTypes(NSPasteboard pasteboard) {
-	String[] typeNames = getAvailableTypeNames();
-	NSMutableArray declaredTypes = NSMutableArray.arrayWithCapacity(typeNames.length);
-	for (int i = 0; i < typeNames.length; i++) {
-		String typeName = typeNames[i];
-		if (typeName != null) {
-			declaredTypes.addObject(NSString.stringWith(typeName));
-		}
-	}
-	pasteboard.declareTypes(declaredTypes, null);
 }
 
 /**
