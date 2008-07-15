@@ -11,8 +11,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import java.io.*;
-
 import org.eclipse.swt.internal.cocoa.*;
  
 /**
