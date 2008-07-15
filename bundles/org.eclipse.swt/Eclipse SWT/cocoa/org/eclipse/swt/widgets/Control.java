@@ -770,8 +770,8 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawRect(int id, NSRect rect) {
-	super.drawRect(id, rect);
+void drawWidget (int id, NSRect rect) {
+	if (id != view.id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
 	/* Send paint event */
@@ -1032,6 +1032,10 @@ public Rectangle getBounds () {
 public boolean getDragDetect () {
 	checkWidget ();
 	return (state & DRAG_DETECT) != 0;
+}
+
+NSBezierPath getClipping() {
+	return parent.getClipping ();
 }
 
 /**

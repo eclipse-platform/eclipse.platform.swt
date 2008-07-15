@@ -147,7 +147,7 @@ void createHandle () {
 	view = widget;
 }
 
-void drawRect (int id, NSRect rect) {
+void drawWidget (int id, NSRect rect) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Color background = control.background;
@@ -159,7 +159,7 @@ void drawRect (int id, NSRect rect) {
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
 	}
-	super.drawRect (id, rect);
+	super.drawWidget (id, rect);
 }
 
 Cursor findCursor () {

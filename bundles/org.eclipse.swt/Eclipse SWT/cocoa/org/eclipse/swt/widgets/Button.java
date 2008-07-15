@@ -216,46 +216,46 @@ void createHandle () {
 	_setAlignment(style);
 }
 
-void drawRect(int id, NSRect rect) {
-	super.drawRect(id, rect);
-	if ((style & SWT.ARROW) == 0) return;
-
-	NSRect frame = view.frame();
-	int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
-	NSGraphicsContext context = NSGraphicsContext.currentContext();
-	context.saveGraphicsState();
-	NSPoint p1 = new NSPoint();
-	p1.x = (float)Math.floor(-arrowSize / 2);
-	p1.y = (float)Math.floor(-arrowSize / 2);
-	NSPoint p2 = new NSPoint();
-	p2.x = (float)Math.ceil(arrowSize / 2);
-	p2.y = p1.y;
-	NSPoint p3 = new NSPoint();
-	p3.y = (float)Math.ceil(arrowSize / 2);
-
-	NSBezierPath path = NSBezierPath.bezierPath();
-	path.moveToPoint(p1);
-	path.lineToPoint(p2);
-	path.lineToPoint(p3);
-	path.closePath();
-
-	NSAffineTransform transform = NSAffineTransform.transform();
-	if ((style & SWT.LEFT) != 0) {
-		transform.rotateByDegrees(90);
-	} else if ((style & SWT.UP) != 0) {
-		transform.rotateByDegrees(180);
-	} else if ((style & SWT.RIGHT) != 0) {
-		transform.rotateByDegrees(-90);
+void drawWidget (int id, NSRect rect) {
+	if ((style & SWT.ARROW) != 0) {	
+		NSRect frame = view.frame();
+		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
+		NSGraphicsContext context = NSGraphicsContext.currentContext();
+		context.saveGraphicsState();
+		NSPoint p1 = new NSPoint();
+		p1.x = (float)Math.floor(-arrowSize / 2);
+		p1.y = (float)Math.floor(-arrowSize / 2);
+		NSPoint p2 = new NSPoint();
+		p2.x = (float)Math.ceil(arrowSize / 2);
+		p2.y = p1.y;
+		NSPoint p3 = new NSPoint();
+		p3.y = (float)Math.ceil(arrowSize / 2);
+	
+		NSBezierPath path = NSBezierPath.bezierPath();
+		path.moveToPoint(p1);
+		path.lineToPoint(p2);
+		path.lineToPoint(p3);
+		path.closePath();
+	
+		NSAffineTransform transform = NSAffineTransform.transform();
+		if ((style & SWT.LEFT) != 0) {
+			transform.rotateByDegrees(90);
+		} else if ((style & SWT.UP) != 0) {
+			transform.rotateByDegrees(180);
+		} else if ((style & SWT.RIGHT) != 0) {
+			transform.rotateByDegrees(-90);
+		}
+		path.transformUsingAffineTransform(transform);
+		transform = NSAffineTransform.transform();
+		transform.translateXBy(frame.width / 2, frame.height / 2);
+		path.transformUsingAffineTransform(transform);
+	
+		NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
+		color.set();
+		path.fill();
+		context.restoreGraphicsState();
 	}
-	path.transformUsingAffineTransform(transform);
-	transform = NSAffineTransform.transform();
-	transform.translateXBy(frame.width / 2, frame.height / 2);
-	path.transformUsingAffineTransform(transform);
-
-	NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
-	color.set();
-	path.fill();
-	context.restoreGraphicsState();
+	super.drawWidget (id, rect);
 }
 
 /**

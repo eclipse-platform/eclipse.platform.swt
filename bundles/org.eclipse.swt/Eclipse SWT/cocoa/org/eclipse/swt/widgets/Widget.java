@@ -129,6 +129,10 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+NSBezierPath getClipping () {
+	return null;
+}
+
 int attributedSubstringFromRange (int id, int sel, int range) {
 	return 0;
 }
@@ -395,14 +399,23 @@ void drawBackground (int control, int context) {
 	/* Do nothing */
 }
 
-void drawRect(int id, NSRect rect) {
+void drawRect (int id, NSRect rect) {
+	NSBezierPath path = getClipping ();
+	if (path != null) {
+		NSGraphicsContext.static_saveGraphicsState();
+		path.addClip ();
+	}
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, OS.sel_drawRect_1, rect);
+	drawWidget (id, rect);
+	if (path != null) {
+		NSGraphicsContext.static_restoreGraphicsState();
+	}
 }
 
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int id, NSRect rect) {
 }
 
 void error (int code) {

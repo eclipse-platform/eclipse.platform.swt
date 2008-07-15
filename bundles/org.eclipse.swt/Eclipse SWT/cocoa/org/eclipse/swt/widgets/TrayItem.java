@@ -159,6 +159,11 @@ void createHandle () {
 	item.setView(view);
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (view);
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -240,6 +245,11 @@ public String getToolTipText () {
 public boolean getVisible () {
 	checkWidget ();
 	return visible;
+}
+
+void register () {
+	super.register ();
+	display.addWidget (view, this);
 }
 
 void releaseHandle () {
@@ -409,7 +419,6 @@ void showMenu () {
 }
 
 void mouseDown(int id, int sel, int event) {
-	super.mouseDown(id, sel, event);
 	NSEvent nsEvent = new NSEvent(event);
 	int mask = nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask;
 	if (mask == OS.NSControlKeyMask) {
@@ -423,13 +432,11 @@ void mouseDown(int id, int sel, int event) {
 }
 
 void mouseUp(int id, int sel, int theEvent) {
-	super.mouseUp(id, sel, theEvent);
 	highlight = false;
 	view.setNeedsDisplay(true);
 }
 
 void rightMouseDown(int id, int sel, int theEvent) {
-	super.rightMouseDown(id, sel, theEvent);
 	showMenu();
 }
 

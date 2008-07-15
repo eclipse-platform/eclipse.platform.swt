@@ -283,8 +283,7 @@ void destroyWidget() {
 	super.destroyWidget();
 }
 
-void drawRect(int id, NSRect rect) {
-	super.drawRect(id, rect);
+void drawWidget (int id, NSRect rect) {
 	if (id == view.id && getSelection ()) {
 		NSRect bounds = view.bounds();
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
@@ -347,6 +346,10 @@ public Rectangle getBounds () {
 	checkWidget();
 	NSRect rect = view.frame();
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+}
+
+NSBezierPath getClipping() {
+	return parent.getClipping ();
 }
 
 /**

@@ -526,7 +526,7 @@ void destroyWidget () {
 	}
 }
 
-void drawRect(int id, NSRect rect) {
+void drawWidget (int id, NSRect rect) {
 	if (regionPath != null && background == null) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
@@ -534,7 +534,7 @@ void drawRect(int id, NSRect rect) {
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
 	}
-	super.drawRect(id, rect);
+	super.drawWidget (id, rect);
 }
 
 Control findBackgroundControl () {
@@ -621,6 +621,10 @@ public Rectangle getClientArea () {
 		height = (int)size.height;
 	}
 	return new Rectangle (0, 0, width, height);
+}
+
+NSBezierPath getClipping() {
+	return regionPath;
 }
 
 /**

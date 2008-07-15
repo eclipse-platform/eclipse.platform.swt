@@ -243,14 +243,14 @@ void createHandle () {
 	view = widget;
 }
 
-void drawRect (int id, NSRect rect) {
+void drawWidget (int id, NSRect rect) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			NSGraphicsContext context = NSGraphicsContext.currentContext();
 			fillBackground (view, context, rect);
 		}
 	}
-	super.drawRect (id, rect);
+	super.drawWidget (id, rect);
 }
 
 Composite findDeferredControl () {
