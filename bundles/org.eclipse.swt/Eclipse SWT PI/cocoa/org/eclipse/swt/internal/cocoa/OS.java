@@ -372,6 +372,7 @@ public static final native int attributedSubstringFromRange_CALLBACK(int func);
 public static final native int setMarkedText_selectedRange_CALLBACK(int func);
 public static final native int characterIndexForPoint_CALLBACK(int func);
 public static final native int firstRectForCharacterRange_CALLBACK(int func);
+public static final native int textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int func);
 
 public static final native int objc_msgSendSuper(objc_super superId, int sel);
 public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);

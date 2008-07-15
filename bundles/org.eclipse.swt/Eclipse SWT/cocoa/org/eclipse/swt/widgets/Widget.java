@@ -1242,6 +1242,13 @@ boolean tableView_shouldEditTableColumn_row(int aTableView, int aTableColumn, in
 void tableView_willDisplayCell_forTableColumn_row(int aTableView, int aCell, int aTableColumn, int rowIndex) {
 }
 
+void textViewDidChangeSelection(int aNotification) {
+}
+
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
+	return new NSRange();
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

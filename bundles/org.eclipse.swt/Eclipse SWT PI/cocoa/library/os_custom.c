@@ -534,3 +534,20 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(attributedSubstringFromRange_1CALLBACK)
 	return (SWT_PTR)attributedSubstringFromRangeProc;
 }
 #endif
+
+#ifndef NO_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK
+static SWT_PTR textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK;
+static NSRange textView_1willChangeSelectionFromCharacterRange_1toCharacterRange(id obj, SEL sel, NSTextView *aTextView, NSRange oldSelectedCharRange, NSRange newSelectedCharRange)
+{
+	NSRange* ptr = ((NSRange* (*)(id, SEL, NSTextView*, NSRange*, NSRange*))textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK)(obj, sel, aTextView, &oldSelectedCharRange, &newSelectedCharRange);
+	NSRange result = *ptr;
+	free(ptr);
+	return result;
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK = func;
+	return (SWT_PTR)textView_1willChangeSelectionFromCharacterRange_1toCharacterRange;
+}
+#endif

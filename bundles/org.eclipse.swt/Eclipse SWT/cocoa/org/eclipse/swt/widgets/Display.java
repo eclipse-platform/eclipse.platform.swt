@@ -1694,7 +1694,8 @@ void initClasses () {
 	int attributedSubstringFromRangeProc = OS.attributedSubstringFromRange_CALLBACK(proc3);
 	int characterIndexForPointProc = OS.characterIndexForPoint_CALLBACK(proc3);
 	int firstRectForCharacterRangeProc = OS.firstRectForCharacterRange_CALLBACK(proc3);	
-	
+	int textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
+
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
@@ -1916,6 +1917,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTSearchField";
@@ -1924,6 +1927,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTSecureTextField";
@@ -1932,6 +1937,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:i");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTWindow";
@@ -3598,6 +3605,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 		widget.pageDown(id, sel, arg0);
 	} else if (sel == OS.sel_pageUp_1) {
 		widget.pageUp(id, sel, arg0);
+	} else if (sel == OS.sel_textViewDidChangeSelection_1) {
+		widget.textViewDidChangeSelection(arg0);
 	} else if (sel == OS.sel_attributedSubstringFromRange_1) {
 		return widget.attributedSubstringFromRange (id, sel, arg0);
 	} else if (sel == OS.sel_characterIndexForPoint_1) {
@@ -3651,6 +3660,12 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 		 return widget.outlineView_child_ofItem(arg0, arg1, arg2);
 	} else if (sel == OS.sel_outlineView_1objectValueForTableColumn_1byItem_1) {
 		 return widget.outlineView_objectValueForTableColumn_byItem(arg0, arg1, arg2);
+	} else if (sel == OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1) {
+		NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(arg0, arg1, arg2);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRange.sizeof);
+		OS.memmove (result, range, NSRange.sizeof);
+		return result;
 	}
 	return 0;
 }

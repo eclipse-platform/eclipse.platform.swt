@@ -47,8 +47,9 @@ import org.eclipse.swt.graphics.*;
 public class Text extends Scrollable {
 	int textLimit = LIMIT, tabs = 8;
 	char echoCharacter;
-	boolean doubleClick;
+	boolean doubleClick, receivingFocus;
 	String hiddenText, message;
+	NSRange selection;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -248,6 +249,13 @@ public void append (String string) {
 		widget.scrollRangeToVisible(range);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
+}
+
+boolean becomeFirstResponder (int id, int sel) {
+	receivingFocus = true;
+	boolean result = super.becomeFirstResponder (id, sel);
+	receivingFocus = false;
+	return result;
 }
 
 static int checkStyle (int style) {
@@ -755,8 +763,8 @@ int getPosition (int x, int y) {
 public Point getSelection () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
-//		new NSTextFieldCell(((NSTextField)view).cell()).title().
-		return new Point(0, 0);
+		if (selection == null) return new Point(0, 0);
+		return new Point(selection.location, selection.location + selection.length);
 	} else {
 		NSTextView widget = (NSTextView)view;
 		NSRange range = widget.selectedRange();
@@ -777,8 +785,7 @@ public Point getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
-//		new NSTextFieldCell(((NSTextField)view).cell()).title().
-		return -1;
+		return selection != null ? selection.length : 0;
 	} else {
 		NSTextView widget = (NSTextView)view;
 		NSRange range = widget.selectedRange();
@@ -1051,6 +1058,7 @@ public void paste () {
 void releaseWidget () {
 	super.releaseWidget ();
 	hiddenText = message = null;
+	selection = null;
 }
 
 /**
@@ -1626,6 +1634,26 @@ public void showSelection () {
 		NSTextView widget = (NSTextView)view;
 		widget.scrollRangeToVisible(widget.selectedRange());
 	}
+}
+
+void textViewDidChangeSelection(int aNotification) {
+	NSNotification notification = new NSNotification(aNotification);
+	NSText editor = new NSText(notification.object().id);
+	selection = editor.selectedRange();
+}
+
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
+	/*
+	* If the selection is changing as a result of the receiver getting focus
+	* then return the receiver's last selection range, otherwise the full
+	* text will be automatically selected.
+	*/
+	if (receivingFocus && selection != null) return selection;
+
+	/* allow the selection change to proceed */
+	NSRange result = new NSRange();
+	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
+	return result;
 }
 
 int traversalCode (int key, NSEvent theEvent) {
