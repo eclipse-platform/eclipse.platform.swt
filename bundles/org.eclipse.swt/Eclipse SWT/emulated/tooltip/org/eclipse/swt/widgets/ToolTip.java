@@ -154,7 +154,12 @@ void configure () {
 	int x = this.x;
 	int y = this.y;
 	if (x == -1 || y == -1) {
-		Point point = display.getCursorLocation ();
+		Point point;
+		if (item != null) {
+			point = item.getLocation ();
+		} else {
+			point = display.getCursorLocation ();
+		}
 		x = point.x;
 		y = point.y;
 	}

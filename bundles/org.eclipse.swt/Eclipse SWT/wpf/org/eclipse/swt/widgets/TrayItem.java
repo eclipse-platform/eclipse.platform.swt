@@ -155,6 +155,10 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+Point getLocation () {
+	return display.getCursorLocation ();
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Tray</code>.
  *
