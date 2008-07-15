@@ -1851,6 +1851,8 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	addEventMethods(cls, proc2, proc3);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);

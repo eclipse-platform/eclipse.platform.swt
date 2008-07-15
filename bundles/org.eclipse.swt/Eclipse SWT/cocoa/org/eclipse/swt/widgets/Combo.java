@@ -56,6 +56,8 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Combo extends Composite {
 	int textLimit = LIMIT;
+	boolean receivingFocus;
+	NSRange selection;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -261,6 +263,13 @@ public void addVerifyListener (VerifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Verify, typedListener);
+}
+
+boolean becomeFirstResponder (int id, int sel) {
+	receivingFocus = true;
+	boolean result = super.becomeFirstResponder (id, sel);
+	receivingFocus = false;
+	return result;
 }
 
 static int checkStyle (int style) {
@@ -618,15 +627,8 @@ public Point getSelection () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, getCharCount ());
 	} else {
-//		ControlEditTextSelectionRec selection;
-//		if (this.selection != null) {
-//			selection = this.selection;
-//		} else {
-//			selection = new ControlEditTextSelectionRec ();
-//			OS.GetControlData (handle, (short) OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
-//		}
-//		return new Point (selection.selStart, selection.selEnd);
-		return null;
+		if (selection == null) return new Point(0, 0);
+		return new Point(selection.location, selection.location + selection.length);
 	}
 }
 
@@ -837,6 +839,11 @@ public void paste () {
 //	start += newText.length ();
 //	setSelection (new Point (start, start));
 //	sendEvent (SWT.Modify);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	selection = null;
 }
 
 /**
@@ -1359,6 +1366,26 @@ public void setVisibleItemCount (int count) {
 	} else {
 		((NSComboBox)view).setNumberOfVisibleItems(count);
 	}
+}
+
+void textViewDidChangeSelection(int aNotification) {
+	NSNotification notification = new NSNotification(aNotification);
+	NSText editor = new NSText(notification.object().id);
+	selection = editor.selectedRange();
+}
+
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
+	/*
+	* If the selection is changing as a result of the receiver getting focus
+	* then return the receiver's last selection range, otherwise the full
+	* text will be automatically selected.
+	*/
+	if (receivingFocus && selection != null) return selection;
+
+	/* allow the selection change to proceed */
+	NSRange result = new NSRange();
+	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
+	return result;
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
