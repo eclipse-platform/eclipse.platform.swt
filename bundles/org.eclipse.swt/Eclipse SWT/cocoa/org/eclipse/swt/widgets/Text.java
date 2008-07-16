@@ -650,7 +650,7 @@ public boolean getEditable () {
 public int getLineCount () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	return ((NSTextView)view).textStorage().paragraphs().count() + 1;
+	return ((NSTextView)view).textStorage().paragraphs().count();
 }
 
 /**
