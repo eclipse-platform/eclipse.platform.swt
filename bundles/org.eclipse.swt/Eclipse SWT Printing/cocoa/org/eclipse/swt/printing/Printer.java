@@ -42,10 +42,6 @@ public final class Printer extends Device {
 	boolean inPage, isGCCreated;
 
 	static final String DRIVER = "Mac";
-	static final String PRINTER_DRIVER = "Printer";
-	static final String FILE_DRIVER = "File";
-	static final String PREVIEW_DRIVER = "Preview";
-	static final String FAX_DRIVER = "Fax";
 
 /**
  * Returns an array of <code>PrinterData</code> objects
@@ -76,43 +72,13 @@ public static PrinterData[] getPrinterList() {
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
-	//TODO - get default
-	PrinterData[] printers = getPrinterList();
-	if (printers.length > 0) return printers[0];
-	return null;
+	NSPrinter printer = NSPrintInfo.defaultPrinter();
+	NSString str = printer.name();
+	char[] buffer = new char[str.length()];
+	str.getCharacters_(buffer);
+	return new PrinterData(DRIVER, new String(buffer));
+	
 }
-//static int packData(int handle, byte[] buffer, int offset) {
-//	int length = OS.GetHandleSize (handle);
-//	buffer[offset++] = (byte)((length & 0xFF) >> 0);
-//	buffer[offset++] = (byte)((length & 0xFF00) >> 8);
-//	buffer[offset++] = (byte)((length & 0xFF0000) >> 16);
-//	buffer[offset++] = (byte)((length & 0xFF000000) >> 24);
-//	int [] ptr = new int [1];
-//	OS.HLock(handle);
-//	OS.memmove(ptr, handle, 4);
-//	byte[] buffer1 = new byte[length];
-//	OS.memmove(buffer1, ptr [0], length);
-//	OS.HUnlock(handle);
-//	System.arraycopy(buffer1, 0, buffer, offset, length);
-//	return offset + length;
-//}
-//static int unpackData(int[] handle, byte[] buffer, int offset) {
-//	int length = 
-//		((buffer[offset++] & 0xFF) << 0) |
-//		((buffer[offset++] & 0xFF) << 8) |
-//		((buffer[offset++] & 0xFF) << 16) |
-//		((buffer[offset++] & 0xFF) << 24);
-//	handle[0] = OS.NewHandle(length);
-//	if (handle[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//	int[] ptr = new int[1];
-//	OS.HLock(handle[0]);
-//	OS.memmove(ptr, handle[0], 4);
-//	byte[] buffer1 = new byte[length];
-//	System.arraycopy(buffer, offset, buffer1, 0, length);
-//	OS.memmove(ptr[0], buffer1, length);
-//	OS.HUnlock(handle[0]);
-//	return offset + length;
-//}
 
 /**
  * Constructs a new printer representing the default printer.
