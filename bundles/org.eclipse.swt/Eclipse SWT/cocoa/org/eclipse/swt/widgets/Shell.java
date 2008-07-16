@@ -499,6 +499,7 @@ void createHandle () {
 			window.setLevel(OS.NSFloatingWindowLevel);
 		}
 		super.createHandle ();
+		topView ().setHidden (true);
 	}
 	window.setAcceptsMouseMovedEvents(true);
 	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
@@ -1320,6 +1321,7 @@ void setWindowVisible (boolean visible, boolean key) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
+		topView ().setHidden (false);
 		if (key) {
 			window.makeKeyAndOrderFront (null);
 		} else {
@@ -1342,6 +1344,7 @@ void setWindowVisible (boolean visible, boolean key) {
 		}
 	} else {
 		window.orderOut (null);
+		topView ().setHidden (true);
 		sendEvent (SWT.Hide);
 	}
 }
