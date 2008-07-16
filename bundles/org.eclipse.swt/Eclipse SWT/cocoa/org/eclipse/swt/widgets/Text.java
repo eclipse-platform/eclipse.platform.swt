@@ -1454,20 +1454,22 @@ public void setSelection (int start, int end) {
 		if (str != null) {
 			length = str.length();
 		}
-		start = Math.min (Math.max (Math.min (start, end), 0), length);
-		end = Math.min (Math.max (Math.max (start, end), 0), length);
+		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
+		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
 		selectionRange = new NSRange();
-		selectionRange.location = start;
-		selectionRange.length = end - start;
+		selectionRange.location = selStart;
+		selectionRange.length = selEnd - selStart;
 		if (this == display.getFocusControl ()) {
 			NSText editor = view.window().fieldEditor(false, view);
 			editor.setSelectedRange(selectionRange);
 		}
 	} else {
-		//TODO - range test
+		int length = ((NSTextView)view).textStorage().length();
+		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
+		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
 		NSRange range = new NSRange ();
-		range.location = start;
-		range.length = end - start;
+		range.location = selStart;
+		range.length = selEnd - selStart;
 		((NSTextView)view).setSelectedRange (range);
 	}
 }

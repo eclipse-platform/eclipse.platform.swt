@@ -1261,9 +1261,8 @@ public void setSelection (Point selection) {
 		if (str != null) {
 			length = str.length();
 		}
-		int start = selection.x, end = selection.y;
-		start = Math.min (Math.max (Math.min (start, end), 0), length);
-		end = Math.min (Math.max (Math.max (start, end), 0), length);
+		int start = Math.min (Math.max (Math.min (selection.x, selection.y), 0), length);
+		int end = Math.min (Math.max (Math.max (selection.x, selection.y), 0), length);
 		selectionRange = new NSRange();
 		selectionRange.location = start;
 		selectionRange.length = end - start;
