@@ -534,7 +534,6 @@ public Point getCaretLocation () {
 	}
 //	NSText
 	NSRange range = ((NSTextView)view).selectedRange();
-	System.out.println(range.location + " " + range.length);
 	return null;
 }
 
@@ -577,8 +576,7 @@ public int getCharCount () {
 	if ((style & SWT.SINGLE) != 0) {
 		return new NSCell(((NSControl)view).cell()).title().length();
 	} else {
-		//TODO
-		return 0;
+		return ((NSTextView)view).textStorage().length();
 	}
 }
 
