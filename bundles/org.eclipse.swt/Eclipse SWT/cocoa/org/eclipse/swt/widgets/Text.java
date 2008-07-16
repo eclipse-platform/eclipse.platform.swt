@@ -806,8 +806,11 @@ public int getSelectionCount () {
 public String getSelectionText () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
-		//TODO
-		return "";
+		if (selectionRange == null) return ""; //$NON-NLS-1$
+		NSString str = new NSTextFieldCell(((NSTextField)view).cell()).title();
+		char[] buffer = new char[selectionRange.length];
+		str.getCharacters_range_(buffer, selectionRange);
+		return new String(buffer);
 	} else {
 		NSTextView widget = (NSTextView)view;
 		NSRange range = widget.selectedRange();
@@ -1466,7 +1469,7 @@ public void setSelection (int start, int end) {
 		//TODO - range test
 		NSRange range = new NSRange ();
 		range.location = start;
-		range.length = end - start + 1;
+		range.length = end - start;
 		((NSTextView)view).setSelectedRange (range);
 	}
 }
