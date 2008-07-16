@@ -861,7 +861,6 @@ public String getText () {
 	} else {
 		str = ((NSTextView)view).textStorage().string();
 	}
-	if (str == null) return "";
 	char[] buffer = new char[str.length()];
 	str.getCharacters_(buffer);
 	return new String(buffer);
@@ -890,7 +889,6 @@ public String getText (int start, int end) {
 	if (!(start <= end && 0 <= end)) return ""; //$NON-NLS-1$
 	if ((style & SWT.SINGLE) != 0) {
 		NSString string = new NSTextFieldCell(((NSTextField)view).cell()).title();
-		if (string == null) return ""; //$NON-NLS-1$
 		end = Math.min (end, string.length() - 1);
 		if (start > end) return ""; //$NON-NLS-1$
 		start = Math.max (0, start);
@@ -1460,11 +1458,8 @@ public void setSelection (int start) {
 public void setSelection (int start, int end) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
-		int length = 0;
 		NSString str = new NSCell(((NSTextField)view).cell()).title();
-		if (str != null) {
-			length = str.length();
-		}
+		int length = str.length();
 		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
 		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
 		selectionRange = new NSRange();

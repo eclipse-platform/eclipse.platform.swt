@@ -673,10 +673,10 @@ String getText (int start, int end) {
 	NSString str;
 	if ((style & SWT.READ_ONLY) != 0) {
 		str = ((NSPopUpButton)view).titleOfSelectedItem();
+		if (str == null) return ""; //$NON-NLS-1$
 	} else {
 		str = new NSCell(((NSComboBox)view).cell()).title();
 	}
-	if (str == null) return "";
 	int length = str.length();
 	char[] buffer = new char[length];
 	str.getCharacters_(buffer);
@@ -1256,11 +1256,8 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) == 0) {
-		int length = 0;
 		NSString str = new NSCell(((NSComboBox)view).cell()).title();
-		if (str != null) {
-			length = str.length();
-		}
+		int length = str.length();
 		int start = Math.min (Math.max (Math.min (selection.x, selection.y), 0), length);
 		int end = Math.min (Math.max (Math.max (selection.x, selection.y), 0), length);
 		selectionRange = new NSRange();
