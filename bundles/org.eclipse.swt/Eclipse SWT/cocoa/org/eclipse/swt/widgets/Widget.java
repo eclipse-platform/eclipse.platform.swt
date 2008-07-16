@@ -400,6 +400,8 @@ void drawBackground (int control, int context) {
 }
 
 void drawRect (int id, NSRect rect) {
+	//TODO offset region to view coordinates
+	//TODO use region from control as well shell region
 	NSBezierPath path = getClipping ();
 	if (path != null) {
 		NSGraphicsContext.static_saveGraphicsState();
