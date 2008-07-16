@@ -887,18 +887,29 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	NSString str;
+	if (!(start <= end && 0 <= end)) return ""; //$NON-NLS-1$
 	if ((style & SWT.SINGLE) != 0) {
-		str = new NSTextFieldCell(((NSTextField)view).cell()).title();
-		 
-	} else {
-		str = null;
-//		return getTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset);
+		NSString string = new NSTextFieldCell(((NSTextField)view).cell()).title();
+		if (string == null) return ""; //$NON-NLS-1$
+		end = Math.min (end, string.length() - 1);
+		if (start > end) return ""; //$NON-NLS-1$
+		start = Math.max (0, start);
+		char[] buffer = new char[string.length()];
+		string.getCharacters_(buffer);
+		return new String(buffer, start, end - start + 1);
 	}
-	if (str == null) return "";
-	char[] buffer = new char[str.length()];
-	str.getCharacters_(buffer);
-	return new String(buffer, start, end - start);
+	NSTextStorage storage = ((NSTextView)view).textStorage();
+	end = Math.min (end, storage.length() - 1);
+	if (start > end) return ""; //$NON-NLS-1$
+	start = Math.max (0, start);
+	NSRange range = new NSRange();
+	range.location = start;
+	range.length = end - start + 1;
+	NSAttributedString substring = storage.attributedSubstringFromRange(range);
+	NSString string = substring.string();
+	char[] buffer = new char[string.length()];
+	string.getCharacters_(buffer);
+	return new String(buffer);
 }
 
 /**
