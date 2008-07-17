@@ -406,6 +406,7 @@ void createHandle () {
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
 	firstColumn.initWithIdentifier(str);
+	firstColumn.setMinWidth(0);
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
 	NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
 	firstColumn.setDataCell(cell);
@@ -433,6 +434,7 @@ void createItem (TableColumn column, int index) {
 		//TODO - set attributes, alignment etc.
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
 		nsColumn.initWithIdentifier(NSString.stringWith(""));
+		nsColumn.setMinWidth(0);
 		((NSTableView)view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
 		((NSTableView)view).moveColumn (columnCount + checkColumn, index + checkColumn);
