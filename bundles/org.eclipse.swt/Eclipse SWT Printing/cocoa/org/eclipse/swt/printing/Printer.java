@@ -372,7 +372,10 @@ static DeviceData checkNull (PrinterData data) {
  */
 public boolean startPage() {
 	checkDevice();
-	NSRect rect = printInfo.imageablePageBounds();
+	NSSize paperSize = printInfo.paperSize();
+	NSRect rect = new NSRect();
+	rect.width = paperSize.width;
+	rect.height = paperSize.height;
 	view.beginPageInRect(rect, new NSPoint());
 	NSAffineTransform transform = NSAffineTransform.transform();
 	transform.translateXBy(0, rect.height);
