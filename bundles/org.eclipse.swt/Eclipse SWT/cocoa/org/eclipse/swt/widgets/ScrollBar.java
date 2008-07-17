@@ -275,8 +275,8 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-//	return getControlSize (handle);
-	return new Point(0, 0);
+	NSRect rect = ((NSScroller)view).frame();
+	return new Point((int)rect.width, (int)rect.height);
 }
 
 /**
