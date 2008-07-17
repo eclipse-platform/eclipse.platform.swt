@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 348;
-int OS_nativeFunctionCallCount[348];
+int OS_nativeFunctionCount = 357;
+int OS_nativeFunctionCallCount[357];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -47,6 +47,14 @@ char * OS_nativeFunctionNames[] = {
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
 	"NSParagraphStyleAttributeName",
+	"NSPrintAllPages",
+	"NSPrintCopies",
+	"NSPrintFirstPage",
+	"NSPrintJobDisposition",
+	"NSPrintLastPage",
+	"NSPrintMustCollate",
+	"NSPrintSaveJob",
+	"NSPrintSavePath",
 	"NSRTFPboardType",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
@@ -364,6 +372,7 @@ char * OS_nativeFunctionNames[] = {
 	"setFrameSize_1CALLBACK",
 	"setFrame_1CALLBACK",
 	"setMarkedText_1selectedRange_1CALLBACK",
+	"textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK",
 	"webView_1setFrame_1CALLBACK",
 };
 

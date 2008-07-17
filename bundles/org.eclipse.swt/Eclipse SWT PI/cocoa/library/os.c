@@ -480,6 +480,102 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSParagraphStyleAttributeName)
 }
 #endif
 
+#ifndef NO_NSPrintAllPages
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintAllPages)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintAllPages_FUNC);
+	rc = (jint)NSPrintAllPages;
+	OS_NATIVE_EXIT(env, that, NSPrintAllPages_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintCopies
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintCopies)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintCopies_FUNC);
+	rc = (jint)NSPrintCopies;
+	OS_NATIVE_EXIT(env, that, NSPrintCopies_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintFirstPage
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintFirstPage)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintFirstPage_FUNC);
+	rc = (jint)NSPrintFirstPage;
+	OS_NATIVE_EXIT(env, that, NSPrintFirstPage_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintJobDisposition
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintJobDisposition)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintJobDisposition_FUNC);
+	rc = (jint)NSPrintJobDisposition;
+	OS_NATIVE_EXIT(env, that, NSPrintJobDisposition_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintLastPage
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintLastPage)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintLastPage_FUNC);
+	rc = (jint)NSPrintLastPage;
+	OS_NATIVE_EXIT(env, that, NSPrintLastPage_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintMustCollate
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintMustCollate)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintMustCollate_FUNC);
+	rc = (jint)NSPrintMustCollate;
+	OS_NATIVE_EXIT(env, that, NSPrintMustCollate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintSaveJob
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintSaveJob)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintSaveJob_FUNC);
+	rc = (jint)NSPrintSaveJob;
+	OS_NATIVE_EXIT(env, that, NSPrintSaveJob_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSPrintSavePath
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintSavePath)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintSavePath_FUNC);
+	rc = (jint)NSPrintSavePath;
+	OS_NATIVE_EXIT(env, that, NSPrintSavePath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSRTFPboardType
 JNIEXPORT jint JNICALL OS_NATIVE(NSRTFPboardType)
 	(JNIEnv *env, jclass that)
