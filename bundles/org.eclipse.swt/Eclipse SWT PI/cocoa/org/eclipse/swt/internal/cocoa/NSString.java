@@ -181,6 +181,12 @@ public void getParagraphStart(int startPtr, int parEndPtr, int contentsEndPtr, N
 	OS.objc_msgSend(this.id, OS.sel_getParagraphStart_1end_1contentsEnd_1forRange_1, startPtr, parEndPtr, contentsEndPtr, range);
 }
 
+public String getString() {
+	char[] buffer = new char[length()];
+	getCharacters_(buffer);
+	return new String(buffer);
+}
+
 public boolean hasPrefix(NSString aString) {
 	return OS.objc_msgSend(this.id, OS.sel_hasPrefix_1, aString != null ? aString.id : 0) != 0;
 }
