@@ -573,7 +573,9 @@ public int getTopIndex () {
 	NSPoint point = new NSPoint();
 	point.x = rect.x;
 	point.y = rect.y;
-    return ((NSTableView)view).rowAtPoint(point);
+    int result = ((NSTableView)view).rowAtPoint(point);
+    if (result == -1) result = 0;
+    return result;
 }
 
 /**
