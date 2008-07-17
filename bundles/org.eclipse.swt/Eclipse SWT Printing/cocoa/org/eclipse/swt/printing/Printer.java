@@ -39,7 +39,11 @@ import org.eclipse.swt.internal.cocoa.*;
 public final class Printer extends Device {
 	PrinterData data;
 	NSPrinter printer;
-	boolean inPage, isGCCreated;
+	NSPrintInfo printInfo;
+	NSPrintOperation operation;
+	NSView view;
+	NSWindow window;
+	boolean isGCCreated;
 
 	static final String DRIVER = "Mac";
 
@@ -73,6 +77,7 @@ public static PrinterData[] getPrinterList() {
  */
 public static PrinterData getDefaultPrinterData() {
 	NSPrinter printer = NSPrintInfo.defaultPrinter();
+	if (printer == null) return null;
 	NSString str = printer.name();
 	char[] buffer = new char[str.length()];
 	str.getCharacters_(buffer);
@@ -155,12 +160,13 @@ public Printer(PrinterData data) {
  */
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
-//	PMRect pageRect = new PMRect();
-//	PMRect paperRect = new PMRect();
-//	OS.PMGetAdjustedPageRect(pageFormat, pageRect);
-//	OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-//	return new Rectangle(x+(int)paperRect.left, y+(int)paperRect.top, width+(int)(paperRect.right-pageRect.right), height+(int)(paperRect.bottom-pageRect.bottom));
-	return null;
+	NSSize paperSize = printInfo.paperSize();
+	NSRect bounds = printInfo.imageablePageBounds();
+	x -= bounds.x;
+	y -= bounds.y;
+	width += paperSize.width - bounds.width;
+	height += paperSize.height - bounds.height;
+	return new Rectangle(x, y, width, height);
 }
 
 /**	 
@@ -172,63 +178,27 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
 	
+	//TODO printing is not working. NSPrintOperation does not fit our API well
+	// maybe should core printing directly
 	printer = NSPrinter.static_printerWithName_(NSString.stringWith(data.name));
 	printer.retain();
-	
-//	int[] buffer = new int[1];
-//	if (OS.PMCreateSession(buffer) != OS.noErr) SWT.error(SWT.ERROR_NO_HANDLES);
-//	printSession = buffer[0];
-//	if (printSession == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		
-//	if (data.otherData != null) {
-//		/* Deserialize settings */
-//		int offset = 0;
-//		byte[] otherData = data.otherData;
-//		offset = unpackData(buffer, otherData, offset);
-//		int flatSettings = buffer[0];
-//		offset = unpackData(buffer, otherData, offset);
-//		int flatFormat = buffer[0];
-//		if (OS.PMUnflattenPrintSettings(flatSettings, buffer) != OS.noErr) SWT.error(SWT.ERROR_NO_HANDLES);
-//		printSettings = buffer[0];
-//		if (printSettings == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		if (OS.PMUnflattenPageFormat(flatFormat, buffer) != OS.noErr) SWT.error(SWT.ERROR_NO_HANDLES);
-//		pageFormat = buffer[0];
-//		if (pageFormat == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		OS.DisposeHandle(flatSettings);
-//		OS.DisposeHandle(flatFormat);
-//	} else {
-//		/* Create default settings */
-//		if (OS.PMCreatePrintSettings(buffer) != OS.noErr) SWT.error(SWT.ERROR_NO_HANDLES);
-//		printSettings = buffer[0];
-//		if (printSettings == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		OS.PMSessionDefaultPrintSettings(printSession, printSettings);
-//		if (OS.PMCreatePageFormat(buffer) != OS.noErr) SWT.error(SWT.ERROR_NO_HANDLES);
-//		pageFormat = buffer[0];
-//		if (pageFormat == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		OS.PMSessionDefaultPageFormat(printSession, pageFormat);
-//	}
-//	
-//	if (PREVIEW_DRIVER.equals(data.driver)) {
-//		OS.PMSessionSetDestination(printSession, printSettings, (short) OS.kPMDestinationPreview, 0, 0);
-//	}
-//	String name = data.name;
-//	char[] buffer1 = new char[name.length ()];
-//	name.getChars(0, buffer1.length, buffer1, 0);
-//	int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer1, buffer1.length);
-//	if (ptr != 0) {
-//		OS.PMSessionSetCurrentPrinter(printSession, ptr); 
-//		OS.CFRelease(ptr);
-//	}
-//	
-//	OS.PMSessionValidatePrintSettings(printSession, printSettings, null);
-//	OS.PMSessionValidatePageFormat(printSession, pageFormat, null);	
-//	
-//	int graphicsContextsArray = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
-//	if (graphicsContextsArray != 0) {
-//		OS.CFArrayAppendValue(graphicsContextsArray, OS.kPMGraphicsContextCoreGraphics());
-//		OS.PMSessionSetDocumentFormatGeneration(printSession, OS.kPMDocumentFormatPDF(), graphicsContextsArray, 0);
-//		OS.CFRelease(graphicsContextsArray);
-//	}
+	if (data.otherData != null) {
+		NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
+		printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
+	} else {
+		printInfo = NSPrintInfo.sharedPrintInfo();
+	}
+	printInfo.retain();
+	printInfo.setPrinter(printer);
+	window = (NSWindow)new NSWindow().alloc();
+	window.initWithContentRect_styleMask_backing_defer_(printInfo.imageablePageBounds(), OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+	view = (NSView)new NSView().alloc();
+	view.initWithFrame(new NSRect());
+	window.setContentView(view);
+	operation = NSPrintOperation.static_printOperationWithView_printInfo_(view, printInfo);
+//	operation = NSPrintOperation.static_PDFOperationWithView_insideRect_toPath_printInfo_(view, printInfo.imageablePageBounds(), NSString.stringWith("/Users/silenioquarti/Desktop/u.pdf"), printInfo);
+	operation.retain();
+	operation.setShowsPrintPanel(false);
 }
 
 /**	 
@@ -238,7 +208,14 @@ protected void create(DeviceData deviceData) {
  */
 protected void destroy() {
 	if (printer != null) printer.release();
+	if (printInfo != null) printInfo.release();
+	if (view != null) view.release();
+	if (window != null) window.release();
+	if (operation != null) operation.release();
 	printer = null;
+	printInfo = null;
+	view = null;
+	operation = null;
 }
 
 /**	 
@@ -256,25 +233,15 @@ protected void destroy() {
  */
 public int internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	setupNewPage();
-//	if (data != null) {
-//		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//		data.device = this;
-//		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
-//		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
-//		data.font = getSystemFont ();
-//		PMRect paperRect= new PMRect();
-//		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-//		Rect portRect = new Rect();
-//		portRect.left = (short)paperRect.left;
-//		portRect.right = (short)paperRect.right;
-//		portRect.top = (short)paperRect.top;
-//		portRect.bottom = (short)paperRect.bottom;
-//		data.portRect = portRect;
-//		isGCCreated = true;
-//	}
-//	return context;
-	return 0;
+	if (data != null) {
+		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		data.device = this;
+		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
+		data.font = getSystemFont ();
+		isGCCreated = true;
+	}
+	return operation.context().id;
 }
 
 protected void init () {
@@ -330,16 +297,15 @@ protected void release () {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
-//	if (jobName != null && jobName.length() != 0) {
-//		char[] buffer = new char[jobName.length ()];
-//		jobName.getChars(0, buffer.length, buffer, 0);
-//		int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer, buffer.length);
-//		if (ptr != 0) {
-//			OS.PMSetJobNameCFString(printSettings, ptr); 
-//			OS.CFRelease (ptr);
-//		}
-//	}
-//	return OS.PMSessionBeginDocumentNoDialog(printSession, printSettings, pageFormat) == OS.noErr;
+	if (jobName != null && jobName.length() != 0) {
+		operation.setJobTitle(NSString.stringWith(jobName));
+	}
+	NSPrintOperation.setCurrentOperation(operation);
+	NSGraphicsContext context = operation.createContext();
+	if (context != null) {
+		view.beginDocument();
+		return true;
+	}
 	return false;
 }
 
@@ -356,12 +322,10 @@ public boolean startJob(String jobName) {
  */
 public void endJob() {
 	checkDevice();
-//	if (inPage) {
-//		OS.PMSessionEndPageNoDialog(printSession);
-//		inPage = false;
-//	}
-//	OS.PMSessionEndDocumentNoDialog(printSession);
-//	context = 0;
+	view.endDocument();
+	operation.deliverResult();
+	operation.destroyContext();
+	operation.cleanUpOperation();
 }
 
 /**
@@ -373,13 +337,8 @@ public void endJob() {
  */
 public void cancelJob() {
 	checkDevice();
-//	OS.PMSessionSetError(printSession, OS.kPMCancel);
-//	if (inPage) {
-//		OS.PMSessionEndPageNoDialog(printSession);
-//		inPage = false;
-//	}
-//	OS.PMSessionEndDocumentNoDialog(printSession);
-//	context = 0;
+	operation.destroyContext();
+	operation.cleanUpOperation();
 }
 
 static DeviceData checkNull (PrinterData data) {
@@ -413,10 +372,13 @@ static DeviceData checkNull (PrinterData data) {
  */
 public boolean startPage() {
 	checkDevice();
-//	if (OS.PMSessionError(printSession) != OS.noErr) return false;
-//	setupNewPage();
-//	return context != 0;
-	return false;
+	NSRect rect = printInfo.imageablePageBounds();
+	view.beginPageInRect(rect, new NSPoint());
+	NSAffineTransform transform = NSAffineTransform.transform();
+	transform.translateXBy(0, rect.height);
+	transform.scaleXBy(1, -1);
+	transform.concat();
+	return true;
 }
 
 /**
@@ -432,10 +394,7 @@ public boolean startPage() {
  */
 public void endPage() {
 	checkDevice();
-//	if (inPage) {
-//		OS.PMSessionEndPageNoDialog(printSession);
-//		inPage = false;
-//	}
+	view.endPage();
 }
 
 /**
@@ -451,10 +410,8 @@ public void endPage() {
  */
 public Point getDPI() {
 	checkDevice();
-//	PMResolution resolution = new PMResolution();
-//	OS.PMGetResolution(pageFormat, resolution);
-//	return new Point((int)resolution.hRes, (int)resolution.vRes);
-	return null;
+	//TODO
+	return new Point(72, 72);
 }
 
 /**
@@ -474,10 +431,8 @@ public Point getDPI() {
  */
 public Rectangle getBounds() {
 	checkDevice();
-//	PMRect paperRect = new PMRect();
-//	OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-//	return new Rectangle(0, 0, (int)(paperRect.right-paperRect.left), (int)(paperRect.bottom-paperRect.top));
-	return null;
+	NSSize size = printInfo.paperSize();
+	return new Rectangle (0, 0, (int)size.width, (int)size.height);
 }
 
 /**
@@ -499,10 +454,8 @@ public Rectangle getBounds() {
  */
 public Rectangle getClientArea() {
 	checkDevice();
-//	PMRect pageRect = new PMRect();
-//	OS.PMGetAdjustedPageRect(pageFormat, pageRect);
-//	return new Rectangle(0, 0, (int)(pageRect.right-pageRect.left), (int)(pageRect.bottom-pageRect.top));
-	return null;
+	NSRect rect = printInfo.imageablePageBounds();
+	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /**
@@ -515,61 +468,4 @@ public PrinterData getPrinterData() {
 	checkDevice();
 	return data;
 }
-
-/**
- * On the Mac the core graphics context for printing is only valid between PMSessionBeginPage and PMSessionEndPage,
- * so printing code has to retrieve and initializes a graphic context for every page like this:
- * 
- * <pre>
- * PMSessionBeginDocument
- *    PMSessionBeginPage
- * 	     PMSessionGetGraphicsContext
- * 		 // ... use context
- *    PMSessionEndPage
- * PMSessionEndDocument
- * </pre>
- * 
- * In SWT it is OK to create a GC once between startJob / endJob and use it for all pages in between:
- * 
- * <pre>
- * startJob(...);
- * 	  GC gc= new GC(printer);
- *    startPage();
- * 		 // ... use gc
- *    endPage();
- *    gc.dispose();
- * endJob();
- * </pre>
- * 
- * The solution to resolve this difference is to rely on the fact that Mac OS X returns the same but
- * reinitialized graphics context for every page. So we only have to account for the fact that SWT assumes
- * that the graphics context keeps it settings across a page break when it actually does not.
- * So we have to copy some settings that exist in the CGC before a PMSessionEndPage to the CGC after a PMSessionBeginPage.
- * <p>
- * In addition to this we have to cope with the situation that in SWT we can create a GC before a call to
- * PMSessionBeginPage. For this we decouple the call to PMSessionBeginPage from
- * SWT's method startPage as follows: if a new GC is created before a call to startPage, internal_new_GC
- * does the PMSessionBeginPage and the next following startPage does nothing.
- * </p>
- */
-void setupNewPage() {
-//	if (!inPage) {
-//		inPage= true;
-//		OS.PMSessionBeginPageNoDialog(printSession, pageFormat, null);
-//		int[] buffer = new int[1];
-//		OS.PMSessionGetGraphicsContext(printSession, 0, buffer);
-//		if (context == 0) {
-//			context = buffer[0];
-//		} else {
-//			if (context != buffer[0]) SWT.error(SWT.ERROR_UNSPECIFIED);
-//		}
-//		PMRect paperRect= new PMRect();
-//		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-//		OS.CGContextScaleCTM(context, 1, -1);
-//		OS.CGContextTranslateCTM(context, 0, -(float)(paperRect.bottom-paperRect.top));
-//		OS.CGContextSetStrokeColorSpace(context, colorspace);
-//		OS.CGContextSetFillColorSpace(context, colorspace);
-//	}
-}
-
 }

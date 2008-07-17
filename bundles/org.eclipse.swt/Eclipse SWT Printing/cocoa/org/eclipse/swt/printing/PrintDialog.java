@@ -124,96 +124,49 @@ public PrinterData getPrinterData() {
  * </ul>
  */
 public PrinterData open() {
+	PrinterData data = null;
 	NSPrintPanel panel = NSPrintPanel.printPanel();
-	NSPrintInfo printInfo =(NSPrintInfo)new NSPrintInfo().alloc();
-	printInfo.initWithDictionary(null);
-	panel.runModalWithPrintInfo(printInfo);
+	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy().id);
+	NSDictionary dict = printInfo.dictionary();	
+	if (printToFile) {
+		dict.setValue_forKey_(new NSString(OS.NSPrintSaveJob()), new NSString(OS.NSPrintJobDisposition()));
+	}
+	//TODO - setting range not work. why?
+	dict.setValue_forKey_(NSNumber.numberWithBool(scope == PrinterData.ALL_PAGES), new NSString(OS.NSPrintAllPages()));
+	if (scope == PrinterData.PAGE_RANGE) {
+		dict.setValue_forKey_(NSNumber.numberWithInt(startPage), new NSString(OS.NSPrintFirstPage()));
+		dict.setValue_forKey_(NSNumber.numberWithInt(endPage), new NSString(OS.NSPrintLastPage()));
+	}
+	//TODO open page layout panel either as a separate dialog or as a accessory view
+	if (panel.runModalWithPrintInfo(printInfo) != OS.NSCancelButton) {
+		NSPrinter printer = printInfo.printer();
+		NSString str = printer.name();
+		char[] buffer = new char[str.length()];
+		str.getCharacters_(buffer);
+		data = new PrinterData(Printer.DRIVER, new String(buffer));
+		data.printToFile = printInfo.jobDisposition().isEqual(new NSString(OS.NSPrintSaveJob()));
+		if (data.printToFile) {
+			NSString filename = new NSString(dict.objectForKey(new NSString(OS.NSPrintSavePath())).id);
+			data.fileName = filename.getString();
+		}
+		data.scope = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintAllPages())).id).intValue() != 0 ? PrinterData.ALL_PAGES : PrinterData.PAGE_RANGE;
+		if (data.scope == PrinterData.PAGE_RANGE) {
+			data.startPage = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintFirstPage())).id).intValue();
+			data.endPage = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintLastPage())).id).intValue();
+		}
+		data.collate = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintMustCollate())).id).intValue() != 0;
+		data.copyCount = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintCopies())).id).intValue();
+		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
+		data.otherData = new byte[nsData.length()];
+		OS.memmove(data.otherData, nsData.bytes(), data.otherData.length);
+
+		printToFile = data.printToFile;
+		scope = data.scope;
+		startPage = data.startPage;
+		endPage = data.endPage;
+	}
 	printInfo.release();
-//	int[] buffer = new int[1];
-//	if (OS.PMCreateSession(buffer) == OS.noErr) {
-//		int printSession = buffer[0];
-//		if (OS.PMCreatePrintSettings(buffer) == OS.noErr) {
-//			int printSettings = buffer[0];
-//			OS.PMSessionDefaultPrintSettings(printSession, printSettings);
-//			if (OS.PMCreatePageFormat(buffer) == OS.noErr) {
-//				int pageFormat = buffer[0];
-//				OS.PMSessionDefaultPageFormat(printSession, pageFormat);
-//				OS.PMSessionSetDestination(printSession, printSettings, (short) (printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
-//				if (scope == PrinterData.PAGE_RANGE) {
-//					OS.PMSetFirstPage(printSettings, startPage, false);
-//					OS.PMSetLastPage(printSettings, endPage, false);
-//					OS.PMSetPageRange(printSettings, startPage, endPage);
-//				} else {
-//					OS.PMSetPageRange(printSettings, 1, OS.kPMPrintAllPages);
-//				}
-//				boolean[] accepted = new boolean [1];
-//				OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
-//				if (accepted[0]) {		
-//					OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
-//					if (accepted[0]) {
-//						short[] destType = new short[1];
-//						OS.PMSessionGetDestinationType(printSession, printSettings, destType);
-//						String name = Printer.getCurrentPrinterName(printSession);
-//						String driver = Printer.DRIVER;
-//						switch (destType[0]) {
-//							case OS.kPMDestinationFax: driver = Printer.FAX_DRIVER; break;
-//							case OS.kPMDestinationFile: driver = Printer.FILE_DRIVER; break;
-//							case OS.kPMDestinationPreview: driver = Printer.PREVIEW_DRIVER; break;
-//							case OS.kPMDestinationPrinter: driver = Printer.PRINTER_DRIVER; break;
-//						}
-//						PrinterData data = new PrinterData(driver, name);
-//						if (destType[0] == OS.kPMDestinationFile) {
-//							data.printToFile = true;
-//							OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
-//							int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
-//							OS.CFRelease(buffer[0]);
-//							data.fileName = Printer.getString(fileName);
-//							OS.CFRelease(fileName);
-//						}
-//						OS.PMGetCopies(printSettings, buffer);
-//						data.copyCount = buffer[0];						
-//						OS.PMGetFirstPage(printSettings, buffer);
-//						data.startPage = buffer[0];
-//						OS.PMGetLastPage(printSettings, buffer);
-//						data.endPage = buffer[0];
-//						OS.PMGetPageRange(printSettings, null, buffer);
-//						if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
-//							data.scope = PrinterData.ALL_PAGES;
-//						} else {
-//							data.scope = PrinterData.PAGE_RANGE;
-//						}
-//						boolean[] collate = new boolean[1];
-//						OS.PMGetCollate(printSettings, collate);
-//						data.collate = collate[0];
-//						
-//						/* Serialize settings */
-//						int[] flatSettings = new int[1];
-//						OS.PMFlattenPrintSettings(printSettings, flatSettings);
-//						int[] flatFormat = new int[1];
-//						OS.PMFlattenPageFormat(pageFormat, flatFormat);
-//						int settingsLength = OS.GetHandleSize (flatSettings[0]);
-//						int formatLength = OS.GetHandleSize (flatFormat[0]);
-//						byte[] otherData = data.otherData = new byte[settingsLength + formatLength + 8];
-//						int offset = 0;
-//						offset = Printer.packData(flatSettings[0], otherData, offset);
-//						offset = Printer.packData(flatFormat[0], otherData, offset);
-//						OS.DisposeHandle(flatSettings[0]);
-//						OS.DisposeHandle(flatFormat[0]);
-//						
-//						scope = data.scope;
-//						startPage = data.startPage;
-//						endPage = data.endPage;
-//						printToFile = data.printToFile;
-//						return data;
-//					}
-//				}
-//				OS.PMRelease(pageFormat);
-//			}
-//			OS.PMRelease(printSettings);
-//		}
-//		OS.PMRelease(printSession);
-//	}
-	return null;
+	return data;
 }
 
 /**
