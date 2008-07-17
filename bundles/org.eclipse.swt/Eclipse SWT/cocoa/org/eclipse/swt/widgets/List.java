@@ -375,10 +375,7 @@ void fixSelection (int index, boolean add) {
  */
 public int getFocusIndex () {
 	checkWidget();
-//	int [] first = new int [1], last = new int [1];
-//	if (OS.GetDataBrowserSelectionAnchor (handle, first, last) != OS.noErr) return -1;
-//    return first [0] - 1;
-	return -1;
+	return ((NSTableView)view).selectedRow();
 }
 
 /**
