@@ -403,6 +403,7 @@ void createHandle () {
 	
 	firstColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 	firstColumn.initWithIdentifier (str);
+	firstColumn.setMinWidth(0);
 	firstColumn.headerCell ().setTitle (str);
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn (firstColumn);
@@ -439,6 +440,7 @@ void createItem (TreeColumn column, int index) {
 		NSString str = NSString.stringWith ("");
 		nsColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 		nsColumn.initWithIdentifier (str);
+		nsColumn.setMinWidth(0);
 		nsColumn.headerCell ().setTitle (str);
 		((NSTableView) view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
