@@ -48,9 +48,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2
-static SEL cascadeTopLeftFromPoint;
-static SEL convertScreenToBase;
-static SEL convertBaseToScreen;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3)
 {
@@ -63,19 +60,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, lparg3);
 	
-	if (cascadeTopLeftFromPoint == NULL) cascadeTopLeftFromPoint = sel_registerName("cascadeTopLeftFromPoint:");
-	if ((SEL)arg2 == cascadeTopLeftFromPoint) {
-		*lparg0 = [(NSWindow *)arg1 cascadeTopLeftFromPoint: *lparg3];
-	} else {
-		if (convertScreenToBase == 0) convertScreenToBase = sel_registerName("convertScreenToBase:");
-		if ((SEL)arg2 == convertScreenToBase) {
-			*lparg0 = [(id)arg1 convertScreenToBase: *lparg3];
-		} else {
-			if (convertBaseToScreen == 0) convertBaseToScreen = sel_registerName("convertBaseToScreen:");
-			if ((SEL)arg2 == convertBaseToScreen) {
-				*lparg0 = [(id)arg1 convertBaseToScreen: *lparg3];
-			}
-		}
+	if ((SEL)arg2 == @selector(cascadeTopLeftFromPoint:)) {
+		*lparg0 = [(id)arg1 cascadeTopLeftFromPoint: *lparg3];
+	} else if ((SEL)arg2 == @selector(convertScreenToBase:)) {
+		*lparg0 = [(id)arg1 convertScreenToBase: *lparg3];
+	} else if ((SEL)arg2 == @selector(convertBaseToScreen:)) {
+		*lparg0 = [(id)arg1 convertBaseToScreen: *lparg3];
 	}
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
@@ -87,7 +77,6 @@ fail:
 
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III
-static SEL locationForGlyphAtIndex;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
 {
@@ -97,10 +86,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2);
-	
-	if (locationForGlyphAtIndex == 0) locationForGlyphAtIndex = sel_registerName("locationForGlyphAtIndex:");
-	if ((SEL)arg2 == locationForGlyphAtIndex) {
-		*lparg0 = [(NSLayoutManager *)arg1 locationForGlyphAtIndex: arg3];
+
+	if ((SEL)arg2 == @selector(locationForGlyphAtIndex:)) {
+		*lparg0 = [(id)arg1 locationForGlyphAtIndex: arg3];
 	}
 	
 fail:
@@ -111,9 +99,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II
-static SEL mouseLocationOutsideOfEventStream;
-static SEL locationInWindow;
-static SEL mouseLocation;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -124,19 +109,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2);
 	
-	if (mouseLocationOutsideOfEventStream == 0) mouseLocationOutsideOfEventStream = sel_registerName("mouseLocationOutsideOfEventStream");
-	if ((SEL)arg2 == mouseLocationOutsideOfEventStream) {
-		*lparg0 = [(NSWindow *)arg1 mouseLocationOutsideOfEventStream];
-	} else {
-		if (locationInWindow == 0) locationInWindow = sel_registerName("locationInWindow");
-		if ((SEL)arg2 == locationInWindow) {
-			*lparg0 = [(NSEvent *)arg1 locationInWindow];
-		} else {
-			if (mouseLocation == 0) mouseLocation = sel_registerName("mouseLocation");
-			if ((SEL)arg2 == mouseLocation) {
-				*lparg0 = [(id)arg1 mouseLocation];
-			}
-		}
+	if ((SEL)arg2 == @selector(mouseLocationOutsideOfEventStream)) {
+		*lparg0 = [(id)arg1 mouseLocationOutsideOfEventStream];
+	} else if ((SEL)arg2 == @selector(locationInWindow)) {
+		*lparg0 = [(id)arg1 locationInWindow];
+	} else if ((SEL)arg2 == @selector(mouseLocation)) {
+		*lparg0 = [(id)arg1 mouseLocation];
 	}
 	
 fail:
@@ -147,7 +125,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I
-static SEL glyphRangeForCharacterRange;
 JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
 {
@@ -156,11 +133,13 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	
 	//objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4);
-	if (glyphRangeForCharacterRange == 0) glyphRangeForCharacterRange = sel_registerName("glyphRangeForCharacterRange:actualCharacterRange::");
-	if ((SEL)arg2 == glyphRangeForCharacterRange) {
+
+	if ((SEL)arg2 == @selector(glyphRangeForCharacterRange:actualCharacterRange:)) {
 		*lparg0 = [(id)arg1 glyphRangeForCharacterRange: *lparg3 actualCharacterRange: (NSRange *)arg4];
 	}
+
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -169,7 +148,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI
-static SEL frameSizeForContentSize;
 JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jboolean arg4, jboolean arg5, jint arg6)
 {
@@ -178,11 +156,13 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
+
 	//objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4, arg5, arg6);
-	if (frameSizeForContentSize == 0) frameSizeForContentSize = sel_registerName("frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:");
-	if ((SEL)arg2 == frameSizeForContentSize) {
+
+	if ((SEL)arg2 == @selector(frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:)) {
 		*lparg0 = [(id)arg1 frameSizeForContentSize: *lparg3 hasHorizontalScroller: arg4 hasVerticalScroller: arg5 borderType: arg6];
 	}
+
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -191,7 +171,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II
-static SEL selectedRange;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -201,9 +180,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2);
-	if (selectedRange == 0) selectedRange = sel_registerName("selectedRange");
-	if ((SEL)arg2 == selectedRange) {
-		*lparg0 = [(NSText *)arg1 selectedRange];
+
+	if ((SEL)arg2 == @selector(selectedRange)) {
+		*lparg0 = [(id)arg1 selectedRange];
 	}
 		
 fail:
@@ -215,8 +194,6 @@ fail:
 
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III
-static SEL doubleClickAtIndex;
-static SEL glyphRangeForTextContainer;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
 {
@@ -226,14 +203,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, arg3);
-	if (doubleClickAtIndex == 0) doubleClickAtIndex = sel_registerName("doubleClickAtIndex:");
-	if ((SEL)arg2 == doubleClickAtIndex) {
-		*lparg0 = [(NSAttributedString *)arg1 doubleClickAtIndex: arg3];
-	} else {
-		if (glyphRangeForTextContainer == 0) glyphRangeForTextContainer = sel_registerName("glyphRangeForTextContainer:");
-		if ((SEL)arg2 == glyphRangeForTextContainer) {
-			*lparg0 = [(NSLayoutManager *)arg1 glyphRangeForTextContainer: (NSTextContainer *)arg3];
-		}
+
+	if ((SEL)arg2 == @selector(doubleClickAtIndex:)) {
+		*lparg0 = [(id)arg1 doubleClickAtIndex: arg3];
+	} else if ((SEL)arg2 == @selector(glyphRangeForTextContainer:)) {
+		*lparg0 = [(id)arg1 glyphRangeForTextContainer: (id)arg3];
 	}
 		
 fail:
@@ -244,13 +218,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II
-static SEL size;
-static SEL minimumSize;
-static SEL contentSize;
-static SEL containerSize;
-static SEL cellSize;
-static SEL sizeValue;
-static SEL contentViewMargins;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -260,39 +227,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2);
-	if (size == 0) size = sel_registerName("size");
-	if ((SEL)arg2 == size) {
-		*lparg0 = [(NSAttributedString *)arg1 size];
-	} else {
-		if (minimumSize == 0) minimumSize = sel_registerName("minimumSize");
-		if ((SEL)arg2 == minimumSize) {
-			*lparg0 = [(NSTabView *)arg1 minimumSize];
-		} else {
-			if (contentSize == 0) contentSize = sel_registerName("contentSize");
-			if ((SEL)arg2 == contentSize) {
-				*lparg0 = [(NSScrollView *)arg1 contentSize];
-			} else {
-				if (cellSize == 0) cellSize = sel_registerName("cellSize");
-				if ((SEL)arg2 == contentSize) {
-					*lparg0 = [(NSCell *)arg1 cellSize];
-				} else {
-					if (containerSize == 0) containerSize = sel_registerName("containerSize");
-					if ((SEL)arg2 == containerSize) {
-						*lparg0 = [(id)arg1 containerSize];
-					} else {
-						if (sizeValue == 0) sizeValue = sel_registerName("sizeValue");
-						if ((SEL)arg2 == sizeValue) {
-							*lparg0 = [(id)arg1 sizeValue];
-						} else {
-							if (contentViewMargins == 0) contentViewMargins = sel_registerName("contentViewMargins");
-							if ((SEL)arg2 == contentViewMargins) {
-								*lparg0 = [(id)arg1 contentViewMargins];
-							}
-						}
-					}
-				}
-			}
-		}
+	if ((SEL)arg2 == @selector(size)) {
+		*lparg0 = [(id)arg1 size];
+	} else if ((SEL)arg2 == @selector(minimumSize)) {
+		*lparg0 = [(id)arg1 minimumSize];
+	} else if ((SEL)arg2 == @selector(contentSize)) {
+		*lparg0 = [(id)arg1 contentSize];
+	} else if ((SEL)arg2 == @selector(cellSize)) {
+		*lparg0 = [(id)arg1 cellSize];
+	} else if ((SEL)arg2 == @selector(containerSize)) {
+		*lparg0 = [(id)arg1 containerSize];
+	} else if ((SEL)arg2 == @selector(sizeValue)) {
+		*lparg0 = [(id)arg1 sizeValue];
+	} else if ((SEL)arg2 == @selector(contentViewMargins)) {
+		*lparg0 = [(id)arg1 contentViewMargins];
+	} else if ((SEL)arg2 == @selector(paperSize)) {
+		*lparg0 = [(id)arg1 paperSize];
 	}
 	
 fail:
@@ -303,8 +253,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I
-static SEL convertPointfromView;
-static SEL convertPoint_toView_;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
 {
@@ -316,14 +264,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
 	
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, lparg3, arg4);
-	if (convertPointfromView == 0) convertPointfromView = sel_registerName("convertPoint:fromView:");
-	if ((SEL)arg2 == convertPointfromView) {
-		*lparg0 = [(NSView *)arg1 convertPoint: *lparg3 fromView: (NSView *)arg4];
-	} else {
-		if (convertPoint_toView_ == 0) convertPoint_toView_ = sel_registerName("convertPoint:toView:");
-		if ((SEL)arg2 == convertPoint_toView_) {
-			*lparg0 = [(id)arg1 convertPoint: *lparg3 toView: (id)arg4];
-		}
+
+	if ((SEL)arg2 == @selector(convertPoint:fromView:)) {
+		*lparg0 = [(id)arg1 convertPoint: *lparg3 fromView: (id)arg4];
+	} else if ((SEL)arg2 == @selector(convertPoint:toView:)) {
+		*lparg0 = [(id)arg1 convertPoint: *lparg3 toView: (id)arg4];
 	}
 	
 fail:
@@ -335,7 +280,6 @@ fail:
 #endif
 
 #ifndef NO_objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2
-static SEL lineRangeForRange;
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jobject arg3)
 {
@@ -345,11 +289,13 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend_1struct__Lorg_eclipse_swt_interna
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
+
 	//rc = (jint)objc_msgSend_struct(lparg0, arg1, arg2, lparg3);
-	if (lineRangeForRange == 0) lineRangeForRange = sel_registerName("lineRangeForRange:");
-	if ((SEL)arg2 == lineRangeForRange) {
-		*lparg0 = [(NSString *)arg1 lineRangeForRange: *lparg3];
+
+	if ((SEL)arg2 == @selector(lineRangeForRange:)) {
+		*lparg0 = [(id)arg1 lineRangeForRange: *lparg3];
 	}
+
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
