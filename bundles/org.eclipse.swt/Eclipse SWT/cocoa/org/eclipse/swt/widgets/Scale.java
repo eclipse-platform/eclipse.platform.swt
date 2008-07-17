@@ -288,7 +288,8 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget();
-	if (value < 0) return;
+	int minimum = (int)((NSSlider)view).minValue();
+	if (value <= minimum) return;
 	((NSSlider)view).setMaxValue(value);
 }
 
@@ -307,7 +308,8 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget();
-	if (value < 0) return;
+	int maximum = (int)((NSSlider)view).maxValue();
+	if (!(0 <= value && value < maximum)) return;
 	((NSSlider)view).setMinValue(value);
 }
 
