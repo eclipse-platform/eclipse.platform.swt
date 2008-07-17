@@ -190,8 +190,14 @@ public int getState () {
  */
 public void setMaximum (int value) {
 	checkWidget();
-	if (value < 0) return;
+	int minimum = (int)((NSProgressIndicator)view).minValue();
+	if (!(0 <= minimum && minimum < value)) return;
 	((NSProgressIndicator)view).setMaxValue(value);
+	int selection = (int)((NSProgressIndicator)view).doubleValue();
+	int newSelection = Math.min (selection, value);
+	if (selection != newSelection) {
+		((NSProgressIndicator)view).setDoubleValue(newSelection);
+	}
 }
 
 /**
@@ -209,8 +215,14 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget();
-	if (value < 0) return;
+	int maximum =  (int)((NSProgressIndicator)view).maxValue();
+	if (!(0 <= value && value < maximum)) return;
 	((NSProgressIndicator)view).setMinValue(value);
+	int selection = (int)((NSProgressIndicator)view).doubleValue();
+	int newSelection = Math.max (selection, value);
+	if (selection != newSelection) {
+		((NSProgressIndicator)view).setDoubleValue(newSelection);
+	}
 }
 
 /**
@@ -227,7 +239,10 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-   ((NSProgressIndicator)view).setDoubleValue(value);
+	int minimum = (int)((NSProgressIndicator)view).minValue();
+	int maximum = (int)((NSProgressIndicator)view).maxValue();
+	value = Math.max (minimum, Math.min (maximum, value));
+	((NSProgressIndicator)view).setDoubleValue(value);
 }
 
 /**
