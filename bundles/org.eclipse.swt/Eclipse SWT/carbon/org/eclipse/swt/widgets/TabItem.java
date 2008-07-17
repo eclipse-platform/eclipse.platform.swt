@@ -321,6 +321,12 @@ public void setText (String string) {
 	tab.name = ptr;
 	OS.SetControlData (parent.handle, index+1, OS.kControlTabInfoTag, ControlTabInfoRecV1.sizeof, tab);
 	OS.CFRelease (ptr);
+	if (image != null) {
+		ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+		inContent.contentType = (short)OS.kControlContentCGImageRef;
+		inContent.iconRef = image.handle;
+		OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
+	}
 }
 
 /**
