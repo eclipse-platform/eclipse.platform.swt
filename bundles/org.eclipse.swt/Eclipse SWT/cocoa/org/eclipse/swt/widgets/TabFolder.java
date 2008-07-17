@@ -543,7 +543,7 @@ public void setSelection (int index) {
 }
 
 void setSelection (int index, boolean notify, boolean force) {
-	if (index >= itemCount) return;
+	if (!(0 <= index && index < itemCount)) return;
 	int currentIndex = getSelectionIndex ();
 	if (!force && currentIndex == index) return;
 	if (currentIndex != -1) {
