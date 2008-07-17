@@ -1131,12 +1131,7 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
-//	if (OS.VERSION >= 0x1040) {
-//		int [] attrib = new int [1];
-//		OS.DataBrowserGetAttributes (handle, attrib);
-//		return (attrib [0] & (OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers)) != 0;
-//	}
-	return false;
+	return ((NSTableView)view).usesAlternatingRowBackgroundColors();
 }
 
 /**
