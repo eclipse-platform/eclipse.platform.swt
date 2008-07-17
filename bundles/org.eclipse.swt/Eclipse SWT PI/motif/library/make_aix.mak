@@ -16,7 +16,7 @@ include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
 
-CC=cc_r
+CC=gcc
 
 # This makefile expects the following environment variables set:
 #    JAVA_HOME  - The JDK > 1.3
@@ -53,12 +53,11 @@ CFLAGS = -O -s \
 	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
 	-DAIX -DMOTIF -DCDE \
 	-DNO_XPRINTING_EXTENSIONS -DNO_XINERAMA_EXTENSIONS \
-	-q mbcs -qlanglvl=extended -qmaxmem=8192 \
 	-I$(JAVA_HOME)/include \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-all: make_swt make_cde
+all: make_swt make_cde make_cairo
 
 make_swt: $(SWT_LIB)
 
