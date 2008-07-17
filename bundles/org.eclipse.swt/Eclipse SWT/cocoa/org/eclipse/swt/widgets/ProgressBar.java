@@ -191,7 +191,7 @@ public int getState () {
 public void setMaximum (int value) {
 	checkWidget();
 	int minimum = (int)((NSProgressIndicator)view).minValue();
-	if (!(0 <= minimum && minimum < value)) return;
+	if (value <= minimum) return;
 	((NSProgressIndicator)view).setMaxValue(value);
 	int selection = (int)((NSProgressIndicator)view).doubleValue();
 	int newSelection = Math.min (selection, value);
@@ -239,9 +239,6 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	int minimum = (int)((NSProgressIndicator)view).minValue();
-	int maximum = (int)((NSProgressIndicator)view).maxValue();
-	value = Math.max (minimum, Math.min (maximum, value));
 	((NSProgressIndicator)view).setDoubleValue(value);
 }
 
