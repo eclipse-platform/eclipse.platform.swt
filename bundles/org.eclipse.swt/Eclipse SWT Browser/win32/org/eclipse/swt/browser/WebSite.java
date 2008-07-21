@@ -273,7 +273,7 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 	* By default the IE shortcuts are run.  However, F5 causes a refresh, which is not
 	* appropriate when rendering HTML from memory, and CTRL-N opens a standalone IE,
 	* which is undesirable and can cause a crash in some contexts.  The workaround is
-	* to block the handling of these shortcuts by IE.
+	* to block IE from handling these shortcuts by answering COM.S_OK.
 	*/
 	int result = COM.S_FALSE;
 	MSG msg = new MSG();
@@ -308,8 +308,8 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				*/
 				break;
 			case OS.VK_N:
-				/* If the exact keypress is Ctrl+N, which opens a new external IE, then eat this key */
 				if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_MENU) >= 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
+					frame.setData(CONSUME_KEY, "false"); //$NON-NLS-1$
 					result = COM.S_OK;
 					break;
 				}
