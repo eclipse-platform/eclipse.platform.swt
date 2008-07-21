@@ -14756,12 +14756,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1set_1grid_1lines)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1set_1grid_1lines_FUNC);
 /*
-	gtk_tree_view_set_grid_lines((GtkTreeView*)arg0, (GtkTreeViewGridLines)arg1);
+	gtk_tree_view_set_grid_lines((GtkTreeView*)arg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(GtkTreeView*, GtkTreeViewGridLines);
+		typedef void (*FPTR)(GtkTreeView*, jint);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_tree_view_set_grid_lines_LIB, RTLD_LAZY);
@@ -14769,7 +14769,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1set_1grid_1lines)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)((GtkTreeView*)arg0, (GtkTreeViewGridLines)arg1);
+			(*fptr)((GtkTreeView*)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1set_1grid_1lines_FUNC);
