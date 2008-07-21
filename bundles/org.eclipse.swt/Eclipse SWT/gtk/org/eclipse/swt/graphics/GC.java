@@ -2948,6 +2948,7 @@ public void setAdvanced(boolean advanced) {
 		if (cairo != 0) Cairo.cairo_destroy(cairo);
 		data.cairo = 0;
 		data.interpolation = SWT.DEFAULT;
+		data.alpha = 0xFF;
 		data.backgroundPattern = data.foregroundPattern = null;
 		data.state = 0;
 		setClipping(0);
