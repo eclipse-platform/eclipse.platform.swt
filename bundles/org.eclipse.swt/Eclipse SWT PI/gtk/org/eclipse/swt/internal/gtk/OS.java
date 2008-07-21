@@ -355,6 +355,10 @@ public class OS extends C {
 	public static final int GTK_TREE_VIEW_DROP_AFTER = 1;
 	public static final int GTK_TREE_VIEW_DROP_INTO_OR_BEFORE = 2;
 	public static final int GTK_TREE_VIEW_DROP_INTO_OR_AFTER = 3;
+	public static final int GTK_TREE_VIEW_GRID_LINES_NONE = 0;
+	public static final int GTK_TREE_VIEW_GRID_LINES_HORIZONTAL = 1;
+	public static final int GTK_TREE_VIEW_GRID_LINES_VERTICAL = 2;
+	public static final int GTK_TREE_VIEW_GRID_LINES_BOTH = 3;
 	public static final int GDK_UNMAP = 15;
 	public static final int GTK_UNIT_PIXEL = 0;
 	public static final int GTK_UNIT_POINTS = 1;
@@ -8820,6 +8824,15 @@ public static final void gtk_tree_view_set_cursor(int /*long*/ tree_view, int /*
 		lock.unlock();
 	}
 } 
+public static final native void _gtk_tree_view_set_grid_lines(int /*long*/ tree_view, int grid_lines);
+public static final void gtk_tree_view_set_grid_lines(int /*long*/ tree_view, int grid_lines) {
+	lock.lock();
+	try {
+		_gtk_tree_view_set_grid_lines(tree_view, grid_lines);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_view_set_headers_visible(int /*long*/ tree_view, boolean visible);
 public static final void gtk_tree_view_set_headers_visible(int /*long*/ tree_view, boolean visible) {
 	lock.lock();

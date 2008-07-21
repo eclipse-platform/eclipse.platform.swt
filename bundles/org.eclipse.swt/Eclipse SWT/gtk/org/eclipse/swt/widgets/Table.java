@@ -2976,6 +2976,9 @@ public void setItemCount (int count) {
 public void setLinesVisible (boolean show) {
 	checkWidget();
 	OS.gtk_tree_view_set_rules_hint (handle, show);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		OS.gtk_tree_view_set_grid_lines(handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
+	}
 }
 
 void setParentBackground () {

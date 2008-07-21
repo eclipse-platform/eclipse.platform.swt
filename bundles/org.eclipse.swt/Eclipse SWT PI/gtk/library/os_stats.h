@@ -1023,6 +1023,7 @@ typedef enum {
 	_1gtk_1tree_1view_1set_1cursor_FUNC,
 	_1gtk_1tree_1view_1set_1drag_1dest_1row_FUNC,
 	_1gtk_1tree_1view_1set_1enable_1search_FUNC,
+	_1gtk_1tree_1view_1set_1grid_1lines_FUNC,
 	_1gtk_1tree_1view_1set_1headers_1visible_FUNC,
 	_1gtk_1tree_1view_1set_1model_FUNC,
 	_1gtk_1tree_1view_1set_1rules_1hint_FUNC,
