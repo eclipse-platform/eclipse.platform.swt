@@ -177,9 +177,6 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
-	
-	//TODO printing is not working. NSPrintOperation does not fit our API well
-	// maybe should core printing directly
 	printer = NSPrinter.static_printerWithName_(NSString.stringWith(data.name));
 	printer.retain();
 	if (data.otherData != null) {
@@ -190,13 +187,13 @@ protected void create(DeviceData deviceData) {
 	}
 	printInfo.retain();
 	printInfo.setPrinter(printer);
+	NSRect rect = new NSRect();
 	window = (NSWindow)new NSWindow().alloc();
-	window.initWithContentRect_styleMask_backing_defer_(printInfo.imageablePageBounds(), OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+	window.initWithContentRect_styleMask_backing_defer_(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 	view = (NSView)new NSView().alloc();
-	view.initWithFrame(new NSRect());
+	view.initWithFrame(rect);
 	window.setContentView(view);
 	operation = NSPrintOperation.static_printOperationWithView_printInfo_(view, printInfo);
-//	operation = NSPrintOperation.static_PDFOperationWithView_insideRect_toPath_printInfo_(view, printInfo.imageablePageBounds(), NSString.stringWith("/Users/silenioquarti/Desktop/u.pdf"), printInfo);
 	operation.retain();
 	operation.setShowsPrintPanel(false);
 }
@@ -377,6 +374,7 @@ public boolean startPage() {
 	rect.width = paperSize.width;
 	rect.height = paperSize.height;
 	view.beginPageInRect(rect, new NSPoint());
+	NSBezierPath.bezierPathWithRect(rect).setClip();
 	NSAffineTransform transform = NSAffineTransform.transform();
 	transform.translateXBy(0, rect.height);
 	transform.scaleXBy(1, -1);
