@@ -137,7 +137,7 @@ public PrinterData open() {
 		dict.setValue_forKey_(NSNumber.numberWithInt(startPage), new NSString(OS.NSPrintFirstPage()));
 		dict.setValue_forKey_(NSNumber.numberWithInt(endPage), new NSString(OS.NSPrintLastPage()));
 	}
-	//TODO open page layout panel either as a separate dialog or as a accessory view
+	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | panel.options());
 	if (panel.runModalWithPrintInfo(printInfo) != OS.NSCancelButton) {
 		NSPrinter printer = printInfo.printer();
 		NSString str = printer.name();
