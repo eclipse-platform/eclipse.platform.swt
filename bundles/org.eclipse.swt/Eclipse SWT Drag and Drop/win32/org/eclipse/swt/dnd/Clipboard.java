@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.ole.win32.*;
  */
 public class Clipboard {
 
-	private static final int RETRY_LIMIT = 100;
+	private static final int RETRY_LIMIT = 10;
 	private Display display;
 	
 	// ole interfaces
@@ -499,7 +499,7 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 	* message sends.
 	*/
 	int retryCount = 0;
-	while (result != COM.S_OK && retryCount++ < 10) {
+	while (result != COM.S_OK && retryCount++ < RETRY_LIMIT) {
 		try {Thread.sleep(50);} catch (Throwable t) {}
 		MSG msg = new MSG();
 		OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);

@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
  
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -29,7 +30,30 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Transfer {
-	
+
+private static final int RETRY_LIMIT = 10;
+/* 
+ * Feature in Windows. When another application has control
+ * of the clipboard, the clipboard is locked and it's not
+ * possible to retrieve data until the other application is
+ * finished. To allow other applications to get the
+ * data, use PeekMessage() to enable cross thread
+ * message sends.
+ */
+int getData(IDataObject dataObject, FORMATETC pFormatetc, STGMEDIUM pmedium) {
+	if (dataObject.GetData(pFormatetc, pmedium) == COM.S_OK) return COM.S_OK;
+	try {Thread.sleep(50);} catch (Throwable t) {}
+	int result = dataObject.GetData(pFormatetc, pmedium);
+	int retryCount = 0;
+	while (result != COM.S_OK && retryCount++ < RETRY_LIMIT) {
+		MSG msg = new MSG();
+		OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
+		try {Thread.sleep(50);} catch (Throwable t) {}
+		result = dataObject.GetData(pFormatetc, pmedium);
+	}
+	return result;
+}
+
 /**
  * Returns a list of the platform specific data types that can be converted using 
  * this transfer agent.

@@ -117,7 +117,7 @@ public Object nativeToJava(TransferData transferData) {
 	formatetc.tymed = COM.TYMED_HGLOBAL;
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	stgmedium.tymed = COM.TYMED_HGLOBAL;
-	transferData.result = dataObject.GetData(formatetc, stgmedium);
+	transferData.result = getData(dataObject, formatetc, stgmedium);
 	dataObject.Release();
 	if (transferData.result != COM.S_OK) return null;
 	// How many files are there?
