@@ -5540,7 +5540,7 @@ LRESULT WM_CONTEXTMENU (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (findImageControl () != null) return LRESULT.ONE;
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!OS.IsWinCE && OS.COMCTL32_MAJOR < 6) {
 		if ((style & SWT.DOUBLE_BUFFERED) != 0) {
 			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_DOUBLEBUFFER) == 0) return LRESULT.ONE;
@@ -5754,7 +5754,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	if (fixScrollWidth) setScrollWidth (null, true);
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (!OS.IsWinCE && OS.COMCTL32_MAJOR < 6) {
 		if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
 			int bits = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_DOUBLEBUFFER) == 0) {
