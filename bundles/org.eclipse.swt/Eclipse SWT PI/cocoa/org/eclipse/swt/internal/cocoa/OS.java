@@ -9666,7 +9666,7 @@ public static final native int NSPrintMustCollate();
 public static final native int NSPrintSaveJob();
 public static final native int NSPrintSavePath();
 //public static final native int NSPrintScalingFactor();
-//public static final native int NSPrintSpoolJob();
+public static final native int NSPrintSpoolJob();
 //public static final native int NSPrintTime();
 //public static final native int NSPrintTopMargin();
 //public static final native int NSPrintVerticalPagination();

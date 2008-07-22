@@ -576,6 +576,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSPrintSavePath)
 }
 #endif
 
+#ifndef NO_NSPrintSpoolJob
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintSpoolJob)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintSpoolJob_FUNC);
+	rc = (jint)NSPrintSpoolJob;
+	OS_NATIVE_EXIT(env, that, NSPrintSpoolJob_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSRTFPboardType
 JNIEXPORT jint JNICALL OS_NATIVE(NSRTFPboardType)
 	(JNIEnv *env, jclass that)

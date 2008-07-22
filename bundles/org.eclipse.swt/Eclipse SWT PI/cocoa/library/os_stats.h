@@ -63,6 +63,7 @@ typedef enum {
 	NSPrintMustCollate_FUNC,
 	NSPrintSaveJob_FUNC,
 	NSPrintSavePath_FUNC,
+	NSPrintSpoolJob_FUNC,
 	NSRTFPboardType_FUNC,
 	NSStrikethroughColorAttributeName_FUNC,
 	NSStrikethroughStyleAttributeName_FUNC,
