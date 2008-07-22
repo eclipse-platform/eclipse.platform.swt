@@ -74,6 +74,17 @@ public class DragSourceEvent extends TypedEvent {
 	 */
 	public Image image;
 
+	/**
+	 * In dragStart, the x offset (relative to the image) where the drag source image will be displayed.
+	 * @since 3.5
+	 */
+ 	public int offsetX;
+	/**
+	 * In dragStart, the y offset (relative to the image) where the drag source image will be displayed.
+	 * @since 3.5
+	 */
+ 	public int offsetY;
+
 	static final long serialVersionUID = 3257002142513770808L;
 	
 /**
@@ -91,6 +102,8 @@ public DragSourceEvent(DNDEvent e) {
 	this.x = e.x;
 	this.y = e.y;
 	this.image = e.image;
+	this.offsetX = e.offsetX;
+	this.offsetY = e.offsetY;
 }
 void updateEvent(DNDEvent e) {
 	e.widget = this.widget;
@@ -102,5 +115,7 @@ void updateEvent(DNDEvent e) {
 	e.x = this.x;
 	e.y = this.y;
 	e.image = this.image;
+	e.offsetX = this.offsetX;
+	e.offsetY = this.offsetY;
 }
 }

@@ -20,4 +20,6 @@ class DNDEvent extends Event {
 	public int operations;
 	public int feedback;
 	public Image image;
+	public int offsetX;
+	public int offsetY;
 }
