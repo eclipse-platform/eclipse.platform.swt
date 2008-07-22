@@ -1361,7 +1361,7 @@ private void printEvent(DragSourceEvent e) {
 	sb.append("widget: "); sb.append(e.widget);
 	sb.append(", time: "); sb.append(e.time);
 	sb.append(", operation: "); sb.append(e.detail);
-	sb.append(", type: "); sb.append(e.dataType != null ? e.dataType.type : 0);
+	sb.append(", type: "); sb.append(e.dataType != null ? e.dataType.type : "0");
 	sb.append(", doit: "); sb.append(e.doit);
 	sb.append(", data: "); sb.append(e.data);
 	sb.append("\n");
