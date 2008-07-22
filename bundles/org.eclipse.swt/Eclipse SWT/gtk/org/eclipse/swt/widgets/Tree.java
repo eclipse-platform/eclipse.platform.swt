@@ -462,6 +462,10 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter, boolean recurse) {
 	}
 
 	if (path != 0) OS.gtk_tree_path_free (path);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0) && OS.gtk_tree_view_get_rules_hint (handle)) {
+		OS.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+		width += 2 * w [0];
+	}
 	return width;
 }
 
@@ -2914,6 +2918,9 @@ public void setHeaderVisible (boolean show) {
 public void setLinesVisible (boolean show) {
 	checkWidget();
 	OS.gtk_tree_view_set_rules_hint (handle, show);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
+	}
 }
 
 void setParentBackground () {

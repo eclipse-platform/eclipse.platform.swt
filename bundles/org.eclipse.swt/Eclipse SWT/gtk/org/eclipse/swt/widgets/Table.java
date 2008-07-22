@@ -359,6 +359,10 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 		temp = OS.g_list_next (temp);
 	}
 	OS.g_list_free (list);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0) && OS.gtk_tree_view_get_rules_hint (handle)) {
+		OS.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+		width += 2 * w [0];
+	}
 	return width;
 }
 
@@ -2977,7 +2981,7 @@ public void setLinesVisible (boolean show) {
 	checkWidget();
 	OS.gtk_tree_view_set_rules_hint (handle, show);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
-		OS.gtk_tree_view_set_grid_lines(handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
+		OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
 	}
 }
 
