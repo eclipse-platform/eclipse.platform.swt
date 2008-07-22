@@ -260,10 +260,37 @@ public void create (Composite parent, int style) {
 					byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 					rc = XPCOMInit.XPCOMGlueStartup (path);
 					if (rc != XPCOM.NS_OK) {
-						IsXULRunner = false;	/* failed */
 						mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 						if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
-					} else {
+
+						/* attempt to XPCOMGlueStartup the GRE pointed at by MOZILLA_FIVE_HOME */
+						int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_FIVE_HOME, true));
+						if (ptr == 0) {
+							IsXULRunner = false;
+						} else {
+							length = C.strlen (ptr);
+							byte[] buffer = new byte[length];
+							C.memmove (buffer, ptr, length);
+							mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, buffer));
+							/*
+							 * Attempting to XPCOMGlueStartup a mozilla-based GRE != xulrunner can
+							 * crash, so don't attempt unless the GRE appears to be xulrunner.
+							 */
+							if (mozillaPath.indexOf("xulrunner") == -1) { //$NON-NLS-1$
+								IsXULRunner = false;	
+							} else {
+								mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
+								path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
+								rc = XPCOMInit.XPCOMGlueStartup (path);
+								if (rc != XPCOM.NS_OK) {
+									IsXULRunner = false;
+									mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
+									if (Device.DEBUG) System.out.println ("failed to start as XULRunner: " + mozillaPath); //$NON-NLS-1$
+								}
+							}
+						} 
+					}
+					if (IsXULRunner) {
 						XPCOMInitWasGlued = true;
 					}
 				}
