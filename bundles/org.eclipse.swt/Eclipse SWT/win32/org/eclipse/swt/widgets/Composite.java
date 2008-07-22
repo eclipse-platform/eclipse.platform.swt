@@ -1339,7 +1339,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 			if ((style & (SWT.DOUBLE_BUFFERED | SWT.TRANSPARENT)) != 0 || (style & SWT.NO_MERGE_PAINTS) != 0) {
 				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 				if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
-					if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 						if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
 							int nBytes = OS.GetRegionData (sysRgn, 0, null);
 							int [] lpRgnData = new int [nBytes / 4];
