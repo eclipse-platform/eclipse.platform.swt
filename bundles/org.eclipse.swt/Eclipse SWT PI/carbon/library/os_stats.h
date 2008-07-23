@@ -760,6 +760,7 @@ typedef enum {
 	PMSetJobNameCFString_FUNC,
 	PMSetLastPage_FUNC,
 	PMSetPageRange_FUNC,
+	PMShowPrintDialogWithOptions_FUNC,
 	PMUnflattenPageFormat_FUNC,
 	PMUnflattenPrintSettings_FUNC,
 	PickColor_FUNC,

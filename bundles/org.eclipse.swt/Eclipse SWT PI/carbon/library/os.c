@@ -10806,6 +10806,39 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMSetPageRange)
 }
 #endif
 
+#ifndef NO_PMShowPrintDialogWithOptions
+JNIEXPORT jint JNICALL OS_NATIVE(PMShowPrintDialogWithOptions)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbooleanArray arg4)
+{
+	jboolean *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PMShowPrintDialogWithOptions_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetBooleanArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)PMShowPrintDialogWithOptions(arg0, arg1, arg2, arg3, lparg4);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint, jint, jboolean *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(PMShowPrintDialogWithOptions_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("PMShowPrintDialogWithOptions"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseBooleanArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, PMShowPrintDialogWithOptions_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PMUnflattenPageFormat
 JNIEXPORT jint JNICALL OS_NATIVE(PMUnflattenPageFormat)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

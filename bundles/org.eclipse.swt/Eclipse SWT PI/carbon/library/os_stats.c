@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 973;
-int OS_nativeFunctionCallCount[973];
+int OS_nativeFunctionCount = 974;
+int OS_nativeFunctionCallCount[974];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -752,6 +752,7 @@ char * OS_nativeFunctionNames[] = {
 	"PMSetJobNameCFString",
 	"PMSetLastPage",
 	"PMSetPageRange",
+	"PMShowPrintDialogWithOptions",
 	"PMUnflattenPageFormat",
 	"PMUnflattenPrintSettings",
 	"PickColor",

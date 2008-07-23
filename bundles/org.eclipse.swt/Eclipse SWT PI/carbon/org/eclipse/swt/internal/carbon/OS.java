@@ -750,6 +750,8 @@ public class OS extends C {
 	public static final int kPMDestinationPreview = 4;
 	public static final int kPMDestinationPrinter = 1;
 	public static final int kPMPrintAllPages = 2147483647;
+	public static final int kPMShowDefaultInlineItems = 1 << 15;
+	public static final int kPMShowPageAttributesPDE = 1 << 8;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
 	public static final int kQDUseCGTextRendering = (1 << 1);
 	public static final int kScrapFlavorTypeUnicode = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
@@ -1773,6 +1775,7 @@ public static final native int PMSetFirstPage(int printSettings, int first, bool
 public static final native int PMSetJobNameCFString(int printSettings, int name); 
 public static final native int PMSetLastPage(int printSettings, int last, boolean lock);
 public static final native int PMSetPageRange(int printSettings, int minPage, int maxPage);
+public static final native int PMShowPrintDialogWithOptions(int printSession, int printSettings, int pageFormat, int printDialogOptions, boolean[] accepted);
 public static final native int PMUnflattenPageFormat(int flatFormat, int[] pageFormat); 
 public static final native int PMUnflattenPrintSettings(int flatSettings, int[] printSettings); 
 public static final native boolean PtInRect(Point pt, Rect r);
