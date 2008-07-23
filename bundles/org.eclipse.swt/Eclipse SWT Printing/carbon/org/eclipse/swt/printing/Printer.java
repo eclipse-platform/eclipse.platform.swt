@@ -12,11 +12,8 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.PMRect;
-import org.eclipse.swt.internal.carbon.PMResolution;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -112,6 +109,9 @@ static String getCurrentPrinterName(int printSession) {
 		OS.CFRelease(printerList[0]);
 	}
 	return result;
+}
+Point getIndependentDPI() {
+	return super.getDPI();
 }
 static String getString(int ptr) {
 	int length = OS.CFStringGetLength(ptr);
@@ -233,7 +233,12 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	PMRect paperRect = new PMRect();
 	OS.PMGetAdjustedPageRect(pageFormat, pageRect);
 	OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-	return new Rectangle(x+(int)paperRect.left, y+(int)paperRect.top, width+(int)(paperRect.right-pageRect.right), height+(int)(paperRect.bottom-pageRect.bottom));
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	x += paperRect.left * dpi.x / screenDPI.x;
+	y += paperRect.top * dpi.y / screenDPI.y;
+	width += ((paperRect.right-paperRect.left)-(pageRect.right-pageRect.left)) * dpi.x / screenDPI.x;
+	height += ((paperRect.bottom-paperRect.top)-(pageRect.bottom-pageRect.top)) * dpi.y / screenDPI.y;
+	return new Rectangle(x, y, width, height);
 }
 
 /**	 
@@ -527,7 +532,14 @@ public void endPage() {
 public Point getDPI() {
 	checkDevice();
 	PMResolution resolution = new PMResolution();
-	OS.PMGetResolution(pageFormat, resolution);
+	if (OS.VERSION >= 0x1050) {
+		int[] printer = new int[1]; 
+		OS.PMSessionGetCurrentPrinter(printSession, printer);
+		OS.PMPrinterGetOutputResolution(printer[0], printSettings, resolution);
+	}
+	if (resolution.hRes == 0 || resolution.vRes == 0) {
+		OS.PMGetResolution(pageFormat, resolution);
+	}
 	return new Point((int)resolution.hRes, (int)resolution.vRes);
 }
 
@@ -550,7 +562,8 @@ public Rectangle getBounds() {
 	checkDevice();
 	PMRect paperRect = new PMRect();
 	OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
-	return new Rectangle(0, 0, (int)(paperRect.right-paperRect.left), (int)(paperRect.bottom-paperRect.top));
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	return new Rectangle(0, 0, (int)((paperRect.right-paperRect.left) * dpi.x / screenDPI.x), (int)((paperRect.bottom-paperRect.top) * dpi.x / screenDPI.x));
 }
 
 /**
@@ -574,7 +587,8 @@ public Rectangle getClientArea() {
 	checkDevice();
 	PMRect pageRect = new PMRect();
 	OS.PMGetAdjustedPageRect(pageFormat, pageRect);
-	return new Rectangle(0, 0, (int)(pageRect.right-pageRect.left), (int)(pageRect.bottom-pageRect.top));
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	return new Rectangle(0, 0, (int)((pageRect.right-pageRect.left) * dpi.x / screenDPI.x), (int)((pageRect.bottom-pageRect.top) * dpi.x / screenDPI.x));
 }
 
 /**
@@ -636,9 +650,13 @@ void setupNewPage() {
 			if (context != buffer[0]) SWT.error(SWT.ERROR_UNSPECIFIED);
 		}
 		PMRect paperRect= new PMRect();
+		PMRect pageRect= new PMRect();
 		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
+		OS.PMGetAdjustedPageRect(pageFormat, pageRect);
+		OS.CGContextTranslateCTM(context, (float)-paperRect.left, (float)(paperRect.bottom-paperRect.top) + (float)paperRect.top);
 		OS.CGContextScaleCTM(context, 1, -1);
-		OS.CGContextTranslateCTM(context, 0, -(float)(paperRect.bottom-paperRect.top));
+		Point dpi = getDPI(), screenDPI = getIndependentDPI();
+		OS.CGContextScaleCTM(context, screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 		OS.CGContextSetStrokeColorSpace(context, colorspace);
 		OS.CGContextSetFillColorSpace(context, colorspace);
 	}

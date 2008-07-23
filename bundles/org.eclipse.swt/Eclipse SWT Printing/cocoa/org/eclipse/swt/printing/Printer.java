@@ -162,10 +162,11 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
 	NSSize paperSize = printInfo.paperSize();
 	NSRect bounds = printInfo.imageablePageBounds();
-	x -= bounds.x;
-	y -= bounds.y;
-	width += paperSize.width - bounds.width;
-	height += paperSize.height - bounds.height;
+	Point dpi = getDPI (), screenDPI = getIndependentDPI();
+	x -= (bounds.x * dpi.x / screenDPI.x);
+	y -= (bounds.y * dpi.y / screenDPI.y);
+	width += (paperSize.width - bounds.width) * dpi.x / screenDPI.x;
+	height += (paperSize.height - bounds.height) * dpi.y / screenDPI.y;
 	return new Rectangle(x, y, width, height);
 }
 
@@ -177,8 +178,6 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
-	printer = NSPrinter.static_printerWithName_(NSString.stringWith(data.name));
-	printer.retain();
 	if (data.otherData != null) {
 		NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
 		printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
@@ -186,7 +185,11 @@ protected void create(DeviceData deviceData) {
 		printInfo = NSPrintInfo.sharedPrintInfo();
 	}
 	printInfo.retain();
-	printInfo.setPrinter(printer);
+	printer = NSPrinter.static_printerWithName_(NSString.stringWith(data.name));
+	if (printer != null) {
+		printer.retain();
+		printInfo.setPrinter(printer);
+	}
 	/*
 	* Bug in Cocoa.  For some reason, the output still goes to the printer when
 	* the user chooses the preview button.  The fix is to reset the job disposition.
@@ -242,6 +245,7 @@ public int internal_new_GC(GCData data) {
 		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
+		data.size = printInfo.paperSize();
 		isGCCreated = true;
 	}
 	return operation.context().id;
@@ -303,6 +307,7 @@ public boolean startJob(String jobName) {
 	if (jobName != null && jobName.length() != 0) {
 		operation.setJobTitle(NSString.stringWith(jobName));
 	}
+	printInfo.setUpPrintOperationDefaultValues();
 	NSPrintOperation.setCurrentOperation(operation);
 	NSGraphicsContext context = operation.createContext();
 	if (context != null) {
@@ -380,10 +385,13 @@ public boolean startPage() {
 	rect.width = paperSize.width;
 	rect.height = paperSize.height;
 	view.beginPageInRect(rect, new NSPoint());
-	NSBezierPath.bezierPathWithRect(rect).setClip();
+	NSRect imageBounds = printInfo.imageablePageBounds();
+	NSBezierPath.bezierPathWithRect(imageBounds).setClip();
 	NSAffineTransform transform = NSAffineTransform.transform();
-	transform.translateXBy(0, rect.height);
+	transform.translateXBy(imageBounds.x, rect.height - imageBounds.y);
 	transform.scaleXBy(1, -1);
+	Point dpi = getDPI (), screenDPI = getIndependentDPI();
+	transform.scaleXBy(screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 	transform.concat();
 	return true;
 }
@@ -417,8 +425,12 @@ public void endPage() {
  */
 public Point getDPI() {
 	checkDevice();
-	//TODO
-	return new Point(72, 72);
+	//TODO get output resolution
+	return getIndependentDPI();
+}
+
+Point getIndependentDPI() {
+	return super.getDPI();
 }
 
 /**
@@ -439,7 +451,8 @@ public Point getDPI() {
 public Rectangle getBounds() {
 	checkDevice();
 	NSSize size = printInfo.paperSize();
-	return new Rectangle (0, 0, (int)size.width, (int)size.height);
+	Point dpi = getDPI (), screenDPI = getIndependentDPI();
+	return new Rectangle (0, 0, (int)(size.width * dpi.x / screenDPI.x), (int)(size.height * dpi.y / screenDPI.y));
 }
 
 /**
@@ -462,7 +475,8 @@ public Rectangle getBounds() {
 public Rectangle getClientArea() {
 	checkDevice();
 	NSRect rect = printInfo.imageablePageBounds();
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	Point dpi = getDPI (), screenDPI = getIndependentDPI();
+	return new Rectangle(0, 0, (int)(rect.width * dpi.x / screenDPI.x), (int)(rect.height * dpi.y / screenDPI.y));
 }
 
 /**

@@ -316,10 +316,7 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	NSDictionary dictionary = getPrimaryScreen().deviceDescription();
-	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
-	NSSize size = value.sizeValue();
-	return new Point((int)size.width, (int)size.height);
+	return getScreenDPI();
 }
 
 NSScreen getPrimaryScreen () {
@@ -367,6 +364,13 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	FontData[] result = new FontData[count];
 	System.arraycopy(fds, 0, result, 0, count);
 	return result;
+}
+
+Point getScreenDPI () {
+	NSDictionary dictionary = getPrimaryScreen().deviceDescription();
+	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
+	NSSize size = value.sizeValue();
+	return new Point((int)size.width, (int)size.height);
 }
 
 /**
@@ -483,7 +487,8 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 	
 	/* Initialize the system font slot */
-	NSFont font = NSFont.systemFontOfSize(NSFont.systemFontSize());
+	Point dpi = getDPI(), screenDPI = getScreenDPI();
+	NSFont font = NSFont.systemFontOfSize(NSFont.systemFontSize() * dpi.y / screenDPI.y);
 	systemFont = Font.cocoa_new(this, font);
 }
 

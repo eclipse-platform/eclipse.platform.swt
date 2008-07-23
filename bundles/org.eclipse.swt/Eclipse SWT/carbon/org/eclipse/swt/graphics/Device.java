@@ -460,6 +460,18 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	return result;
 }
 
+Point getScreenDPI() {
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memmove(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memmove(device, ptr[0], GDevice.sizeof);
+	OS.memmove(ptr, device.gdPMap, 4);
+	PixMap pixmap = new PixMap();
+	OS.memmove(pixmap, ptr[0], PixMap.sizeof);
+	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
+}
+
 /**
  * Returns the matching standard color for the given
  * constant, which should be one of the color constants
@@ -591,7 +603,8 @@ protected void init () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	systemFont = Font.carbon_new (this, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0]);
+	Point dpi = getDPI(), screenDPI = getScreenDPI();
+	systemFont = Font.carbon_new (this, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0] * dpi.y / screenDPI.y);
 }
 
 /**	 
