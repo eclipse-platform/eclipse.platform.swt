@@ -49,12 +49,14 @@ public class DragSourceEvent extends TypedEvent {
 	/**
 	 * In dragStart, the x coordinate (relative to the control) of the 
 	 * position the mouse went down to start the drag.
+	 * 
 	 * @since 3.2
 	 */
  	public int x;
  	/**
 	 * In dragStart, the y coordinate (relative to the control) of the 
-	 * position the mouse went down to start the drag .
+	 * position the mouse went down to start the drag.
+	 * 
 	 * @since 3.2
 	 */
  	public int y;
@@ -76,11 +78,13 @@ public class DragSourceEvent extends TypedEvent {
 
 	/**
 	 * In dragStart, the x offset (relative to the image) where the drag source image will be displayed.
+	 * 
 	 * @since 3.5
 	 */
  	public int offsetX;
 	/**
 	 * In dragStart, the y offset (relative to the image) where the drag source image will be displayed.
+	 * 
 	 * @since 3.5
 	 */
  	public int offsetY;
