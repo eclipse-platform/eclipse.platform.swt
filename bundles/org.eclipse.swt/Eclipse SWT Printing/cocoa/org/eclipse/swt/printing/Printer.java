@@ -194,7 +194,10 @@ protected void create(DeviceData deviceData) {
 	* Bug in Cocoa.  For some reason, the output still goes to the printer when
 	* the user chooses the preview button.  The fix is to reset the job disposition.
 	*/
-	printInfo.setJobDisposition(printInfo.jobDisposition());
+	NSString job = printInfo.jobDisposition();
+	if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
+		printInfo.setJobDisposition(job);
+	}
 	NSRect rect = new NSRect();
 	window = (NSWindow)new NSWindow().alloc();
 	window.initWithContentRect_styleMask_backing_defer_(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
