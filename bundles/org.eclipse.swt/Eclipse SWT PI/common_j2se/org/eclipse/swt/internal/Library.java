@@ -92,10 +92,12 @@ static boolean extract (String fileName, String mappedName) {
 	FileOutputStream os = null;
 	InputStream is = null;
 	File file = new File(fileName);
+	boolean extracted = false;
 	try {
 		if (!file.exists ()) {
 			is = Library.class.getResourceAsStream ("/" + mappedName); //$NON-NLS-1$
 			if (is != null) {
+				extracted = true;
 				int read;
 				byte [] buffer = new byte [4096];
 				os = new FileOutputStream (fileName);
@@ -109,9 +111,9 @@ static boolean extract (String fileName, String mappedName) {
 						Runtime.getRuntime ().exec (new String []{"chmod", "755", fileName}).waitFor(); //$NON-NLS-1$ //$NON-NLS-2$
 					} catch (Throwable e) {}
 				}
-				if (load (fileName)) return true;
 			}
 		}
+		if (load (fileName)) return true;
 	} catch (Throwable e) {
 		try {
 			if (os != null) os.close ();
@@ -119,8 +121,8 @@ static boolean extract (String fileName, String mappedName) {
 		try {
 			if (is != null) is.close ();
 		} catch (IOException e1) {}
+		if (extracted && file.exists ()) file.delete ();
 	}
-	if (file.exists ()) file.delete ();
 	return false;
 }
 
