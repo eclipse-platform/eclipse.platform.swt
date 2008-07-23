@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2017,6 +2017,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XSetTile)
 	OS_NATIVE_ENTER(env, that, _1XSetTile_FUNC);
 	XSetTile((Display *)arg0, (GC)arg1, (Pixmap)arg2);
 	OS_NATIVE_EXIT(env, that, _1XSetTile_FUNC);
+}
+#endif
+
+#ifndef NO__1XSetTransientForHint
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetTransientForHint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XSetTransientForHint_FUNC);
+	rc = (jint)XSetTransientForHint((Display *)arg0, (Window)arg1, (Window)arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetTransientForHint_FUNC);
+	return rc;
 }
 #endif
 
