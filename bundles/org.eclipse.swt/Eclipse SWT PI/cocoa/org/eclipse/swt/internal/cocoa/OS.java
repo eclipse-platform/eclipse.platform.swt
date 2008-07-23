@@ -9658,7 +9658,7 @@ public static final native int NSPrintMustCollate();
 //public static final native int NSPrintPaperName();
 //public static final native int NSPrintPaperSize();
 //public static final native int NSPrintPhotoJobStyleHint();
-//public static final native int NSPrintPreviewJob();
+public static final native int NSPrintPreviewJob();
 //public static final native int NSPrintPrinter();
 //public static final native int NSPrintPrinterName();
 //public static final native int NSPrintReversePageOrder();

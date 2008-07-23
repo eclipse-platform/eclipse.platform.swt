@@ -61,6 +61,7 @@ typedef enum {
 	NSPrintJobDisposition_FUNC,
 	NSPrintLastPage_FUNC,
 	NSPrintMustCollate_FUNC,
+	NSPrintPreviewJob_FUNC,
 	NSPrintSaveJob_FUNC,
 	NSPrintSavePath_FUNC,
 	NSPrintSpoolJob_FUNC,

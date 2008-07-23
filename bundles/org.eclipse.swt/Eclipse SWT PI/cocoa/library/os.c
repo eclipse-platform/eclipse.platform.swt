@@ -552,6 +552,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSPrintMustCollate)
 }
 #endif
 
+#ifndef NO_NSPrintPreviewJob
+JNIEXPORT jint JNICALL OS_NATIVE(NSPrintPreviewJob)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintPreviewJob_FUNC);
+	rc = (jint)NSPrintPreviewJob;
+	OS_NATIVE_EXIT(env, that, NSPrintPreviewJob_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSPrintSaveJob
 JNIEXPORT jint JNICALL OS_NATIVE(NSPrintSaveJob)
 	(JNIEnv *env, jclass that)
