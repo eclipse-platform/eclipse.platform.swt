@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1266;
-int OS_nativeFunctionCallCount[1266];
+int OS_nativeFunctionCount = 1267;
+int OS_nativeFunctionCallCount[1267];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -178,6 +178,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XSetErrorHandler",
 	"_1XSetIOErrorHandler",
 	"_1XSetInputFocus",
+	"_1XSetTransientForHint",
 	"_1XSynchronize",
 	"_1XTestFakeButtonEvent",
 	"_1XTestFakeKeyEvent",

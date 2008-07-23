@@ -831,6 +831,15 @@ public static final int XSetInputFocus(int /*long*/ display, int /*long*/ window
 		lock.unlock();
 	}
 }
+public static final native int _XSetTransientForHint(int /*long*/ display, int /*long*/ w, int /*long*/ prop_window);
+public static final int XSetTransientForHint(int /*long*/ display, int /*long*/ w, int /*long*/ prop_window) {
+	lock.lock();
+	try {
+		return _XSetTransientForHint(display, w, prop_window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _XSynchronize(int /*long*/ display, boolean onoff);
 public static final int /*long*/ XSynchronize(int /*long*/ display, boolean onoff) {
 	lock.lock();
