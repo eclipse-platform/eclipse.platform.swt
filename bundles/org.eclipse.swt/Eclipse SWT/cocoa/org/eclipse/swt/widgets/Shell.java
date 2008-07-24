@@ -465,10 +465,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= CANVAS | HIDDEN;// | GRAB;
+	state |= CANVAS;
 	if (window != null) {
-		view = window.contentView();
+		//TODO - get the content of the foreign window instead of creating it
+		super.createHandle ();
 	} else {
+		state |= HIDDEN;
 		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {

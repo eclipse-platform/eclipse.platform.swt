@@ -689,8 +689,9 @@ void createDisplay (DeviceData data) {
 	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_1untilDate_1inMode_1dequeue_1, proc6, "@:i@@B");
 	OS.objc_registerClassPair(cls);
-	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
-//	application = NSApplication.sharedApplication();
+	application = NSApplication.sharedApplication();
+	OS.object_setClass(application.id, cls);
+//	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
 }
 
 static void deregister (Display display) {
