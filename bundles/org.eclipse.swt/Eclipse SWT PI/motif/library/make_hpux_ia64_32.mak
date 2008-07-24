@@ -37,10 +37,9 @@ CDE_OBJS = swt.o cde.o cde_structs.o cde_stats.o
 CDE_LIBS = -G -L$(CDE_HOME)/lib -L$(CDE_HOME)/lib/hpux32 -lDtSvc
 
 AWT_PREFIX = swt-awt
-AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
+AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_OBJS = swt_awt.o
-AWT_LIBS = -L$(AWT_HOME) -ljawt -G -bnoentry -bexpall -lc
-
+AWT_LIBS = -G  -L/usr/lib -lX11 -lc -L$(AWT_HOME) -ljawt 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
@@ -48,7 +47,7 @@ AWT_LIBS = -L$(AWT_HOME) -ljawt -G -bnoentry -bexpall -lc
 # The following CFLAGS are for compiling both the SWT library and the CDE
 # library.
 #
-CFLAGS = -Ae +z \
+CFLAGS =  \
 	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
 	-DNO_XINERAMA_EXTENSIONS \
 	-D_HPUX -D_POSIX_C_SOURCE=199506L -DMOTIF -DCDE \
@@ -72,7 +71,7 @@ $(CDE_LIB): $(CDE_OBJS)
 make_awt: $(AWT_LIB)
 
 $(AWT_LIB): $(AWT_OBJS)
-	ld -o $(AWT_LIB) $(AWT_OBJS) $(AWT_LIBS)
+	ld +nodefaultrpath -b -z -o $(AWT_LIB) $(AWT_OBJS) $(AWT_LIBS)
 	
 install: all
 	cp *.so $(OUTPUT_DIR)
