@@ -114,4 +114,31 @@ void updateEvent(DNDEvent e) {
 	e.feedback = this.feedback;
 	e.item = this.item;
 }
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	StringBuffer sb = new StringBuffer();
+	sb.append(string.substring (0, string.length() - 1)); // remove trailing '}'
+	sb.append(" x="); sb.append(x);
+	sb.append(" y="); sb.append(y);
+	sb.append(" item="); sb.append(item);
+	sb.append(" operations="); sb.append(operations);
+	sb.append(" operation="); sb.append(detail);
+	sb.append(" feedback="); sb.append(feedback);
+	sb.append(" dataTypes={ ");
+	if (dataTypes != null) {
+		for (int i = 0; i < dataTypes.length; i++) {
+			sb.append(dataTypes[i].type); sb.append(' ');
+		}
+	}
+	sb.append('}');
+	sb.append(" currentDataType="); sb.append(currentDataType != null ? currentDataType.type : '0');
+	sb.append('}');
+	return sb.toString();
+}
 }

@@ -1357,39 +1357,12 @@ public void open(Display display) {
 
 private void printEvent(DragSourceEvent e) {
 	if (!dragEventDetail) return;
-	StringBuffer sb = new StringBuffer();
-	sb.append("widget: "); sb.append(e.widget);
-	sb.append(", time: "); sb.append(e.time);
-	sb.append(", operation: "); sb.append(e.detail);
-	sb.append(", type: "); sb.append(e.dataType != null ? e.dataType.type : '0');
-	sb.append(", doit: "); sb.append(e.doit);
-	sb.append(", data: "); sb.append(e.data);
-	sb.append("\n");
-	dragConsole.append(sb.toString());
+	dragConsole.append(e.toString() + "\n");
 }
 
 private void printEvent(DropTargetEvent e) {
 	if (!dropEventDetail) return;
-	StringBuffer sb = new StringBuffer();
-	sb.append("widget; "); sb.append(e.widget);
-	sb.append(", time: "); sb.append(e.time);
-	sb.append(", x: "); sb.append(e.x);
-	sb.append(", y: "); sb.append(e.y);
-	sb.append(", item: "); sb.append(e.item);
-	sb.append(", operations: "); sb.append(e.operations);
-	sb.append(", operation: "); sb.append(e.detail);
-	sb.append(", feedback: "); sb.append(e.feedback);
-	if (e.dataTypes != null) {
-		for (int i = 0; i < e.dataTypes.length; i++) {
-			sb.append(", dataType "); sb.append(i); sb.append(": "); sb.append(e.dataTypes[i].type);
-		}
-	} else {
-		sb.append(", dataTypes: none");
-	}
-	sb.append(", currentDataType: "); sb.append(e.currentDataType);
-	sb.append(", data: "); sb.append(e.data);
-	sb.append("\n");
-	dropConsole.append(sb.toString());
+	dropConsole.append(e.toString() + "\n");
 }
 
 private void removeDragTransfer(Transfer transfer){
