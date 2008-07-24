@@ -1178,6 +1178,12 @@ boolean setInputState (Event event, int type) {
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
 	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
 	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	/*
+	* Bug in Windows.  On some machines that do not have XBUTTONs,
+	* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
+	* causing mouse capture to become stuck.  The fix is to test
+	* for the extra buttons only when they exist.
+	*/
 	if (display.xMouse) {
 		if (OS.GetKeyState (OS.VK_XBUTTON1) < 0) event.stateMask |= SWT.BUTTON4;
 		if (OS.GetKeyState (OS.VK_XBUTTON2) < 0) event.stateMask |= SWT.BUTTON5;
