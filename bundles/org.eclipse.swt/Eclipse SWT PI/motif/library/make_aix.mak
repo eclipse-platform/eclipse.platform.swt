@@ -42,6 +42,11 @@ CAIRO_OBJS = swt.o cairo.o cairo_structs.o cairo_stats.o
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIRO_LIBS = -G -bnoentry -bexpall -lc `pkg-config --libs-only-L cairo` -lcairo
 
+AWT_PREFIX = swt-awt
+AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
+AWT_OBJS = swt_awt.o
+AWT_LIBS = -L$(AWT_HOME) -ljawt -G -bnoentry -bexpall -lc
+
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
@@ -57,7 +62,7 @@ CFLAGS = -O -s \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-all: make_swt make_cde make_cairo
+all: make_swt make_awt make_cde make_cairo
 
 make_swt: $(SWT_LIB)
 
@@ -80,6 +85,11 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC)  $(CAIROCFLAGS)  $(CFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC)  $(CAIROCFLAGS) $(CFLAGS) -c cairo_stats.c
+
+make_awt: $(AWT_LIB)
+
+$(AWT_LIB): $(AWT_OBJS)
+	ld -o $(AWT_LIB) $(AWT_OBJS) $(AWT_LIBS)
 
 install: all
 	cp *.a $(OUTPUT_DIR)
