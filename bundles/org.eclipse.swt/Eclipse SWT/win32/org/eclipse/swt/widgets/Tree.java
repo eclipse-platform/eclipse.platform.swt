@@ -6765,7 +6765,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 			GC gc = null;
 			int /*long*/ paintDC = 0;
 			PAINTSTRUCT ps = new PAINTSTRUCT ();
-			boolean hooksPaint = hooks (SWT.Paint);
+			boolean hooksPaint = hooks (SWT.Paint) || filters (SWT.Paint);
 			if (hooksPaint) {
 				GCData data = new GCData ();
 				data.ps = ps;

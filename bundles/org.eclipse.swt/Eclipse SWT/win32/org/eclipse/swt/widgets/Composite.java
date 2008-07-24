@@ -1276,7 +1276,7 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Paint the control and the background */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
-	if (hooks (SWT.Paint)) {
+	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 
 		/* Use the buffered paint when possible */
 		boolean bufferedPaint = false;
