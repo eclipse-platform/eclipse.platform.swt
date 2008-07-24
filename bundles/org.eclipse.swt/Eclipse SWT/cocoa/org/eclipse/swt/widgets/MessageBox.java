@@ -165,7 +165,8 @@ public int open () {
 	}
 	NSString title = NSString.stringWith(this.title != null ? this.title : "");
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
-	NSAlert alert = NSAlert.alertWithMessageText(title, defaultButton, alternateButton, otherButton, message);
+	NSAlert alert = NSAlert.alertWithMessageText(NSString.stringWith(""), defaultButton, alternateButton, otherButton, message);
+	new NSWindow(alert.window().id).setTitle(title);
 	alert.setAlertStyle(alertType);
 	int response = alert.runModal();
 	switch (bits) {
