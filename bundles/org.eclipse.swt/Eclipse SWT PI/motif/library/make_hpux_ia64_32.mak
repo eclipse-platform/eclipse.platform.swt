@@ -36,6 +36,11 @@ CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJS = swt.o cde.o cde_structs.o cde_stats.o
 CDE_LIBS = -G -L$(CDE_HOME)/lib -L$(CDE_HOME)/lib/hpux32 -lDtSvc
 
+AWT_PREFIX = swt-awt
+AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
+AWT_OBJS = swt_awt.o
+AWT_LIBS = -L$(AWT_HOME) -ljawt -G -bnoentry -bexpall -lc
+
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
@@ -52,7 +57,7 @@ CFLAGS = -Ae +z \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-all: make_swt make_cde
+all: make_swt make_awt make_cde
 
 make_swt: $(SWT_LIB)
 
@@ -64,6 +69,11 @@ make_cde: $(CDE_LIB)
 $(CDE_LIB): $(CDE_OBJS)
 	ld +nodefaultrpath -b -z -o $@ $(CDE_OBJS) $(CDE_LIBS)
 
+make_awt: $(AWT_LIB)
+
+$(AWT_LIB): $(AWT_OBJS)
+	ld -o $(AWT_LIB) $(AWT_OBJS) $(AWT_LIBS)
+	
 install: all
 	cp *.so $(OUTPUT_DIR)
 
