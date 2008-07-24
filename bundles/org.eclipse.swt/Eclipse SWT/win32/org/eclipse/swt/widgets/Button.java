@@ -1292,6 +1292,16 @@ LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 		}
 	}
+	/*
+	* Feature in Windows.  Push and toggle buttons draw directly
+	* in WM_UPDATEUISTATE rather than damaging and drawing later
+	* in WM_PAINT.  This means that clients who hook WM_PAINT
+	* expecting to get all the drawing will not.  The fix is to
+	* redraw the control when paint events are hooked.
+	*/
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+		if (hooks (SWT.Paint) || filters (SWT.Paint)) OS.InvalidateRect (handle, null, true);
+	}
 	return result;
 }
 
