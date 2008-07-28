@@ -849,8 +849,7 @@ public ImageData getImageData() {
 	OS.g_object_unref(pixbuf);
 
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-	ImageData data = new ImageData(width, height, 24, palette);
-	data.data = srcData;
+	ImageData data = new ImageData(width, height, 24, palette, 4, srcData);
 	data.bytesPerLine = stride;
 
 	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {

@@ -937,8 +937,7 @@ public ImageData getImageData() {
 		OS.memmove(v, visual, Visual.sizeof);
 		palette = new PaletteData(v.red_mask, v.green_mask, v.blue_mask);
 	}	
-	ImageData data = new ImageData(width, height, xSrcImage.bits_per_pixel, palette);
-	data.data = srcData;
+	ImageData data = new ImageData(width, height, xSrcImage.bits_per_pixel, palette, 4, srcData);
 	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
 		/* Get the icon mask data */
 		int xMaskPtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);

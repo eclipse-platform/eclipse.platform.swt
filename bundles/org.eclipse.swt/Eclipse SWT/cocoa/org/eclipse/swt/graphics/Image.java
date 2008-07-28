@@ -620,8 +620,7 @@ public ImageData getImageData() {
 	OS.memmove(srcData, imageRep.bitmapData(), dataSize);
 	
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-	ImageData data = new ImageData(width, height, bpp, palette);
-	data.data = srcData;
+	ImageData data = new ImageData(width, height, bpp, palette, 4, srcData);
 	data.bytesPerLine = bpr;
 
 	data.transparentPixel = transparentPixel;
