@@ -580,9 +580,10 @@ void fixShell (Shell newShell, Control control) {
  */
 public void forceActive () {
 	checkWidget ();
-	if (!isVisible ()) return;
-//	OS.SelectWindow (shellHandle);
-//	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
+	if (!isVisible()) return;
+	window.makeKeyAndOrderFront (null);
+	NSApplication application = NSApplication.sharedApplication ();
+	application.activateIgnoringOtherApps (true);
 }
 
 /**
@@ -956,8 +957,8 @@ public void removeShellListener(ShellListener listener) {
  */
 public void setActive () {
 	checkWidget ();
-	if (!isVisible ()) return;
-//	OS.SelectWindow (shellHandle);
+	if (!isVisible()) return;
+	window.makeKeyAndOrderFront (null);
 }
 
 void setActiveControl (Control control) {
