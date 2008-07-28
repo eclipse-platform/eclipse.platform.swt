@@ -401,13 +401,16 @@ public void pack () {
 			* the empty space left for the image.  The fix is to increase
 			* the column width by the width of the image list.
 			* 
+			* NOTE:  This bug does not happen on Vista.
 			*/
-			if (!parent.firstColumnImage) {
-				int /*long*/ hImageList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-				if (hImageList != 0) {
-					int [] cx = new int [1], cy = new int [1];
-					OS.ImageList_GetIconSize (hImageList, cx, cy);
-					columnWidth += cx [0];
+			if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+				if (!parent.firstColumnImage) {
+					int /*long*/ hImageList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+					if (hImageList != 0) {
+						int [] cx = new int [1], cy = new int [1];
+						OS.ImageList_GetIconSize (hImageList, cx, cy);
+						columnWidth += cx [0];
+					}
 				}
 			}
 			/*
