@@ -1260,6 +1260,9 @@ void tableView_willDisplayCell_forTableColumn_row(int aTableView, int aCell, int
 void textViewDidChangeSelection(int aNotification) {
 }
 
+void textDidChange(int aNotification) {
+}
+
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
 	return new NSRange();
 }

@@ -738,6 +738,10 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	setSelection (selection, true, true, false);
 }
 
+void textDidChange (int aNotification) {
+	postEvent (SWT.Modify);
+}
+
 String verifyText (String string, int start, int end, Event keyEvent) {
 	Event event = new Event ();
 	event.text = string;

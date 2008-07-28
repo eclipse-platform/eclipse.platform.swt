@@ -1656,6 +1656,10 @@ void textViewDidChangeSelection(int aNotification) {
 	selectionRange = editor.selectedRange();
 }
 
+void textDidChange (int aNotification) {
+	postEvent (SWT.Modify);
+}
+
 NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
