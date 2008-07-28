@@ -359,14 +359,7 @@ public void pack () {
 	}
 	parent.ignoreColumnResize = true;
 	int columnWidth = 0;
-	/*
-	* Bug in Windows.  When the first column of a table does not
-	* have an image and the user double clicks on the divider,
-	* Windows packs the column but does not take into account
-	* the empty space left for the image.  The fix is to measure
-	* each items ourselves rather than letting Windows do it.
-	*/
-	if ((index == 0 && !parent.firstColumnImage) || parent.hooks (SWT.MeasureItem)) {
+	if (parent.hooks (SWT.MeasureItem)) {
 		RECT headerRect = new RECT ();
 		int /*long*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
@@ -401,6 +394,22 @@ public void pack () {
 			* is to increase the column width by a small amount.
 			*/
 			if (parent.imageList == null) columnWidth += 2;
+			/*
+			* Bug in Windows.  When the first column of a table does not
+			* have an image and the user double clicks on the divider,
+			* Windows packs the column but does not take into account
+			* the empty space left for the image.  The fix is to increase
+			* the column width by the width of the image list.
+			* 
+			*/
+			if (!parent.firstColumnImage) {
+				int /*long*/ hImageList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+				if (hImageList != 0) {
+					int [] cx = new int [1], cy = new int [1];
+					OS.ImageList_GetIconSize (hImageList, cx, cy);
+					columnWidth += cx [0];
+				}
+			}
 			/*
 			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
 			* for a table with a state image list, the column is width does not
