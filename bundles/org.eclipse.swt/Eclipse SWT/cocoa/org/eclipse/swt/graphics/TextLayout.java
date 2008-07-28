@@ -754,7 +754,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 			} else {
 				offset--;
 			}
-			return untranslateOffset(offset);
+			return Math.max(0, Math.min(length, untranslateOffset(offset)));
 		}
 		case SWT.MOVEMENT_WORD: {
 			return untranslateOffset(textStorage.nextWordFromIndex(offset, forward));
