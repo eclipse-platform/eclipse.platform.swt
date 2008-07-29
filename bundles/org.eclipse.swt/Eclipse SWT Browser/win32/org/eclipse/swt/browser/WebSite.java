@@ -306,7 +306,6 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				* translated here, and instead is explicitly handled in the keypress
 				* handler.
 				*/
-				frame.setData(CONSUME_KEY, "true"); //$NON-NLS-1$
 				break;
 			case OS.VK_N:
 				/* If the exact keypress is Ctrl+N, which opens a new external IE, then eat this key */
