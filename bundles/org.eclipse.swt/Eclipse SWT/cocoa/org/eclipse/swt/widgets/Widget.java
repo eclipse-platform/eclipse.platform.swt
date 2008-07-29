@@ -399,6 +399,9 @@ void drawBackground (int control, int context) {
 	/* Do nothing */
 }
 
+void drawInteriorFrame_inView (int cellFrame, int view) {
+}
+
 void drawRect (int id, NSRect rect) {
 	//TODO offset region to view coordinates
 	//TODO use region from control as well shell region

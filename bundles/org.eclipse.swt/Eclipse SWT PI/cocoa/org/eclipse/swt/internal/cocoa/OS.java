@@ -361,6 +361,7 @@ public static final native int objc_msgSend_struct(NSRange result, int object, i
 public static final native int objc_msgSend_struct(NSRange result, int object, int selector, int arg0);
 
 public static final native int drawRect_CALLBACK(int func);
+public static final native int drawInteriorWithFrame_inView_CALLBACK(int func);
 public static final native int setFrame_CALLBACK(int func);
 public static final native int setFrameOrigin_CALLBACK(int func);
 public static final native int setFrameSize_CALLBACK(int func);

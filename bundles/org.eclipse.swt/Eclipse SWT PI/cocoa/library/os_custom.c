@@ -318,6 +318,21 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(drawRect_1CALLBACK)
 }
 #endif
 
+
+#ifndef NO_drawInteriorWithFrame_1inView_1CALLBACK
+static SWT_PTR drawInteriorWithFrame_1inView_1CALLBACK;
+static void drawInteriorWithFrame_1inView(id obj, SEL sel, NSRect rect, NSView* view)
+{
+	return ((void (*)(id, SEL, NSRect*, NSView*))drawInteriorWithFrame_1inView_1CALLBACK)(obj, sel, &rect, view);
+}
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(drawInteriorWithFrame_1inView_1CALLBACK)
+	(JNIEnv *env, jclass that, SWT_PTR func)
+{
+	drawInteriorWithFrame_1inView_1CALLBACK = func;
+	return (SWT_PTR)drawInteriorWithFrame_1inView;
+}
+#endif
+
 #ifndef NO_setFrame_1CALLBACK
 static SWT_PTR setFrame_1CALLBACK;
 static void setFrame(id obj, SEL sel, NSRect rect)
@@ -495,5 +510,17 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(textView_1willChangeSelectionFromCharacterRa
 {
 	textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1CALLBACK = func;
 	return (SWT_PTR)textView_1willChangeSelectionFromCharacterRange_1toCharacterRange;
+}
+#endif
+
+#ifndef NO_NSZeroRect
+JNIEXPORT jint JNICALL OS_NATIVE(NSZeroRect)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSZeroRect_FUNC);
+	rc = (jint)&NSZeroRect;
+	OS_NATIVE_EXIT(env, that, NSZeroRect_FUNC);
+	return rc;
 }
 #endif

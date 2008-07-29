@@ -39,7 +39,9 @@ import org.eclipse.swt.events.*;
 public class TreeColumn extends Item {
 	NSTableColumn nsColumn;
 	Tree parent;
-	String toolTipText;
+	String toolTipText, displayText;
+
+	static final int MARGIN = 2;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -189,9 +191,89 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget (nsColumn.headerCell());
+}
+
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+void drawInteriorFrame_inView (int cellFrame, int view) {
+	NSRect cellRect = new NSRect ();
+	OS.memmove (cellRect, cellFrame, NSRect.sizeof);
+	NSGraphicsContext context = NSGraphicsContext.currentContext ();
+	context.saveGraphicsState ();
+
+	int contentWidth = 0;
+	NSSize stringSize = null, imageSize = null;
+	NSAttributedString attrString = null;
+	if (displayText != null) {
+		NSString string = NSString.stringWith (displayText);
+		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString_attributes_ (string, null);
+		stringSize = attrString.size ();
+		contentWidth += stringSize.width;
+		if (image != null) contentWidth += MARGIN; /* space between image and text */
+	}
+	if (image != null) {
+		imageSize = image.handle.size ();
+		contentWidth += imageSize.width;
+	}
+
+	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
+		boolean ascending = parent.sortDirection == SWT.UP;
+		NSTableHeaderCell headerCell = nsColumn.headerCell ();
+		headerCell.drawSortIndicatorWithFrame (cellRect, new NSView(view), ascending, 0);
+		/* remove the arrow's space from the available drawing width */
+		NSRect sortRect = headerCell.sortIndicatorRectForBounds (cellRect);
+		cellRect.width = Math.max (0, sortRect.x - cellRect.x);
+	}
+
+	int drawX = 0;
+	if ((style & SWT.CENTER) != 0) {
+		drawX = (int)(cellRect.x + Math.max (MARGIN, ((cellRect.width - contentWidth) / 2)));
+	} else if ((style & SWT.RIGHT) != 0) {
+		drawX = (int)(cellRect.x + Math.max (MARGIN, cellRect.width - contentWidth - MARGIN));
+	} else {
+		drawX = (int)cellRect.x + MARGIN;
+	}
+
+	if (image != null) {
+		NSRect destRect = new NSRect ();
+		destRect.x = drawX;
+		destRect.y = cellRect.y;
+		destRect.width = Math.min (imageSize.width, cellRect.width - 2 * MARGIN);
+		destRect.height = Math.min (imageSize.height, cellRect.height);
+		boolean isFlipped = new NSView (view).isFlipped(); 
+		if (isFlipped) {
+			context.saveGraphicsState ();
+			NSAffineTransform transform = NSAffineTransform.transform ();
+		 	transform.scaleXBy (1, -1);
+		 	transform.translateXBy (0, -(destRect.height + 2 * destRect.y));
+		 	transform.concat ();
+		}
+		NSRect sourceRect = new NSRect ();
+		sourceRect.width = destRect.width;
+		sourceRect.height = destRect.height;
+		image.handle.drawInRect (destRect, sourceRect, OS.NSCompositeSourceOver, 1f);
+		if (isFlipped) context.restoreGraphicsState ();
+		drawX += destRect.width;
+	}
+
+	if (displayText != null && displayText.length () > 0) {
+		if (image != null) drawX += MARGIN; /* space between image and text */
+		NSRect destRect = new NSRect ();
+		destRect.x = drawX;
+		destRect.y = cellRect.y;
+		destRect.width = Math.min (stringSize.width, cellRect.x + cellRect.width - MARGIN - drawX);
+		destRect.height = Math.min (stringSize.height, cellRect.height);
+		attrString.drawInRect (destRect);
+		attrString.release ();
+	}
+
+	context.restoreGraphicsState ();
 }
 
 /**
@@ -340,7 +422,10 @@ public void pack () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (nsColumn != null) nsColumn.release();
+	if (nsColumn != null) {
+		nsColumn.headerCell ().release ();
+		nsColumn.release ();
+	}
 	nsColumn = null;
 	parent = null;
 }
@@ -424,7 +509,11 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	//TODO
+	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
+	if (headerView == null) return;
+	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	headerView.setNeedsDisplayInRect (rect);
+	// TODO change alignment of items in column
 }
 
 public void setImage (Image image) {
@@ -432,19 +521,12 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	int index = parent.indexOf (this);
-//	if (index == -1) return;
-//	if (iconRef != 0) {
-//		OS.ReleaseIconRef (iconRef);
-//		iconRef = 0;
-//	}
-//	super.setImage (image);
-//	if (image != null) {
-//		if (OS.VERSION < 0x1040) {
-//			iconRef = createIconRef (image);
-//		}
-//	}
-//	updateHeader ();
+	super.setImage (image);
+	int index = parent.indexOf (this);
+	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
+	if (headerView == null) return;
+	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	headerView.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -504,7 +586,12 @@ public void setText (String string) {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
-	nsColumn.headerCell().setTitle(NSString.stringWithCharacters(buffer, length));
+	displayText = new String (buffer, 0, length);
+	int index = parent.indexOf (this);
+	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
+	if (headerView == null) return;
+	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	headerView.setNeedsDisplayInRect (rect);
 }
 
 /**

@@ -1694,6 +1694,7 @@ void initClasses () {
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	int drawRectProc = OS.drawRect_CALLBACK(proc3);
+	int drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
 	int setFrameOriginProc = OS.setFrame_CALLBACK(proc3);
 	int setFrameSizeProc = OS.setFrame_CALLBACK(proc3);
 	int hitTestProc = OS.hitTest_CALLBACK(proc3);
@@ -1793,7 +1794,13 @@ void initClasses () {
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
-	
+
+	className = "SWTTableHeaderCell";
+	cls = OS.objc_allocateClassPair (OS.class_NSTableHeaderCell, className, 0);
+	OS.class_addIvar (cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log (OS.PTR_SIZEOF) / Math.log (2)), "i");
+	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_1inView_1, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.objc_registerClassPair (cls);
+
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, OS.PTR_SIZEOF, (byte)(Math.log(OS.PTR_SIZEOF) / Math.log(2)), "i");
@@ -3645,7 +3652,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 		widget.menu_willHighlightItem(arg0, arg1);
 	} else if (sel == OS.sel_setMarkedText_1selectedRange_1) {
 		widget.setMarkedText_selectedRange (delegate, sel, arg0, arg1);
-		return 0;
+	} else if (sel == OS.sel_drawInteriorWithFrame_1inView_1) {
+		widget.drawInteriorFrame_inView (arg0, arg1);
 	}
 	return 0;
 }

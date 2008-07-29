@@ -442,8 +442,11 @@ void createItem (TableColumn column, int index) {
 		nsColumn.setDataCell(cell);
 		cell.release();
 	}
+	column.createJNIRef ();
+	NSTableHeaderCell headerCell = (NSTableHeaderCell)new SWTTableHeaderCell ().alloc ().init ();
+	nsColumn.setHeaderCell (headerCell);
+	display.addWidget (headerCell, column);
 	column.nsColumn = nsColumn;
-	nsColumn.headerCell().setTitle(NSString.stringWith(""));
 	nsColumn.setWidth(0);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
@@ -2131,25 +2134,21 @@ public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
-//	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-//	OS.GetDataBrowserCallbacks (handle, callbacks);
-//	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-//	OS.SetDataBrowserCallbacks (handle, callbacks);
-//	if (column == null) {
-//		if (sortColumn != null  && !sortColumn.isDisposed ()  && sortDirection != SWT.NONE) {
-//			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
-//			sortColumn = null; 
-//			OS.SetDataBrowserSortProperty (handle, 0);
-//		}
-//	}
-//	sortColumn = column;
-//	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
-//		OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-//		int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-//		OS.SetDataBrowserSortOrder (handle, (short) order);
-//	}
-//	callbacks.v1_itemCompareCallback = itemCompareProc ();
-//	OS.SetDataBrowserCallbacks (handle, callbacks);
+	TableColumn oldSortColumn = sortColumn;
+	sortColumn = column;
+	if (sortDirection == SWT.NONE) return;
+	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
+	if (headerView == null) return;
+	if (oldSortColumn != null) {
+		int index = indexOf (oldSortColumn);
+		NSRect rect = headerView.headerRectOfColumn (index + 1);
+		headerView.setNeedsDisplayInRect (rect);
+	}
+	if (sortColumn != null) {
+		int index = indexOf (sortColumn);
+		NSRect rect = headerView.headerRectOfColumn (index + 1);
+		headerView.setNeedsDisplayInRect (rect);
+	}
 }
 
 /**
@@ -2170,26 +2169,12 @@ public void setSortDirection  (int direction) {
 	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	if (direction == sortDirection) return;
 	sortDirection = direction;
-//	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
-//	OS.GetDataBrowserCallbacks (handle, callbacks);
-//	callbacks.v1_itemCompareCallback = display.itemCompareProc;
-//	OS.SetDataBrowserCallbacks (handle, callbacks);
-//	if (sortColumn != null && !sortColumn.isDisposed ()) {
-//		if (sortDirection == SWT.NONE) {
-//			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
-//			TableColumn column = sortColumn;
-//			sortColumn = null; 
-//			OS.SetDataBrowserSortProperty (handle, 0);
-//			sortColumn = column;
-//		} else {
-//			OS.SetDataBrowserSortProperty (handle, 0);
-//			OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-//			int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
-//			OS.SetDataBrowserSortOrder (handle, (short) order);
-//		}
-//	}
-//	callbacks.v1_itemCompareCallback = itemCompareProc ();
-//	OS.SetDataBrowserCallbacks (handle, callbacks);
+	if (sortColumn == null) return;
+	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
+	if (headerView == null) return;
+	int index = indexOf (sortColumn);
+	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	headerView.setNeedsDisplayInRect (rect);
 }
 
 void setTableEmpty () {

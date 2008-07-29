@@ -91,6 +91,7 @@ typedef enum {
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
 	class_1addProtocol_FUNC,
+	drawInteriorWithFrame_1inView_1CALLBACK_FUNC,
 	drawRect_1CALLBACK_FUNC,
 	firstRectForCharacterRange_1CALLBACK_FUNC,
 	hitTest_1CALLBACK_FUNC,
