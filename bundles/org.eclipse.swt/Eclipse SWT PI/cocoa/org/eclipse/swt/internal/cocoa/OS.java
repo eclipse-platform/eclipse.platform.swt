@@ -10460,4 +10460,5 @@ public static final native int NSFileTypeForHFSTypeCode(int hfsFileTypeCode);
 //public static final native int NSZoneRealloc(int zone, int ptr, int size);
 //public static final native int NXReadNSObjectFromCoder(int decoder);
 
+public static final native void instrumentObjcMessageSends(boolean val);
 }

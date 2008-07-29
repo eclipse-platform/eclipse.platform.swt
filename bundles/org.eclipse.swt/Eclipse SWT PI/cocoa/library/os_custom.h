@@ -28,3 +28,4 @@
 #define DiffRgn_LIB "com.apple.Carbon"
 #define CopyRgn_LIB "com.apple.Carbon"
 #define CloseRgn_LIB "com.apple.Carbon"
+#define instrumentObjcMessageSends_LIB "com.apple.Foundation"

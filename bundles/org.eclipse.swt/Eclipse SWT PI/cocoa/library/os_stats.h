@@ -95,6 +95,7 @@ typedef enum {
 	drawRect_1CALLBACK_FUNC,
 	firstRectForCharacterRange_1CALLBACK_FUNC,
 	hitTest_1CALLBACK_FUNC,
+	instrumentObjcMessageSends_FUNC,
 	markedRange_1CALLBACK_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,

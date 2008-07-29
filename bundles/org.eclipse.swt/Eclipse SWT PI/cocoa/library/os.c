@@ -1075,6 +1075,32 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addProtocol)
 }
 #endif
 
+#ifndef NO_instrumentObjcMessageSends
+JNIEXPORT void JNICALL OS_NATIVE(instrumentObjcMessageSends)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	OS_NATIVE_ENTER(env, that, instrumentObjcMessageSends_FUNC);
+/*
+	instrumentObjcMessageSends(arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef void (*FPTR)(jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(instrumentObjcMessageSends_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("instrumentObjcMessageSends"));
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, instrumentObjcMessageSends_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 360;
-int OS_nativeFunctionCallCount[360];
+int OS_nativeFunctionCount = 361;
+int OS_nativeFunctionCallCount[361];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -87,6 +87,7 @@ char * OS_nativeFunctionNames[] = {
 	"drawRect_1CALLBACK",
 	"firstRectForCharacterRange_1CALLBACK",
 	"hitTest_1CALLBACK",
+	"instrumentObjcMessageSends",
 	"markedRange_1CALLBACK",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I",
