@@ -5926,6 +5926,13 @@ LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 		}
 	}
+	/*
+	* Bug in Windows.  When WM_SETREDRAW is used to turn off
+	* redraw for a list, table or tree, the background of the
+	* control is drawn.  The fix is to call DefWindowProc(),
+	* which stops all graphics output to the control.
+	*/
+	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	int /*long*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (wParam == 0) {
 		if ((int)/*64*/OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {

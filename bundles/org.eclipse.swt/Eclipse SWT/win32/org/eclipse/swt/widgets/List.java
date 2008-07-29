@@ -1656,6 +1656,19 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  When WM_SETREDRAW is used to turn off
+	* redraw for a list, table or tree, the background of the
+	* control is drawn.  The fix is to call DefWindowProc(),
+	* which stops all graphics output to the control.
+	*/
+	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	return result;
+}
+
 LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  If the top index is changed while the
