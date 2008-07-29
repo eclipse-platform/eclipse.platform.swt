@@ -6562,10 +6562,15 @@ LRESULT wmNotifyHeader (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					* Bug in Windows.  When the first column of a table does not
 					* have an image and the user double clicks on the divider,
 					* Windows packs the column but does not take into account
-					* the empty space left for the image.  The fix is to measure
-					* each items ourselves rather than letting Windows do it.
+					* the empty space left for the image.  The fix is to pack
+					* the column explicitly rather than letting Windows do it.
+					* 
+					* NOTE:  This bug does not happen on Vista.
 					*/
-					boolean fixPack = phdn.iItem == 0 && !firstColumnImage;
+					boolean fixPack = false;
+					if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+						fixPack = phdn.iItem == 0 && !firstColumnImage;
+					}
 					if (column != null && (fixPack || hooks (SWT.MeasureItem))) {
 						column.pack ();
 						return LRESULT.ONE;
