@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 974;
-int OS_nativeFunctionCallCount[974];
+int OS_nativeFunctionCount = 975;
+int OS_nativeFunctionCallCount[975];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -207,6 +207,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextStrokeRect",
 	"CGContextSynchronize",
 	"CGContextTranslateCTM",
+	"CGCursorIsVisible",
 	"CGDataProviderCreateWithData",
 	"CGDataProviderCreateWithURL",
 	"CGDataProviderRelease",

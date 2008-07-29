@@ -2519,6 +2519,18 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextTranslateCTM)
 }
 #endif
 
+#ifndef NO_CGCursorIsVisible
+JNIEXPORT jboolean JNICALL OS_NATIVE(CGCursorIsVisible)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CGCursorIsVisible_FUNC);
+	rc = (jboolean)CGCursorIsVisible();
+	OS_NATIVE_EXIT(env, that, CGCursorIsVisible_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGDataProviderCreateWithData
 JNIEXPORT jint JNICALL OS_NATIVE(CGDataProviderCreateWithData)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
@@ -2607,7 +2619,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayHideCursor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayHideCursor_FUNC);
-	rc = (jint)CGDisplayHideCursor(arg0);
+	rc = (jint)CGDisplayHideCursor((CGDirectDisplayID)arg0);
 	OS_NATIVE_EXIT(env, that, CGDisplayHideCursor_FUNC);
 	return rc;
 }
@@ -2643,7 +2655,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayShowCursor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayShowCursor_FUNC);
-	rc = (jint)CGDisplayShowCursor(arg0);
+	rc = (jint)CGDisplayShowCursor((CGDirectDisplayID)arg0);
 	OS_NATIVE_EXIT(env, that, CGDisplayShowCursor_FUNC);
 	return rc;
 }
