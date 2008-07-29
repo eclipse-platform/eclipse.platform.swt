@@ -77,6 +77,7 @@ typedef enum {
 	GraphicsPath_1new__I_FUNC,
 	GraphicsPath_1new___3I_3BII_FUNC,
 	Graphics_1DrawArc_FUNC,
+	Graphics_1DrawDriverString_FUNC,
 	Graphics_1DrawEllipse_FUNC,
 	Graphics_1DrawImage__IIII_FUNC,
 	Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII_FUNC,

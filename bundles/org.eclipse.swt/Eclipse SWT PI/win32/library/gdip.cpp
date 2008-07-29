@@ -701,6 +701,23 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawArc)
 }
 #endif
 
+#ifndef NO_Graphics_1DrawDriverString
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawDriverString)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jint arg6, jint arg7);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawDriverString)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jint arg6, jint arg7)
+{
+	PointF _arg5(25.0f,70.0f), *lparg5=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawDriverString_FUNC);
+	if (arg5) if ((lparg5 = getPointFFields(env, arg5, &_arg5)) == NULL) goto fail;
+	rc = (jint)((Graphics *)arg0)->DrawDriverString((const UINT16 *)arg1, arg2, (const Font *)arg3, (const Brush *)arg4, (const PointF *)lparg5, arg6, (const Matrix *)arg7);
+fail:
+	if (arg5 && lparg5) setPointFFields(env, arg5, lparg5);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawDriverString_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1DrawEllipse
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawEllipse)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawEllipse)

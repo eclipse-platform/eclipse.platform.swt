@@ -43,6 +43,7 @@ public class Gdip extends Platform {
 	public static final int DashStyleDashDot = 3;
 	public static final int DashStyleDashDotDot = 4;
 	public static final int DashStyleCustom = 5;
+	public static final int DriverStringOptionsRealizedAdvance = 4; 
 	public static final int FontStyleRegular = 0;
 	public static final int FontStyleBold = 1;
 	public static final int FontStyleItalic = 2;
@@ -169,6 +170,7 @@ public static final native int FontFamily_GetFamilyName(int /*long*/ family, cha
 public static final native int /*long*/ Graphics_new(int /*long*/ hdc);
 public static final native void Graphics_delete(int /*long*/ graphics);
 public static final native int Graphics_DrawArc(int /*long*/ graphics, int /*long*/ pen, int x, int y, int width, int height, float startAngle, float sweepAngle);
+public static final native int Graphics_DrawDriverString( int /*long*/ graphics, int /*long*/ text, int length, int /*long*/ font, int /*long*/ brush, PointF /*long*/ positions, int flags, int /*long*/ matrix);
 public static final native int Graphics_DrawEllipse(int /*long*/ graphics, int /*long*/ pen, int x, int y, int width, int height);
 public static final native int Graphics_DrawImage(int /*long*/ graphics, int /*long*/ image, int x, int y);
 public static final native int Graphics_DrawImage(int /*long*/ graphics, int /*long*/ image, Rect destRect, int srcx, int srcy, int srcwidth, int srcheight, int srcUnit, int /*long*/ imageAttributes, int /*long*/ callback, int /*long*/ callbackData);
