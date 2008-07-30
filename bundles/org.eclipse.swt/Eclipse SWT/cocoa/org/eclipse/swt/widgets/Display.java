@@ -115,7 +115,7 @@ public class Display extends Device {
 	NSDictionary markedAttributes;
 
 	Menu menuBar;
-	Menu[] menus;
+	Menu[] menus, popups;
 
 	NSApplication application;
 	NSWindow screenWindow;
@@ -134,7 +134,6 @@ public class Display extends Device {
 	
 	/* Menus */
 //	Menu menuBar;
-//	Menu [] menus, popups;
 //	static final int ID_TEMPORARY = 1000;
 //	static final int ID_START = 1001;
 	
@@ -400,24 +399,24 @@ void addMenu (Menu menu) {
 	menus = newMenus;
 }
 
-//void addPopup (Menu menu) {
-//	if (popups == null) popups = new Menu [4];
-//	int length = popups.length;
-//	for (int i=0; i<length; i++) {
-//		if (popups [i] == menu) return;
-//	}
-//	int index = 0;
-//	while (index < length) {
-//		if (popups [index] == null) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		Menu [] newPopups = new Menu [length + 4];
-//		System.arraycopy (popups, 0, newPopups, 0, length);
-//		popups = newPopups;
-//	}
-//	popups [index] = menu;
-//}
+void addPopup (Menu menu) {
+	if (popups == null) popups = new Menu [4];
+	int length = popups.length;
+	for (int i=0; i<length; i++) {
+		if (popups [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (popups [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newPopups = new Menu [length + 4];
+		System.arraycopy (popups, 0, newPopups, 0, length);
+		popups = newPopups;
+	}
+	popups [index] = menu;
+}
 
 void addWidget (NSObject view, Widget widget) {
 	if (view == null) return;
@@ -2487,6 +2486,7 @@ public boolean readAndDispatch () {
 		boolean events = false;
 		events |= runTimers ();
 		events |= runContexts ();
+		events |= runPopups ();
 		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
 		if (event != null) {
 			events = true;
@@ -2724,15 +2724,15 @@ void removeMenu (Menu menu) {
 	}
 }
 
-//void removePopup (Menu menu) {
-//	if (popups == null) return;
-//	for (int i=0; i<popups.length; i++) {
-//		if (popups [i] == menu) {
-//			popups [i] = null;
-//			return;
-//		}
-//	}
-//}
+void removePopup (Menu menu) {
+	if (popups == null) return;
+	for (int i=0; i<popups.length; i++) {
+		if (popups [i] == menu) {
+			popups [i] = null;
+			return;
+		}
+	}
+}
 
 boolean runAsyncMessages (boolean all) {
 	return synchronizer.runAsyncMessages (all);
@@ -2781,6 +2781,25 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+
+boolean runPopups () {
+	if (popups == null) return false;
+	boolean result = false;
+	while (popups != null) {
+		Menu menu = popups [0];
+		if (menu == null) break;
+		int length = popups.length;
+		System.arraycopy (popups, 1, popups, 0, --length);
+		popups [length] = null;
+//		clearMenuFlags ();
+		runDeferredEvents ();
+		if (!menu.isDisposed ()) menu._setVisible (true);
+//		clearMenuFlags ();
+		result = true;
+	}
+	popups = null;
+	return result;
 }
 
 boolean runTimers () {

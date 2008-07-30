@@ -899,12 +899,9 @@ public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
-//		display.addPopup (this);
-		//TODO -WRONG
-		_setVisible (true);
+		display.addPopup (this);
 	} else {
-//		display.removePopup (this);
-		_setVisible (false);
+		display.removePopup (this);
 	}
 }
 	
