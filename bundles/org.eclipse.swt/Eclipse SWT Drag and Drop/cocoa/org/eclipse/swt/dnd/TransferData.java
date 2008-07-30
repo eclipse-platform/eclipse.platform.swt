@@ -40,7 +40,7 @@ public class TransferData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public String type;
+	public int type;
 	
 	/**
 	 * The data being transferred.

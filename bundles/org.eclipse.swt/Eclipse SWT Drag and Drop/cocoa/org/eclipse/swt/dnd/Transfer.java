@@ -30,8 +30,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public abstract class Transfer {
 
-static String[] types = new String[4];
-static int typeCount;
+static String[] TYPES = new String[4];
 
 static String getString (NSString str) {
 	char[] chars = new char[str.length()];
@@ -142,19 +141,22 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName) {
-	for (int i = 0; i < typeCount; i++) {
-		String type = types[i];
+	/* Note the type 0 is not used */
+	int index = 1;
+	while (index < TYPES.length) {
+		String type = TYPES[index];
 		if (type != null && formatName.equals(type)) {
-			return i;
+			return index;
 		}
+		index++;
 	}
-	if (typeCount + 1 == types.length) { // types[0] is null
-		String[] newTypes = new String[types.length + 4];
-		System.arraycopy(types, 0, newTypes, 0, types.length);
-		types = newTypes;
+	if (index == TYPES.length) {
+		String[] newTypes = new String[TYPES.length + 4];
+		System.arraycopy(TYPES, 0, newTypes, 0, TYPES.length);
+		TYPES = newTypes;
 	}
-	types[++typeCount] = formatName;
-	return typeCount;
+	TYPES[index] = formatName;
+	return index;
 }
 
 /**

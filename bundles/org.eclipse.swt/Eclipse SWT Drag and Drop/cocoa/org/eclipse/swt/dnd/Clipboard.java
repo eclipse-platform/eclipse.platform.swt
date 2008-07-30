@@ -290,7 +290,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			tdata.data = pasteboard.dataForType(type);
 		}
 		if (tdata.data != null) {
-			tdata.type = Transfer.getString(type);		
+			tdata.type = Transfer.registerType(Transfer.getString(type));		
 			return transfer.nativeToJava(tdata);
 		}
 	}
@@ -444,10 +444,10 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 		String[] typeNames = dataTypes[i].getTypeNames();
 		for (int j=0; j<typeNames.length; j++) {
 			TransferData transferData = new TransferData();
-			transferData.type = typeNames[j];
+			transferData.type = Transfer.registerType(typeNames[j]);
 			dataTypes[i].javaToNative(data[i], transferData);
 			NSObject tdata = transferData.data;
-			NSString dataType = NSString.stringWith(transferData.type);
+			NSString dataType = NSString.stringWith(typeNames[j]);
 			pasteboard.addTypes(NSArray.arrayWithObject(dataType), null);
 			if (dataType.isEqual(OS.NSStringPboardType) ||
 					dataType.isEqual(OS.NSRTFPboardType)) {
@@ -512,7 +512,7 @@ public TransferData[] getAvailableTypes(int clipboards) {
 	TransferData[] result = new TransferData[count];
 	for (int i = 0; i < count; i++) {
 		result[i] = new TransferData();
-		result[i].type = Transfer.getString(new NSString(types.objectAtIndex(i)));
+		result[i].type = Transfer.registerType(Transfer.getString(new NSString(types.objectAtIndex(i))));
 	}
 	return result;
 }
