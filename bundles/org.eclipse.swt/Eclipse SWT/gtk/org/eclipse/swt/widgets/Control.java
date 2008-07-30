@@ -161,11 +161,12 @@ void fixStyle (int /*long*/ handle) {
 	* should not override the application background.
 	*/
 	if ((state & BACKGROUND) != 0) return;
+	if ((state & THEME_BACKGROUND) == 0) return;
 	int /*long*/ childStyle = parent.childStyle ();
-	if (childStyle != 0) {		
+	if (childStyle != 0) {
 		GdkColor color = new GdkColor();
 		OS.gtk_style_get_bg (childStyle, 0, color);
-		OS.gtk_widget_modify_bg (handle, 0, color);
+		setBackgroundColor (color);
 	}
 }
 

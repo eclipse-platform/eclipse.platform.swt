@@ -499,6 +499,11 @@ public void copy () {
 }
 
 void createHandle () {
+	if ((style & SWT.READ_ONLY) != 0) {
+		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+	}
 	int [] outControl = new int [1];
 	if ((style & SWT.MULTI) != 0 || (style & (SWT.BORDER | SWT.SEARCH)) == 0) {
 		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0 || OS.VERSION >= 0x1050) {
@@ -535,6 +540,7 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		OS.HIViewSetVisible (handle, true);
+		if ((state & THEME_BACKGROUND) != 0) OS.HITextViewSetBackgroundColor (handle, 0);
 		if ((style & SWT.MULTI) != 0 && (style & SWT.BORDER) != 0) {
 			int features = OS.kControlSupportsEmbedding;
 			OS.CreateUserPaneControl (0, null, features, outControl);
