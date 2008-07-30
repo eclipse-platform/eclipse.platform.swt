@@ -561,38 +561,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int /*long*/ gdipGraphics = data.gdipGraphics;
 	int foreground = data.foreground;
 	int alpha = data.alpha;
-	boolean gdip = gdipGraphics != 0 && (alpha != 0xFF || data.foregroundPattern != null);
-	int /*long*/ clipRgn = 0;
-	float[] lpXform = null;
+	boolean gdip = gdipGraphics != 0;
 	Rect gdipRect = new Rect();
-	if (gdipGraphics != 0 && !gdip) {
-		int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
-		int /*long*/ identity = gc.identity();
-		Gdip.Matrix_Invert(identity);
-		Gdip.Matrix_Multiply(matrix, identity, Gdip.MatrixOrderAppend);
-		Gdip.Matrix_delete(identity);
-		if (!Gdip.Matrix_IsIdentity(matrix)) {
-			lpXform = new float[6];
-			Gdip.Matrix_GetElements(matrix, lpXform);
-		}
-		Gdip.Matrix_delete(matrix);
-		if ((data.style & SWT.MIRRORED) != 0 && lpXform != null) {
-			gdip = true;
-			lpXform = null;
-		} else {
-			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
-			int /*long*/ rgn = Gdip.Region_new();
-			Gdip.Graphics_GetClip(gdipGraphics, rgn);
-			if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
-				clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
-			}
-			Gdip.Region_delete(rgn);
-			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
-			hdc = Gdip.Graphics_GetHDC(gdipGraphics);
-		}
-	}
 	int /*long*/ foregroundBrush = 0;
 	int state = 0;
 	if (gdip) {
@@ -602,14 +572,6 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		state = OS.SaveDC(hdc);
 		if ((data.style & SWT.MIRRORED) != 0) {
 			OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
-		}
-		if (lpXform != null) {
-			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
-			OS.SetWorldTransform(hdc, lpXform);
-		}
-		if (clipRgn != 0) {
-			OS.SelectClipRgn(hdc, clipRgn);
-			OS.DeleteObject(clipRgn);
 		}
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
@@ -622,7 +584,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionEnd = translateOffset(selectionEnd);
 	}
 	RECT rect = new RECT();
-	int /*long*/ selBrush = 0, selPen = 0, selBrushFg = 0;
+	int /*long*/ selBrush = 0, selPen = 0, selBrushFg = 0, gdipFont = 0, lastHFont = 0;
 	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		if (gdip) {
 			int bg = selectionBackground.handle;
@@ -764,8 +726,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					int end = run.start + run.length - 1;
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 					boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
-					OS.SelectObject(hdc, getItemFont(run));
-					int drawRunY = drawY + (baseline - run.ascent);
+					int /*long*/ hFont = getItemFont(run);
+					OS.SelectObject(hdc, hFont);
 					if (partialSelection) {
 						int selStart = Math.max(selectionStart, run.start) - run.start;
 						int selEnd = Math.min(selectionEnd, end) - run.start;
@@ -783,26 +745,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						rect.bottom = drawY + lineHeight;
 					}
 					if (gdip) {
-						OS.BeginPath(hdc);
-						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-						OS.EndPath(hdc);
-						int count = OS.GetPath(hdc, null, null, 0);
-						int[] points = new int[count*2];
-						byte[] types = new byte[count];
-						OS.GetPath(hdc, points, types, count);
-						for (int typeIndex = 0; typeIndex < types.length; typeIndex++) {
-							int newType = 0;
-							int type = types[typeIndex] & 0xFF;
-							switch (type & ~OS.PT_CLOSEFIGURE) {
-								case OS.PT_MOVETO: newType = Gdip.PathPointTypeStart; break;
-								case OS.PT_LINETO: newType = Gdip.PathPointTypeLine; break;
-								case OS.PT_BEZIERTO: newType = Gdip.PathPointTypeBezier; break;
-							}
-							if ((type & OS.PT_CLOSEFIGURE) != 0) newType |= Gdip.PathPointTypeCloseSubpath;
-							types[typeIndex] = (byte)newType;
-						}
-						int /*long*/ path = Gdip.GraphicsPath_new(points, types, count, Gdip.FillModeAlternate);
-						if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+						int drawRunY = drawY + baseline;
 						int /*long*/ brush = foregroundBrush;
 						if (fullSelection) {
 							brush = selBrushFg;
@@ -824,51 +767,45 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							gstate = Gdip.Graphics_Save(gdipGraphics);
 							Gdip.Graphics_SetClip(gdipGraphics, gdipRect, Gdip.CombineModeExclude);
 						}
-						int antialias = Gdip.Graphics_GetSmoothingMode(gdipGraphics), textAntialias = 0;
-						int mode = Gdip.Graphics_GetTextRenderingHint(data.gdipGraphics);
-						switch (mode) {
-							case Gdip.TextRenderingHintSystemDefault: textAntialias = Gdip.SmoothingModeAntiAlias; break;
-							case Gdip.TextRenderingHintSingleBitPerPixel:
-							case Gdip.TextRenderingHintSingleBitPerPixelGridFit: textAntialias = Gdip.SmoothingModeNone; break;
-							case Gdip.TextRenderingHintAntiAlias:
-							case Gdip.TextRenderingHintAntiAliasGridFit:
-							case Gdip.TextRenderingHintClearTypeGridFit: textAntialias = Gdip.SmoothingModeAntiAlias; break;
-						}
-						Gdip.Graphics_SetSmoothingMode(gdipGraphics, textAntialias);
+						PointF pt = new PointF();
+						pt.X = drawX;
+						pt.Y = drawRunY;
 						int gstate2 = 0;
 						if ((data.style & SWT.MIRRORED) != 0) {
 							gstate2 = Gdip.Graphics_Save(gdipGraphics);
 							Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
 							Gdip.Graphics_TranslateTransform(gdipGraphics, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
 						}
-						Gdip.Graphics_FillPath(gdipGraphics, brush, path);
+						if (hFont != lastHFont) {
+							lastHFont = hFont;
+							if (gdipFont != 0) Gdip.Font_delete(gdipFont);
+							gdipFont = GC.createGdipFont(hdc, hFont);
+						}
+						Gdip.Graphics_DrawDriverString(gdipGraphics, run.glyphs, run.glyphCount, gdipFont, brush, pt, Gdip.DriverStringOptionsRealizedAdvance, 0);
 						if ((data.style & SWT.MIRRORED) != 0) {
 							Gdip.Graphics_Restore(gdipGraphics, gstate2);
 						}
-						Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
 						drawLines(gdip, gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, brush, null, alpha);
 						if (partialSelection) {
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 							gstate = Gdip.Graphics_Save(gdipGraphics);
 							Gdip.Graphics_SetClip(gdipGraphics, gdipRect, Gdip.CombineModeIntersect);
-							Gdip.Graphics_SetSmoothingMode(gdipGraphics, textAntialias);
 							if ((data.style & SWT.MIRRORED) != 0) {
 								gstate2 = Gdip.Graphics_Save(gdipGraphics);
 								Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
 								Gdip.Graphics_TranslateTransform(gdipGraphics, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
 							}
-							Gdip.Graphics_FillPath(gdipGraphics, selBrushFg, path);
+							Gdip.Graphics_DrawDriverString(gdipGraphics, run.glyphs, run.glyphCount, gdipFont, selBrushFg, pt, Gdip.DriverStringOptionsRealizedAdvance, 0);
 							if ((data.style & SWT.MIRRORED) != 0) {
 								Gdip.Graphics_Restore(gdipGraphics, gstate2);
 							}
-							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
 							drawLines(gdip, gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, selBrushFg, rect, alpha);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
 						borderClip = drawBorder(gdip, gdipGraphics, x, drawY, lineHeight, foregroundBrush, selBrushFg, fullSelection, borderClip, partialSelection ? rect : null, alpha, lineRuns, i, selectionStart, selectionEnd);
-						Gdip.GraphicsPath_delete(path);
 						if (brush != selBrushFg && brush != foregroundBrush) Gdip.SolidBrush_delete(brush);
 					}  else {
+						int drawRunY = drawY + (baseline - run.ascent);
 						int fg = foreground;
 						if (fullSelection) {
 							fg = selectionForeground.handle;
@@ -895,6 +832,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (selBrush != 0) Gdip.SolidBrush_delete(selBrush);
 		if (selBrushFg != 0) Gdip.SolidBrush_delete(selBrushFg);
 		if (selPen != 0) Gdip.Pen_delete(selPen);
+		if (gdipFont != 0) Gdip.Font_delete(gdipFont);
 	} else {
 		OS.RestoreDC(hdc, state);
 		if (gdipGraphics != 0) Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
