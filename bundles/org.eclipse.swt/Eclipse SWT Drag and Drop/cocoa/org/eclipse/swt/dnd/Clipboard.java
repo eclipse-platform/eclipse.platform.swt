@@ -282,6 +282,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 	NSString type = pasteboard.availableTypeFromArray(types);
 	if (type != null) {
 		TransferData tdata = new TransferData();
+		tdata.type = Transfer.registerType(Transfer.getString(type));
 		if (type.isEqual(OS.NSStringPboardType) || type.isEqual(OS.NSRTFPboardType)) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSFilenamesPboardType)) {
@@ -290,7 +291,6 @@ public Object getContents(Transfer transfer, int clipboards) {
 			tdata.data = pasteboard.dataForType(type);
 		}
 		if (tdata.data != null) {
-			tdata.type = Transfer.registerType(Transfer.getString(type));		
 			return transfer.nativeToJava(tdata);
 		}
 	}
