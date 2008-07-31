@@ -518,6 +518,13 @@ int menuForEvent (int id, int sel, int theEvent) {
 	return parent.menuForEvent (id, sel, theEvent);
 }
 
+void mouseDown(int id, int sel, int theEvent) {
+	Display display = this.display;
+	display.trackingControl = parent;
+	super.mouseDown(id, sel, theEvent);
+	display.trackingControl = null;
+}
+
 void register () {
 	super.register ();
 	display.addWidget (view, this);
