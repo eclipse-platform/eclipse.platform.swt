@@ -122,6 +122,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = (int) newRect.height;
 		view.setFrame (oldRect);
 	}
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
