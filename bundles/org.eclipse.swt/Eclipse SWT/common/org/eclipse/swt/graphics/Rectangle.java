@@ -120,7 +120,7 @@ public void add (Rectangle rect) {
  * @return <code>true</code> if the rectangle contains the point and <code>false</code> otherwise
  */
 public boolean contains (int x, int y) {
-	return (x >= this.x) && (y >= this.y) && ((x - this.x) < width) && ((y - this.y) < height);
+	return (x >= this.x) && (y >= this.y) && x < (this.x + width) && y < (this.y + height);
 }
 
 /**
