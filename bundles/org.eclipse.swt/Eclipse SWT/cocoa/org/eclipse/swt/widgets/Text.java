@@ -355,7 +355,10 @@ void createHandle () {
 		widget.initWithFrame(new NSRect());
 		widget.setSelectable(true);
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
-		if ((style & SWT.BORDER) == 0) widget.setBordered(false);
+		if ((style & SWT.BORDER) == 0) {
+			widget.setFocusRingType(OS.NSFocusRingTypeNone);
+			widget.setBordered(false);
+		}
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
@@ -374,7 +377,6 @@ void createHandle () {
 		NSTextView widget = (NSTextView)new SWTTextView().alloc();
 		widget.initWithFrame(new NSRect());
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
-		if ((style & SWT.BORDER) == 0) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 		
 		NSSize size = new NSSize();
 		size.width = size.height = Float.MAX_VALUE;

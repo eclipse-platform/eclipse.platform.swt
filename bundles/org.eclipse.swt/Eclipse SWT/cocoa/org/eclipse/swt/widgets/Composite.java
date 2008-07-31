@@ -49,7 +49,6 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
-	int scrolledVisibleRgn, siblingsVisibleRgn;
 	int layoutCount, backgroundMode;
 
 Composite () {

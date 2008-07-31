@@ -645,18 +645,18 @@ void destroyWidget () {
 }
 
 boolean doCommandBySelector (int id, int sel, int selector) {
-	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-	if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
-		boolean [] consume = new boolean [1];
-		if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return false;
-		if (isDisposed ()) return false;
-		if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return false;
-		if (consume [0]) return false;
+	if (view.window ().firstResponder ().id == id) {
+		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
+			boolean [] consume = new boolean [1];
+			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return false;
+			if (isDisposed ()) return false;
+			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return false;
+			if (consume [0]) return false;
+		}
+		if ((state & CANVAS) != 0) return true;
 	}
-	if ((state & CANVAS) == 0) {
-		return super.doCommandBySelector (id, sel, selector);
-	}
-	return true;
+	return super.doCommandBySelector (id, sel, selector);
 }
 
 /**
@@ -1353,26 +1353,26 @@ int hitTest (int id, int sel, NSPoint point) {
 }
 
 boolean insertText (int id, int sel, int string) {
-	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-	if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
-		NSString str = new NSString (string);
-		if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
-			str = new NSAttributedString (string).string ();
+	if (view.window ().firstResponder ().id == id) {
+		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
+			NSString str = new NSString (string);
+			if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
+				str = new NSAttributedString (string).string ();
+			}
+			int length = str.length ();
+			char[] buffer = new char [length];
+			str.getCharacters_ (buffer);
+			for (int i = 0; i < buffer.length; i++) {
+				Event event = new Event ();
+				if (length == 1) setKeyState (event, SWT.KeyDown, nsEvent);
+				event.character = buffer [i];
+				sendKeyEvent (SWT.KeyDown, event);
+			}
 		}
-		int length = str.length ();
-		char[] buffer = new char [length];
-		str.getCharacters_ (buffer);
-		for (int i = 0; i < buffer.length; i++) {
-			Event event = new Event ();
-			if (length == 1) setKeyState (event, SWT.KeyDown, nsEvent);
-			event.character = buffer [i];
-			sendKeyEvent (SWT.KeyDown, event);
-		}
+		if ((state & CANVAS) != 0) return true;
 	}
-	if ((state & CANVAS) == 0) {
-		return super.insertText (id, sel, string);
-	}
-	return true;
+	return super.insertText (id, sel, string);
 }
 
 /**	 
