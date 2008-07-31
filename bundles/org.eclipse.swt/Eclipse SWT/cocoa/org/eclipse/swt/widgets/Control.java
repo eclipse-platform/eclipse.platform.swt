@@ -812,7 +812,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
 		context.restoreGraphicsState();
 		return;
 	}
-	Color background = control.background;
+	Color background = control.getBackgroundColor ();
 	if (background != null && !background.isDisposed ()) {
 		float [] color = background.handle;
 		context.saveGraphicsState();
