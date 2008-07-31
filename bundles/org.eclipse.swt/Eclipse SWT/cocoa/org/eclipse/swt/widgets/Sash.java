@@ -148,17 +148,8 @@ void createHandle () {
 }
 
 void drawWidget (int id, NSRect rect) {
-	Control control = findBackgroundControl();
-	if (control == null) control = this;
-	Color background = control.background;
-	if (background != null && !background.isDisposed ()) {
-		float [] color = background.handle;
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		context.saveGraphicsState();
-		NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
-		NSBezierPath.fillRect(rect);
-		context.restoreGraphicsState();
-	}
+	NSGraphicsContext context = NSGraphicsContext.currentContext();
+	fillBackground (view, context, rect);
 	super.drawWidget (id, rect);
 }
 
