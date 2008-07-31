@@ -152,6 +152,10 @@ public String getText () {
 	return text;
 }
 
+float getThemeAlpha () {
+	return 0.25f * parent.getThemeAlpha ();
+}
+
 void register () {
 	super.register ();
 	display.addWidget (contentView, this);

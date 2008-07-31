@@ -790,6 +790,10 @@ public Point getSize () {
 	return new Point ((int) frame.width, (int) frame.height);
 }
 
+float getThemeAlpha () {
+	return 1;
+}
+
 boolean hasBorder () {
 	return false;
 }

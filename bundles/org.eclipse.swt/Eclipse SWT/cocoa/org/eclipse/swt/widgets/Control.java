@@ -816,7 +816,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect) {
 	if (background != null && !background.isDisposed ()) {
 		float [] color = background.handle;
 		context.saveGraphicsState();
-		NSColor.colorWithDeviceRed(color [0], color [1], color [2], color [3]).setFill();
+		NSColor.colorWithDeviceRed(color [0], color [1], color [2], getThemeAlpha()).setFill();
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();
 		return;
@@ -1299,6 +1299,10 @@ public Point getSize () {
 	checkWidget();
 	NSRect rect = topView().frame();
 	return new Point((int)rect.width, (int)rect.height);
+}
+
+float getThemeAlpha () {
+	return 1 * parent.getThemeAlpha ();
 }
 
 /**

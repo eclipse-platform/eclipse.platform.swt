@@ -369,6 +369,10 @@ public int getSelectionIndex () {
 	return -1;
 }
 
+float getThemeAlpha () {
+	return 0.25f * parent.getThemeAlpha ();
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
