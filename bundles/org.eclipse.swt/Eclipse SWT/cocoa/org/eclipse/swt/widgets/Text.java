@@ -305,12 +305,28 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = (int)newRect.height;
 	} else {
 		NSTextView widget = (NSTextView)view;
+		NSSize oldSize = null;
+		NSTextContainer textContainer = widget.textContainer();
+		if ((style & SWT.WRAP) != 0) {
+			widget.setHorizontallyResizable(true);
+			textContainer.setWidthTracksTextView(false);
+			oldSize = textContainer.containerSize();
+			NSSize csize = new NSSize();
+			csize.width = wHint != SWT.DEFAULT ? wHint : Float.MAX_VALUE;
+			csize.height = hHint != SWT.DEFAULT ? hHint : Float.MAX_VALUE;
+			textContainer.setContainerSize(csize);
+		}
 		NSRect oldRect = widget.frame();
 		widget.sizeToFit();
 		NSRect newRect = widget.frame();
 		widget.setFrame (oldRect);
-		width = (int)newRect.width;
-		height = (int)newRect.height;
+		if ((style & SWT.WRAP) != 0) {
+			widget.setHorizontallyResizable(false);
+			textContainer.setWidthTracksTextView(true);
+			textContainer.setContainerSize(oldSize);
+		}
+		width = (int)(newRect.width + 1);
+		height = (int)(newRect.height + 1);
 	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	if (height <= 0) height = DEFAULT_HEIGHT;
@@ -384,11 +400,12 @@ void createHandle () {
 		widget.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 
 		if ((style & SWT.WRAP) == 0) {
+			NSTextContainer textContainer = widget.textContainer();
 			widget.setHorizontallyResizable(true);
+			textContainer.setWidthTracksTextView(false);
 			NSSize csize = new NSSize();
 			csize.width = csize.height = Float.MAX_VALUE;
-			widget.textContainer().setWidthTracksTextView(false);
-			widget.textContainer().setContainerSize(csize);
+			textContainer.setContainerSize(csize);
 		}
 
 		int align = OS.NSLeftTextAlignment;
