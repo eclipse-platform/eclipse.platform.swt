@@ -256,33 +256,6 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
-void resizeClientArea () {
-//	if (scrolledHandle == 0) return;
-//	if ((state & CANVAS) == 0) return;
-//	int vWidth = 0, hHeight = 0;
-//	int [] outMetric = new int [1];
-//	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-//	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
-//	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
-//	if (isVisibleHBar) hHeight = outMetric [0];
-//	if (isVisibleVBar) vWidth = outMetric [0];
-//	int width, height;
-//	CGRect rect = new CGRect (); 
-//	OS.HIViewGetBounds (scrolledHandle, rect);
-//	width = (int) rect.width;
-//	height = (int) rect.height;
-//	Rect inset = inset ();
-//	width = Math.max (0, width - vWidth - inset.left - inset.right);
-//	height = Math.max (0, height - hHeight - inset.top - inset.bottom);
-//	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
-//	if (isVisibleHBar) {
-//		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
-//	}
-//	if (isVisibleVBar) {
-//		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
-//	}
-}
-
 void sendHorizontalSelection () {
 	horizontalBar.sendSelection ();
 }
@@ -301,8 +274,11 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 		if ((bar.state & HIDDEN) != 0) return false;
 		bar.state |= HIDDEN;
 	}
-	resizeClientArea ();
-	bar.view.setHidden(!visible);
+	if ((bar.style & SWT.HORIZONTAL) != 0) {
+		scrollView.setHasHorizontalScroller (visible);
+	} else {
+		scrollView.setHasVerticalScroller (visible);
+	}
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
 	return true;

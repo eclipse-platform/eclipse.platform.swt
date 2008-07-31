@@ -398,7 +398,6 @@ void releaseParent () {
 	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
-	parent.resizeClientArea ();
 }
 
 void releaseWidget () {
@@ -650,7 +649,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	//TODO visibility
 	parent.setScrollBarVisible (this, visible);
 }
 
