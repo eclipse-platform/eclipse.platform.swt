@@ -290,8 +290,7 @@ void setBackground (float [] color) {
 	textView.setDrawsBackground(color != null);
 	if (color == null) return;
 	NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
-	NSTextFieldCell cell = new NSTextFieldCell(textView.cell());
-	cell.setBackgroundColor(nsColor);
+	((NSTextField)textView).setBackgroundColor(nsColor);
 }
 
 void _setAlignment() {
