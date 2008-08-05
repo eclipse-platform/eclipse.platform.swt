@@ -53,7 +53,7 @@ public void generateConstants() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("constant".equals(node.getLocalName())) {
+			if ("constant".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				out("public static final native int ");
 				out(attributes.getNamedItem("name").getNodeValue());
@@ -70,7 +70,7 @@ public void generateConstantsMetaData() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("constant".equals(node.getLocalName())) {
+			if ("constant".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				out("OS_");
 				out(attributes.getNamedItem("name").getNodeValue());
@@ -87,7 +87,7 @@ public void generateEnums() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("enum".equals(node.getLocalName())) {
+			if ("enum".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				Node value = attributes.getNamedItem("value");
 				if (value != null) {
@@ -174,7 +174,7 @@ public void generateClasses() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getLocalName())) {
+			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
@@ -215,7 +215,7 @@ public void generateClasses() throws Exception {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
-						if ("method".equals(method.getLocalName())) {
+						if ("method".equals(method.getNodeName())) {
 							String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
 							out("public ");
 							boolean isStatic = method.getAttributes().getNamedItem("class_method") != null; 
@@ -242,7 +242,7 @@ public void generateClasses() throws Exception {
 							boolean first = true;
 							for (int k = 0; k < params.getLength(); k++) {
 								Node param = params.item(k);
-								if ("arg".equals(param.getLocalName())) {
+								if ("arg".equals(param.getNodeName())) {
 									NamedNodeMap paramAttributes = param.getAttributes();
 									if (!first) out(", ");
 									out(getJavaType(param));
@@ -296,7 +296,7 @@ public void generateClasses() throws Exception {
 							first = false;
 							for (int k = 0; k < params.getLength(); k++) {
 								Node param = params.item(k);
-								if ("arg".equals(param.getLocalName())) {
+								if ("arg".equals(param.getNodeName())) {
 									NamedNodeMap paramAttributes = param.getAttributes();
 									if (!first) out(", ");
 									first = false;
@@ -357,14 +357,14 @@ public void generateSelectorsConst() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getLocalName())) {
+			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
-						if ("method".equals(method.getLocalName())) {
+						if ("method".equals(method.getNodeName())) {
 							String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
 							set.add(sel);
 						}
@@ -393,14 +393,14 @@ public void generateSends() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getLocalName())) {
+			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
-						if ("method".equals(method.getLocalName())) {
+						if ("method".equals(method.getNodeName())) {
 							Node returnNode = getReturnNode(method.getChildNodes());
 							StringBuffer buffer = new StringBuffer();
 							buffer.append("public static final native "); 
@@ -419,7 +419,7 @@ public void generateSends() throws Exception {
 							int count = 0;
 							for (int k = 0; k < params.getLength(); k++) {
 								Node param = params.item(k);
-								if ("arg".equals(param.getLocalName())) {
+								if ("arg".equals(param.getNodeName())) {
 									if (!first) buffer.append(", ");
 									if (isStruct(param)) {
 										buffer.append(getJavaType(param));
@@ -452,14 +452,14 @@ public void generateSendsMetaData() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getLocalName())) {
+			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
-						if ("method".equals(method.getLocalName())) {
+						if ("method".equals(method.getNodeName())) {
 							Node returnNode = getReturnNode(method.getChildNodes());
 							StringBuffer buffer = new StringBuffer();
 							if (returnNode != null && isStruct(returnNode)) {
@@ -476,7 +476,7 @@ public void generateSendsMetaData() throws Exception {
 							NodeList params = method.getChildNodes();
 							for (int k = 0; k < params.getLength(); k++) {
 								Node param = params.item(k);
-								if ("arg".equals(param.getLocalName())) {
+								if ("arg".equals(param.getNodeName())) {
 									if (isStruct(param)) {
 										buffer.append("Lorg_eclipse_swt_internal_cocoa_");
 										buffer.append(getJavaType(param));
@@ -523,7 +523,7 @@ public void generateSendsMetaData() throws Exception {
 		NodeList params = method.getChildNodes();
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
-			if ("arg".equals(param.getLocalName())) {
+			if ("arg".equals(param.getNodeName())) {
 				out(key);
 				out("_");
 				out(String.valueOf(count));
@@ -551,7 +551,7 @@ public void generateClassesConst() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getLocalName())) {
+			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
@@ -576,7 +576,7 @@ public void generateClassesConst() throws Exception {
 Node getReturnNode(NodeList list) {
 	for (int j = 0; j < list.getLength(); j++) {
 		Node node = list.item(j);
-		if ("retval".equals(node.getLocalName())) {
+		if ("retval".equals(node.getNodeName())) {
 			return node;
 		}
 	}
@@ -685,7 +685,7 @@ public void generateFunctions() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("function".equals(node.getLocalName())) {
+			if ("function".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				out("public static final native ");
@@ -702,7 +702,7 @@ public void generateFunctions() throws Exception {
 				boolean first = true;
 				for (int j = 0; j < params.getLength(); j++) {
 					Node param = params.item(j);
-					if ("arg".equals(param.getLocalName())) {
+					if ("arg".equals(param.getNodeName())) {
 						NamedNodeMap paramAttributes = param.getAttributes();
 						if (!first) out(", ");
 						out(getType(param));
@@ -763,8 +763,8 @@ public static void main(String[] args) throws Exception {
 //		"NSURL",
 //	});
 	gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa");
-//	gen.generateOS();
+	gen.generateOS();
 //	gen.generateMetadata();
-	gen.generateClasses();
+//	gen.generateClasses();
 }
 }
