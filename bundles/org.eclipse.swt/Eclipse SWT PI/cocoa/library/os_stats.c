@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 361;
-int OS_nativeFunctionCallCount[361];
+int OS_nativeFunctionCount = 351;
+int OS_nativeFunctionCallCount[351];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -355,16 +355,6 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIZ",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2III",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",
-	"objc_1msgSend_1struct__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI",
 	"objc_1registerClassPair",
 	"object_1getClassName",
 	"object_1getInstanceVariable",

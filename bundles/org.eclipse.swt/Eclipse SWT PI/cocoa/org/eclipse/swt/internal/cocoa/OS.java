@@ -349,17 +349,6 @@ public static final native int objc_msgSend(int id, int sel, int arg0, NSPoint a
 public static final native void objc_msgSend_stret(NSRect result, int id, int sel, NSSize arg0, int arg1);
 public static final native int objc_msgSend(int id, int sel, int arg0, int arg1, float arg2);
 
-public static final native int objc_msgSend_struct(NSSize result, int object, int selector);
-public static final native void objc_msgSend_struct(NSRange result, int id, int sel, NSRange arg0, int arg1);
-public static final native void objc_msgSend_struct(NSSize result, int id, int sel, NSSize arg0, boolean arg1, boolean arg2, int arg3);
-public static final native int objc_msgSend_struct(NSPoint result, int object, int selector);
-public static final native int objc_msgSend_struct(NSPoint result, int object, int selector, int arg0);
-public static final native int objc_msgSend_struct(NSPoint result, int object, int selector, NSPoint arg0);
-public static final native int objc_msgSend_struct(NSRange result, int object, int selector, NSRange arg0);
-public static final native int objc_msgSend_struct(NSPoint result, int object, int selector, NSPoint arg0, int arg1);
-public static final native int objc_msgSend_struct(NSRange result, int object, int selector);
-public static final native int objc_msgSend_struct(NSRange result, int object, int selector, int arg0);
-
 public static final native int drawRect_CALLBACK(int func);
 public static final native int drawInteriorWithFrame_inView_CALLBACK(int func);
 public static final native int setFrame_CALLBACK(int func);

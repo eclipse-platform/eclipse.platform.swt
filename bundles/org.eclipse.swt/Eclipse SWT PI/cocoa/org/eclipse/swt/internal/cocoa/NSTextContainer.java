@@ -22,7 +22,7 @@ public NSTextContainer(int id) {
 
 public NSSize containerSize() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_containerSize);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_containerSize);
 	return result;
 }
 

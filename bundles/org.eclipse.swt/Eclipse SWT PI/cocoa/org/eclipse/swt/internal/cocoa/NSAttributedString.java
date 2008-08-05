@@ -76,7 +76,7 @@ public NSString string() {
 
 public NSSize size() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_size);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_size);
 	return result;
 }
 
@@ -98,7 +98,7 @@ public int nextWordFromIndex(int index, boolean forward) {
 
 public NSRange doubleClickAtIndex(int index) {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_struct(result, id, OS.sel_doubleClickAtIndex_1, index);
+	OS.objc_msgSend_stret(result, id, OS.sel_doubleClickAtIndex_1, index);
 	return result;
 }
 

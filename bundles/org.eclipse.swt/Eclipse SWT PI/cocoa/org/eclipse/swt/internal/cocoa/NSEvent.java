@@ -137,7 +137,7 @@ public static NSEvent keyEventWithType(int type, NSPoint location, int flags, do
 
 public NSPoint locationInWindow() {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_locationInWindow);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_locationInWindow);
 	return result;
 }
 
@@ -152,7 +152,7 @@ public static NSEvent mouseEventWithType(int type, NSPoint location, int flags, 
 
 public static NSPoint mouseLocation() {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_struct(result, OS.class_NSEvent, OS.sel_mouseLocation);
+	OS.objc_msgSend_stret(result, OS.class_NSEvent, OS.sel_mouseLocation);
 	return result;
 }
 

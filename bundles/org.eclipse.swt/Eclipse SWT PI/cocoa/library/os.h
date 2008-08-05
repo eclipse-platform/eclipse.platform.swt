@@ -24,7 +24,11 @@
 #define objc_msgSend_fpret objc_msgSend
 #endif
 
-#endif /* INC_os_H */
+#ifdef __i386__
+#define STRUCT_SIZE_LIMIT 8
+#elif __ppc__
+#define STRUCT_SIZE_LIMIT 4
+#endif
 
 #ifndef NATIVE_STATS
 #define OS_NATIVE_ENTER(env, that, func) \
@@ -38,3 +42,5 @@
 		@throw; \
 	}
 #endif
+
+#endif /* INC_os_H */

@@ -94,7 +94,7 @@ public NSString paperName() {
 
 public NSSize paperSize() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_paperSize);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_paperSize);
 	return result;
 }
 

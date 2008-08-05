@@ -4249,7 +4249,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSAffineTransformStruct _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSAffineTransformStructFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSAffineTransformStruct *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSAffineTransformStruct *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSAffineTransformStruct (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSAffineTransformStructFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II_FUNC);
@@ -4263,7 +4267,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSDecimal _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSDecimal_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSDecimalFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSDecimal *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSDecimal *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSDecimal (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSDecimalFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSDecimal_2II_FUNC);
@@ -4277,7 +4285,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSPoint _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC);
@@ -4291,7 +4303,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSPoint _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III_FUNC);
@@ -4305,7 +4321,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSPoint _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IIIII_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, jint, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	}
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IIIII_FUNC);
@@ -4319,7 +4339,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSPoint _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IIIIIII_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, jint, jint, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, jint, jint, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, jint, jint, jint, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7);
+	}
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IIIIIII_FUNC);
@@ -4335,7 +4359,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IIILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, jint, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, jint, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, arg5);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, jint, NSRect, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, arg5);
+	}
 fail:
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -4352,7 +4380,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IIISLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRectFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, jint, jshort, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, jint, jshort, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, jint, jshort, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	}
 fail:
 	if (arg5 && lparg5) setNSRectFields(env, arg5, lparg5);
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -4369,7 +4401,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, NSPoint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, NSPoint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, NSPoint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -4386,7 +4422,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, NSPoint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, NSPoint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, NSPoint, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -4403,7 +4443,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSPoint *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSPoint *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSPoint (*)(id, SEL, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -4418,7 +4462,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC);
@@ -4432,7 +4480,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2III_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2III_FUNC);
@@ -4446,7 +4498,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIII_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIII_FUNC);
@@ -4460,7 +4516,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIII_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIII_FUNC);
@@ -4474,7 +4534,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIIII_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIIII_FUNC);
@@ -4488,7 +4552,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIIIIZ_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint, jint, jint, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint, jint, jint, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint, jint, jint, jboolean))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIIIIZ_FUNC);
@@ -4502,7 +4570,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRange _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIIIZII_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint, jint, jboolean, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint, jint, jboolean, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint, jint, jboolean, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIIIZII_FUNC);
@@ -4518,7 +4590,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRangeFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	}
 fail:
 	if (arg5 && lparg5) setNSRangeFields(env, arg5, lparg5);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4535,7 +4611,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IIIILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRangeFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, jint, NSRange, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, jint, NSRange, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5, arg6);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, jint, NSRange, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, *lparg5, arg6);
+	}
 fail:
 	if (arg5 && lparg5) setNSRangeFields(env, arg5, lparg5);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4554,7 +4634,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRangeFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRangeFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, jint, NSRange, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, jint, NSRange, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, jint, NSRange, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5);
+	}
 fail:
 	if (arg5 && lparg5) setNSRangeFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setNSRangeFields(env, arg4, lparg4);
@@ -4572,7 +4656,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4589,7 +4677,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, NSRange, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, NSRange, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, NSRange, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4606,7 +4698,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, NSRange, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, NSRange, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, NSRange, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4, arg5);
+	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4623,7 +4719,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4640,7 +4740,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRange *, id, SEL, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRange *, id, SEL, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSRange (*)(id, SEL, NSRect, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -4655,7 +4759,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRect _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
@@ -4669,7 +4777,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRect _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2III_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2III_FUNC);
@@ -4683,7 +4795,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRect _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIII_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIII_FUNC);
@@ -4697,7 +4813,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRect _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIIII_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIIII_FUNC);
@@ -4713,7 +4833,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIIILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRectFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, jint, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, jint, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, jint, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, *lparg5);
+	}
 fail:
 	if (arg5 && lparg5) setNSRectFields(env, arg5, lparg5);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4732,7 +4856,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRectFields(env, arg5, &_arg5)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = getNSPointFields(env, arg6, &_arg6)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, jint, NSRect, NSPoint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5, *lparg6, arg7);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, jint, NSRect, NSPoint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, *lparg5, *lparg6, arg7);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, jint, NSRect, NSPoint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, *lparg5, *lparg6, arg7);
+	}
 fail:
 	if (arg6 && lparg6) setNSPointFields(env, arg6, lparg6);
 	if (arg5 && lparg5) setNSRectFields(env, arg5, lparg5);
@@ -4748,7 +4876,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRect _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIIIZ_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, jint, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, jint, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, jint, jboolean))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIIIZ_FUNC);
@@ -4768,7 +4900,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg4) if ((lparg4 = getNSPointFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRectFields(env, arg5, &_arg5)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getNSRangeFields(env, arg7, &_arg7)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSPoint, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6, *lparg7);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSPoint, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6, *lparg7);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSPoint, NSRect, jint, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6, *lparg7);
+	}
 fail:
 	if (arg7 && lparg7) setNSRangeFields(env, arg7, lparg7);
 	if (arg5 && lparg5) setNSRectFields(env, arg5, lparg5);
@@ -4787,7 +4923,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRangeFields(env, arg4, &_arg4)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4);
+	}
 fail:
 	if (arg4 && lparg4) setNSRangeFields(env, arg4, lparg4);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4804,7 +4944,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4);
+	}
 fail:
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4821,7 +4965,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, arg5);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSRect, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, arg5);
+	}
 fail:
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4840,7 +4988,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSPointFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSRect, NSPoint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSRect, NSPoint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSRect, NSPoint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6);
+	}
 fail:
 	if (arg5 && lparg5) setNSPointFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
@@ -4860,7 +5012,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRectFields(env, arg5, &_arg5)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSRect, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSRect, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSRect, NSRect, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6);
+	}
 fail:
 	if (arg5 && lparg5) setNSRectFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
@@ -4882,7 +5038,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getNSRectFields(env, arg5, &_arg5)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getNSRangeFields(env, arg7, &_arg7)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jint, NSRect, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6, *lparg7);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jint, NSRect, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6, *lparg7);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jint, NSRect, NSRect, jint, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, *lparg5, arg6, *lparg7);
+	}
 fail:
 	if (arg7 && lparg7) setNSRangeFields(env, arg7, lparg7);
 	if (arg5 && lparg5) setNSRectFields(env, arg5, lparg5);
@@ -4905,7 +5065,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = getNSRangeFields(env, arg6, &_arg6)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSPoint, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, *lparg4, arg5, *lparg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSPoint, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, *lparg4, arg5, *lparg6);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSPoint, NSRect, jint, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, *lparg4, arg5, *lparg6);
+	}
 fail:
 	if (arg6 && lparg6) setNSRangeFields(env, arg6, lparg6);
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
@@ -4924,7 +5088,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4941,7 +5109,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSRange, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSRange, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRange, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4958,7 +5130,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4975,7 +5151,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSRect, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRect, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -4992,7 +5172,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2III_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSRect, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSRect, jint, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRect, jint, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -5013,7 +5197,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = getNSRangeFields(env, arg6, &_arg6)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSRect, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, *lparg4, arg5, *lparg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSRect, NSRect, jint, NSRange))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, *lparg4, arg5, *lparg6);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRect, NSRect, jint, NSRange))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, *lparg4, arg5, *lparg6);
+	}
 fail:
 	if (arg6 && lparg6) setNSRangeFields(env, arg6, lparg6);
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
@@ -5032,7 +5220,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSSize, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSSize, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSSize, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -5049,7 +5241,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, NSSize, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, NSSize, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, NSSize, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4, arg5);
+	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -5064,7 +5260,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSRect _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIZ_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSRect *, id, SEL, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSRect *, id, SEL, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSRect (*)(id, SEL, jboolean))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIZ_FUNC);
@@ -5078,7 +5278,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSSize _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC);
@@ -5092,7 +5296,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSSize _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIF_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, jfloat))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, jfloat))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, jfloat))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIF_FUNC);
@@ -5106,7 +5314,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSSize _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2III_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2III_FUNC);
@@ -5120,7 +5332,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSSize _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIII_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4);
+	}
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIII_FUNC);
@@ -5136,7 +5352,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIILorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRangeFields(env, arg4, &_arg4)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, jint, NSRange, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, arg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, jint, NSRange, jint, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4, arg5, arg6);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, jint, NSRange, jint, jint))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4, arg5, arg6);
+	}
 fail:
 	if (arg4 && lparg4) setNSRangeFields(env, arg4, lparg4);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -5153,7 +5373,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSSizeFields(env, arg4, &_arg4)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, jint, NSSize))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, jint, NSSize))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, *lparg4);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, jint, NSSize))objc_msgSend)((id)arg1, (SEL)arg2, arg3, *lparg4);
+	}
 fail:
 	if (arg4 && lparg4) setNSSizeFields(env, arg4, lparg4);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -5170,7 +5394,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -5187,7 +5415,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, NSSize))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, NSSize))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, NSSize))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
+	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -5204,7 +5436,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, NSSize, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, NSSize, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, NSSize, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -5221,7 +5457,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, NSSize, jboolean, jboolean, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, NSSize, jboolean, jboolean, jint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, NSSize, jboolean, jboolean, jint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
+	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -5236,7 +5476,11 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	NSSize _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIZ_FUNC);
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	((void (*)(NSSize *, id, SEL, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		((void (*)(NSSize *, id, SEL, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
+	} else {
+		*lparg0 = (*(NSSize (*)(id, SEL, jboolean))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
+	}
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IIZ_FUNC);

@@ -70,7 +70,7 @@ public void insertTabViewItem(NSTabViewItem tabViewItem, int index) {
 
 public NSSize minimumSize() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_minimumSize);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_minimumSize);
 	return result;
 }
 

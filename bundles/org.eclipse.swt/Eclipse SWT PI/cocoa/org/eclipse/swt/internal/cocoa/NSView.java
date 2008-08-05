@@ -145,13 +145,13 @@ public NSArray contentFilters() {
 
 public NSPoint convertPoint_fromView_(NSPoint aPoint, NSView aView) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_convertPoint_1fromView_1, aPoint, aView != null ? aView.id : 0);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_convertPoint_1fromView_1, aPoint, aView != null ? aView.id : 0);
 	return result;
 }
 
 public NSPoint convertPoint_toView_(NSPoint aPoint, NSView aView) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_convertPoint_1toView_1, aPoint, aView != null ? aView.id : 0);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_convertPoint_1toView_1, aPoint, aView != null ? aView.id : 0);
 	return result;
 }
 

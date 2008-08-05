@@ -35,7 +35,7 @@ public int borderType() {
 
 public NSSize contentSize() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_contentSize);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_contentSize);
 	return result;
 }
 
@@ -55,9 +55,9 @@ public NSCursor documentCursor() {
 	return result != 0 ? new NSCursor(result) : null;
 }
 
-public id documentView() {
+public NSView documentView() {
 	int result = OS.objc_msgSend(this.id, OS.sel_documentView);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSView(result) : null;
 }
 
 public NSRect documentVisibleRect() {
@@ -72,7 +72,7 @@ public boolean drawsBackground() {
 
 public static NSSize frameSizeForContentSize(NSSize cSize, boolean hFlag, boolean vFlag, int aType) {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, OS.class_NSScrollView, OS.sel_frameSizeForContentSize_1hasHorizontalScroller_1hasVerticalScroller_1borderType_1, cSize, hFlag, vFlag, aType);
+	OS.objc_msgSend_stret(result, OS.class_NSScrollView, OS.sel_frameSizeForContentSize_1hasHorizontalScroller_1hasVerticalScroller_1borderType_1, cSize, hFlag, vFlag, aType);
 	return result;
 }
 

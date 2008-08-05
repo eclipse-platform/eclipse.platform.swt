@@ -66,7 +66,7 @@ public NSRect rectValue() {
 
 public NSSize sizeValue() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_sizeValue);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_sizeValue);
 	return result;
 }
 

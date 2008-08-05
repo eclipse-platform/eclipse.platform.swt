@@ -237,13 +237,13 @@ public NSRange glyphRangeForBoundingRectWithoutAdditionalLayout(NSRect bounds, N
 
 public NSRange glyphRangeForCharacterRange(NSRange charRange, int actualCharRange) {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_glyphRangeForCharacterRange_1actualCharacterRange_1, charRange, actualCharRange);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_glyphRangeForCharacterRange_1actualCharacterRange_1, charRange, actualCharRange);
 	return result;
 }
 
 public NSRange glyphRangeForTextContainer(NSTextContainer container) {
 	NSRange result = new NSRange();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_glyphRangeForTextContainer_1, container != null ? container.id : 0);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_glyphRangeForTextContainer_1, container != null ? container.id : 0);
 	return result;
 }
 
@@ -345,7 +345,7 @@ public NSRect lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAddition
 
 public NSPoint locationForGlyphAtIndex(int glyphIndex) {
 	NSPoint result = new NSPoint();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_locationForGlyphAtIndex_1, glyphIndex);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_locationForGlyphAtIndex_1, glyphIndex);
 	return result;
 }
 

@@ -617,6 +617,13 @@ void generateFunctionCallRightSide(Method method, MethodData methodData, Class[]
 }
 
 void generateFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
+	String name = method.getName();
+	boolean objc_struct = false;
+	if (name.equals("objc_msgSend_stret")) {
+		objc_struct = true;
+		outputln("\tif (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {");
+		output("\t");
+	}
 	String copy = (String)methodData.getParam("copy");
 	boolean makeCopy = copy.length() != 0 && isCPP && returnType != Void.TYPE;
 	if (makeCopy) {
@@ -627,7 +634,6 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 	}
 	int paramStart = 0;
-	String name = method.getName();
 	if (name.startsWith("_")) name = name.substring(1);
 	if (name.equalsIgnoreCase("call")) {
 		output("(");
@@ -785,6 +791,29 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		output(getTypeSignature2(returnType));
 		output(")");
 		outputln("copy;");
+		outputln("\t}");
+	}
+	if (objc_struct) {
+		outputln("\t} else {");
+		output("\t\t*lparg0 = (*(");
+		output(getTypeSignature4(paramTypes[0], true));
+		output(" (*)(");
+		for (int i = 1; i < paramTypes.length; i++) {
+			if (i != 1) output(", ");
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			String cast = paramData.getCast();
+			if (cast != null && cast.length() != 0) {
+				if (cast.startsWith("(")) cast = cast.substring(1);
+				if (cast.endsWith(")")) cast = cast.substring(0, cast.length() - 1);
+				output(cast);
+			} else {
+				output(getTypeSignature4(paramType, paramData.getFlag(FLAG_STRUCT)));
+			}
+		}
+		output("))objc_msgSend)");
+		generateFunctionCallRightSide(method, methodData, paramTypes, 1);
+		outputln(";");
 		outputln("\t}");
 	}
 }

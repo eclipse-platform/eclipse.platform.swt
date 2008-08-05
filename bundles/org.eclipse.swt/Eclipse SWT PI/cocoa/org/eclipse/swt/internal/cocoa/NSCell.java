@@ -67,7 +67,7 @@ public int cellAttribute(int aParameter) {
 
 public NSSize cellSize() {
 	NSSize result = new NSSize();
-	OS.objc_msgSend_struct(result, this.id, OS.sel_cellSize);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_cellSize);
 	return result;
 }
 
