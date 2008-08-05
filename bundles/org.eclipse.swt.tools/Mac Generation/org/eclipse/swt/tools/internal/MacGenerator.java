@@ -358,7 +358,7 @@ public void generateSelectorsConst() throws Exception {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getNodeName())) {
+			if ("class".equals(node.getNodeName()) || "informal_protocol".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
 				if (getGenerateClass(name)) {
@@ -792,13 +792,17 @@ public void setOutputDir(String dir) {
 }
 
 public static void main(String[] args) throws Exception {
-	MacGenerator gen = new MacGenerator(args);
-//	gen.setClasses(new String[]{
-//		"NSURL",
-//	});
-	gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa");
-	gen.generateOS();
-//	gen.generateMetadata();
-//	gen.generateClasses();
+	try {
+		MacGenerator gen = new MacGenerator(args);
+//		gen.setClasses(new String[]{
+//			"NSURL",
+//		});
+		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa");
+		gen.generateOS();
+//		gen.generateMetadata();
+//		gen.generateClasses();
+	} catch (Throwable e) {
+		e.printStackTrace();
+	}
 }
 }
