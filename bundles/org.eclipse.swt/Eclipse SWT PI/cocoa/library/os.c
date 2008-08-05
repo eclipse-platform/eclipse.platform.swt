@@ -612,6 +612,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSRTFPboardType)
 }
 #endif
 
+#ifndef NO_NSSearchPathForDirectoriesInDomains
+JNIEXPORT jint JNICALL OS_NATIVE(NSSearchPathForDirectoriesInDomains)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSSearchPathForDirectoriesInDomains_FUNC);
+	rc = (jint)NSSearchPathForDirectoriesInDomains(arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, NSSearchPathForDirectoriesInDomains_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSStrikethroughColorAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSStrikethroughColorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -656,6 +668,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSTIFFPboardType)
 	OS_NATIVE_ENTER(env, that, NSTIFFPboardType_FUNC);
 	rc = (jint)NSTIFFPboardType;
 	OS_NATIVE_EXIT(env, that, NSTIFFPboardType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSTemporaryDirectory
+JNIEXPORT jint JNICALL OS_NATIVE(NSTemporaryDirectory)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSTemporaryDirectory_FUNC);
+	rc = (jint)NSTemporaryDirectory();
+	OS_NATIVE_EXIT(env, that, NSTemporaryDirectory_FUNC);
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 351;
-int OS_nativeFunctionCallCount[351];
+int OS_nativeFunctionCount = 353;
+int OS_nativeFunctionCallCount[353];
 char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
@@ -58,10 +58,12 @@ char * OS_nativeFunctionNames[] = {
 	"NSPrintSavePath",
 	"NSPrintSpoolJob",
 	"NSRTFPboardType",
+	"NSSearchPathForDirectoriesInDomains",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
 	"NSStringPboardType",
 	"NSTIFFPboardType",
+	"NSTemporaryDirectory",
 	"NSURLPboardType",
 	"NSUnderlineColorAttributeName",
 	"NSUnderlineStyleAttributeName",
