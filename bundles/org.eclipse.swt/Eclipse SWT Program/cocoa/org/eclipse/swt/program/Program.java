@@ -11,12 +11,12 @@
 package org.eclipse.swt.program;
 
 
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * Instances of this class represent programs and
@@ -27,8 +27,7 @@ import java.util.Hashtable;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Program {
-	String name;
-	byte[] fsRef;
+	String name, fullPath;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -52,24 +51,40 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-//	char[] chars;
-//	if (extension.charAt (0) != '.') {
-//		chars = new char[extension.length()];
-//		extension.getChars(0, chars.length, chars, 0);
-//	} else {
-//		chars = new char[extension.length() - 1];
-//		extension.getChars(1, extension.length(), chars, 0);		
-//	}
-//	int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-//	Program program = null;
-//	if (ext != 0) {
-//		byte[] fsRef = new byte[80];
-//		if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-//			program = getProgram(fsRef);
-//		}
-//		OS.CFRelease(ext);
-//	}
-//	return program;
+	if (extension.charAt(0) != '.') extension = "." + extension;
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	int /*long*/ appName = OS.malloc(C.PTR_SIZEOF);
+	int /*long*/ type = OS.malloc(C.PTR_SIZEOF);
+	NSString temp = new NSString(OS.NSTemporaryDirectory());
+	NSString fileName = NSString.stringWith("swt" + System.currentTimeMillis() + extension);
+	NSString fullPath = temp.stringByAppendingPathComponent(fileName);
+	NSFileManager fileManager = NSFileManager.defaultManager();
+	fileManager.createFileAtPath(fullPath, null, null);
+	workspace.getInfoForFile(fullPath, appName, type);
+	fileManager.removeItemAtPath(fullPath, 0);
+	int /*long*/ [] buffer = new int /*long*/[1];
+	OS.memmove(buffer, appName, C.PTR_SIZEOF);
+	OS.free(appName);
+	OS.free(type);
+	if (buffer [0] != 0) {
+		NSString appPath = new NSString(buffer[0]);
+		NSBundle bundle = NSBundle.bundleWithPath(appPath);
+		if (bundle != null) {
+			NSString CFBundleName = NSString.stringWith("CFBundleName");
+			NSString CFBundleDisplayName = NSString.stringWith("CFBundleDisplayName");
+			id bundleName = bundle.objectForInfoDictionaryKey(CFBundleDisplayName);
+		    if (bundleName == null) {
+		        bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
+		    }
+		    if (bundleName == null) {
+		        bundleName = appPath.lastPathComponent().stringByDeletingPathExtension();
+		    }
+		    NSString name = new NSString(bundleName.id);	    
+			Program program = new Program();
+			program.name = name.getString();
+			return program;
+		}
+	}
 	return null;
 }
 
@@ -81,199 +96,54 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-	return new String [] {
-		// From System-Declared Uniform Type Identifiers
-		".txt",
-		".rtf",
-		".html",
-		".htm",
-		".xml",
-		".c",
-		".m",
-		".cp", ".cpp", ".c++", ".cc", ".cxx",
-		".mm",
-		".h",
-		".hpp",
-		".h++",
-		".hxx",
-		".java",
-		".jav",
-		".s",
-		".r",
-		".defs",
-		".mig",
-		".exp",
-		".js",
-		".jscript",
-		".javascript",
-		".sh",
-		".command",
-		".csh",
-		".pl",
-		".pm",
-		".py",
-		".rb",
-		".rbw",
-		".php",
-		".php3",
-		".php4",
-		".ph3",
-		".ph4",
-		".phtml",
-		".jnlp",
-		".applescript",
-		".scpt",
-		".o",
-		".exe",
-		".dll",
-		".class",
-		".jar",
-		".qtz",
-		".gtar",
-		".tar",
-		".gz",
-		".gzip",
-		".tgz",
-		".hqx",
-		".bin",
-		".vcf",
-		".vcard",
-		".jpg",
-		".jpeg",
-		".jp2",
-		".tif",
-		".tiff",
-		".pic",
-		".pct",
-		".pict",
-		".pntg",
-		".png",
-		".xbm",
-		".qif",
-		".qtif",
-		".icns",
-		".mov",
-		".qt",
-		".avi",
-		".vfw",
-		".mpg",
-		".mpeg",
-		".m75",
-		".m15",
-		".mp4",
-		".3gp",
-		".3gpp",
-		".3g2",
-		".3gp2",
-		".mp3",
-		".m4a",
-		".m4p",
-		".m4b",
-		".au",
-		".ulw",
-		".snd",
-		".aifc",
-		".aiff",
-		".aif",
-		".caf",
-		".bundle",
-		".app",
-		".plugin",
-		".mdimporter",
-		".wdgt",
-		".cpio",
-		".zip",
-		".framework",
-		".rtfd",
-		".dfont",
-		".otf",
-		".ttf",
-		".ttc",
-		".suit",
-		".pfb",
-		".pfa",
-		".icc",
-		".icm",
-		".pf",
-		".pdf",
-		".ps",
-		".eps",
-		".psd",
-		".ai",
-		".gif",
-		".bmp",
-		".ico",
-		".doc",
-		".xls",
-		".ppt",
-		".wav",
-		".wave",
-		".asf",
-		".wm",
-		".wmv",
-		".wmp",
-		".wma",
-		".asx",
-		".wmx",
-		".wvx",
-		".wax",
-		".key",
-		".kth",
-		".tga",
-		".sgi",
-		".exr",
-		".fpx",
-		".jfx",
-		".efx",
-		".sd2",
-		".rm",
-		".ram",
-		".ra",
-		".smil",
-		".sit",
-		".sitx",
-		// Others
-		".plist",
-		".nib",
-		".lproj",
-		// iChat
-		".iPhoto",
-		// iChat
-		".iChat",
-		".chat",
-		// acrobat reader
-		".rmf",
-		".xfdf",
-		".fdf",
-		// Chess
-		".game",
-		".pgn",
-		// iCal
-		".ics",
-		".vcs",
-		".aplmodel",
-		".icbu",
-		".icalevent",
-		".icaltodo",
-		// Mail
-		".mailhold",
-		".mbox",
-		".imapmbox",
-		".emlx",
-		".mailextract",
-		// Sherlock
-		".sherlock",
-		// Stickies
-		".tpl",
-		// System Preferences
-		".prefPane",
-		".sliderSaver",
-		".saver",
-		// Console
-		".log",
-		// Grapher
-		".gcx",
-	};
+	NSMutableSet supportedDocumentTypes = (NSMutableSet)NSMutableSet.set();
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	NSString CFBundleDocumentTypes = NSString.stringWith("CFBundleDocumentTypes");
+	NSString CFBundleTypeExtensions = NSString.stringWith("CFBundleTypeExtensions");
+	NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
+	int count = array.count();
+	for (int i = 0; i < count; i++) {
+		NSString path = new NSString(array.objectAtIndex(i));
+		NSFileManager fileManager = NSFileManager.defaultManager();
+		NSDirectoryEnumerator enumerator = fileManager.enumeratorAtPath(path);
+		if (enumerator != null) {
+			id id;
+			while ((id = enumerator.nextObject()) != null) {
+				enumerator.skipDescendents();
+				NSString filePath = new NSString(id.id);
+				NSString fullPath = path.stringByAppendingPathComponent(filePath);
+				if (workspace.isFilePackageAtPath(fullPath)) {
+					NSBundle bundle = NSBundle.bundleWithPath(fullPath);
+					id = bundle.infoDictionary().objectForKey(CFBundleDocumentTypes);
+					if (id != null) {
+						NSDictionary documentTypes = new NSDictionary(id.id);
+						NSEnumerator documentTypesEnumerator = documentTypes.objectEnumerator();
+						while ((id = documentTypesEnumerator.nextObject()) != null) {
+							NSDictionary documentType = new NSDictionary(id.id);
+							id = documentType.objectForKey(CFBundleTypeExtensions);
+							if (id != null) {
+								supportedDocumentTypes.addObjectsFromArray(new NSArray(id.id));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	int i = 0;
+	String[] exts = new String[supportedDocumentTypes.count()];
+	NSEnumerator enumerator = supportedDocumentTypes.objectEnumerator();
+	id id;
+	while ((id = enumerator.nextObject()) != null) {
+		String ext = new NSString(id.id).getString();
+		if (!ext.equals("*")) exts[i++] = "." + ext;
+	}
+	if (i != exts.length) {
+		String[] temp = new String[i];
+		System.arraycopy(exts, 0, temp, 0, i);
+		exts = temp;
+	}
+	return exts;
 }
 
 /**
@@ -284,62 +154,43 @@ public static String [] getExtensions () {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	return new Program[0];
-//	Hashtable bundles = new Hashtable();
-//	String[] extensions = getExtensions();
-//	byte[] fsRef = new byte[80];
-//	for (int i = 0; i < extensions.length; i++) {
-//		String extension = extensions[i];
-//		char[] chars = new char[extension.length() - 1];
-//		extension.getChars(1, extension.length(), chars, 0);
-//		int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-//		if (ext != 0) {
-//			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-//				Program program = getProgram(fsRef);
-//				if (program != null && bundles.get(program.getName()) == null) {
-//					bundles.put(program.getName(), program);
-//					fsRef = new byte[80];
-//				}
-//			}
-//			if (OS.VERSION >= 0x1040) {
-//				int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
-//				if (utis != 0) {
-//					int utiCount = OS.CFArrayGetCount(utis);
-//					for (int j = 0; j < utiCount; j++) {
-//						int uti = OS.CFArrayGetValueAtIndex(utis, j);
-//						if (uti != 0) {
-//							int apps = OS.LSCopyAllRoleHandlersForContentType(uti, OS.kLSRolesAll);
-//							if (apps != 0) {
-//								int appCount = OS.CFArrayGetCount(apps);
-//								for (int k = 0; k < appCount; k++) {
-//									int app = OS.CFArrayGetValueAtIndex(apps, k);
-//									if (app != 0) {;
-//										if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app, 0, fsRef, null) == OS.noErr) {
-//											Program program = getProgram(fsRef);
-//											if (program != null && bundles.get(program.getName()) == null) {
-//												bundles.put(program.getName(), program);
-//												fsRef = new byte[80];
-//											}
-//										}
-//									}
-//								}
-//								OS.CFRelease(apps);
-//							}
-//						}
-//					}
-//					OS.CFRelease(utis);
-//				}
-//			}
-//			OS.CFRelease(ext);
-//		}
-//	}
-//	int count = 0;
-//	Program[] programs = new Program[bundles.size()];
-//	Enumeration values = bundles.elements();
-//	while (values.hasMoreElements()) {
-//		programs[count++] = (Program)values.nextElement();
-//	}
-//	return programs;
+	Vector vector = new Vector();
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	NSString CFBundleName = NSString.stringWith("CFBundleName");
+	NSString CFBundleDisplayName = NSString.stringWith("CFBundleDisplayName");
+	NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
+	int count = array.count();
+	for (int i = 0; i < count; i++) {
+		NSString path = new NSString(array.objectAtIndex(i));
+		NSFileManager fileManager = NSFileManager.defaultManager();
+		NSDirectoryEnumerator enumerator = fileManager.enumeratorAtPath(path);
+		if (enumerator != null) {
+			id id;
+			while ((id = enumerator.nextObject()) != null) {
+				enumerator.skipDescendents();
+				NSString filePath = new NSString(id.id);
+				NSString fullPath = path.stringByAppendingPathComponent(filePath);
+				if (workspace.isFilePackageAtPath(fullPath)) {
+					NSBundle bundle = NSBundle.bundleWithPath(fullPath);
+					id bundleName = bundle.objectForInfoDictionaryKey(CFBundleDisplayName);
+				    if (bundleName == null) {
+				        bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
+				    }
+				    if (bundleName == null) {
+				        bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
+				    }
+				    NSString name = new NSString(bundleName.id);
+				    Program program = new Program();
+				    program.name = name.getString();
+				    program.fullPath = fullPath.getString();
+				    vector.addElement(program);
+				}
+			}
+		}
+	}
+	Program[] programs = new Program[vector.size()];
+	vector.copyInto(programs);
+	return programs;
 }
 
 /**
@@ -359,7 +210,8 @@ public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-	return workspace.openURL(NSURL.static_URLWithString_(NSString.stringWith(fileName)));
+	NSString str = NSString.stringWith(fileName).stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
+	return workspace.openURL(NSURL.static_URLWithString_(str));
 }
 
 /**
@@ -377,45 +229,9 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-//	if (OS.VERSION < 0x1040) return launch(fileName);
-//	int rc = -1;
-//	int fsRefPtr = OS.NewPtr(fsRef.length);
-//	if (fsRefPtr != 0) {
-//		OS.memmove(fsRefPtr, fsRef, fsRef.length);
-//		LSApplicationParameters params = new LSApplicationParameters();
-//		params.version = 0;
-//		params.flags = 0;
-//		params.application = fsRefPtr;
-//		if (fileName.length() == 0) {
-//			rc = OS.LSOpenApplication(params, null);
-//		} else {
-//			if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
-//			char[] chars = new char[fileName.length()];
-//			fileName.getChars(0, chars.length, chars, 0);
-//			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-//			if (str != 0) {
-//				int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-//				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
-//				if (escapedStr != 0) {
-//					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
-//					if (urls != 0) {
-//						int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
-//						if (url != 0) {
-//							OS.CFArrayAppendValue(urls, url);
-//							rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
-//						}
-//						OS.CFRelease(urls);
-//					}
-//					OS.CFRelease(escapedStr);
-//				}
-//				if (unscapedStr != 0) OS.CFRelease(unscapedStr);
-//				OS.CFRelease(str);
-//			}
-//		}
-//		OS.DisposePtr(fsRefPtr);
-//	}
-//	return rc == OS.noErr;
-	return false;
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	NSString fullPath = NSString.stringWith(fileName);
+	return workspace.openFile_withApplication_(fullPath, NSString.stringWith(name));
 }
 
 /**
@@ -426,50 +242,44 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-//	int[] iconRef = new int[1];
-//	OS.GetIconRefFromFileInfo(fsRef, 0, null, 0, 0, 0, iconRef, null);
-//	int[] family = new int[1];
-//	int rc = OS.IconRefToIconFamily(iconRef[0], OS.kSelectorAlLAvailableData, family);
-//	OS.ReleaseIconRef(iconRef[0]);
-//	if (rc != OS.noErr) return null;
-////	ImageData result = createImageFromFamily(family[0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
-//	ImageData result = createImageFromFamily(family[0], OS.kSmall32BitData, OS.kSmall8BitMask, 16, 16);
-//	OS.DisposeHandle(family[0]);
-//	if (result == null) {
-//		RGB[] rgbs = new RGB[] {
-//			new RGB(0xff, 0xff, 0xff), 
-//			new RGB(0x5f, 0x5f, 0x5f),
-//			new RGB(0x80, 0x80, 0x80),
-//			new RGB(0xC0, 0xC0, 0xC0),
-//			new RGB(0xDF, 0xDF, 0xBF),
-//			new RGB(0xFF, 0xDF, 0x9F),
-//			new RGB(0x00, 0x00, 0x00),
-//		};  
-//		result = new ImageData(16, 16, 4, new PaletteData(rgbs)	);
-//		result.transparentPixel = 6; // use black for transparency
-//		String[] p= {
-//			"CCCCCCCCGGG",
-//			"CFAAAAACBGG",
-//			"CAAAAAACFBG",
-//			"CAAAAAACBBB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CAAAAAAAAEB",
-//			"CDDDDDDDDDB",
-//			"CBBBBBBBBBB",
-//		};
-//		for (int y= 0; y < p.length; y++) {
-//			for (int x= 0; x < 11; x++) {
-//				result.setPixel(x+3, y+1, p[y].charAt(x)-'A');
-//			}
-//		}
-//	}
-//	return result;
+	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	NSString fullPath;
+	if (this.fullPath != null) {
+		fullPath = NSString.stringWith(this.fullPath);
+	} else {
+		fullPath = workspace.fullPathForApplication(NSString.stringWith(name));
+	}
+	if (fullPath != null) {
+		NSImage nsImage = workspace.iconForFile(fullPath);
+		if (nsImage != null) {
+			NSSize size = new NSSize();
+			size.width = size.height = 16;
+			nsImage.setSize(size);
+			NSImageRep rep = nsImage.bestRepresentationForDevice(null);
+			NSBitmapImageRep imageRep = null;
+			if (rep.isKindOfClass(NSBitmapImageRep.static_class())) { 
+				imageRep = new NSBitmapImageRep(rep.id);
+			}
+			if (imageRep != null) {
+				int width = imageRep.pixelsWide();
+				int height = imageRep.pixelsHigh();
+				int bpr = imageRep.bytesPerRow();
+				int bpp = imageRep.bitsPerPixel();
+				int dataSize = height * bpr;
+				byte[] srcData = new byte[dataSize];
+				OS.memmove(srcData, imageRep.bitmapData(), dataSize);
+				//TODO check color info
+				PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
+				ImageData data = new ImageData(width, height, bpp, palette, 4, srcData);
+				data.bytesPerLine = bpr;
+				data.alphaData = new byte[width * height];
+				for (int i = 3, o = 0; i < srcData.length; i+= 4, o++) {
+					data.alphaData[o] = srcData[i];
+				}
+				return data;
+			}
+		}
+	}
 	return null;
 }
 
@@ -484,27 +294,6 @@ public ImageData getImageData () {
 public String getName () {
 	return name;
 }
-
-//static Program getProgram(byte[] fsRef) {
-//	String name = "";
-//	int[] namePtr = new int[1];
-//	OS.LSCopyDisplayNameForRef(fsRef, namePtr);
-//	if (namePtr[0] != 0) {
-//		int length = OS.CFStringGetLength(namePtr[0]);
-//		if (length != 0) {
-//			char[] buffer= new char[length];
-//			CFRange range = new CFRange();
-//			range.length = length;
-//			OS.CFStringGetCharacters(namePtr[0], range, buffer);
-//			name = new String(buffer);
-//		}
-//		OS.CFRelease(namePtr[0]);
-//	}
-//	Program program = new Program();
-//	program.fsRef = fsRef;
-//	program.name = name;
-//	return program;
-//}
 
 /**
  * Compares the argument to the receiver, and returns true
