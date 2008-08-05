@@ -564,7 +564,7 @@ public void generateClassesConst() throws Exception {
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String cls = (String) iterator.next();
 		String clsConst = "class_" + cls;
-		out("public static final int ");
+		out("public static final int /*long*/ ");
 		out(clsConst);
 		out(" = ");
 		out("objc_getClass(\"");
@@ -593,7 +593,7 @@ public void generateProtocolsConst() throws Exception {
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String cls = (String) iterator.next();
 		String clsConst = "class_" + cls;
-		out("public static final int ");
+		out("public static final int /*long*/ ");
 		out(clsConst);
 		out(" = ");
 		out("objc_getProtocol(\"");
