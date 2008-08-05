@@ -498,7 +498,7 @@ void createHandle () {
 		frame.height = height;
 		window.setFrame_display_(frame, false);
 		if ((style & SWT.ON_TOP) != 0) {
-			window.setLevel(OS.NSFloatingWindowLevel);
+			window.setLevel(OS.NSStatusWindowLevel);
 		}
 		super.createHandle ();
 		topView ().setHidden (true);
@@ -510,6 +510,28 @@ void createHandle () {
 	id id = window.fieldEditor (true, null);
 	if (id != null) {
 		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+	}
+}
+
+void fixLevel() {
+	Shell topShell = this;
+	while (topShell.parent != null) {
+		if (topShell.parent != null) topShell = (Shell) topShell.parent;
+	}
+	Shell[] shells = display.getShells ();
+	for (int i = 0; i < shells.length; i++) {
+		Shell shell = shells [i];
+		if ((shell.style & SWT.ON_TOP) == 0) {
+			int level = 0;
+			Shell pShell = shell;
+			while (pShell.parent != null) {
+				pShell = (Shell) pShell.parent;
+				level++;
+			}
+			int newLevel = pShell == topShell ? level : 0;
+			newLevel = Math.min (newLevel, OS.NSModalPanelWindowLevel - 1);
+			shell.window.setLevel (newLevel);
+		}
 	}
 }
 
@@ -1407,6 +1429,7 @@ void windowDidBecomeKey(int notification) {
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
+	fixLevel();
 //	if (!isDisposed ()) {
 //		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 //	}
