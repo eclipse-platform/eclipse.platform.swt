@@ -396,8 +396,8 @@ public class Display extends Device {
 
 	/* GTK Version */
 	static final int MAJOR = 2;
-	static final int MINOR = 0;
-	static final int MICRO = 6;
+	static final int MINOR = 2;
+	static final int MICRO = 0;
 
 	/* Display Data */
 	Object data;
