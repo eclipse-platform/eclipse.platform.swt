@@ -3639,7 +3639,7 @@ public static String getMessage(String key) {
 	
 /**
  * Returns the SWT platform name.
- * Examples: "win32", "motif", "gtk", "photon", "carbon"
+ * Examples: "win32", "motif", "gtk", "photon", "carbon", "cocoa", "wpf"
  *
  * @return the SWT platform name
  */
