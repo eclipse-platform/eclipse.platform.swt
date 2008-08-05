@@ -116,9 +116,9 @@ public void removeObserver(NSObject observer, NSString keyPath) {
 	OS.objc_msgSend(this.id, OS.sel_removeObserver_1forKeyPath_1, observer != null ? observer.id : 0, keyPath != null ? keyPath.id : 0);
 }
 
-public static id set() {
+public static NSSet set() {
 	int result = OS.objc_msgSend(OS.class_NSSet, OS.sel_set);
-	return result != 0 ? new id(result) : null;
+	return result != 0 ? new NSSet(result) : null;
 }
 
 public NSSet setByAddingObject(id anObject) {

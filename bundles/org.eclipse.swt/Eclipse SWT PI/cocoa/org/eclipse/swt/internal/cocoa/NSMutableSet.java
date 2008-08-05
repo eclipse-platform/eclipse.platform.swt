@@ -53,6 +53,11 @@ public void removeObject(id object) {
 	OS.objc_msgSend(this.id, OS.sel_removeObject_1, object != null ? object.id : 0);
 }
 
+public static NSSet set() {
+	int result = OS.objc_msgSend(OS.class_NSMutableSet, OS.sel_set);
+	return result != 0 ? new NSMutableSet(result) : null;
+}
+
 public void setSet(NSSet otherSet) {
 	OS.objc_msgSend(this.id, OS.sel_setSet_1, otherSet != null ? otherSet.id : 0);
 }
