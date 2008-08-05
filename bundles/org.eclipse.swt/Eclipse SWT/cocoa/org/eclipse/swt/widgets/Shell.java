@@ -513,6 +513,11 @@ void createHandle () {
 	}
 }
 
+/*
+* Feature in Cocoa.  An NSWindow that is the child window of another NSWindow
+* will track the movement of its parent window. The work around is to adjust
+* the window's level.  
+*/
 void fixLevel() {
 	Shell topShell = this;
 	while (topShell.parent != null) {
