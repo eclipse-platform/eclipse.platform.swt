@@ -41,6 +41,9 @@ public abstract class Device implements Drawable {
 
 	/* System Font */
 	Font systemFont;
+	
+	/* Device DPI */
+	Point dpi;
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -487,7 +490,7 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 	
 	/* Initialize the system font slot */
-	Point dpi = getDPI(), screenDPI = getScreenDPI();
+	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	NSFont font = NSFont.systemFontOfSize(NSFont.systemFontSize() * dpi.y / screenDPI.y);
 	systemFont = Font.cocoa_new(this, font);
 }

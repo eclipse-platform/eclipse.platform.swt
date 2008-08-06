@@ -48,6 +48,9 @@ public abstract class Device implements Drawable {
 
 	/* System Font */
 	Font systemFont;
+	
+	/* Device DPI */
+	Point dpi;
 
 	/* Callbacks */
 	Callback drawPatternCallback, axialShadingCallback, releaseCallback;
@@ -603,7 +606,7 @@ protected void init () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	Point dpi = getDPI(), screenDPI = getScreenDPI();
+	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	systemFont = Font.carbon_new (this, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0] * dpi.y / screenDPI.y);
 }
 

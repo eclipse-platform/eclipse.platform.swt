@@ -298,9 +298,8 @@ public FontData[] getFontData() {
 	if ((this.style & OS.bold) != 0) style |= SWT.BOLD;
 	if (atsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
 	if (atsName.indexOf("Bold") != -1) style |= SWT.BOLD;
-	int deviceDPI = device.getDPI().y;
-	int screenDPI = device.getScreenDPI().y;
-	FontData data = new FontData(name, size * screenDPI/deviceDPI, style);
+	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
+	FontData data = new FontData(name, size * screenDPI.y / dpi.y, style);
 	data.atsName = atsName;
 	return new FontData[]{data};
 }
@@ -383,9 +382,8 @@ void init(String name, float height, int style, String atsName) {
 			}
 		}
 	}
-	int deviceDPI = device.getDPI().y;
-	int screenDPI = device.getScreenDPI().y;
-	this.size = height * deviceDPI/screenDPI;
+	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
+	this.size = height * dpi.y / screenDPI.y;
 	if (font == 0) {
 		Font systemFont = device.systemFont;
 		this.handle = systemFont.handle;

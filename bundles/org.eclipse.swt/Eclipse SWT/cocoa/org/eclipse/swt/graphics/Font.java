@@ -189,7 +189,7 @@ public FontData[] getFontData() {
 	int style = SWT.NORMAL;
 	if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
 	if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
-	Point dpi = device.getDPI(), screenDPI = device.getScreenDPI();
+	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 	FontData data = new FontData(name, handle.pointSize() * screenDPI.y / dpi.y, style);
 	data.nsName = nsName;
 	return new FontData[]{data};
@@ -235,7 +235,7 @@ public int hashCode() {
 void init(String name, float height, int style, String nsName) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point dpi = device.getDPI(), screenDPI = device.getScreenDPI();
+	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
 	float size = height * dpi.y / screenDPI.y;
 	if (nsName != null) {
 		handle = NSFont.static_fontWithName_size_(NSString.stringWith(nsName), size);
