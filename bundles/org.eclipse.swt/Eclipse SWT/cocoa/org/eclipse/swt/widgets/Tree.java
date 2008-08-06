@@ -361,6 +361,52 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 
+void createColumn (TreeItem item, int index) {
+	if (item.items != null) {
+		for (int i = 0; i < item.items.length; i++) {
+			if (item.items[i] != null) createColumn (item.items[i], index);
+		}
+	}
+	String [] strings = item.strings;
+	if (strings != null) {
+		String [] temp = new String [columnCount];
+		System.arraycopy (strings, 0, temp, 0, index);
+		System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+		temp [index] = "";
+		item.strings = temp;
+	}
+	if (index == 0) item.text = "";
+	Image [] images = item.images;
+	if (images != null) {
+		Image [] temp = new Image [columnCount];
+		System.arraycopy (images, 0, temp, 0, index);
+		System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+		item.images = temp;
+	}
+	if (index == 0) item.image = null;
+	Color [] cellBackground = item.cellBackground;
+	if (cellBackground != null) {
+		Color [] temp = new Color [columnCount];
+		System.arraycopy (cellBackground, 0, temp, 0, index);
+		System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+		item.cellBackground = temp;
+	}
+	Color [] cellForeground = item.cellForeground;
+	if (cellForeground != null) {
+		Color [] temp = new Color [columnCount];
+		System.arraycopy (cellForeground, 0, temp, 0, index);
+		System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+		item.cellForeground = temp;
+	}
+	Font [] cellFont = item.cellFont;
+	if (cellFont != null) {
+		Font [] temp = new Font [columnCount];
+		System.arraycopy (cellFont, 0, temp, 0, index);
+		System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+		item.cellFont = temp;
+	}
+}
+
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView) new SWTScrollView ().alloc ();
 	scrollWidget.initWithFrame (new NSRect ());
@@ -461,46 +507,7 @@ void createItem (TreeColumn column, int index) {
 	if (columnCount > 1) {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
-			if (item != null) {
-				String [] strings = item.strings;
-				if (strings != null) {
-					String [] temp = new String [columnCount];
-					System.arraycopy (strings, 0, temp, 0, index);
-					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
-					temp [index] = "";
-					item.strings = temp;
-				}
-				if (index == 0) item.text = "";
-				Image [] images = item.images;
-				if (images != null) {
-					Image [] temp = new Image [columnCount];
-					System.arraycopy (images, 0, temp, 0, index);
-					System.arraycopy (images, index, temp, index+1, columnCount-index-1);
-					item.images = temp;
-				}
-				if (index == 0) item.image = null;
-				Color [] cellBackground = item.cellBackground;
-				if (cellBackground != null) {
-					Color [] temp = new Color [columnCount];
-					System.arraycopy (cellBackground, 0, temp, 0, index);
-					System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
-					item.cellBackground = temp;
-				}
-				Color [] cellForeground = item.cellForeground;
-				if (cellForeground != null) {
-					Color [] temp = new Color [columnCount];
-					System.arraycopy (cellForeground, 0, temp, 0, index);
-					System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
-					item.cellForeground = temp;
-				}
-				Font [] cellFont = item.cellFont;
-				if (cellFont != null) {
-					Font [] temp = new Font [columnCount];
-					System.arraycopy (cellFont, 0, temp, 0, index);
-					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
-					item.cellFont = temp;
-				}
-			}
+			if (item != null) createColumn (item, index);
 		}
 	}
 }
