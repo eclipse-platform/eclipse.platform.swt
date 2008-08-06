@@ -87,6 +87,8 @@ public class OleControlSite extends OleClientSite
  *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
  *     <li>ERROR_INVALID_CLASSID
  * </ul>
+ * 
+ * @since 3.5
  */
 public OleControlSite(Composite parent, int style, File file) {
 	super(parent, style, file);
@@ -212,6 +214,8 @@ public OleControlSite(Composite parent, int style, String progId) {
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
  * </ul>
+ * 
+ * @since 3.5
  */
 public OleControlSite(Composite parent, int style, String progId, File file) {
 	super(parent, style, progId, file);
