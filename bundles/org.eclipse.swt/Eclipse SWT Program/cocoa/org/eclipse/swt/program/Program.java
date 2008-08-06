@@ -202,6 +202,7 @@ public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+	//TODO use CFURLCreateStringByAddingPercentEscapes instead
 	NSString str = NSString.stringWith(fileName).stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
 	return workspace.openURL(NSURL.static_URLWithString_(str));
 }
@@ -226,6 +227,7 @@ public boolean execute (String fileName) {
 	if (fileName.indexOf(':') == -1) {
 		return workspace.openFile_withApplication_(fullPath, NSString.stringWith(name));
 	}
+	//TODO use CFURLCreateStringByAddingPercentEscapes instead
 	NSString str = fullPath.stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
 	NSArray urls = NSArray.arrayWithObject(NSURL.static_URLWithString_(str));
 	return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
