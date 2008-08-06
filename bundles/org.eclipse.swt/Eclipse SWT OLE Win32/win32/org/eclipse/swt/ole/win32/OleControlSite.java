@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.ole.win32;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.graphics.*;
@@ -65,6 +67,34 @@ public class OleControlSite extends OleClientSite
 	// work around for IE destroying the caret
 	static int SWT_RESTORECARET;
 	
+/**
+ * Create an OleControlSite child widget using the OLE Document type associated with the
+ * specified file.  The OLE Document type is determined either through header information in the file 
+ * or through a Registry entry for the file extension. Use style bits to select a particular look 
+ * or set of properties.
+ *
+ * @param parent a composite widget; must be an OleFrame
+ * @param style the bitwise OR'ing of widget styles
+ * @param file the file that is to be opened in this OLE Document
+ *
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul> 
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
+ *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
+ *     <li>ERROR_INVALID_CLASSID
+ * </ul>
+ */
+public OleControlSite(Composite parent, int style, File file) {
+	super(parent, style, file);
+	
+	// Init site properties
+	setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
+	setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
+}
 /**
  * Create an OleControlSite child widget using style bits
  * to select a particular look or set of properties.
@@ -154,6 +184,41 @@ public OleControlSite(Composite parent, int style, String progId) {
 		disposeCOMInterfaces();
 		throw e;
 	}			
+}
+/**
+ * Create an OleClientSite child widget to edit the specified file using the specified OLE Document
+ * application.  Use style bits to select a particular look or set of properties. 
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>OleClientSite</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ * @param parent a composite widget; must be an OleFrame
+ * @param style the bitwise OR'ing of widget styles
+ * @param progId the unique program identifier of am OLE Document application; 
+ *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
+ *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
+ *               for Word is Word.Document)
+ * @param file the file that is to be opened in this OLE Document
+ *
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul>
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
+ * </ul>
+ */
+public OleControlSite(Composite parent, int style, String progId, File file) {
+	super(parent, style, progId, file);
+	
+	// Init site properties
+	setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
+	setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
 }
 /**	 
  * Adds the listener to receive events.
