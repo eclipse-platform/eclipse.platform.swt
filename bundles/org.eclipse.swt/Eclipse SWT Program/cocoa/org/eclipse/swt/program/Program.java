@@ -27,7 +27,7 @@ import java.util.Vector;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Program {
-	String name, fullPath;
+	String name, fullPath, identifier;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -69,21 +69,7 @@ public static Program findProgram (String extension) {
 	if (buffer [0] != 0) {
 		NSString appPath = new NSString(buffer[0]);
 		NSBundle bundle = NSBundle.bundleWithPath(appPath);
-		if (bundle != null) {
-			NSString CFBundleName = NSString.stringWith("CFBundleName");
-			NSString CFBundleDisplayName = NSString.stringWith("CFBundleDisplayName");
-			id bundleName = bundle.objectForInfoDictionaryKey(CFBundleDisplayName);
-		    if (bundleName == null) {
-		        bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
-		    }
-		    if (bundleName == null) {
-		        bundleName = appPath.lastPathComponent().stringByDeletingPathExtension();
-		    }
-		    NSString name = new NSString(bundleName.id);	    
-			Program program = new Program();
-			program.name = name.getString();
-			return program;
-		}
+		if (bundle != null) return getProgram(bundle);
 	}
 	return null;
 }
@@ -146,6 +132,26 @@ public static String [] getExtensions () {
 	return exts;
 }
 
+static Program getProgram(NSBundle bundle) {
+	NSString CFBundleName = NSString.stringWith("CFBundleName");
+	NSString CFBundleDisplayName = NSString.stringWith("CFBundleDisplayName");
+	NSString fullPath = bundle.bundlePath();
+	NSString identifier = bundle.bundleIdentifier();
+	id bundleName = bundle.objectForInfoDictionaryKey(CFBundleDisplayName);
+    if (bundleName == null) {
+        bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
+    }
+    if (bundleName == null) {
+        bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
+    }
+    NSString name = new NSString(bundleName.id);
+    Program program = new Program();
+    program.name = name.getString();
+    program.fullPath = fullPath.getString();
+    program.identifier = identifier != null ? identifier.getString() : "";
+    return program;
+}
+
 /**
  * Answers all available programs in the operating system.  Note
  * that a <code>Display</code> must already exist to guarantee
@@ -156,8 +162,6 @@ public static String [] getExtensions () {
 public static Program [] getPrograms () {
 	Vector vector = new Vector();
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-	NSString CFBundleName = NSString.stringWith("CFBundleName");
-	NSString CFBundleDisplayName = NSString.stringWith("CFBundleDisplayName");
 	NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
 	int count = array.count();
 	for (int i = 0; i < count; i++) {
@@ -168,22 +172,10 @@ public static Program [] getPrograms () {
 			id id;
 			while ((id = enumerator.nextObject()) != null) {
 				enumerator.skipDescendents();
-				NSString filePath = new NSString(id.id);
-				NSString fullPath = path.stringByAppendingPathComponent(filePath);
+				NSString fullPath = path.stringByAppendingPathComponent(new NSString(id.id));
 				if (workspace.isFilePackageAtPath(fullPath)) {
 					NSBundle bundle = NSBundle.bundleWithPath(fullPath);
-					id bundleName = bundle.objectForInfoDictionaryKey(CFBundleDisplayName);
-				    if (bundleName == null) {
-				        bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
-				    }
-				    if (bundleName == null) {
-				        bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
-				    }
-				    NSString name = new NSString(bundleName.id);
-				    Program program = new Program();
-				    program.name = name.getString();
-				    program.fullPath = fullPath.getString();
-				    vector.addElement(program);
+				    vector.addElement(getProgram(bundle));
 				}
 			}
 		}
@@ -231,7 +223,12 @@ public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 	NSString fullPath = NSString.stringWith(fileName);
-	return workspace.openFile_withApplication_(fullPath, NSString.stringWith(name));
+	if (fileName.indexOf(':') == -1) {
+		return workspace.openFile_withApplication_(fullPath, NSString.stringWith(name));
+	}
+	NSString str = fullPath.stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
+	NSArray urls = NSArray.arrayWithObject(NSURL.static_URLWithString_(str));
+	return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
 }
 
 /**
