@@ -108,10 +108,8 @@ public class MacGeneratorUI {
 	Document getDocument(String xmlPath) {
 		try {
 			InputStream is = null;
-			if (xmlPath.indexOf(File.separatorChar) == -1) {
-				is = getClass().getResourceAsStream(xmlPath);
-				if (is == null) is = new BufferedInputStream(new FileInputStream(xmlPath));
-			}
+			if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
+			if (is == null) is = new BufferedInputStream(new FileInputStream(xmlPath));
 			if (is != null) return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
 		} catch (Exception e) {
 //			e.printStackTrace();
@@ -182,33 +180,33 @@ public class MacGeneratorUI {
 	
 	void updateNodes() {
 		if (xmls == null) return;
-		try {
-			for (int x = 0; x < xmls.length; x++) {
-				String xmlPath = xmls[x];
-				TreeItem xmlItem = new TreeItem(nodesTree, SWT.NONE);
-				String xmlText = xmlPath;
-				int index = xmlText.lastIndexOf(File.separatorChar);
-				if (index != -1) xmlText = xmlText.substring(index + 1);
-				xmlItem.setText(xmlText);
+		for (int x = 0; x < xmls.length; x++) {
+			String xmlPath = xmls[x];
+			String xmlSimplePath = xmlPath;
+			int index = xmlSimplePath.lastIndexOf(File.separatorChar);
+			if (index != -1) xmlSimplePath = xmlSimplePath.substring(index + 1);
 
-				Hashtable extras = new Hashtable();
-				Document extraDocument = getDocument(xmlText + ".extras");
-				if (extraDocument != null) {
-					buildLookup(extraDocument, extras);
-				}
-
-				Document document = getDocument(xmlPath);
-				NodeList list = document.getDocumentElement().getChildNodes();
-				for (int i = 0; i < list.getLength(); i++) {
-					addChild(list.item(i), xmlItem, extras);
-				}
+			Document document = getDocument(xmlPath);
+			if (document == null) {
+				System.out.println("Could not find: " + xmlPath);
+				continue;
 			}
-			TreeColumn[] columns = nodesTree.getColumns();
-			for (int i = 0; i < columns.length; i++) {
-				columns[i].pack();
+			Hashtable extras = new Hashtable();
+			Document extraDocument = getDocument(xmlSimplePath + ".extras");
+			if (extraDocument != null) {
+				buildLookup(extraDocument, extras);
 			}
-		} catch (Throwable e) {
-			e.printStackTrace();
+			
+			TreeItem xmlItem = new TreeItem(nodesTree, SWT.NONE);
+			xmlItem.setText(xmlSimplePath);
+			NodeList list = document.getDocumentElement().getChildNodes();
+			for (int i = 0; i < list.getLength(); i++) {
+				addChild(list.item(i), xmlItem, extras);
+			}
+		}
+		TreeColumn[] columns = nodesTree.getColumns();
+		for (int i = 0; i < columns.length; i++) {
+			columns[i].pack();
 		}
 	}
 
