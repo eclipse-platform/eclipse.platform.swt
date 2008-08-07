@@ -85,9 +85,7 @@ public class MacGeneratorUI {
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			addChild(childNodes.item(i), item, extras);
 		}
-        boolean checked = item.getChecked();
-        checkItems(item, checked);
-        checkPath(item.getParentItem(), checked, false);
+        checkPath(item.getParentItem(), item.getChecked(), false);
 		return item;
 	}
 	
