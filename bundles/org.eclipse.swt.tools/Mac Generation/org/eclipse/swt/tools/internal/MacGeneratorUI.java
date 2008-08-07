@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.File;
 import java.util.Hashtable;
 
 import javax.xml.parsers.DocumentBuilder;
