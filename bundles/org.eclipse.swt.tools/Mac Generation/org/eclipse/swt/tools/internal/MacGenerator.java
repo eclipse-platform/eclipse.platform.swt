@@ -33,236 +33,47 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 public class MacGenerator {
-	String[] classes;
-	String xmls[];
-	String outputDir;
+	String[] xmls;
+	Document[] documents;
+	Hashtable[] extraAttributes;
+	String outputDir, mainClassName;
 	
 	PrintStream out;
 	
-public MacGenerator(String[] xml) {
-	this.xmls = xml;	
-}
-	
-public void out(String str) {
-	PrintStream out = this.out;
-	if (out == null) out = System.out;
-	out.print(str);
-}
-
-public void outln() {
-	PrintStream out = this.out;
-	if (out == null) out = System.out;
-	out.println();
-}
-
-public void generateConstants() throws Exception {
-	for (int j = 0; j < xmls.length; j++) {
-		Document document = getDocument(xmls[j]);
-		NodeList list = document.getDocumentElement().getChildNodes();
-		for (int i = 0; i < list.getLength(); i++) {
-			Node node = list.item(i);
-			if ("constant".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				out("public static final native int ");
-				out(attributes.getNamedItem("name").getNodeValue());
-				out("();");
-				outln();
-			}
-		}		
+public MacGenerator(String[] xmls) {
+	this.xmls = xmls;
+	documents = new Document[xmls.length];
+	extraAttributes = new Hashtable[xmls.length];
+	for (int i = 0; i < xmls.length; i++) {
+		documents[i] = getDocument(xmls[i]);
+		extraAttributes[i] = loadExtraAttributes(xmls[i]);
 	}
 }
 
-public void generateConstantsMetaData() throws Exception {
-	for (int j = 0; j < xmls.length; j++) {
-		Document document = getDocument(xmls[j]);
-		NodeList list = document.getDocumentElement().getChildNodes();
-		for (int i = 0; i < list.getLength(); i++) {
-			Node node = list.item(i);
-			if ("constant".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				out("OS_");
-				out(attributes.getNamedItem("name").getNodeValue());
-				out("=flags=const");
-				outln();
-			}
-		}
-	}
+public void generateAll() {
+	generateMainClass();
+	generateClasses();
+	generateMetadata();
 }
 
-public void generateEnums() throws Exception {
-	for (int j = 0; j < xmls.length; j++) {
-		Document document = getDocument(xmls[j]);
-		NodeList list = document.getDocumentElement().getChildNodes();
-		for (int i = 0; i < list.getLength(); i++) {
-			Node node = list.item(i);
-			if ("enum".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				Node value = attributes.getNamedItem("value");
-				if (value != null) {
-					out("public static final ");
-					if (value.getNodeValue().indexOf('.') != -1) {
-						out("double ");
-					} else {
-						out("int ");
-					}
-					out(attributes.getNamedItem("name").getNodeValue());
-					out(" = ");
-					out(value.getNodeValue());
-					out(";");
-					outln();
-				}
-			}
-		}
-	}
-}
-
-boolean isStruct(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
-	return code.startsWith("{");
-}
-
-boolean isFloatingPoint(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
-	return code.equals("f") || code.equals("d");
-}
-
-boolean isObject(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
-	return code.equals("@");
-}
-
-boolean isBoolean(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
-	return code.equals("B");
-}
-
-public Document getDocument(String xmlPath) {
-	try {
-		InputStream is = null;
-		if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
-		if (is == null) is = new BufferedInputStream(new FileInputStream(xmlPath));
-		if (is != null) return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
-	} catch (Exception e) {
-//		e.printStackTrace();
-	}
-	return null;
-}
-
-public String[] getExtraAttributes() {
-	return new String[]{
-		"swt_superclass",
-		"swt_vararg_max",
-		"swt_not_static",
-	};
-}
-
-String getMetaDataDir() {
-	return "./Mac Generation/org/eclipse/swt/tools/internal/";
-}
-
-public String getKey (Node node) {
-	StringBuffer buffer = new StringBuffer();
-	while (node != null) {
-		if (buffer.length() > 0) buffer.append("_");
-		String name = node.getNodeName();
-		StringBuffer key = new StringBuffer(name);
-		Node nameAttrib = getNameAttribute(node);
-		if (nameAttrib != null) {
-			key.append("-");
-			key.append(nameAttrib.getNodeValue());
-		}
-		buffer.append(key.reverse());
-		node = node.getParentNode();
-	}
-	buffer.reverse();
-	return buffer.toString();
-}
-
-public Node getNameAttribute(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	if (attributes == null) return null;
-	Node nameAttrib = attributes.getNamedItem("name");
-	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("selector");
-	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("path");
-	return nameAttrib;
-}
-
-void buildExtrasLookup(Node node, Hashtable table) {
-	NodeList list = node.getChildNodes();
-	for (int i = 0; i < list.getLength(); i++) {
-		Node childNode = list.item(i);
-		String key = getKey(childNode);
-		table.put(key, childNode);
-		buildExtrasLookup(childNode, table);
-	}
-}
-
-public String getFileName(String xmlPath) {
-	String fileName = xmlPath;
-	int index = fileName.lastIndexOf(File.separatorChar);
-	if (index != -1) fileName = fileName.substring(index + 1);
-	return fileName;
-}
-
-public Hashtable loadExtraAttributesLookup (String xmlPath) {
-	Hashtable table = new Hashtable();
-	Document doc = getDocument(getFileName(xmlPath) + ".extras");
-	if (doc != null) buildExtrasLookup(doc, table);
-	return table;
-}
-
-public String[] getXmls() {
-	return xmls;
-}
-
-boolean getGenerateClass(String className) {
-	if (classes != null) {
-		for (int i = 0; i < classes.length; i++) {
-			if (className.equals(classes[i])) return true;
-		}
-		return false;
-	}
-	return true;
-}
-
-public boolean isUnique(Node method, NodeList methods) {
-	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
-	int index = methodName.indexOf(":");
-	if (index != -1) methodName = methodName.substring(0, index);
-	for (int j = 0; j < methods.getLength(); j++) {
-		Node other = methods.item(j);
-		NamedNodeMap attributes = other.getAttributes();
-		Node otherSel = null;
-		if (attributes != null) otherSel = attributes.getNamedItem("selector");
-		if (other != method && otherSel != null) {
-			String otherName = otherSel.getNodeValue();
-			index = otherName.indexOf(":");
-			if (index != -1) otherName = otherName.substring(0, index);
-			if (methodName.equals(otherName)) {
-				return false;
-			}
-		}
-	}
-	return true;
-}
-
-public void generateClasses() throws Exception {
+void generateClasses() {
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
+				Node extra = (Node)extras.get(getKey(node));
 				NamedNodeMap attributes = node.getAttributes();
+				NamedNodeMap extraAttributes = extra.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
-				if (getGenerateClass(name)) {
+				Node gen = extraAttributes.getNamedItem("swt_gen");
+				if (gen != null && gen.getNodeValue().equals("true")) {
 					if (outputDir != null) {
-						FileOutputStream  is = new FileOutputStream(outputDir + "/" + name + ".java");
-						out = new PrintStream(new BufferedOutputStream(is));
+//						FileOutputStream  is = new FileOutputStream(outputDir + "/" + name + ".java");
+						out = new PrintStream(new ByteArrayOutputStream());
 					}
 					out("package org.eclipse.swt.internal.cocoa;");
 					outln();
@@ -432,17 +243,292 @@ public void generateClasses() throws Exception {
 	}
 }
 
-public void generateSelectorsConst() throws Exception {
+void generateMainClass() {
+	out("/** Classes */");
+	outln();
+	generateClassesConst();
+	outln();
+	out("/** Protocols */");
+	outln();
+	generateProtocolsConst();
+	outln();
+	out("/** Selectors */");
+	outln();
+	generateSelectorsConst();
+	outln();
+	out("/** Constants */");
+	outln();
+	generateEnums();
+	outln();
+	out("/** Globals */");
+	outln();
+	generateConstants();
+	outln();
+	out("/** Functions */");
+	outln();
+	generateFunctions();
+	outln();
+	out("/** Sends */");
+	outln();
+	generateSends();
+}
+
+void generateMetadata() {
+	generateConstantsMetaData();
+	generateSendsMetaData();
+}
+
+public Document[] getDocuments() {
+	return documents;
+}
+
+public Hashtable[] getExtraAttributes() {
+	return extraAttributes;
+}
+
+public String[] getXmls() {
+	return xmls;
+}
+
+public Hashtable loadExtraAttributes(String xmlPath) {
+	Hashtable table = new Hashtable();
+	Document doc = getDocument(getFileName(xmlPath) + ".extras");
+	if (doc != null) buildExtrasLookup(doc, table);
+	return table;
+}
+
+public void reloadExtraAttributes() {
+	extraAttributes = new Hashtable[xmls.length];
+	for (int i = 0; i < xmls.length; i++) {
+		extraAttributes[i] = loadExtraAttributes(xmls[i]);
+	}
+}
+
+public void saveExtraAttributes(String xmlPath, Document document) {
+	try {
+		String fileName = getMetaDataDir() + getFileName(xmlPath) + ".extras";
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		new DOMWriter(new PrintStream(out), false).print(document);
+		if (out.size() > 0) output(out.toByteArray(), fileName);
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
+}
+
+public void setOutputDir(String dir) {
+	this.outputDir = dir;
+}
+
+public void setMainClass(String mainClassName) {
+	this.mainClassName = mainClassName;
+}
+
+public Document getDocument(String xmlPath) {
+	try {
+		InputStream is = null;
+		if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
+		if (is == null) is = new BufferedInputStream(new FileInputStream(xmlPath));
+		if (is != null) return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
+	} catch (Exception e) {
+//		e.printStackTrace();
+	}
+	return null;
+}
+
+public String[] getExtraAttributeNames() {
+	return new String[]{
+		"swt_superclass",
+		"swt_vararg_max",
+		"swt_not_static",
+	};
+}
+
+public String getFileName(String xmlPath) {
+	String fileName = xmlPath;
+	int index = fileName.lastIndexOf(File.separatorChar);
+	if (index != -1) fileName = fileName.substring(index + 1);
+	return fileName;
+}
+
+public String getKey (Node node) {
+	StringBuffer buffer = new StringBuffer();
+	while (node != null) {
+		if (buffer.length() > 0) buffer.append("_");
+		String name = node.getNodeName();
+		StringBuffer key = new StringBuffer(name);
+		Node nameAttrib = getNameAttribute(node);
+		if (nameAttrib != null) {
+			key.append("-");
+			key.append(nameAttrib.getNodeValue());
+		}
+		buffer.append(key.reverse());
+		node = node.getParentNode();
+	}
+	buffer.reverse();
+	return buffer.toString();
+}
+
+public Node getNameAttribute(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	if (attributes == null) return null;
+	Node nameAttrib = attributes.getNamedItem("name");
+	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("selector");
+	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("path");
+	return nameAttrib;
+}
+	
+void out(String str) {
+	PrintStream out = this.out;
+	if (out == null) out = System.out;
+	out.print(str);
+}
+
+void outln() {
+	PrintStream out = this.out;
+	if (out == null) out = System.out;
+	out.println();
+}
+
+void generateConstants() {
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("constant".equals(node.getNodeName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				out("public static final native int ");
+				out(attributes.getNamedItem("name").getNodeValue());
+				out("();");
+				outln();
+			}
+		}		
+	}
+}
+
+void generateConstantsMetaData() {
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("constant".equals(node.getNodeName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				out("OS_");
+				out(attributes.getNamedItem("name").getNodeValue());
+				out("=flags=const");
+				outln();
+			}
+		}
+	}
+}
+
+void generateEnums() {
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("enum".equals(node.getNodeName())) {
+				NamedNodeMap attributes = node.getAttributes();
+				Node value = attributes.getNamedItem("value");
+				if (value != null) {
+					out("public static final ");
+					if (value.getNodeValue().indexOf('.') != -1) {
+						out("double ");
+					} else {
+						out("int ");
+					}
+					out(attributes.getNamedItem("name").getNodeValue());
+					out(" = ");
+					out(value.getNodeValue());
+					out(";");
+					outln();
+				}
+			}
+		}
+	}
+}
+
+boolean isStruct(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	String code = attributes.getNamedItem("type").getNodeValue();
+	return code.startsWith("{");
+}
+
+boolean isFloatingPoint(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	String code = attributes.getNamedItem("type").getNodeValue();
+	return code.equals("f") || code.equals("d");
+}
+
+boolean isObject(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	String code = attributes.getNamedItem("type").getNodeValue();
+	return code.equals("@");
+}
+
+boolean isBoolean(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	String code = attributes.getNamedItem("type").getNodeValue();
+	return code.equals("B");
+}
+
+String getMetaDataDir() {
+	return "./Mac Generation/org/eclipse/swt/tools/internal/";
+}
+
+void buildExtrasLookup(Node node, Hashtable table) {
+	NodeList list = node.getChildNodes();
+	for (int i = 0; i < list.getLength(); i++) {
+		Node childNode = list.item(i);
+		String key = getKey(childNode);
+		table.put(key, childNode);
+		buildExtrasLookup(childNode, table);
+	}
+}
+
+boolean isUnique(Node method, NodeList methods) {
+	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
+	int index = methodName.indexOf(":");
+	if (index != -1) methodName = methodName.substring(0, index);
+	for (int j = 0; j < methods.getLength(); j++) {
+		Node other = methods.item(j);
+		NamedNodeMap attributes = other.getAttributes();
+		Node otherSel = null;
+		if (attributes != null) otherSel = attributes.getNamedItem("selector");
+		if (other != method && otherSel != null) {
+			String otherName = otherSel.getNodeValue();
+			index = otherName.indexOf(":");
+			if (index != -1) otherName = otherName.substring(0, index);
+			if (methodName.equals(otherName)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void generateSelectorsConst() {
 	HashSet set = new HashSet();
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName()) || "informal_protocol".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
-				if (getGenerateClass(name)) {
+//				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
@@ -451,7 +537,7 @@ public void generateSelectorsConst() throws Exception {
 							set.add(sel);
 						}
 					}
-				}
+//				}
 			}
 		}
 	}
@@ -468,17 +554,19 @@ public void generateSelectorsConst() throws Exception {
 	}
 }
 
-public void generateSends() throws Exception {
+void generateSends() {
 	HashSet set = new HashSet();
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
-				if (getGenerateClass(name)) {
+//				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
@@ -517,7 +605,7 @@ public void generateSends() throws Exception {
 							set.add(buffer.toString());
 						}
 					}
-				}
+//				}
 			}
 		}
 	}
@@ -527,17 +615,19 @@ public void generateSends() throws Exception {
 	}
 }
 
-public void generateSendsMetaData() throws Exception {
+void generateSendsMetaData() {
 	HashMap set = new HashMap();
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
-				if (getGenerateClass(name)) {
+//				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
@@ -572,7 +662,7 @@ public void generateSendsMetaData() throws Exception {
 							if (set.get(key) == null) set.put(key, method);
 						}
 					}
-				}
+//				}
 			}
 		}
 	}
@@ -626,19 +716,21 @@ String getSelConst(String sel) {
 	return "sel_" + sel.replaceAll(":", "_1");
 }
 
-public void generateClassesConst() throws Exception {
+void generateClassesConst() {
 	TreeSet set = new TreeSet();
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
-				if (getGenerateClass(name)) {
+//				if (getGenerateClass(name)) {
 					set.add(name);
-				}
+//				}
 			}
 		}
 	}
@@ -655,19 +747,21 @@ public void generateClassesConst() throws Exception {
 	}
 }
 
-public void generateProtocolsConst() throws Exception {
+void generateProtocolsConst() {
 	TreeSet set = new TreeSet();
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("informal_protocol".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				String name = attributes.getNamedItem("name").getNodeValue();
-				if (getGenerateClass(name)) {
+//				if (getGenerateClass(name)) {
 					set.add(name);
-				}
+//				}
 			}
 		}
 	}
@@ -790,9 +884,11 @@ String getJavaType(Node node) {
 	return "BAD " + code;
 }
 
-public void generateFunctions() throws Exception {
+void generateFunctions() {
 	for (int x = 0; x < xmls.length; x++) {
-		Document document = getDocument(xmls[x]);
+		Document document = documents[x];
+		if (document == null) continue;
+		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -829,53 +925,6 @@ public void generateFunctions() throws Exception {
 	}
 }
 
-public void generateOS() throws Exception {
-	out("/** Classes */");
-	outln();
-	generateClassesConst();
-	outln();
-	out("/** Protocols */");
-	outln();
-	generateProtocolsConst();
-	outln();
-	out("/** Selectors */");
-	outln();
-	generateSelectorsConst();
-	outln();
-	out("/** Constants */");
-	outln();
-	generateEnums();
-	outln();
-	out("/** Globals */");
-	outln();
-	generateConstants();
-	outln();
-	out("/** Functions */");
-	outln();
-	generateFunctions();
-	outln();
-	out("/** Sends */");
-	outln();
-	generateSends();
-}
-
-public void generateMetadata() throws Exception {
-	generateConstantsMetaData();
-	generateSendsMetaData();
-}
-
-public void saveExtraAttributes(String xmlPath, Document document) {
-	try {
-		String fileName = getMetaDataDir() + getFileName(xmlPath) + ".extras";
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		new DOMWriter(new PrintStream(out), false).print(document);
-		if (out.size() > 0) output(out.toByteArray(), fileName);
-	} catch (Exception e) {
-		System.out.println("Problem");
-		e.printStackTrace(System.out);
-	}
-}
-
 boolean compare(InputStream is1, InputStream is2) throws IOException {
 	while (true) {
 		int c1 = is1.read();
@@ -902,22 +951,14 @@ void output(byte[] bytes, String fileName) throws IOException {
 	out.close();
 }
 
-public void setClasses(String[] classes) {
-	this.classes = classes;
-}
-
-public void setOutputDir(String dir) {
-	this.outputDir = dir;
-}
-
-public static void main(String[] args) throws Exception {
+public static void main(String[] args) {
 	try {
 		MacGenerator gen = new MacGenerator(args);
 //		gen.setClasses(new String[]{
 //			"NSURL",
 //		});
 		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa");
-		gen.generateOS();
+		gen.generateMainClass();
 //		gen.generateMetadata();
 //		gen.generateClasses();
 	} catch (Throwable e) {

@@ -198,7 +198,7 @@ public class MacGeneratorUI {
 
 		TreeColumn nodesColumn = new TreeColumn(nodesTree, SWT.NONE);
 		nodesColumn.setText("Name");
-		String[] extraAttributes = gen.getExtraAttributes();
+		String[] extraAttributes = gen.getExtraAttributeNames();
 		for (int i = 0; i < extraAttributes.length; i++) {
 			TreeColumn column = new TreeColumn(nodesTree, SWT.NONE);
 			column.setText(extraAttributes[i]);
@@ -284,6 +284,7 @@ public class MacGeneratorUI {
 						gen.saveExtraAttributes((String)item.getData(), document);
 					}
 				}
+				gen.reloadExtraAttributes();
 			}
 		});
 		
@@ -309,21 +310,23 @@ public class MacGeneratorUI {
 	void updateNodes() {
 		String[] xmls = gen.getXmls();
 		if (xmls == null) return;
+		Document[] documents = gen.getDocuments();
+		Hashtable[] extras = gen.getExtraAttributes();
 		for (int x = 0; x < xmls.length; x++) {
 			String xmlPath = xmls[x];
-			Document document = gen.getDocument(xmlPath);
+			Document document = documents[x];
 			if (document == null) {
 				System.out.println("Could not find: " + xmlPath);
 				continue;
 			}
-			Hashtable extras = gen.loadExtraAttributesLookup(xmlPath);
+			Hashtable extraAttributes = extras[x];
 			
 			TreeItem xmlItem = new TreeItem(nodesTree, SWT.NONE);
 			xmlItem.setText(gen.getFileName(xmlPath));
 			xmlItem.setData(xmlPath);
 			NodeList list = document.getDocumentElement().getChildNodes();
 			for (int i = 0; i < list.getLength(); i++) {
-				addChild(list.item(i), xmlItem, extras);
+				addChild(list.item(i), xmlItem, extraAttributes);
 			}
 		}
 		TreeColumn[] columns = nodesTree.getColumns();
