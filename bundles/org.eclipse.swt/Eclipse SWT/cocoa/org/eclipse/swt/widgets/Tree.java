@@ -1010,58 +1010,17 @@ public TreeItem getItem (int index) {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-//	Rect rect = new Rect ();
-//	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-//	OS.SetPt (pt, (short) point.x, (short) point.y);
-//	if (0 < lastHittest && lastHittest <= items.length && lastHittestColumn != 0) {
-//		TreeItem item = _getItem (lastHittest, false);
-//		if (item != null) {
-//			if (OS.GetDataBrowserItemPartBounds (handle, item.id, lastHittestColumn, OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
-//				if (OS.PtInRect (pt, rect)) return null;
-//			}
-//			if (OS.GetDataBrowserItemPartBounds (handle, item.id, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//				if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//					if ((style & SWT.FULL_SELECTION) != 0) {
-//						return item;
-//					} else {
-//						return OS.PtInRect (pt, rect) ? item : null;
-//					}
-//				}
-//			}
-//		}
-//	}
-//	//TODO - optimize
-//	for (int i=0; i<items.length; i++) {
-//		TreeItem item = items [i];
-//		if (item != null) {
-//			if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyDisclosurePart, rect) == OS.noErr) {
-//				if (OS.PtInRect (pt, rect)) return null;
-//			}
-//			if (columnCount == 0) {
-//				if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//						if ((style & SWT.FULL_SELECTION) != 0) {
-//							return item;
-//						} else {
-//							return OS.PtInRect (pt, rect) ? item : null;
-//						}
-//					}
-//				}
-//			} else {
-//				for (int j = 0; j < columnCount; j++) {
-//					if (OS.GetDataBrowserItemPartBounds (handle, item.id, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//						if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//							if ((style & SWT.FULL_SELECTION) != 0) {
-//								return item;
-//							} else {
-//								return OS.PtInRect (pt, rect) ? item : null;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
+	NSOutlineView widget = (NSOutlineView)view;
+	NSPoint pt = new NSPoint();
+	pt.x = point.x;
+	pt.y = point.y;
+	int row = widget.rowAtPoint(pt);
+	if (row == -1) return null;
+	id id = widget.itemAtRow(row);
+	Widget item = display.getWidget (id.id);
+	if (item != null && item instanceof TreeItem) {
+		return (TreeItem)item;
+	}
 	return null;
 }
 

@@ -976,85 +976,13 @@ public TableItem getItem (int index) {
  */
 public TableItem getItem (Point point) {
 	checkWidget ();
-//	checkItems (true);
-//	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-//	Rect rect = new Rect ();
-//	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-//	OS.SetPt (pt, (short) point.x, (short) point.y);
-//	if (0 < lastHittest && lastHittest <= itemCount && lastHittestColumn != 0) {
-//		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//			if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//				if ((style & SWT.FULL_SELECTION) != 0) {
-//					return _getItem (lastHittest - 1);
-//				} else {
-//					return OS.PtInRect (pt, rect) ? _getItem (lastHittest - 1) : null;
-//				}
-//			}
-//		}
-//			
-//	}
-//	int [] top = new int [1], left = new int [1];
-//    OS.GetDataBrowserScrollPosition(handle, top, left);
-//	short [] height = new short [1];
-//	OS.GetDataBrowserTableViewRowHeight (handle, height);
-//	short [] header = new short [1];
-//	OS.GetDataBrowserListViewHeaderBtnHeight (handle, header);
-//	int [] offsets = new int [] {0, 1, -1};
-//	for (int i = 0; i < offsets.length; i++) {
-//		int index = (top[0] - header [0] + point.y) / height [0] + offsets [i];
-//		if (0 <= index && index < itemCount) {
-//			if (columnCount == 0) {
-//				if (OS.GetDataBrowserItemPartBounds (handle, index + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//						if ((style & SWT.FULL_SELECTION) != 0) {
-//							return _getItem (index);
-//						} else {
-//							return OS.PtInRect (pt, rect) ? _getItem (index) : null;
-//						}
-//					}
-//				}
-//			} else {
-//				for (int j = 0; j < columnCount; j++) {
-//					if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//						if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//							if ((style & SWT.FULL_SELECTION) != 0) {
-//								return _getItem (index);
-//							} else {
-//								return OS.PtInRect (pt, rect) ? _getItem (index) : null;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	//TODO - optimize
-//	for (int i=0; i<itemCount; i++) {
-//		if (columnCount == 0) {
-//			if (OS.GetDataBrowserItemPartBounds (handle, i + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//				if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//					if ((style & SWT.FULL_SELECTION) != 0) {
-//						return _getItem (i);
-//					} else {
-//						return OS.PtInRect (pt, rect) ? _getItem (i) : null;
-//					}
-//				}
-//			}
-//		} else {
-//			for (int j = 0; j < columnCount; j++) {
-//				if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-//					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-//						if ((style & SWT.FULL_SELECTION) != 0) {
-//							return _getItem (i);
-//						} else {
-//							return OS.PtInRect (pt, rect) ? _getItem (i) : null;
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-	return null;
+	NSTableView widget = (NSTableView)view;
+	NSPoint pt = new NSPoint();
+	pt.x = point.x;
+	pt.y = point.y;
+	int row = widget.rowAtPoint(pt);
+	if (row == -1) return null;
+	return items[row];
 }
 
 /**
