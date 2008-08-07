@@ -37,24 +37,48 @@ public class MacGeneratorUI {
 	public MacGeneratorUI(String[] xmls) {
 		this.xmls = xmls;
 	}
-	
-	String getKey (Node node) {
-		StringBuffer buffer = new StringBuffer();
-		while (node != null) {
-			if (buffer.length() > 0) buffer.append("_");
-			String name = node.getNodeName();
-			StringBuffer key = new StringBuffer(name);
-			NamedNodeMap attributes = node.getAttributes();
-			Node nameAttrib = getNameAttrib(attributes);
-			if (nameAttrib != null) {
-				key.append("-");
-				key.append(nameAttrib.getNodeValue());
+
+	TreeItem addChild (Node node, TreeItem superItem, Hashtable extras) {
+		String name = node.getNodeName();
+		if (name.equals("#text")) return null;
+		TreeItem parentItem = null;
+		TreeItem[] items = superItem.getItems();
+		for (int i = 0; i < items.length; i++) {
+			if (name.equals(items[i].getData())) {
+				parentItem = items[i];
+				break;
 			}
-			buffer.append(key.reverse());
-			node = node.getParentNode();
 		}
-		buffer.reverse();
-		return buffer.toString();
+		if (parentItem == null) {
+			parentItem = new TreeItem(superItem, SWT.NONE);
+			parentItem.setData(name);
+			parentItem.setText(getPrettyText(name));
+		}
+		NamedNodeMap attributes = node.getAttributes();
+		TreeItem item = new TreeItem(parentItem, SWT.NONE);
+		Node nameAttrib = getNameAttribute(attributes);
+		String text = nameAttrib != null ? nameAttrib.getNodeValue() : name;
+		item.setText(text);
+		Node extra = (Node)extras.get(getKey(node));
+		if (extra != null) {
+			NamedNodeMap extraAttributes = extra.getAttributes();
+			Node gen = extraAttributes.getNamedItem("swt_gen");
+			if (gen != null && gen.getNodeValue().equals("true")) {
+				item.setChecked(true);
+			}
+		}
+		for (int i = 0; i < attributes.getLength(); i++) {
+			Node attrib = attributes.item(i);
+			text = attrib.getNodeName();
+			if (attrib.equals(nameAttrib)) continue;
+			int columnIndex = getColumnFor(text);
+			item.setText(columnIndex, attrib.getNodeValue());
+		}
+		NodeList childNodes = node.getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			addChild(childNodes.item(i), item, extras);
+		}
+		return item;
 	}
 
 	void buildLookup(Node node, Hashtable table) {
@@ -95,7 +119,26 @@ public class MacGeneratorUI {
 		return null;
 	}
 	
-	Node getNameAttrib(NamedNodeMap attributes) {
+	String getKey (Node node) {
+		StringBuffer buffer = new StringBuffer();
+		while (node != null) {
+			if (buffer.length() > 0) buffer.append("_");
+			String name = node.getNodeName();
+			StringBuffer key = new StringBuffer(name);
+			NamedNodeMap attributes = node.getAttributes();
+			Node nameAttrib = getNameAttribute(attributes);
+			if (nameAttrib != null) {
+				key.append("-");
+				key.append(nameAttrib.getNodeValue());
+			}
+			buffer.append(key.reverse());
+			node = node.getParentNode();
+		}
+		buffer.reverse();
+		return buffer.toString();
+	}
+	
+	Node getNameAttribute(NamedNodeMap attributes) {
 		if (attributes == null) return null;
 		Node nameAttrib = attributes.getNamedItem("name");
 		if (nameAttrib == null) nameAttrib = attributes.getNamedItem("selector");
@@ -135,49 +178,6 @@ public class MacGeneratorUI {
 		if (text.equals("class")) return "Classes";
 		if (text.equals("depends_on")) return "Depends_on";
 		return text.substring(0, 1).toUpperCase() + text.substring(1) + "s";
-	}
-	
-	TreeItem addChild (Node node, TreeItem superItem, Hashtable extras) {
-		String name = node.getNodeName();
-		if (name.equals("#text")) return null;
-		TreeItem parentItem = null;
-		TreeItem[] items = superItem.getItems();
-		for (int i = 0; i < items.length; i++) {
-			if (name.equals(items[i].getData())) {
-				parentItem = items[i];
-				break;
-			}
-		}
-		if (parentItem == null) {
-			parentItem = new TreeItem(superItem, SWT.NONE);
-			parentItem.setData(name);
-			parentItem.setText(getPrettyText(name));
-		}
-		NamedNodeMap attributes = node.getAttributes();
-		TreeItem item = new TreeItem(parentItem, SWT.NONE);
-		Node nameAttrib = getNameAttrib(attributes);
-		String text = nameAttrib != null ? nameAttrib.getNodeValue() : name;
-		item.setText(text);
-		Node extra = (Node)extras.get(getKey(node));
-		if (extra != null) {
-			NamedNodeMap extraAttributes = extra.getAttributes();
-			Node gen = extraAttributes.getNamedItem("swt_gen");
-			if (gen != null && gen.getNodeValue().equals("true")) {
-				item.setChecked(true);
-			}
-		}
-		for (int i = 0; i < attributes.getLength(); i++) {
-			Node attrib = attributes.item(i);
-			text = attrib.getNodeName();
-			if (attrib.equals(nameAttrib)) continue;
-			int columnIndex = getColumnFor(text);
-			item.setText(columnIndex, attrib.getNodeValue());
-		}
-		NodeList childNodes = node.getChildNodes();
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			addChild(childNodes.item(i), item, extras);
-		}
-		return item;
 	}
 	
 	void updateNodes() {
