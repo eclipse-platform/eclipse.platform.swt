@@ -13,11 +13,18 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -27,13 +34,13 @@ import org.xml.sax.InputSource;
 
 public class MacGenerator {
 	String[] classes;
-	String xml[];
+	String xmls[];
 	String outputDir;
 	
 	PrintStream out;
 	
-public MacGenerator(String[] xml) throws Exception {
-	this.xml = xml;	
+public MacGenerator(String[] xml) {
+	this.xmls = xml;	
 }
 	
 public void out(String str) {
@@ -49,8 +56,8 @@ public void outln() {
 }
 
 public void generateConstants() throws Exception {
-	for (int j = 0; j < xml.length; j++) {
-		Document document = getDocument(xml[j]);
+	for (int j = 0; j < xmls.length; j++) {
+		Document document = getDocument(xmls[j]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -66,8 +73,8 @@ public void generateConstants() throws Exception {
 }
 
 public void generateConstantsMetaData() throws Exception {
-	for (int j = 0; j < xml.length; j++) {
-		Document document = getDocument(xml[j]);
+	for (int j = 0; j < xmls.length; j++) {
+		Document document = getDocument(xmls[j]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -83,8 +90,8 @@ public void generateConstantsMetaData() throws Exception {
 }
 
 public void generateEnums() throws Exception {
-	for (int j = 0; j < xml.length; j++) {
-		Document document = getDocument(xml[j]);
+	for (int j = 0; j < xmls.length; j++) {
+		Document document = getDocument(xmls[j]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -133,9 +140,83 @@ boolean isBoolean(Node node) {
 	return code.equals("B");
 }
 
-Document getDocument(String xmlPath) throws Exception {
-	BufferedInputStream is = new BufferedInputStream(new FileInputStream(xmlPath));
-	return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
+public Document getDocument(String xmlPath) {
+	try {
+		InputStream is = null;
+		if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
+		if (is == null) is = new BufferedInputStream(new FileInputStream(xmlPath));
+		if (is != null) return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
+	} catch (Exception e) {
+//		e.printStackTrace();
+	}
+	return null;
+}
+
+public String[] getExtraAttributes() {
+	return new String[]{
+		"swt_superclass",
+		"swt_vararg_max",
+		"swt_not_static",
+	};
+}
+
+String getMetaDataDir() {
+	return "./Mac Generation/org/eclipse/swt/tools/internal/";
+}
+
+public String getKey (Node node) {
+	StringBuffer buffer = new StringBuffer();
+	while (node != null) {
+		if (buffer.length() > 0) buffer.append("_");
+		String name = node.getNodeName();
+		StringBuffer key = new StringBuffer(name);
+		Node nameAttrib = getNameAttribute(node);
+		if (nameAttrib != null) {
+			key.append("-");
+			key.append(nameAttrib.getNodeValue());
+		}
+		buffer.append(key.reverse());
+		node = node.getParentNode();
+	}
+	buffer.reverse();
+	return buffer.toString();
+}
+
+public Node getNameAttribute(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	if (attributes == null) return null;
+	Node nameAttrib = attributes.getNamedItem("name");
+	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("selector");
+	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("path");
+	return nameAttrib;
+}
+
+void buildExtrasLookup(Node node, Hashtable table) {
+	NodeList list = node.getChildNodes();
+	for (int i = 0; i < list.getLength(); i++) {
+		Node childNode = list.item(i);
+		String key = getKey(childNode);
+		table.put(key, childNode);
+		buildExtrasLookup(childNode, table);
+	}
+}
+
+public String getFileName(String xmlPath) {
+	String fileName = xmlPath;
+	int index = fileName.lastIndexOf(File.separatorChar);
+	if (index != -1) fileName = fileName.substring(index + 1);
+	return fileName;
+}
+
+public Hashtable loadExtraAttributesLookup (String xmlPath) {
+	Hashtable table = new Hashtable();
+	Document doc = getDocument(getFileName(xmlPath) + ".extras");
+	if (doc != null) buildExtrasLookup(doc, table);
+	return table;
+}
+
+public String[] getXmls() {
+	return xmls;
 }
 
 boolean getGenerateClass(String className) {
@@ -170,8 +251,8 @@ public boolean isUnique(Node method, NodeList methods) {
 }
 
 public void generateClasses() throws Exception {
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -353,8 +434,8 @@ public void generateClasses() throws Exception {
 
 public void generateSelectorsConst() throws Exception {
 	HashSet set = new HashSet();
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -389,8 +470,8 @@ public void generateSelectorsConst() throws Exception {
 
 public void generateSends() throws Exception {
 	HashSet set = new HashSet();
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -448,8 +529,8 @@ public void generateSends() throws Exception {
 
 public void generateSendsMetaData() throws Exception {
 	HashMap set = new HashMap();
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -547,8 +628,8 @@ String getSelConst(String sel) {
 
 public void generateClassesConst() throws Exception {
 	TreeSet set = new TreeSet();
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -576,8 +657,8 @@ public void generateClassesConst() throws Exception {
 
 public void generateProtocolsConst() throws Exception {
 	TreeSet set = new TreeSet();
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -710,8 +791,8 @@ String getJavaType(Node node) {
 }
 
 public void generateFunctions() throws Exception {
-	for (int x = 0; x < xml.length; x++) {
-		Document document = getDocument(xml[x]);
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = getDocument(xmls[x]);
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -781,6 +862,44 @@ public void generateOS() throws Exception {
 public void generateMetadata() throws Exception {
 	generateConstantsMetaData();
 	generateSendsMetaData();
+}
+
+public void saveExtraAttributes(String xmlPath, Document document) {
+	try {
+		String fileName = getMetaDataDir() + getFileName(xmlPath) + ".extras";
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		new DOMWriter(new PrintStream(out), false).print(document);
+		if (out.size() > 0) output(out.toByteArray(), fileName);
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
+}
+
+boolean compare(InputStream is1, InputStream is2) throws IOException {
+	while (true) {
+		int c1 = is1.read();
+		int c2 = is2.read();
+		if (c1 != c2) return false;
+		if (c1 == -1) break;
+	}
+	return true;
+}
+
+void output(byte[] bytes, String fileName) throws IOException {
+	FileInputStream is = null;
+	try {
+		is = new FileInputStream(fileName);
+		if (compare(new ByteArrayInputStream(bytes), new BufferedInputStream(is))) return;
+	} catch (FileNotFoundException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	FileOutputStream out = new FileOutputStream(fileName);
+	out.write(bytes);
+	out.close();
 }
 
 public void setClasses(String[] classes) {
