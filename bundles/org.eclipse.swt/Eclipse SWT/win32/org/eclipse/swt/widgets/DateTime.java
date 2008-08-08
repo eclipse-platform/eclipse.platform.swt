@@ -938,6 +938,20 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
+	/*
+	* Feature in Windows. For some reason, the calendar control
+	* does not take focus on WM_LBUTTONDOWN.  The fix is to
+	* explicitly set focus.
+	*/
+	if ((style & SWT.CALENDAR) != 0) {
+		if ((style & SWT.NO_FOCUS) == 0) OS.SetFocus (handle);
+	}
+	return result;
+}
+
 LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
