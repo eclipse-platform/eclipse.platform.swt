@@ -60,8 +60,7 @@ public class MacGeneratorUI {
 		item.setText(idAttrib != null ? idAttrib.getNodeValue() : name);
 		item.setData(node);
 		NamedNodeMap attributes = node.getAttributes();
-		Node gen = attributes.getNamedItem("swt_gen");
-		item.setChecked(gen != null && gen.getNodeValue().equals("true"));
+		checkItem(node, item);
 		for (int i = 0, length = attributes.getLength(); i < length; i++) {
 			Node attrib = attributes.item(i);
 			if (attrib.equals(idAttrib)) continue;
@@ -94,6 +93,18 @@ public class MacGeneratorUI {
 	    item.setGrayed(grayed);
 	    checkPath(item.getParentItem(), checked, grayed);
 	}
+	
+	void checkItem(Node node, TreeItem item) {
+		NamedNodeMap attributes = node.getAttributes();
+		Node gen = attributes.getNamedItem("swt_gen");
+		if (gen != null) {
+			String value = gen.getNodeValue();
+			boolean grayed = value.equals("mixed");
+			boolean checked = grayed || value.equals("true");
+			item.setChecked(checked);
+			item.setGrayed(grayed);
+		}
+	}
 
 	void checkChildren(TreeItem item) {
 		TreeItem dummy;
@@ -104,14 +115,17 @@ public class MacGeneratorUI {
 			for (int i = 0, length = childNodes.getLength(); i < length; i++) {
 				addChild(childNodes.item(i), item);
 			}
+			/* Figure out categories state */
 			TreeItem[] items = item.getItems();
 			for (int i = 0; i < items.length; i++) {
 				TreeItem[] children = items[i].getItems();
 				int checkedCount = 0;
 				for (int j = 0; j < children.length; j++) {
 					if (children[j].getChecked()) checkedCount++;
+					if (children[j].getGrayed()) break;
 				}
-				checkPath(items[i], checkedCount == children.length, false);
+				items[i].setChecked(checkedCount != 0);
+				items[i].setGrayed(checkedCount != children.length);
 			}
 			TreeColumn[] columns = nodesTree.getColumns();
 			for (int i = 0; i < columns.length; i++) {
@@ -279,7 +293,11 @@ public class MacGeneratorUI {
 		if (item.getData() instanceof Element) {
 			Element node = (Element)item.getData();
 			if (item.getChecked()) {
-				node.setAttribute("swt_gen", "true");
+				if (item.getGrayed()) {
+					node.setAttribute("swt_gen", "mixed");
+				} else {
+					node.setAttribute("swt_gen", "true");
+				}
 			} else {
 				node.removeAttribute("swt_gen");
 			}
@@ -301,10 +319,12 @@ public class MacGeneratorUI {
 				System.out.println("Could not find: " + xmlPath);
 				continue;
 			}
-			TreeItem xmlItem = new TreeItem(nodesTree, SWT.NONE);
-			xmlItem.setText(gen.getFileName(xmlPath));
-			xmlItem.setData(document.getDocumentElement());
-			new TreeItem(xmlItem, SWT.NONE);
+			TreeItem item = new TreeItem(nodesTree, SWT.NONE);
+			item.setText(gen.getFileName(xmlPath));
+			Node node = document.getDocumentElement();
+			item.setData(node);
+			checkItem(node, item);
+			new TreeItem(item, SWT.NONE);
 		}
 		TreeColumn[] columns = nodesTree.getColumns();
 		for (int i = 0; i < columns.length; i++) {
