@@ -38,8 +38,6 @@ public class OS extends C {
 	public static final int sel_sendHorizontalSelection = sel_registerName("sendHorizontalSelection");
 	public static final int sel_drawAtPoint_ = sel_registerName("drawAtPoint:");
 	public static final int sel_timerProc_1 = sel_registerName("timerProc:");
-	
-	public static final native int NSDeviceRGBColorSpace();
 
 /** JNI natives */
 public static final native int NewGlobalRef(Object object);
@@ -78,8 +76,36 @@ public static final int kQDParseRegionFromLeft = (1 << 2);
 public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
-	
-	
+
+/** Custom callbacks */
+public static final native int drawRect_CALLBACK(int func);
+public static final native int drawInteriorWithFrame_inView_CALLBACK(int func);
+public static final native int setFrame_CALLBACK(int func);
+public static final native int setFrameOrigin_CALLBACK(int func);
+public static final native int setFrameSize_CALLBACK(int func);
+public static final native int hitTest_CALLBACK(int func);
+public static final native int webView_setFrame_CALLBACK(int func);
+public static final native int markedRange_CALLBACK(int func);
+public static final native int selectedRange_CALLBACK(int func);
+public static final native int attributedSubstringFromRange_CALLBACK(int func);
+public static final native int setMarkedText_selectedRange_CALLBACK(int func);
+public static final native int characterIndexForPoint_CALLBACK(int func);
+public static final native int firstRectForCharacterRange_CALLBACK(int func);
+public static final native int textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int func);
+
+public static final native int objc_msgSendSuper(objc_super superId, int sel);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, NSPoint arg0);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, NSSize arg0);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0);
+public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0, int arg1, int arg2, int arg3);
+public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
+public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (NSPoint dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (NSSize dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (NSRange dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (int /*long*/ dest, NSRange src, int /*long*/ size);
+
 public static final native boolean class_addIvar(int cls, String name, int size, byte alignment, String types);
 public static final native boolean class_addMethod(int cls, int name, int imp, String types);
 public static final native boolean class_addProtocol(int cls, int protocol);
@@ -93,8 +119,11 @@ public static final native int object_getInstanceVariable(int obj, String name, 
 public static final native int object_setInstanceVariable(int obj, String name, int value);
 public static final native int object_setClass(int obj, int clazz);
 public static final native int sel_registerName(String selectorName);
+public static final native void instrumentObjcMessageSends(boolean val);
 
+/** This section is auto generated */
 
+/** Obj-C Sends */
 public static final native int objc_msgSend(int id, int sel, byte[] arg0, int arg1);
 public static final native int objc_msgSend(int id, int sel, char[] arg0);
 public static final native int objc_msgSend(int id, int sel, char[] arg0, int arg1);
@@ -345,34 +374,6 @@ public static final native int objc_msgSend(int id, int sel, NSRect arg0, boolea
 public static final native int objc_msgSend(int id, int sel, int arg0, NSPoint arg1, NSPoint arg2);
 public static final native void objc_msgSend_stret(NSRect result, int id, int sel, NSSize arg0, int arg1);
 public static final native int objc_msgSend(int id, int sel, int arg0, int arg1, float arg2);
-
-public static final native int drawRect_CALLBACK(int func);
-public static final native int drawInteriorWithFrame_inView_CALLBACK(int func);
-public static final native int setFrame_CALLBACK(int func);
-public static final native int setFrameOrigin_CALLBACK(int func);
-public static final native int setFrameSize_CALLBACK(int func);
-public static final native int hitTest_CALLBACK(int func);
-public static final native int webView_setFrame_CALLBACK(int func);
-public static final native int markedRange_CALLBACK(int func);
-public static final native int selectedRange_CALLBACK(int func);
-public static final native int attributedSubstringFromRange_CALLBACK(int func);
-public static final native int setMarkedText_selectedRange_CALLBACK(int func);
-public static final native int characterIndexForPoint_CALLBACK(int func);
-public static final native int firstRectForCharacterRange_CALLBACK(int func);
-public static final native int textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int func);
-
-public static final native int objc_msgSendSuper(objc_super superId, int sel);
-public static final native int objc_msgSendSuper(objc_super superId, int sel, NSRect arg0);
-public static final native int objc_msgSendSuper(objc_super superId, int sel, NSPoint arg0);
-public static final native int objc_msgSendSuper(objc_super superId, int sel, NSSize arg0);
-public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0);
-public static final native int objc_msgSendSuper(objc_super superId, int sel, int arg0, int arg1, int arg2, int arg3);
-public static final native void memmove (int /*long*/ dest, NSRect src, int /*long*/ size);
-public static final native void memmove (NSRect dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove (NSPoint dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove (NSSize dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove (NSRange dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove (int /*long*/ dest, NSRange src, int /*long*/ size);
 
 /** Classes */
 public static final int class_NSScanner = objc_getClass("NSScanner");
@@ -9375,7 +9376,7 @@ public static final native int NSCalibratedRGBColorSpace();
 //public static final native int NSDeviceColorSpaceName();
 //public static final native int NSDeviceIsPrinter();
 //public static final native int NSDeviceIsScreen();
-//public static final native int NSDeviceRGBColorSpace();
+public static final native int NSDeviceRGBColorSpace();
 public static final native int NSDeviceResolution();
 //public static final native int NSDeviceSize();
 //public static final native int NSDeviceWhiteColorSpace();
@@ -10446,5 +10447,5 @@ public static final native int NSTemporaryDirectory();
 //public static final native int NSZoneRealloc(int zone, int ptr, int size);
 //public static final native int NXReadNSObjectFromCoder(int decoder);
 
-public static final native void instrumentObjcMessageSends(boolean val);
+/** This section is auto generated */
 }
