@@ -21,6 +21,7 @@ public class MacGenerator {
 	String[] xmls;
 	Document[] documents;
 	String outputDir, mainClassName;
+	String delimiter = System.getProperty("line.separator");
 	
 	PrintStream out;
 	
@@ -28,24 +29,44 @@ public MacGenerator(String[] xmls) {
 	this.xmls = xmls;
 	documents = new Document[xmls.length];
 	for (int i = 0; i < xmls.length; i++) {
-		long start = System.currentTimeMillis();
+//		long start = System.currentTimeMillis();
 		Document document = documents[i] = getDocument(xmls[i]);
 		if (document == null) continue;
 		Hashtable extras = loadExtraAttributes(xmls[i]);
 		merge(document, document, extras);
-		long end = System.currentTimeMillis();
-		System.out.println("load=" + (end - start));
+//		long end = System.currentTimeMillis();
+//		System.out.println("load=" + (end - start));
 	}
 }
 
 public void generateAll() {
 	generateExtraAttributes();
 	generateMainClass();
+	generateClasses();
 //	generateMetadata();
-//	generateClasses();
+}
+
+String fixDelimiter(String str) {
+	if (delimiter.equals("\n")) return str;
+	int index = 0, length = str.length();
+	StringBuffer buffer = new StringBuffer();
+	while (index != -1) {
+		int start = index;
+		index = str.indexOf('\n', start);
+		if (index == -1) {
+			buffer.append(str.substring(start, length));
+		} else {
+			buffer.append(str.substring(start, index));
+			buffer.append(delimiter);
+			index++;
+		}
+	}
+	return buffer.toString();
 }
 
 void generateClasses() {
+	MetaData metaData = new MetaData(mainClassName);
+	
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -53,14 +74,15 @@ void generateClasses() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				Node gen = attributes.getNamedItem("swt_gen");
-				if (gen != null && gen.getNodeValue().equals("mixed")) {
+				if (getGen(node)) {
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					this.out = new PrintStream(out);
+					String data = metaData.getMetaData("swt_copyright", null);
+					if (data != null && data.length() != 0) {
+						out(fixDelimiter(data));
+					}					
+					NamedNodeMap attributes = node.getAttributes();
 					String name = attributes.getNamedItem("name").getNodeValue();
-					if (outputDir != null) {
-//						FileOutputStream  is = new FileOutputStream(outputDir + "/" + name + ".java");
-						out = new PrintStream(new ByteArrayOutputStream());
-					}
 					out("package org.eclipse.swt.internal.cocoa;");
 					outln();
 					outln();
@@ -69,7 +91,14 @@ void generateClasses() {
 					if (name.equals("NSObject")) {
 						out(" extends id {");
 					} else {
-						out(" extends NSObject {");
+						Node superclass = attributes.getNamedItem("swt_superclass");
+						out(" extends ");
+						if (superclass != null) {
+							out(superclass.getNodeValue());
+						} else {
+							out("NSObject");
+						}
+						out(" {");
 					}
 					outln();
 					outln();
@@ -95,134 +124,151 @@ void generateClasses() {
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
 						if ("method".equals(method.getNodeName())) {
-							String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
-							out("public ");
-							boolean isStatic = method.getAttributes().getNamedItem("class_method") != null; 
-							if (isStatic) out("static ");
-							Node returnNode = getReturnNode(method.getChildNodes());
-							if (getType(returnNode).equals("void")) returnNode = null;
-							if (returnNode != null) {
-								out(getJavaType(returnNode));
-								out(" ");
-							} else {
-								out("void ");
-							}
-							String methodName = sel;
-							if (isUnique(method, methods)) {
-								int index = methodName.indexOf(":");
-								if (index != -1) methodName = methodName.substring(0, index);
-							} else {
-								methodName = methodName.replaceAll(":", "_");
-								if (isStatic) methodName = "static_" + methodName;
-							}
-							out(methodName);
-							out("(");
-							NodeList params = method.getChildNodes();
-							boolean first = true;
-							for (int k = 0; k < params.getLength(); k++) {
-								Node param = params.item(k);
-								if ("arg".equals(param.getNodeName())) {
-									NamedNodeMap paramAttributes = param.getAttributes();
-									if (!first) out(", ");
-									out(getJavaType(param));
-									first = false;
-									out(" ");
-									String paramName = paramAttributes.getNamedItem("name").getNodeValue();
-									if (paramName.equals("boolean")) paramName = "b";
-									out(paramName);
-								}
-							}
-							out(") {");
-							outln();
-							if (returnNode != null && isStruct(returnNode)) {
-								String type = getJavaType(returnNode);
-								out("\t");
-								out(type);
-								out(" result = new ");
-								out(type);
-								out("();");
-								outln();
-								out("\tOS.objc_msgSend_stret(result, ");
-							} else if (returnNode != null && isFloatingPoint(returnNode)) {
-								String type = getJavaType(returnNode);
-								out("\treturn ");
-								if (type.equals("float")) out("(float)");
-								out("OS.objc_msgSend_fpret(");
-							} else if (returnNode != null && isObject(returnNode)) {
-								out("\tint result = OS.objc_msgSend(");
-							} else {
+							if (getGen(method)) {
+								NamedNodeMap mthAttributes = method.getAttributes();
+								String sel = mthAttributes.getNamedItem("selector").getNodeValue();
+								out("public ");
+								boolean isStatic = mthAttributes.getNamedItem("class_method") != null; 
+								if (isStatic) out("static ");
+								Node returnNode = getReturnNode(method.getChildNodes());
+								if (getType(returnNode).equals("void")) returnNode = null;
+								String returnType = "";
 								if (returnNode != null) {
-									out("\treturn ");
-									String type = getJavaType(returnNode);
-									if (!(type.equals("int") || type.equals("boolean"))) {
-										out("(");
-										out(type);
-										out(")");
-									}
-								} else {
-									out("\t");
-								}
-								out("OS.objc_msgSend(");
-							}
-							if (isStatic) {
-								out("OS.class_");
-								out(name);
-							} else {
-								out("this.id");
-							}
-							out(", OS.");
-							out(getSelConst(sel));
-							first = false;
-							for (int k = 0; k < params.getLength(); k++) {
-								Node param = params.item(k);
-								if ("arg".equals(param.getNodeName())) {
-									NamedNodeMap paramAttributes = param.getAttributes();
-									if (!first) out(", ");
-									first = false;
-									String paramName = paramAttributes.getNamedItem("name").getNodeValue();
-									if (paramName.equals("boolean")) paramName = "b";
-									if (isObject(param)) {
-										out(paramName);
-										out(" != null ? ");
-										out(paramName);
-										out(".id : 0");
+									Node replace = returnNode.getAttributes().getNamedItem("swt_replace_return");
+									if (replace != null) {
+										out(returnType = replace.getNodeValue());
 									} else {
+										out(returnType = getJavaType(returnNode));
+									}
+									out(" ");
+								} else {
+									out("void ");
+								}
+								String methodName = sel;
+								if (isUnique(method, methods)) {
+									int index = methodName.indexOf(":");
+									if (index != -1) methodName = methodName.substring(0, index);
+								} else {
+									methodName = methodName.replaceAll(":", "_");
+									if (isStatic) methodName = "static_" + methodName;
+								}
+								out(methodName);
+								out("(");
+								NodeList params = method.getChildNodes();
+								boolean first = true;
+								for (int k = 0; k < params.getLength(); k++) {
+									Node param = params.item(k);
+									if ("arg".equals(param.getNodeName())) {
+										NamedNodeMap paramAttributes = param.getAttributes();
+										if (!first) out(", ");
+										out(getJavaType(param));
+										first = false;
+										out(" ");
+										String paramName = paramAttributes.getNamedItem("name").getNodeValue();
+										if (paramName.length() == 0) paramName = "arg" + paramAttributes.getNamedItem("index").getNodeValue();
+										if (paramName.equals("boolean")) paramName = "b";
 										out(paramName);
 									}
 								}
-							}
-							out(")");
-							if (returnNode != null && isBoolean(returnNode)) {
-								out(" != 0");
-							}
-							out(";");
-							outln();
-							if (returnNode != null && isObject(returnNode)) {
-								if (!isStatic && getJavaType(returnNode).equals(name)) {
-									out("\treturn result == this.id ? this : (result != 0 ? new ");
-									out(getJavaType(returnNode));
-									out("(result) : null);");
+								out(") {");
+								outln();
+								if (returnNode != null && isStruct(returnNode)) {
+									String type = getJavaType(returnNode);
+									out("\t");
+									out(type);
+									out(" result = new ");
+									out(type);
+									out("();");
+									outln();
+									out("\tOS.objc_msgSend_stret(result, ");
+								} else if (returnNode != null && isFloatingPoint(returnNode)) {
+									String type = getJavaType(returnNode);
+									out("\treturn ");
+									if (type.equals("float")) out("(float)");
+									out("OS.objc_msgSend_fpret(");
+								} else if (returnNode != null && isObject(returnNode)) {
+									out("\tint result = OS.objc_msgSend(");
 								} else {
-									out("\treturn result != 0 ? new ");
-									out(getJavaType(returnNode));
-									out("(result) : null;");
+									if (returnNode != null) {
+										out("\treturn ");
+										String type = getJavaType(returnNode);
+										if (!(type.equals("int") || type.equals("boolean"))) {
+											out("(");
+											out(type);
+											out(")");
+										}
+									} else {
+										out("\t");
+									}
+									out("OS.objc_msgSend(");
 								}
+								if (isStatic) {
+									out("OS.class_");
+									out(name);
+								} else {
+									out("this.id");
+								}
+								out(", OS.");
+								out(getSelConst(sel));
+								first = false;
+								for (int k = 0; k < params.getLength(); k++) {
+									Node param = params.item(k);
+									if ("arg".equals(param.getNodeName())) {
+										NamedNodeMap paramAttributes = param.getAttributes();
+										if (!first) out(", ");
+										first = false;
+										String paramName = paramAttributes.getNamedItem("name").getNodeValue();
+										if (paramName.length() == 0) paramName = "arg" + paramAttributes.getNamedItem("index").getNodeValue();
+										if (paramName.equals("boolean")) paramName = "b";
+										if (isObject(param)) {
+											out(paramName);
+											out(" != null ? ");
+											out(paramName);
+											out(".id : 0");
+										} else {
+											out(paramName);
+										}
+									}
+								}
+								out(")");
+								if (returnNode != null && isBoolean(returnNode)) {
+									out(" != 0");
+								}
+								out(";");
 								outln();
-							} else if (returnNode != null && isStruct(returnNode)) {
-								out("\treturn result;");
+								if (returnNode != null && isObject(returnNode)) {
+									if (!isStatic && returnType.equals(name)) {
+										out("\treturn result == this.id ? this : (result != 0 ? new ");
+										out(returnType);
+										out("(result) : null);");
+									} else {
+										out("\treturn result != 0 ? new ");
+										out(returnType);
+										out("(result) : null;");
+									}
+									outln();
+								} else if (returnNode != null && isStruct(returnNode)) {
+									out("\treturn result;");
+									outln();
+								}
+								out("}");
+								outln();
 								outln();
 							}
-							out("}");
-							outln();
-							outln();
 						}					
 					}				
 					out("}");
 					outln();
-					if (outputDir != null) {
-						out.close();
-						out = null;
+					
+					String fileName = outputDir + mainClassName.substring(0, mainClassName.lastIndexOf('.') + 1).replace('.', '/') + name + ".java";
+					try {
+						out.flush();
+						if (out.size() > 0) output(out.toByteArray(), fileName);
+					} catch (Exception e) {
+						System.out.println("Problem");
+						e.printStackTrace(System.out);
 					}
+					out = null;
 				}
 			}
 		}
@@ -327,6 +373,8 @@ public boolean getEditable(Node node, String attribName) {
 		if (attribName.equals("swt_not_static")) return true;
 	} else if (name.equals("class")) {
 		if (attribName.equals("swt_superclass")) return true;
+	} else if (name.equals("retval")) {
+		if (attribName.equals("swt_replace_return")) return true;
 	}
 	return false;
 }
@@ -383,6 +431,7 @@ public String[] getExtraAttributeNames() {
 	return new String[]{
 		"swt_gen",
 		"swt_superclass",
+		"swt_replace_return",
 		"swt_vararg_max",
 		"swt_not_static",
 	};

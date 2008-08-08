@@ -2272,7 +2272,7 @@
   <class name="CIColor" swt_gen="true">
     <method selector="initWithColor:" swt_gen="true">
       <arg name="color" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="CIColor"></retval>
     </method>
   </class>
   <class name="CIImage" swt_gen="true">
@@ -2292,7 +2292,7 @@
     </method>
     <method selector="initWithBitmapImageRep:" swt_gen="true">
       <arg name="bitmapImageRep" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="CIImage"></retval>
     </method>
   </class>
   <class name="NSATSTypesetter" swt_gen="true" swt_superclass="NSTypesetter">
@@ -2394,7 +2394,7 @@
     </method>
     <method selector="initWithTransform:" swt_gen="true">
       <arg name="transform" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAffineTransform"></retval>
     </method>
     <method selector="invert" swt_gen="true">
       <retval swt_gen="true"></retval>
