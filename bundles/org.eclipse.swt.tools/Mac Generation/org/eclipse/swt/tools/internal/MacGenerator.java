@@ -35,42 +35,42 @@ import org.xml.sax.InputSource;
 public class MacGenerator {
 	String[] xmls;
 	Document[] documents;
-	Hashtable[] extraAttributes;
 	String outputDir, mainClassName;
 	
 	PrintStream out;
 	
 public MacGenerator(String[] xmls) {
 	this.xmls = xmls;
+	long start = System.currentTimeMillis();
 	documents = new Document[xmls.length];
-	extraAttributes = new Hashtable[xmls.length];
 	for (int i = 0; i < xmls.length; i++) {
-		documents[i] = getDocument(xmls[i]);
-		extraAttributes[i] = loadExtraAttributes(xmls[i]);
+		Document document = documents[i] = getDocument(xmls[i]);
+		if (document == null) continue;
+		merge(document, document, loadExtraAttributes(xmls[i]));
 	}
+	long end = System.currentTimeMillis();
+	System.out.println("load=" + (end - start));
 }
 
 public void generateAll() {
-	generateMainClass();
-	generateClasses();
-	generateMetadata();
+	generateExtraAttributes();
+//	generateMainClass();
+//	generateClasses();
+//	generateMetadata();
 }
 
 void generateClasses() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
-				Node extra = (Node)extras.get(getKey(node));
 				NamedNodeMap attributes = node.getAttributes();
-				NamedNodeMap extraAttributes = extra.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
-				Node gen = extraAttributes.getNamedItem("swt_gen");
+				Node gen = attributes.getNamedItem("swt_gen");
 				if (gen != null && gen.getNodeValue().equals("true")) {
+					String name = attributes.getNamedItem("name").getNodeValue();
 					if (outputDir != null) {
 //						FileOutputStream  is = new FileOutputStream(outputDir + "/" + name + ".java");
 						out = new PrintStream(new ByteArrayOutputStream());
@@ -243,6 +243,14 @@ void generateClasses() {
 	}
 }
 
+void generateExtraAttributes() {
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		saveExtraAttributes(xmls[x], document);
+	}
+}
+
 void generateMainClass() {
 	out("/** Classes */");
 	outln();
@@ -282,33 +290,28 @@ public Document[] getDocuments() {
 	return documents;
 }
 
-public Hashtable[] getExtraAttributes() {
-	return extraAttributes;
-}
-
 public String[] getXmls() {
 	return xmls;
 }
 
-public Hashtable loadExtraAttributes(String xmlPath) {
+private Hashtable loadExtraAttributes(String xmlPath) {
 	Hashtable table = new Hashtable();
 	Document doc = getDocument(getFileName(xmlPath) + ".extras");
 	if (doc != null) buildExtrasLookup(doc, table);
 	return table;
 }
 
-public void reloadExtraAttributes() {
-	extraAttributes = new Hashtable[xmls.length];
-	for (int i = 0; i < xmls.length; i++) {
-		extraAttributes[i] = loadExtraAttributes(xmls[i]);
-	}
-}
-
-public void saveExtraAttributes(String xmlPath, Document document) {
+private void saveExtraAttributes(String xmlPath, Document document) {
 	try {
-		String fileName = getMetaDataDir() + getFileName(xmlPath) + ".extras";
+		String fileName = getExtraAttributesDir() + getFileName(xmlPath) + ".extras";
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		new DOMWriter(new PrintStream(out), false).print(document);
+		DOMWriter writer = new DOMWriter(new PrintStream(out), false);
+		String[] names = getIDAttributeNames();
+		String[] filter = new String[names.length + 1];
+		filter[0] = "swt_.*";
+		System.arraycopy(names, 0, filter, 1, names.length);
+		writer.setAttributeFilter(filter);
+		writer.print(document);
 		if (out.size() > 0) output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -324,7 +327,7 @@ public void setMainClass(String mainClassName) {
 	this.mainClassName = mainClassName;
 }
 
-public Document getDocument(String xmlPath) {
+private Document getDocument(String xmlPath) {
 	try {
 		InputStream is = null;
 		if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
@@ -338,6 +341,7 @@ public Document getDocument(String xmlPath) {
 
 public String[] getExtraAttributeNames() {
 	return new String[]{
+		"swt_gen",
 		"swt_superclass",
 		"swt_vararg_max",
 		"swt_not_static",
@@ -351,13 +355,13 @@ public String getFileName(String xmlPath) {
 	return fileName;
 }
 
-public String getKey (Node node) {
+private String getKey (Node node) {
 	StringBuffer buffer = new StringBuffer();
 	while (node != null) {
 		if (buffer.length() > 0) buffer.append("_");
 		String name = node.getNodeName();
 		StringBuffer key = new StringBuffer(name);
-		Node nameAttrib = getNameAttribute(node);
+		Node nameAttrib = getIDAttribute(node);
 		if (nameAttrib != null) {
 			key.append("-");
 			key.append(nameAttrib.getNodeValue());
@@ -369,22 +373,57 @@ public String getKey (Node node) {
 	return buffer.toString();
 }
 
-public Node getNameAttribute(Node node) {
+public Node getIDAttribute(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	if (attributes == null) return null;
-	Node nameAttrib = attributes.getNamedItem("name");
-	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("selector");
-	if (nameAttrib == null) nameAttrib = attributes.getNamedItem("path");
-	return nameAttrib;
+	String[] names = getIDAttributeNames();
+	for (int i = 0; i < names.length; i++) {
+		Node nameAttrib = attributes.getNamedItem("name");
+		if (nameAttrib != null) return nameAttrib;
+	}
+	return null;
 }
+
+public String[] getIDAttributeNames() {
+	return new String[]{
+		"name",
+		"selector",
+		"path",
+	};
+}
+
+void merge(Document document, Node node, Hashtable extras) {
+	if (extras == null) return;
+	NodeList list = node.getChildNodes();
+	for (int i = 0; i < list.getLength(); i++) {
+		Node childNode = list.item(i);
+		if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+			Node extra = (Node)extras.get(getKey(childNode));
+			if (extra != null) {
+				NamedNodeMap attributes = extra.getAttributes();
+				for (int j = 0, length = attributes.getLength(); j < length; j++) {
+					Attr attr = (Attr)attributes.item(j);
+					String name = attr.getNodeName();
+					if (name.startsWith("swt_")) {
+						Attr newAttr = document.createAttribute(name);
+						newAttr.setNodeValue(attr.getNodeValue());
+						((Element)childNode).setAttributeNode(newAttr);
+					}
+				}
+			}
+		}
+		merge(document, childNode, extras);
+	}
+}
+
 	
-void out(String str) {
+private void out(String str) {
 	PrintStream out = this.out;
 	if (out == null) out = System.out;
 	out.print(str);
 }
 
-void outln() {
+private void outln() {
 	PrintStream out = this.out;
 	if (out == null) out = System.out;
 	out.println();
@@ -394,7 +433,6 @@ void generateConstants() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -413,7 +451,6 @@ void generateConstantsMetaData() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -432,7 +469,6 @@ void generateEnums() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -481,7 +517,7 @@ boolean isBoolean(Node node) {
 	return code.equals("B");
 }
 
-String getMetaDataDir() {
+String getExtraAttributesDir() {
 	return "./Mac Generation/org/eclipse/swt/tools/internal/";
 }
 
@@ -521,7 +557,6 @@ void generateSelectorsConst() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -559,7 +594,6 @@ void generateSends() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -620,7 +654,6 @@ void generateSendsMetaData() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -721,7 +754,6 @@ void generateClassesConst() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -752,7 +784,6 @@ void generateProtocolsConst() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
@@ -888,7 +919,6 @@ void generateFunctions() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
-		Hashtable extras = extraAttributes[x];
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
