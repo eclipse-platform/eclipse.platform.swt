@@ -163,7 +163,7 @@ public class MacGeneratorUI {
 
 		Composite parent = shell;
 
-		nodesTree = new Tree(parent, SWT.MULTI | SWT.CHECK | SWT.BORDER);
+		nodesTree = new Tree(parent, SWT.MULTI | SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
 		nodesTree.setLayoutData(new GridData(GridData.FILL_BOTH));
 		nodesTree.setHeaderVisible(true);
 		nodesTree.setLinesVisible(true);
