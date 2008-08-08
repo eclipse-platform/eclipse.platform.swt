@@ -1,83 +1,83 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-  <depends_on path="/System/Library/Frameworks/CoreFoundation.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CFNetwork.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/SystemConfiguration.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/CoreServices.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/Security.framework" swt_gen="true"></depends_on>
-  <struct name="NSAffineTransformStruct" swt_gen="true">
-    <field name="m11" swt_gen="true"></field>
-    <field name="m12" swt_gen="true"></field>
-    <field name="m21" swt_gen="true"></field>
-    <field name="m22" swt_gen="true"></field>
-    <field name="tX" swt_gen="true"></field>
-    <field name="tY" swt_gen="true"></field>
+  <depends_on path="/System/Library/Frameworks/CoreFoundation.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CFNetwork.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/SystemConfiguration.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/CoreServices.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/Security.framework"></depends_on>
+  <struct name="NSAffineTransformStruct">
+    <field name="m11"></field>
+    <field name="m12"></field>
+    <field name="m21"></field>
+    <field name="m22"></field>
+    <field name="tX"></field>
+    <field name="tY"></field>
   </struct>
-  <struct name="NSDecimal" swt_gen="true">
-    <field name="_exponent" swt_gen="true"></field>
-    <field name="_length" swt_gen="true"></field>
-    <field name="_isNegative" swt_gen="true"></field>
-    <field name="_isCompact" swt_gen="true"></field>
-    <field name="_reserved" swt_gen="true"></field>
-    <field name="_mantissa" swt_gen="true"></field>
+  <struct name="NSDecimal">
+    <field name="_exponent"></field>
+    <field name="_length"></field>
+    <field name="_isNegative"></field>
+    <field name="_isCompact"></field>
+    <field name="_reserved"></field>
+    <field name="_mantissa"></field>
   </struct>
-  <struct name="NSFastEnumerationState" swt_gen="true">
-    <field name="state" swt_gen="true"></field>
-    <field name="itemsPtr" swt_gen="true"></field>
-    <field name="mutationsPtr" swt_gen="true"></field>
-    <field name="extra" swt_gen="true"></field>
+  <struct name="NSFastEnumerationState">
+    <field name="state"></field>
+    <field name="itemsPtr"></field>
+    <field name="mutationsPtr"></field>
+    <field name="extra"></field>
   </struct>
-  <struct name="NSHashEnumerator" swt_gen="true">
-    <field name="_pi" swt_gen="true"></field>
-    <field name="_si" swt_gen="true"></field>
-    <field name="_bs" swt_gen="true"></field>
+  <struct name="NSHashEnumerator">
+    <field name="_pi"></field>
+    <field name="_si"></field>
+    <field name="_bs"></field>
   </struct>
-  <struct name="NSHashTableCallBacks" swt_gen="true">
-    <field name="hash" swt_gen="true"></field>
-    <field name="isEqual" swt_gen="true"></field>
-    <field name="retain" swt_gen="true"></field>
-    <field name="release" swt_gen="true"></field>
-    <field name="describe" swt_gen="true"></field>
+  <struct name="NSHashTableCallBacks">
+    <field name="hash"></field>
+    <field name="isEqual"></field>
+    <field name="retain"></field>
+    <field name="release"></field>
+    <field name="describe"></field>
   </struct>
-  <struct name="NSMapEnumerator" swt_gen="true">
-    <field name="_pi" swt_gen="true"></field>
-    <field name="_si" swt_gen="true"></field>
-    <field name="_bs" swt_gen="true"></field>
+  <struct name="NSMapEnumerator">
+    <field name="_pi"></field>
+    <field name="_si"></field>
+    <field name="_bs"></field>
   </struct>
-  <struct name="NSMapTableKeyCallBacks" swt_gen="true">
-    <field name="hash" swt_gen="true"></field>
-    <field name="isEqual" swt_gen="true"></field>
-    <field name="retain" swt_gen="true"></field>
-    <field name="release" swt_gen="true"></field>
-    <field name="describe" swt_gen="true"></field>
-    <field name="notAKeyMarker" swt_gen="true"></field>
+  <struct name="NSMapTableKeyCallBacks">
+    <field name="hash"></field>
+    <field name="isEqual"></field>
+    <field name="retain"></field>
+    <field name="release"></field>
+    <field name="describe"></field>
+    <field name="notAKeyMarker"></field>
   </struct>
-  <struct name="NSMapTableValueCallBacks" swt_gen="true">
-    <field name="retain" swt_gen="true"></field>
-    <field name="release" swt_gen="true"></field>
-    <field name="describe" swt_gen="true"></field>
+  <struct name="NSMapTableValueCallBacks">
+    <field name="retain"></field>
+    <field name="release"></field>
+    <field name="describe"></field>
   </struct>
-  <struct name="NSPoint" swt_gen="true">
-    <field name="x" swt_gen="true"></field>
-    <field name="y" swt_gen="true"></field>
+  <struct name="NSPoint">
+    <field name="x"></field>
+    <field name="y"></field>
   </struct>
-  <struct name="NSRange" swt_gen="true">
-    <field name="location" swt_gen="true"></field>
-    <field name="length" swt_gen="true"></field>
+  <struct name="NSRange">
+    <field name="location"></field>
+    <field name="length"></field>
   </struct>
-  <struct name="NSRect" swt_gen="true">
-    <field name="origin" swt_gen="true"></field>
-    <field name="size" swt_gen="true"></field>
+  <struct name="NSRect">
+    <field name="origin"></field>
+    <field name="size"></field>
   </struct>
-  <struct name="NSSize" swt_gen="true">
-    <field name="width" swt_gen="true"></field>
-    <field name="height" swt_gen="true"></field>
+  <struct name="NSSize">
+    <field name="width"></field>
+    <field name="height"></field>
   </struct>
-  <struct name="NSSwappedDouble" swt_gen="true">
-    <field name="v" swt_gen="true"></field>
+  <struct name="NSSwappedDouble">
+    <field name="v"></field>
   </struct>
-  <struct name="NSSwappedFloat" swt_gen="true">
-    <field name="v" swt_gen="true"></field>
+  <struct name="NSSwappedFloat">
+    <field name="v"></field>
   </struct>
   <opaque name="NSZone" swt_gen="true"></opaque>
   <constant name="NSAppleEventManagerWillProcessFirstEventNotification"></constant>

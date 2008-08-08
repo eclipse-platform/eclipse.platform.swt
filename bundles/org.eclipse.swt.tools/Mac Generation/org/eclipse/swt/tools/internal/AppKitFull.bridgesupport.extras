@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-  <depends_on path="/System/Library/Frameworks/ApplicationServices.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/AudioToolbox.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/AudioUnit.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/CoreData.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/Foundation.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/IOKit.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/QuartzCore.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/Security.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/CoreAudio.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/DiskArbitration.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/CoreServices.framework" swt_gen="true"></depends_on>
-  <depends_on path="/System/Library/Frameworks/CoreFoundation.framework" swt_gen="true"></depends_on>
-  <opaque name="NSModalSession" swt_gen="true"></opaque>
+  <depends_on path="/System/Library/Frameworks/ApplicationServices.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/AudioToolbox.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/AudioUnit.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/CoreData.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/Foundation.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/IOKit.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/QuartzCore.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/Security.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/CoreAudio.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/DiskArbitration.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/CoreServices.framework"></depends_on>
+  <depends_on path="/System/Library/Frameworks/CoreFoundation.framework"></depends_on>
+  <opaque name="NSModalSession"></opaque>
   <constant name="NSAbortModalException"></constant>
   <constant name="NSAbortPrintingException"></constant>
   <constant name="NSAccessibilityAllowedValuesAttribute"></constant>
