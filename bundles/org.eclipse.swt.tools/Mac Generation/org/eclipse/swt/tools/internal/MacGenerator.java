@@ -46,7 +46,8 @@ public MacGenerator(String[] xmls) {
 	for (int i = 0; i < xmls.length; i++) {
 		Document document = documents[i] = getDocument(xmls[i]);
 		if (document == null) continue;
-		merge(document, document, loadExtraAttributes(xmls[i]));
+		Hashtable extras = loadExtraAttributes(xmls[i]);
+		merge(document, document, extras);
 	}
 	long end = System.currentTimeMillis();
 	System.out.println("load=" + (end - start));
