@@ -31,6 +31,8 @@ public class MacGeneratorUI {
 
 	public MacGeneratorUI(String[] xmls) {
 		gen = new MacGenerator(xmls);
+		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
+		gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
 	}
 
 	TreeItem lastParent;

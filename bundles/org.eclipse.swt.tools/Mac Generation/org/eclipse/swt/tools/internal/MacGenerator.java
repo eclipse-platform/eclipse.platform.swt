@@ -40,9 +40,9 @@ public MacGenerator(String[] xmls) {
 
 public void generateAll() {
 	generateExtraAttributes();
-//	generateMainClass();
-//	generateClasses();
+	generateMainClass();
 //	generateMetadata();
+//	generateClasses();
 }
 
 void generateClasses() {
@@ -55,7 +55,7 @@ void generateClasses() {
 			if ("class".equals(node.getNodeName())) {
 				NamedNodeMap attributes = node.getAttributes();
 				Node gen = attributes.getNamedItem("swt_gen");
-				if (gen != null && gen.getNodeValue().equals("true")) {
+				if (gen != null && gen.getNodeValue().equals("mixed")) {
 					String name = attributes.getNamedItem("name").getNodeValue();
 					if (outputDir != null) {
 //						FileOutputStream  is = new FileOutputStream(outputDir + "/" + name + ".java");
@@ -238,6 +238,36 @@ void generateExtraAttributes() {
 }
 
 void generateMainClass() {
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	this.out = new PrintStream(out);
+
+	String header = "", footer = "";
+	String fileName = outputDir + mainClassName.replace('.', '/') + ".java";
+	FileInputStream is = null;
+	try {
+		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is = new FileInputStream(fileName)));
+		StringBuffer str = new StringBuffer();
+		char[] buffer = new char[4096];
+		int read;
+		while ((read = input.read(buffer)) != -1) {
+			str.append(buffer, 0, read);
+		}
+		String section = "/** This section is auto generated */";
+		int start = str.indexOf(section) + section.length();
+		int end = str.indexOf(section, start);
+		header = str.substring(0, start);
+		footer = str.substring(end);
+	} catch (IOException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	
+	out(header);
+	outln();
+	outln();
+	
 	out("/** Classes */");
 	outln();
 	generateClassesConst();
@@ -265,6 +295,16 @@ void generateMainClass() {
 	out("/** Sends */");
 	outln();
 	generateSends();
+	
+	outln();
+	out(footer);
+	try {
+		out.flush();
+		if (out.size() > 0) output(out.toByteArray(), fileName);
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
 }
 
 void generateMetadata() {
@@ -437,11 +477,22 @@ void generateConstants() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("constant".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				out("public static final native int ");
-				out(attributes.getNamedItem("name").getNodeValue());
-				out("();");
-				outln();
+				if (getGen(node)) {
+					NamedNodeMap attributes = node.getAttributes();
+					String constName = attributes.getNamedItem("name").getNodeValue();
+					out("public static final native int ");
+					out(constName);
+					out("();");
+					outln();
+//					if (attributes.getNamedItem("declared_type").getNodeValue().equals("NSString*")) {
+//						out("public static final NSString ");
+//						out(constName);
+//						out("= new NSString(");
+//						out(constName);
+//						out("());");
+//						outln();
+//					}
+				}
 			}
 		}		
 	}
@@ -473,24 +524,42 @@ void generateEnums() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("enum".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				Node value = attributes.getNamedItem("value");
-				if (value != null) {
-					out("public static final ");
-					if (value.getNodeValue().indexOf('.') != -1) {
-						out("double ");
-					} else {
-						out("int ");
+				if (getGen(node)) {
+					NamedNodeMap attributes = node.getAttributes();
+					Node valueNode = attributes.getNamedItem("value");
+					if (valueNode != null) {
+						String value = valueNode.getNodeValue();
+						out("public static final ");
+						boolean isLong = false;
+						if (value.indexOf('.') != -1) {
+							out("double ");
+						} else {
+							try {
+								Integer.parseInt(value);
+								out("int ");
+							} catch (NumberFormatException e) {
+								isLong = true;
+								out("long ");
+							}
+						}
+						out(attributes.getNamedItem("name").getNodeValue());
+						out(" = ");
+						out(value);
+						if (isLong && !value.endsWith("L")) out("L");
+						out(";");
+						outln();
 					}
-					out(attributes.getNamedItem("name").getNodeValue());
-					out(" = ");
-					out(value.getNodeValue());
-					out(";");
-					outln();
 				}
 			}
 		}
 	}
+}
+
+boolean getGen(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	if (attributes == null) return false;
+	Node gen = attributes.getNamedItem("swt_gen");
+	return gen != null && !gen.getNodeValue().equals("false");
 }
 
 boolean isStruct(Node node) {
@@ -561,18 +630,17 @@ void generateSelectorsConst() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName()) || "informal_protocol".equals(node.getNodeName())) {
-//				NamedNodeMap attributes = node.getAttributes();
-//				String name = attributes.getNamedItem("name").getNodeValue();
-//				if (getGenerateClass(name)) {
+				if (getGen(node)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
-						if ("method".equals(method.getNodeName())) {
-							String sel = method.getAttributes().getNamedItem("selector").getNodeValue();
+						if (getGen(method)) {
+							NamedNodeMap mthAttributes = method.getAttributes();
+							String sel = mthAttributes.getNamedItem("selector").getNodeValue();
 							set.add(sel);
 						}
 					}
-//				}
+				}
 			}
 		}
 	}
@@ -598,48 +666,48 @@ void generateSends() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
-//				NamedNodeMap attributes = node.getAttributes();
-//				String name = attributes.getNamedItem("name").getNodeValue();
-//				if (getGenerateClass(name)) {
+				if (getGen(node)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
 						Node method = methods.item(j);
 						if ("method".equals(method.getNodeName())) {
-							Node returnNode = getReturnNode(method.getChildNodes());
-							StringBuffer buffer = new StringBuffer();
-							buffer.append("public static final native "); 
-							if (returnNode != null && isStruct(returnNode)) {
-								buffer.append("void objc_msgSend_stret(");
-								buffer.append(getJavaType(returnNode));
-								buffer.append(" result, ");
-							} else if (returnNode != null && isFloatingPoint(returnNode)) {
-								buffer.append("double objc_msgSend_fpret(");
-							} else {
-								buffer.append("int objc_msgSend(");
-							}
-							buffer.append("int id, int sel");
-							NodeList params = method.getChildNodes();
-							boolean first = false;
-							int count = 0;
-							for (int k = 0; k < params.getLength(); k++) {
-								Node param = params.item(k);
-								if ("arg".equals(param.getNodeName())) {
-									if (!first) buffer.append(", ");
-									if (isStruct(param)) {
-										buffer.append(getJavaType(param));
-									} else {
-										buffer.append(getType(param));
-									}
-									first = false;
-									buffer.append(" arg");
-									buffer.append(String.valueOf(count++));
+							if (getGen(method)) {
+								Node returnNode = getReturnNode(method.getChildNodes());
+								StringBuffer buffer = new StringBuffer();
+								buffer.append("public static final native "); 
+								if (returnNode != null && isStruct(returnNode)) {
+									buffer.append("void objc_msgSend_stret(");
+									buffer.append(getJavaType(returnNode));
+									buffer.append(" result, ");
+								} else if (returnNode != null && isFloatingPoint(returnNode)) {
+									buffer.append("double objc_msgSend_fpret(");
+								} else {
+									buffer.append("int objc_msgSend(");
 								}
+								buffer.append("int id, int sel");
+								NodeList params = method.getChildNodes();
+								boolean first = false;
+								int count = 0;
+								for (int k = 0; k < params.getLength(); k++) {
+									Node param = params.item(k);
+									if ("arg".equals(param.getNodeName())) {
+										if (!first) buffer.append(", ");
+										if (isStruct(param)) {
+											buffer.append(getJavaType(param));
+										} else {
+											buffer.append(getType(param));
+										}
+										first = false;
+										buffer.append(" arg");
+										buffer.append(String.valueOf(count++));
+									}
+								}
+								buffer.append(");");
+								set.add(buffer.toString());
 							}
-							buffer.append(");");
-							set.add(buffer.toString());
 						}
 					}
-//				}
+				}
 			}
 		}
 	}
@@ -758,11 +826,11 @@ void generateClassesConst() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
-//				if (getGenerateClass(name)) {
+				if (getGen(node)) {
+					NamedNodeMap attributes = node.getAttributes();
+					String name = attributes.getNamedItem("name").getNodeValue();
 					set.add(name);
-//				}
+				}
 			}
 		}
 	}
@@ -788,17 +856,17 @@ void generateProtocolsConst() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("informal_protocol".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
-//				if (getGenerateClass(name)) {
+				if (getGen(node)) {
+					NamedNodeMap attributes = node.getAttributes();
+					String name = attributes.getNamedItem("name").getNodeValue();
 					set.add(name);
-//				}
+				}
 			}
 		}
 	}
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String cls = (String) iterator.next();
-		String clsConst = "class_" + cls;
+		String clsConst = "protocol_" + cls;
 		out("public static final int /*long*/ ");
 		out(clsConst);
 		out(" = ");
@@ -923,33 +991,35 @@ void generateFunctions() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("function".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
-				out("public static final native ");
-				Node returnNode = getReturnNode(node.getChildNodes());
-				if (returnNode != null) {
-					out(getType(returnNode));
-					out(" ");
-				} else {
-					out("void ");
-				}
-				out(name);
-				out("(");
-				NodeList params = node.getChildNodes();
-				boolean first = true;
-				for (int j = 0; j < params.getLength(); j++) {
-					Node param = params.item(j);
-					if ("arg".equals(param.getNodeName())) {
-						NamedNodeMap paramAttributes = param.getAttributes();
-						if (!first) out(", ");
-						out(getType(param));
-						first = false;
+				if (getGen(node)) {
+					NamedNodeMap attributes = node.getAttributes();
+					String name = attributes.getNamedItem("name").getNodeValue();
+					out("public static final native ");
+					Node returnNode = getReturnNode(node.getChildNodes());
+					if (returnNode != null) {
+						out(getType(returnNode));
 						out(" ");
-						out(paramAttributes.getNamedItem("name").getNodeValue());
+					} else {
+						out("void ");
 					}
+					out(name);
+					out("(");
+					NodeList params = node.getChildNodes();
+					boolean first = true;
+					for (int j = 0; j < params.getLength(); j++) {
+						Node param = params.item(j);
+						if ("arg".equals(param.getNodeName())) {
+							NamedNodeMap paramAttributes = param.getAttributes();
+							if (!first) out(", ");
+							out(getType(param));
+							first = false;
+							out(" ");
+							out(paramAttributes.getNamedItem("name").getNodeValue());
+						}
+					}
+					out(");");
+					outln();
 				}
-				out(");");
-				outln();
 			}
 		}
 	}
@@ -984,13 +1054,9 @@ void output(byte[] bytes, String fileName) throws IOException {
 public static void main(String[] args) {
 	try {
 		MacGenerator gen = new MacGenerator(args);
-//		gen.setClasses(new String[]{
-//			"NSURL",
-//		});
-		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa");
-		gen.generateMainClass();
-//		gen.generateMetadata();
-//		gen.generateClasses();
+		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
+		gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
+		gen.generateAll();
 	} catch (Throwable e) {
 		e.printStackTrace();
 	}
