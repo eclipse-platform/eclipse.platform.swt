@@ -10,23 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.io.*;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
@@ -565,8 +550,8 @@ void generateSelectorsConst() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName()) || "informal_protocol".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
+//				NamedNodeMap attributes = node.getAttributes();
+//				String name = attributes.getNamedItem("name").getNodeValue();
 //				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
@@ -602,8 +587,8 @@ void generateSends() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
+//				NamedNodeMap attributes = node.getAttributes();
+//				String name = attributes.getNamedItem("name").getNodeValue();
 //				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {
@@ -662,8 +647,8 @@ void generateSendsMetaData() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName())) {
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
+//				NamedNodeMap attributes = node.getAttributes();
+//				String name = attributes.getNamedItem("name").getNodeValue();
 //				if (getGenerateClass(name)) {
 					NodeList methods = node.getChildNodes();
 					for (int j = 0; j < methods.getLength(); j++) {

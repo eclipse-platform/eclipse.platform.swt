@@ -150,9 +150,9 @@ public class MacGeneratorUI {
 		});
 		nodesTree.addListener(SWT.Expand, new Listener() {
 			public void handleEvent(Event event) {
-				TreeItem item = (TreeItem)event.item;
-				if (item.getItemCount() == 1 && item.getItem(0).getData() == null) {
-					item.getItem(0).dispose();
+				TreeItem item = (TreeItem)event.item, dummy;
+				if (item.getItemCount() == 1 && (dummy = item.getItem(0)).getData() == null) {
+					dummy.dispose();
 					Node node = (Node)item.getData();
 					NodeList childNodes = node.getChildNodes();
 					for (int i = 0, length = childNodes.getLength(); i < length; i++) {
