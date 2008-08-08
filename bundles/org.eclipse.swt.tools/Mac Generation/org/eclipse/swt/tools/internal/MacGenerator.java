@@ -296,7 +296,10 @@ public String[] getXmls() {
 
 private Hashtable loadExtraAttributes(String xmlPath) {
 	Hashtable table = new Hashtable();
-	Document doc = getDocument(getFileName(xmlPath) + ".extras");
+	String path = getFileName(xmlPath) + ".extras";
+	File file = new File(getExtraAttributesDir());
+	if (file.exists()) path = new File(file, path).getAbsolutePath();
+	Document doc = getDocument(path);
 	if (doc != null) buildExtrasLookup(doc, table);
 	return table;
 }
