@@ -23,9 +23,6 @@ public class OS extends C {
 		OS.Gestalt (OS.gestaltSystemVersion, response);
 		VERSION = response [0] & 0xffff;		
 	}
-
-	//TODO - don't hard code
-	public static final int PTR_SIZEOF = 4;
 	
 	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int noErr = 0;
