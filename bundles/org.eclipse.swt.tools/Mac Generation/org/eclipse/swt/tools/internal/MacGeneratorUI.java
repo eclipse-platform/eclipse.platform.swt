@@ -38,7 +38,7 @@ public class MacGeneratorUI {
 		String name = node.getNodeName();
 		if (name.equals("#text")) return null;
 		TreeItem parentItem = null;
-		if (lastParent != null && name.equals(lastParent.getData())) {
+		if (lastParent != null && lastParent.getParentItem() == superItem && name.equals(lastParent.getData())) {
 			parentItem = lastParent;
 		} else {
 			TreeItem[] items = superItem.getItems();
@@ -153,7 +153,6 @@ public class MacGeneratorUI {
 				TreeItem item = (TreeItem)event.item, dummy;
 				if (item.getItemCount() == 1 && (dummy = item.getItem(0)).getData() == null) {
 					dummy.dispose();
-					lastParent = null;
 					Node node = (Node)item.getData();
 					NodeList childNodes = node.getChildNodes();
 					for (int i = 0, length = childNodes.getLength(); i < length; i++) {
