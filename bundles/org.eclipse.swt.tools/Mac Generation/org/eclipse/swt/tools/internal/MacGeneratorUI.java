@@ -33,21 +33,27 @@ public class MacGeneratorUI {
 		gen = new MacGenerator(xmls);
 	}
 
+	TreeItem lastParent;
 	TreeItem addChild (Node node, TreeItem superItem) {
 		String name = node.getNodeName();
 		if (name.equals("#text")) return null;
 		TreeItem parentItem = null;
-		TreeItem[] items = superItem.getItems();
-		for (int i = 0; i < items.length; i++) {
-			if (name.equals(items[i].getData())) {
-				parentItem = items[i];
-				break;
+		if (lastParent != null && name.equals(lastParent.getData())) {
+			parentItem = lastParent;
+		} else {
+			TreeItem[] items = superItem.getItems();
+			for (int i = 0; i < items.length; i++) {
+				if (name.equals(items[i].getData())) {
+					parentItem = items[i];
+					break;
+				}
 			}
-		}
-		if (parentItem == null) {
-			parentItem = new TreeItem(superItem, SWT.NONE);
-			parentItem.setData(name);
-			parentItem.setText(getPrettyText(name));
+			if (parentItem == null) {
+				parentItem = new TreeItem(superItem, SWT.NONE);
+				parentItem.setData(name);
+				parentItem.setText(getPrettyText(name));
+			}
+			lastParent = parentItem;
 		}
 		TreeItem item = new TreeItem(parentItem, SWT.NONE);
 		Node idAttrib = gen.getIDAttribute(node);
@@ -56,7 +62,7 @@ public class MacGeneratorUI {
 		NamedNodeMap attributes = node.getAttributes();
 		Node gen = attributes.getNamedItem("swt_gen");
 		item.setChecked(gen != null && gen.getNodeValue().equals("true"));
-		for (int i = 0; i < attributes.getLength(); i++) {
+		for (int i = 0, length = attributes.getLength(); i < length; i++) {
 			Node attrib = attributes.item(i);
 			if (attrib.equals(idAttrib)) continue;
 			String attribName = attrib.getNodeName();
@@ -64,9 +70,7 @@ public class MacGeneratorUI {
 			item.setText(getColumnFor(attribName), attrib.getNodeValue());
 		}
 		NodeList childNodes = node.getChildNodes();
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			addChild(childNodes.item(i), item);
-		}
+		if (childNodes.getLength() > 0) new TreeItem(item, SWT.NONE);
 		return item;
 	}
 	
@@ -142,6 +146,23 @@ public class MacGeneratorUI {
 				boolean checked = item.getChecked();
                 checkItems(item, checked);
                 checkPath(item.getParentItem(), checked, false);
+			}
+		});
+		nodesTree.addListener(SWT.Expand, new Listener() {
+			public void handleEvent(Event event) {
+				TreeItem item = (TreeItem)event.item;
+				if (item.getItemCount() == 1 && item.getItem(0).getData() == null) {
+					item.getItem(0).dispose();
+					Node node = (Node)item.getData();
+					NodeList childNodes = node.getChildNodes();
+					for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+						addChild(childNodes.item(i), item);
+					}
+					TreeColumn[] columns = nodesTree.getColumns();
+					for (int i = 0; i < columns.length; i++) {
+						columns[i].pack();
+					}
+				}
 			}
 		});
 
@@ -221,8 +242,7 @@ public class MacGeneratorUI {
 				}
 				gen.generateAll();
 			}
-		});
-		
+		});		
 
 		updateNodes();
 	}
@@ -260,7 +280,6 @@ public class MacGeneratorUI {
 	void updateNodes() {
 		String[] xmls = gen.getXmls();
 		if (xmls == null) return;
-		long start = System.currentTimeMillis();
 		Document[] documents = gen.getDocuments();
 		for (int x = 0; x < xmls.length; x++) {
 			String xmlPath = xmls[x];
@@ -269,17 +288,11 @@ public class MacGeneratorUI {
 				System.out.println("Could not find: " + xmlPath);
 				continue;
 			}
-			
 			TreeItem xmlItem = new TreeItem(nodesTree, SWT.NONE);
 			xmlItem.setText(gen.getFileName(xmlPath));
-			xmlItem.setData(xmlPath);
-			NodeList list = document.getDocumentElement().getChildNodes();
-			for (int i = 0; i < list.getLength(); i++) {
-				addChild(list.item(i), xmlItem);
-			}
+			xmlItem.setData(document.getDocumentElement());
+			new TreeItem(xmlItem, SWT.NONE);
 		}
-		long end = System.currentTimeMillis();
-		System.out.println("total=" + (end - start));
 		TreeColumn[] columns = nodesTree.getColumns();
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].pack();

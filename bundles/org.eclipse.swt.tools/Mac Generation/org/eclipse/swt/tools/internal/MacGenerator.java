@@ -382,7 +382,7 @@ public Node getIDAttribute(Node node) {
 	if (attributes == null) return null;
 	String[] names = getIDAttributeNames();
 	for (int i = 0; i < names.length; i++) {
-		Node nameAttrib = attributes.getNamedItem("name");
+		Node nameAttrib = attributes.getNamedItem(names[i]);
 		if (nameAttrib != null) return nameAttrib;
 	}
 	return null;
