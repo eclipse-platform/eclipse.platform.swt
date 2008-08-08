@@ -142,17 +142,14 @@ public class MacGeneratorUI {
 	void checkItems(TreeItem item, boolean checked) {
 	    item.setGrayed(false);
 	    item.setChecked(checked);
-	    TreeItem[] items = item.getItems();
 	    /*
 	     * Note that this creates the whole tree underneath item
 	     * so that the checked/grayed state can be kept in the
 	     * UI only and updated when generate is called. This can
 	     * be very expensive.
 	     */
-	    if (items.length == 1 && items[0].getData() == null) {
-	    	checkChildren(item);
-	    	items = item.getItems();
-	    }
+	    checkChildren(item);
+	    TreeItem[] items = item.getItems();
 	    for (int i = 0; i < items.length; i++) {
 	        checkItems(items[i], checked);
 	    }
