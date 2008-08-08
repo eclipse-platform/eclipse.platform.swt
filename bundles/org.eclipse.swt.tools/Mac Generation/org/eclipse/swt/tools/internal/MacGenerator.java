@@ -41,16 +41,16 @@ public class MacGenerator {
 	
 public MacGenerator(String[] xmls) {
 	this.xmls = xmls;
-	long start = System.currentTimeMillis();
 	documents = new Document[xmls.length];
 	for (int i = 0; i < xmls.length; i++) {
+		long start = System.currentTimeMillis();
 		Document document = documents[i] = getDocument(xmls[i]);
 		if (document == null) continue;
 		Hashtable extras = loadExtraAttributes(xmls[i]);
 		merge(document, document, extras);
+		long end = System.currentTimeMillis();
+		System.out.println("load=" + (end - start));
 	}
-	long end = System.currentTimeMillis();
-	System.out.println("load=" + (end - start));
 }
 
 public void generateAll() {
