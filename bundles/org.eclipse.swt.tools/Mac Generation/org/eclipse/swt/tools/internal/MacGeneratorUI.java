@@ -94,6 +94,31 @@ public class MacGeneratorUI {
 	    item.setGrayed(grayed);
 	    checkPath(item.getParentItem(), checked, grayed);
 	}
+
+	void checkChildren(TreeItem item) {
+		TreeItem dummy;
+		if (item.getItemCount() == 1 && (dummy = item.getItem(0)).getData() == null) {
+			dummy.dispose();
+			Node node = (Node)item.getData();
+			NodeList childNodes = node.getChildNodes();
+			for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+				addChild(childNodes.item(i), item);
+			}
+			TreeItem[] items = item.getItems();
+			for (int i = 0; i < items.length; i++) {
+				TreeItem[] children = items[i].getItems();
+				int checkedCount = 0;
+				for (int j = 0; j < children.length; j++) {
+					if (children[j].getChecked()) checkedCount++;
+				}
+				checkPath(items[i], checkedCount == children.length, false);
+			}
+			TreeColumn[] columns = nodesTree.getColumns();
+			for (int i = 0; i < columns.length; i++) {
+				columns[i].pack();
+			}
+		}
+	}
 	void checkItems(TreeItem item, boolean checked) {
 	    item.setGrayed(false);
 	    item.setChecked(checked);
@@ -150,19 +175,7 @@ public class MacGeneratorUI {
 		});
 		nodesTree.addListener(SWT.Expand, new Listener() {
 			public void handleEvent(Event event) {
-				TreeItem item = (TreeItem)event.item, dummy;
-				if (item.getItemCount() == 1 && (dummy = item.getItem(0)).getData() == null) {
-					dummy.dispose();
-					Node node = (Node)item.getData();
-					NodeList childNodes = node.getChildNodes();
-					for (int i = 0, length = childNodes.getLength(); i < length; i++) {
-						addChild(childNodes.item(i), item);
-					}
-					TreeColumn[] columns = nodesTree.getColumns();
-					for (int i = 0; i < columns.length; i++) {
-						columns[i].pack();
-					}
-				}
+				checkChildren((TreeItem)event.item);				
 			}
 		});
 
