@@ -280,6 +280,17 @@ public String[] getXmls() {
 	return xmls;
 }
 
+public boolean getEditable(Node node, String attribName) {
+	String name = node.getNodeName();
+	if (name.equals("method")) {
+		if (attribName.equals("swt_vararg_max")) return true;
+		if (attribName.equals("swt_not_static")) return true;
+	} else if (name.equals("class")) {
+		if (attribName.equals("swt_superclass")) return true;
+	}
+	return false;
+}
+
 private Hashtable loadExtraAttributes(String xmlPath) {
 	Hashtable table = new Hashtable();
 	String path = getFileName(xmlPath) + ".extras";

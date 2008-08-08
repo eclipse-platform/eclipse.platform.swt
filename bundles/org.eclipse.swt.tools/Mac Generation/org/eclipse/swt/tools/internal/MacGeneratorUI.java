@@ -105,6 +105,12 @@ public class MacGeneratorUI {
 			item.setGrayed(grayed);
 		}
 	}
+	
+	boolean getEditable(TreeItem item, int column) {
+		if (!(item.getData() instanceof Node)) return false;
+		String attribName = item.getParent().getColumn(column).getText();
+		return gen.getEditable((Node)item.getData(), attribName);
+	}
 
 	void checkChildren(TreeItem item) {
 		TreeItem dummy;
@@ -235,7 +241,6 @@ public class MacGeneratorUI {
 						Point pt = new Point(e.x, e.y);
 						TreeItem item = nodesTree.getItem(pt);
 						if (item == null) return;
-						if (!(item.getData() instanceof Element)) return;
 						int column = -1;
 						for (int i = 0; i < nodesTree.getColumnCount(); i++) {
 							if (item.getBounds(i).contains(pt)) {
@@ -244,7 +249,7 @@ public class MacGeneratorUI {
 							}				
 						}
 						if (column == -1) return;
-						if (!nodesTree.getColumn(column).getText().startsWith("swt_")) return;
+						if (!getEditable(item, column)) return;
 						editor.setColumn(column);
 						editor.setItem(item);
 						editorTx.setText(item.getText(column));
