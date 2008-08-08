@@ -3730,7 +3730,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="representation" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="WebDocumentRepresentation"></retval>
     </method>
     <method selector="request" swt_gen="true">
       <retval swt_gen="true"></retval>

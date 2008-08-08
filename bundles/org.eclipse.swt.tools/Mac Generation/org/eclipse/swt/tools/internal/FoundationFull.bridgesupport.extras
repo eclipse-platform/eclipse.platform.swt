@@ -2726,7 +2726,7 @@
   </class>
   <class name="NSCalendarDate" swt_gen="true" swt_superclass="NSDate">
     <method selector="calendarDate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSCalendarDate"></retval>
     </method>
     <method selector="calendarFormat" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2759,7 +2759,7 @@
       <arg name="minute" swt_gen="true"></arg>
       <arg name="second" swt_gen="true"></arg>
       <arg name="aTimeZone" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSCalendarDate"></retval>
     </method>
     <method selector="dayOfCommonEra" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4578,7 +4578,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="defaultCenter" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSNotificationCenter"></retval>
     </method>
     <method selector="notificationCenterForType:" swt_gen="true">
       <arg name="notificationCenterType" swt_gen="true"></arg>
@@ -6883,7 +6883,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="defaultCenter" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSNotificationCenter"></retval>
     </method>
     <method selector="postNotification:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
@@ -9442,7 +9442,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSRelativeSpecifier" swt_gen="true">
+  <class name="NSRelativeSpecifier" swt_gen="true" swt_superclass="NSScriptObjectSpecifier">
     <method selector="baseSpecifier" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -10149,7 +10149,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="set" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSSet"></retval>
     </method>
     <method selector="setByAddingObject:" swt_gen="true">
       <arg name="anObject" swt_gen="true"></arg>
@@ -11354,7 +11354,7 @@
     </method>
     <method selector="URLWithString:" swt_gen="true">
       <arg name="URLString" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSURL"></retval>
     </method>
     <method selector="URLWithString:relativeToURL:" swt_gen="true">
       <arg name="URLString" swt_gen="true"></arg>
@@ -11372,7 +11372,7 @@
     </method>
     <method selector="fileURLWithPath:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSURL"></retval>
     </method>
     <method selector="fileURLWithPath:isDirectory:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
@@ -11921,7 +11921,7 @@
     </method>
     <method selector="requestWithURL:" swt_gen="true">
       <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSURLRequest"></retval>
     </method>
     <method selector="requestWithURL:cachePolicy:timeoutInterval:" swt_gen="true">
       <arg name="URL" swt_gen="true"></arg>
@@ -12130,7 +12130,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSUserDefaults" swt_gen="true" swt_superclass="NSController">
+  <class name="NSUserDefaults" swt_gen="true">
     <method selector="addSuiteNamed:" swt_gen="true">
       <arg name="suiteName" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>

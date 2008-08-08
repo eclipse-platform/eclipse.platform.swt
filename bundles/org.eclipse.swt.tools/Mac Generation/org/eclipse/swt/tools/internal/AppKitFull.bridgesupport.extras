@@ -2589,7 +2589,7 @@
     <method selector="initWithDuration:animationCurve:" swt_gen="true">
       <arg name="duration" swt_gen="true"></arg>
       <arg name="animationCurve" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAnimation"></retval>
     </method>
     <method selector="isAnimating" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2672,7 +2672,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSApplication" swt_gen="true">
+  <class name="NSApplication" swt_gen="true" swt_superclass="NSResponder">
     <method selector="abortModal" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -3911,7 +3911,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="contentView" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSView"></retval>
     </method>
     <method selector="contentViewMargins" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3988,7 +3988,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="titleCell" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSCell"></retval>
     </method>
     <method selector="titleFont" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -6448,7 +6448,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="cell" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSCell"></retval>
     </method>
     <method selector="cellClass" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -17195,7 +17195,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="documentView" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSView"></retval>
     </method>
     <method selector="documentVisibleRect" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -18902,7 +18902,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="headerCell" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSTableHeaderCell"></retval>
     </method>
     <method selector="headerToolTip" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -21766,7 +21766,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSUserDefaultsController" swt_gen="true">
+  <class name="NSUserDefaultsController" swt_gen="true" swt_superclass="NSController">
     <method selector="appliesImmediately" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -22683,7 +22683,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSWindow" swt_gen="true">
+  <class name="NSWindow" swt_gen="true" swt_superclass="NSResponder">
     <method selector="acceptsMouseMovedEvents" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -22802,7 +22802,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="contentView" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSView"></retval>
     </method>
     <method selector="convertBaseToScreen:" swt_gen="true">
       <arg name="aPoint" swt_gen="true"></arg>
