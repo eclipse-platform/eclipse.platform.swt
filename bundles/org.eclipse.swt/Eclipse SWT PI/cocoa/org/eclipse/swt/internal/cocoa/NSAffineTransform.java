@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -24,21 +24,17 @@ public void appendTransform(NSAffineTransform transform) {
 	OS.objc_msgSend(this.id, OS.sel_appendTransform_1, transform != null ? transform.id : 0);
 }
 
+public void concat() {
+	OS.objc_msgSend(this.id, OS.sel_concat);
+}
+
 public NSAffineTransform initWithTransform(NSAffineTransform transform) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_1, transform != null ? transform.id : 0);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAffineTransform(result) : null);
 }
 
 public void invert() {
 	OS.objc_msgSend(this.id, OS.sel_invert);
-}
-
-public void set() {
-	OS.objc_msgSend(this.id, OS.sel_set);
-}
-
-public void concat() {
-	OS.objc_msgSend(this.id, OS.sel_concat);
 }
 
 public void prependTransform(NSAffineTransform transform) {
@@ -61,6 +57,10 @@ public void scaleXBy(float scaleX, float scaleY) {
 	OS.objc_msgSend(this.id, OS.sel_scaleXBy_1yBy_1, scaleX, scaleY);
 }
 
+public void set() {
+	OS.objc_msgSend(this.id, OS.sel_set);
+}
+
 public void setTransformStruct(NSAffineTransformStruct transformStruct) {
 	OS.objc_msgSend(this.id, OS.sel_setTransformStruct_1, transformStruct);
 }
@@ -68,6 +68,11 @@ public void setTransformStruct(NSAffineTransformStruct transformStruct) {
 public static NSAffineTransform transform() {
 	int result = OS.objc_msgSend(OS.class_NSAffineTransform, OS.sel_transform);
 	return result != 0 ? new NSAffineTransform(result) : null;
+}
+
+public NSBezierPath transformBezierPath(NSBezierPath aPath) {
+	int result = OS.objc_msgSend(this.id, OS.sel_transformBezierPath_1, aPath != null ? aPath.id : 0);
+	return result != 0 ? new NSBezierPath(result) : null;
 }
 
 public NSPoint transformPoint(NSPoint aPoint) {

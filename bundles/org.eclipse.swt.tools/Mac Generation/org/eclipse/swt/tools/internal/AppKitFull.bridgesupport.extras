@@ -3276,77 +3276,77 @@
     </method>
     <method selector="initWithAttributedString:" swt_gen="true">
       <arg name="attrStr" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithData:options:documentAttributes:error:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="options" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
       <arg name="error" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithDocFormat:documentAttributes:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithHTML:baseURL:documentAttributes:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="base" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithHTML:documentAttributes:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithHTML:options:documentAttributes:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="options" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithPath:documentAttributes:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithRTF:documentAttributes:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithRTFD:documentAttributes:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithRTFDFileWrapper:documentAttributes:" swt_gen="true">
       <arg name="wrapper" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:attributes:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
       <arg name="attrs" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithURL:documentAttributes:" swt_gen="true">
       <arg name="url" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithURL:options:documentAttributes:error:" swt_gen="true">
       <arg name="url" swt_gen="true"></arg>
       <arg name="options" swt_gen="true"></arg>
       <arg name="dict" swt_gen="true"></arg>
       <arg name="error" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="isEqualToAttributedString:" swt_gen="true">
       <arg name="other" swt_gen="true"></arg>
@@ -3798,7 +3798,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="initForIncrementalLoad" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:" swt_gen="true">
       <arg name="planes" swt_gen="true"></arg>
@@ -3812,7 +3812,7 @@
       <arg name="bitmapFormat" swt_gen="true"></arg>
       <arg name="rBytes" swt_gen="true"></arg>
       <arg name="pBits" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:" swt_gen="true">
       <arg name="planes" swt_gen="true"></arg>
@@ -3825,23 +3825,23 @@
       <arg name="colorSpaceName" swt_gen="true"></arg>
       <arg name="rBytes" swt_gen="true"></arg>
       <arg name="pBits" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithCGImage:" swt_gen="true">
       <arg name="cgImage" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithCIImage:" swt_gen="true">
       <arg name="ciImage" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithData:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithFocusedViewRect:" swt_gen="true">
       <arg name="rect" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
     </method>
     <method selector="isPlanar" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -6428,7 +6428,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSControl" swt_gen="true" swt_superclass="NSView">
+  <class name="NSControl" swt_gen="mixed" swt_superclass="NSView">
     <method selector="abortEditing" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -6479,9 +6479,9 @@
     <method selector="ignoresMultiClick" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="initWithFrame:" swt_gen="true">
-      <arg name="frameRect" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initWithFrame:">
+      <arg name="frameRect"></arg>
+      <retval></retval>
     </method>
     <method selector="intValue" swt_gen="true">
       <retval swt_gen="true"></retval>

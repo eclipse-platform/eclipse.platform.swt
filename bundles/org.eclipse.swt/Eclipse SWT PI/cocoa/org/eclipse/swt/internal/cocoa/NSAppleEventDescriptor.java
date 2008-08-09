@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -111,32 +111,32 @@ public int eventID() {
 
 public NSAppleEventDescriptor initListDescriptor() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initListDescriptor);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 
 public NSAppleEventDescriptor initRecordDescriptor() {
 	int result = OS.objc_msgSend(this.id, OS.sel_initRecordDescriptor);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 
 public NSAppleEventDescriptor initWithAEDescNoCopy(int aeDesc) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithAEDescNoCopy_1, aeDesc);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 
 public NSAppleEventDescriptor initWithDescriptorType_bytes_length_(int descriptorType, int bytes, int byteCount) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithDescriptorType_1bytes_1length_1, descriptorType, bytes, byteCount);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 
 public NSAppleEventDescriptor initWithDescriptorType_data_(int descriptorType, NSData data) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithDescriptorType_1data_1, descriptorType, data != null ? data.id : 0);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 
 public NSAppleEventDescriptor initWithEventClass(int eventClass, int eventID, NSAppleEventDescriptor targetDescriptor, short returnID, int transactionID) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithEventClass_1eventID_1targetDescriptor_1returnID_1transactionID_1, eventClass, eventID, targetDescriptor != null ? targetDescriptor.id : 0, returnID, transactionID);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 
 public void insertDescriptor(NSAppleEventDescriptor descriptor, int index) {

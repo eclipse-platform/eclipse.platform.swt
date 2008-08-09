@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -61,15 +61,6 @@ public NSString applicationNameForUserAgent() {
 	return result != 0 ? new NSString(result) : null;
 }
 
-//public void applyStyle(DOMCSSStyleDeclaration style) {
-//	OS.objc_msgSend(this.id, OS.sel_applyStyle_1, style != null ? style.id : 0);
-//}
-//
-//public WebBackForwardList backForwardList() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_backForwardList);
-//	return result != 0 ? new WebBackForwardList(result) : null;
-//}
-
 public boolean canGoBack() {
 	return OS.objc_msgSend(this.id, OS.sel_canGoBack) != 0;
 }
@@ -122,11 +113,6 @@ public void close() {
 	OS.objc_msgSend(this.id, OS.sel_close);
 }
 
-//public DOMCSSStyleDeclaration computedStyleForElement(DOMElement element, NSString pseudoElement) {
-//	int result = OS.objc_msgSend(this.id, OS.sel_computedStyleForElement_1pseudoElement_1, element != null ? element.id : 0, pseudoElement != null ? pseudoElement.id : 0);
-//	return result != 0 ? new DOMCSSStyleDeclaration(result) : null;
-//}
-
 public void copy(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_copy_1, sender != null ? sender.id : 0);
 }
@@ -166,11 +152,6 @@ public boolean drawsBackground() {
 	return OS.objc_msgSend(this.id, OS.sel_drawsBackground) != 0;
 }
 
-//public DOMRange editableDOMRangeForPoint(NSPoint point) {
-//	int result = OS.objc_msgSend(this.id, OS.sel_editableDOMRangeForPoint_1, point);
-//	return result != 0 ? new DOMRange(result) : null;
-//}
-
 public id editingDelegate() {
 	int result = OS.objc_msgSend(this.id, OS.sel_editingDelegate);
 	return result != 0 ? new id(result) : null;
@@ -205,10 +186,6 @@ public boolean goForward() {
 public void goForward_(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_goForward_1, sender != null ? sender.id : 0);
 }
-//
-//public boolean goToBackForwardItem(WebHistoryItem item) {
-//	return OS.objc_msgSend(this.id, OS.sel_goToBackForwardItem_1, item != null ? item.id : 0) != 0;
-//}
 
 public NSString groupName() {
 	int result = OS.objc_msgSend(this.id, OS.sel_groupName);
@@ -241,11 +218,6 @@ public WebFrame mainFrame() {
 	int result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
-
-//public DOMDocument mainFrameDocument() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_mainFrameDocument);
-//	return result != 0 ? new DOMDocument(result) : null;
-//}
 
 public NSImage mainFrameIcon() {
 	int result = OS.objc_msgSend(this.id, OS.sel_mainFrameIcon);
@@ -338,11 +310,6 @@ public id policyDelegate() {
 	return result != 0 ? new id(result) : null;
 }
 
-//public WebPreferences preferences() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_preferences);
-//	return result != 0 ? new WebPreferences(result) : null;
-//}
-
 public NSString preferencesIdentifier() {
 	int result = OS.objc_msgSend(this.id, OS.sel_preferencesIdentifier);
 	return result != 0 ? new NSString(result) : null;
@@ -364,17 +331,9 @@ public void removeDragCaret() {
 	OS.objc_msgSend(this.id, OS.sel_removeDragCaret);
 }
 
-//public void replaceSelectionWithArchive(WebArchive archive) {
-//	OS.objc_msgSend(this.id, OS.sel_replaceSelectionWithArchive_1, archive != null ? archive.id : 0);
-//}
-
 public void replaceSelectionWithMarkupString(NSString markupString) {
 	OS.objc_msgSend(this.id, OS.sel_replaceSelectionWithMarkupString_1, markupString != null ? markupString.id : 0);
 }
-
-//public void replaceSelectionWithNode(DOMNode node) {
-//	OS.objc_msgSend(this.id, OS.sel_replaceSelectionWithNode_1, node != null ? node.id : 0);
-//}
 
 public void replaceSelectionWithText(NSString text) {
 	OS.objc_msgSend(this.id, OS.sel_replaceSelectionWithText_1, text != null ? text.id : 0);
@@ -385,23 +344,9 @@ public id resourceLoadDelegate() {
 	return result != 0 ? new id(result) : null;
 }
 
-//public boolean searchFor(NSString string, boolean forward, boolean caseFlag, boolean wrapFlag) {
-//	return OS.objc_msgSend(this.id, OS.sel_searchFor_1direction_1caseSensitive_1wrap_1, string != null ? string.id : 0, forward, caseFlag, wrapFlag) != 0;
-//}
-
 public void selectSentence(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_selectSentence_1, sender != null ? sender.id : 0);
 }
-
-//public DOMRange selectedDOMRange() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_selectedDOMRange);
-//	return result != 0 ? new DOMRange(result) : null;
-//}
-
-//public WebFrame selectedFrame() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_selectedFrame);
-//	return result != 0 ? new WebFrame(result) : null;
-//}
 
 public int selectionAffinity() {
 	return OS.objc_msgSend(this.id, OS.sel_selectionAffinity);
@@ -471,10 +416,6 @@ public void setPolicyDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setPolicyDelegate_1, delegate != null ? delegate.id : 0);
 }
 
-//public void setPreferences(WebPreferences prefs) {
-//	OS.objc_msgSend(this.id, OS.sel_setPreferences_1, prefs != null ? prefs.id : 0);
-//}
-
 public void setPreferencesIdentifier(NSString anIdentifier) {
 	OS.objc_msgSend(this.id, OS.sel_setPreferencesIdentifier_1, anIdentifier != null ? anIdentifier.id : 0);
 }
@@ -482,10 +423,6 @@ public void setPreferencesIdentifier(NSString anIdentifier) {
 public void setResourceLoadDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setResourceLoadDelegate_1, delegate != null ? delegate.id : 0);
 }
-
-//public void setSelectedDOMRange(DOMRange range, int selectionAffinity) {
-//	OS.objc_msgSend(this.id, OS.sel_setSelectedDOMRange_1affinity_1, range != null ? range.id : 0, selectionAffinity);
-//}
 
 public void setShouldCloseWithWindow(boolean close) {
 	OS.objc_msgSend(this.id, OS.sel_setShouldCloseWithWindow_1, close);
@@ -498,10 +435,6 @@ public void setSmartInsertDeleteEnabled(boolean flag) {
 public void setTextSizeMultiplier(float multiplier) {
 	OS.objc_msgSend(this.id, OS.sel_setTextSizeMultiplier_1, multiplier);
 }
-
-//public void setTypingStyle(DOMCSSStyleDeclaration style) {
-//	OS.objc_msgSend(this.id, OS.sel_setTypingStyle_1, style != null ? style.id : 0);
-//}
 
 public void setUIDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setUIDelegate_1, delegate != null ? delegate.id : 0);
@@ -540,11 +473,6 @@ public NSString stringByEvaluatingJavaScriptFromString(NSString script) {
 	return result != 0 ? new NSString(result) : null;
 }
 
-//public DOMCSSStyleDeclaration styleDeclarationWithText(NSString text) {
-//	int result = OS.objc_msgSend(this.id, OS.sel_styleDeclarationWithText_1, text != null ? text.id : 0);
-//	return result != 0 ? new DOMCSSStyleDeclaration(result) : null;
-//}
-
 public boolean supportsTextEncoding() {
 	return OS.objc_msgSend(this.id, OS.sel_supportsTextEncoding) != 0;
 }
@@ -565,11 +493,6 @@ public void toggleSmartInsertDelete(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_toggleSmartInsertDelete_1, sender != null ? sender.id : 0);
 }
 
-//public DOMCSSStyleDeclaration typingStyle() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_typingStyle);
-//	return result != 0 ? new DOMCSSStyleDeclaration(result) : null;
-//}
-
 public NSUndoManager undoManager() {
 	int result = OS.objc_msgSend(this.id, OS.sel_undoManager);
 	return result != 0 ? new NSUndoManager(result) : null;
@@ -579,11 +502,6 @@ public NSString userAgentForURL(NSURL URL) {
 	int result = OS.objc_msgSend(this.id, OS.sel_userAgentForURL_1, URL != null ? URL.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
-
-//public WebScriptObject windowScriptObject() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_windowScriptObject);
-//	return result != 0 ? new WebScriptObject(result) : null;
-//}
 
 public void writeElement(NSDictionary element, NSArray types, NSPasteboard pasteboard) {
 	OS.objc_msgSend(this.id, OS.sel_writeElement_1withPasteboardTypes_1toPasteboard_1, element != null ? element.id : 0, types != null ? types.id : 0, pasteboard != null ? pasteboard.id : 0);

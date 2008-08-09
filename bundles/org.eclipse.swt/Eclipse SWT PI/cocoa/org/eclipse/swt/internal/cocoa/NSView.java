@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -132,11 +132,6 @@ public NSRect centerScanRect(NSRect aRect) {
 	OS.objc_msgSend_stret(result, this.id, OS.sel_centerScanRect_1, aRect);
 	return result;
 }
-
-//public CIFilter compositingFilter() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_compositingFilter);
-//	return result != 0 ? new CIFilter(result) : null;
-//}
 
 public NSArray contentFilters() {
 	int result = OS.objc_msgSend(this.id, OS.sel_contentFilters);
@@ -374,7 +369,7 @@ public boolean inLiveResize() {
 
 public NSView initWithFrame(NSRect frameRect) {
 	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_1, frameRect);
-	return result != 0 ? this : null;
+	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
 public boolean isDescendantOf(NSView aView) {
@@ -412,11 +407,6 @@ public boolean isRotatedOrScaledFromBase() {
 public boolean knowsPageRange(int range) {
 	return OS.objc_msgSend(this.id, OS.sel_knowsPageRange_1, range) != 0;
 }
-
-//public CALayer layer() {
-//	int result = OS.objc_msgSend(this.id, OS.sel_layer);
-//	return result != 0 ? new CALayer(result) : null;
-//}
 
 public NSPoint locationOfPrintRect(NSRect aRect) {
 	NSPoint result = new NSPoint();
@@ -698,10 +688,6 @@ public void setBoundsSize(NSSize newSize) {
 	OS.objc_msgSend(this.id, OS.sel_setBoundsSize_1, newSize);
 }
 
-//public void setCompositingFilter(CIFilter filter) {
-//	OS.objc_msgSend(this.id, OS.sel_setCompositingFilter_1, filter != null ? filter.id : 0);
-//}
-
 public void setContentFilters(NSArray filters) {
 	OS.objc_msgSend(this.id, OS.sel_setContentFilters_1, filters != null ? filters.id : 0);
 }
@@ -737,10 +723,6 @@ public void setHidden(boolean flag) {
 public void setKeyboardFocusRingNeedsDisplayInRect(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_setKeyboardFocusRingNeedsDisplayInRect_1, rect);
 }
-
-//public void setLayer(CALayer newLayer) {
-//	OS.objc_msgSend(this.id, OS.sel_setLayer_1, newLayer != null ? newLayer.id : 0);
-//}
 
 public void setNeedsDisplay(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setNeedsDisplay_1, flag);

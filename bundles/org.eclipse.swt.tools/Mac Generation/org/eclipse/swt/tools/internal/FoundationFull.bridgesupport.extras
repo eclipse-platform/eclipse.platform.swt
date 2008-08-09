@@ -1876,25 +1876,25 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="initListDescriptor" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initRecordDescriptor" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithAEDescNoCopy:" swt_gen="true">
       <arg name="aeDesc" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithDescriptorType:bytes:length:" swt_gen="true">
       <arg name="descriptorType" swt_gen="true"></arg>
       <arg name="bytes" swt_gen="true"></arg>
       <arg name="byteCount" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithDescriptorType:data:" swt_gen="true">
       <arg name="descriptorType" swt_gen="true"></arg>
       <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithEventClass:eventID:targetDescriptor:returnID:transactionID:" swt_gen="true">
       <arg name="eventClass" swt_gen="true"></arg>
@@ -1902,7 +1902,7 @@
       <arg name="targetDescriptor" swt_gen="true"></arg>
       <arg name="returnID" swt_gen="true"></arg>
       <arg name="transactionID" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="insertDescriptor:atIndex:" swt_gen="true">
       <arg name="descriptor" swt_gen="true"></arg>
@@ -2037,11 +2037,11 @@
     <method selector="initWithContentsOfURL:error:" swt_gen="true">
       <arg name="url" swt_gen="true"></arg>
       <arg name="errorInfo" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleScript"></retval>
     </method>
     <method selector="initWithSource:" swt_gen="true">
       <arg name="source" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAppleScript"></retval>
     </method>
     <method selector="isCompiled" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2082,7 +2082,7 @@
     </method>
     <method selector="initForWritingWithMutableData:" swt_gen="true">
       <arg name="mdata" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArchiver"></retval>
     </method>
     <method selector="replaceObject:withObject:" swt_gen="true">
       <arg name="object" swt_gen="true"></arg>
@@ -2131,7 +2131,7 @@
     </method>
     <method selector="arrayWithObject:" swt_gen="true">
       <arg name="anObject" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="arrayWithObjects:" swt_gen="true">
       <arg name="arrayWithObjects" swt_gen="true"></arg>
@@ -2202,29 +2202,29 @@
     </method>
     <method selector="initWithArray:" swt_gen="true">
       <arg name="array" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="initWithArray:copyItems:" swt_gen="true">
       <arg name="array" swt_gen="true"></arg>
       <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="initWithContentsOfFile:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="initWithContentsOfURL:" swt_gen="true">
       <arg name="url" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="initWithObjects:" swt_gen="true">
       <arg name="initWithObjects" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="initWithObjects:count:" swt_gen="true">
       <arg name="objects" swt_gen="true"></arg>
       <arg name="cnt" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
     </method>
     <method selector="isEqualToArray:" swt_gen="true">
       <arg name="otherArray" swt_gen="true"></arg>
@@ -2378,16 +2378,16 @@
     </method>
     <method selector="initWithAttributedString:" swt_gen="true">
       <arg name="attrStr" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:attributes:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
       <arg name="attrs" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
     </method>
     <method selector="isEqualToAttributedString:" swt_gen="true">
       <arg name="other" swt_gen="true"></arg>
@@ -2496,7 +2496,7 @@
     </method>
     <method selector="initWithPath:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="NSBundle"></retval>
     </method>
     <method selector="isLoaded" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3292,7 +3292,7 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="NSCondition" swt_gen="true">
+  <class name="NSCondition" swt_gen="mixed">
     <method selector="broadcast" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -3306,8 +3306,8 @@
     <method selector="signal" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="wait" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="wait">
+      <retval></retval>
     </method>
     <method selector="waitUntilDate:" swt_gen="true">
       <arg name="limit" swt_gen="true"></arg>
