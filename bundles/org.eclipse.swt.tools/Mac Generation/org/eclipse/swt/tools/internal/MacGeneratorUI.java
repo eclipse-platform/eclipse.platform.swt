@@ -198,8 +198,10 @@ public class MacGeneratorUI {
 				TreeItem item = (TreeItem)event.item;
 				if (item == null) return;
 				boolean checked = item.getChecked();
+				item.getParent().setRedraw(false);
                 checkItems(item, checked);
                 checkPath(item.getParentItem(), checked, false);
+                item.getParent().setRedraw(true);
 			}
 		});
 		nodesTree.addListener(SWT.Expand, new Listener() {

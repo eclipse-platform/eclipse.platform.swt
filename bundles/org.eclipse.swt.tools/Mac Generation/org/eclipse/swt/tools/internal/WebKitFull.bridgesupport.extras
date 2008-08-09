@@ -1304,198 +1304,198 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMDocument" swt_gen="true">
-    <method selector="URLWithAttributeString:" swt_gen="true">
-      <arg name="string" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+  <class name="DOMDocument" swt_gen="mixed">
+    <method selector="URLWithAttributeString:">
+      <arg name="string"></arg>
+      <retval></retval>
     </method>
-    <method selector="adoptNode:" swt_gen="true">
-      <arg name="source" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="adoptNode:">
+      <arg name="source"></arg>
+      <retval></retval>
     </method>
-    <method selector="createAttribute:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createAttribute:">
+      <arg name="name"></arg>
+      <retval></retval>
     </method>
-    <method selector="createAttributeNS::" swt_gen="true">
-      <arg name="createAttributeNS" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createAttributeNS::">
+      <arg name="createAttributeNS"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="createAttributeNS:qualifiedName:" swt_gen="true">
-      <arg name="namespaceURI" swt_gen="true"></arg>
-      <arg name="qualifiedName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createAttributeNS:qualifiedName:">
+      <arg name="namespaceURI"></arg>
+      <arg name="qualifiedName"></arg>
+      <retval></retval>
     </method>
-    <method selector="createCDATASection:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createCDATASection:">
+      <arg name="data"></arg>
+      <retval></retval>
     </method>
-    <method selector="createCSSStyleDeclaration" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="createCSSStyleDeclaration">
+      <retval></retval>
     </method>
-    <method selector="createComment:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createComment:">
+      <arg name="data"></arg>
+      <retval></retval>
     </method>
-    <method selector="createDocumentFragment" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="createDocumentFragment">
+      <retval></retval>
     </method>
-    <method selector="createElement:" swt_gen="true">
-      <arg name="tagName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createElement:">
+      <arg name="tagName"></arg>
+      <retval></retval>
     </method>
-    <method selector="createElementNS::" swt_gen="true">
-      <arg name="createElementNS" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createElementNS::">
+      <arg name="createElementNS"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="createElementNS:qualifiedName:" swt_gen="true">
-      <arg name="namespaceURI" swt_gen="true"></arg>
-      <arg name="qualifiedName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createElementNS:qualifiedName:">
+      <arg name="namespaceURI"></arg>
+      <arg name="qualifiedName"></arg>
+      <retval></retval>
     </method>
-    <method selector="createEntityReference:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createEntityReference:">
+      <arg name="name"></arg>
+      <retval></retval>
     </method>
-    <method selector="createEvent:" swt_gen="true">
-      <arg name="eventType" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createEvent:">
+      <arg name="eventType"></arg>
+      <retval></retval>
     </method>
-    <method selector="createExpression::" swt_gen="true">
-      <arg name="createExpression" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createExpression::">
+      <arg name="createExpression"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="createExpression:resolver:" swt_gen="true">
-      <arg name="expression" swt_gen="true"></arg>
-      <arg name="resolver" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createExpression:resolver:">
+      <arg name="expression"></arg>
+      <arg name="resolver"></arg>
+      <retval></retval>
     </method>
-    <method selector="createNSResolver:" swt_gen="true">
-      <arg name="nodeResolver" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createNSResolver:">
+      <arg name="nodeResolver"></arg>
+      <retval></retval>
     </method>
-    <method selector="createNodeIterator::::" swt_gen="true">
-      <arg name="createNodeIterator" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createNodeIterator::::">
+      <arg name="createNodeIterator"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="createNodeIterator:whatToShow:filter:expandEntityReferences:" swt_gen="true">
-      <arg name="root" swt_gen="true"></arg>
-      <arg name="whatToShow" swt_gen="true"></arg>
-      <arg name="filter" swt_gen="true"></arg>
-      <arg name="expandEntityReferences" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createNodeIterator:whatToShow:filter:expandEntityReferences:">
+      <arg name="root"></arg>
+      <arg name="whatToShow"></arg>
+      <arg name="filter"></arg>
+      <arg name="expandEntityReferences"></arg>
+      <retval></retval>
     </method>
-    <method selector="createProcessingInstruction::" swt_gen="true">
-      <arg name="createProcessingInstruction" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createProcessingInstruction::">
+      <arg name="createProcessingInstruction"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="createProcessingInstruction:data:" swt_gen="true">
-      <arg name="target" swt_gen="true"></arg>
-      <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createProcessingInstruction:data:">
+      <arg name="target"></arg>
+      <arg name="data"></arg>
+      <retval></retval>
     </method>
-    <method selector="createRange" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="createRange">
+      <retval></retval>
     </method>
-    <method selector="createTextNode:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createTextNode:">
+      <arg name="data"></arg>
+      <retval></retval>
     </method>
-    <method selector="createTreeWalker::::" swt_gen="true">
-      <arg name="createTreeWalker" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createTreeWalker::::">
+      <arg name="createTreeWalker"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="createTreeWalker:whatToShow:filter:expandEntityReferences:" swt_gen="true">
-      <arg name="root" swt_gen="true"></arg>
-      <arg name="whatToShow" swt_gen="true"></arg>
-      <arg name="filter" swt_gen="true"></arg>
-      <arg name="expandEntityReferences" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="createTreeWalker:whatToShow:filter:expandEntityReferences:">
+      <arg name="root"></arg>
+      <arg name="whatToShow"></arg>
+      <arg name="filter"></arg>
+      <arg name="expandEntityReferences"></arg>
+      <retval></retval>
     </method>
-    <method selector="evaluate:::::" swt_gen="true">
-      <arg name="evaluate" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="evaluate:::::">
+      <arg name="evaluate"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="evaluate:contextNode:resolver:type:inResult:" swt_gen="true">
-      <arg name="expression" swt_gen="true"></arg>
-      <arg name="contextNode" swt_gen="true"></arg>
-      <arg name="resolver" swt_gen="true"></arg>
-      <arg name="type" swt_gen="true"></arg>
-      <arg name="inResult" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="evaluate:contextNode:resolver:type:inResult:">
+      <arg name="expression"></arg>
+      <arg name="contextNode"></arg>
+      <arg name="resolver"></arg>
+      <arg name="type"></arg>
+      <arg name="inResult"></arg>
+      <retval></retval>
     </method>
-    <method selector="getComputedStyle::" swt_gen="true">
-      <arg name="getComputedStyle" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getComputedStyle::">
+      <arg name="getComputedStyle"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="getComputedStyle:pseudoElement:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="pseudoElement" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getComputedStyle:pseudoElement:">
+      <arg name="element"></arg>
+      <arg name="pseudoElement"></arg>
+      <retval></retval>
     </method>
-    <method selector="getElementById:" swt_gen="true">
-      <arg name="elementId" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getElementById:">
+      <arg name="elementId"></arg>
+      <retval></retval>
     </method>
-    <method selector="getElementsByTagName:" swt_gen="true">
-      <arg name="tagname" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getElementsByTagName:">
+      <arg name="tagname"></arg>
+      <retval></retval>
     </method>
-    <method selector="getElementsByTagNameNS::" swt_gen="true">
-      <arg name="getElementsByTagNameNS" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getElementsByTagNameNS::">
+      <arg name="getElementsByTagNameNS"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="getElementsByTagNameNS:localName:" swt_gen="true">
-      <arg name="namespaceURI" swt_gen="true"></arg>
-      <arg name="localName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getElementsByTagNameNS:localName:">
+      <arg name="namespaceURI"></arg>
+      <arg name="localName"></arg>
+      <retval></retval>
     </method>
-    <method selector="getMatchedCSSRules:pseudoElement:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="pseudoElement" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getMatchedCSSRules:pseudoElement:">
+      <arg name="element"></arg>
+      <arg name="pseudoElement"></arg>
+      <retval></retval>
     </method>
-    <method selector="getMatchedCSSRules:pseudoElement:authorOnly:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="pseudoElement" swt_gen="true"></arg>
-      <arg name="authorOnly" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getMatchedCSSRules:pseudoElement:authorOnly:">
+      <arg name="element"></arg>
+      <arg name="pseudoElement"></arg>
+      <arg name="authorOnly"></arg>
+      <retval></retval>
     </method>
-    <method selector="getOverrideStyle::" swt_gen="true">
-      <arg name="getOverrideStyle" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getOverrideStyle::">
+      <arg name="getOverrideStyle"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="getOverrideStyle:pseudoElement:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="pseudoElement" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getOverrideStyle:pseudoElement:">
+      <arg name="element"></arg>
+      <arg name="pseudoElement"></arg>
+      <retval></retval>
     </method>
-    <method selector="importNode::" swt_gen="true">
-      <arg name="importNode" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="importNode::">
+      <arg name="importNode"></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="importNode:deep:" swt_gen="true">
-      <arg name="importedNode" swt_gen="true"></arg>
-      <arg name="deep" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="importNode:deep:">
+      <arg name="importedNode"></arg>
+      <arg name="deep"></arg>
+      <retval></retval>
     </method>
     <method selector="webFrame" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2946,16 +2946,16 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSObject" swt_gen="true">
-    <method selector="acceptNode:" swt_gen="true">
-      <arg name="n" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+  <class name="NSObject" swt_gen="mixed">
+    <method selector="acceptNode:">
+      <arg name="n"></arg>
+      <retval></retval>
     </method>
-    <method selector="addEventListener:::" swt_gen="true">
-      <arg name="addEventListener" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="addEventListener:::">
+      <arg name="addEventListener"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
     <method selector="addEventListener:listener:useCapture:" swt_gen="true">
       <arg name="type" swt_gen="true"></arg>
@@ -2963,768 +2963,768 @@
       <arg name="useCapture" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="attributedString" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="attributedString">
+      <retval></retval>
     </method>
-    <method selector="canProvideDocumentSource" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="cancel" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="canProvideDocumentSource">
+      <retval></retval>
+    </method>
+    <method selector="cancel">
+      <retval></retval>
     </method>
-    <method selector="chooseFilename:" swt_gen="true">
-      <arg name="fileName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="chooseFilename:">
+      <arg name="fileName"></arg>
+      <retval></retval>
     </method>
-    <method selector="dataSourceUpdated:" swt_gen="true">
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="dataSourceUpdated:">
+      <arg name="dataSource"></arg>
+      <retval></retval>
     </method>
-    <method selector="deselectAll" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="deselectAll">
+      <retval></retval>
     </method>
-    <method selector="dispatchEvent:" swt_gen="true">
-      <arg name="event" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="dispatchEvent:">
+      <arg name="event"></arg>
+      <retval></retval>
     </method>
-    <method selector="documentSource" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="documentSource">
+      <retval></retval>
     </method>
-    <method selector="download" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="download">
+      <retval></retval>
     </method>
-    <method selector="downloadWindowForAuthenticationSheet:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="downloadWindowForAuthenticationSheet:">
+      <arg name="download"></arg>
+      <retval></retval>
     </method>
-    <method selector="finalizeForWebScript" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="finalizeForWebScript">
+      <retval></retval>
     </method>
-    <method selector="finishedLoadingWithDataSource:" swt_gen="true">
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="finishedLoadingWithDataSource:">
+      <arg name="dataSource"></arg>
+      <retval></retval>
     </method>
-    <method selector="handleEvent:" swt_gen="true">
-      <arg name="evt" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="handleEvent:">
+      <arg name="evt"></arg>
+      <retval></retval>
     </method>
-    <method selector="ignore" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="ignore">
+      <retval></retval>
     </method>
-    <method selector="invokeDefaultMethodWithArguments:" swt_gen="true">
-      <arg name="args" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="invokeDefaultMethodWithArguments:">
+      <arg name="args"></arg>
+      <retval></retval>
     </method>
-    <method selector="invokeUndefinedMethodFromWebScript:withArguments:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="args" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="invokeUndefinedMethodFromWebScript:withArguments:">
+      <arg name="name"></arg>
+      <arg name="args"></arg>
+      <retval></retval>
     </method>
-    <method selector="isKeyExcludedFromWebScript:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="isKeyExcludedFromWebScript:">
+      <arg name="name"></arg>
+      <retval></retval>
     </method>
-    <method selector="isSelectorExcludedFromWebScript:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="isSelectorExcludedFromWebScript:">
+      <arg name="aSelector"></arg>
+      <retval></retval>
     </method>
-    <method selector="layout" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="layout">
+      <retval></retval>
     </method>
-    <method selector="lookupNamespaceURI:" swt_gen="true">
-      <arg name="prefix" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="lookupNamespaceURI:">
+      <arg name="prefix"></arg>
+      <retval></retval>
     </method>
-    <method selector="objectForWebScript" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="objectForWebScript">
+      <retval></retval>
     </method>
-    <method selector="plugInViewWithArguments:" swt_gen="true">
-      <arg name="arguments" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="plugInViewWithArguments:">
+      <arg name="arguments"></arg>
+      <retval></retval>
     </method>
-    <method selector="receivedData:withDataSource:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="receivedData:withDataSource:">
+      <arg name="data"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
     </method>
-    <method selector="receivedError:withDataSource:" swt_gen="true">
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="receivedError:withDataSource:">
+      <arg name="error"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
     </method>
-    <method selector="removeEventListener:::" swt_gen="true">
-      <arg name="removeEventListener" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="removeEventListener:::">
+      <arg name="removeEventListener"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="removeEventListener:listener:useCapture:" swt_gen="true">
-      <arg name="type" swt_gen="true"></arg>
-      <arg name="listener" swt_gen="true"></arg>
-      <arg name="useCapture" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="removeEventListener:listener:useCapture:">
+      <arg name="type"></arg>
+      <arg name="listener"></arg>
+      <arg name="useCapture"></arg>
+      <retval></retval>
     </method>
-    <method selector="searchFor:direction:caseSensitive:wrap:" swt_gen="true">
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="forward" swt_gen="true"></arg>
-      <arg name="caseFlag" swt_gen="true"></arg>
-      <arg name="wrapFlag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="searchFor:direction:caseSensitive:wrap:">
+      <arg name="string"></arg>
+      <arg name="forward"></arg>
+      <arg name="caseFlag"></arg>
+      <arg name="wrapFlag"></arg>
+      <retval></retval>
     </method>
-    <method selector="selectAll" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="selectAll">
+      <retval></retval>
     </method>
-    <method selector="selectedAttributedString" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="selectedAttributedString">
+      <retval></retval>
     </method>
-    <method selector="selectedString" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="selectedString">
+      <retval></retval>
     </method>
-    <method selector="setDataSource:" swt_gen="true">
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setDataSource:">
+      <arg name="dataSource"></arg>
+      <retval></retval>
     </method>
-    <method selector="setDataSource:" swt_gen="true">
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setDataSource:">
+      <arg name="dataSource"></arg>
+      <retval></retval>
     </method>
-    <method selector="setNeedsLayout:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setNeedsLayout:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="string" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="supportsTextEncoding" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="title" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="undoManagerForWebView:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="use" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="viewDidMoveToHostWindow" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="viewWillMoveToHostWindow:" swt_gen="true">
-      <arg name="hostWindow" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webFrame" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInCallJava:isStatic:returnType:method:arguments:callingURL:exceptionDescription:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
-      <arg name="isStatic" swt_gen="true"></arg>
-      <arg name="returnType" swt_gen="true"></arg>
-      <arg name="method" swt_gen="true"></arg>
-      <arg name="args" swt_gen="true"></arg>
-      <arg name="url" swt_gen="true"></arg>
-      <arg name="exceptionString" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInContainerLoadRequest:inFrame:" swt_gen="true">
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="target" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInContainerSelectionColor" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInContainerShowStatus:" swt_gen="true">
-      <arg name="message" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInDestroy" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInGetApplet" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInInitialize" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInSetIsSelected:" swt_gen="true">
-      <arg name="isSelected" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInStart" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webPlugInStop" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webScriptNameForKey:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webScriptNameForSelector:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:contextMenuItemsForElement:defaultMenuItems:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="defaultMenuItems" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:createWebViewModalDialogWithRequest:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:createWebViewWithRequest:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:decidePolicyForMIMEType:request:frame:decisionListener:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="type" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <arg name="listener" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:decidePolicyForNavigationAction:request:frame:decisionListener:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="actionInformation" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <arg name="listener" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="actionInformation" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="frameName" swt_gen="true"></arg>
-      <arg name="listener" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didCancelClientRedirectForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didChangeLocationWithinPageForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didClearWindowObject:forFrame:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="windowObject" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didCommitLoadForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didFailLoadWithError:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didFailProvisionalLoadWithError:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didFinishLoadForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didReceiveIcon:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didReceiveServerRedirectForProvisionalLoadForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didReceiveTitle:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="title" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:didStartProvisionalLoadForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:doCommandBySelector:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="selector" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:dragDestinationActionMaskForDraggingInfo:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="draggingInfo" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:dragSourceActionMaskForPoint:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="point" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:drawFooterInRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:drawHeaderInRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:identifierForInitialRequest:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:makeFirstResponder:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="responder" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:mouseDidMoveOverElement:modifierFlags:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="elementInformation" swt_gen="true"></arg>
-      <arg name="modifierFlags" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:plugInFailedWithError:dataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:printFrameView:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frameView" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:didCancelAuthenticationChallenge:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:didFailLoadingWithError:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:didFinishLoadingFromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:didReceiveContentLength:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="length" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:didReceiveResponse:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="response" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:resource:willSendRequest:redirectResponse:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="redirectResponse" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runJavaScriptAlertPanelWithMessage:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runJavaScriptConfirmPanelWithMessage:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="prompt" swt_gen="true"></arg>
-      <arg name="defaultText" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="prompt" swt_gen="true"></arg>
-      <arg name="defaultText" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:runOpenPanelForFileButtonWithResultListener:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="resultListener" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:setContentRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:setFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:setResizable:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="resizable" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:setStatusBarVisible:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="visible" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:setStatusText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="text" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:setToolbarsVisible:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="visible" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldApplyStyle:toElementsInDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="style" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldBeginEditingInDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldChangeSelectedDOMRange:toDOMRange:affinity:stillSelecting:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="currentRange" swt_gen="true"></arg>
-      <arg name="proposedRange" swt_gen="true"></arg>
-      <arg name="selectionAffinity" swt_gen="true"></arg>
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldChangeTypingStyle:toStyle:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="currentStyle" swt_gen="true"></arg>
-      <arg name="proposedStyle" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldDeleteDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldEndEditingInDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldInsertNode:replacingDOMRange:givenAction:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="node" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldInsertText:replacingDOMRange:givenAction:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="text" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:shouldPerformAction:fromSender:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:unableToImplementPolicyWithError:frame:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:validateUserInterfaceItem:defaultValidation:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
-      <arg name="defaultValidation" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:willCloseFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:willPerformClientRedirectToURL:delay:fireDate:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="URL" swt_gen="true"></arg>
-      <arg name="seconds" swt_gen="true"></arg>
-      <arg name="date" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:willPerformDragDestinationAction:forDraggingInfo:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <arg name="draggingInfo" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:willPerformDragSourceAction:fromPoint:withPasteboard:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <arg name="point" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webView:windowScriptObjectAvailable:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="windowScriptObject" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewAreToolbarsVisible:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewClose:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewContentRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewDidBeginEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewDidChange:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewDidChangeSelection:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewDidChangeTypingStyle:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewDidEndEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewFirstResponder:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewFocus:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewFooterHeight:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewHeaderHeight:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewIsResizable:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewIsStatusBarVisible:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewRunModal:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewShow:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewStatusText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webViewUnfocus:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="string">
+      <retval></retval>
+    </method>
+    <method selector="supportsTextEncoding">
+      <retval></retval>
+    </method>
+    <method selector="title">
+      <retval></retval>
+    </method>
+    <method selector="undoManagerForWebView:">
+      <arg name="webView"></arg>
+      <retval></retval>
+    </method>
+    <method selector="use">
+      <retval></retval>
+    </method>
+    <method selector="viewDidMoveToHostWindow">
+      <retval></retval>
+    </method>
+    <method selector="viewWillMoveToHostWindow:">
+      <arg name="hostWindow"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webFrame">
+      <retval></retval>
+    </method>
+    <method selector="webPlugInCallJava:isStatic:returnType:method:arguments:callingURL:exceptionDescription:">
+      <arg name="object"></arg>
+      <arg name="isStatic"></arg>
+      <arg name="returnType"></arg>
+      <arg name="method"></arg>
+      <arg name="args"></arg>
+      <arg name="url"></arg>
+      <arg name="exceptionString"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webPlugInContainerLoadRequest:inFrame:">
+      <arg name="request"></arg>
+      <arg name="target"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webPlugInContainerSelectionColor">
+      <retval></retval>
+    </method>
+    <method selector="webPlugInContainerShowStatus:">
+      <arg name="message"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webPlugInDestroy">
+      <retval></retval>
+    </method>
+    <method selector="webPlugInGetApplet">
+      <retval></retval>
+    </method>
+    <method selector="webPlugInInitialize">
+      <retval></retval>
+    </method>
+    <method selector="webPlugInSetIsSelected:">
+      <arg name="isSelected"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webPlugInStart">
+      <retval></retval>
+    </method>
+    <method selector="webPlugInStop">
+      <retval></retval>
+    </method>
+    <method selector="webScriptNameForKey:">
+      <arg name="name"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webScriptNameForSelector:">
+      <arg name="aSelector"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:contextMenuItemsForElement:defaultMenuItems:">
+      <arg name="sender"></arg>
+      <arg name="element"></arg>
+      <arg name="defaultMenuItems"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:createWebViewModalDialogWithRequest:">
+      <arg name="sender"></arg>
+      <arg name="request"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:createWebViewWithRequest:">
+      <arg name="sender"></arg>
+      <arg name="request"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:decidePolicyForMIMEType:request:frame:decisionListener:">
+      <arg name="webView"></arg>
+      <arg name="type"></arg>
+      <arg name="request"></arg>
+      <arg name="frame"></arg>
+      <arg name="listener"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:decidePolicyForNavigationAction:request:frame:decisionListener:">
+      <arg name="webView"></arg>
+      <arg name="actionInformation"></arg>
+      <arg name="request"></arg>
+      <arg name="frame"></arg>
+      <arg name="listener"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:">
+      <arg name="webView"></arg>
+      <arg name="actionInformation"></arg>
+      <arg name="request"></arg>
+      <arg name="frameName"></arg>
+      <arg name="listener"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didCancelClientRedirectForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didChangeLocationWithinPageForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didClearWindowObject:forFrame:">
+      <arg name="webView"></arg>
+      <arg name="windowObject"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didCommitLoadForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didFailLoadWithError:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="error"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didFailProvisionalLoadWithError:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="error"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didFinishLoadForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didReceiveIcon:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="image"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didReceiveServerRedirectForProvisionalLoadForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didReceiveTitle:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="title"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:didStartProvisionalLoadForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:doCommandBySelector:">
+      <arg name="webView"></arg>
+      <arg name="selector"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:dragDestinationActionMaskForDraggingInfo:">
+      <arg name="webView"></arg>
+      <arg name="draggingInfo"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:dragSourceActionMaskForPoint:">
+      <arg name="webView"></arg>
+      <arg name="point"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:drawFooterInRect:">
+      <arg name="sender"></arg>
+      <arg name="rect"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:drawHeaderInRect:">
+      <arg name="sender"></arg>
+      <arg name="rect"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:identifierForInitialRequest:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="request"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:makeFirstResponder:">
+      <arg name="sender"></arg>
+      <arg name="responder"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:mouseDidMoveOverElement:modifierFlags:">
+      <arg name="sender"></arg>
+      <arg name="elementInformation"></arg>
+      <arg name="modifierFlags"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:plugInFailedWithError:dataSource:">
+      <arg name="sender"></arg>
+      <arg name="error"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:printFrameView:">
+      <arg name="sender"></arg>
+      <arg name="frameView"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:didCancelAuthenticationChallenge:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="challenge"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:didFailLoadingWithError:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="error"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:didFinishLoadingFromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="challenge"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:didReceiveContentLength:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="length"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:didReceiveResponse:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="response"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:resource:willSendRequest:redirectResponse:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="request"></arg>
+      <arg name="redirectResponse"></arg>
+      <arg name="dataSource"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runJavaScriptAlertPanelWithMessage:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runJavaScriptConfirmPanelWithMessage:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:">
+      <arg name="sender"></arg>
+      <arg name="prompt"></arg>
+      <arg name="defaultText"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="prompt"></arg>
+      <arg name="defaultText"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:runOpenPanelForFileButtonWithResultListener:">
+      <arg name="sender"></arg>
+      <arg name="resultListener"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:setContentRect:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:setFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:setResizable:">
+      <arg name="sender"></arg>
+      <arg name="resizable"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:setStatusBarVisible:">
+      <arg name="sender"></arg>
+      <arg name="visible"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:setStatusText:">
+      <arg name="sender"></arg>
+      <arg name="text"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:setToolbarsVisible:">
+      <arg name="sender"></arg>
+      <arg name="visible"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldApplyStyle:toElementsInDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="style"></arg>
+      <arg name="range"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldBeginEditingInDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="range"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldChangeSelectedDOMRange:toDOMRange:affinity:stillSelecting:">
+      <arg name="webView"></arg>
+      <arg name="currentRange"></arg>
+      <arg name="proposedRange"></arg>
+      <arg name="selectionAffinity"></arg>
+      <arg name="flag"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldChangeTypingStyle:toStyle:">
+      <arg name="webView"></arg>
+      <arg name="currentStyle"></arg>
+      <arg name="proposedStyle"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldDeleteDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="range"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldEndEditingInDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="range"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldInsertNode:replacingDOMRange:givenAction:">
+      <arg name="webView"></arg>
+      <arg name="node"></arg>
+      <arg name="range"></arg>
+      <arg name="action"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldInsertText:replacingDOMRange:givenAction:">
+      <arg name="webView"></arg>
+      <arg name="text"></arg>
+      <arg name="range"></arg>
+      <arg name="action"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:shouldPerformAction:fromSender:">
+      <arg name="webView"></arg>
+      <arg name="action"></arg>
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:unableToImplementPolicyWithError:frame:">
+      <arg name="webView"></arg>
+      <arg name="error"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:validateUserInterfaceItem:defaultValidation:">
+      <arg name="webView"></arg>
+      <arg name="item"></arg>
+      <arg name="defaultValidation"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:willCloseFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:willPerformClientRedirectToURL:delay:fireDate:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="URL"></arg>
+      <arg name="seconds"></arg>
+      <arg name="date"></arg>
+      <arg name="frame"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:willPerformDragDestinationAction:forDraggingInfo:">
+      <arg name="webView"></arg>
+      <arg name="action"></arg>
+      <arg name="draggingInfo"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:willPerformDragSourceAction:fromPoint:withPasteboard:">
+      <arg name="webView"></arg>
+      <arg name="action"></arg>
+      <arg name="point"></arg>
+      <arg name="pasteboard"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webView:windowScriptObjectAvailable:">
+      <arg name="webView"></arg>
+      <arg name="windowScriptObject"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewAreToolbarsVisible:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewClose:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewContentRect:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewDidBeginEditing:">
+      <arg name="notification"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewDidChange:">
+      <arg name="notification"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewDidChangeSelection:">
+      <arg name="notification"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewDidChangeTypingStyle:">
+      <arg name="notification"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewDidEndEditing:">
+      <arg name="notification"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewFirstResponder:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewFocus:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewFooterHeight:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewFrame:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewHeaderHeight:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewIsResizable:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewIsStatusBarVisible:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewRunModal:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewShow:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewStatusText:">
+      <arg name="sender"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webViewUnfocus:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
   </class>
-  <class name="WebArchive" swt_gen="true">
+  <class name="WebArchive">
+    <method selector="data">
+      <retval></retval>
+    </method>
+    <method selector="initWithData:">
+      <arg name="data"></arg>
+      <retval></retval>
+    </method>
+    <method selector="initWithMainResource:subresources:subframeArchives:">
+      <arg name="mainResource"></arg>
+      <arg name="subresources"></arg>
+      <arg name="subframeArchives"></arg>
+      <retval></retval>
+    </method>
+    <method selector="mainResource">
+      <retval></retval>
+    </method>
+    <method selector="subframeArchives">
+      <retval></retval>
+    </method>
+    <method selector="subresources">
+      <retval></retval>
+    </method>
+  </class>
+  <class name="WebBackForwardList">
+    <method selector="addItem:">
+      <arg name="item"></arg>
+      <retval></retval>
+    </method>
+    <method selector="backItem">
+      <retval></retval>
+    </method>
+    <method selector="backListCount">
+      <retval></retval>
+    </method>
+    <method selector="backListWithLimit:">
+      <arg name="limit"></arg>
+      <retval></retval>
+    </method>
+    <method selector="capacity">
+      <retval></retval>
+    </method>
+    <method selector="containsItem:">
+      <arg name="item"></arg>
+      <retval></retval>
+    </method>
+    <method selector="currentItem">
+      <retval></retval>
+    </method>
+    <method selector="forwardItem">
+      <retval></retval>
+    </method>
+    <method selector="forwardListCount">
+      <retval></retval>
+    </method>
+    <method selector="forwardListWithLimit:">
+      <arg name="limit"></arg>
+      <retval></retval>
+    </method>
+    <method selector="goBack">
+      <retval></retval>
+    </method>
+    <method selector="goForward">
+      <retval></retval>
+    </method>
+    <method selector="goToItem:">
+      <arg name="item"></arg>
+      <retval></retval>
+    </method>
+    <method selector="itemAtIndex:">
+      <arg name="index"></arg>
+      <retval></retval>
+    </method>
+    <method selector="pageCacheSize">
+      <retval></retval>
+    </method>
+    <method selector="setCapacity:">
+      <arg name="size"></arg>
+      <retval></retval>
+    </method>
+    <method selector="setPageCacheSize:">
+      <arg name="size"></arg>
+      <retval></retval>
+    </method>
+  </class>
+  <class name="WebDataSource" swt_gen="mixed">
+    <method selector="addSubresource:">
+      <arg name="subresource"></arg>
+      <retval></retval>
+    </method>
     <method selector="data" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="initWithData:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initWithRequest:">
+      <arg name="request"></arg>
+      <retval></retval>
     </method>
-    <method selector="initWithMainResource:subresources:subframeArchives:" swt_gen="true">
-      <arg name="mainResource" swt_gen="true"></arg>
-      <arg name="subresources" swt_gen="true"></arg>
-      <arg name="subframeArchives" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="mainResource" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="subframeArchives" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="subresources" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-  </class>
-  <class name="WebBackForwardList" swt_gen="true">
-    <method selector="addItem:" swt_gen="true">
-      <arg name="item" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="backItem" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="backListCount" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="backListWithLimit:" swt_gen="true">
-      <arg name="limit" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="capacity" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="containsItem:" swt_gen="true">
-      <arg name="item" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="currentItem" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="forwardItem" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="forwardListCount" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="forwardListWithLimit:" swt_gen="true">
-      <arg name="limit" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="goBack" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="goForward" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="goToItem:" swt_gen="true">
-      <arg name="item" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="itemAtIndex:" swt_gen="true">
-      <arg name="index" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="pageCacheSize" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="setCapacity:" swt_gen="true">
-      <arg name="size" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="setPageCacheSize:" swt_gen="true">
-      <arg name="size" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-  </class>
-  <class name="WebDataSource" swt_gen="true">
-    <method selector="addSubresource:" swt_gen="true">
-      <arg name="subresource" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="data" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="initWithRequest:" swt_gen="true">
-      <arg name="request" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="initialRequest" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="initialRequest">
+      <retval></retval>
     </method>
     <method selector="isLoading" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="mainResource" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="mainResource">
+      <retval></retval>
     </method>
     <method selector="pageTitle" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3738,27 +3738,27 @@
     <method selector="response" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="subresourceForURL:" swt_gen="true">
-      <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="subresourceForURL:">
+      <arg name="URL"></arg>
+      <retval></retval>
     </method>
-    <method selector="subresources" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="subresources">
+      <retval></retval>
     </method>
     <method selector="textEncodingName" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="unreachableURL" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="unreachableURL">
+      <retval></retval>
     </method>
-    <method selector="webArchive" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="webArchive">
+      <retval></retval>
     </method>
     <method selector="webFrame" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="WebFrame" swt_gen="true">
+  <class name="WebFrame" swt_gen="mixed">
     <method selector="DOMDocument" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -3772,11 +3772,11 @@
       <arg name="name" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="frameElement" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="frameElement">
+      <retval></retval>
     </method>
-    <method selector="frameView" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="frameView">
+      <retval></retval>
     </method>
     <method selector="globalContext" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3793,9 +3793,9 @@
       <arg name="unreachableURL" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="loadArchive:" swt_gen="true">
-      <arg name="archive" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="loadArchive:">
+      <arg name="archive"></arg>
+      <retval></retval>
     </method>
     <method selector="loadData:MIMEType:textEncodingName:baseURL:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
@@ -3831,8 +3831,8 @@
     <method selector="webView" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="windowObject" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="windowObject">
+      <retval></retval>
     </method>
   </class>
   <class name="WebFrameView" swt_gen="true">
@@ -3863,124 +3863,124 @@
       <retval swt_gen="true"></retval>
     </method>
   </class>
-  <class name="WebHistory" swt_gen="true">
-    <method selector="addItems:" swt_gen="true">
-      <arg name="newItems" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+  <class name="WebHistory">
+    <method selector="addItems:">
+      <arg name="newItems"></arg>
+      <retval></retval>
     </method>
-    <method selector="historyAgeInDaysLimit" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="historyAgeInDaysLimit">
+      <retval></retval>
     </method>
-    <method selector="historyItemLimit" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="historyItemLimit">
+      <retval></retval>
     </method>
-    <method selector="itemForURL:" swt_gen="true">
-      <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="itemForURL:">
+      <arg name="URL"></arg>
+      <retval></retval>
     </method>
-    <method selector="loadFromURL:error:" swt_gen="true">
-      <arg name="URL" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="loadFromURL:error:">
+      <arg name="URL"></arg>
+      <arg name="error"></arg>
+      <retval></retval>
     </method>
-    <method selector="optionalSharedHistory" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="optionalSharedHistory">
+      <retval></retval>
     </method>
-    <method selector="orderedItemsLastVisitedOnDay:" swt_gen="true">
-      <arg name="calendarDate" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="orderedItemsLastVisitedOnDay:">
+      <arg name="calendarDate"></arg>
+      <retval></retval>
     </method>
-    <method selector="orderedLastVisitedDays" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="orderedLastVisitedDays">
+      <retval></retval>
     </method>
-    <method selector="removeAllItems" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="removeAllItems">
+      <retval></retval>
     </method>
-    <method selector="removeItems:" swt_gen="true">
-      <arg name="items" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="removeItems:">
+      <arg name="items"></arg>
+      <retval></retval>
     </method>
-    <method selector="saveToURL:error:" swt_gen="true">
-      <arg name="URL" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="saveToURL:error:">
+      <arg name="URL"></arg>
+      <arg name="error"></arg>
+      <retval></retval>
     </method>
-    <method selector="setHistoryAgeInDaysLimit:" swt_gen="true">
-      <arg name="limit" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setHistoryAgeInDaysLimit:">
+      <arg name="limit"></arg>
+      <retval></retval>
     </method>
-    <method selector="setHistoryItemLimit:" swt_gen="true">
-      <arg name="limit" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setHistoryItemLimit:">
+      <arg name="limit"></arg>
+      <retval></retval>
     </method>
-    <method selector="setOptionalSharedHistory:" swt_gen="true">
-      <arg name="history" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-  </class>
-  <class name="WebHistoryItem" swt_gen="true">
-    <method selector="URLString" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="alternateTitle" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="icon" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="initWithURLString:title:lastVisitedTimeInterval:" swt_gen="true">
-      <arg name="URLString" swt_gen="true"></arg>
-      <arg name="title" swt_gen="true"></arg>
-      <arg name="time" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="lastVisitedTimeInterval" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="originalURLString" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="setAlternateTitle:" swt_gen="true">
-      <arg name="alternateTitle" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="title" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="setOptionalSharedHistory:">
+      <arg name="history"></arg>
+      <retval></retval>
     </method>
   </class>
-  <class name="WebPreferences" swt_gen="true">
-    <method selector="allowsAnimatedImageLooping" swt_gen="true">
-      <retval swt_gen="true"></retval>
+  <class name="WebHistoryItem">
+    <method selector="URLString">
+      <retval></retval>
     </method>
-    <method selector="allowsAnimatedImages" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="alternateTitle">
+      <retval></retval>
     </method>
-    <method selector="arePlugInsEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="icon">
+      <retval></retval>
     </method>
-    <method selector="autosaves" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="initWithURLString:title:lastVisitedTimeInterval:">
+      <arg name="URLString"></arg>
+      <arg name="title"></arg>
+      <arg name="time"></arg>
+      <retval></retval>
     </method>
-    <method selector="cacheModel" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="lastVisitedTimeInterval">
+      <retval></retval>
     </method>
-    <method selector="cursiveFontFamily" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="originalURLString">
+      <retval></retval>
     </method>
-    <method selector="defaultFixedFontSize" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="setAlternateTitle:">
+      <arg name="alternateTitle"></arg>
+      <retval></retval>
     </method>
-    <method selector="defaultFontSize" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="title">
+      <retval></retval>
     </method>
-    <method selector="defaultTextEncodingName" swt_gen="true">
-      <retval swt_gen="true"></retval>
+  </class>
+  <class name="WebPreferences" swt_gen="mixed">
+    <method selector="allowsAnimatedImageLooping">
+      <retval></retval>
     </method>
-    <method selector="fantasyFontFamily" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="allowsAnimatedImages">
+      <retval></retval>
     </method>
-    <method selector="fixedFontFamily" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="arePlugInsEnabled">
+      <retval></retval>
+    </method>
+    <method selector="autosaves">
+      <retval></retval>
+    </method>
+    <method selector="cacheModel">
+      <retval></retval>
+    </method>
+    <method selector="cursiveFontFamily">
+      <retval></retval>
+    </method>
+    <method selector="defaultFixedFontSize">
+      <retval></retval>
+    </method>
+    <method selector="defaultFontSize">
+      <retval></retval>
+    </method>
+    <method selector="defaultTextEncodingName">
+      <retval></retval>
+    </method>
+    <method selector="fantasyFontFamily">
+      <retval></retval>
+    </method>
+    <method selector="fixedFontFamily">
+      <retval></retval>
     </method>
     <method selector="identifier" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3989,228 +3989,228 @@
       <arg name="anIdentifier" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="isJavaEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="isJavaEnabled">
+      <retval></retval>
     </method>
-    <method selector="isJavaScriptEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="isJavaScriptEnabled">
+      <retval></retval>
     </method>
-    <method selector="javaScriptCanOpenWindowsAutomatically" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="javaScriptCanOpenWindowsAutomatically">
+      <retval></retval>
     </method>
-    <method selector="loadsImagesAutomatically" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="loadsImagesAutomatically">
+      <retval></retval>
     </method>
-    <method selector="minimumFontSize" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="minimumFontSize">
+      <retval></retval>
     </method>
-    <method selector="minimumLogicalFontSize" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="minimumLogicalFontSize">
+      <retval></retval>
     </method>
-    <method selector="privateBrowsingEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="privateBrowsingEnabled">
+      <retval></retval>
     </method>
-    <method selector="sansSerifFontFamily" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="sansSerifFontFamily">
+      <retval></retval>
     </method>
-    <method selector="serifFontFamily" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="serifFontFamily">
+      <retval></retval>
     </method>
-    <method selector="setAllowsAnimatedImageLooping:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setAllowsAnimatedImageLooping:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setAllowsAnimatedImages:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setAllowsAnimatedImages:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setAutosaves:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setAutosaves:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setCacheModel:" swt_gen="true">
-      <arg name="cacheModel" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setCacheModel:">
+      <arg name="cacheModel"></arg>
+      <retval></retval>
     </method>
-    <method selector="setCursiveFontFamily:" swt_gen="true">
-      <arg name="family" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setCursiveFontFamily:">
+      <arg name="family"></arg>
+      <retval></retval>
     </method>
-    <method selector="setDefaultFixedFontSize:" swt_gen="true">
-      <arg name="size" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setDefaultFixedFontSize:">
+      <arg name="size"></arg>
+      <retval></retval>
     </method>
-    <method selector="setDefaultFontSize:" swt_gen="true">
-      <arg name="size" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setDefaultFontSize:">
+      <arg name="size"></arg>
+      <retval></retval>
     </method>
-    <method selector="setDefaultTextEncodingName:" swt_gen="true">
-      <arg name="encoding" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setDefaultTextEncodingName:">
+      <arg name="encoding"></arg>
+      <retval></retval>
     </method>
-    <method selector="setFantasyFontFamily:" swt_gen="true">
-      <arg name="family" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setFantasyFontFamily:">
+      <arg name="family"></arg>
+      <retval></retval>
     </method>
-    <method selector="setFixedFontFamily:" swt_gen="true">
-      <arg name="family" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setFixedFontFamily:">
+      <arg name="family"></arg>
+      <retval></retval>
     </method>
-    <method selector="setJavaEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setJavaEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setJavaScriptCanOpenWindowsAutomatically:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setJavaScriptCanOpenWindowsAutomatically:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
     <method selector="setJavaScriptEnabled:" swt_gen="true">
       <arg name="flag" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setLoadsImagesAutomatically:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setLoadsImagesAutomatically:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setMinimumFontSize:" swt_gen="true">
-      <arg name="size" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setMinimumFontSize:">
+      <arg name="size"></arg>
+      <retval></retval>
     </method>
-    <method selector="setMinimumLogicalFontSize:" swt_gen="true">
-      <arg name="size" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setMinimumLogicalFontSize:">
+      <arg name="size"></arg>
+      <retval></retval>
     </method>
-    <method selector="setPlugInsEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setPlugInsEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setPrivateBrowsingEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setPrivateBrowsingEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setSansSerifFontFamily:" swt_gen="true">
-      <arg name="family" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setSansSerifFontFamily:">
+      <arg name="family"></arg>
+      <retval></retval>
     </method>
-    <method selector="setSerifFontFamily:" swt_gen="true">
-      <arg name="family" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setSerifFontFamily:">
+      <arg name="family"></arg>
+      <retval></retval>
     </method>
-    <method selector="setShouldPrintBackgrounds:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setShouldPrintBackgrounds:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setStandardFontFamily:" swt_gen="true">
-      <arg name="family" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setStandardFontFamily:">
+      <arg name="family"></arg>
+      <retval></retval>
     </method>
-    <method selector="setTabsToLinks:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setTabsToLinks:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setUserStyleSheetEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setUserStyleSheetEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setUserStyleSheetLocation:" swt_gen="true">
-      <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setUserStyleSheetLocation:">
+      <arg name="URL"></arg>
+      <retval></retval>
     </method>
-    <method selector="setUsesPageCache:" swt_gen="true">
-      <arg name="usesPageCache" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setUsesPageCache:">
+      <arg name="usesPageCache"></arg>
+      <retval></retval>
     </method>
-    <method selector="shouldPrintBackgrounds" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="shouldPrintBackgrounds">
+      <retval></retval>
     </method>
-    <method selector="standardFontFamily" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="standardFontFamily">
+      <retval></retval>
     </method>
     <method selector="standardPreferences" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="tabsToLinks" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="tabsToLinks">
+      <retval></retval>
     </method>
-    <method selector="userStyleSheetEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="userStyleSheetEnabled">
+      <retval></retval>
     </method>
-    <method selector="userStyleSheetLocation" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="userStyleSheetLocation">
+      <retval></retval>
     </method>
-    <method selector="usesPageCache" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-  </class>
-  <class name="WebResource" swt_gen="true">
-    <method selector="MIMEType" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="URL" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="data" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="frameName" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="initWithData:URL:MIMEType:textEncodingName:frameName:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <arg name="URL" swt_gen="true"></arg>
-      <arg name="MIMEType" swt_gen="true"></arg>
-      <arg name="textEncodingName" swt_gen="true"></arg>
-      <arg name="frameName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="textEncodingName" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="usesPageCache">
+      <retval></retval>
     </method>
   </class>
-  <class name="WebScriptObject" swt_gen="true">
-    <method selector="JSObject" swt_gen="true">
-      <retval swt_gen="true"></retval>
+  <class name="WebResource">
+    <method selector="MIMEType">
+      <retval></retval>
     </method>
-    <method selector="callWebScriptMethod:withArguments:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="args" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="URL">
+      <retval></retval>
     </method>
-    <method selector="evaluateWebScript:" swt_gen="true">
-      <arg name="script" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="data">
+      <retval></retval>
     </method>
-    <method selector="removeWebScriptKey:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="frameName">
+      <retval></retval>
     </method>
-    <method selector="setException:" swt_gen="true">
-      <arg name="description" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initWithData:URL:MIMEType:textEncodingName:frameName:">
+      <arg name="data"></arg>
+      <arg name="URL"></arg>
+      <arg name="MIMEType"></arg>
+      <arg name="textEncodingName"></arg>
+      <arg name="frameName"></arg>
+      <retval></retval>
     </method>
-    <method selector="setWebScriptValueAtIndex:value:" swt_gen="true">
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="value" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="stringRepresentation" swt_gen="true">
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="throwException:" swt_gen="true">
-      <arg name="exceptionMessage" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="webScriptValueAtIndex:" swt_gen="true">
-      <arg name="index" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="textEncodingName">
+      <retval></retval>
     </method>
   </class>
-  <class name="WebUndefined" swt_gen="true">
-    <method selector="undefined" swt_gen="true">
-      <retval swt_gen="true"></retval>
+  <class name="WebScriptObject">
+    <method selector="JSObject">
+      <retval></retval>
+    </method>
+    <method selector="callWebScriptMethod:withArguments:">
+      <arg name="name"></arg>
+      <arg name="args"></arg>
+      <retval></retval>
+    </method>
+    <method selector="evaluateWebScript:">
+      <arg name="script"></arg>
+      <retval></retval>
+    </method>
+    <method selector="removeWebScriptKey:">
+      <arg name="name"></arg>
+      <retval></retval>
+    </method>
+    <method selector="setException:">
+      <arg name="description"></arg>
+      <retval></retval>
+    </method>
+    <method selector="setWebScriptValueAtIndex:value:">
+      <arg name="index"></arg>
+      <arg name="value"></arg>
+      <retval></retval>
+    </method>
+    <method selector="stringRepresentation">
+      <retval></retval>
+    </method>
+    <method selector="throwException:">
+      <arg name="exceptionMessage"></arg>
+      <retval></retval>
+    </method>
+    <method selector="webScriptValueAtIndex:">
+      <arg name="index"></arg>
+      <retval></retval>
     </method>
   </class>
-  <class name="WebView" swt_gen="true" swt_superclass="NSView">
+  <class name="WebUndefined">
+    <method selector="undefined">
+      <retval></retval>
+    </method>
+  </class>
+  <class name="WebView" swt_gen="mixed" swt_superclass="NSView">
     <method selector="MIMETypesShownAsHTML" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -4333,9 +4333,9 @@
     <method selector="drawsBackground" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="editableDOMRangeForPoint:" swt_gen="true">
-      <arg name="point" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="editableDOMRangeForPoint:">
+      <arg name="point"></arg>
+      <retval></retval>
     </method>
     <method selector="editingDelegate" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4364,9 +4364,9 @@
       <arg name="sender" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="goToBackForwardItem:" swt_gen="true">
-      <arg name="item" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="goToBackForwardItem:">
+      <arg name="item"></arg>
+      <retval></retval>
     </method>
     <method selector="groupName" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4392,8 +4392,8 @@
     <method selector="mainFrame" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="mainFrameDocument" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="mainFrameDocument">
+      <retval></retval>
     </method>
     <method selector="mainFrameIcon" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4472,8 +4472,8 @@
     <method selector="policyDelegate" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="preferences" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="preferences">
+      <retval></retval>
     </method>
     <method selector="preferencesIdentifier" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4495,17 +4495,17 @@
     <method selector="removeDragCaret" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="replaceSelectionWithArchive:" swt_gen="true">
-      <arg name="archive" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="replaceSelectionWithArchive:">
+      <arg name="archive"></arg>
+      <retval></retval>
     </method>
     <method selector="replaceSelectionWithMarkupString:" swt_gen="true">
       <arg name="markupString" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="replaceSelectionWithNode:" swt_gen="true">
-      <arg name="node" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="replaceSelectionWithNode:">
+      <arg name="node"></arg>
+      <retval></retval>
     </method>
     <method selector="replaceSelectionWithText:" swt_gen="true">
       <arg name="text" swt_gen="true"></arg>
@@ -4514,22 +4514,22 @@
     <method selector="resourceLoadDelegate" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="searchFor:direction:caseSensitive:wrap:" swt_gen="true">
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="forward" swt_gen="true"></arg>
-      <arg name="caseFlag" swt_gen="true"></arg>
-      <arg name="wrapFlag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="searchFor:direction:caseSensitive:wrap:">
+      <arg name="string"></arg>
+      <arg name="forward"></arg>
+      <arg name="caseFlag"></arg>
+      <arg name="wrapFlag"></arg>
+      <retval></retval>
     </method>
     <method selector="selectSentence:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="selectedDOMRange" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="selectedDOMRange">
+      <retval></retval>
     </method>
-    <method selector="selectedFrame" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="selectedFrame">
+      <retval></retval>
     </method>
     <method selector="selectionAffinity" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4598,9 +4598,9 @@
       <arg name="delegate" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setPreferences:" swt_gen="true">
-      <arg name="prefs" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setPreferences:">
+      <arg name="prefs"></arg>
+      <retval></retval>
     </method>
     <method selector="setPreferencesIdentifier:" swt_gen="true">
       <arg name="anIdentifier" swt_gen="true"></arg>
@@ -4610,10 +4610,10 @@
       <arg name="delegate" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setSelectedDOMRange:affinity:" swt_gen="true">
-      <arg name="range" swt_gen="true"></arg>
-      <arg name="selectionAffinity" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setSelectedDOMRange:affinity:">
+      <arg name="range"></arg>
+      <arg name="selectionAffinity"></arg>
+      <retval></retval>
     </method>
     <method selector="setShouldCloseWithWindow:" swt_gen="true">
       <arg name="close" swt_gen="true"></arg>
@@ -4627,9 +4627,9 @@
       <arg name="multiplier" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setTypingStyle:" swt_gen="true">
-      <arg name="style" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setTypingStyle:">
+      <arg name="style"></arg>
+      <retval></retval>
     </method>
     <method selector="setUIDelegate:" swt_gen="true">
       <arg name="delegate" swt_gen="true"></arg>
@@ -4664,9 +4664,9 @@
       <arg name="script" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="styleDeclarationWithText:" swt_gen="true">
-      <arg name="text" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="styleDeclarationWithText:">
+      <arg name="text"></arg>
+      <retval></retval>
     </method>
     <method selector="supportsTextEncoding" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4686,8 +4686,8 @@
       <arg name="sender" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="typingStyle" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="typingStyle">
+      <retval></retval>
     </method>
     <method selector="undoManager" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4696,8 +4696,8 @@
       <arg name="URL" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="windowScriptObject" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="windowScriptObject">
+      <retval></retval>
     </method>
     <method selector="writeElement:withPasteboardTypes:toPasteboard:" swt_gen="true">
       <arg name="element" swt_gen="true"></arg>
