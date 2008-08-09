@@ -1662,42 +1662,42 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMEvent">
-    <method selector="bubbles">
-      <retval></retval>
+  <class name="DOMEvent" swt_gen="true" swt_superclass="NSEvent">
+    <method selector="bubbles" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="cancelable">
-      <retval></retval>
+    <method selector="cancelable" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="currentTarget">
-      <retval></retval>
+    <method selector="currentTarget" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="eventPhase">
-      <retval></retval>
+    <method selector="eventPhase" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="initEvent:::">
-      <arg name="initEvent"></arg>
-      <arg name=""></arg>
-      <arg name=""></arg>
-      <retval></retval>
+    <method selector="initEvent:::" swt_gen="true">
+      <arg name="initEvent" swt_gen="true"></arg>
+      <arg name="" swt_gen="true"></arg>
+      <arg name="" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="initEvent:canBubbleArg:cancelableArg:">
-      <arg name="eventTypeArg"></arg>
-      <arg name="canBubbleArg"></arg>
-      <arg name="cancelableArg"></arg>
-      <retval></retval>
+    <method selector="initEvent:canBubbleArg:cancelableArg:" swt_gen="true">
+      <arg name="eventTypeArg" swt_gen="true"></arg>
+      <arg name="canBubbleArg" swt_gen="true"></arg>
+      <arg name="cancelableArg" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="preventDefault">
-      <retval></retval>
+    <method selector="preventDefault" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="stopPropagation">
-      <retval></retval>
+    <method selector="stopPropagation" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="target">
-      <retval></retval>
+    <method selector="target" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="timeStamp">
-      <retval></retval>
+    <method selector="timeStamp" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="DOMHTMLAnchorElement">
@@ -2395,7 +2395,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMKeyboardEvent" swt_gen="true">
+  <class name="DOMKeyboardEvent" swt_gen="true" swt_superclass="DOMUIEvent">
     <method selector="altKey" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -2439,7 +2439,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMMouseEvent" swt_gen="true">
+  <class name="DOMMouseEvent" swt_gen="mixed" swt_superclass="DOMUIEvent">
     <method selector="altKey" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -2455,41 +2455,41 @@
     <method selector="ctrlKey" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="initMouseEvent:::::::::::::::" swt_gen="true">
-      <arg name="initMouseEvent" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initMouseEvent:::::::::::::::">
+      <arg name="initMouseEvent"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="initMouseEvent:canBubble:cancelable:view:detail:screenX:screenY:clientX:clientY:ctrlKey:altKey:shiftKey:metaKey:button:relatedTarget:" swt_gen="true">
-      <arg name="type" swt_gen="true"></arg>
-      <arg name="canBubble" swt_gen="true"></arg>
-      <arg name="cancelable" swt_gen="true"></arg>
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="detail" swt_gen="true"></arg>
-      <arg name="screenX" swt_gen="true"></arg>
-      <arg name="screenY" swt_gen="true"></arg>
-      <arg name="clientX" swt_gen="true"></arg>
-      <arg name="clientY" swt_gen="true"></arg>
-      <arg name="ctrlKey" swt_gen="true"></arg>
-      <arg name="altKey" swt_gen="true"></arg>
-      <arg name="shiftKey" swt_gen="true"></arg>
-      <arg name="metaKey" swt_gen="true"></arg>
-      <arg name="button" swt_gen="true"></arg>
-      <arg name="relatedTarget" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initMouseEvent:canBubble:cancelable:view:detail:screenX:screenY:clientX:clientY:ctrlKey:altKey:shiftKey:metaKey:button:relatedTarget:">
+      <arg name="type"></arg>
+      <arg name="canBubble"></arg>
+      <arg name="cancelable"></arg>
+      <arg name="view"></arg>
+      <arg name="detail"></arg>
+      <arg name="screenX"></arg>
+      <arg name="screenY"></arg>
+      <arg name="clientX"></arg>
+      <arg name="clientY"></arg>
+      <arg name="ctrlKey"></arg>
+      <arg name="altKey"></arg>
+      <arg name="shiftKey"></arg>
+      <arg name="metaKey"></arg>
+      <arg name="button"></arg>
+      <arg name="relatedTarget"></arg>
+      <retval></retval>
     </method>
     <method selector="metaKey" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2855,9 +2855,9 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMUIEvent">
-    <method selector="detail">
-      <retval></retval>
+  <class name="DOMUIEvent" swt_gen="mixed" swt_superclass="DOMEvent">
+    <method selector="detail" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="initUIEvent:::::">
       <arg name="initUIEvent"></arg>

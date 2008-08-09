@@ -79,7 +79,7 @@
   <struct name="NSSwappedFloat">
     <field name="v"></field>
   </struct>
-  <opaque name="NSZone" swt_gen="true"></opaque>
+  <opaque name="NSZone"></opaque>
   <constant name="NSAppleEventManagerWillProcessFirstEventNotification"></constant>
   <constant name="NSAppleEventTimeOutDefault"></constant>
   <constant name="NSAppleEventTimeOutNone"></constant>
