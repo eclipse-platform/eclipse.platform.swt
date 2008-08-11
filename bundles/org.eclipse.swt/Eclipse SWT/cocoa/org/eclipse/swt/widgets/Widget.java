@@ -129,6 +129,12 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+String getClipboardText () {
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
+	NSString string = pasteboard.stringForType (OS.NSStringPboardType);
+	return string != null ? string.getString () : null;
+}
+
 NSBezierPath getClipping () {
 	return null;
 }
@@ -329,6 +335,13 @@ boolean clickOnLink(int textView, int link, int charIndex) {
 }
 
 void comboBoxSelectionDidChange(int notification) {
+}
+
+void copyToClipboard (char [] buffer) {
+	if (buffer.length == 0) return;
+	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
+	pasteboard.declareTypes (NSArray.arrayWithObject (OS.NSStringPboardType), null);
+	pasteboard.setString (NSString.stringWithCharacters (buffer, buffer.length), OS.NSStringPboardType);
 }
 
 void createHandle () {

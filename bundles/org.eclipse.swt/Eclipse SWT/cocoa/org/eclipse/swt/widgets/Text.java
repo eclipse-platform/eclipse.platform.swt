@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -146,7 +145,7 @@ public Text (Composite parent, int style) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
@@ -179,11 +178,11 @@ public void addModifyListener (ModifyListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);
-	addListener(SWT.Selection,typedListener);
-	addListener(SWT.DefaultSelection,typedListener);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Selection,typedListener);
+	addListener (SWT.DefaultSelection,typedListener);
 }
 
 /**
@@ -206,7 +205,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see #removeVerifyListener
  */
 public void addVerifyListener (VerifyListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Verify, typedListener);
@@ -230,23 +229,24 @@ public void addVerifyListener (VerifyListener listener) {
  * </ul>
  */
 public void append (String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int charCount = getCharCount ();
 		string = verifyText (string, charCount, charCount, null);
 		if (string == null) return;
 	}
-	NSString str = NSString.stringWith(string);
+	NSString str = NSString.stringWith (string);
 	if ((style & SWT.SINGLE) != 0) {
-//		new NSTextFieldCell(((NSTextField)view).cell()).title().
+		setSelection (getCharCount ());
+		insertEditText (string);
 	} else {
-		NSTextView widget = (NSTextView)view;
-		NSMutableString mutableString = widget.textStorage().mutableString();
-		mutableString.appendString(str);
-		NSRange range = new NSRange();
-		range.location = mutableString.length();
-		widget.scrollRangeToVisible(range);
+		NSTextView widget = (NSTextView) view;
+		NSMutableString mutableString = widget.textStorage ().mutableString ();
+		mutableString.appendString (str);
+		NSRange range = new NSRange ();
+		range.location = mutableString.length ();
+		widget.scrollRangeToVisible (range);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
@@ -287,43 +287,43 @@ static int checkStyle (int style) {
  * </ul>
  */
 public void clearSelection () {
-	checkWidget();
+	checkWidget ();
 	Point selection = getSelection ();
 	setSelection (selection.x);	
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	checkWidget ();
 	int width = 0, height = 0;
 	if ((style & SWT.SINGLE) != 0) {
-		NSTextField widget = (NSTextField)view;
-		NSRect oldRect = widget.frame();
-		widget.sizeToFit();
-		NSRect newRect = widget.frame();
+		NSTextField widget = (NSTextField) view;
+		NSRect oldRect = widget.frame ();
+		widget.sizeToFit ();
+		NSRect newRect = widget.frame ();
 		widget.setFrame (oldRect);
-		width = (int)newRect.width;
-		height = (int)newRect.height;
+		width = (int) newRect.width;
+		height = (int) newRect.height;
 	} else {
-		NSTextView widget = (NSTextView)view;
+		NSTextView widget = (NSTextView) view;
 		NSSize oldSize = null;
-		NSTextContainer textContainer = widget.textContainer();
+		NSTextContainer textContainer = widget.textContainer ();
 		if ((style & SWT.WRAP) != 0) {
-			widget.setHorizontallyResizable(true);
-			textContainer.setWidthTracksTextView(false);
-			oldSize = textContainer.containerSize();
-			NSSize csize = new NSSize();
+			widget.setHorizontallyResizable (true);
+			textContainer.setWidthTracksTextView (false);
+			oldSize = textContainer.containerSize ();
+			NSSize csize = new NSSize ();
 			csize.width = wHint != SWT.DEFAULT ? wHint : Float.MAX_VALUE;
 			csize.height = hHint != SWT.DEFAULT ? hHint : Float.MAX_VALUE;
-			textContainer.setContainerSize(csize);
+			textContainer.setContainerSize (csize);
 		}
-		NSRect oldRect = widget.frame();
-		widget.sizeToFit();
-		NSRect newRect = widget.frame();
+		NSRect oldRect = widget.frame ();
+		widget.sizeToFit ();
+		NSRect newRect = widget.frame ();
 		widget.setFrame (oldRect);
 		if ((style & SWT.WRAP) != 0) {
-			widget.setHorizontallyResizable(false);
-			textContainer.setWidthTracksTextView(true);
-			textContainer.setContainerSize(oldSize);
+			widget.setHorizontallyResizable (false);
+			textContainer.setWidthTracksTextView (true);
+			textContainer.setContainerSize (oldSize);
 		}
 		width = (int)(newRect.width + 1);
 		height = (int)(newRect.height + 1);
@@ -352,9 +352,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public void copy () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		
+		Point selection = getSelection ();
+		if (selection.x == selection.y) return;
+		copyToClipboard (getEditText (selection.x, selection.y - 1));
 	} else {
-		((NSText)view).copy(view);
+		NSText text = (NSText) view;
+		if (text.selectedRange ().length == 0) return;
+		text.copy (text);
 	}
 }
 
@@ -362,60 +366,60 @@ void createHandle () {
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget;
 		if ((style & SWT.PASSWORD) != 0) {
-			widget = (NSTextField)new SWTSecureTextField().alloc();
+			widget = (NSTextField) new SWTSecureTextField ().alloc ();
 		} else if ((style & SWT.SEARCH) != 0) {
-			widget = (NSTextField)new SWTSearchField().alloc();
+			widget = (NSTextField) new SWTSearchField ().alloc ();
 		} else {
-			widget = (NSTextField)new SWTTextField().alloc();
+			widget = (NSTextField) new SWTTextField ().alloc ();
 		}
-		widget.initWithFrame(new NSRect());
-		widget.setSelectable(true);
+		widget.initWithFrame (new NSRect ());
+		widget.setSelectable (true);
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.BORDER) == 0) {
-			widget.setFocusRingType(OS.NSFocusRingTypeNone);
-			widget.setBordered(false);
+			widget.setFocusRingType (OS.NSFocusRingTypeNone);
+			widget.setBordered (false);
 		}
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
-		widget.setAlignment(align);
+		widget.setAlignment (align);
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		view = widget;
 	} else {
-		NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
-		scrollWidget.initWithFrame(new NSRect());
-		scrollWidget.setHasVerticalScroller((style & SWT.VERTICAL) != 0);
-		scrollWidget.setHasHorizontalScroller((style & SWT.HORIZONTAL) != 0);
-		scrollWidget.setAutoresizesSubviews(true);
-		if ((style & SWT.BORDER) != 0) scrollWidget.setBorderType(OS.NSBezelBorder);
+		NSScrollView scrollWidget = (NSScrollView) new SWTScrollView ().alloc ();
+		scrollWidget.initWithFrame (new NSRect ());
+		scrollWidget.setHasVerticalScroller ((style & SWT.VERTICAL) != 0);
+		scrollWidget.setHasHorizontalScroller ((style & SWT.HORIZONTAL) != 0);
+		scrollWidget.setAutoresizesSubviews (true);
+		if ((style & SWT.BORDER) != 0) scrollWidget.setBorderType (OS.NSBezelBorder);
 		
-		NSTextView widget = (NSTextView)new SWTTextView().alloc();
-		widget.initWithFrame(new NSRect());
-		widget.setEditable((style & SWT.READ_ONLY) == 0);
+		NSTextView widget = (NSTextView) new SWTTextView ().alloc ();
+		widget.initWithFrame (new NSRect ());
+		widget.setEditable ((style & SWT.READ_ONLY) == 0);
 		
-		NSSize size = new NSSize();
+		NSSize size = new NSSize ();
 		size.width = size.height = Float.MAX_VALUE;
-		widget.setMaxSize(size);
-		widget.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+		widget.setMaxSize (size);
+		widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
 
 		if ((style & SWT.WRAP) == 0) {
-			NSTextContainer textContainer = widget.textContainer();
-			widget.setHorizontallyResizable(true);
-			textContainer.setWidthTracksTextView(false);
-			NSSize csize = new NSSize();
+			NSTextContainer textContainer = widget.textContainer ();
+			widget.setHorizontallyResizable (true);
+			textContainer.setWidthTracksTextView (false);
+			NSSize csize = new NSSize ();
 			csize.width = csize.height = Float.MAX_VALUE;
-			textContainer.setContainerSize(csize);
+			textContainer.setContainerSize (csize);
 		}
 
 		int align = OS.NSLeftTextAlignment;
 		if ((style & SWT.CENTER) != 0) align = OS.NSCenterTextAlignment;
 		if ((style & SWT.RIGHT) != 0) align = OS.NSRightTextAlignment;
-		widget.setAlignment(align);
+		widget.setAlignment (align);
 
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
-		widget.setRichText(false);
+		widget.setRichText (false);
 		
 		view = widget;
 		scrollView = scrollWidget;
@@ -441,50 +445,39 @@ void createWidget () {
  * </ul>
  */
 public void cut () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	if ((style & SWT.SINGLE) != 0) {
-		
-	} else {
-		((NSTextView)view).cut(null);
+	boolean cut = true;
+	char [] oldText = null;
+	Point oldSelection = getSelection ();
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		if (oldSelection.x != oldSelection.y) {
+			oldText = getEditText (oldSelection.x, oldSelection.y - 1);
+			String newText = verifyText ("", oldSelection.x, oldSelection.y, null);
+			if (newText == null) return;
+			if (newText.length () != 0) {
+				copyToClipboard (oldText);
+				if ((style & SWT.SINGLE) != 0) {
+					insertEditText (newText);
+				} else {
+					NSTextView widget = (NSTextView) view;
+					widget.replaceCharactersInRange_withString_ (widget.selectedRange (), NSString.stringWith (newText));
+				}
+				cut = false;
+			}
+		}
 	}
-//	boolean cut = true;
-//	char [] oldText = null;
-//	Point oldSelection = getSelection ();
-//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//		if (oldSelection.x != oldSelection.y) {
-//			oldText = getEditText (oldSelection.x, oldSelection.y - 1);
-//			String newText = verifyText ("", oldSelection.x, oldSelection.y, null);
-//			if (newText == null) return;
-//			if (newText.length () != 0) {
-//				copyToClipboard (oldText);
-//				if (txnObject == 0) {
-//					insertEditText (newText);
-//				} else {
-//					setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
-//					OS.TXNShowSelection (txnObject, false);
-//				}
-//				cut = false;
-//			}
-//		}
-//	}
-//	if (cut) {
-//		if (txnObject == 0) {
-//			if (oldText == null) oldText = getEditText (oldSelection.x, oldSelection.y - 1);
-//			copyToClipboard (oldText);
-//			insertEditText ("");
-//		} else {
-//			OS.TXNCut (txnObject);
-//	
-//			/*
-//			* Feature in the Macintosh.  When an empty string is set in the TXNObject,
-//			* the font attributes are cleared.  The fix is to reset them.
-//			*/
-//			if (OS.TXNDataSize (txnObject) / 2 == 0) setFontStyle (font);
-//		}
-//	}
-//	Point newSelection = getSelection ();
-//	if (!cut || !oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
+	if (cut) {
+		if ((style & SWT.SINGLE) != 0) {
+			if (oldText == null) oldText = getEditText (oldSelection.x, oldSelection.y - 1);
+			copyToClipboard (oldText);
+			insertEditText ("");
+		} else {
+			((NSTextView) view).cut (null);
+		}
+	}
+	Point newSelection = getSelection ();
+	if (!cut || !oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
 
 Color defaultBackground () {
@@ -526,7 +519,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
  * </ul>
  */
 public int getCaretLineNumber () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
     return (getTopPixel () + getCaretLocation ().y) / getLineHeight ();
 }
@@ -546,7 +539,7 @@ public int getCaretLineNumber () {
  * </ul>
  */
 public Point getCaretLocation () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		//TODO - caret location for unicode text
 		return new Point (0, 0);
@@ -570,7 +563,7 @@ public Point getCaretLocation () {
  * </ul>
  */
 public int getCaretPosition () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		//TODO
 		return 0;
@@ -593,9 +586,9 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		return new NSCell(((NSControl)view).cell()).title().length();
+		return new NSCell (((NSControl) view).cell ()).title ().length ();
 	} else {
-		return ((NSTextView)view).textStorage().length();
+		return ((NSTextView) view).textStorage ().length ();
 	}
 }
 
@@ -615,7 +608,7 @@ public int getCharCount () {
  * </ul>
  */
 public boolean getDoubleClickEnabled () {
-	checkWidget();
+	checkWidget ();
     return doubleClick;
 }
 
@@ -637,7 +630,7 @@ public boolean getDoubleClickEnabled () {
  * @see #setEchoChar
  */
 public char getEchoChar () {
-	checkWidget();
+	checkWidget ();
 	return echoCharacter;
 }
 
@@ -652,8 +645,40 @@ public char getEchoChar () {
  * </ul>
  */
 public boolean getEditable () {
-	checkWidget();
+	checkWidget ();
 	return (style & SWT.READ_ONLY) == 0;
+}
+
+char [] getEditText () {
+	NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+	int length = str.length ();
+	char [] buffer = new char [length];
+	if (hiddenText != null) {
+		hiddenText.getChars (0, length, buffer, 0);
+	} else {
+		NSRange range = new NSRange ();
+		range.length = length;
+		str.getCharacters_range_ (buffer, range);
+	}
+	return buffer;
+}
+
+char [] getEditText (int start, int end) {
+	NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+	int length = str.length ();
+	end = Math.min (end, length - 1);
+	if (start > end) return new char [0];
+	start = Math.max (0, start);
+	NSRange range = new NSRange ();
+	range.location = start;
+	range.length = Math.max (0, end - start + 1);
+	char [] buffer = new char [range.length];
+	if (hiddenText != null) {
+		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
+	} else {
+		str.getCharacters_range_ (buffer, range);
+	}
+	return buffer;
 }
 
 /**
@@ -667,9 +692,9 @@ public boolean getEditable () {
  * </ul>
  */
 public int getLineCount () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	return ((NSTextView)view).textStorage().paragraphs().count();
+	return ((NSTextView) view).textStorage ().paragraphs ().count ();
 }
 
 /**
@@ -685,7 +710,7 @@ public int getLineCount () {
  * @see #DELIMITER
  */
 public String getLineDelimiter () {
-	checkWidget();
+	checkWidget ();
 	return DELIMITER;
 }
 
@@ -700,7 +725,7 @@ public String getLineDelimiter () {
  * </ul>
  */
 public int getLineHeight () {
-	checkWidget();
+	checkWidget ();
 	//TODO
 	return 16;
 }
@@ -719,7 +744,7 @@ public int getLineHeight () {
  * @since 2.1.2
  */
 public int getOrientation () {
-	checkWidget();
+	checkWidget ();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
@@ -778,14 +803,17 @@ int getPosition (int x, int y) {
  * </ul>
  */
 public Point getSelection () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		if (selectionRange == null) return new Point(0, 0);
-		return new Point(selectionRange.location, selectionRange.location + selectionRange.length);
+		if (selectionRange == null) {
+			NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+			return new Point(str.length (), str.length ());
+		}
+		return new Point (selectionRange.location, selectionRange.location + selectionRange.length);
 	} else {
-		NSTextView widget = (NSTextView)view;
-		NSRange range = widget.selectedRange();
-		return new Point(range.location, range.location + range.length);
+		NSTextView widget = (NSTextView) view;
+		NSRange range = widget.selectedRange ();
+		return new Point (range.location, range.location + range.length);
 	}
 }
 
@@ -800,12 +828,12 @@ public Point getSelection () {
  * </ul>
  */
 public int getSelectionCount () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		return selectionRange != null ? selectionRange.length : 0;
 	} else {
-		NSTextView widget = (NSTextView)view;
-		NSRange range = widget.selectedRange();
+		NSTextView widget = (NSTextView) view;
+		NSRange range = widget.selectedRange ();
 		return range.length;
 	}
 }
@@ -821,20 +849,18 @@ public int getSelectionCount () {
  * </ul>
  */
 public String getSelectionText () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		if (selectionRange == null) return ""; //$NON-NLS-1$
-		NSString str = new NSTextFieldCell(((NSTextField)view).cell()).title();
-		char[] buffer = new char[selectionRange.length];
-		str.getCharacters_range_(buffer, selectionRange);
-		return new String(buffer);
+		Point selection = getSelection ();
+		if (selection.x == selection.y) return "";
+		return new String (getEditText (selection.x, selection.y - 1));
 	} else {
-		NSTextView widget = (NSTextView)view;
-		NSRange range = widget.selectedRange();
-		NSString str = widget.textStorage().string();
-		char[] buffer = new char[range.length];
-		str.getCharacters_range_(buffer, range);
-		return new String(buffer);
+		NSTextView widget = (NSTextView) view;
+		NSRange range = widget.selectedRange ();
+		NSString str = widget.textStorage ().string ();
+		char[] buffer = new char [range.length];
+		str.getCharacters_range_ (buffer, range);
+		return new String (buffer);
 	}
 }
 
@@ -854,7 +880,7 @@ public String getSelectionText () {
  * </ul>
  */
 public int getTabs () {
-	checkWidget();
+	checkWidget ();
 	return tabs;
 }
 
@@ -873,16 +899,16 @@ public int getTabs () {
  * </ul>
  */
 public String getText () {
-	checkWidget();
+	checkWidget ();
 	NSString str;
 	if ((style & SWT.SINGLE) != 0) {
-		str = new NSTextFieldCell(((NSTextField)view).cell()).title();
+		return new String (getEditText ());
 	} else {
-		str = ((NSTextView)view).textStorage().string();
+		str = ((NSTextView)view).textStorage ().string ();
 	}
-	char[] buffer = new char[str.length()];
-	str.getCharacters_(buffer);
-	return new String(buffer);
+	char[] buffer = new char[str.length ()];
+	str.getCharacters_ (buffer);
+	return new String (buffer);
 }
 
 /**
@@ -907,26 +933,20 @@ public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return ""; //$NON-NLS-1$
 	if ((style & SWT.SINGLE) != 0) {
-		NSString string = new NSTextFieldCell(((NSTextField)view).cell()).title();
-		end = Math.min (end, string.length() - 1);
-		if (start > end) return ""; //$NON-NLS-1$
-		start = Math.max (0, start);
-		char[] buffer = new char[string.length()];
-		string.getCharacters_(buffer);
-		return new String(buffer, start, end - start + 1);
+		return new String (getEditText (start, end));
 	}
-	NSTextStorage storage = ((NSTextView)view).textStorage();
-	end = Math.min (end, storage.length() - 1);
+	NSTextStorage storage = ((NSTextView) view).textStorage ();
+	end = Math.min (end, storage.length () - 1);
 	if (start > end) return ""; //$NON-NLS-1$
 	start = Math.max (0, start);
-	NSRange range = new NSRange();
+	NSRange range = new NSRange ();
 	range.location = start;
 	range.length = end - start + 1;
-	NSAttributedString substring = storage.attributedSubstringFromRange(range);
-	NSString string = substring.string();
-	char[] buffer = new char[string.length()];
-	string.getCharacters_(buffer);
-	return new String(buffer);
+	NSAttributedString substring = storage.attributedSubstringFromRange (range);
+	NSString string = substring.string ();
+	char[] buffer = new char [range.length];
+	string.getCharacters_ (buffer);
+	return new String (buffer);
 }
 
 /**
@@ -946,7 +966,7 @@ public String getText (int start, int end) {
  * @see #LIMIT
  */
 public int getTextLimit () {
-	checkWidget();
+	checkWidget ();
     return textLimit;
 }
 
@@ -965,7 +985,7 @@ public int getTextLimit () {
  * </ul>
  */
 public int getTopIndex () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
     return getTopPixel () / getLineHeight ();
 }
@@ -991,7 +1011,7 @@ public int getTopIndex () {
  * </ul>
  */
 public int getTopPixel () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	//TODO
 	return 0;
@@ -1014,7 +1034,7 @@ public int getTopPixel () {
  * </ul>
  */
 public void insert (String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		Point selection = getSelection ();
@@ -1022,15 +1042,44 @@ public void insert (String string) {
 		if (string == null) return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
-//		new NSTextFieldCell(((NSTextField)view).cell()).title().
+		insertEditText (string);
 	} else {
-		//
-		NSString str = NSString.stringWith(string);
-		NSTextView widget = (NSTextView)view;
-		NSRange range = widget.selectedRange();
-		widget.textStorage().replaceCharactersInRange_withString_(range, str);
+		NSString str = NSString.stringWith (string);
+		NSTextView widget = (NSTextView) view;
+		NSRange range = widget.selectedRange ();
+		widget.textStorage ().replaceCharactersInRange_withString_ (range, str);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
+}
+
+void insertEditText (String string) {
+	int length = string.length ();
+	Point selection = getSelection ();
+	if (hasFocus () && hiddenText == null) {
+		if (textLimit != LIMIT) {
+			int charCount = getCharCount();
+			if (charCount - (selection.y - selection.x) + length > textLimit) {
+				length = textLimit - charCount + (selection.y - selection.x);
+			}
+		}
+		char [] buffer = new char [length];
+		string.getChars (0, buffer.length, buffer, 0);
+		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
+		NSText editor = ((NSTextField) view).currentEditor ();
+		editor.replaceCharactersInRange_withString_ (editor.selectedRange (), nsstring);
+		selectionRange = null;
+	} else {
+		String oldText = getText ();
+		if (textLimit != LIMIT) {
+			int charCount = oldText.length ();
+			if (charCount - (selection.y - selection.x) + length > textLimit) {
+				string = string.substring(0, textLimit - charCount + (selection.y - selection.x));
+			}
+		}
+		String newText = oldText.substring (0, selection.x) + string + oldText.substring (selection.y);
+		setEditText (newText);
+		setSelection (selection.x + string.length ());
+	}
 }
 
 /**
@@ -1046,42 +1095,38 @@ public void insert (String string) {
  * </ul>
  */
 public void paste () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-//	boolean paste = true;
-//	String oldText = null;
-//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//		oldText = getClipboardText ();
-//		if (oldText != null) {
-//			Point selection = getSelection ();
-//			String newText = verifyText (oldText, selection.x, selection.y, null);
-//			if (newText == null) return;
-//			if (!newText.equals (oldText)) {
-//				if (txnObject == 0) {
-//					insertEditText (newText);
-//				} else {
-//					setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
-//					OS.TXNShowSelection (txnObject, false);
-//				}
-//				paste = false;
-//			}
-//		}
-//	}
-//	if (paste) {
-//		if (txnObject == 0) {
-//			if (oldText == null) oldText = getClipboardText ();
-//			insertEditText (oldText);
-//		} else {
-//			if (textLimit != LIMIT) {
-//				if (oldText == null) oldText = getClipboardText ();
-//				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, oldText);
-//				OS.TXNShowSelection (txnObject, false);
-//			} else {
-//				OS.TXNPaste (txnObject);
-//			}
-//		}
-//	}
-//	sendEvent (SWT.Modify);
+	boolean paste = true;
+	String oldText = null;
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		oldText = getClipboardText ();
+		if (oldText != null) {
+			Point selection = getSelection ();
+			String newText = verifyText (oldText, selection.x, selection.y, null);
+			if (newText == null) return;
+			if (!newText.equals (oldText)) {
+				if ((style & SWT.SINGLE) != 0) {
+					insertEditText (newText);
+				} else {
+					NSTextView textView = (NSTextView) view;
+					textView.replaceCharactersInRange_withString_ (textView.selectedRange (), NSString.stringWith (newText));
+				}
+				paste = false;
+			}
+		}
+	}
+	if (paste) {
+		if ((style & SWT.SINGLE) != 0) {
+			if (oldText == null) oldText = getClipboardText ();
+			insertEditText (oldText);
+		} else {
+			//TODO check text limit
+			NSTextView textView = (NSTextView) view;
+			textView.paste (null);
+		}
+	}
+	sendEvent (SWT.Modify);
 }
 
 void releaseWidget () {
@@ -1108,7 +1153,7 @@ void releaseWidget () {
  * @see #addModifyListener
  */
 public void removeModifyListener (ModifyListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);
@@ -1132,11 +1177,11 @@ public void removeModifyListener (ModifyListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook(SWT.Selection, listener);
-	eventTable.unhook(SWT.DefaultSelection,listener);
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection,listener);
 }
 
 /**
@@ -1157,7 +1202,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see #addVerifyListener
  */
 public void removeVerifyListener (VerifyListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);
@@ -1172,11 +1217,11 @@ public void removeVerifyListener (VerifyListener listener) {
  * </ul>
  */
 public void selectAll () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		setSelection (0, getCharCount ());
 	} else {
-		((NSTextView)view).selectAll(null);
+		((NSTextView) view).selectAll (null);
 	}
 }
 
@@ -1248,12 +1293,12 @@ void setBackground (float [] color) {
 	if (color == null) {
 		return;	// TODO reset to OS default
 	} else {
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
 	}
 	if ((style & SWT.SINGLE) != 0) {
-		((NSTextField)view).setBackgroundColor(nsColor);
+		((NSTextField) view).setBackgroundColor (nsColor);
 	} else {
-		((NSTextView)view).setBackgroundColor(nsColor);
+		((NSTextView) view).setBackgroundColor (nsColor);
 	}
 }
 
@@ -1276,7 +1321,7 @@ void setBackground (float [] color) {
  * </ul>
  */
 public void setDoubleClickEnabled (boolean doubleClick) {
-	checkWidget();
+	checkWidget ();
 	this.doubleClick = doubleClick;
 }
 
@@ -1302,7 +1347,7 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  * </ul>
  */
 public void setEchoChar (char echo) {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.MULTI) != 0) return;
 //	if (txnObject == 0) {
 //		if ((style & SWT.PASSWORD) == 0) {
@@ -1329,25 +1374,41 @@ public void setEchoChar (char echo) {
  * </ul>
  */
 public void setEditable (boolean editable) {
-	checkWidget();
+	checkWidget ();
 	if (editable) {
 		style &= ~SWT.READ_ONLY;
 	} else {
 		style |= SWT.READ_ONLY;
 	}
 	if ((style & SWT.SINGLE) != 0) {
-		((NSTextField)view).setEditable(editable);
+		((NSTextField) view).setEditable (editable);
 	} else {
-		((NSTextView)view).setEditable(editable);
+		((NSTextView) view).setEditable (editable);
 	}
+}
+
+void setEditText (String string) {
+	char [] buffer;
+	if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
+		hiddenText = string;
+		buffer = new char [Math.min(hiddenText.length (), textLimit)];
+		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
+	} else {
+		hiddenText = null;
+		buffer = new char [Math.min(string.length (), textLimit)];
+		string.getChars (0, buffer.length, buffer, 0);
+	}
+	NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
+	new NSCell (((NSTextField) view).cell ()).setTitle (nsstring);
+	selectionRange = null;
 }
 
 void setFont(NSFont font) {
 	if ((style & SWT.MULTI) !=  0) {
-		((NSTextView) view).setFont_(font);
+		((NSTextView) view).setFont_ (font);
 		return;
 	}
-	super.setFont(font);
+	super.setFont (font);
 }
 
 void setForeground (float [] color) {
@@ -1355,12 +1416,12 @@ void setForeground (float [] color) {
 	if (color == null) {
 		return;	// TODO reset to OS default
 	} else {
-		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
 	}
 	if ((style & SWT.SINGLE) != 0) {
-		((NSTextField)view).setTextColor(nsColor);
+		((NSTextField) view).setTextColor (nsColor);
 	} else {
-		((NSTextView)view).setTextColor_(nsColor);
+		((NSTextView) view).setTextColor_ (nsColor);
 	}
 }
 
@@ -1382,7 +1443,7 @@ void setForeground (float [] color) {
  * @since 2.1.2
  */
 public void setOrientation (int orientation) {
-	checkWidget();
+	checkWidget ();
 }
 
 /**
@@ -1445,7 +1506,7 @@ public void setMessage (String message) {
  * </ul>
  */
 public void setSelection (int start) {
-	checkWidget();
+	checkWidget ();
 	setSelection (start, start);
 }
 
@@ -1475,27 +1536,27 @@ public void setSelection (int start) {
  * </ul>
  */
 public void setSelection (int start, int end) {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		NSString str = new NSCell(((NSTextField)view).cell()).title();
-		int length = str.length();
+		NSString str = new NSCell (((NSTextField) view).cell ()).title ();
+		int length = str.length ();
 		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
 		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
-		selectionRange = new NSRange();
+		selectionRange = new NSRange ();
 		selectionRange.location = selStart;
 		selectionRange.length = selEnd - selStart;
 		if (this == display.getFocusControl ()) {
-			NSText editor = view.window().fieldEditor(false, view);
-			editor.setSelectedRange(selectionRange);
+			NSText editor = view.window ().fieldEditor (false, view);
+			editor.setSelectedRange (selectionRange);
 		}
 	} else {
-		int length = ((NSTextView)view).textStorage().length();
+		int length = ((NSTextView) view).textStorage ().length ();
 		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
 		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
 		NSRange range = new NSRange ();
 		range.location = selStart;
 		range.length = selEnd - selStart;
-		((NSTextView)view).setSelectedRange (range);
+		((NSTextView) view).setSelectedRange (range);
 	}
 }
 
@@ -1529,7 +1590,7 @@ public void setSelection (int start, int end) {
  * </ul>
  */
 public void setSelection (Point selection) {
-	checkWidget();
+	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
 }
@@ -1551,7 +1612,7 @@ public void setSelection (Point selection) {
  * </ul>
  */
 public void setTabs (int tabs) {
-	checkWidget();
+	checkWidget ();
 	if (this.tabs == tabs) return;
 //	if (txnObject == 0) return;
 //	this.tabs = tabs;
@@ -1579,17 +1640,17 @@ public void setTabs (int tabs) {
  * </ul>
  */
 public void setText (String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		string = verifyText (string, 0, getCharCount (), null);
 		if (string == null) return;
 	}
-	NSString str = NSString.stringWith(string);
 	if ((style & SWT.SINGLE) != 0) {
-		new NSCell(((NSTextField)view).cell()).setTitle(str);
+		setEditText (string);
 	} else {
-		((NSTextView)view).setString(str);
+		NSString str = NSString.stringWith (string);
+		((NSTextView) view).setString (str);
 	}
 	sendEvent (SWT.Modify);
 }
@@ -1619,7 +1680,7 @@ public void setText (String string) {
  * @see #LIMIT
  */
 public void setTextLimit (int limit) {
-	checkWidget();
+	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	textLimit = limit;
 }
@@ -1637,13 +1698,13 @@ public void setTextLimit (int limit) {
  * </ul>
  */
 public void setTopIndex (int index) {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	//TODO no working
-	NSTextView widget = (NSTextView)view;
-	NSRange range = new NSRange();
-	NSRect rect = widget.firstRectForCharacterRange(range);
-	view.scrollRectToVisible(rect);
+	NSTextView widget = (NSTextView) view;
+	NSRange range = new NSRange ();
+	NSRect rect = widget.firstRectForCharacterRange (range);
+	view.scrollRectToVisible (rect);
 }
 
 /**
@@ -1660,26 +1721,26 @@ public void setTopIndex (int index) {
  * </ul>
  */
 public void showSelection () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.SINGLE) != 0)  {
-		setSelection (getSelection());
+		setSelection (getSelection ());
 	} else {
-		NSTextView widget = (NSTextView)view;
-		widget.scrollRangeToVisible(widget.selectedRange());
+		NSTextView widget = (NSTextView) view;
+		widget.scrollRangeToVisible (widget.selectedRange ());
 	}
 }
 
 void textViewDidChangeSelection(int aNotification) {
-	NSNotification notification = new NSNotification(aNotification);
-	NSText editor = new NSText(notification.object().id);
-	selectionRange = editor.selectedRange();
+	NSNotification notification = new NSNotification (aNotification);
+	NSText editor = new NSText (notification.object ().id);
+	selectionRange = editor.selectedRange ();
 }
 
 void textDidChange (int aNotification) {
 	postEvent (SWT.Modify);
 }
 
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
 	* then return the receiver's last selection range, otherwise the full
@@ -1688,7 +1749,7 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTex
 	if (receivingFocus && selectionRange != null) return selectionRange;
 
 	/* allow the selection change to proceed */
-	NSRange result = new NSRange();
+	NSRange result = new NSRange ();
 	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
 	return result;
 }

@@ -366,7 +366,7 @@ public void copy () {
 	checkWidget ();
 	Point selection = getSelection ();
 	if (selection.x == selection.y) return;
-//	copyToClipboard (getText (selection.x, selection.y));
+	copyToClipboard (getText (selection.x, selection.y));
 }
 
 void createHandle () {
@@ -402,25 +402,25 @@ void createHandle () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-//	Point selection = getSelection ();
-//	if (selection.x == selection.y) return;
-//	int start = selection.x, end = selection.y;
-//	String text = getText ();
-//	String leftText = text.substring (0, start);
-//	String rightText = text.substring (end, text.length ());
-//	String oldText = text.substring (start, end);
-//	String newText = "";
-//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//		newText = verifyText (newText, start, end, null);
-//		if (newText == null) return;
-//	}
-//	char [] buffer = new char [oldText.length ()];
-//	oldText.getChars (0, buffer.length, buffer, 0);
-//	copyToClipboard (buffer);
-//	setText (leftText + newText + rightText, false);
-//	start += newText.length ();
-//	setSelection (new Point (start, start));
-//	sendEvent (SWT.Modify);
+	Point selection = getSelection ();
+	if (selection.x == selection.y) return;
+	int start = selection.x, end = selection.y;
+	String text = getText ();
+	String leftText = text.substring (0, start);
+	String rightText = text.substring (end, text.length ());
+	String oldText = text.substring (start, end);
+	String newText = "";
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		newText = verifyText (newText, start, end, null);
+		if (newText == null) return;
+	}
+	char [] buffer = new char [oldText.length ()];
+	oldText.getChars (0, buffer.length, buffer, 0);
+	copyToClipboard (buffer);
+	setText (leftText + newText + rightText, false);
+	start += newText.length ();
+	setSelection (new Point (start, start));
+	sendEvent (SWT.Modify);
 }
 
 Color defaultBackground () {
@@ -627,7 +627,10 @@ public Point getSelection () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, getCharCount ());
 	} else {
-		if (selectionRange == null) return new Point(0, 0);
+		if (selectionRange == null) {
+			NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+			return new Point(str.length (), str.length ());
+		}
 		return new Point(selectionRange.location, selectionRange.location + selectionRange.length);
 	}
 }
@@ -648,7 +651,7 @@ public int getSelectionIndex () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return ((NSPopUpButton)view).indexOfSelectedItem();
 	} else {
-		return ((NSComboBox)view).indexOfSelectedItem();
+		return indexOf (getText ());
 	}
 }
 
@@ -666,25 +669,28 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget ();
-	return getText(0, -1);
+	return new String (getText(0, -1));
 }
 
-String getText (int start, int end) {
+char [] getText (int start, int end) {
 	NSString str;
 	if ((style & SWT.READ_ONLY) != 0) {
 		str = ((NSPopUpButton)view).titleOfSelectedItem();
-		if (str == null) return ""; //$NON-NLS-1$
 	} else {
 		str = new NSCell(((NSComboBox)view).cell()).title();
 	}
-	int length = str.length();
-	char[] buffer = new char[length];
-	str.getCharacters_(buffer);
-	String string = new String(buffer);
-	if (end == -1) end = length;
-	start = Math.max(0, Math.min(start, length));
-	end = Math.max(0, Math.min(end, length));
-	return string.substring(start, end);
+	if (str == null) return new char[0];
+	NSRange range = new NSRange ();
+	range.location = start;
+	if (end == -1) {
+		int length = str.length();
+		range.length = length - start;
+	} else {
+		range.length = end - start;
+	}
+	char [] buffer= new char [range.length];
+	str.getCharacters_range_(buffer, range);
+	return buffer;
 }
 
 /**
@@ -819,26 +825,26 @@ public int indexOf (String string, int start) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-//	Point selection = getSelection ();
-//	int start = selection.x, end = selection.y;
-//	String text = getText ();
-//	String leftText = text.substring (0, start);
-//	String rightText = text.substring (end, text.length ());
-//	String newText = getClipboardText ();
-//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//		newText = verifyText (newText, start, end, null);
-//		if (newText == null) return;
-//	}
-//	if (textLimit != LIMIT) {
-//		int charCount = text.length ();
-//		if (charCount - (end - start) + newText.length() > textLimit) {
-//			newText = newText.substring(0, textLimit - charCount + (end - start));
-//		}
-//	}
-//	setText (leftText + newText + rightText, false);
-//	start += newText.length ();
-//	setSelection (new Point (start, start));
-//	sendEvent (SWT.Modify);
+	Point selection = getSelection ();
+	int start = selection.x, end = selection.y;
+	String text = getText ();
+	String leftText = text.substring (0, start);
+	String rightText = text.substring (end, text.length ());
+	String newText = getClipboardText ();
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		newText = verifyText (newText, start, end, null);
+		if (newText == null) return;
+	}
+	if (textLimit != LIMIT) {
+		int charCount = text.length ();
+		if (charCount - (end - start) + newText.length() > textLimit) {
+			newText = newText.substring(0, textLimit - charCount + (end - start));
+		}
+	}
+	setText (leftText + newText + rightText, false);
+	start += newText.length ();
+	setSelection (new Point (start, start));
+	sendEvent (SWT.Modify);
 }
 
 void releaseWidget () {
@@ -1314,6 +1320,7 @@ void setText (String string, boolean notify) {
 		new NSCell(((NSComboBox)view).cell()).setTitle(NSString.stringWith(string));
 		if (notify) sendEvent (SWT.Modify);
 	}
+	selectionRange = null;
 }
 
 /**
