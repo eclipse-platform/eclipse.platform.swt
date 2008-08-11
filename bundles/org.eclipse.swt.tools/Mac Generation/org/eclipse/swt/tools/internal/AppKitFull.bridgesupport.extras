@@ -3670,7 +3670,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="setLineDash:count:phase:" swt_gen="true">
-      <arg name="pattern" swt_gen="true"></arg>
+      <arg name="pattern" swt_gen="true" swt_java_type="float[]"></arg>
       <arg name="count" swt_gen="true"></arg>
       <arg name="phase" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
@@ -4419,11 +4419,11 @@
       <arg name="zone" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="loadNibFile:externalNameTable:withZone:" swt_gen="true">
-      <arg name="fileName" swt_gen="true"></arg>
-      <arg name="context" swt_gen="true"></arg>
-      <arg name="zone" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="loadNibFile:externalNameTable:withZone:">
+      <arg name="fileName"></arg>
+      <arg name="context"></arg>
+      <arg name="zone"></arg>
+      <retval></retval>
     </method>
     <method selector="loadNibNamed:owner:">
       <arg name="nibName"></arg>
@@ -5727,7 +5727,7 @@
       <retval></retval>
     </method>
     <method selector="getComponents:" swt_gen="true">
-      <arg name="components" swt_gen="true"></arg>
+      <arg name="components" swt_gen="true" swt_java_type="float[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="getCyan:magenta:yellow:black:alpha:">
@@ -9985,7 +9985,7 @@
     <method selector="glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:" swt_gen="true">
       <arg name="point" swt_gen="true"></arg>
       <arg name="container" swt_gen="true"></arg>
-      <arg name="partialFraction" swt_gen="true"></arg>
+      <arg name="partialFraction" swt_gen="true" swt_java_type="float[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="glyphRangeForBoundingRect:inTextContainer:">
@@ -14486,7 +14486,7 @@
       <retval></retval>
     </method>
     <method selector="initWithAttributes:" swt_gen="true">
-      <arg name="attribs" swt_gen="true"></arg>
+      <arg name="attribs" swt_gen="true" swt_java_type="int[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="initWithData:">
@@ -25389,28 +25389,5 @@
     <method selector="windowWillMove:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSTextInput" swt_gen="true">
-   <method selector="attributedSubstringFromRange:" swt_gen="true">
-      <arg name="theRange" swt_gen="true"></arg>
-   </method>
-   <method selector="characterIndexForPoint:" swt_gen="true">
-      <arg name="thePoint" swt_gen="true"></arg>
-   </method>
-   <method selector="setMarkedText:selectedRange:" swt_gen="true">
-      <arg name="aString" swt_gen="true"></arg>
-      <arg name="selRange" swt_gen="true"></arg>
-   </method>
-   <method selector="validAttributesForMarkedText" swt_gen="true"></method>
-   <method selector="unmarkText" swt_gen="true"></method>
-   <method selector="markedRange" swt_gen="true"></method>
-   <method selector="selectedRange" swt_gen="true"></method>
-   <method selector="hasMarkedText" swt_gen="true"></method>
-   <method selector="insertText:" swt_gen="true">
-      <arg name="aString" swt_gen="true"></arg>
-   </method>
-   <method selector="firstRectForCharacterRange:" swt_gen="true">
-      <arg name="theRange" swt_gen="true"></arg>
-   </method>   
   </informal_protocol>
 </signatures>

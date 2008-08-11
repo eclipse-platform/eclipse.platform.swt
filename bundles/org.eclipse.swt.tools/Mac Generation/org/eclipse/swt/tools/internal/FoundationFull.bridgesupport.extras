@@ -3549,9 +3549,9 @@
       <retval></retval>
     </method>
     <method selector="dataWithBytes:length:" swt_gen="true">
-      <arg name="bytes" swt_gen="true"></arg>
+      <arg name="bytes" swt_gen="true" swt_java_type="byte[]"></arg>
       <arg name="length" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_java_type="NSData"></retval>
     </method>
     <method selector="dataWithBytesNoCopy:length:">
       <arg name="bytes"></arg>
@@ -3596,7 +3596,7 @@
       <retval></retval>
     </method>
     <method selector="getBytes:" swt_gen="true">
-      <arg name="buffer" swt_gen="true"></arg>
+      <arg name="buffer" swt_gen="true" swt_java_type="byte[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="getBytes:length:" swt_gen="true">
@@ -5464,7 +5464,7 @@
       <retval></retval>
     </method>
     <method selector="getIndexes:maxCount:inIndexRange:" swt_gen="true">
-      <arg name="indexBuffer" swt_gen="true"></arg>
+      <arg name="indexBuffer" swt_gen="true" swt_java_type="int[]"></arg>
       <arg name="bufferSize" swt_gen="true"></arg>
       <arg name="range" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
@@ -8721,8 +8721,8 @@
     <method selector="superclass" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="superclass">
-      <retval></retval>
+    <method selector="superclass" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="takeStoredValue:forKey:">
       <arg name="value"></arg>
@@ -10545,11 +10545,11 @@
       <retval></retval>
     </method>
     <method selector="getCharacters:" swt_gen="true">
-      <arg name="buffer" swt_gen="true"></arg>
+      <arg name="buffer" swt_gen="true" swt_java_type="char[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="getCharacters:range:" swt_gen="true">
-      <arg name="buffer" swt_gen="true"></arg>
+      <arg name="buffer" swt_gen="true" swt_java_type="char[]"></arg>
       <arg name="aRange" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -10917,9 +10917,9 @@
       <retval></retval>
     </method>
     <method selector="stringWithCharacters:length:" swt_gen="true">
-      <arg name="characters" swt_gen="true"></arg>
+      <arg name="characters" swt_gen="true" swt_java_type="char[]"></arg>
       <arg name="length" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_java_type="NSString"></retval>
     </method>
     <method selector="stringWithContentsOfFile:">
       <arg name="path"></arg>

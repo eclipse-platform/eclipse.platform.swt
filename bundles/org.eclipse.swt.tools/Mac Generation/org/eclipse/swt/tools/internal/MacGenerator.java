@@ -32,8 +32,15 @@ public MacGenerator(String[] xmls) {
 //		long start = System.currentTimeMillis();
 		Document document = documents[i] = getDocument(xmls[i]);
 		if (document == null) continue;
-		Hashtable extras = loadExtraAttributes(xmls[i]);
+		HashMap extras = loadExtraAttributes(xmls[i]);
 		merge(document, document, extras);
+//		for (Iterator iterator = extras.values().iterator(); iterator.hasNext();) {
+//			Node node = (Node) iterator.next();
+//			if (getGen(node)) {
+//				Node attribName = getIDAttribute(node);
+//				System.out.println(node.getNodeName() + " " + attribName.getNodeValue());
+//			}
+//		}
 //		long end = System.currentTimeMillis();
 //		System.out.println("load=" + (end - start));
 	}
@@ -78,12 +85,7 @@ void generateMethods(String className, TreeMap methods) {
 		if (getType(returnNode).equals("void")) returnNode = null;
 		String returnType = "";
 		if (returnNode != null) {
-			Node replace = returnNode.getAttributes().getNamedItem("swt_replace_return");
-			if (replace != null) {
-				out(returnType = replace.getNodeValue());
-			} else {
-				out(returnType = getJavaType(returnNode));
-			}
+			out(returnType = getJavaType(returnNode));
 			out(" ");
 		} else {
 			out("void ");
@@ -226,10 +228,22 @@ void generateClasses() {
 					if ("method".equals(method.getNodeName()) && getGen(method)) {
 						NamedNodeMap mthAttributes = method.getAttributes();
 						String selector = mthAttributes.getNamedItem("selector").getNodeValue();
-						//static overloading instance method
-						if (methods.get(selector) == null) {
+						Node other = (Node)methods.get(selector);
+						if (other == null) {
 							methods.put(selector, method);
-						} 
+						} else {
+							boolean isStatic = mthAttributes.getNamedItem("class_method") != null;
+							boolean otherIsStatic = other.getAttributes().getNamedItem("class_method") != null;
+							if (isStatic != otherIsStatic) {
+								if (isStatic) {
+									methods.put("static_" + selector, method);
+									methods.put(selector, other);
+								} else {
+									methods.put("static_" + selector, other);
+									methods.put(selector, method);
+								}
+							}
+						}
 					}					
 				}
 			}
@@ -283,12 +297,34 @@ void generateClasses() {
 		outln();
 		out("public ");
 		out(className);
-		out("(int id) {");
+		out("(int /*long*/ id) {");
 		outln();
 		out("\tsuper(id);");
 		outln();
 		out("}");
 		outln();
+		out("public ");
+		out(className);
+		out("(id id) {");
+		outln();
+		out("\tsuper(id);");
+		outln();
+		out("}");
+		outln();
+		if (className.equals("NSString")) {
+			out("public String getString() {");
+			outln();
+			out("\treturn null;");
+			outln();
+			out("}");
+			outln();
+			out("public static NSString stringWith(String str) {");
+			outln();
+			out("\treturn null;");
+			outln();
+			out("}");
+			outln();
+		}
 		outln();
 		
 		generateMethods(className, methods);
@@ -406,14 +442,14 @@ public boolean getEditable(Node node, String attribName) {
 		if (attribName.equals("swt_not_static")) return true;
 	} else if (name.equals("class")) {
 		if (attribName.equals("swt_superclass")) return true;
-	} else if (name.equals("retval")) {
-		if (attribName.equals("swt_replace_return")) return true;
+	} else if (name.equals("retval") || name.equals("arg")) {
+		if (attribName.equals("swt_java_type")) return true;
 	}
 	return false;
 }
 
-private Hashtable loadExtraAttributes(String xmlPath) {
-	Hashtable table = new Hashtable();
+private HashMap loadExtraAttributes(String xmlPath) {
+	HashMap table = new HashMap();
 	String path = getFileName(xmlPath) + ".extras";
 	File file = new File(getExtraAttributesDir());
 	if (file.exists()) path = new File(file, path).getAbsolutePath();
@@ -464,7 +500,7 @@ public String[] getExtraAttributeNames() {
 	return new String[]{
 		"swt_gen",
 		"swt_superclass",
-		"swt_replace_return",
+		"swt_java_type",
 		"swt_vararg_max",
 		"swt_not_static",
 	};
@@ -514,13 +550,13 @@ public String[] getIDAttributeNames() {
 	};
 }
 
-void merge(Document document, Node node, Hashtable extras) {
+void merge(Document document, Node node, HashMap extras) {
 	if (extras == null) return;
 	NodeList list = node.getChildNodes();
 	for (int i = 0; i < list.getLength(); i++) {
 		Node childNode = list.item(i);
 		if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-			Node extra = (Node)extras.get(getKey(childNode));
+			Node extra = (Node)extras.remove(getKey(childNode));
 			if (extra != null) {
 				NamedNodeMap attributes = extra.getAttributes();
 				for (int j = 0, length = attributes.getLength(); j < length; j++) {
@@ -566,14 +602,14 @@ void generateConstants() {
 					out(constName);
 					out("();");
 					outln();
-//					if (attributes.getNamedItem("declared_type").getNodeValue().equals("NSString*")) {
-//						out("public static final NSString ");
-//						out(constName);
-//						out("= new NSString(");
-//						out(constName);
-//						out("());");
-//						outln();
-//					}
+					if (attributes.getNamedItem("declared_type").getNodeValue().equals("NSString*")) {
+						out("public static final NSString ");
+						out(constName);
+						out("= new NSString(");
+						out(constName);
+						out("());");
+						outln();
+					}
 				}
 			}
 		}		
@@ -672,7 +708,7 @@ String getExtraAttributesDir() {
 	return "./Mac Generation/org/eclipse/swt/tools/internal/";
 }
 
-void buildExtrasLookup(Node node, Hashtable table) {
+void buildExtrasLookup(Node node, HashMap table) {
 	NodeList list = node.getChildNodes();
 	for (int i = 0; i < list.getLength(); i++) {
 		Node childNode = list.item(i);
@@ -684,6 +720,14 @@ void buildExtrasLookup(Node node, Hashtable table) {
 
 boolean isUnique(Node method, TreeMap methods) {
 	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
+	String signature = "";
+	NodeList params = method.getChildNodes();
+	for (int k = 0; k < params.getLength(); k++) {
+		Node param = params.item(k);
+		if ("arg".equals(param.getNodeName())) {
+			signature += getJavaType(param);
+		}
+	}
 	int index = methodName.indexOf(":");
 	if (index != -1) methodName = methodName.substring(0, index);
 	for (Iterator iterator = methods.values().iterator(); iterator.hasNext();) {
@@ -696,7 +740,17 @@ boolean isUnique(Node method, TreeMap methods) {
 			index = otherName.indexOf(":");
 			if (index != -1) otherName = otherName.substring(0, index);
 			if (methodName.equals(otherName)) {
-				return false;
+				NodeList otherParams = other.getChildNodes();
+				String otherSignature = "";
+				for (int k = 0; k < otherParams.getLength(); k++) {
+					Node param = otherParams.item(k);
+					if ("arg".equals(param.getNodeName())) {
+						otherSignature += getJavaType(param);
+					}
+				}
+				if (signature.equals(otherSignature)) {
+					return false;
+				}
 			}
 		}
 	}
@@ -977,6 +1031,8 @@ Node getReturnNode(NodeList list) {
 
 String getType(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
+	Node javaType = attributes.getNamedItem("swt_java_type");
+	if (javaType != null) return javaType.getNodeValue();
 	String code = attributes.getNamedItem("type").getNodeValue();
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
@@ -1036,6 +1092,8 @@ String getJNIType(Node node) {
 
 String getJavaType(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
+	Node javaType = attributes.getNamedItem("swt_java_type");
+	if (javaType != null) return javaType.getNodeValue();
 	String code = attributes.getNamedItem("type").getNodeValue();
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
