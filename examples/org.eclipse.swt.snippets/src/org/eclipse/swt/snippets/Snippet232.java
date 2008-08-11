@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Tree example snippet: Draw a bar graph
+ * Tree example snippet: show results as a bar chart in tree
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

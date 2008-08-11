@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Virtual Tree example snippet: populate tree lazily
+ * Virtual Tree example snippet: create a virtual tree (lazy)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

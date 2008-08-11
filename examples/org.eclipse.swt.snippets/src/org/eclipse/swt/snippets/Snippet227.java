@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * Tree example snippet: Multiple lines in a TreeItem
+ * Tree example snippet: draw multiple lines in a tree item
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Tool tip snippet: show a Label's tool tip iff it's not fully visible
+ * Tool tip snippet: show a tool tip iff it's not fully visible
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

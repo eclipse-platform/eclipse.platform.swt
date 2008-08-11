@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Table example snippet: Images on the right hand side of a TableItem
+ * Table example snippet: draw images on right side of table item
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

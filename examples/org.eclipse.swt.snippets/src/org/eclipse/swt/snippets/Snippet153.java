@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * ToolBar example snippet: update a status line when the pointer enters a ToolItem
+ * ToolBar example snippet: update a status line when the mouse enters a tool item
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Table example snippet: Draw a custom gradient selection
+ * Table example snippet: draw a custom gradient selection for table
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

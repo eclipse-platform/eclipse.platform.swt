@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * example snippet: Multiple lines per TableItem
+ * example snippet: draw multiple lines in a table item
  *
  * For a detailed explanation of this snippet see
  * http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example6

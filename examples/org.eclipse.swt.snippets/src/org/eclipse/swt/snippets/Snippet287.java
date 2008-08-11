@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Tree example snippet: search for a string in a Tree recursively
+ * Tree example snippet: search for a string in a tree (recursively)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
