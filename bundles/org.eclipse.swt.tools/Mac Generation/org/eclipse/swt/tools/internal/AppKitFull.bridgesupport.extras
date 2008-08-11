@@ -4414,9 +4414,9 @@
       <retval></retval>
     </method>
     <method class_method="true" selector="loadNibFile:externalNameTable:withZone:" swt_gen="true">
-      <arg name="fileName"></arg>
-      <arg name="context"></arg>
-      <arg name="zone"></arg>
+      <arg name="fileName" swt_gen="true"></arg>
+      <arg name="context" swt_gen="true"></arg>
+      <arg name="zone" swt_gen="true"></arg>
       <retval></retval>
     </method>
     <method class_method="true" selector="loadNibFile:externalNameTable:withZone:">
