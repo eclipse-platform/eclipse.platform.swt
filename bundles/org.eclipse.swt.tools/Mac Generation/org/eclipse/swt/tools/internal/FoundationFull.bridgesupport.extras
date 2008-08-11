@@ -1778,7 +1778,7 @@
       <arg name="transformStruct"></arg>
       <retval></retval>
     </method>
-    <method selector="transform">
+    <method class_method="true" selector="transform">
       <retval></retval>
     </method>
     <method selector="transformPoint:">
@@ -1802,7 +1802,7 @@
     <method selector="aeDesc">
       <retval></retval>
     </method>
-    <method selector="appleEventWithEventClass:eventID:targetDescriptor:returnID:transactionID:">
+    <method class_method="true" selector="appleEventWithEventClass:eventID:targetDescriptor:returnID:transactionID:">
       <arg name="eventClass"></arg>
       <arg name="eventID"></arg>
       <arg name="targetDescriptor"></arg>
@@ -1835,34 +1835,34 @@
     <method selector="descriptorType">
       <retval></retval>
     </method>
-    <method selector="descriptorWithBoolean:">
+    <method class_method="true" selector="descriptorWithBoolean:">
       <arg name="boolean"></arg>
       <retval></retval>
     </method>
-    <method selector="descriptorWithDescriptorType:bytes:length:">
+    <method class_method="true" selector="descriptorWithDescriptorType:bytes:length:">
       <arg name="descriptorType"></arg>
       <arg name="bytes"></arg>
       <arg name="byteCount"></arg>
       <retval></retval>
     </method>
-    <method selector="descriptorWithDescriptorType:data:">
+    <method class_method="true" selector="descriptorWithDescriptorType:data:">
       <arg name="descriptorType"></arg>
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="descriptorWithEnumCode:">
+    <method class_method="true" selector="descriptorWithEnumCode:">
       <arg name="enumerator"></arg>
       <retval></retval>
     </method>
-    <method selector="descriptorWithInt32:">
+    <method class_method="true" selector="descriptorWithInt32:">
       <arg name="signedInt"></arg>
       <retval></retval>
     </method>
-    <method selector="descriptorWithString:">
+    <method class_method="true" selector="descriptorWithString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="descriptorWithTypeCode:">
+    <method class_method="true" selector="descriptorWithTypeCode:">
       <arg name="typeCode"></arg>
       <retval></retval>
     </method>
@@ -1916,10 +1916,10 @@
       <arg name="index"></arg>
       <retval></retval>
     </method>
-    <method selector="listDescriptor">
+    <method class_method="true" selector="listDescriptor">
       <retval></retval>
     </method>
-    <method selector="nullDescriptor">
+    <method class_method="true" selector="nullDescriptor">
       <retval></retval>
     </method>
     <method selector="numberOfItems">
@@ -1929,7 +1929,7 @@
       <arg name="keyword"></arg>
       <retval></retval>
     </method>
-    <method selector="recordDescriptor">
+    <method class_method="true" selector="recordDescriptor">
       <retval></retval>
     </method>
     <method selector="removeDescriptorAtIndex:">
@@ -2013,7 +2013,7 @@
       <arg name="eventID"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedAppleEventManager">
+    <method class_method="true" selector="sharedAppleEventManager">
       <retval></retval>
     </method>
     <method selector="suspendCurrentAppleEvent">
@@ -2051,12 +2051,12 @@
     </method>
   </class>
   <class name="NSArchiver">
-    <method selector="archiveRootObject:toFile:">
+    <method class_method="true" selector="archiveRootObject:toFile:">
       <arg name="rootObject"></arg>
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="archivedDataWithRootObject:">
+    <method class_method="true" selector="archivedDataWithRootObject:">
       <arg name="rootObject"></arg>
       <retval></retval>
     </method>
@@ -2106,7 +2106,7 @@
       <arg name="context"></arg>
       <retval></retval>
     </method>
-    <method selector="array">
+    <method class_method="true" selector="array">
       <retval></retval>
     </method>
     <method selector="arrayByAddingObject:">
@@ -2117,27 +2117,27 @@
       <arg name="otherArray"></arg>
       <retval></retval>
     </method>
-    <method selector="arrayWithArray:">
+    <method class_method="true" selector="arrayWithArray:">
       <arg name="array"></arg>
       <retval></retval>
     </method>
-    <method selector="arrayWithContentsOfFile:">
+    <method class_method="true" selector="arrayWithContentsOfFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="arrayWithContentsOfURL:">
+    <method class_method="true" selector="arrayWithContentsOfURL:">
       <arg name="url"></arg>
       <retval></retval>
     </method>
-    <method selector="arrayWithObject:" swt_gen="true">
+    <method class_method="true" selector="arrayWithObject:" swt_gen="true">
       <arg name="anObject" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSArray"></retval>
     </method>
-    <method selector="arrayWithObjects:">
+    <method class_method="true" selector="arrayWithObjects:">
       <arg name="arrayWithObjects"></arg>
       <retval></retval>
     </method>
-    <method selector="arrayWithObjects:count:">
+    <method class_method="true" selector="arrayWithObjects:count:">
       <arg name="objects"></arg>
       <arg name="cnt"></arg>
       <retval></retval>
@@ -2328,7 +2328,7 @@
     </method>
   </class>
   <class name="NSAssertionHandler">
-    <method selector="currentHandler">
+    <method class_method="true" selector="currentHandler">
       <retval></retval>
     </method>
     <method selector="handleFailureInFunction:file:lineNumber:description:">
@@ -2401,7 +2401,7 @@
     </method>
   </class>
   <class name="NSAutoreleasePool" swt_gen="mixed">
-    <method selector="addObject:">
+    <method class_method="true" selector="addObject:">
       <arg name="anObject"></arg>
       <retval></retval>
     </method>
@@ -2409,58 +2409,58 @@
       <arg name="anObject"></arg>
       <retval></retval>
     </method>
-    <method selector="autoreleasedObjectCount">
+    <method class_method="true" selector="autoreleasedObjectCount">
       <retval></retval>
     </method>
     <method selector="drain">
       <retval></retval>
     </method>
-    <method selector="enableFreedObjectCheck:" swt_gen="true">
+    <method class_method="true" selector="enableFreedObjectCheck:" swt_gen="true">
       <arg name="enable" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="enableRelease:">
+    <method class_method="true" selector="enableRelease:">
       <arg name="enable"></arg>
       <retval></retval>
     </method>
-    <method selector="poolCountHighWaterMark">
+    <method class_method="true" selector="poolCountHighWaterMark">
       <retval></retval>
     </method>
-    <method selector="poolCountHighWaterResolution">
+    <method class_method="true" selector="poolCountHighWaterResolution">
       <retval></retval>
     </method>
-    <method selector="resetTotalAutoreleasedObjects">
+    <method class_method="true" selector="resetTotalAutoreleasedObjects">
       <retval></retval>
     </method>
-    <method selector="setPoolCountHighWaterMark:">
+    <method class_method="true" selector="setPoolCountHighWaterMark:">
       <arg name="count"></arg>
       <retval></retval>
     </method>
-    <method selector="setPoolCountHighWaterResolution:">
+    <method class_method="true" selector="setPoolCountHighWaterResolution:">
       <arg name="res"></arg>
       <retval></retval>
     </method>
-    <method selector="showPools">
+    <method class_method="true" selector="showPools">
       <retval></retval>
     </method>
-    <method selector="topAutoreleasePoolCount">
+    <method class_method="true" selector="topAutoreleasePoolCount">
       <retval></retval>
     </method>
-    <method selector="totalAutoreleasedObjects">
+    <method class_method="true" selector="totalAutoreleasedObjects">
       <retval></retval>
     </method>
   </class>
   <class name="NSBundle" swt_gen="mixed">
-    <method selector="allBundles">
+    <method class_method="true" selector="allBundles">
       <retval></retval>
     </method>
-    <method selector="allFrameworks">
+    <method class_method="true" selector="allFrameworks">
       <retval></retval>
     </method>
     <method selector="builtInPlugInsPath">
       <retval></retval>
     </method>
-    <method selector="bundleForClass:">
+    <method class_method="true" selector="bundleForClass:">
       <arg name="aClass"></arg>
       <retval></retval>
     </method>
@@ -2470,11 +2470,11 @@
     <method selector="bundlePath" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="bundleWithIdentifier:">
+    <method class_method="true" selector="bundleWithIdentifier:">
       <arg name="identifier"></arg>
       <retval></retval>
     </method>
-    <method selector="bundleWithPath:" swt_gen="true">
+    <method class_method="true" selector="bundleWithPath:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -2520,7 +2520,7 @@
       <arg name="tableName"></arg>
       <retval></retval>
     </method>
-    <method selector="mainBundle">
+    <method class_method="true" selector="mainBundle">
       <retval></retval>
     </method>
     <method selector="objectForInfoDictionaryKey:" swt_gen="true">
@@ -2542,7 +2542,7 @@
       <arg name="subpath"></arg>
       <retval></retval>
     </method>
-    <method selector="pathForResource:ofType:inDirectory:">
+    <method class_method="true" selector="pathForResource:ofType:inDirectory:">
       <arg name="name"></arg>
       <arg name="ext"></arg>
       <arg name="bundlePath"></arg>
@@ -2555,7 +2555,7 @@
       <arg name="localizationName"></arg>
       <retval></retval>
     </method>
-    <method selector="pathsForResourcesOfType:inDirectory:">
+    <method class_method="true" selector="pathsForResourcesOfType:inDirectory:">
       <arg name="ext"></arg>
       <arg name="bundlePath"></arg>
       <retval></retval>
@@ -2574,11 +2574,11 @@
     <method selector="preferredLocalizations">
       <retval></retval>
     </method>
-    <method selector="preferredLocalizationsFromArray:">
+    <method class_method="true" selector="preferredLocalizationsFromArray:">
       <arg name="localizationsArray"></arg>
       <retval></retval>
     </method>
-    <method selector="preferredLocalizationsFromArray:forPreferences:">
+    <method class_method="true" selector="preferredLocalizationsFromArray:forPreferences:">
       <arg name="localizationsArray"></arg>
       <arg name="preferencesArray"></arg>
       <retval></retval>
@@ -2633,7 +2633,7 @@
     </method>
   </class>
   <class name="NSCalendar">
-    <method selector="autoupdatingCurrentCalendar">
+    <method class_method="true" selector="autoupdatingCurrentCalendar">
       <retval></retval>
     </method>
     <method selector="calendarIdentifier">
@@ -2651,7 +2651,7 @@
       <arg name="opts"></arg>
       <retval></retval>
     </method>
-    <method selector="currentCalendar">
+    <method class_method="true" selector="currentCalendar">
       <retval></retval>
     </method>
     <method selector="dateByAddingComponents:toDate:options:">
@@ -2725,7 +2725,7 @@
     </method>
   </class>
   <class name="NSCalendarDate" swt_gen="mixed" swt_superclass="NSDate">
-    <method selector="calendarDate" swt_gen="true">
+    <method class_method="true" selector="calendarDate" swt_gen="true">
       <retval swt_gen="true" swt_java_type="NSCalendarDate"></retval>
     </method>
     <method selector="calendarFormat">
@@ -2740,18 +2740,18 @@
       <arg name="second"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithString:calendarFormat:">
+    <method class_method="true" selector="dateWithString:calendarFormat:">
       <arg name="description"></arg>
       <arg name="format"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithString:calendarFormat:locale:">
+    <method class_method="true" selector="dateWithString:calendarFormat:locale:">
       <arg name="description"></arg>
       <arg name="format"></arg>
       <arg name="locale"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithYear:month:day:hour:minute:second:timeZone:" swt_gen="true">
+    <method class_method="true" selector="dateWithYear:month:day:hour:minute:second:timeZone:" swt_gen="true">
       <arg name="year" swt_gen="true"></arg>
       <arg name="month" swt_gen="true"></arg>
       <arg name="day" swt_gen="true"></arg>
@@ -2852,49 +2852,49 @@
     </method>
   </class>
   <class name="NSCharacterSet">
-    <method selector="alphanumericCharacterSet">
+    <method class_method="true" selector="alphanumericCharacterSet">
       <retval></retval>
     </method>
     <method selector="bitmapRepresentation">
       <retval></retval>
     </method>
-    <method selector="capitalizedLetterCharacterSet">
+    <method class_method="true" selector="capitalizedLetterCharacterSet">
       <retval></retval>
     </method>
     <method selector="characterIsMember:">
       <arg name="aCharacter"></arg>
       <retval></retval>
     </method>
-    <method selector="characterSetWithBitmapRepresentation:">
+    <method class_method="true" selector="characterSetWithBitmapRepresentation:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="characterSetWithCharactersInString:">
+    <method class_method="true" selector="characterSetWithCharactersInString:">
       <arg name="aString"></arg>
       <retval></retval>
     </method>
-    <method selector="characterSetWithContentsOfFile:">
+    <method class_method="true" selector="characterSetWithContentsOfFile:">
       <arg name="fName"></arg>
       <retval></retval>
     </method>
-    <method selector="characterSetWithRange:">
+    <method class_method="true" selector="characterSetWithRange:">
       <arg name="aRange"></arg>
       <retval></retval>
     </method>
-    <method selector="controlCharacterSet">
+    <method class_method="true" selector="controlCharacterSet">
       <retval></retval>
     </method>
-    <method selector="decimalDigitCharacterSet">
+    <method class_method="true" selector="decimalDigitCharacterSet">
       <retval></retval>
     </method>
-    <method selector="decomposableCharacterSet">
+    <method class_method="true" selector="decomposableCharacterSet">
       <retval></retval>
     </method>
     <method selector="hasMemberInPlane:">
       <arg name="thePlane"></arg>
       <retval></retval>
     </method>
-    <method selector="illegalCharacterSet">
+    <method class_method="true" selector="illegalCharacterSet">
       <retval></retval>
     </method>
     <method selector="invertedSet">
@@ -2904,35 +2904,35 @@
       <arg name="theOtherSet"></arg>
       <retval></retval>
     </method>
-    <method selector="letterCharacterSet">
+    <method class_method="true" selector="letterCharacterSet">
       <retval></retval>
     </method>
     <method selector="longCharacterIsMember:">
       <arg name="theLongChar"></arg>
       <retval></retval>
     </method>
-    <method selector="lowercaseLetterCharacterSet">
+    <method class_method="true" selector="lowercaseLetterCharacterSet">
       <retval></retval>
     </method>
-    <method selector="newlineCharacterSet">
+    <method class_method="true" selector="newlineCharacterSet">
       <retval></retval>
     </method>
-    <method selector="nonBaseCharacterSet">
+    <method class_method="true" selector="nonBaseCharacterSet">
       <retval></retval>
     </method>
-    <method selector="punctuationCharacterSet">
+    <method class_method="true" selector="punctuationCharacterSet">
       <retval></retval>
     </method>
-    <method selector="symbolCharacterSet">
+    <method class_method="true" selector="symbolCharacterSet">
       <retval></retval>
     </method>
-    <method selector="uppercaseLetterCharacterSet">
+    <method class_method="true" selector="uppercaseLetterCharacterSet">
       <retval></retval>
     </method>
-    <method selector="whitespaceAndNewlineCharacterSet">
+    <method class_method="true" selector="whitespaceAndNewlineCharacterSet">
       <retval></retval>
     </method>
-    <method selector="whitespaceCharacterSet">
+    <method class_method="true" selector="whitespaceCharacterSet">
       <retval></retval>
     </method>
   </class>
@@ -2940,18 +2940,18 @@
     <method selector="attributeKeys">
       <retval></retval>
     </method>
-    <method selector="classDescriptionForClass:">
+    <method class_method="true" selector="classDescriptionForClass:">
       <arg name="aClass"></arg>
       <retval></retval>
     </method>
-    <method selector="invalidateClassDescriptionCache">
+    <method class_method="true" selector="invalidateClassDescriptionCache">
       <retval></retval>
     </method>
     <method selector="inverseForRelationshipKey:">
       <arg name="relationshipKey"></arg>
       <retval></retval>
     </method>
-    <method selector="registerClassDescription:forClass:">
+    <method class_method="true" selector="registerClassDescription:forClass:">
       <arg name="description"></arg>
       <arg name="aClass"></arg>
       <retval></retval>
@@ -3249,13 +3249,13 @@
     <method selector="predicateOperatorType">
       <retval></retval>
     </method>
-    <method selector="predicateWithLeftExpression:rightExpression:customSelector:">
+    <method class_method="true" selector="predicateWithLeftExpression:rightExpression:customSelector:">
       <arg name="lhs"></arg>
       <arg name="rhs"></arg>
       <arg name="selector"></arg>
       <retval></retval>
     </method>
-    <method selector="predicateWithLeftExpression:rightExpression:modifier:type:options:">
+    <method class_method="true" selector="predicateWithLeftExpression:rightExpression:modifier:type:options:">
       <arg name="lhs"></arg>
       <arg name="rhs"></arg>
       <arg name="modifier"></arg>
@@ -3268,7 +3268,7 @@
     </method>
   </class>
   <class name="NSCompoundPredicate" swt_superclass="NSPredicate">
-    <method selector="andPredicateWithSubpredicates:">
+    <method class_method="true" selector="andPredicateWithSubpredicates:">
       <arg name="subpredicates"></arg>
       <retval></retval>
     </method>
@@ -3280,11 +3280,11 @@
       <arg name="subpredicates"></arg>
       <retval></retval>
     </method>
-    <method selector="notPredicateWithSubpredicate:">
+    <method class_method="true" selector="notPredicateWithSubpredicate:">
       <arg name="predicate"></arg>
       <retval></retval>
     </method>
-    <method selector="orPredicateWithSubpredicates:">
+    <method class_method="true" selector="orPredicateWithSubpredicates:">
       <arg name="subpredicates"></arg>
       <retval></retval>
     </method>
@@ -3363,29 +3363,29 @@
       <arg name="runloop"></arg>
       <retval></retval>
     </method>
-    <method selector="allConnections">
+    <method class_method="true" selector="allConnections">
       <retval></retval>
     </method>
-    <method selector="connectionWithReceivePort:sendPort:">
+    <method class_method="true" selector="connectionWithReceivePort:sendPort:">
       <arg name="receivePort"></arg>
       <arg name="sendPort"></arg>
       <retval></retval>
     </method>
-    <method selector="connectionWithRegisteredName:host:">
+    <method class_method="true" selector="connectionWithRegisteredName:host:">
       <arg name="name"></arg>
       <arg name="hostName"></arg>
       <retval></retval>
     </method>
-    <method selector="connectionWithRegisteredName:host:usingNameServer:">
+    <method class_method="true" selector="connectionWithRegisteredName:host:usingNameServer:">
       <arg name="name"></arg>
       <arg name="hostName"></arg>
       <arg name="server"></arg>
       <retval></retval>
     </method>
-    <method selector="currentConversation">
+    <method class_method="true" selector="currentConversation">
       <retval></retval>
     </method>
-    <method selector="defaultConnection">
+    <method class_method="true" selector="defaultConnection">
       <retval></retval>
     </method>
     <method selector="delegate">
@@ -3452,12 +3452,12 @@
     <method selector="rootProxy">
       <retval></retval>
     </method>
-    <method selector="rootProxyForConnectionWithRegisteredName:host:">
+    <method class_method="true" selector="rootProxyForConnectionWithRegisteredName:host:">
       <arg name="name"></arg>
       <arg name="hostName"></arg>
       <retval></retval>
     </method>
-    <method selector="rootProxyForConnectionWithRegisteredName:host:usingNameServer:">
+    <method class_method="true" selector="rootProxyForConnectionWithRegisteredName:host:usingNameServer:">
       <arg name="name"></arg>
       <arg name="hostName"></arg>
       <arg name="server"></arg>
@@ -3469,12 +3469,12 @@
     <method selector="sendPort">
       <retval></retval>
     </method>
-    <method selector="serviceConnectionWithName:rootObject:">
+    <method class_method="true" selector="serviceConnectionWithName:rootObject:">
       <arg name="name"></arg>
       <arg name="root"></arg>
       <retval></retval>
     </method>
-    <method selector="serviceConnectionWithName:rootObject:usingNameServer:">
+    <method class_method="true" selector="serviceConnectionWithName:rootObject:usingNameServer:">
       <arg name="name"></arg>
       <arg name="root"></arg>
       <arg name="server"></arg>
@@ -3545,50 +3545,50 @@
     <method selector="bytes" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="data">
+    <method class_method="true" selector="data">
       <retval></retval>
     </method>
-    <method selector="dataWithBytes:length:" swt_gen="true">
+    <method class_method="true" selector="dataWithBytes:length:" swt_gen="true">
       <arg name="bytes" swt_gen="true" swt_java_type="byte[]"></arg>
       <arg name="length" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSData"></retval>
     </method>
-    <method selector="dataWithBytesNoCopy:length:">
+    <method class_method="true" selector="dataWithBytesNoCopy:length:">
       <arg name="bytes"></arg>
       <arg name="length"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithBytesNoCopy:length:freeWhenDone:">
+    <method class_method="true" selector="dataWithBytesNoCopy:length:freeWhenDone:">
       <arg name="bytes"></arg>
       <arg name="length"></arg>
       <arg name="b"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithContentsOfFile:">
+    <method class_method="true" selector="dataWithContentsOfFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithContentsOfFile:options:error:">
+    <method class_method="true" selector="dataWithContentsOfFile:options:error:">
       <arg name="path"></arg>
       <arg name="readOptionsMask"></arg>
       <arg name="errorPtr"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithContentsOfMappedFile:">
+    <method class_method="true" selector="dataWithContentsOfMappedFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithContentsOfURL:">
+    <method class_method="true" selector="dataWithContentsOfURL:">
       <arg name="url"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithContentsOfURL:options:error:">
+    <method class_method="true" selector="dataWithContentsOfURL:options:error:">
       <arg name="url"></arg>
       <arg name="readOptionsMask"></arg>
       <arg name="errorPtr"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithData:">
+    <method class_method="true" selector="dataWithData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
@@ -3696,7 +3696,7 @@
       <arg name="other"></arg>
       <retval></retval>
     </method>
-    <method selector="date">
+    <method class_method="true" selector="date">
       <retval></retval>
     </method>
     <method selector="dateWithCalendarFormat:timeZone:" swt_gen="true">
@@ -3704,28 +3704,28 @@
       <arg name="aTimeZone" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="dateWithNaturalLanguageString:">
+    <method class_method="true" selector="dateWithNaturalLanguageString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithNaturalLanguageString:locale:">
+    <method class_method="true" selector="dateWithNaturalLanguageString:locale:">
       <arg name="string"></arg>
       <arg name="locale"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithString:">
+    <method class_method="true" selector="dateWithString:">
       <arg name="aString"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithTimeIntervalSince1970:">
+    <method class_method="true" selector="dateWithTimeIntervalSince1970:">
       <arg name="secs"></arg>
       <retval></retval>
     </method>
-    <method selector="dateWithTimeIntervalSinceNow:" swt_gen="true">
+    <method class_method="true" selector="dateWithTimeIntervalSinceNow:" swt_gen="true">
       <arg name="secs" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSDate"></retval>
     </method>
-    <method selector="dateWithTimeIntervalSinceReferenceDate:">
+    <method class_method="true" selector="dateWithTimeIntervalSinceReferenceDate:">
       <arg name="secs"></arg>
       <retval></retval>
     </method>
@@ -3742,10 +3742,10 @@
       <arg name="locale"></arg>
       <retval></retval>
     </method>
-    <method selector="distantFuture" swt_gen="true">
+    <method class_method="true" selector="distantFuture" swt_gen="true">
       <retval swt_gen="true" swt_java_type="NSDate"></retval>
     </method>
-    <method selector="distantPast">
+    <method class_method="true" selector="distantPast">
       <retval></retval>
     </method>
     <method selector="earlierDate:">
@@ -3790,7 +3790,7 @@
     <method selector="timeIntervalSinceNow">
       <retval></retval>
     </method>
-    <method selector="timeIntervalSinceReferenceDate">
+    <method class_method="true" selector="timeIntervalSinceReferenceDate">
       <retval></retval>
     </method>
     <method selector="timeIntervalSinceReferenceDate">
@@ -3895,7 +3895,7 @@
     <method selector="defaultDate">
       <retval></retval>
     </method>
-    <method selector="defaultFormatterBehavior">
+    <method class_method="true" selector="defaultFormatterBehavior">
       <retval></retval>
     </method>
     <method selector="eraSymbols">
@@ -3960,7 +3960,7 @@
       <arg name="date"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultFormatterBehavior:">
+    <method class_method="true" selector="setDefaultFormatterBehavior:">
       <arg name="behavior"></arg>
       <retval></retval>
     </method>
@@ -4191,21 +4191,21 @@
       <arg name="behavior"></arg>
       <retval></retval>
     </method>
-    <method selector="decimalNumberWithDecimal:">
+    <method class_method="true" selector="decimalNumberWithDecimal:">
       <arg name="dcm"></arg>
       <retval></retval>
     </method>
-    <method selector="decimalNumberWithMantissa:exponent:isNegative:">
+    <method class_method="true" selector="decimalNumberWithMantissa:exponent:isNegative:">
       <arg name="mantissa"></arg>
       <arg name="exponent"></arg>
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="decimalNumberWithString:">
+    <method class_method="true" selector="decimalNumberWithString:">
       <arg name="numberValue"></arg>
       <retval></retval>
     </method>
-    <method selector="decimalNumberWithString:locale:">
+    <method class_method="true" selector="decimalNumberWithString:locale:">
       <arg name="numberValue"></arg>
       <arg name="locale"></arg>
       <retval></retval>
@@ -4213,7 +4213,7 @@
     <method selector="decimalValue">
       <retval></retval>
     </method>
-    <method selector="defaultBehavior">
+    <method class_method="true" selector="defaultBehavior">
       <retval></retval>
     </method>
     <method selector="descriptionWithLocale:">
@@ -4242,31 +4242,31 @@
       <arg name="locale"></arg>
       <retval></retval>
     </method>
-    <method selector="maximumDecimalNumber">
+    <method class_method="true" selector="maximumDecimalNumber">
       <retval></retval>
     </method>
-    <method selector="minimumDecimalNumber">
+    <method class_method="true" selector="minimumDecimalNumber">
       <retval></retval>
     </method>
-    <method selector="notANumber">
+    <method class_method="true" selector="notANumber">
       <retval></retval>
     </method>
     <method selector="objCType">
       <retval></retval>
     </method>
-    <method selector="one">
+    <method class_method="true" selector="one">
       <retval></retval>
     </method>
-    <method selector="setDefaultBehavior:">
+    <method class_method="true" selector="setDefaultBehavior:">
       <arg name="behavior"></arg>
       <retval></retval>
     </method>
-    <method selector="zero">
+    <method class_method="true" selector="zero">
       <retval></retval>
     </method>
   </class>
   <class name="NSDecimalNumberHandler">
-    <method selector="decimalNumberHandlerWithRoundingMode:scale:raiseOnExactness:raiseOnOverflow:raiseOnUnderflow:raiseOnDivideByZero:">
+    <method class_method="true" selector="decimalNumberHandlerWithRoundingMode:scale:raiseOnExactness:raiseOnOverflow:raiseOnUnderflow:raiseOnDivideByZero:">
       <arg name="roundingMode"></arg>
       <arg name="scale"></arg>
       <arg name="exact"></arg>
@@ -4275,7 +4275,7 @@
       <arg name="divideByZero"></arg>
       <retval></retval>
     </method>
-    <method selector="defaultDecimalNumberHandler">
+    <method class_method="true" selector="defaultDecimalNumberHandler">
       <retval></retval>
     </method>
     <method selector="initWithRoundingMode:scale:raiseOnExactness:raiseOnOverflow:raiseOnUnderflow:raiseOnDivideByZero:">
@@ -4326,38 +4326,38 @@
       <arg name="level"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionary">
+    <method class_method="true" selector="dictionary">
       <retval></retval>
     </method>
-    <method selector="dictionaryWithContentsOfFile:">
+    <method class_method="true" selector="dictionaryWithContentsOfFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionaryWithContentsOfURL:">
+    <method class_method="true" selector="dictionaryWithContentsOfURL:">
       <arg name="url"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionaryWithDictionary:">
+    <method class_method="true" selector="dictionaryWithDictionary:">
       <arg name="dict"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionaryWithObject:forKey:" swt_gen="true">
+    <method class_method="true" selector="dictionaryWithObject:forKey:" swt_gen="true">
       <arg name="object" swt_gen="true"></arg>
       <arg name="key" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSDictionary"></retval>
     </method>
-    <method selector="dictionaryWithObjects:forKeys:">
+    <method class_method="true" selector="dictionaryWithObjects:forKeys:">
       <arg name="objects"></arg>
       <arg name="keys"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionaryWithObjects:forKeys:count:">
+    <method class_method="true" selector="dictionaryWithObjects:forKeys:count:">
       <arg name="objects"></arg>
       <arg name="keys"></arg>
       <arg name="cnt"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionaryWithObjectsAndKeys:">
+    <method class_method="true" selector="dictionaryWithObjectsAndKeys:">
       <arg name="dictionaryWithObjectsAndKeys"></arg>
       <retval></retval>
     </method>
@@ -4509,12 +4509,12 @@
       <arg name="connection"></arg>
       <retval></retval>
     </method>
-    <method selector="proxyWithLocal:connection:">
+    <method class_method="true" selector="proxyWithLocal:connection:">
       <arg name="target"></arg>
       <arg name="connection"></arg>
       <retval></retval>
     </method>
-    <method selector="proxyWithTarget:connection:">
+    <method class_method="true" selector="proxyWithTarget:connection:">
       <arg name="target"></arg>
       <arg name="connection"></arg>
       <retval></retval>
@@ -4550,7 +4550,7 @@
     <method selector="lockDate">
       <retval></retval>
     </method>
-    <method selector="lockWithPath:">
+    <method class_method="true" selector="lockWithPath:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
@@ -4577,10 +4577,10 @@
       <arg name="suspensionBehavior"></arg>
       <retval></retval>
     </method>
-    <method selector="defaultCenter">
+    <method class_method="true" selector="defaultCenter">
       <retval swt_java_type="NSNotificationCenter"></retval>
     </method>
-    <method selector="notificationCenterForType:">
+    <method class_method="true" selector="notificationCenterForType:">
       <arg name="notificationCenterType"></arg>
       <retval></retval>
     </method>
@@ -4638,7 +4638,7 @@
     <method selector="domain">
       <retval></retval>
     </method>
-    <method selector="errorWithDomain:code:userInfo:">
+    <method class_method="true" selector="errorWithDomain:code:userInfo:">
       <arg name="domain"></arg>
       <arg name="code"></arg>
       <arg name="dict"></arg>
@@ -4673,7 +4673,7 @@
     <method selector="callStackReturnAddresses">
       <retval></retval>
     </method>
-    <method selector="exceptionWithName:reason:userInfo:">
+    <method class_method="true" selector="exceptionWithName:reason:userInfo:">
       <arg name="name"></arg>
       <arg name="reason"></arg>
       <arg name="userInfo"></arg>
@@ -4691,12 +4691,12 @@
     <method selector="raise">
       <retval></retval>
     </method>
-    <method selector="raise:format:">
+    <method class_method="true" selector="raise:format:">
       <arg name="name"></arg>
       <arg name="format"></arg>
       <retval></retval>
     </method>
-    <method selector="raise:format:arguments:">
+    <method class_method="true" selector="raise:format:arguments:">
       <arg name="name"></arg>
       <arg name="format"></arg>
       <arg name="argList"></arg>
@@ -4719,54 +4719,54 @@
     <method selector="constantValue">
       <retval></retval>
     </method>
-    <method selector="expressionForAggregate:">
+    <method class_method="true" selector="expressionForAggregate:">
       <arg name="subexpressions"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForConstantValue:">
+    <method class_method="true" selector="expressionForConstantValue:">
       <arg name="obj"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForEvaluatedObject">
+    <method class_method="true" selector="expressionForEvaluatedObject">
       <retval></retval>
     </method>
-    <method selector="expressionForFunction:arguments:">
+    <method class_method="true" selector="expressionForFunction:arguments:">
       <arg name="name"></arg>
       <arg name="parameters"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForFunction:selectorName:arguments:">
+    <method class_method="true" selector="expressionForFunction:selectorName:arguments:">
       <arg name="target"></arg>
       <arg name="name"></arg>
       <arg name="parameters"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForIntersectSet:with:">
+    <method class_method="true" selector="expressionForIntersectSet:with:">
       <arg name="left"></arg>
       <arg name="right"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForKeyPath:">
+    <method class_method="true" selector="expressionForKeyPath:">
       <arg name="keyPath"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForMinusSet:with:">
+    <method class_method="true" selector="expressionForMinusSet:with:">
       <arg name="left"></arg>
       <arg name="right"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForSubquery:usingIteratorVariable:predicate:">
+    <method class_method="true" selector="expressionForSubquery:usingIteratorVariable:predicate:">
       <arg name="expression"></arg>
       <arg name="variable"></arg>
       <arg name="predicate"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForUnionSet:with:">
+    <method class_method="true" selector="expressionForUnionSet:with:">
       <arg name="left"></arg>
       <arg name="right"></arg>
       <retval></retval>
     </method>
-    <method selector="expressionForVariable:">
+    <method class_method="true" selector="expressionForVariable:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
@@ -4821,28 +4821,28 @@
     <method selector="fileDescriptor">
       <retval></retval>
     </method>
-    <method selector="fileHandleForReadingAtPath:">
+    <method class_method="true" selector="fileHandleForReadingAtPath:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="fileHandleForUpdatingAtPath:">
+    <method class_method="true" selector="fileHandleForUpdatingAtPath:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="fileHandleForWritingAtPath:">
+    <method class_method="true" selector="fileHandleForWritingAtPath:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="fileHandleWithNullDevice">
+    <method class_method="true" selector="fileHandleWithNullDevice">
       <retval></retval>
     </method>
-    <method selector="fileHandleWithStandardError">
+    <method class_method="true" selector="fileHandleWithStandardError">
       <retval></retval>
     </method>
-    <method selector="fileHandleWithStandardInput">
+    <method class_method="true" selector="fileHandleWithStandardInput">
       <retval></retval>
     </method>
-    <method selector="fileHandleWithStandardOutput">
+    <method class_method="true" selector="fileHandleWithStandardOutput">
       <retval></retval>
     </method>
     <method selector="initWithFileDescriptor:">
@@ -4986,7 +4986,7 @@
     <method selector="currentDirectoryPath">
       <retval></retval>
     </method>
-    <method selector="defaultManager" swt_gen="true">
+    <method class_method="true" selector="defaultManager" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="delegate">
@@ -5152,7 +5152,7 @@
     <method selector="collectIfNeeded">
       <retval></retval>
     </method>
-    <method selector="defaultCollector">
+    <method class_method="true" selector="defaultCollector">
       <retval></retval>
     </method>
     <method selector="disable">
@@ -5186,11 +5186,11 @@
     <method selector="commentURL">
       <retval></retval>
     </method>
-    <method selector="cookieWithProperties:">
+    <method class_method="true" selector="cookieWithProperties:">
       <arg name="properties"></arg>
       <retval></retval>
     </method>
-    <method selector="cookiesWithResponseHeaderFields:forURL:">
+    <method class_method="true" selector="cookiesWithResponseHeaderFields:forURL:">
       <arg name="headerFields"></arg>
       <arg name="URL"></arg>
       <retval></retval>
@@ -5223,7 +5223,7 @@
     <method selector="properties">
       <retval></retval>
     </method>
-    <method selector="requestHeaderFieldsWithCookies:">
+    <method class_method="true" selector="requestHeaderFieldsWithCookies:">
       <arg name="cookies"></arg>
       <retval></retval>
     </method>
@@ -5263,7 +5263,7 @@
       <arg name="mainDocumentURL"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedHTTPCookieStorage" swt_gen="true">
+    <method class_method="true" selector="sharedHTTPCookieStorage" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
   </class>
@@ -5271,7 +5271,7 @@
     <method selector="allHeaderFields">
       <retval></retval>
     </method>
-    <method selector="localizedStringForStatusCode:">
+    <method class_method="true" selector="localizedStringForStatusCode:">
       <arg name="statusCode"></arg>
       <retval></retval>
     </method>
@@ -5297,11 +5297,11 @@
     <method selector="count">
       <retval></retval>
     </method>
-    <method selector="hashTableWithOptions:">
+    <method class_method="true" selector="hashTableWithOptions:">
       <arg name="options"></arg>
       <retval></retval>
     </method>
-    <method selector="hashTableWithWeakObjects">
+    <method class_method="true" selector="hashTableWithWeakObjects">
       <retval></retval>
     </method>
     <method selector="initWithOptions:capacity:">
@@ -5366,17 +5366,17 @@
     <method selector="addresses">
       <retval></retval>
     </method>
-    <method selector="currentHost">
+    <method class_method="true" selector="currentHost">
       <retval></retval>
     </method>
-    <method selector="flushHostCache">
+    <method class_method="true" selector="flushHostCache">
       <retval></retval>
     </method>
-    <method selector="hostWithAddress:">
+    <method class_method="true" selector="hostWithAddress:">
       <arg name="address"></arg>
       <retval></retval>
     </method>
-    <method selector="hostWithName:">
+    <method class_method="true" selector="hostWithName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -5384,7 +5384,7 @@
       <arg name="aHost"></arg>
       <retval></retval>
     </method>
-    <method selector="isHostCacheEnabled">
+    <method class_method="true" selector="isHostCacheEnabled">
       <retval></retval>
     </method>
     <method selector="name">
@@ -5393,7 +5393,7 @@
     <method selector="names">
       <retval></retval>
     </method>
-    <method selector="setHostCacheEnabled:">
+    <method class_method="true" selector="setHostCacheEnabled:">
       <arg name="flag"></arg>
       <retval></retval>
     </method>
@@ -5418,11 +5418,11 @@
     <method selector="indexPathByRemovingLastIndex">
       <retval></retval>
     </method>
-    <method selector="indexPathWithIndex:">
+    <method class_method="true" selector="indexPathWithIndex:">
       <arg name="index"></arg>
       <retval></retval>
     </method>
-    <method selector="indexPathWithIndexes:length:">
+    <method class_method="true" selector="indexPathWithIndexes:length:">
       <arg name="indexes"></arg>
       <arg name="length"></arg>
       <retval></retval>
@@ -5485,14 +5485,14 @@
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="indexSet">
+    <method class_method="true" selector="indexSet">
       <retval></retval>
     </method>
-    <method selector="indexSetWithIndex:">
+    <method class_method="true" selector="indexSetWithIndex:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="indexSetWithIndexesInRange:">
+    <method class_method="true" selector="indexSetWithIndexesInRange:">
       <arg name="range"></arg>
       <retval></retval>
     </method>
@@ -5556,11 +5556,11 @@
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="inputStreamWithData:">
+    <method class_method="true" selector="inputStreamWithData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="inputStreamWithFileAtPath:">
+    <method class_method="true" selector="inputStreamWithFileAtPath:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
@@ -5583,7 +5583,7 @@
       <arg name="retLoc"></arg>
       <retval></retval>
     </method>
-    <method selector="invocationWithMethodSignature:">
+    <method class_method="true" selector="invocationWithMethodSignature:">
       <arg name="sig"></arg>
       <retval></retval>
     </method>
@@ -5643,12 +5643,12 @@
     </method>
   </class>
   <class name="NSKeyedArchiver" swt_gen="mixed" swt_superclass="NSCoder">
-    <method selector="archiveRootObject:toFile:">
+    <method class_method="true" selector="archiveRootObject:toFile:">
       <arg name="rootObject"></arg>
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="archivedDataWithRootObject:" swt_gen="true">
+    <method class_method="true" selector="archivedDataWithRootObject:" swt_gen="true">
       <arg name="rootObject" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -5656,7 +5656,7 @@
       <arg name="cls"></arg>
       <retval></retval>
     </method>
-    <method selector="classNameForClass:">
+    <method class_method="true" selector="classNameForClass:">
       <arg name="cls"></arg>
       <retval></retval>
     </method>
@@ -5719,7 +5719,7 @@
     <method selector="outputFormat">
       <retval></retval>
     </method>
-    <method selector="setClassName:forClass:">
+    <method class_method="true" selector="setClassName:forClass:">
       <arg name="codedName"></arg>
       <arg name="cls"></arg>
       <retval></retval>
@@ -5743,7 +5743,7 @@
       <arg name="codedName"></arg>
       <retval></retval>
     </method>
-    <method selector="classForClassName:">
+    <method class_method="true" selector="classForClassName:">
       <arg name="codedName"></arg>
       <retval></retval>
     </method>
@@ -5799,7 +5799,7 @@
       <arg name="codedName"></arg>
       <retval></retval>
     </method>
-    <method selector="setClass:forClassName:">
+    <method class_method="true" selector="setClass:forClassName:">
       <arg name="cls"></arg>
       <arg name="codedName"></arg>
       <retval></retval>
@@ -5808,43 +5808,43 @@
       <arg name="delegate"></arg>
       <retval></retval>
     </method>
-    <method selector="unarchiveObjectWithData:" swt_gen="true">
+    <method class_method="true" selector="unarchiveObjectWithData:" swt_gen="true">
       <arg name="data" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="unarchiveObjectWithFile:">
+    <method class_method="true" selector="unarchiveObjectWithFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
   </class>
   <class name="NSLocale">
-    <method selector="ISOCountryCodes">
+    <method class_method="true" selector="ISOCountryCodes">
       <retval></retval>
     </method>
-    <method selector="ISOCurrencyCodes">
+    <method class_method="true" selector="ISOCurrencyCodes">
       <retval></retval>
     </method>
-    <method selector="ISOLanguageCodes">
+    <method class_method="true" selector="ISOLanguageCodes">
       <retval></retval>
     </method>
-    <method selector="autoupdatingCurrentLocale">
+    <method class_method="true" selector="autoupdatingCurrentLocale">
       <retval></retval>
     </method>
-    <method selector="availableLocaleIdentifiers">
+    <method class_method="true" selector="availableLocaleIdentifiers">
       <retval></retval>
     </method>
-    <method selector="canonicalLocaleIdentifierFromString:">
+    <method class_method="true" selector="canonicalLocaleIdentifierFromString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="commonISOCurrencyCodes">
+    <method class_method="true" selector="commonISOCurrencyCodes">
       <retval></retval>
     </method>
-    <method selector="componentsFromLocaleIdentifier:">
+    <method class_method="true" selector="componentsFromLocaleIdentifier:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="currentLocale">
+    <method class_method="true" selector="currentLocale">
       <retval></retval>
     </method>
     <method selector="displayNameForKey:value:">
@@ -5859,7 +5859,7 @@
     <method selector="localeIdentifier">
       <retval></retval>
     </method>
-    <method selector="localeIdentifierFromComponents:">
+    <method class_method="true" selector="localeIdentifierFromComponents:">
       <arg name="dict"></arg>
       <retval></retval>
     </method>
@@ -5867,10 +5867,10 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="preferredLanguages">
+    <method class_method="true" selector="preferredLanguages">
       <retval></retval>
     </method>
-    <method selector="systemLocale">
+    <method class_method="true" selector="systemLocale">
       <retval></retval>
     </method>
   </class>
@@ -5923,7 +5923,7 @@
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedInstance">
+    <method class_method="true" selector="sharedInstance">
       <retval></retval>
     </method>
   </class>
@@ -5940,11 +5940,11 @@
     <method selector="machPort">
       <retval></retval>
     </method>
-    <method selector="portWithMachPort:">
+    <method class_method="true" selector="portWithMachPort:">
       <arg name="machPort"></arg>
       <retval></retval>
     </method>
-    <method selector="portWithMachPort:options:">
+    <method class_method="true" selector="portWithMachPort:options:">
       <arg name="machPort"></arg>
       <arg name="f"></arg>
       <retval></retval>
@@ -5985,21 +5985,21 @@
     <method selector="keyPointerFunctions">
       <retval></retval>
     </method>
-    <method selector="mapTableWithKeyOptions:valueOptions:">
+    <method class_method="true" selector="mapTableWithKeyOptions:valueOptions:">
       <arg name="keyOptions"></arg>
       <arg name="valueOptions"></arg>
       <retval></retval>
     </method>
-    <method selector="mapTableWithStrongToStrongObjects">
+    <method class_method="true" selector="mapTableWithStrongToStrongObjects">
       <retval></retval>
     </method>
-    <method selector="mapTableWithStrongToWeakObjects">
+    <method class_method="true" selector="mapTableWithStrongToWeakObjects">
       <retval></retval>
     </method>
-    <method selector="mapTableWithWeakToStrongObjects">
+    <method class_method="true" selector="mapTableWithWeakToStrongObjects">
       <retval></retval>
     </method>
-    <method selector="mapTableWithWeakToWeakObjects">
+    <method class_method="true" selector="mapTableWithWeakToWeakObjects">
       <retval></retval>
     </method>
     <method selector="objectEnumerator">
@@ -6035,7 +6035,7 @@
       <arg name="host"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedInstance">
+    <method class_method="true" selector="sharedInstance">
       <retval></retval>
     </method>
   </class>
@@ -6204,7 +6204,7 @@
     <method selector="numberOfArguments">
       <retval></retval>
     </method>
-    <method selector="signatureWithObjCTypes:">
+    <method class_method="true" selector="signatureWithObjCTypes:">
       <arg name="types"></arg>
       <retval></retval>
     </method>
@@ -6227,7 +6227,7 @@
       <arg name="otherArray"></arg>
       <retval></retval>
     </method>
-    <method selector="arrayWithCapacity:" swt_gen="true">
+    <method class_method="true" selector="arrayWithCapacity:" swt_gen="true">
       <arg name="numItems" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
     </method>
@@ -6441,11 +6441,11 @@
       <arg name="other"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithCapacity:">
+    <method class_method="true" selector="dataWithCapacity:">
       <arg name="aNumItems"></arg>
       <retval></retval>
     </method>
-    <method selector="dataWithLength:">
+    <method class_method="true" selector="dataWithLength:">
       <arg name="length"></arg>
       <retval></retval>
     </method>
@@ -6493,7 +6493,7 @@
       <arg name="otherDictionary"></arg>
       <retval></retval>
     </method>
-    <method selector="dictionaryWithCapacity:" swt_gen="true">
+    <method class_method="true" selector="dictionaryWithCapacity:" swt_gen="true">
       <arg name="numItems" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
     </method>
@@ -6597,7 +6597,7 @@
       <arg name="otherSet"></arg>
       <retval></retval>
     </method>
-    <method selector="setWithCapacity:">
+    <method class_method="true" selector="setWithCapacity:">
       <arg name="numItems"></arg>
       <retval></retval>
     </method>
@@ -6644,7 +6644,7 @@
       <arg name="aString"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithCapacity:">
+    <method class_method="true" selector="stringWithCapacity:">
       <arg name="capacity"></arg>
       <retval></retval>
     </method>
@@ -6720,14 +6720,14 @@
     <method selector="addresses">
       <retval></retval>
     </method>
-    <method selector="dataFromTXTRecordDictionary:">
+    <method class_method="true" selector="dataFromTXTRecordDictionary:">
       <arg name="txtDictionary"></arg>
       <retval></retval>
     </method>
     <method selector="delegate">
       <retval></retval>
     </method>
-    <method selector="dictionaryFromTXTRecordData:">
+    <method class_method="true" selector="dictionaryFromTXTRecordData:">
       <arg name="txtData"></arg>
       <retval></retval>
     </method>
@@ -6856,12 +6856,12 @@
     <method selector="name">
       <retval></retval>
     </method>
-    <method selector="notificationWithName:object:">
+    <method class_method="true" selector="notificationWithName:object:">
       <arg name="aName"></arg>
       <arg name="anObject"></arg>
       <retval></retval>
     </method>
-    <method selector="notificationWithName:object:userInfo:">
+    <method class_method="true" selector="notificationWithName:object:userInfo:">
       <arg name="aName"></arg>
       <arg name="anObject"></arg>
       <arg name="aUserInfo"></arg>
@@ -6882,7 +6882,7 @@
       <arg name="anObject" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="defaultCenter" swt_gen="true">
+    <method class_method="true" selector="defaultCenter" swt_gen="true">
       <retval swt_gen="true" swt_java_type="NSNotificationCenter"></retval>
     </method>
     <method selector="postNotification:">
@@ -6912,7 +6912,7 @@
     </method>
   </class>
   <class name="NSNotificationQueue">
-    <method selector="defaultQueue">
+    <method class_method="true" selector="defaultQueue">
       <retval></retval>
     </method>
     <method selector="dequeueNotificationsMatching:coalesceMask:">
@@ -6938,7 +6938,7 @@
     </method>
   </class>
   <class name="NSNull">
-    <method selector="null">
+    <method class_method="true" selector="null">
       <retval></retval>
     </method>
   </class>
@@ -7042,63 +7042,63 @@
     <method selector="longValue">
       <retval></retval>
     </method>
-    <method selector="numberWithBool:" swt_gen="true">
+    <method class_method="true" selector="numberWithBool:" swt_gen="true">
       <arg name="value" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="numberWithChar:">
+    <method class_method="true" selector="numberWithChar:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithDouble:">
+    <method class_method="true" selector="numberWithDouble:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithFloat:">
+    <method class_method="true" selector="numberWithFloat:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithInt:" swt_gen="true">
+    <method class_method="true" selector="numberWithInt:" swt_gen="true">
       <arg name="value" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="numberWithInteger:">
+    <method class_method="true" selector="numberWithInteger:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithLong:">
+    <method class_method="true" selector="numberWithLong:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithLongLong:">
+    <method class_method="true" selector="numberWithLongLong:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithShort:">
+    <method class_method="true" selector="numberWithShort:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithUnsignedChar:">
+    <method class_method="true" selector="numberWithUnsignedChar:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithUnsignedInt:">
+    <method class_method="true" selector="numberWithUnsignedInt:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithUnsignedInteger:">
+    <method class_method="true" selector="numberWithUnsignedInteger:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithUnsignedLong:">
+    <method class_method="true" selector="numberWithUnsignedLong:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithUnsignedLongLong:">
+    <method class_method="true" selector="numberWithUnsignedLongLong:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="numberWithUnsignedShort:">
+    <method class_method="true" selector="numberWithUnsignedShort:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
@@ -7158,7 +7158,7 @@
     <method selector="decimalSeparator">
       <retval></retval>
     </method>
-    <method selector="defaultFormatterBehavior">
+    <method class_method="true" selector="defaultFormatterBehavior">
       <retval></retval>
     </method>
     <method selector="exponentSymbol">
@@ -7344,7 +7344,7 @@
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultFormatterBehavior:">
+    <method class_method="true" selector="setDefaultFormatterBehavior:">
       <arg name="behavior"></arg>
       <retval></retval>
     </method>
@@ -7684,7 +7684,7 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="accessInstanceVariablesDirectly">
+    <method class_method="true" selector="accessInstanceVariablesDirectly">
       <retval></retval>
     </method>
     <method selector="addObserver:forKeyPath:options:context:">
@@ -7694,10 +7694,10 @@
       <arg name="context"></arg>
       <retval></retval>
     </method>
-    <method selector="alloc">
+    <method class_method="true" selector="alloc">
       <retval></retval>
     </method>
-    <method selector="allocWithZone:">
+    <method class_method="true" selector="allocWithZone:">
       <arg name="zone"></arg>
       <retval></retval>
     </method>
@@ -7750,7 +7750,7 @@
       <arg name="components"></arg>
       <retval></retval>
     </method>
-    <method selector="automaticallyNotifiesObserversForKey:">
+    <method class_method="true" selector="automaticallyNotifiesObserversForKey:">
       <arg name="key"></arg>
       <retval></retval>
     </method>
@@ -7765,17 +7765,17 @@
       <arg name="challenge"></arg>
       <retval></retval>
     </method>
-    <method selector="cancelPreviousPerformRequestsWithTarget:">
+    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:">
       <arg name="aTarget"></arg>
       <retval></retval>
     </method>
-    <method selector="cancelPreviousPerformRequestsWithTarget:selector:object:">
+    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:selector:object:">
       <arg name="aTarget"></arg>
       <arg name="aSelector"></arg>
       <arg name="anArgument"></arg>
       <retval></retval>
     </method>
-    <method selector="class">
+    <method class_method="true" selector="class">
       <retval></retval>
     </method>
     <method selector="class">
@@ -7787,7 +7787,7 @@
     <method selector="classDescription">
       <retval></retval>
     </method>
-    <method selector="classFallbacksForKeyedArchiver">
+    <method class_method="true" selector="classFallbacksForKeyedArchiver">
       <retval></retval>
     </method>
     <method selector="classForArchiver">
@@ -7799,7 +7799,7 @@
     <method selector="classForKeyedArchiver">
       <retval></retval>
     </method>
-    <method selector="classForKeyedUnarchiver">
+    <method class_method="true" selector="classForKeyedUnarchiver">
       <retval></retval>
     </method>
     <method selector="classForPortCoder">
@@ -7817,7 +7817,7 @@
       <arg name="aProtocol"></arg>
       <retval></retval>
     </method>
-    <method selector="conformsToProtocol:">
+    <method class_method="true" selector="conformsToProtocol:">
       <arg name="protocol"></arg>
       <retval></retval>
     </method>
@@ -7888,7 +7888,7 @@
       <arg name="zone"></arg>
       <retval></retval>
     </method>
-    <method selector="copyWithZone:">
+    <method class_method="true" selector="copyWithZone:">
       <arg name="zone"></arg>
       <retval></retval>
     </method>
@@ -7908,7 +7908,7 @@
     <method selector="description">
       <retval></retval>
     </method>
-    <method selector="description">
+    <method class_method="true" selector="description">
       <retval></retval>
     </method>
     <method selector="dictionaryWithValuesForKeys:">
@@ -8108,7 +8108,7 @@
       <arg name="aDecoder"></arg>
       <retval></retval>
     </method>
-    <method selector="initialize">
+    <method class_method="true" selector="initialize">
       <retval></retval>
     </method>
     <method selector="insertValue:atIndex:inPropertyWithKey:">
@@ -8122,15 +8122,15 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="instanceMethodForSelector:">
+    <method class_method="true" selector="instanceMethodForSelector:">
       <arg name="aSelector"></arg>
       <retval></retval>
     </method>
-    <method selector="instanceMethodSignatureForSelector:">
+    <method class_method="true" selector="instanceMethodSignatureForSelector:">
       <arg name="aSelector"></arg>
       <retval></retval>
     </method>
-    <method selector="instancesRespondToSelector:">
+    <method class_method="true" selector="instancesRespondToSelector:">
       <arg name="aSelector"></arg>
       <retval></retval>
     </method>
@@ -8185,15 +8185,15 @@
     <method selector="isProxy">
       <retval></retval>
     </method>
-    <method selector="isSubclassOfClass:">
+    <method class_method="true" selector="isSubclassOfClass:">
       <arg name="aClass"></arg>
       <retval></retval>
     </method>
-    <method selector="keyPathsForValuesAffectingValueForKey:">
+    <method class_method="true" selector="keyPathsForValuesAffectingValueForKey:">
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="load">
+    <method class_method="true" selector="load">
       <retval></retval>
     </method>
     <method selector="lock">
@@ -8238,7 +8238,7 @@
       <arg name="zone"></arg>
       <retval></retval>
     </method>
-    <method selector="mutableCopyWithZone:">
+    <method class_method="true" selector="mutableCopyWithZone:">
       <arg name="zone"></arg>
       <retval></retval>
     </method>
@@ -8322,7 +8322,7 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="new">
+    <method class_method="true" selector="new">
       <retval></retval>
     </method>
     <method selector="newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:">
@@ -8524,7 +8524,7 @@
       <arg name="array"></arg>
       <retval></retval>
     </method>
-    <method selector="poseAsClass:">
+    <method class_method="true" selector="poseAsClass:">
       <arg name="aClass"></arg>
       <retval></retval>
     </method>
@@ -8563,11 +8563,11 @@
       <arg name="coder"></arg>
       <retval></retval>
     </method>
-    <method selector="resolveClassMethod:">
+    <method class_method="true" selector="resolveClassMethod:">
       <arg name="sel"></arg>
       <retval></retval>
     </method>
-    <method selector="resolveInstanceMethod:">
+    <method class_method="true" selector="resolveInstanceMethod:">
       <arg name="sel"></arg>
       <retval></retval>
     </method>
@@ -8629,7 +8629,7 @@
     <method selector="self">
       <retval></retval>
     </method>
-    <method selector="setKeys:triggerChangeNotificationsForDependentKey:">
+    <method class_method="true" selector="setKeys:triggerChangeNotificationsForDependentKey:">
       <arg name="keys"></arg>
       <arg name="dependentKey"></arg>
       <retval></retval>
@@ -8665,7 +8665,7 @@
       <arg name="keyedValues"></arg>
       <retval></retval>
     </method>
-    <method selector="setVersion:">
+    <method class_method="true" selector="setVersion:">
       <arg name="aVersion"></arg>
       <retval></retval>
     </method>
@@ -8718,11 +8718,11 @@
       <arg name="eventCode"></arg>
       <retval></retval>
     </method>
-    <method selector="superclass" swt_gen="true">
+    <method class_method="true" selector="superclass" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="superclass" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="superclass">
+      <retval></retval>
     </method>
     <method selector="takeStoredValue:forKey:">
       <arg name="value"></arg>
@@ -8786,7 +8786,7 @@
       <arg name="challenge"></arg>
       <retval></retval>
     </method>
-    <method selector="useStoredAccessor">
+    <method class_method="true" selector="useStoredAccessor">
       <retval></retval>
     </method>
     <method selector="validateValue:forKey:error:">
@@ -8832,7 +8832,7 @@
       <arg name="keys"></arg>
       <retval></retval>
     </method>
-    <method selector="version">
+    <method class_method="true" selector="version">
       <retval></retval>
     </method>
     <method selector="willChange:valuesAtIndexes:forKey:">
@@ -8948,17 +8948,17 @@
     <method selector="initToMemory">
       <retval></retval>
     </method>
-    <method selector="outputStreamToBuffer:capacity:">
+    <method class_method="true" selector="outputStreamToBuffer:capacity:">
       <arg name="buffer"></arg>
       <arg name="capacity"></arg>
       <retval></retval>
     </method>
-    <method selector="outputStreamToFileAtPath:append:">
+    <method class_method="true" selector="outputStreamToFileAtPath:append:">
       <arg name="path"></arg>
       <arg name="shouldAppend"></arg>
       <retval></retval>
     </method>
-    <method selector="outputStreamToMemory">
+    <method class_method="true" selector="outputStreamToMemory">
       <retval></retval>
     </method>
     <method selector="write:maxLength:">
@@ -8977,7 +8977,7 @@
     <method selector="init">
       <retval></retval>
     </method>
-    <method selector="pipe">
+    <method class_method="true" selector="pipe">
       <retval></retval>
     </method>
   </class>
@@ -9008,18 +9008,18 @@
       <arg name="index"></arg>
       <retval></retval>
     </method>
-    <method selector="pointerArrayWithOptions:">
+    <method class_method="true" selector="pointerArrayWithOptions:">
       <arg name="options"></arg>
       <retval></retval>
     </method>
-    <method selector="pointerArrayWithPointerFunctions:">
+    <method class_method="true" selector="pointerArrayWithPointerFunctions:">
       <arg name="functions"></arg>
       <retval></retval>
     </method>
-    <method selector="pointerArrayWithStrongObjects">
+    <method class_method="true" selector="pointerArrayWithStrongObjects">
       <retval></retval>
     </method>
-    <method selector="pointerArrayWithWeakObjects">
+    <method class_method="true" selector="pointerArrayWithWeakObjects">
       <retval></retval>
     </method>
     <method selector="pointerAtIndex:">
@@ -9048,7 +9048,7 @@
       <arg name="options"></arg>
       <retval></retval>
     </method>
-    <method selector="pointerFunctionsWithOptions:">
+    <method class_method="true" selector="pointerFunctionsWithOptions:">
       <arg name="options"></arg>
       <retval></retval>
     </method>
@@ -9074,7 +9074,7 @@
       <arg name="mode"></arg>
       <retval></retval>
     </method>
-    <method selector="allocWithZone:">
+    <method class_method="true" selector="allocWithZone:">
       <arg name="zone"></arg>
       <retval></retval>
     </method>
@@ -9087,7 +9087,7 @@
     <method selector="isValid">
       <retval></retval>
     </method>
-    <method selector="port">
+    <method class_method="true" selector="port">
       <retval></retval>
     </method>
     <method selector="removeConnection:fromRunLoop:forMode:">
@@ -9155,7 +9155,7 @@
     <method selector="isByref">
       <retval></retval>
     </method>
-    <method selector="portCoderWithReceivePort:sendPort:components:">
+    <method class_method="true" selector="portCoderWithReceivePort:sendPort:components:">
       <arg name="rcvPort"></arg>
       <arg name="sndPort"></arg>
       <arg name="comps"></arg>
@@ -9209,7 +9209,7 @@
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="systemDefaultPortNameServer">
+    <method class_method="true" selector="systemDefaultPortNameServer">
       <retval></retval>
     </method>
   </class>
@@ -9258,16 +9258,16 @@
     <method selector="predicateFormat">
       <retval></retval>
     </method>
-    <method selector="predicateWithFormat:">
+    <method class_method="true" selector="predicateWithFormat:">
       <arg name="predicateWithFormat"></arg>
       <retval></retval>
     </method>
-    <method selector="predicateWithFormat:argumentArray:">
+    <method class_method="true" selector="predicateWithFormat:argumentArray:">
       <arg name="predicateFormat"></arg>
       <arg name="arguments"></arg>
       <retval></retval>
     </method>
-    <method selector="predicateWithFormat:arguments:">
+    <method class_method="true" selector="predicateWithFormat:arguments:">
       <arg name="predicateFormat"></arg>
       <arg name="argList"></arg>
       <retval></retval>
@@ -9276,7 +9276,7 @@
       <arg name="variables"></arg>
       <retval></retval>
     </method>
-    <method selector="predicateWithValue:">
+    <method class_method="true" selector="predicateWithValue:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
@@ -9312,7 +9312,7 @@
     <method selector="processIdentifier">
       <retval></retval>
     </method>
-    <method selector="processInfo">
+    <method class_method="true" selector="processInfo">
       <retval></retval>
     </method>
     <method selector="processName">
@@ -9327,18 +9327,18 @@
     </method>
   </class>
   <class name="NSPropertyListSerialization">
-    <method selector="dataFromPropertyList:format:errorDescription:">
+    <method class_method="true" selector="dataFromPropertyList:format:errorDescription:">
       <arg name="plist"></arg>
       <arg name="format"></arg>
       <arg name="errorString"></arg>
       <retval></retval>
     </method>
-    <method selector="propertyList:isValidForFormat:">
+    <method class_method="true" selector="propertyList:isValidForFormat:">
       <arg name="plist"></arg>
       <arg name="format"></arg>
       <retval></retval>
     </method>
-    <method selector="propertyListFromData:mutabilityOption:format:errorDescription:">
+    <method class_method="true" selector="propertyListFromData:mutabilityOption:format:errorDescription:">
       <arg name="data"></arg>
       <arg name="opt"></arg>
       <arg name="format"></arg>
@@ -9355,7 +9355,7 @@
     <method selector="protocol">
       <retval></retval>
     </method>
-    <method selector="protocolCheckerWithTarget:protocol:">
+    <method class_method="true" selector="protocolCheckerWithTarget:protocol:">
       <arg name="anObject"></arg>
       <arg name="aProtocol"></arg>
       <retval></retval>
@@ -9365,14 +9365,14 @@
     </method>
   </class>
   <class name="NSProxy">
-    <method selector="alloc">
+    <method class_method="true" selector="alloc">
       <retval></retval>
     </method>
-    <method selector="allocWithZone:">
+    <method class_method="true" selector="allocWithZone:">
       <arg name="zone"></arg>
       <retval></retval>
     </method>
-    <method selector="class">
+    <method class_method="true" selector="class">
       <retval></retval>
     </method>
     <method selector="dealloc">
@@ -9392,7 +9392,7 @@
       <arg name="sel"></arg>
       <retval></retval>
     </method>
-    <method selector="respondsToSelector:">
+    <method class_method="true" selector="respondsToSelector:">
       <arg name="aSelector"></arg>
       <retval></retval>
     </method>
@@ -9498,7 +9498,7 @@
     <method selector="currentMode">
       <retval></retval>
     </method>
-    <method selector="currentRunLoop" swt_gen="true">
+    <method class_method="true" selector="currentRunLoop" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="getCFRunLoop">
@@ -9508,7 +9508,7 @@
       <arg name="mode"></arg>
       <retval></retval>
     </method>
-    <method selector="mainRunLoop" swt_gen="true">
+    <method class_method="true" selector="mainRunLoop" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="performSelector:target:argument:order:modes:">
@@ -9554,7 +9554,7 @@
     <method selector="locale">
       <retval></retval>
     </method>
-    <method selector="localizedScannerWithString:">
+    <method class_method="true" selector="localizedScannerWithString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
@@ -9621,7 +9621,7 @@
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="scannerWithString:">
+    <method class_method="true" selector="scannerWithString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
@@ -9653,7 +9653,7 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="classDescriptionForClass:">
+    <method class_method="true" selector="classDescriptionForClass:">
       <arg name="aClass"></arg>
       <retval></retval>
     </method>
@@ -9740,7 +9740,7 @@
       <arg name="toClass"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedCoercionHandler">
+    <method class_method="true" selector="sharedCoercionHandler">
       <retval></retval>
     </method>
   </class>
@@ -9754,7 +9754,7 @@
     <method selector="commandDescription">
       <retval></retval>
     </method>
-    <method selector="currentCommand">
+    <method class_method="true" selector="currentCommand">
       <retval></retval>
     </method>
     <method selector="directParameter">
@@ -9900,7 +9900,7 @@
       <arg name="obj"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedScriptExecutionContext">
+    <method class_method="true" selector="sharedScriptExecutionContext">
       <retval></retval>
     </method>
     <method selector="topLevelObject">
@@ -9954,7 +9954,7 @@
     <method selector="keyClassDescription">
       <retval></retval>
     </method>
-    <method selector="objectSpecifierWithDescriptor:">
+    <method class_method="true" selector="objectSpecifierWithDescriptor:">
       <arg name="descriptor"></arg>
       <retval></retval>
     </method>
@@ -10041,11 +10041,11 @@
       <arg name="commandDescription"></arg>
       <retval></retval>
     </method>
-    <method selector="setSharedScriptSuiteRegistry:">
+    <method class_method="true" selector="setSharedScriptSuiteRegistry:">
       <arg name="registry"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedScriptSuiteRegistry">
+    <method class_method="true" selector="sharedScriptSuiteRegistry">
       <retval></retval>
     </method>
     <method selector="suiteForAppleEventCode:">
@@ -10148,7 +10148,7 @@
       <arg name="keyPath"></arg>
       <retval></retval>
     </method>
-    <method selector="set" swt_gen="true">
+    <method class_method="true" selector="set" swt_gen="true">
       <retval swt_gen="true" swt_java_type="NSSet"></retval>
     </method>
     <method selector="setByAddingObject:">
@@ -10168,24 +10168,24 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="setWithArray:">
+    <method class_method="true" selector="setWithArray:">
       <arg name="array"></arg>
       <retval></retval>
     </method>
-    <method selector="setWithObject:">
+    <method class_method="true" selector="setWithObject:">
       <arg name="object"></arg>
       <retval></retval>
     </method>
-    <method selector="setWithObjects:">
+    <method class_method="true" selector="setWithObjects:">
       <arg name="setWithObjects"></arg>
       <retval></retval>
     </method>
-    <method selector="setWithObjects:count:">
+    <method class_method="true" selector="setWithObjects:count:">
       <arg name="objects"></arg>
       <arg name="cnt"></arg>
       <retval></retval>
     </method>
-    <method selector="setWithSet:">
+    <method class_method="true" selector="setWithSet:">
       <arg name="set"></arg>
       <retval></retval>
     </method>
@@ -10291,7 +10291,7 @@
       <arg name="portNumber"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedInstance">
+    <method class_method="true" selector="sharedInstance">
       <retval></retval>
     </method>
   </class>
@@ -10362,7 +10362,7 @@
     <method selector="delegate">
       <retval></retval>
     </method>
-    <method selector="getStreamsToHost:port:inputStream:outputStream:">
+    <method class_method="true" selector="getStreamsToHost:port:inputStream:outputStream:">
       <arg name="host"></arg>
       <arg name="port"></arg>
       <arg name="inputStream"></arg>
@@ -10406,7 +10406,7 @@
     <method selector="UTF8String">
       <retval></retval>
     </method>
-    <method selector="availableStringEncodings">
+    <method class_method="true" selector="availableStringEncodings">
       <retval></retval>
     </method>
     <method selector="boolValue">
@@ -10494,7 +10494,7 @@
     <method selector="decomposedStringWithCompatibilityMapping">
       <retval></retval>
     </method>
-    <method selector="defaultCStringEncoding">
+    <method class_method="true" selector="defaultCStringEncoding">
       <retval></retval>
     </method>
     <method selector="description">
@@ -10730,11 +10730,11 @@
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="localizedNameOfStringEncoding:">
+    <method class_method="true" selector="localizedNameOfStringEncoding:">
       <arg name="encoding"></arg>
       <retval></retval>
     </method>
-    <method selector="localizedStringWithFormat:">
+    <method class_method="true" selector="localizedStringWithFormat:">
       <arg name="localizedStringWithFormat"></arg>
       <retval></retval>
     </method>
@@ -10761,7 +10761,7 @@
     <method selector="pathExtension">
       <retval></retval>
     </method>
-    <method selector="pathWithComponents:">
+    <method class_method="true" selector="pathWithComponents:">
       <arg name="components"></arg>
       <retval></retval>
     </method>
@@ -10825,7 +10825,7 @@
     <method selector="smallestEncoding">
       <retval></retval>
     </method>
-    <method selector="string">
+    <method class_method="true" selector="string">
       <retval></retval>
     </method>
     <method selector="stringByAbbreviatingWithTildeInPath">
@@ -10902,66 +10902,66 @@
       <arg name="set"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithCString:">
+    <method class_method="true" selector="stringWithCString:">
       <arg name="bytes"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithCString:encoding:">
+    <method class_method="true" selector="stringWithCString:encoding:">
       <arg name="cString"></arg>
       <arg name="enc"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithCString:length:">
+    <method class_method="true" selector="stringWithCString:length:">
       <arg name="bytes"></arg>
       <arg name="length"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithCharacters:length:" swt_gen="true">
+    <method class_method="true" selector="stringWithCharacters:length:" swt_gen="true">
       <arg name="characters" swt_gen="true" swt_java_type="char[]"></arg>
       <arg name="length" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSString"></retval>
     </method>
-    <method selector="stringWithContentsOfFile:">
+    <method class_method="true" selector="stringWithContentsOfFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithContentsOfFile:encoding:error:">
-      <arg name="path"></arg>
-      <arg name="enc"></arg>
-      <arg name="error"></arg>
-      <retval></retval>
-    </method>
-    <method selector="stringWithContentsOfFile:usedEncoding:error:">
+    <method class_method="true" selector="stringWithContentsOfFile:encoding:error:">
       <arg name="path"></arg>
       <arg name="enc"></arg>
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithContentsOfURL:">
+    <method class_method="true" selector="stringWithContentsOfFile:usedEncoding:error:">
+      <arg name="path"></arg>
+      <arg name="enc"></arg>
+      <arg name="error"></arg>
+      <retval></retval>
+    </method>
+    <method class_method="true" selector="stringWithContentsOfURL:">
       <arg name="url"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithContentsOfURL:encoding:error:">
+    <method class_method="true" selector="stringWithContentsOfURL:encoding:error:">
       <arg name="url"></arg>
       <arg name="enc"></arg>
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithContentsOfURL:usedEncoding:error:">
+    <method class_method="true" selector="stringWithContentsOfURL:usedEncoding:error:">
       <arg name="url"></arg>
       <arg name="enc"></arg>
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithFormat:">
+    <method class_method="true" selector="stringWithFormat:">
       <arg name="stringWithFormat"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithString:">
+    <method class_method="true" selector="stringWithString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="stringWithUTF8String:">
+    <method class_method="true" selector="stringWithUTF8String:">
       <arg name="nullTerminatedCString"></arg>
       <retval></retval>
     </method>
@@ -11034,7 +11034,7 @@
     <method selector="launchPath">
       <retval></retval>
     </method>
-    <method selector="launchedTaskWithLaunchPath:arguments:">
+    <method class_method="true" selector="launchedTaskWithLaunchPath:arguments:">
       <arg name="path"></arg>
       <arg name="arguments"></arg>
       <retval></retval>
@@ -11096,22 +11096,22 @@
     </method>
   </class>
   <class name="NSThread">
-    <method selector="callStackReturnAddresses">
+    <method class_method="true" selector="callStackReturnAddresses">
       <retval></retval>
     </method>
     <method selector="cancel">
       <retval></retval>
     </method>
-    <method selector="currentThread">
+    <method class_method="true" selector="currentThread">
       <retval></retval>
     </method>
-    <method selector="detachNewThreadSelector:toTarget:withObject:">
+    <method class_method="true" selector="detachNewThreadSelector:toTarget:withObject:">
       <arg name="selector"></arg>
       <arg name="target"></arg>
       <arg name="argument"></arg>
       <retval></retval>
     </method>
-    <method selector="exit">
+    <method class_method="true" selector="exit">
       <retval></retval>
     </method>
     <method selector="init">
@@ -11132,19 +11132,19 @@
     <method selector="isFinished">
       <retval></retval>
     </method>
-    <method selector="isMainThread">
+    <method class_method="true" selector="isMainThread">
       <retval></retval>
     </method>
     <method selector="isMainThread">
       <retval></retval>
     </method>
-    <method selector="isMultiThreaded">
+    <method class_method="true" selector="isMultiThreaded">
       <retval></retval>
     </method>
     <method selector="main">
       <retval></retval>
     </method>
-    <method selector="mainThread">
+    <method class_method="true" selector="mainThread">
       <retval></retval>
     </method>
     <method selector="name">
@@ -11158,15 +11158,15 @@
       <arg name="s"></arg>
       <retval></retval>
     </method>
-    <method selector="setThreadPriority:">
+    <method class_method="true" selector="setThreadPriority:">
       <arg name="p"></arg>
       <retval></retval>
     </method>
-    <method selector="sleepForTimeInterval:">
+    <method class_method="true" selector="sleepForTimeInterval:">
       <arg name="ti"></arg>
       <retval></retval>
     </method>
-    <method selector="sleepUntilDate:">
+    <method class_method="true" selector="sleepUntilDate:">
       <arg name="date"></arg>
       <retval></retval>
     </method>
@@ -11179,7 +11179,7 @@
     <method selector="threadDictionary">
       <retval></retval>
     </method>
-    <method selector="threadPriority">
+    <method class_method="true" selector="threadPriority">
       <retval></retval>
     </method>
   </class>
@@ -11187,7 +11187,7 @@
     <method selector="abbreviation">
       <retval></retval>
     </method>
-    <method selector="abbreviationDictionary">
+    <method class_method="true" selector="abbreviationDictionary">
       <retval></retval>
     </method>
     <method selector="abbreviationForDate:">
@@ -11204,7 +11204,7 @@
       <arg name="aDate"></arg>
       <retval></retval>
     </method>
-    <method selector="defaultTimeZone" swt_gen="true">
+    <method class_method="true" selector="defaultTimeZone" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="description">
@@ -11230,10 +11230,10 @@
       <arg name="aTimeZone"></arg>
       <retval></retval>
     </method>
-    <method selector="knownTimeZoneNames">
+    <method class_method="true" selector="knownTimeZoneNames">
       <retval></retval>
     </method>
-    <method selector="localTimeZone">
+    <method class_method="true" selector="localTimeZone">
       <retval></retval>
     </method>
     <method selector="localizedName:locale:">
@@ -11251,7 +11251,7 @@
       <arg name="aDate"></arg>
       <retval></retval>
     </method>
-    <method selector="resetSystemTimeZone">
+    <method class_method="true" selector="resetSystemTimeZone">
       <retval></retval>
     </method>
     <method selector="secondsFromGMT">
@@ -11261,26 +11261,26 @@
       <arg name="aDate"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultTimeZone:">
+    <method class_method="true" selector="setDefaultTimeZone:">
       <arg name="aTimeZone"></arg>
       <retval></retval>
     </method>
-    <method selector="systemTimeZone">
+    <method class_method="true" selector="systemTimeZone">
       <retval></retval>
     </method>
-    <method selector="timeZoneForSecondsFromGMT:">
+    <method class_method="true" selector="timeZoneForSecondsFromGMT:">
       <arg name="seconds"></arg>
       <retval></retval>
     </method>
-    <method selector="timeZoneWithAbbreviation:">
+    <method class_method="true" selector="timeZoneWithAbbreviation:">
       <arg name="abbreviation"></arg>
       <retval></retval>
     </method>
-    <method selector="timeZoneWithName:">
+    <method class_method="true" selector="timeZoneWithName:">
       <arg name="tzName"></arg>
       <retval></retval>
     </method>
-    <method selector="timeZoneWithName:data:">
+    <method class_method="true" selector="timeZoneWithName:data:">
       <arg name="tzName"></arg>
       <arg name="aData"></arg>
       <retval></retval>
@@ -11308,13 +11308,13 @@
     <method selector="isValid">
       <retval></retval>
     </method>
-    <method selector="scheduledTimerWithTimeInterval:invocation:repeats:">
+    <method class_method="true" selector="scheduledTimerWithTimeInterval:invocation:repeats:">
       <arg name="ti"></arg>
       <arg name="invocation"></arg>
       <arg name="yesOrNo"></arg>
       <retval></retval>
     </method>
-    <method selector="scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:" swt_gen="true">
+    <method class_method="true" selector="scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:" swt_gen="true">
       <arg name="ti" swt_gen="true"></arg>
       <arg name="aTarget" swt_gen="true"></arg>
       <arg name="aSelector" swt_gen="true"></arg>
@@ -11329,13 +11329,13 @@
     <method selector="timeInterval">
       <retval></retval>
     </method>
-    <method selector="timerWithTimeInterval:invocation:repeats:">
+    <method class_method="true" selector="timerWithTimeInterval:invocation:repeats:">
       <arg name="ti"></arg>
       <arg name="invocation"></arg>
       <arg name="yesOrNo"></arg>
       <retval></retval>
     </method>
-    <method selector="timerWithTimeInterval:target:selector:userInfo:repeats:">
+    <method class_method="true" selector="timerWithTimeInterval:target:selector:userInfo:repeats:">
       <arg name="ti"></arg>
       <arg name="aTarget"></arg>
       <arg name="aSelector"></arg>
@@ -11352,11 +11352,11 @@
       <arg name="shouldUseCache"></arg>
       <retval></retval>
     </method>
-    <method selector="URLWithString:" swt_gen="true">
+    <method class_method="true" selector="URLWithString:" swt_gen="true">
       <arg name="URLString" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSURL"></retval>
     </method>
-    <method selector="URLWithString:relativeToURL:">
+    <method class_method="true" selector="URLWithString:relativeToURL:">
       <arg name="URLString"></arg>
       <arg name="baseURL"></arg>
       <retval></retval>
@@ -11370,11 +11370,11 @@
     <method selector="baseURL">
       <retval></retval>
     </method>
-    <method selector="fileURLWithPath:" swt_gen="true">
+    <method class_method="true" selector="fileURLWithPath:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSURL"></retval>
     </method>
-    <method selector="fileURLWithPath:isDirectory:">
+    <method class_method="true" selector="fileURLWithPath:isDirectory:">
       <arg name="path"></arg>
       <arg name="isDir"></arg>
       <retval></retval>
@@ -11540,11 +11540,11 @@
       <arg name="memoryCapacity"></arg>
       <retval></retval>
     </method>
-    <method selector="setSharedURLCache:">
+    <method class_method="true" selector="setSharedURLCache:">
       <arg name="cache"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedURLCache">
+    <method class_method="true" selector="sharedURLCache">
       <retval></retval>
     </method>
     <method selector="storeCachedResponse:forRequest:">
@@ -11554,14 +11554,14 @@
     </method>
   </class>
   <class name="NSURLConnection">
-    <method selector="canHandleRequest:">
+    <method class_method="true" selector="canHandleRequest:">
       <arg name="request"></arg>
       <retval></retval>
     </method>
     <method selector="cancel">
       <retval></retval>
     </method>
-    <method selector="connectionWithRequest:delegate:">
+    <method class_method="true" selector="connectionWithRequest:delegate:">
       <arg name="request"></arg>
       <arg name="delegate"></arg>
       <retval></retval>
@@ -11582,7 +11582,7 @@
       <arg name="mode"></arg>
       <retval></retval>
     </method>
-    <method selector="sendSynchronousRequest:returningResponse:error:">
+    <method class_method="true" selector="sendSynchronousRequest:returningResponse:error:">
       <arg name="request"></arg>
       <arg name="response"></arg>
       <arg name="error"></arg>
@@ -11598,7 +11598,7 @@
     </method>
   </class>
   <class name="NSURLCredential">
-    <method selector="credentialWithUser:password:persistence:">
+    <method class_method="true" selector="credentialWithUser:password:persistence:">
       <arg name="user"></arg>
       <arg name="password"></arg>
       <arg name="persistence"></arg>
@@ -11650,12 +11650,12 @@
       <arg name="space"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedCredentialStorage">
+    <method class_method="true" selector="sharedCredentialStorage">
       <retval></retval>
     </method>
   </class>
   <class name="NSURLDownload" swt_gen="mixed">
-    <method selector="canResumeDownloadDecodedWithEncodingMIMEType:">
+    <method class_method="true" selector="canResumeDownloadDecodedWithEncodingMIMEType:">
       <arg name="MIMEType"></arg>
       <retval></retval>
     </method>
@@ -11693,7 +11693,7 @@
     </method>
   </class>
   <class name="NSURLHandle">
-    <method selector="URLHandleClassForURL:">
+    <method class_method="true" selector="URLHandleClassForURL:">
       <arg name="anURL"></arg>
       <retval></retval>
     </method>
@@ -11711,11 +11711,11 @@
     <method selector="beginLoadInBackground">
       <retval></retval>
     </method>
-    <method selector="cachedHandleForURL:">
+    <method class_method="true" selector="cachedHandleForURL:">
       <arg name="anURL"></arg>
       <retval></retval>
     </method>
-    <method selector="canInitWithURL:">
+    <method class_method="true" selector="canInitWithURL:">
       <arg name="anURL"></arg>
       <retval></retval>
     </method>
@@ -11758,7 +11758,7 @@
       <arg name="propertyKey"></arg>
       <retval></retval>
     </method>
-    <method selector="registerURLHandleClass:">
+    <method class_method="true" selector="registerURLHandleClass:">
       <arg name="anURLHandleSubclass"></arg>
       <retval></retval>
     </method>
@@ -11828,11 +11828,11 @@
     <method selector="cachedResponse">
       <retval></retval>
     </method>
-    <method selector="canInitWithRequest:">
+    <method class_method="true" selector="canInitWithRequest:">
       <arg name="request"></arg>
       <retval></retval>
     </method>
-    <method selector="canonicalRequestForRequest:">
+    <method class_method="true" selector="canonicalRequestForRequest:">
       <arg name="request"></arg>
       <retval></retval>
     </method>
@@ -11845,16 +11845,16 @@
       <arg name="client"></arg>
       <retval></retval>
     </method>
-    <method selector="propertyForKey:inRequest:">
+    <method class_method="true" selector="propertyForKey:inRequest:">
       <arg name="key"></arg>
       <arg name="request"></arg>
       <retval></retval>
     </method>
-    <method selector="registerClass:">
+    <method class_method="true" selector="registerClass:">
       <arg name="protocolClass"></arg>
       <retval></retval>
     </method>
-    <method selector="removePropertyForKey:inRequest:">
+    <method class_method="true" selector="removePropertyForKey:inRequest:">
       <arg name="key"></arg>
       <arg name="request"></arg>
       <retval></retval>
@@ -11862,12 +11862,12 @@
     <method selector="request">
       <retval></retval>
     </method>
-    <method selector="requestIsCacheEquivalent:toRequest:">
+    <method class_method="true" selector="requestIsCacheEquivalent:toRequest:">
       <arg name="a"></arg>
       <arg name="b"></arg>
       <retval></retval>
     </method>
-    <method selector="setProperty:forKey:inRequest:">
+    <method class_method="true" selector="setProperty:forKey:inRequest:">
       <arg name="value"></arg>
       <arg name="key"></arg>
       <arg name="request"></arg>
@@ -11879,7 +11879,7 @@
     <method selector="stopLoading">
       <retval></retval>
     </method>
-    <method selector="unregisterClass:">
+    <method class_method="true" selector="unregisterClass:">
       <arg name="protocolClass"></arg>
       <retval></retval>
     </method>
@@ -11919,11 +11919,11 @@
     <method selector="mainDocumentURL">
       <retval></retval>
     </method>
-    <method selector="requestWithURL:" swt_gen="true">
+    <method class_method="true" selector="requestWithURL:" swt_gen="true">
       <arg name="URL" swt_gen="true"></arg>
       <retval swt_gen="true" swt_java_type="NSURLRequest"></retval>
     </method>
-    <method selector="requestWithURL:cachePolicy:timeoutInterval:">
+    <method class_method="true" selector="requestWithURL:cachePolicy:timeoutInterval:">
       <arg name="URL"></arg>
       <arg name="cachePolicy"></arg>
       <arg name="timeoutInterval"></arg>
@@ -11962,7 +11962,7 @@
     </method>
   </class>
   <class name="NSUnarchiver" swt_superclass="NSCoder">
-    <method selector="classNameDecodedForArchiveClassName:">
+    <method class_method="true" selector="classNameDecodedForArchiveClassName:">
       <arg name="inArchiveName"></arg>
       <retval></retval>
     </method>
@@ -11975,7 +11975,7 @@
       <arg name="trueName"></arg>
       <retval></retval>
     </method>
-    <method selector="decodeClassName:asClassName:">
+    <method class_method="true" selector="decodeClassName:asClassName:">
       <arg name="inArchiveName"></arg>
       <arg name="trueName"></arg>
       <retval></retval>
@@ -12002,11 +12002,11 @@
     <method selector="systemVersion">
       <retval></retval>
     </method>
-    <method selector="unarchiveObjectWithData:">
+    <method class_method="true" selector="unarchiveObjectWithData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="unarchiveObjectWithFile:">
+    <method class_method="true" selector="unarchiveObjectWithFile:">
       <arg name="path"></arg>
       <retval></retval>
     </method>
@@ -12213,7 +12213,7 @@
       <arg name="domainName"></arg>
       <retval></retval>
     </method>
-    <method selector="resetStandardUserDefaults">
+    <method class_method="true" selector="resetStandardUserDefaults">
       <retval></retval>
     </method>
     <method selector="setBool:forKey:">
@@ -12251,7 +12251,7 @@
       <arg name="domainName"></arg>
       <retval></retval>
     </method>
-    <method selector="standardUserDefaults">
+    <method class_method="true" selector="standardUserDefaults">
       <retval></retval>
     </method>
     <method selector="stringArrayForKey:">
@@ -12308,50 +12308,50 @@
     <method selector="sizeValue" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="value:withObjCType:">
+    <method class_method="true" selector="value:withObjCType:">
       <arg name="value"></arg>
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="valueWithBytes:objCType:">
+    <method class_method="true" selector="valueWithBytes:objCType:">
       <arg name="value"></arg>
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="valueWithNonretainedObject:">
+    <method class_method="true" selector="valueWithNonretainedObject:">
       <arg name="anObject"></arg>
       <retval></retval>
     </method>
-    <method selector="valueWithPoint:" swt_gen="true">
+    <method class_method="true" selector="valueWithPoint:" swt_gen="true">
       <arg name="point" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="valueWithPointer:">
+    <method class_method="true" selector="valueWithPointer:">
       <arg name="pointer"></arg>
       <retval></retval>
     </method>
-    <method selector="valueWithRange:" swt_gen="true">
+    <method class_method="true" selector="valueWithRange:" swt_gen="true">
       <arg name="range" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="valueWithRect:" swt_gen="true">
+    <method class_method="true" selector="valueWithRect:" swt_gen="true">
       <arg name="rect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="valueWithSize:" swt_gen="true">
+    <method class_method="true" selector="valueWithSize:" swt_gen="true">
       <arg name="size" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="NSValueTransformer">
-    <method selector="allowsReverseTransformation">
+    <method class_method="true" selector="allowsReverseTransformation">
       <retval></retval>
     </method>
     <method selector="reverseTransformedValue:">
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="setValueTransformer:forName:">
+    <method class_method="true" selector="setValueTransformer:forName:">
       <arg name="transformer"></arg>
       <arg name="name"></arg>
       <retval></retval>
@@ -12360,14 +12360,14 @@
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="transformedValueClass">
+    <method class_method="true" selector="transformedValueClass">
       <retval></retval>
     </method>
-    <method selector="valueTransformerForName:">
+    <method class_method="true" selector="valueTransformerForName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="valueTransformerNames">
+    <method class_method="true" selector="valueTransformerNames">
       <retval></retval>
     </method>
   </class>
@@ -12459,7 +12459,7 @@
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="predefinedEntityDeclarationForName:">
+    <method class_method="true" selector="predefinedEntityDeclarationForName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -12614,7 +12614,7 @@
       <arg name="node"></arg>
       <retval></retval>
     </method>
-    <method selector="replacementClassForClass:">
+    <method class_method="true" selector="replacementClassForClass:">
       <arg name="cls"></arg>
       <retval></retval>
     </method>
@@ -12778,7 +12778,7 @@
     </method>
   </class>
   <class name="NSXMLNode">
-    <method selector="DTDNodeWithXMLString:">
+    <method class_method="true" selector="DTDNodeWithXMLString:">
       <arg name="string"></arg>
       <retval></retval>
     </method>
@@ -12795,13 +12795,13 @@
     <method selector="XPath">
       <retval></retval>
     </method>
-    <method selector="attributeWithName:URI:stringValue:">
+    <method class_method="true" selector="attributeWithName:URI:stringValue:">
       <arg name="name"></arg>
       <arg name="URI"></arg>
       <arg name="stringValue"></arg>
       <retval></retval>
     </method>
-    <method selector="attributeWithName:stringValue:">
+    <method class_method="true" selector="attributeWithName:stringValue:">
       <arg name="name"></arg>
       <arg name="stringValue"></arg>
       <retval></retval>
@@ -12820,7 +12820,7 @@
     <method selector="children">
       <retval></retval>
     </method>
-    <method selector="commentWithStringValue:">
+    <method class_method="true" selector="commentWithStringValue:">
       <arg name="stringValue"></arg>
       <retval></retval>
     </method>
@@ -12830,29 +12830,29 @@
     <method selector="detach">
       <retval></retval>
     </method>
-    <method selector="document">
+    <method class_method="true" selector="document">
       <retval></retval>
     </method>
-    <method selector="documentWithRootElement:">
+    <method class_method="true" selector="documentWithRootElement:">
       <arg name="element"></arg>
       <retval></retval>
     </method>
-    <method selector="elementWithName:">
+    <method class_method="true" selector="elementWithName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="elementWithName:URI:">
+    <method class_method="true" selector="elementWithName:URI:">
       <arg name="name"></arg>
       <arg name="URI"></arg>
       <retval></retval>
     </method>
-    <method selector="elementWithName:children:attributes:">
+    <method class_method="true" selector="elementWithName:children:attributes:">
       <arg name="name"></arg>
       <arg name="children"></arg>
       <arg name="attributes"></arg>
       <retval></retval>
     </method>
-    <method selector="elementWithName:stringValue:">
+    <method class_method="true" selector="elementWithName:stringValue:">
       <arg name="name"></arg>
       <arg name="string"></arg>
       <retval></retval>
@@ -12878,14 +12878,14 @@
     <method selector="localName">
       <retval></retval>
     </method>
-    <method selector="localNameForName:">
+    <method class_method="true" selector="localNameForName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
     <method selector="name">
       <retval></retval>
     </method>
-    <method selector="namespaceWithName:stringValue:">
+    <method class_method="true" selector="namespaceWithName:stringValue:">
       <arg name="name"></arg>
       <arg name="stringValue"></arg>
       <retval></retval>
@@ -12918,14 +12918,14 @@
     <method selector="parent">
       <retval></retval>
     </method>
-    <method selector="predefinedNamespaceForPrefix:">
+    <method class_method="true" selector="predefinedNamespaceForPrefix:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
     <method selector="prefix">
       <retval></retval>
     </method>
-    <method selector="prefixForName:">
+    <method class_method="true" selector="prefixForName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -12935,7 +12935,7 @@
     <method selector="previousSibling">
       <retval></retval>
     </method>
-    <method selector="processingInstructionWithName:stringValue:">
+    <method class_method="true" selector="processingInstructionWithName:stringValue:">
       <arg name="name"></arg>
       <arg name="stringValue"></arg>
       <retval></retval>
@@ -12967,7 +12967,7 @@
     <method selector="stringValue">
       <retval></retval>
     </method>
-    <method selector="textWithStringValue:">
+    <method class_method="true" selector="textWithStringValue:">
       <arg name="stringValue"></arg>
       <retval></retval>
     </method>
@@ -13054,10 +13054,10 @@
     <method selector="replacementObjectForCoder:" swt_gen="true">
       <arg name="aCoder" swt_gen="true"></arg>
     </method>
-    <method selector="setVersion:" swt_gen="true">
+    <method class_method="true" selector="setVersion:" swt_gen="true">
       <arg name="aVersion" swt_gen="true"></arg>
     </method>
-    <method selector="version" swt_gen="true"></method>
+    <method class_method="true" selector="version" swt_gen="true"></method>
   </informal_protocol>
   <informal_protocol name="NSComparisonMethods" swt_gen="true">
     <method selector="doesContain:" swt_gen="true">
@@ -13119,10 +13119,10 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSDelayedPerforming" swt_gen="true">
-    <method selector="cancelPreviousPerformRequestsWithTarget:" swt_gen="true">
+    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:" swt_gen="true">
       <arg name="aTarget" swt_gen="true"></arg>
     </method>
-    <method selector="cancelPreviousPerformRequestsWithTarget:selector:object:" swt_gen="true">
+    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:selector:object:" swt_gen="true">
       <arg name="aTarget" swt_gen="true"></arg>
       <arg name="aSelector" swt_gen="true"></arg>
       <arg name="anArgument" swt_gen="true"></arg>
@@ -13168,19 +13168,19 @@
     <method selector="unableToSetNilForKey:" swt_gen="true">
       <arg name="key" swt_gen="true"></arg>
     </method>
-    <method selector="useStoredAccessor" swt_gen="true"></method>
+    <method class_method="true" selector="useStoredAccessor" swt_gen="true"></method>
     <method selector="valuesForKeys:" swt_gen="true">
       <arg name="keys" swt_gen="true"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="NSDeprecatedKeyValueObservingCustomization" swt_gen="true">
-    <method selector="setKeys:triggerChangeNotificationsForDependentKey:" swt_gen="true">
+    <method class_method="true" selector="setKeys:triggerChangeNotificationsForDependentKey:" swt_gen="true">
       <arg name="keys" swt_gen="true"></arg>
       <arg name="dependentKey" swt_gen="true"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="NSDeprecatedMethods" swt_gen="true">
-    <method selector="poseAsClass:" swt_gen="true">
+    <method class_method="true" selector="poseAsClass:" swt_gen="true">
       <arg name="aClass" swt_gen="true"></arg>
     </method>
   </informal_protocol>
@@ -13254,7 +13254,7 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSKeyValueCoding" swt_gen="true">
-    <method selector="accessInstanceVariablesDirectly" swt_gen="true"></method>
+    <method class_method="true" selector="accessInstanceVariablesDirectly" swt_gen="true"></method>
     <method selector="dictionaryWithValuesForKeys:" swt_gen="true">
       <arg name="keys" swt_gen="true"></arg>
     </method>
@@ -13357,10 +13357,10 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSKeyValueObservingCustomization" swt_gen="true">
-    <method selector="automaticallyNotifiesObserversForKey:" swt_gen="true">
+    <method class_method="true" selector="automaticallyNotifiesObserversForKey:" swt_gen="true">
       <arg name="key" swt_gen="true"></arg>
     </method>
-    <method selector="keyPathsForValuesAffectingValueForKey:" swt_gen="true">
+    <method class_method="true" selector="keyPathsForValuesAffectingValueForKey:" swt_gen="true">
       <arg name="key" swt_gen="true"></arg>
     </method>
     <method selector="observationInfo" swt_gen="true"></method>
@@ -13390,7 +13390,7 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSKeyedArchiverObjectSubstitution" swt_gen="true">
-    <method selector="classFallbacksForKeyedArchiver" swt_gen="true"></method>
+    <method class_method="true" selector="classFallbacksForKeyedArchiver" swt_gen="true"></method>
     <method selector="classForKeyedArchiver" swt_gen="true"></method>
     <method selector="replacementObjectForKeyedArchiver:" swt_gen="true">
       <arg name="archiver" swt_gen="true"></arg>
@@ -13419,7 +13419,7 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSKeyedUnarchiverObjectSubstitution" swt_gen="true">
-    <method selector="classForKeyedUnarchiver" swt_gen="true"></method>
+    <method class_method="true" selector="classForKeyedUnarchiver" swt_gen="true"></method>
   </informal_protocol>
   <informal_protocol name="NSMachPortDelegateMethods" swt_gen="true">
     <method selector="handleMachMessage:" swt_gen="true">
