@@ -8718,8 +8718,8 @@
       <arg name="eventCode"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="superclass" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method class_method="true" selector="superclass">
+      <retval></retval>
     </method>
     <method selector="superclass">
       <retval></retval>

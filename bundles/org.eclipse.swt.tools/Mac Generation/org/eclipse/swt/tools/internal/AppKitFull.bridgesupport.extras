@@ -2301,7 +2301,7 @@
       <arg name="remainingRect"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedTypesetter">
+    <method class_method="true" selector="sharedTypesetter">
       <retval></retval>
     </method>
   </class>
@@ -2427,7 +2427,7 @@
       <arg name="transformStruct" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="transform" swt_gen="true">
+    <method class_method="true" selector="transform" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="transformBezierPath:">
@@ -2462,11 +2462,11 @@
     <method selector="alertStyle">
       <retval></retval>
     </method>
-    <method selector="alertWithError:">
+    <method class_method="true" selector="alertWithError:">
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method selector="alertWithMessageText:defaultButton:alternateButton:otherButton:informativeTextWithFormat:" swt_gen="true">
+    <method class_method="true" selector="alertWithMessageText:defaultButton:alternateButton:otherButton:informativeTextWithFormat:" swt_gen="true">
       <arg name="message" swt_gen="true"></arg>
       <arg name="defaultButton" swt_gen="true"></arg>
       <arg name="alternateButton" swt_gen="true"></arg>
@@ -2650,16 +2650,16 @@
     </method>
   </class>
   <class name="NSAnimationContext">
-    <method selector="beginGrouping">
+    <method class_method="true" selector="beginGrouping">
       <retval></retval>
     </method>
-    <method selector="currentContext">
+    <method class_method="true" selector="currentContext">
       <retval></retval>
     </method>
     <method selector="duration">
       <retval></retval>
     </method>
-    <method selector="endGrouping">
+    <method class_method="true" selector="endGrouping">
       <retval></retval>
     </method>
     <method selector="setDuration:">
@@ -2736,7 +2736,7 @@
     <method selector="delegate">
       <retval></retval>
     </method>
-    <method selector="detachDrawingThread:toTarget:withObject:">
+    <method class_method="true" selector="detachDrawingThread:toTarget:withObject:">
       <arg name="selector"></arg>
       <arg name="target"></arg>
       <arg name="argument"></arg>
@@ -2930,7 +2930,7 @@
       <arg name="needUpdate"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedApplication" swt_gen="true">
+    <method class_method="true" selector="sharedApplication" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="showHelp:">
@@ -3209,7 +3209,7 @@
       <arg name="rangeLimit"></arg>
       <retval></retval>
     </method>
-    <method selector="attributedStringWithAttachment:">
+    <method class_method="true" selector="attributedStringWithAttachment:">
       <arg name="attachment"></arg>
       <retval></retval>
     </method>
@@ -3400,22 +3400,22 @@
     <method selector="string">
       <retval></retval>
     </method>
-    <method selector="textFileTypes">
+    <method class_method="true" selector="textFileTypes">
       <retval></retval>
     </method>
-    <method selector="textPasteboardTypes">
+    <method class_method="true" selector="textPasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="textTypes">
+    <method class_method="true" selector="textTypes">
       <retval></retval>
     </method>
-    <method selector="textUnfilteredFileTypes">
+    <method class_method="true" selector="textUnfilteredFileTypes">
       <retval></retval>
     </method>
-    <method selector="textUnfilteredPasteboardTypes">
+    <method class_method="true" selector="textUnfilteredPasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="textUnfilteredTypes">
+    <method class_method="true" selector="textUnfilteredTypes">
       <retval></retval>
     </method>
   </class>
@@ -3482,7 +3482,7 @@
       <arg name="yRadius" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="bezierPath" swt_gen="true">
+    <method class_method="true" selector="bezierPath" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="bezierPathByFlatteningPath" swt_gen="true">
@@ -3491,15 +3491,15 @@
     <method selector="bezierPathByReversingPath">
       <retval></retval>
     </method>
-    <method selector="bezierPathWithOvalInRect:">
+    <method class_method="true" selector="bezierPathWithOvalInRect:">
       <arg name="rect"></arg>
       <retval></retval>
     </method>
-    <method selector="bezierPathWithRect:" swt_gen="true">
+    <method class_method="true" selector="bezierPathWithRect:" swt_gen="true">
       <arg name="rect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="bezierPathWithRoundedRect:xRadius:yRadius:">
+    <method class_method="true" selector="bezierPathWithRoundedRect:xRadius:yRadius:">
       <arg name="rect"></arg>
       <arg name="xRadius"></arg>
       <arg name="yRadius"></arg>
@@ -3511,7 +3511,7 @@
     <method selector="cachesBezierPath">
       <retval></retval>
     </method>
-    <method selector="clipRect:">
+    <method class_method="true" selector="clipRect:">
       <arg name="rect"></arg>
       <retval></retval>
     </method>
@@ -3534,25 +3534,25 @@
       <arg name="controlPoint2" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="defaultFlatness" swt_gen="true">
+    <method class_method="true" selector="defaultFlatness" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="defaultLineCapStyle">
+    <method class_method="true" selector="defaultLineCapStyle">
       <retval></retval>
     </method>
-    <method selector="defaultLineJoinStyle">
+    <method class_method="true" selector="defaultLineJoinStyle">
       <retval></retval>
     </method>
-    <method selector="defaultLineWidth">
+    <method class_method="true" selector="defaultLineWidth">
       <retval></retval>
     </method>
-    <method selector="defaultMiterLimit">
+    <method class_method="true" selector="defaultMiterLimit">
       <retval></retval>
     </method>
-    <method selector="defaultWindingRule">
+    <method class_method="true" selector="defaultWindingRule">
       <retval></retval>
     </method>
-    <method selector="drawPackedGlyphs:atPoint:">
+    <method class_method="true" selector="drawPackedGlyphs:atPoint:">
       <arg name="packedGlyphs"></arg>
       <arg name="point"></arg>
       <retval></retval>
@@ -3572,7 +3572,7 @@
     <method selector="fill" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="fillRect:" swt_gen="true">
+    <method class_method="true" selector="fillRect:" swt_gen="true">
       <arg name="rect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -3637,27 +3637,27 @@
     <method selector="setClip" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setDefaultFlatness:" swt_gen="true">
+    <method class_method="true" selector="setDefaultFlatness:" swt_gen="true">
       <arg name="flatness" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setDefaultLineCapStyle:">
+    <method class_method="true" selector="setDefaultLineCapStyle:">
       <arg name="lineCapStyle"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultLineJoinStyle:">
+    <method class_method="true" selector="setDefaultLineJoinStyle:">
       <arg name="lineJoinStyle"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultLineWidth:">
+    <method class_method="true" selector="setDefaultLineWidth:">
       <arg name="lineWidth"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultMiterLimit:">
+    <method class_method="true" selector="setDefaultMiterLimit:">
       <arg name="limit"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultWindingRule:">
+    <method class_method="true" selector="setDefaultWindingRule:">
       <arg name="windingRule"></arg>
       <retval></retval>
     </method>
@@ -3694,12 +3694,12 @@
     <method selector="stroke" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="strokeLineFromPoint:toPoint:">
+    <method class_method="true" selector="strokeLineFromPoint:toPoint:">
       <arg name="point1"></arg>
       <arg name="point2"></arg>
       <retval></retval>
     </method>
-    <method selector="strokeRect:" swt_gen="true">
+    <method class_method="true" selector="strokeRect:" swt_gen="true">
       <arg name="rect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -3718,11 +3718,11 @@
     <method selector="TIFFRepresentation">
       <retval></retval>
     </method>
-    <method selector="TIFFRepresentationOfImageRepsInArray:">
+    <method class_method="true" selector="TIFFRepresentationOfImageRepsInArray:">
       <arg name="array"></arg>
       <retval></retval>
     </method>
-    <method selector="TIFFRepresentationOfImageRepsInArray:usingCompression:factor:">
+    <method class_method="true" selector="TIFFRepresentationOfImageRepsInArray:usingCompression:factor:">
       <arg name="array"></arg>
       <arg name="comp"></arg>
       <arg name="factor"></arg>
@@ -3779,16 +3779,16 @@
       <arg name="y"></arg>
       <retval></retval>
     </method>
-    <method selector="getTIFFCompressionTypes:count:">
+    <method class_method="true" selector="getTIFFCompressionTypes:count:">
       <arg name="list"></arg>
       <arg name="numTypes"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepWithData:">
+    <method class_method="true" selector="imageRepWithData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepsWithData:">
+    <method class_method="true" selector="imageRepsWithData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
@@ -3846,14 +3846,14 @@
     <method selector="isPlanar" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="localizedNameForTIFFCompressionType:">
+    <method class_method="true" selector="localizedNameForTIFFCompressionType:">
       <arg name="compression"></arg>
       <retval></retval>
     </method>
     <method selector="numberOfPlanes">
       <retval></retval>
     </method>
-    <method selector="representationOfImageRepsInArray:usingType:properties:">
+    <method class_method="true" selector="representationOfImageRepsInArray:usingType:properties:">
       <arg name="imageReps"></arg>
       <arg name="storageType"></arg>
       <arg name="properties"></arg>
@@ -4028,7 +4028,7 @@
       <arg name="event"></arg>
       <retval></retval>
     </method>
-    <method selector="cellClass">
+    <method class_method="true" selector="cellClass">
       <retval></retval>
     </method>
     <method selector="cellPrototype">
@@ -4152,7 +4152,7 @@
       <arg name="column"></arg>
       <retval></retval>
     </method>
-    <method selector="removeSavedColumnsWithAutosaveName:">
+    <method class_method="true" selector="removeSavedColumnsWithAutosaveName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -4366,14 +4366,14 @@
     <method selector="alternateImage">
       <retval></retval>
     </method>
-    <method selector="branchImage">
+    <method class_method="true" selector="branchImage">
       <retval></retval>
     </method>
     <method selector="highlightColorInView:">
       <arg name="controlView"></arg>
       <retval></retval>
     </method>
-    <method selector="highlightedBranchImage">
+    <method class_method="true" selector="highlightedBranchImage">
       <retval></retval>
     </method>
     <method selector="image">
@@ -4413,19 +4413,19 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="loadNibFile:externalNameTable:withZone:" swt_gen="true">
-      <arg name="fileName" swt_gen="true"></arg>
-      <arg name="context" swt_gen="true"></arg>
-      <arg name="zone" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
-    </method>
-    <method selector="loadNibFile:externalNameTable:withZone:" swt_gen="true">
+    <method class_method="true" selector="loadNibFile:externalNameTable:withZone:" swt_gen="true">
       <arg name="fileName"></arg>
       <arg name="context"></arg>
       <arg name="zone"></arg>
       <retval></retval>
     </method>
-    <method selector="loadNibNamed:owner:">
+    <method class_method="true" selector="loadNibFile:externalNameTable:withZone:">
+      <arg name="fileName"></arg>
+      <arg name="context"></arg>
+      <arg name="zone"></arg>
+      <retval></retval>
+    </method>
+    <method class_method="true" selector="loadNibNamed:owner:">
       <arg name="nibName"></arg>
       <arg name="owner"></arg>
       <retval></retval>
@@ -4794,7 +4794,7 @@
     <method selector="CIImage">
       <retval></retval>
     </method>
-    <method selector="imageRepWithCIImage:">
+    <method class_method="true" selector="imageRepWithCIImage:">
       <arg name="image"></arg>
       <retval></retval>
     </method>
@@ -4885,10 +4885,10 @@
     <method selector="controlView">
       <retval></retval>
     </method>
-    <method selector="defaultFocusRingType">
+    <method class_method="true" selector="defaultFocusRingType">
       <retval></retval>
     </method>
-    <method selector="defaultMenu">
+    <method class_method="true" selector="defaultMenu">
       <retval></retval>
     </method>
     <method selector="doubleValue">
@@ -5062,7 +5062,7 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="prefersTrackingUntilMouseUp">
+    <method class_method="true" selector="prefersTrackingUntilMouseUp">
       <retval></retval>
     </method>
     <method selector="refusesFirstResponder">
@@ -5549,13 +5549,13 @@
     <method selector="alphaComponent" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="alternateSelectedControlColor">
+    <method class_method="true" selector="alternateSelectedControlColor">
       <retval></retval>
     </method>
-    <method selector="alternateSelectedControlTextColor">
+    <method class_method="true" selector="alternateSelectedControlTextColor">
       <retval></retval>
     </method>
-    <method selector="blackColor" swt_gen="true">
+    <method class_method="true" selector="blackColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="blackComponent">
@@ -5566,7 +5566,7 @@
       <arg name="color"></arg>
       <retval></retval>
     </method>
-    <method selector="blueColor">
+    <method class_method="true" selector="blueColor">
       <retval></retval>
     </method>
     <method selector="blueComponent" swt_gen="true">
@@ -5575,20 +5575,20 @@
     <method selector="brightnessComponent">
       <retval></retval>
     </method>
-    <method selector="brownColor">
+    <method class_method="true" selector="brownColor">
       <retval></retval>
     </method>
     <method selector="catalogNameComponent">
       <retval></retval>
     </method>
-    <method selector="clearColor" swt_gen="true">
+    <method class_method="true" selector="clearColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="colorForControlTint:">
+    <method class_method="true" selector="colorForControlTint:">
       <arg name="controlTint"></arg>
       <retval></retval>
     </method>
-    <method selector="colorFromPasteboard:">
+    <method class_method="true" selector="colorFromPasteboard:">
       <arg name="pasteBoard"></arg>
       <retval></retval>
     </method>
@@ -5618,41 +5618,41 @@
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithCIColor:">
+    <method class_method="true" selector="colorWithCIColor:">
       <arg name="color"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithCalibratedHue:saturation:brightness:alpha:">
+    <method class_method="true" selector="colorWithCalibratedHue:saturation:brightness:alpha:">
       <arg name="hue"></arg>
       <arg name="saturation"></arg>
       <arg name="brightness"></arg>
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithCalibratedRed:green:blue:alpha:">
+    <method class_method="true" selector="colorWithCalibratedRed:green:blue:alpha:">
       <arg name="red"></arg>
       <arg name="green"></arg>
       <arg name="blue"></arg>
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithCalibratedWhite:alpha:">
+    <method class_method="true" selector="colorWithCalibratedWhite:alpha:">
       <arg name="white"></arg>
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithCatalogName:colorName:">
+    <method class_method="true" selector="colorWithCatalogName:colorName:">
       <arg name="listName"></arg>
       <arg name="colorName"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithColorSpace:components:count:">
+    <method class_method="true" selector="colorWithColorSpace:components:count:">
       <arg name="space"></arg>
       <arg name="components"></arg>
       <arg name="numberOfComponents"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithDeviceCyan:magenta:yellow:black:alpha:">
+    <method class_method="true" selector="colorWithDeviceCyan:magenta:yellow:black:alpha:">
       <arg name="cyan"></arg>
       <arg name="magenta"></arg>
       <arg name="yellow"></arg>
@@ -5660,66 +5660,66 @@
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithDeviceHue:saturation:brightness:alpha:">
+    <method class_method="true" selector="colorWithDeviceHue:saturation:brightness:alpha:">
       <arg name="hue"></arg>
       <arg name="saturation"></arg>
       <arg name="brightness"></arg>
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithDeviceRed:green:blue:alpha:" swt_gen="true">
+    <method class_method="true" selector="colorWithDeviceRed:green:blue:alpha:" swt_gen="true">
       <arg name="red" swt_gen="true"></arg>
       <arg name="green" swt_gen="true"></arg>
       <arg name="blue" swt_gen="true"></arg>
       <arg name="alpha" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="colorWithDeviceWhite:alpha:">
+    <method class_method="true" selector="colorWithDeviceWhite:alpha:">
       <arg name="white"></arg>
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="colorWithPatternImage:" swt_gen="true">
+    <method class_method="true" selector="colorWithPatternImage:" swt_gen="true">
       <arg name="image" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="controlAlternatingRowBackgroundColors">
+    <method class_method="true" selector="controlAlternatingRowBackgroundColors">
       <retval></retval>
     </method>
-    <method selector="controlBackgroundColor">
+    <method class_method="true" selector="controlBackgroundColor">
       <retval></retval>
     </method>
-    <method selector="controlColor">
+    <method class_method="true" selector="controlColor">
       <retval></retval>
     </method>
-    <method selector="controlDarkShadowColor" swt_gen="true">
+    <method class_method="true" selector="controlDarkShadowColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="controlHighlightColor" swt_gen="true">
+    <method class_method="true" selector="controlHighlightColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="controlLightHighlightColor" swt_gen="true">
+    <method class_method="true" selector="controlLightHighlightColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="controlShadowColor" swt_gen="true">
+    <method class_method="true" selector="controlShadowColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="controlTextColor" swt_gen="true">
+    <method class_method="true" selector="controlTextColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="currentControlTint">
+    <method class_method="true" selector="currentControlTint">
       <retval></retval>
     </method>
-    <method selector="cyanColor">
+    <method class_method="true" selector="cyanColor">
       <retval></retval>
     </method>
     <method selector="cyanComponent">
       <retval></retval>
     </method>
-    <method selector="darkGrayColor">
+    <method class_method="true" selector="darkGrayColor">
       <retval></retval>
     </method>
-    <method selector="disabledControlTextColor" swt_gen="true">
+    <method class_method="true" selector="disabledControlTextColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="drawSwatchInRect:">
@@ -5757,25 +5757,25 @@
       <arg name="alpha"></arg>
       <retval></retval>
     </method>
-    <method selector="grayColor">
+    <method class_method="true" selector="grayColor">
       <retval></retval>
     </method>
-    <method selector="greenColor">
+    <method class_method="true" selector="greenColor">
       <retval></retval>
     </method>
     <method selector="greenComponent" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="gridColor">
+    <method class_method="true" selector="gridColor">
       <retval></retval>
     </method>
-    <method selector="headerColor">
+    <method class_method="true" selector="headerColor">
       <retval></retval>
     </method>
-    <method selector="headerTextColor">
+    <method class_method="true" selector="headerTextColor">
       <retval></retval>
     </method>
-    <method selector="highlightColor">
+    <method class_method="true" selector="highlightColor">
       <retval></retval>
     </method>
     <method selector="highlightWithLevel:">
@@ -5785,16 +5785,16 @@
     <method selector="hueComponent">
       <retval></retval>
     </method>
-    <method selector="ignoresAlpha">
+    <method class_method="true" selector="ignoresAlpha">
       <retval></retval>
     </method>
-    <method selector="keyboardFocusIndicatorColor">
+    <method class_method="true" selector="keyboardFocusIndicatorColor">
       <retval></retval>
     </method>
-    <method selector="knobColor">
+    <method class_method="true" selector="knobColor">
       <retval></retval>
     </method>
-    <method selector="lightGrayColor">
+    <method class_method="true" selector="lightGrayColor">
       <retval></retval>
     </method>
     <method selector="localizedCatalogNameComponent">
@@ -5803,7 +5803,7 @@
     <method selector="localizedColorNameComponent">
       <retval></retval>
     </method>
-    <method selector="magentaColor">
+    <method class_method="true" selector="magentaColor">
       <retval></retval>
     </method>
     <method selector="magentaComponent">
@@ -5812,16 +5812,16 @@
     <method selector="numberOfComponents" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="orangeColor">
+    <method class_method="true" selector="orangeColor">
       <retval></retval>
     </method>
     <method selector="patternImage">
       <retval></retval>
     </method>
-    <method selector="purpleColor">
+    <method class_method="true" selector="purpleColor">
       <retval></retval>
     </method>
-    <method selector="redColor">
+    <method class_method="true" selector="redColor">
       <retval></retval>
     </method>
     <method selector="redComponent" swt_gen="true">
@@ -5830,31 +5830,31 @@
     <method selector="saturationComponent">
       <retval></retval>
     </method>
-    <method selector="scrollBarColor">
+    <method class_method="true" selector="scrollBarColor">
       <retval></retval>
     </method>
-    <method selector="secondarySelectedControlColor" swt_gen="true">
+    <method class_method="true" selector="secondarySelectedControlColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="selectedControlColor">
+    <method class_method="true" selector="selectedControlColor">
       <retval></retval>
     </method>
-    <method selector="selectedControlTextColor">
+    <method class_method="true" selector="selectedControlTextColor">
       <retval></retval>
     </method>
-    <method selector="selectedKnobColor">
+    <method class_method="true" selector="selectedKnobColor">
       <retval></retval>
     </method>
-    <method selector="selectedMenuItemColor">
+    <method class_method="true" selector="selectedMenuItemColor">
       <retval></retval>
     </method>
-    <method selector="selectedMenuItemTextColor">
+    <method class_method="true" selector="selectedMenuItemTextColor">
       <retval></retval>
     </method>
-    <method selector="selectedTextBackgroundColor" swt_gen="true">
+    <method class_method="true" selector="selectedTextBackgroundColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="selectedTextColor" swt_gen="true">
+    <method class_method="true" selector="selectedTextColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="set" swt_gen="true">
@@ -5863,46 +5863,46 @@
     <method selector="setFill" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setIgnoresAlpha:">
+    <method class_method="true" selector="setIgnoresAlpha:">
       <arg name="flag"></arg>
       <retval></retval>
     </method>
     <method selector="setStroke" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="shadowColor">
+    <method class_method="true" selector="shadowColor">
       <retval></retval>
     </method>
     <method selector="shadowWithLevel:">
       <arg name="val"></arg>
       <retval></retval>
     </method>
-    <method selector="textBackgroundColor" swt_gen="true">
+    <method class_method="true" selector="textBackgroundColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="textColor" swt_gen="true">
+    <method class_method="true" selector="textColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="whiteColor">
+    <method class_method="true" selector="whiteColor">
       <retval></retval>
     </method>
     <method selector="whiteComponent">
       <retval></retval>
     </method>
-    <method selector="windowBackgroundColor" swt_gen="true">
+    <method class_method="true" selector="windowBackgroundColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="windowFrameColor" swt_gen="true">
+    <method class_method="true" selector="windowFrameColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="windowFrameTextColor" swt_gen="true">
+    <method class_method="true" selector="windowFrameTextColor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="writeToPasteboard:">
       <arg name="pasteBoard"></arg>
       <retval></retval>
     </method>
-    <method selector="yellowColor">
+    <method class_method="true" selector="yellowColor">
       <retval></retval>
     </method>
     <method selector="yellowComponent">
@@ -5913,10 +5913,10 @@
     <method selector="allKeys">
       <retval></retval>
     </method>
-    <method selector="availableColorLists">
+    <method class_method="true" selector="availableColorLists">
       <retval></retval>
     </method>
-    <method selector="colorListNamed:">
+    <method class_method="true" selector="colorListNamed:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -5980,7 +5980,7 @@
       <arg name="colorList"></arg>
       <retval></retval>
     </method>
-    <method selector="dragColor:withEvent:fromView:">
+    <method class_method="true" selector="dragColor:withEvent:fromView:">
       <arg name="color"></arg>
       <arg name="theEvent"></arg>
       <arg name="sourceView"></arg>
@@ -6012,11 +6012,11 @@
       <arg name="mode"></arg>
       <retval></retval>
     </method>
-    <method selector="setPickerMask:">
+    <method class_method="true" selector="setPickerMask:">
       <arg name="mask"></arg>
       <retval></retval>
     </method>
-    <method selector="setPickerMode:">
+    <method class_method="true" selector="setPickerMode:">
       <arg name="mode"></arg>
       <retval></retval>
     </method>
@@ -6028,10 +6028,10 @@
       <arg name="anObject"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedColorPanel" swt_gen="true">
+    <method class_method="true" selector="sharedColorPanel" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="sharedColorPanelExists">
+    <method class_method="true" selector="sharedColorPanelExists">
       <retval></retval>
     </method>
     <method selector="showsAlpha">
@@ -6085,7 +6085,7 @@
     <method selector="ICCProfileData">
       <retval></retval>
     </method>
-    <method selector="adobeRGB1998ColorSpace">
+    <method class_method="true" selector="adobeRGB1998ColorSpace">
       <retval></retval>
     </method>
     <method selector="colorSpaceModel">
@@ -6094,22 +6094,22 @@
     <method selector="colorSyncProfile">
       <retval></retval>
     </method>
-    <method selector="deviceCMYKColorSpace">
+    <method class_method="true" selector="deviceCMYKColorSpace">
       <retval></retval>
     </method>
-    <method selector="deviceGrayColorSpace">
+    <method class_method="true" selector="deviceGrayColorSpace">
       <retval></retval>
     </method>
-    <method selector="deviceRGBColorSpace" swt_gen="true">
+    <method class_method="true" selector="deviceRGBColorSpace" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="genericCMYKColorSpace">
+    <method class_method="true" selector="genericCMYKColorSpace">
       <retval></retval>
     </method>
-    <method selector="genericGrayColorSpace">
+    <method class_method="true" selector="genericGrayColorSpace">
       <retval></retval>
     </method>
-    <method selector="genericRGBColorSpace">
+    <method class_method="true" selector="genericRGBColorSpace">
       <retval></retval>
     </method>
     <method selector="initWithCGColorSpace:">
@@ -6130,7 +6130,7 @@
     <method selector="numberOfColorComponents">
       <retval></retval>
     </method>
-    <method selector="sRGBColorSpace">
+    <method class_method="true" selector="sRGBColorSpace">
       <retval></retval>
     </method>
   </class>
@@ -6450,7 +6450,7 @@
     <method selector="cell" swt_gen="true">
       <retval swt_gen="true" swt_java_type="NSCell"></retval>
     </method>
-    <method selector="cellClass">
+    <method class_method="true" selector="cellClass">
       <retval></retval>
     </method>
     <method selector="currentEditor">
@@ -6548,7 +6548,7 @@
       <arg name="aCell"></arg>
       <retval></retval>
     </method>
-    <method selector="setCellClass:">
+    <method class_method="true" selector="setCellClass:">
       <arg name="factoryId"></arg>
       <retval></retval>
     </method>
@@ -6691,25 +6691,25 @@
     </method>
   </class>
   <class name="NSCursor" swt_gen="mixed">
-    <method selector="IBeamCursor" swt_gen="true">
+    <method class_method="true" selector="IBeamCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="arrowCursor" swt_gen="true">
+    <method class_method="true" selector="arrowCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="closedHandCursor">
+    <method class_method="true" selector="closedHandCursor">
       <retval></retval>
     </method>
-    <method selector="crosshairCursor" swt_gen="true">
+    <method class_method="true" selector="crosshairCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="currentCursor">
+    <method class_method="true" selector="currentCursor">
       <retval></retval>
     </method>
-    <method selector="disappearingItemCursor">
+    <method class_method="true" selector="disappearingItemCursor">
       <retval></retval>
     </method>
-    <method selector="hide">
+    <method class_method="true" selector="hide">
       <retval></retval>
     </method>
     <method selector="hotSpot">
@@ -6744,43 +6744,43 @@
       <arg name="theEvent"></arg>
       <retval></retval>
     </method>
-    <method selector="openHandCursor">
+    <method class_method="true" selector="openHandCursor">
       <retval></retval>
     </method>
-    <method selector="pointingHandCursor" swt_gen="true">
+    <method class_method="true" selector="pointingHandCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="pop">
       <retval></retval>
     </method>
-    <method selector="pop">
+    <method class_method="true" selector="pop">
       <retval></retval>
     </method>
     <method selector="push">
       <retval></retval>
     </method>
-    <method selector="resizeDownCursor" swt_gen="true">
+    <method class_method="true" selector="resizeDownCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="resizeLeftCursor" swt_gen="true">
+    <method class_method="true" selector="resizeLeftCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="resizeLeftRightCursor" swt_gen="true">
+    <method class_method="true" selector="resizeLeftRightCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="resizeRightCursor" swt_gen="true">
+    <method class_method="true" selector="resizeRightCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="resizeUpCursor" swt_gen="true">
+    <method class_method="true" selector="resizeUpCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="resizeUpDownCursor" swt_gen="true">
+    <method class_method="true" selector="resizeUpDownCursor" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="set" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setHiddenUntilMouseMoves:" swt_gen="true">
+    <method class_method="true" selector="setHiddenUntilMouseMoves:" swt_gen="true">
       <arg name="flag" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -6792,7 +6792,7 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="unhide">
+    <method class_method="true" selector="unhide">
       <retval></retval>
     </method>
   </class>
@@ -7238,7 +7238,7 @@
     <method selector="isDocumentEdited">
       <retval></retval>
     </method>
-    <method selector="isNativeType:">
+    <method class_method="true" selector="isNativeType:">
       <arg name="type"></arg>
       <retval></retval>
     </method>
@@ -7336,7 +7336,7 @@
       <arg name="outError"></arg>
       <retval></retval>
     </method>
-    <method selector="readableTypes">
+    <method class_method="true" selector="readableTypes">
       <retval></retval>
     </method>
     <method selector="removeWindowController:">
@@ -7523,7 +7523,7 @@
     <method selector="windowNibName">
       <retval></retval>
     </method>
-    <method selector="writableTypes">
+    <method class_method="true" selector="writableTypes">
       <retval></retval>
     </method>
     <method selector="writableTypesForSaveOperation:">
@@ -7771,7 +7771,7 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedDocumentController">
+    <method class_method="true" selector="sharedDocumentController">
       <retval></retval>
     </method>
     <method selector="shouldCreateUI">
@@ -7900,7 +7900,7 @@
     <method selector="boundingBox">
       <retval></retval>
     </method>
-    <method selector="imageRepWithData:">
+    <method class_method="true" selector="imageRepWithData:">
       <arg name="epsData"></arg>
       <retval></retval>
     </method>
@@ -7964,7 +7964,7 @@
     <method selector="deviceID">
       <retval></retval>
     </method>
-    <method selector="enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">
+    <method class_method="true" selector="enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">
       <arg name="type"></arg>
       <arg name="location"></arg>
       <arg name="flags"></arg>
@@ -7982,11 +7982,11 @@
     <method selector="eventRef">
       <retval></retval>
     </method>
-    <method selector="eventWithCGEvent:">
+    <method class_method="true" selector="eventWithCGEvent:">
       <arg name="cgEvent"></arg>
       <retval></retval>
     </method>
-    <method selector="eventWithEventRef:">
+    <method class_method="true" selector="eventWithEventRef:">
       <arg name="eventRef"></arg>
       <retval></retval>
     </method>
@@ -7996,13 +7996,13 @@
     <method selector="isEnteringProximity">
       <retval></retval>
     </method>
-    <method selector="isMouseCoalescingEnabled">
+    <method class_method="true" selector="isMouseCoalescingEnabled">
       <retval></retval>
     </method>
     <method selector="keyCode" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:">
+    <method class_method="true" selector="keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:">
       <arg name="type"></arg>
       <arg name="location"></arg>
       <arg name="flags"></arg>
@@ -8021,7 +8021,7 @@
     <method selector="modifierFlags" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:">
+    <method class_method="true" selector="mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:">
       <arg name="type"></arg>
       <arg name="location"></arg>
       <arg name="flags"></arg>
@@ -8033,10 +8033,10 @@
       <arg name="pressure"></arg>
       <retval></retval>
     </method>
-    <method selector="mouseLocation" swt_gen="true">
+    <method class_method="true" selector="mouseLocation" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:" swt_gen="true">
+    <method class_method="true" selector="otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:" swt_gen="true">
       <arg name="type" swt_gen="true"></arg>
       <arg name="location" swt_gen="true"></arg>
       <arg name="flags" swt_gen="true"></arg>
@@ -8063,16 +8063,16 @@
     <method selector="rotation">
       <retval></retval>
     </method>
-    <method selector="setMouseCoalescingEnabled:">
+    <method class_method="true" selector="setMouseCoalescingEnabled:">
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="startPeriodicEventsAfterDelay:withPeriod:">
+    <method class_method="true" selector="startPeriodicEventsAfterDelay:withPeriod:">
       <arg name="delay"></arg>
       <arg name="period"></arg>
       <retval></retval>
     </method>
-    <method selector="stopPeriodicEvents">
+    <method class_method="true" selector="stopPeriodicEvents">
       <retval></retval>
     </method>
     <method selector="subtype">
@@ -8246,7 +8246,7 @@
     <method selector="ascender" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="boldSystemFontOfSize:">
+    <method class_method="true" selector="boldSystemFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
@@ -8260,7 +8260,7 @@
     <method selector="capHeight">
       <retval></retval>
     </method>
-    <method selector="controlContentFontOfSize:">
+    <method class_method="true" selector="controlContentFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
@@ -8288,22 +8288,22 @@
     <method selector="fontName" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="fontWithDescriptor:size:">
+    <method class_method="true" selector="fontWithDescriptor:size:">
       <arg name="fontDescriptor"></arg>
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
-    <method selector="fontWithDescriptor:textTransform:">
+    <method class_method="true" selector="fontWithDescriptor:textTransform:">
       <arg name="fontDescriptor"></arg>
       <arg name="textTransform"></arg>
       <retval></retval>
     </method>
-    <method selector="fontWithName:matrix:">
+    <method class_method="true" selector="fontWithName:matrix:">
       <arg name="fontName"></arg>
       <arg name="fontMatrix"></arg>
       <retval></retval>
     </method>
-    <method selector="fontWithName:size:" swt_gen="true">
+    <method class_method="true" selector="fontWithName:size:" swt_gen="true">
       <arg name="fontName" swt_gen="true"></arg>
       <arg name="fontSize" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
@@ -8346,11 +8346,11 @@
     <method selector="italicAngle">
       <retval></retval>
     </method>
-    <method selector="labelFontOfSize:">
+    <method class_method="true" selector="labelFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
-    <method selector="labelFontSize">
+    <method class_method="true" selector="labelFontSize">
       <retval></retval>
     </method>
     <method selector="leading" swt_gen="true">
@@ -8362,15 +8362,15 @@
     <method selector="maximumAdvancement">
       <retval></retval>
     </method>
-    <method selector="menuBarFontOfSize:">
+    <method class_method="true" selector="menuBarFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
-    <method selector="menuFontOfSize:">
+    <method class_method="true" selector="menuFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
-    <method selector="messageFontOfSize:">
+    <method class_method="true" selector="messageFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
@@ -8380,7 +8380,7 @@
     <method selector="numberOfGlyphs">
       <retval></retval>
     </method>
-    <method selector="paletteFontOfSize:">
+    <method class_method="true" selector="paletteFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
@@ -8425,7 +8425,7 @@
       <arg name="points"></arg>
       <retval></retval>
     </method>
-    <method selector="preferredFontNames">
+    <method class_method="true" selector="preferredFontNames">
       <retval></retval>
     </method>
     <method selector="printerFont">
@@ -8448,40 +8448,40 @@
       <arg name="graphicsContext"></arg>
       <retval></retval>
     </method>
-    <method selector="setPreferredFontNames:">
+    <method class_method="true" selector="setPreferredFontNames:">
       <arg name="fontNameArray"></arg>
       <retval></retval>
     </method>
-    <method selector="setUserFixedPitchFont:">
+    <method class_method="true" selector="setUserFixedPitchFont:">
       <arg name="aFont"></arg>
       <retval></retval>
     </method>
-    <method selector="setUserFont:">
+    <method class_method="true" selector="setUserFont:">
       <arg name="aFont"></arg>
       <retval></retval>
     </method>
-    <method selector="smallSystemFontSize">
+    <method class_method="true" selector="smallSystemFontSize">
       <retval></retval>
     </method>
-    <method selector="systemFontOfSize:" swt_gen="true">
+    <method class_method="true" selector="systemFontOfSize:" swt_gen="true">
       <arg name="fontSize" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="systemFontSize" swt_gen="true">
+    <method class_method="true" selector="systemFontSize" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="systemFontSizeForControlSize:">
+    <method class_method="true" selector="systemFontSizeForControlSize:">
       <arg name="controlSize"></arg>
       <retval></retval>
     </method>
     <method selector="textTransform">
       <retval></retval>
     </method>
-    <method selector="titleBarFontOfSize:">
+    <method class_method="true" selector="titleBarFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
-    <method selector="toolTipsFontOfSize:">
+    <method class_method="true" selector="toolTipsFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
@@ -8491,15 +8491,15 @@
     <method selector="underlineThickness">
       <retval></retval>
     </method>
-    <method selector="useFont:">
+    <method class_method="true" selector="useFont:">
       <arg name="fontName"></arg>
       <retval></retval>
     </method>
-    <method selector="userFixedPitchFontOfSize:">
+    <method class_method="true" selector="userFixedPitchFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
-    <method selector="userFontOfSize:">
+    <method class_method="true" selector="userFontOfSize:">
       <arg name="fontSize"></arg>
       <retval></retval>
     </method>
@@ -8527,7 +8527,7 @@
       <arg name="newFamily"></arg>
       <retval></retval>
     </method>
-    <method selector="fontDescriptorWithFontAttributes:">
+    <method class_method="true" selector="fontDescriptorWithFontAttributes:">
       <arg name="attributes"></arg>
       <retval></retval>
     </method>
@@ -8535,12 +8535,12 @@
       <arg name="matrix"></arg>
       <retval></retval>
     </method>
-    <method selector="fontDescriptorWithName:matrix:">
+    <method class_method="true" selector="fontDescriptorWithName:matrix:">
       <arg name="fontName"></arg>
       <arg name="matrix"></arg>
       <retval></retval>
     </method>
-    <method selector="fontDescriptorWithName:size:">
+    <method class_method="true" selector="fontDescriptorWithName:size:">
       <arg name="fontName"></arg>
       <arg name="size"></arg>
       <retval></retval>
@@ -8751,7 +8751,7 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="setFontManagerFactory:">
+    <method class_method="true" selector="setFontManagerFactory:">
       <arg name="factoryId"></arg>
       <retval></retval>
     </method>
@@ -8759,7 +8759,7 @@
       <arg name="newMenu"></arg>
       <retval></retval>
     </method>
-    <method selector="setFontPanelFactory:">
+    <method class_method="true" selector="setFontPanelFactory:">
       <arg name="factoryId"></arg>
       <retval></retval>
     </method>
@@ -8777,7 +8777,7 @@
       <arg name="aTarget"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedFontManager" swt_gen="true">
+    <method class_method="true" selector="sharedFontManager" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="target">
@@ -8819,10 +8819,10 @@
       <arg name="flag" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="sharedFontPanel" swt_gen="true">
+    <method class_method="true" selector="sharedFontPanel" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="sharedFontPanelExists">
+    <method class_method="true" selector="sharedFontPanelExists">
       <retval></retval>
     </method>
     <method selector="worksWhenModal">
@@ -8988,7 +8988,7 @@
       <arg name="charIndex"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedGlyphGenerator">
+    <method class_method="true" selector="sharedGlyphGenerator">
       <retval></retval>
     </method>
   </class>
@@ -8999,19 +8999,19 @@
     <method selector="characterIdentifier">
       <retval></retval>
     </method>
-    <method selector="glyphInfoWithCharacterIdentifier:collection:baseString:">
+    <method class_method="true" selector="glyphInfoWithCharacterIdentifier:collection:baseString:">
       <arg name="cid"></arg>
       <arg name="characterCollection"></arg>
       <arg name="theString"></arg>
       <retval></retval>
     </method>
-    <method selector="glyphInfoWithGlyph:forFont:baseString:">
+    <method class_method="true" selector="glyphInfoWithGlyph:forFont:baseString:">
       <arg name="glyph"></arg>
       <arg name="font"></arg>
       <arg name="theString"></arg>
       <retval></retval>
     </method>
-    <method selector="glyphInfoWithGlyphName:forFont:baseString:">
+    <method class_method="true" selector="glyphInfoWithGlyphName:forFont:baseString:">
       <arg name="glyphName"></arg>
       <arg name="font"></arg>
       <arg name="theString"></arg>
@@ -9105,10 +9105,10 @@
     <method selector="compositingOperation">
       <retval></retval>
     </method>
-    <method selector="currentContext" swt_gen="true">
+    <method class_method="true" selector="currentContext" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="currentContextDrawingToScreen">
+    <method class_method="true" selector="currentContextDrawingToScreen">
       <retval></retval>
     </method>
     <method selector="flushGraphics" swt_gen="true">
@@ -9117,20 +9117,20 @@
     <method selector="focusStack">
       <retval></retval>
     </method>
-    <method selector="graphicsContextWithAttributes:">
+    <method class_method="true" selector="graphicsContextWithAttributes:">
       <arg name="attributes"></arg>
       <retval></retval>
     </method>
-    <method selector="graphicsContextWithBitmapImageRep:" swt_gen="true">
+    <method class_method="true" selector="graphicsContextWithBitmapImageRep:" swt_gen="true">
       <arg name="bitmapRep" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="graphicsContextWithGraphicsPort:flipped:">
+    <method class_method="true" selector="graphicsContextWithGraphicsPort:flipped:">
       <arg name="graphicsPort"></arg>
       <arg name="initialFlippedState"></arg>
       <retval></retval>
     </method>
-    <method selector="graphicsContextWithWindow:" swt_gen="true">
+    <method class_method="true" selector="graphicsContextWithWindow:" swt_gen="true">
       <arg name="window" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -9152,14 +9152,14 @@
     <method selector="restoreGraphicsState" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="restoreGraphicsState" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method class_method="true" selector="restoreGraphicsState">
+      <retval></retval>
     </method>
     <method selector="saveGraphicsState" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="saveGraphicsState" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method class_method="true" selector="saveGraphicsState">
+      <retval></retval>
     </method>
     <method selector="setColorRenderingIntent:">
       <arg name="renderingIntent"></arg>
@@ -9169,7 +9169,7 @@
       <arg name="operation" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setCurrentContext:" swt_gen="true">
+    <method class_method="true" selector="setCurrentContext:" swt_gen="true">
       <arg name="context" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -9177,7 +9177,7 @@
       <arg name="stack"></arg>
       <retval></retval>
     </method>
-    <method selector="setGraphicsState:">
+    <method class_method="true" selector="setGraphicsState:">
       <arg name="gState"></arg>
       <retval></retval>
     </method>
@@ -9207,7 +9207,7 @@
       <arg name="book"></arg>
       <retval></retval>
     </method>
-    <method selector="isContextHelpModeActive">
+    <method class_method="true" selector="isContextHelpModeActive">
       <retval></retval>
     </method>
     <method selector="openHelpAnchor:inBook:">
@@ -9224,11 +9224,11 @@
       <arg name="object"></arg>
       <retval></retval>
     </method>
-    <method selector="setContextHelpModeActive:">
+    <method class_method="true" selector="setContextHelpModeActive:">
       <arg name="active"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedHelpManager">
+    <method class_method="true" selector="sharedHelpManager">
       <retval></retval>
     </method>
     <method selector="showContextHelpForObject:locationHint:">
@@ -9270,7 +9270,7 @@
     <method selector="cacheMode">
       <retval></retval>
     </method>
-    <method selector="canInitWithPasteboard:">
+    <method class_method="true" selector="canInitWithPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
@@ -9334,26 +9334,26 @@
       <arg name="rect"></arg>
       <retval></retval>
     </method>
-    <method selector="imageFileTypes">
+    <method class_method="true" selector="imageFileTypes">
       <retval></retval>
     </method>
-    <method selector="imageNamed:">
+    <method class_method="true" selector="imageNamed:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="imagePasteboardTypes">
+    <method class_method="true" selector="imagePasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="imageTypes">
+    <method class_method="true" selector="imageTypes">
       <retval></retval>
     </method>
-    <method selector="imageUnfilteredFileTypes">
+    <method class_method="true" selector="imageUnfilteredFileTypes">
       <retval></retval>
     </method>
-    <method selector="imageUnfilteredPasteboardTypes">
+    <method class_method="true" selector="imageUnfilteredPasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="imageUnfilteredTypes">
+    <method class_method="true" selector="imageUnfilteredTypes">
       <retval></retval>
     </method>
     <method selector="initByReferencingFile:">
@@ -9529,11 +9529,11 @@
     <method selector="bitsPerSample" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="canInitWithData:">
+    <method class_method="true" selector="canInitWithData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="canInitWithPasteboard:">
+    <method class_method="true" selector="canInitWithPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
@@ -9554,62 +9554,62 @@
     <method selector="hasAlpha" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="imageFileTypes">
+    <method class_method="true" selector="imageFileTypes">
       <retval></retval>
     </method>
-    <method selector="imagePasteboardTypes">
+    <method class_method="true" selector="imagePasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="imageRepClassForData:">
+    <method class_method="true" selector="imageRepClassForData:">
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepClassForFileType:">
+    <method class_method="true" selector="imageRepClassForFileType:">
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepClassForPasteboardType:">
+    <method class_method="true" selector="imageRepClassForPasteboardType:">
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepClassForType:">
+    <method class_method="true" selector="imageRepClassForType:">
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepWithContentsOfFile:">
+    <method class_method="true" selector="imageRepWithContentsOfFile:">
       <arg name="filename"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepWithContentsOfURL:">
+    <method class_method="true" selector="imageRepWithContentsOfURL:">
       <arg name="url"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepWithPasteboard:">
+    <method class_method="true" selector="imageRepWithPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepsWithContentsOfFile:">
+    <method class_method="true" selector="imageRepsWithContentsOfFile:">
       <arg name="filename"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepsWithContentsOfURL:">
+    <method class_method="true" selector="imageRepsWithContentsOfURL:">
       <arg name="url"></arg>
       <retval></retval>
     </method>
-    <method selector="imageRepsWithPasteboard:">
+    <method class_method="true" selector="imageRepsWithPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
-    <method selector="imageTypes">
+    <method class_method="true" selector="imageTypes">
       <retval></retval>
     </method>
-    <method selector="imageUnfilteredFileTypes">
+    <method class_method="true" selector="imageUnfilteredFileTypes">
       <retval></retval>
     </method>
-    <method selector="imageUnfilteredPasteboardTypes">
+    <method class_method="true" selector="imageUnfilteredPasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="imageUnfilteredTypes">
+    <method class_method="true" selector="imageUnfilteredTypes">
       <retval></retval>
     </method>
     <method selector="isOpaque">
@@ -9621,11 +9621,11 @@
     <method selector="pixelsWide" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="registerImageRepClass:">
+    <method class_method="true" selector="registerImageRepClass:">
       <arg name="imageRepClass"></arg>
       <retval></retval>
     </method>
-    <method selector="registeredImageRepClasses">
+    <method class_method="true" selector="registeredImageRepClasses">
       <retval></retval>
     </method>
     <method selector="setAlpha:">
@@ -9659,7 +9659,7 @@
     <method selector="size">
       <retval></retval>
     </method>
-    <method selector="unregisterImageRepClass:">
+    <method class_method="true" selector="unregisterImageRepClass:">
       <arg name="imageRepClass"></arg>
       <retval></retval>
     </method>
@@ -9716,14 +9716,14 @@
     </method>
   </class>
   <class name="NSInputManager" swt_gen="mixed">
-    <method selector="currentInputManager" swt_gen="true">
+    <method class_method="true" selector="currentInputManager" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="cycleToNextInputLanguage:">
+    <method class_method="true" selector="cycleToNextInputLanguage:">
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="cycleToNextInputServerInLanguage:">
+    <method class_method="true" selector="cycleToNextInputServerInLanguage:">
       <arg name="sender"></arg>
       <retval></retval>
     </method>
@@ -11044,7 +11044,7 @@
     <method selector="menuBarHeight">
       <retval></retval>
     </method>
-    <method selector="menuBarVisible">
+    <method class_method="true" selector="menuBarVisible">
       <retval></retval>
     </method>
     <method selector="menuChangedMessagesEnabled">
@@ -11053,7 +11053,7 @@
     <method selector="menuRepresentation">
       <retval></retval>
     </method>
-    <method selector="menuZone">
+    <method class_method="true" selector="menuZone">
       <retval></retval>
     </method>
     <method selector="numberOfItems" swt_gen="true">
@@ -11067,13 +11067,13 @@
       <arg name="theEvent"></arg>
       <retval></retval>
     </method>
-    <method selector="popUpContextMenu:withEvent:forView:" swt_gen="true">
+    <method class_method="true" selector="popUpContextMenu:withEvent:forView:" swt_gen="true">
       <arg name="menu" swt_gen="true"></arg>
       <arg name="event" swt_gen="true"></arg>
       <arg name="view" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="popUpContextMenu:withEvent:forView:withFont:">
+    <method class_method="true" selector="popUpContextMenu:withEvent:forView:withFont:">
       <arg name="menu"></arg>
       <arg name="event"></arg>
       <arg name="view"></arg>
@@ -11100,7 +11100,7 @@
       <arg name="anObject" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setMenuBarVisible:">
+    <method class_method="true" selector="setMenuBarVisible:">
       <arg name="visible"></arg>
       <retval></retval>
     </method>
@@ -11112,7 +11112,7 @@
       <arg name="menuRep"></arg>
       <retval></retval>
     </method>
-    <method selector="setMenuZone:">
+    <method class_method="true" selector="setMenuZone:">
       <arg name="aZone"></arg>
       <retval></retval>
     </method>
@@ -11227,7 +11227,7 @@
     <method selector="representedObject">
       <retval></retval>
     </method>
-    <method selector="separatorItem" swt_gen="true">
+    <method class_method="true" selector="separatorItem" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="setAction:" swt_gen="true">
@@ -11318,7 +11318,7 @@
       <arg name="toolTip"></arg>
       <retval></retval>
     </method>
-    <method selector="setUsesUserKeyEquivalents:">
+    <method class_method="true" selector="setUsesUserKeyEquivalents:">
       <arg name="flag"></arg>
       <retval></retval>
     </method>
@@ -11347,7 +11347,7 @@
     <method selector="userKeyEquivalent">
       <retval></retval>
     </method>
-    <method selector="usesUserKeyEquivalents">
+    <method class_method="true" selector="usesUserKeyEquivalents">
       <retval></retval>
     </method>
     <method selector="view">
@@ -11521,7 +11521,7 @@
     <method selector="menu">
       <retval></retval>
     </method>
-    <method selector="menuBarHeight">
+    <method class_method="true" selector="menuBarHeight">
       <retval></retval>
     </method>
     <method selector="menuItemCellForItemAtIndex:">
@@ -11603,7 +11603,7 @@
     <method selector="URL">
       <retval></retval>
     </method>
-    <method selector="canInitWithPasteboard:">
+    <method class_method="true" selector="canInitWithPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
@@ -11620,10 +11620,10 @@
       <arg name="byRef"></arg>
       <retval></retval>
     </method>
-    <method selector="movieUnfilteredFileTypes">
+    <method class_method="true" selector="movieUnfilteredFileTypes">
       <retval></retval>
     </method>
-    <method selector="movieUnfilteredPasteboardTypes">
+    <method class_method="true" selector="movieUnfilteredPasteboardTypes">
       <retval></retval>
     </method>
   </class>
@@ -12611,11 +12611,11 @@
       <arg name="proposedTimeInterval"></arg>
       <retval></retval>
     </method>
-    <method selector="defaultAnimationForKey:">
+    <method class_method="true" selector="defaultAnimationForKey:">
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="defaultPlaceholderForMarker:withBinding:">
+    <method class_method="true" selector="defaultPlaceholderForMarker:withBinding:">
       <arg name="marker"></arg>
       <arg name="binding"></arg>
       <retval></retval>
@@ -12753,7 +12753,7 @@
       <arg name="contentSize"></arg>
       <retval></retval>
     </method>
-    <method selector="exposeBinding:">
+    <method class_method="true" selector="exposeBinding:">
       <arg name="binding"></arg>
       <retval></retval>
     </method>
@@ -13393,7 +13393,7 @@
       <arg name="newColor"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultPlaceholder:forMarker:withBinding:">
+    <method class_method="true" selector="setDefaultPlaceholder:forMarker:withBinding:">
       <arg name="placeholder"></arg>
       <arg name="marker"></arg>
       <arg name="binding"></arg>
@@ -14357,7 +14357,7 @@
     <method selector="CGLContextObj">
       <retval></retval>
     </method>
-    <method selector="clearCurrentContext" swt_gen="true">
+    <method class_method="true" selector="clearCurrentContext" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="clearDrawable">
@@ -14374,7 +14374,7 @@
       <arg name="format"></arg>
       <retval></retval>
     </method>
-    <method selector="currentContext" swt_gen="true">
+    <method class_method="true" selector="currentContext" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="currentVirtualScreen">
@@ -14505,7 +14505,7 @@
     <method selector="clearGLContext" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="defaultPixelFormat">
+    <method class_method="true" selector="defaultPixelFormat">
       <retval></retval>
     </method>
     <method selector="initWithFrame:pixelFormat:" swt_gen="true">
@@ -14572,7 +14572,7 @@
     <method selector="filenames" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="openPanel" swt_gen="true">
+    <method class_method="true" selector="openPanel" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="resolvesAliases">
@@ -14720,7 +14720,7 @@
     <method selector="currentPage">
       <retval></retval>
     </method>
-    <method selector="imageRepWithData:">
+    <method class_method="true" selector="imageRepWithData:">
       <arg name="pdfData"></arg>
       <retval></retval>
     </method>
@@ -14743,7 +14743,7 @@
     <method selector="boundingBox">
       <retval></retval>
     </method>
-    <method selector="imageRepWithData:">
+    <method class_method="true" selector="imageRepWithData:">
       <arg name="pictData"></arg>
       <retval></retval>
     </method>
@@ -14771,7 +14771,7 @@
       <arg name="contextInfo"></arg>
       <retval></retval>
     </method>
-    <method selector="pageLayout">
+    <method class_method="true" selector="pageLayout">
       <retval></retval>
     </method>
     <method selector="printInfo">
@@ -14829,13 +14829,13 @@
     <method selector="baseWritingDirection">
       <retval></retval>
     </method>
-    <method selector="defaultParagraphStyle">
+    <method class_method="true" selector="defaultParagraphStyle">
       <retval></retval>
     </method>
     <method selector="defaultTabInterval">
       <retval></retval>
     </method>
-    <method selector="defaultWritingDirectionForLanguage:">
+    <method class_method="true" selector="defaultWritingDirectionForLanguage:">
       <arg name="languageName"></arg>
       <retval></retval>
     </method>
@@ -14910,30 +14910,30 @@
       <arg name="newOwner" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="generalPasteboard" swt_gen="true">
+    <method class_method="true" selector="generalPasteboard" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="name">
       <retval></retval>
     </method>
-    <method selector="pasteboardByFilteringData:ofType:">
+    <method class_method="true" selector="pasteboardByFilteringData:ofType:">
       <arg name="data"></arg>
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="pasteboardByFilteringFile:">
+    <method class_method="true" selector="pasteboardByFilteringFile:">
       <arg name="filename"></arg>
       <retval></retval>
     </method>
-    <method selector="pasteboardByFilteringTypesInPasteboard:">
+    <method class_method="true" selector="pasteboardByFilteringTypesInPasteboard:">
       <arg name="pboard"></arg>
       <retval></retval>
     </method>
-    <method selector="pasteboardWithName:" swt_gen="true">
+    <method class_method="true" selector="pasteboardWithName:" swt_gen="true">
       <arg name="name" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="pasteboardWithUniqueName">
+    <method class_method="true" selector="pasteboardWithUniqueName">
       <retval></retval>
     </method>
     <method selector="propertyListForType:" swt_gen="true">
@@ -14973,7 +14973,7 @@
     <method selector="types" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="typesFilterableTo:">
+    <method class_method="true" selector="typesFilterableTo:">
       <arg name="type"></arg>
       <retval></retval>
     </method>
@@ -15023,7 +15023,7 @@
       <arg name="view"></arg>
       <retval></retval>
     </method>
-    <method selector="pathComponentCellClass">
+    <method class_method="true" selector="pathComponentCellClass">
       <retval></retval>
     </method>
     <method selector="pathComponentCells">
@@ -15590,7 +15590,7 @@
     <method selector="templateViews">
       <retval></retval>
     </method>
-    <method selector="templatesWithAttributeKeyPaths:inEntityDescription:">
+    <method class_method="true" selector="templatesWithAttributeKeyPaths:inEntityDescription:">
       <arg name="keyPaths"></arg>
       <arg name="entityDescription"></arg>
       <retval></retval>
@@ -15609,7 +15609,7 @@
     <method selector="bottomMargin">
       <retval></retval>
     </method>
-    <method selector="defaultPrinter" swt_gen="true">
+    <method class_method="true" selector="defaultPrinter" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="dictionary" swt_gen="true">
@@ -15662,7 +15662,7 @@
       <arg name="margin"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultPrinter:">
+    <method class_method="true" selector="setDefaultPrinter:">
       <arg name="printer"></arg>
       <retval></retval>
     </method>
@@ -15702,7 +15702,7 @@
       <arg name="margin"></arg>
       <retval></retval>
     </method>
-    <method selector="setSharedPrintInfo:">
+    <method class_method="true" selector="setSharedPrintInfo:">
       <arg name="printInfo"></arg>
       <retval></retval>
     </method>
@@ -15721,10 +15721,10 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedPrintInfo" swt_gen="true">
+    <method class_method="true" selector="sharedPrintInfo" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="sizeForPaperName:">
+    <method class_method="true" selector="sizeForPaperName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -15742,40 +15742,40 @@
     </method>
   </class>
   <class name="NSPrintOperation" swt_gen="mixed">
-    <method selector="EPSOperationWithView:insideRect:toData:">
+    <method class_method="true" selector="EPSOperationWithView:insideRect:toData:">
       <arg name="view"></arg>
       <arg name="rect"></arg>
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="EPSOperationWithView:insideRect:toData:printInfo:">
+    <method class_method="true" selector="EPSOperationWithView:insideRect:toData:printInfo:">
       <arg name="view"></arg>
       <arg name="rect"></arg>
       <arg name="data"></arg>
       <arg name="printInfo"></arg>
       <retval></retval>
     </method>
-    <method selector="EPSOperationWithView:insideRect:toPath:printInfo:">
+    <method class_method="true" selector="EPSOperationWithView:insideRect:toPath:printInfo:">
       <arg name="view"></arg>
       <arg name="rect"></arg>
       <arg name="path"></arg>
       <arg name="printInfo"></arg>
       <retval></retval>
     </method>
-    <method selector="PDFOperationWithView:insideRect:toData:">
+    <method class_method="true" selector="PDFOperationWithView:insideRect:toData:">
       <arg name="view"></arg>
       <arg name="rect"></arg>
       <arg name="data"></arg>
       <retval></retval>
     </method>
-    <method selector="PDFOperationWithView:insideRect:toData:printInfo:">
+    <method class_method="true" selector="PDFOperationWithView:insideRect:toData:printInfo:">
       <arg name="view"></arg>
       <arg name="rect"></arg>
       <arg name="data"></arg>
       <arg name="printInfo"></arg>
       <retval></retval>
     </method>
-    <method selector="PDFOperationWithView:insideRect:toPath:printInfo:">
+    <method class_method="true" selector="PDFOperationWithView:insideRect:toPath:printInfo:">
       <arg name="view"></arg>
       <arg name="rect"></arg>
       <arg name="path"></arg>
@@ -15797,7 +15797,7 @@
     <method selector="createContext" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="currentOperation">
+    <method class_method="true" selector="currentOperation">
       <retval></retval>
     </method>
     <method selector="currentPage">
@@ -15827,11 +15827,11 @@
     <method selector="printInfo">
       <retval></retval>
     </method>
-    <method selector="printOperationWithView:">
+    <method class_method="true" selector="printOperationWithView:">
       <arg name="view"></arg>
       <retval></retval>
     </method>
-    <method selector="printOperationWithView:printInfo:" swt_gen="true">
+    <method class_method="true" selector="printOperationWithView:printInfo:" swt_gen="true">
       <arg name="view" swt_gen="true"></arg>
       <arg name="printInfo" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
@@ -15857,7 +15857,7 @@
       <arg name="canSpawnSeparateThread"></arg>
       <retval></retval>
     </method>
-    <method selector="setCurrentOperation:" swt_gen="true">
+    <method class_method="true" selector="setCurrentOperation:" swt_gen="true">
       <arg name="operation" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
@@ -15943,7 +15943,7 @@
     <method selector="printInfo">
       <retval></retval>
     </method>
-    <method selector="printPanel" swt_gen="true">
+    <method class_method="true" selector="printPanel" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="removeAccessoryController:">
@@ -16041,23 +16041,23 @@
       <arg name="paperName"></arg>
       <retval></retval>
     </method>
-    <method selector="printerNames" swt_gen="true">
+    <method class_method="true" selector="printerNames" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="printerTypes">
+    <method class_method="true" selector="printerTypes">
       <retval></retval>
     </method>
-    <method selector="printerWithName:" swt_gen="true">
+    <method class_method="true" selector="printerWithName:" swt_gen="true">
       <arg name="name" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="printerWithName:domain:includeUnavailable:">
+    <method class_method="true" selector="printerWithName:domain:includeUnavailable:">
       <arg name="name"></arg>
       <arg name="domain"></arg>
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="printerWithType:">
+    <method class_method="true" selector="printerWithType:">
       <arg name="type"></arg>
       <retval></retval>
     </method>
@@ -16922,7 +16922,7 @@
     <method selector="originOffset">
       <retval></retval>
     </method>
-    <method selector="registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:">
+    <method class_method="true" selector="registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:">
       <arg name="unitName"></arg>
       <arg name="abbreviation"></arg>
       <arg name="conversionFactor"></arg>
@@ -17066,7 +17066,7 @@
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="savePanel" swt_gen="true">
+    <method class_method="true" selector="savePanel" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="selectText:">
@@ -17140,7 +17140,7 @@
     </method>
   </class>
   <class name="NSScreen" swt_gen="mixed">
-    <method selector="deepestScreen">
+    <method class_method="true" selector="deepestScreen">
       <retval></retval>
     </method>
     <method selector="depth" swt_gen="true">
@@ -17152,10 +17152,10 @@
     <method selector="frame" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="mainScreen" swt_gen="true">
+    <method class_method="true" selector="mainScreen" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="screens" swt_gen="true">
+    <method class_method="true" selector="screens" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="supportedWindowDepths">
@@ -17181,7 +17181,7 @@
     <method selector="contentSize" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:" swt_gen="true">
+    <method class_method="true" selector="contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:" swt_gen="true">
       <arg name="fSize" swt_gen="true"></arg>
       <arg name="hFlag" swt_gen="true"></arg>
       <arg name="vFlag" swt_gen="true"></arg>
@@ -17203,7 +17203,7 @@
     <method selector="drawsBackground">
       <retval></retval>
     </method>
-    <method selector="frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:" swt_gen="true">
+    <method class_method="true" selector="frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:" swt_gen="true">
       <arg name="cSize" swt_gen="true"></arg>
       <arg name="hFlag" swt_gen="true"></arg>
       <arg name="vFlag" swt_gen="true"></arg>
@@ -17244,7 +17244,7 @@
       <arg name="cView"></arg>
       <retval></retval>
     </method>
-    <method selector="rulerViewClass">
+    <method class_method="true" selector="rulerViewClass">
       <retval></retval>
     </method>
     <method selector="rulersVisible">
@@ -17325,7 +17325,7 @@
       <arg name="value"></arg>
       <retval></retval>
     </method>
-    <method selector="setRulerViewClass:">
+    <method class_method="true" selector="setRulerViewClass:">
       <arg name="rulerViewClass"></arg>
       <retval></retval>
     </method>
@@ -17412,10 +17412,10 @@
       <arg name="partCode"></arg>
       <retval></retval>
     </method>
-    <method selector="scrollerWidth" swt_gen="true">
+    <method class_method="true" selector="scrollerWidth" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="scrollerWidthForControlSize:">
+    <method class_method="true" selector="scrollerWidthForControlSize:">
       <arg name="controlSize"></arg>
       <retval></retval>
     </method>
@@ -17962,7 +17962,7 @@
     <method selector="numberOfTickMarks">
       <retval></retval>
     </method>
-    <method selector="prefersTrackingUntilMouseUp">
+    <method class_method="true" selector="prefersTrackingUntilMouseUp">
       <retval></retval>
     </method>
     <method selector="rectOfTickMarkAtIndex:">
@@ -18044,7 +18044,7 @@
     </method>
   </class>
   <class name="NSSound">
-    <method selector="canInitWithPasteboard:">
+    <method class_method="true" selector="canInitWithPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
@@ -18127,17 +18127,17 @@
       <arg name="volume"></arg>
       <retval></retval>
     </method>
-    <method selector="soundNamed:">
+    <method class_method="true" selector="soundNamed:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="soundUnfilteredFileTypes">
+    <method class_method="true" selector="soundUnfilteredFileTypes">
       <retval></retval>
     </method>
-    <method selector="soundUnfilteredPasteboardTypes">
+    <method class_method="true" selector="soundUnfilteredPasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="soundUnfilteredTypes">
+    <method class_method="true" selector="soundUnfilteredTypes">
       <retval></retval>
     </method>
     <method selector="stop">
@@ -18202,17 +18202,17 @@
       <arg name="speechDictionary"></arg>
       <retval></retval>
     </method>
-    <method selector="attributesForVoice:">
+    <method class_method="true" selector="attributesForVoice:">
       <arg name="voice"></arg>
       <retval></retval>
     </method>
-    <method selector="availableVoices">
+    <method class_method="true" selector="availableVoices">
       <retval></retval>
     </method>
     <method selector="continueSpeaking">
       <retval></retval>
     </method>
-    <method selector="defaultVoice">
+    <method class_method="true" selector="defaultVoice">
       <retval></retval>
     </method>
     <method selector="delegate">
@@ -18222,7 +18222,7 @@
       <arg name="voice"></arg>
       <retval></retval>
     </method>
-    <method selector="isAnyApplicationSpeaking">
+    <method class_method="true" selector="isAnyApplicationSpeaking">
       <retval></retval>
     </method>
     <method selector="isSpeaking">
@@ -18387,16 +18387,16 @@
       <arg name="aString"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedSpellChecker">
+    <method class_method="true" selector="sharedSpellChecker">
       <retval></retval>
     </method>
-    <method selector="sharedSpellCheckerExists">
+    <method class_method="true" selector="sharedSpellCheckerExists">
       <retval></retval>
     </method>
     <method selector="spellingPanel">
       <retval></retval>
     </method>
-    <method selector="uniqueSpellDocumentTag">
+    <method class_method="true" selector="uniqueSpellDocumentTag">
       <retval></retval>
     </method>
     <method selector="unlearnWord:">
@@ -18492,7 +18492,7 @@
       <arg name="length" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="systemStatusBar" swt_gen="true">
+    <method class_method="true" selector="systemStatusBar" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="thickness">
@@ -20561,7 +20561,7 @@
     <method selector="readablePasteboardTypes">
       <retval></retval>
     </method>
-    <method selector="registerForServices">
+    <method class_method="true" selector="registerForServices">
       <retval></retval>
     </method>
     <method selector="replaceTextContainer:">
@@ -20968,10 +20968,10 @@
     <method selector="completionDelay">
       <retval></retval>
     </method>
-    <method selector="defaultCompletionDelay">
+    <method class_method="true" selector="defaultCompletionDelay">
       <retval></retval>
     </method>
-    <method selector="defaultTokenizingCharacterSet">
+    <method class_method="true" selector="defaultTokenizingCharacterSet">
       <retval></retval>
     </method>
     <method selector="setCompletionDelay:">
@@ -20997,10 +20997,10 @@
     <method selector="completionDelay">
       <retval></retval>
     </method>
-    <method selector="defaultCompletionDelay">
+    <method class_method="true" selector="defaultCompletionDelay">
       <retval></retval>
     </method>
-    <method selector="defaultTokenizingCharacterSet">
+    <method class_method="true" selector="defaultTokenizingCharacterSet">
       <retval></retval>
     </method>
     <method selector="delegate">
@@ -21472,7 +21472,7 @@
       <arg name="recursively"></arg>
       <retval></retval>
     </method>
-    <method selector="treeNodeWithRepresentedObject:">
+    <method class_method="true" selector="treeNodeWithRepresentedObject:">
       <arg name="modelObject"></arg>
       <retval></retval>
     </method>
@@ -21522,7 +21522,7 @@
     <method selector="currentTextContainer">
       <retval></retval>
     </method>
-    <method selector="defaultTypesetterBehavior">
+    <method class_method="true" selector="defaultTypesetterBehavior">
       <retval></retval>
     </method>
     <method selector="deleteGlyphsInRange:">
@@ -21635,7 +21635,7 @@
       <arg name="rect"></arg>
       <retval></retval>
     </method>
-    <method selector="printingAdjustmentInLayoutManager:forNominallySpacedGlyphRange:packedGlyphs:count:">
+    <method class_method="true" selector="printingAdjustmentInLayoutManager:forNominallySpacedGlyphRange:packedGlyphs:count:">
       <arg name="layoutMgr"></arg>
       <arg name="nominallySpacedGlyphsRange"></arg>
       <arg name="packedGlyphs"></arg>
@@ -21709,10 +21709,10 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedSystemTypesetter">
+    <method class_method="true" selector="sharedSystemTypesetter">
       <retval></retval>
     </method>
-    <method selector="sharedSystemTypesetterForBehavior:">
+    <method class_method="true" selector="sharedSystemTypesetterForBehavior:">
       <arg name="theBehavior"></arg>
       <retval></retval>
     </method>
@@ -21757,7 +21757,7 @@
     </method>
   </class>
   <class name="NSURL">
-    <method selector="URLFromPasteboard:">
+    <method class_method="true" selector="URLFromPasteboard:">
       <arg name="pasteBoard"></arg>
       <retval></retval>
     </method>
@@ -21804,7 +21804,7 @@
       <arg name="initialValues"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedUserDefaultsController">
+    <method class_method="true" selector="sharedUserDefaultsController">
       <retval></retval>
     </method>
     <method selector="values">
@@ -21990,10 +21990,10 @@
       <arg name="rect"></arg>
       <retval></retval>
     </method>
-    <method selector="defaultFocusRingType">
+    <method class_method="true" selector="defaultFocusRingType">
       <retval></retval>
     </method>
-    <method selector="defaultMenu">
+    <method class_method="true" selector="defaultMenu">
       <retval></retval>
     </method>
     <method selector="didAddSubview:">
@@ -22094,7 +22094,7 @@
     <method selector="focusRingType">
       <retval></retval>
     </method>
-    <method selector="focusView">
+    <method class_method="true" selector="focusView">
       <retval></retval>
     </method>
     <method selector="frame" swt_gen="true">
@@ -22793,7 +22793,7 @@
       <arg name="frameRect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="contentRectForFrameRect:styleMask:">
+    <method class_method="true" selector="contentRectForFrameRect:styleMask:">
       <arg name="fRect"></arg>
       <arg name="aStyle"></arg>
       <retval></retval>
@@ -22829,7 +22829,7 @@
     <method selector="defaultButtonCell">
       <retval></retval>
     </method>
-    <method selector="defaultDepthLimit">
+    <method class_method="true" selector="defaultDepthLimit">
       <retval></retval>
     </method>
     <method selector="delegate">
@@ -22930,7 +22930,7 @@
       <arg name="contentRect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="frameRectForContentRect:styleMask:" swt_gen="true">
+    <method class_method="true" selector="frameRectForContentRect:styleMask:" swt_gen="true">
       <arg name="cRect" swt_gen="true"></arg>
       <arg name="aStyle" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
@@ -23084,11 +23084,11 @@
     <method selector="maxSize">
       <retval></retval>
     </method>
-    <method selector="menuChanged:">
+    <method class_method="true" selector="menuChanged:">
       <arg name="menu"></arg>
       <retval></retval>
     </method>
-    <method selector="minFrameWidthWithTitle:styleMask:">
+    <method class_method="true" selector="minFrameWidthWithTitle:styleMask:">
       <arg name="aTitle"></arg>
       <arg name="aStyle"></arg>
       <retval></retval>
@@ -23184,7 +23184,7 @@
       <arg name="childWin"></arg>
       <retval></retval>
     </method>
-    <method selector="removeFrameUsingName:">
+    <method class_method="true" selector="removeFrameUsingName:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
@@ -23526,7 +23526,7 @@
       <arg name="b"></arg>
       <retval></retval>
     </method>
-    <method selector="standardWindowButton:forStyleMask:">
+    <method class_method="true" selector="standardWindowButton:forStyleMask:">
       <arg name="b"></arg>
       <arg name="styleMask"></arg>
       <retval></retval>
@@ -23855,7 +23855,7 @@
       <arg name="options"></arg>
       <retval></retval>
     </method>
-    <method selector="sharedWorkspace" swt_gen="true">
+    <method class_method="true" selector="sharedWorkspace" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="slideImage:from:to:">
@@ -24425,7 +24425,7 @@
       <arg name="keyPath" swt_gen="true"></arg>
       <arg name="options" swt_gen="true"></arg>
     </method>
-    <method selector="exposeBinding:" swt_gen="true">
+    <method class_method="true" selector="exposeBinding:" swt_gen="true">
       <arg name="binding" swt_gen="true"></arg>
     </method>
     <method selector="exposedBindings" swt_gen="true"></method>
@@ -24695,11 +24695,11 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSPlaceholders" swt_gen="true">
-    <method selector="defaultPlaceholderForMarker:withBinding:" swt_gen="true">
+    <method class_method="true" selector="defaultPlaceholderForMarker:withBinding:" swt_gen="true">
       <arg name="marker" swt_gen="true"></arg>
       <arg name="binding" swt_gen="true"></arg>
     </method>
-    <method selector="setDefaultPlaceholder:forMarker:withBinding:" swt_gen="true">
+    <method class_method="true" selector="setDefaultPlaceholder:forMarker:withBinding:" swt_gen="true">
       <arg name="placeholder" swt_gen="true"></arg>
       <arg name="marker" swt_gen="true"></arg>
       <arg name="binding" swt_gen="true"></arg>

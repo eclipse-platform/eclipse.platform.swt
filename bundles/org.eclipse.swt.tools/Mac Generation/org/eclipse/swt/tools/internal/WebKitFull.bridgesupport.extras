@@ -3020,11 +3020,11 @@
       <arg name="args"></arg>
       <retval></retval>
     </method>
-    <method selector="isKeyExcludedFromWebScript:">
+    <method class_method="true" selector="isKeyExcludedFromWebScript:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="isSelectorExcludedFromWebScript:">
+    <method class_method="true" selector="isSelectorExcludedFromWebScript:">
       <arg name="aSelector"></arg>
       <retval></retval>
     </method>
@@ -3038,7 +3038,7 @@
     <method selector="objectForWebScript">
       <retval></retval>
     </method>
-    <method selector="plugInViewWithArguments:">
+    <method class_method="true" selector="plugInViewWithArguments:">
       <arg name="arguments"></arg>
       <retval></retval>
     </method>
@@ -3159,11 +3159,11 @@
     <method selector="webPlugInStop">
       <retval></retval>
     </method>
-    <method selector="webScriptNameForKey:">
+    <method class_method="true" selector="webScriptNameForKey:">
       <arg name="name"></arg>
       <retval></retval>
     </method>
-    <method selector="webScriptNameForSelector:">
+    <method class_method="true" selector="webScriptNameForSelector:">
       <arg name="aSelector"></arg>
       <retval></retval>
     </method>
@@ -3883,7 +3883,7 @@
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method selector="optionalSharedHistory">
+    <method class_method="true" selector="optionalSharedHistory">
       <retval></retval>
     </method>
     <method selector="orderedItemsLastVisitedOnDay:">
@@ -3913,7 +3913,7 @@
       <arg name="limit"></arg>
       <retval></retval>
     </method>
-    <method selector="setOptionalSharedHistory:">
+    <method class_method="true" selector="setOptionalSharedHistory:">
       <arg name="history"></arg>
       <retval></retval>
     </method>
@@ -4126,7 +4126,7 @@
     <method selector="standardFontFamily">
       <retval></retval>
     </method>
-    <method selector="standardPreferences" swt_gen="true">
+    <method class_method="true" selector="standardPreferences" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
     <method selector="tabsToLinks">
@@ -4196,7 +4196,7 @@
     <method selector="stringRepresentation">
       <retval></retval>
     </method>
-    <method selector="throwException:">
+    <method class_method="true" selector="throwException:">
       <arg name="exceptionMessage"></arg>
       <retval></retval>
     </method>
@@ -4206,22 +4206,22 @@
     </method>
   </class>
   <class name="WebUndefined">
-    <method selector="undefined">
+    <method class_method="true" selector="undefined">
       <retval></retval>
     </method>
   </class>
   <class name="WebView" swt_gen="mixed" swt_superclass="NSView">
-    <method selector="MIMETypesShownAsHTML">
+    <method class_method="true" selector="MIMETypesShownAsHTML">
       <retval></retval>
     </method>
     <method selector="UIDelegate">
       <retval></retval>
     </method>
-    <method selector="URLFromPasteboard:">
+    <method class_method="true" selector="URLFromPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
-    <method selector="URLTitleFromPasteboard:">
+    <method class_method="true" selector="URLTitleFromPasteboard:">
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
@@ -4266,11 +4266,11 @@
     <method selector="canMakeTextStandardSize">
       <retval></retval>
     </method>
-    <method selector="canShowMIMEType:" swt_gen="true">
+    <method class_method="true" selector="canShowMIMEType:" swt_gen="true">
       <arg name="MIMEType" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="canShowMIMETypeAsHTML:">
+    <method class_method="true" selector="canShowMIMETypeAsHTML:">
       <arg name="MIMEType"></arg>
       <retval></retval>
     </method>
@@ -4478,11 +4478,11 @@
     <method selector="preferencesIdentifier">
       <retval></retval>
     </method>
-    <method selector="registerURLSchemeAsLocal:">
+    <method class_method="true" selector="registerURLSchemeAsLocal:">
       <arg name="scheme"></arg>
       <retval></retval>
     </method>
-    <method selector="registerViewClass:representationClass:forMIMEType:">
+    <method class_method="true" selector="registerViewClass:representationClass:forMIMEType:">
       <arg name="viewClass"></arg>
       <arg name="representationClass"></arg>
       <arg name="MIMEType"></arg>
@@ -4578,7 +4578,7 @@
       <arg name="hostWindow"></arg>
       <retval></retval>
     </method>
-    <method selector="setMIMETypesShownAsHTML:">
+    <method class_method="true" selector="setMIMETypesShownAsHTML:">
       <arg name="MIMETypes"></arg>
       <retval></retval>
     </method>
@@ -4906,16 +4906,16 @@
       <arg name="name" swt_gen="true"></arg>
       <arg name="args" swt_gen="true"></arg>
     </method>
-    <method selector="isKeyExcludedFromWebScript:" swt_gen="true">
+    <method class_method="true" selector="isKeyExcludedFromWebScript:" swt_gen="true">
       <arg name="name" swt_gen="true"></arg>
     </method>
-    <method selector="isSelectorExcludedFromWebScript:" swt_gen="true">
+    <method class_method="true" selector="isSelectorExcludedFromWebScript:" swt_gen="true">
       <arg name="aSelector" swt_gen="true"></arg>
     </method>
-    <method selector="webScriptNameForKey:" swt_gen="true">
+    <method class_method="true" selector="webScriptNameForKey:" swt_gen="true">
       <arg name="name" swt_gen="true"></arg>
     </method>
-    <method selector="webScriptNameForSelector:" swt_gen="true">
+    <method class_method="true" selector="webScriptNameForSelector:" swt_gen="true">
       <arg name="aSelector" swt_gen="true"></arg>
     </method>
   </informal_protocol>

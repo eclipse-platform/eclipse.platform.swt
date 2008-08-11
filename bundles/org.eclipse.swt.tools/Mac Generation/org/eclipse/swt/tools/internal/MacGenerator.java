@@ -303,6 +303,7 @@ void generateClasses() {
 		outln();
 		out("}");
 		outln();
+		outln();
 		out("public ");
 		out(className);
 		out("(id id) {");
@@ -311,21 +312,31 @@ void generateClasses() {
 		outln();
 		out("}");
 		outln();
+		outln();
 		if (className.equals("NSString")) {
 			out("public String getString() {");
 			outln();
-			out("\treturn null;");
+			out("\tchar[] buffer = new char[length()];");
+			outln();
+			out("\tgetCharacters(buffer);");
+			outln();
+			out("\treturn new String(buffer);");
 			outln();
 			out("}");
+			outln();
 			outln();
 			out("public static NSString stringWith(String str) {");
 			outln();
-			out("\treturn null;");
+			out("\tchar[] buffer = new char[str.length()];");
+			outln();
+			out("\tstr.getChars(0, buffer.length, buffer, 0);");
+			outln();
+			out("\treturn stringWithCharacters(buffer, buffer.length);");
 			outln();
 			out("}");
 			outln();
+			outln();
 		}
-		outln();
 		
 		generateMethods(className, methods);
 		
@@ -464,9 +475,10 @@ private void saveExtraAttributes(String xmlPath, Document document) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		DOMWriter writer = new DOMWriter(new PrintStream(out), false);
 		String[] names = getIDAttributeNames();
-		String[] filter = new String[names.length + 1];
-		filter[0] = "swt_.*";
-		System.arraycopy(names, 0, filter, 1, names.length);
+		String[] filter = new String[names.length + 2];
+		filter[0] = "class_method";
+		filter[1] = "swt_.*";
+		System.arraycopy(names, 0, filter, 2, names.length);
 		writer.setAttributeFilter(filter);
 		writer.print(document);
 		if (out.size() > 0) output(out.toByteArray(), fileName);
@@ -523,6 +535,11 @@ private String getKey (Node node) {
 		if (nameAttrib != null) {
 			key.append("-");
 			key.append(nameAttrib.getNodeValue());
+		}
+		NamedNodeMap attributes = node.getAttributes();
+		if (attributes != null) {
+			boolean isStatic = attributes.getNamedItem("class_method") != null;
+			if (isStatic) key.append("-static");
 		}
 		buffer.append(key.reverse());
 		node = node.getParentNode();
