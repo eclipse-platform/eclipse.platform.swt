@@ -2272,7 +2272,7 @@
   <class name="CIColor">
     <method selector="initWithColor:">
       <arg name="color"></arg>
-      <retval swt_replace_return="CIColor"></retval>
+      <retval swt_java_type="CIColor"></retval>
     </method>
   </class>
   <class name="CIImage">
@@ -2292,7 +2292,7 @@
     </method>
     <method selector="initWithBitmapImageRep:">
       <arg name="bitmapImageRep"></arg>
-      <retval swt_replace_return="CIImage"></retval>
+      <retval swt_java_type="CIImage"></retval>
     </method>
   </class>
   <class name="NSATSTypesetter" swt_superclass="NSTypesetter">
@@ -2394,7 +2394,7 @@
     </method>
     <method selector="initWithTransform:" swt_gen="true">
       <arg name="transform" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSAffineTransform"></retval>
+      <retval swt_gen="true" swt_java_type="NSAffineTransform"></retval>
     </method>
     <method selector="invert" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2551,7 +2551,7 @@
       <retval></retval>
     </method>
     <method selector="window" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSWindow"></retval>
+      <retval swt_gen="true" swt_java_type="NSWindow"></retval>
     </method>
   </class>
   <class name="NSAnimation">
@@ -2589,7 +2589,7 @@
     <method selector="initWithDuration:animationCurve:">
       <arg name="duration"></arg>
       <arg name="animationCurve"></arg>
-      <retval swt_replace_return="NSAnimation"></retval>
+      <retval swt_java_type="NSAnimation"></retval>
     </method>
     <method selector="isAnimating">
       <retval></retval>
@@ -3276,77 +3276,77 @@
     </method>
     <method selector="initWithAttributedString:">
       <arg name="attrStr"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithData:options:documentAttributes:error:">
       <arg name="data"></arg>
       <arg name="options"></arg>
       <arg name="dict"></arg>
       <arg name="error"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithDocFormat:documentAttributes:">
       <arg name="data"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithHTML:baseURL:documentAttributes:">
       <arg name="data"></arg>
       <arg name="base"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithHTML:documentAttributes:">
       <arg name="data"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithHTML:options:documentAttributes:">
       <arg name="data"></arg>
       <arg name="options"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithPath:documentAttributes:">
       <arg name="path"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithRTF:documentAttributes:">
       <arg name="data"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithRTFD:documentAttributes:">
       <arg name="data"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithRTFDFileWrapper:documentAttributes:">
       <arg name="wrapper"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
+      <retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:attributes:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
       <arg name="attrs" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
+      <retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithURL:documentAttributes:">
       <arg name="url"></arg>
       <arg name="dict"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithURL:options:documentAttributes:error:">
       <arg name="url"></arg>
       <arg name="options"></arg>
       <arg name="dict"></arg>
       <arg name="error"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="isEqualToAttributedString:">
       <arg name="other"></arg>
@@ -3798,7 +3798,7 @@
       <retval></retval>
     </method>
     <method selector="initForIncrementalLoad">
-      <retval swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:" swt_gen="true">
       <arg name="planes" swt_gen="true"></arg>
@@ -3812,7 +3812,7 @@
       <arg name="bitmapFormat" swt_gen="true"></arg>
       <arg name="rBytes" swt_gen="true"></arg>
       <arg name="pBits" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:" swt_gen="true">
       <arg name="planes" swt_gen="true"></arg>
@@ -3825,23 +3825,23 @@
       <arg name="colorSpaceName" swt_gen="true"></arg>
       <arg name="rBytes" swt_gen="true"></arg>
       <arg name="pBits" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithCGImage:">
       <arg name="cgImage"></arg>
-      <retval swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithCIImage:">
       <arg name="ciImage"></arg>
-      <retval swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithData:">
       <arg name="data"></arg>
-      <retval swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="initWithFocusedViewRect:">
       <arg name="rect"></arg>
-      <retval swt_replace_return="NSBitmapImageRep"></retval>
+      <retval swt_java_type="NSBitmapImageRep"></retval>
     </method>
     <method selector="isPlanar" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3911,7 +3911,7 @@
       <retval></retval>
     </method>
     <method selector="contentView">
-      <retval swt_replace_return="NSView"></retval>
+      <retval swt_java_type="NSView"></retval>
     </method>
     <method selector="contentViewMargins" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3988,7 +3988,7 @@
       <retval></retval>
     </method>
     <method selector="titleCell">
-      <retval swt_replace_return="NSCell"></retval>
+      <retval swt_java_type="NSCell"></retval>
     </method>
     <method selector="titleFont">
       <retval></retval>
@@ -6448,7 +6448,7 @@
       <retval></retval>
     </method>
     <method selector="cell" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSCell"></retval>
+      <retval swt_gen="true" swt_java_type="NSCell"></retval>
     </method>
     <method selector="cellClass">
       <retval></retval>
@@ -6728,7 +6728,7 @@
     <method selector="initWithImage:hotSpot:" swt_gen="true">
       <arg name="newImage" swt_gen="true"></arg>
       <arg name="aPoint" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSCursor"></retval>
+      <retval swt_gen="true" swt_java_type="NSCursor"></retval>
     </method>
     <method selector="isSetOnMouseEntered">
       <retval></retval>
@@ -9082,7 +9082,7 @@
     <method selector="initWithStartingColor:endingColor:" swt_gen="true">
       <arg name="startingColor" swt_gen="true"></arg>
       <arg name="endingColor" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSGradient"></retval>
+      <retval swt_gen="true" swt_java_type="NSGradient"></retval>
     </method>
     <method selector="interpolatedColorAtLocation:">
       <arg name="location"></arg>
@@ -9386,7 +9386,7 @@
     </method>
     <method selector="initWithSize:" swt_gen="true">
       <arg name="aSize" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSImage"></retval>
+      <retval swt_gen="true" swt_java_type="NSImage"></retval>
     </method>
     <method selector="isCachedSeparately">
       <retval></retval>
@@ -10998,7 +10998,7 @@
     </method>
     <method selector="initWithTitle:" swt_gen="true">
       <arg name="aTitle" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSMenu"></retval>
+      <retval swt_gen="true" swt_java_type="NSMenu"></retval>
     </method>
     <method selector="insertItem:atIndex:" swt_gen="true">
       <arg name="newItem" swt_gen="true"></arg>
@@ -11180,7 +11180,7 @@
       <arg name="aString" swt_gen="true"></arg>
       <arg name="aSelector" swt_gen="true"></arg>
       <arg name="charCode" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSMenuItem"></retval>
+      <retval swt_gen="true" swt_java_type="NSMenuItem"></retval>
     </method>
     <method selector="isAlternate">
       <retval></retval>
@@ -15246,7 +15246,7 @@
     <method selector="initWithFrame:pullsDown:" swt_gen="true">
       <arg name="buttonFrame" swt_gen="true"></arg>
       <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSPopUpButton"></retval>
+      <retval swt_gen="true" swt_java_type="NSPopUpButton"></retval>
     </method>
     <method selector="insertItemWithTitle:atIndex:">
       <arg name="title"></arg>
@@ -15623,7 +15623,7 @@
     </method>
     <method selector="initWithDictionary:" swt_gen="true">
       <arg name="attributes" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSPrintInfo"></retval>
+      <retval swt_gen="true" swt_java_type="NSPrintInfo"></retval>
     </method>
     <method selector="isHorizontallyCentered">
       <retval></retval>
@@ -17195,7 +17195,7 @@
       <retval></retval>
     </method>
     <method selector="documentView" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSView"></retval>
+      <retval swt_gen="true" swt_java_type="NSView"></retval>
     </method>
     <method selector="documentVisibleRect" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -18902,7 +18902,7 @@
       <retval></retval>
     </method>
     <method selector="headerCell" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSTableHeaderCell"></retval>
+      <retval swt_gen="true" swt_java_type="NSTableHeaderCell"></retval>
     </method>
     <method selector="headerToolTip">
       <retval></retval>
@@ -19877,7 +19877,7 @@
     </method>
     <method selector="initWithContainerSize:" swt_gen="mixed">
       <arg name="size" swt_gen="true"></arg>
-      <retval swt_replace_return="NSTextContainer"></retval>
+      <retval swt_java_type="NSTextContainer"></retval>
     </method>
     <method selector="isSimpleRectangularTextContainer">
       <retval></retval>
@@ -22131,7 +22131,7 @@
     </method>
     <method selector="initWithFrame:" swt_gen="true">
       <arg name="frameRect" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSView"></retval>
+      <retval swt_gen="true" swt_java_type="NSView"></retval>
     </method>
     <method selector="isDescendantOf:">
       <arg name="aView"></arg>
@@ -22802,7 +22802,7 @@
       <retval></retval>
     </method>
     <method selector="contentView" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSView"></retval>
+      <retval swt_gen="true" swt_java_type="NSView"></retval>
     </method>
     <method selector="convertBaseToScreen:" swt_gen="true">
       <arg name="aPoint" swt_gen="true"></arg>
@@ -22976,7 +22976,7 @@
       <arg name="aStyle" swt_gen="true"></arg>
       <arg name="bufferingType" swt_gen="true"></arg>
       <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSWindow"></retval>
+      <retval swt_gen="true" swt_java_type="NSWindow"></retval>
     </method>
     <method selector="initWithContentRect:styleMask:backing:defer:screen:" swt_gen="true">
       <arg name="contentRect" swt_gen="true"></arg>
@@ -22984,7 +22984,7 @@
       <arg name="bufferingType" swt_gen="true"></arg>
       <arg name="flag" swt_gen="true"></arg>
       <arg name="screen" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSWindow"></retval>
+      <retval swt_gen="true" swt_java_type="NSWindow"></retval>
     </method>
     <method selector="initWithWindowRef:">
       <arg name="windowRef"></arg>

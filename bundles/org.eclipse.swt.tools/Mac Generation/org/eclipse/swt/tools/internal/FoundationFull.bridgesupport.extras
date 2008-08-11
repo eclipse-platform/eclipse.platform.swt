@@ -1876,25 +1876,25 @@
       <retval></retval>
     </method>
     <method selector="initListDescriptor" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSAppleEventDescriptor"></retval>
+      <retval swt_gen="true" swt_java_type="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initRecordDescriptor">
-      <retval swt_replace_return="NSAppleEventDescriptor"></retval>
+      <retval swt_java_type="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithAEDescNoCopy:">
       <arg name="aeDesc"></arg>
-      <retval swt_replace_return="NSAppleEventDescriptor"></retval>
+      <retval swt_java_type="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithDescriptorType:bytes:length:">
       <arg name="descriptorType"></arg>
       <arg name="bytes"></arg>
       <arg name="byteCount"></arg>
-      <retval swt_replace_return="NSAppleEventDescriptor"></retval>
+      <retval swt_java_type="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithDescriptorType:data:">
       <arg name="descriptorType"></arg>
       <arg name="data"></arg>
-      <retval swt_replace_return="NSAppleEventDescriptor"></retval>
+      <retval swt_java_type="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="initWithEventClass:eventID:targetDescriptor:returnID:transactionID:">
       <arg name="eventClass"></arg>
@@ -1902,7 +1902,7 @@
       <arg name="targetDescriptor"></arg>
       <arg name="returnID"></arg>
       <arg name="transactionID"></arg>
-      <retval swt_replace_return="NSAppleEventDescriptor"></retval>
+      <retval swt_java_type="NSAppleEventDescriptor"></retval>
     </method>
     <method selector="insertDescriptor:atIndex:">
       <arg name="descriptor"></arg>
@@ -2037,11 +2037,11 @@
     <method selector="initWithContentsOfURL:error:">
       <arg name="url"></arg>
       <arg name="errorInfo"></arg>
-      <retval swt_replace_return="NSAppleScript"></retval>
+      <retval swt_java_type="NSAppleScript"></retval>
     </method>
     <method selector="initWithSource:">
       <arg name="source"></arg>
-      <retval swt_replace_return="NSAppleScript"></retval>
+      <retval swt_java_type="NSAppleScript"></retval>
     </method>
     <method selector="isCompiled">
       <retval></retval>
@@ -2082,7 +2082,7 @@
     </method>
     <method selector="initForWritingWithMutableData:">
       <arg name="mdata"></arg>
-      <retval swt_replace_return="NSArchiver"></retval>
+      <retval swt_java_type="NSArchiver"></retval>
     </method>
     <method selector="replaceObject:withObject:">
       <arg name="object"></arg>
@@ -2131,7 +2131,7 @@
     </method>
     <method selector="arrayWithObject:" swt_gen="true">
       <arg name="anObject" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSArray"></retval>
+      <retval swt_gen="true" swt_java_type="NSArray"></retval>
     </method>
     <method selector="arrayWithObjects:">
       <arg name="arrayWithObjects"></arg>
@@ -2202,29 +2202,29 @@
     </method>
     <method selector="initWithArray:">
       <arg name="array"></arg>
-      <retval swt_replace_return="NSArray"></retval>
+      <retval swt_java_type="NSArray"></retval>
     </method>
     <method selector="initWithArray:copyItems:">
       <arg name="array"></arg>
       <arg name="flag"></arg>
-      <retval swt_replace_return="NSArray"></retval>
+      <retval swt_java_type="NSArray"></retval>
     </method>
     <method selector="initWithContentsOfFile:">
       <arg name="path"></arg>
-      <retval swt_replace_return="NSArray"></retval>
+      <retval swt_java_type="NSArray"></retval>
     </method>
     <method selector="initWithContentsOfURL:">
       <arg name="url"></arg>
-      <retval swt_replace_return="NSArray"></retval>
+      <retval swt_java_type="NSArray"></retval>
     </method>
     <method selector="initWithObjects:">
       <arg name="initWithObjects"></arg>
-      <retval swt_replace_return="NSArray"></retval>
+      <retval swt_java_type="NSArray"></retval>
     </method>
     <method selector="initWithObjects:count:">
       <arg name="objects"></arg>
       <arg name="cnt"></arg>
-      <retval swt_replace_return="NSArray"></retval>
+      <retval swt_java_type="NSArray"></retval>
     </method>
     <method selector="isEqualToArray:">
       <arg name="otherArray"></arg>
@@ -2378,16 +2378,16 @@
     </method>
     <method selector="initWithAttributedString:">
       <arg name="attrStr"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSAttributedString"></retval>
+      <retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:attributes:">
       <arg name="str"></arg>
       <arg name="attrs"></arg>
-      <retval swt_replace_return="NSAttributedString"></retval>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="isEqualToAttributedString:">
       <arg name="other"></arg>
@@ -2496,7 +2496,7 @@
     </method>
     <method selector="initWithPath:">
       <arg name="path"></arg>
-      <retval swt_replace_return="NSBundle"></retval>
+      <retval swt_java_type="NSBundle"></retval>
     </method>
     <method selector="isLoaded">
       <retval></retval>
@@ -2726,7 +2726,7 @@
   </class>
   <class name="NSCalendarDate" swt_gen="mixed" swt_superclass="NSDate">
     <method selector="calendarDate" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSCalendarDate"></retval>
+      <retval swt_gen="true" swt_java_type="NSCalendarDate"></retval>
     </method>
     <method selector="calendarFormat">
       <retval></retval>
@@ -2759,7 +2759,7 @@
       <arg name="minute" swt_gen="true"></arg>
       <arg name="second" swt_gen="true"></arg>
       <arg name="aTimeZone" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSCalendarDate"></retval>
+      <retval swt_gen="true" swt_java_type="NSCalendarDate"></retval>
     </method>
     <method selector="dayOfCommonEra">
       <retval></retval>
@@ -3723,7 +3723,7 @@
     </method>
     <method selector="dateWithTimeIntervalSinceNow:" swt_gen="true">
       <arg name="secs" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSDate"></retval>
+      <retval swt_gen="true" swt_java_type="NSDate"></retval>
     </method>
     <method selector="dateWithTimeIntervalSinceReferenceDate:">
       <arg name="secs"></arg>
@@ -3743,7 +3743,7 @@
       <retval></retval>
     </method>
     <method selector="distantFuture" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSDate"></retval>
+      <retval swt_gen="true" swt_java_type="NSDate"></retval>
     </method>
     <method selector="distantPast">
       <retval></retval>
@@ -4344,7 +4344,7 @@
     <method selector="dictionaryWithObject:forKey:" swt_gen="true">
       <arg name="object" swt_gen="true"></arg>
       <arg name="key" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSDictionary"></retval>
+      <retval swt_gen="true" swt_java_type="NSDictionary"></retval>
     </method>
     <method selector="dictionaryWithObjects:forKeys:">
       <arg name="objects"></arg>
@@ -4578,7 +4578,7 @@
       <retval></retval>
     </method>
     <method selector="defaultCenter">
-      <retval swt_replace_return="NSNotificationCenter"></retval>
+      <retval swt_java_type="NSNotificationCenter"></retval>
     </method>
     <method selector="notificationCenterForType:">
       <arg name="notificationCenterType"></arg>
@@ -6229,7 +6229,7 @@
     </method>
     <method selector="arrayWithCapacity:" swt_gen="true">
       <arg name="numItems" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSMutableArray"></retval>
+      <retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
     </method>
     <method selector="exchangeObjectAtIndex:withObjectAtIndex:">
       <arg name="idx1"></arg>
@@ -6495,7 +6495,7 @@
     </method>
     <method selector="dictionaryWithCapacity:" swt_gen="true">
       <arg name="numItems" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSMutableDictionary"></retval>
+      <retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
     </method>
     <method selector="initWithCapacity:">
       <arg name="numItems"></arg>
@@ -6883,7 +6883,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="defaultCenter" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSNotificationCenter"></retval>
+      <retval swt_gen="true" swt_java_type="NSNotificationCenter"></retval>
     </method>
     <method selector="postNotification:">
       <arg name="notification"></arg>
@@ -8102,7 +8102,7 @@
       <retval></retval>
     </method>
     <method selector="init" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSObject"></retval>
+      <retval swt_gen="true" swt_java_type="NSObject"></retval>
     </method>
     <method selector="initWithCoder:">
       <arg name="aDecoder"></arg>
@@ -10149,7 +10149,7 @@
       <retval></retval>
     </method>
     <method selector="set" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="NSSet"></retval>
+      <retval swt_gen="true" swt_java_type="NSSet"></retval>
     </method>
     <method selector="setByAddingObject:">
       <arg name="anObject"></arg>
@@ -11354,7 +11354,7 @@
     </method>
     <method selector="URLWithString:" swt_gen="true">
       <arg name="URLString" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSURL"></retval>
+      <retval swt_gen="true" swt_java_type="NSURL"></retval>
     </method>
     <method selector="URLWithString:relativeToURL:">
       <arg name="URLString"></arg>
@@ -11372,7 +11372,7 @@
     </method>
     <method selector="fileURLWithPath:" swt_gen="true">
       <arg name="path" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSURL"></retval>
+      <retval swt_gen="true" swt_java_type="NSURL"></retval>
     </method>
     <method selector="fileURLWithPath:isDirectory:">
       <arg name="path"></arg>
@@ -11908,7 +11908,7 @@
     </method>
     <method selector="initWithURL:" swt_gen="true">
       <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSURLRequest"></retval>
+      <retval swt_gen="true" swt_java_type="NSURLRequest"></retval>
     </method>
     <method selector="initWithURL:cachePolicy:timeoutInterval:">
       <arg name="URL"></arg>
@@ -11921,7 +11921,7 @@
     </method>
     <method selector="requestWithURL:" swt_gen="true">
       <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="NSURLRequest"></retval>
+      <retval swt_gen="true" swt_java_type="NSURLRequest"></retval>
     </method>
     <method selector="requestWithURL:cachePolicy:timeoutInterval:">
       <arg name="URL"></arg>

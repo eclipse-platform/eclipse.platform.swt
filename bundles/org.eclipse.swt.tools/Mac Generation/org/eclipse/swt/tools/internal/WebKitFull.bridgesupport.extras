@@ -3730,7 +3730,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="representation" swt_gen="true">
-      <retval swt_gen="true" swt_replace_return="WebDocumentRepresentation"></retval>
+      <retval swt_gen="true" swt_java_type="WebDocumentRepresentation"></retval>
     </method>
     <method selector="request" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4378,7 +4378,7 @@
       <arg name="frame" swt_gen="true"></arg>
       <arg name="frameName" swt_gen="true"></arg>
       <arg name="groupName" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_replace_return="WebView"></retval>
+      <retval swt_gen="true" swt_java_type="WebView"></retval>
     </method>
     <method selector="isContinuousSpellCheckingEnabled">
       <retval></retval>
