@@ -1662,42 +1662,42 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMEvent" swt_gen="true" swt_superclass="NSEvent">
-    <method selector="bubbles" swt_gen="true">
-      <retval swt_gen="true"></retval>
+  <class name="DOMEvent" swt_gen="mixed">
+    <method selector="bubbles">
+      <retval></retval>
     </method>
-    <method selector="cancelable" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="cancelable">
+      <retval></retval>
     </method>
-    <method selector="currentTarget" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="currentTarget">
+      <retval></retval>
     </method>
-    <method selector="eventPhase" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="eventPhase">
+      <retval></retval>
     </method>
-    <method selector="initEvent:::" swt_gen="true">
-      <arg name="initEvent" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <arg name="" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initEvent:::">
+      <arg name="initEvent"></arg>
+      <arg name=""></arg>
+      <arg name=""></arg>
+      <retval></retval>
     </method>
-    <method selector="initEvent:canBubbleArg:cancelableArg:" swt_gen="true">
-      <arg name="eventTypeArg" swt_gen="true"></arg>
-      <arg name="canBubbleArg" swt_gen="true"></arg>
-      <arg name="cancelableArg" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initEvent:canBubbleArg:cancelableArg:">
+      <arg name="eventTypeArg"></arg>
+      <arg name="canBubbleArg"></arg>
+      <arg name="cancelableArg"></arg>
+      <retval></retval>
     </method>
     <method selector="preventDefault" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="stopPropagation" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="stopPropagation">
+      <retval></retval>
     </method>
-    <method selector="target" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="target">
+      <retval></retval>
     </method>
-    <method selector="timeStamp" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="timeStamp">
+      <retval></retval>
     </method>
   </class>
   <class name="DOMHTMLAnchorElement">
@@ -2395,7 +2395,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMKeyboardEvent" swt_gen="true" swt_superclass="DOMUIEvent">
+  <class name="DOMKeyboardEvent" swt_gen="mixed" swt_superclass="DOMUIEvent">
     <method selector="altKey" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
@@ -2405,15 +2405,15 @@
     <method selector="ctrlKey" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="getModifierState:" swt_gen="true">
-      <arg name="keyIdentifierArg" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="getModifierState:">
+      <arg name="keyIdentifierArg"></arg>
+      <retval></retval>
     </method>
     <method selector="keyCode" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="keyLocation" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="keyLocation">
+      <retval></retval>
     </method>
     <method selector="metaKey" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2494,14 +2494,14 @@
     <method selector="metaKey" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="relatedTarget" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="relatedTarget">
+      <retval></retval>
     </method>
-    <method selector="screenX" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="screenX">
+      <retval></retval>
     </method>
-    <method selector="screenY" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="screenY">
+      <retval></retval>
     </method>
     <method selector="shiftKey" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -2876,24 +2876,24 @@
       <retval></retval>
     </method>
   </class>
-  <class name="DOMWheelEvent">
-    <method selector="altKey">
-      <retval></retval>
+  <class name="DOMWheelEvent" swt_gen="mixed">
+    <method selector="altKey" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="clientX">
-      <retval></retval>
+    <method selector="clientX" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="clientY">
-      <retval></retval>
+    <method selector="clientY" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="ctrlKey">
-      <retval></retval>
+    <method selector="ctrlKey" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="isHorizontal">
       <retval></retval>
     </method>
-    <method selector="metaKey">
-      <retval></retval>
+    <method selector="metaKey" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="screenX">
       <retval></retval>
@@ -2901,11 +2901,11 @@
     <method selector="screenY">
       <retval></retval>
     </method>
-    <method selector="shiftKey">
-      <retval></retval>
+    <method selector="shiftKey" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="wheelDelta">
-      <retval></retval>
+    <method selector="wheelDelta" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="DOMXPathExpression">
@@ -3004,9 +3004,9 @@
       <arg name="dataSource"></arg>
       <retval></retval>
     </method>
-    <method selector="handleEvent:">
-      <arg name="evt"></arg>
-      <retval></retval>
+    <method selector="handleEvent:" swt_gen="true">
+      <arg name="evt" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="ignore">
       <retval></retval>
@@ -3710,8 +3710,8 @@
       <arg name="subresource"></arg>
       <retval></retval>
     </method>
-    <method selector="data" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="data">
+      <retval></retval>
     </method>
     <method selector="initWithRequest:">
       <arg name="request"></arg>
@@ -3720,8 +3720,8 @@
     <method selector="initialRequest">
       <retval></retval>
     </method>
-    <method selector="isLoading" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="isLoading">
+      <retval></retval>
     </method>
     <method selector="mainResource">
       <retval></retval>
@@ -3735,8 +3735,8 @@
     <method selector="request" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="response" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="response">
+      <retval></retval>
     </method>
     <method selector="subresourceForURL:">
       <arg name="URL"></arg>
@@ -3745,8 +3745,8 @@
     <method selector="subresources">
       <retval></retval>
     </method>
-    <method selector="textEncodingName" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="textEncodingName">
+      <retval></retval>
     </method>
     <method selector="unreachableURL">
       <retval></retval>
@@ -3762,15 +3762,15 @@
     <method selector="DOMDocument" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="childFrames" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="childFrames">
+      <retval></retval>
     </method>
     <method selector="dataSource" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="findFrameNamed:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="findFrameNamed:">
+      <arg name="name"></arg>
+      <retval></retval>
     </method>
     <method selector="frameElement">
       <retval></retval>
@@ -3778,31 +3778,31 @@
     <method selector="frameView">
       <retval></retval>
     </method>
-    <method selector="globalContext" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="globalContext">
+      <retval></retval>
     </method>
-    <method selector="initWithName:webFrameView:webView:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="webView" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initWithName:webFrameView:webView:">
+      <arg name="name"></arg>
+      <arg name="view"></arg>
+      <arg name="webView"></arg>
+      <retval></retval>
     </method>
-    <method selector="loadAlternateHTMLString:baseURL:forUnreachableURL:" swt_gen="true">
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="baseURL" swt_gen="true"></arg>
-      <arg name="unreachableURL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="loadAlternateHTMLString:baseURL:forUnreachableURL:">
+      <arg name="string"></arg>
+      <arg name="baseURL"></arg>
+      <arg name="unreachableURL"></arg>
+      <retval></retval>
     </method>
     <method selector="loadArchive:">
       <arg name="archive"></arg>
       <retval></retval>
     </method>
-    <method selector="loadData:MIMEType:textEncodingName:baseURL:" swt_gen="true">
-      <arg name="data" swt_gen="true"></arg>
-      <arg name="MIMEType" swt_gen="true"></arg>
-      <arg name="encodingName" swt_gen="true"></arg>
-      <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="loadData:MIMEType:textEncodingName:baseURL:">
+      <arg name="data"></arg>
+      <arg name="MIMEType"></arg>
+      <arg name="encodingName"></arg>
+      <arg name="URL"></arg>
+      <retval></retval>
     </method>
     <method selector="loadHTMLString:baseURL:" swt_gen="true">
       <arg name="string" swt_gen="true"></arg>
@@ -3813,37 +3813,37 @@
       <arg name="request" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="name" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="name">
+      <retval></retval>
     </method>
-    <method selector="parentFrame" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="parentFrame">
+      <retval></retval>
     </method>
-    <method selector="provisionalDataSource" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="provisionalDataSource">
+      <retval></retval>
     </method>
-    <method selector="reload" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="reload">
+      <retval></retval>
     </method>
-    <method selector="stopLoading" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="stopLoading">
+      <retval></retval>
     </method>
-    <method selector="webView" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="webView">
+      <retval></retval>
     </method>
     <method selector="windowObject">
       <retval></retval>
     </method>
   </class>
-  <class name="WebFrameView" swt_gen="true">
-    <method selector="allowsScrolling" swt_gen="true">
-      <retval swt_gen="true"></retval>
+  <class name="WebFrameView" swt_gen="mixed">
+    <method selector="allowsScrolling">
+      <retval></retval>
     </method>
-    <method selector="canPrintHeadersAndFooters" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="canPrintHeadersAndFooters">
+      <retval></retval>
     </method>
-    <method selector="documentView" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="documentView">
+      <retval></retval>
     </method>
     <method selector="documentViewShouldHandlePrint" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -3855,12 +3855,12 @@
       <arg name="printInfo" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setAllowsScrolling:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setAllowsScrolling:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="webFrame" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="webFrame">
+      <retval></retval>
     </method>
   </class>
   <class name="WebHistory">
@@ -3982,12 +3982,12 @@
     <method selector="fixedFontFamily">
       <retval></retval>
     </method>
-    <method selector="identifier" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="identifier">
+      <retval></retval>
     </method>
-    <method selector="initWithIdentifier:" swt_gen="true">
-      <arg name="anIdentifier" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="initWithIdentifier:">
+      <arg name="anIdentifier"></arg>
+      <retval></retval>
     </method>
     <method selector="isJavaEnabled">
       <retval></retval>
@@ -4056,17 +4056,17 @@
       <arg name="family"></arg>
       <retval></retval>
     </method>
-    <method selector="setJavaEnabled:">
-      <arg name="flag"></arg>
-      <retval></retval>
+    <method selector="setJavaEnabled:" swt_gen="true">
+      <arg name="flag" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setJavaScriptCanOpenWindowsAutomatically:">
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="setJavaScriptEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setJavaScriptEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
     <method selector="setLoadsImagesAutomatically:">
       <arg name="flag"></arg>
@@ -4211,45 +4211,45 @@
     </method>
   </class>
   <class name="WebView" swt_gen="mixed" swt_superclass="NSView">
-    <method selector="MIMETypesShownAsHTML" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="MIMETypesShownAsHTML">
+      <retval></retval>
     </method>
-    <method selector="UIDelegate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="UIDelegate">
+      <retval></retval>
     </method>
-    <method selector="URLFromPasteboard:" swt_gen="true">
-      <arg name="pasteboard" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="URLFromPasteboard:">
+      <arg name="pasteboard"></arg>
+      <retval></retval>
     </method>
-    <method selector="URLTitleFromPasteboard:" swt_gen="true">
-      <arg name="pasteboard" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="URLTitleFromPasteboard:">
+      <arg name="pasteboard"></arg>
+      <retval></retval>
     </method>
-    <method selector="alignCenter:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="alignCenter:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="alignJustified:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="alignJustified:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="alignLeft:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="alignLeft:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="alignRight:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="alignRight:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="applicationNameForUserAgent" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="applicationNameForUserAgent">
+      <retval></retval>
     </method>
-    <method selector="applyStyle:" swt_gen="true">
-      <arg name="style" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="applyStyle:">
+      <arg name="style"></arg>
+      <retval></retval>
     </method>
-    <method selector="backForwardList" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="backForwardList">
+      <retval></retval>
     </method>
     <method selector="canGoBack" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4257,137 +4257,137 @@
     <method selector="canGoForward" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="canMakeTextLarger" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="canMakeTextLarger">
+      <retval></retval>
     </method>
-    <method selector="canMakeTextSmaller" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="canMakeTextSmaller">
+      <retval></retval>
     </method>
-    <method selector="canMakeTextStandardSize" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="canMakeTextStandardSize">
+      <retval></retval>
     </method>
     <method selector="canShowMIMEType:" swt_gen="true">
       <arg name="MIMEType" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="canShowMIMETypeAsHTML:" swt_gen="true">
-      <arg name="MIMEType" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="canShowMIMETypeAsHTML:">
+      <arg name="MIMEType"></arg>
+      <retval></retval>
     </method>
-    <method selector="changeAttributes:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="changeAttributes:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="changeColor:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="changeColor:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="changeDocumentBackgroundColor:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="changeDocumentBackgroundColor:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="changeFont:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="changeFont:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="checkSpelling:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="checkSpelling:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="close" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="close">
+      <retval></retval>
     </method>
-    <method selector="computedStyleForElement:pseudoElement:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="pseudoElement" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="computedStyleForElement:pseudoElement:">
+      <arg name="element"></arg>
+      <arg name="pseudoElement"></arg>
+      <retval></retval>
     </method>
-    <method selector="copy:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="copy:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="copyFont:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="copyFont:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="customTextEncodingName" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="customTextEncodingName">
+      <retval></retval>
     </method>
-    <method selector="customUserAgent" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="customUserAgent">
+      <retval></retval>
     </method>
-    <method selector="cut:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="cut:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="delete:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="delete:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="deleteSelection" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="deleteSelection">
+      <retval></retval>
     </method>
-    <method selector="downloadDelegate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="downloadDelegate">
+      <retval></retval>
     </method>
-    <method selector="drawsBackground" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="drawsBackground">
+      <retval></retval>
     </method>
     <method selector="editableDOMRangeForPoint:">
       <arg name="point"></arg>
       <retval></retval>
     </method>
-    <method selector="editingDelegate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="editingDelegate">
+      <retval></retval>
     </method>
-    <method selector="elementAtPoint:" swt_gen="true">
-      <arg name="point" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="elementAtPoint:">
+      <arg name="point"></arg>
+      <retval></retval>
     </method>
-    <method selector="estimatedProgress" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="estimatedProgress">
+      <retval></retval>
     </method>
-    <method selector="frameLoadDelegate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="frameLoadDelegate">
+      <retval></retval>
     </method>
     <method selector="goBack" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="goBack:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="goBack:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
     <method selector="goForward" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="goForward:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="goForward:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
     <method selector="goToBackForwardItem:">
       <arg name="item"></arg>
       <retval></retval>
     </method>
-    <method selector="groupName" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="groupName">
+      <retval></retval>
     </method>
-    <method selector="hostWindow" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="hostWindow">
+      <retval></retval>
     </method>
     <method selector="initWithFrame:frameName:groupName:" swt_gen="true">
       <arg name="frame" swt_gen="true"></arg>
       <arg name="frameName" swt_gen="true"></arg>
       <arg name="groupName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_replace_return="WebView"></retval>
     </method>
-    <method selector="isContinuousSpellCheckingEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="isContinuousSpellCheckingEnabled">
+      <retval></retval>
     </method>
-    <method selector="isEditable" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="isEditable">
+      <retval></retval>
     </method>
-    <method selector="isLoading" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="isLoading">
+      <retval></retval>
     </method>
     <method selector="mainFrame" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -4395,124 +4395,124 @@
     <method selector="mainFrameDocument">
       <retval></retval>
     </method>
-    <method selector="mainFrameIcon" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="mainFrameIcon">
+      <retval></retval>
     </method>
-    <method selector="mainFrameTitle" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="mainFrameTitle">
+      <retval></retval>
     </method>
-    <method selector="mainFrameURL" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="mainFrameURL">
+      <retval></retval>
     </method>
-    <method selector="maintainsInactiveSelection" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="maintainsInactiveSelection">
+      <retval></retval>
     </method>
-    <method selector="makeTextLarger:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="makeTextLarger:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="makeTextSmaller:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="makeTextSmaller:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="makeTextStandardSize:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="makeTextStandardSize:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="mediaStyle" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="mediaStyle">
+      <retval></retval>
     </method>
-    <method selector="moveDragCaretToPoint:" swt_gen="true">
-      <arg name="point" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="moveDragCaretToPoint:">
+      <arg name="point"></arg>
+      <retval></retval>
     </method>
-    <method selector="moveToBeginningOfSentence:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="moveToBeginningOfSentence:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="moveToBeginningOfSentenceAndModifySelection:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="moveToBeginningOfSentenceAndModifySelection:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="moveToEndOfSentence:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="moveToEndOfSentence:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="moveToEndOfSentenceAndModifySelection:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="moveToEndOfSentenceAndModifySelection:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="paste:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="paste:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="pasteAsPlainText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="pasteAsPlainText:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="pasteAsRichText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="pasteAsRichText:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="pasteFont:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="pasteFont:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="pasteboardTypesForElement:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="pasteboardTypesForElement:">
+      <arg name="element"></arg>
+      <retval></retval>
     </method>
-    <method selector="pasteboardTypesForSelection" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="pasteboardTypesForSelection">
+      <retval></retval>
     </method>
-    <method selector="performFindPanelAction:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="performFindPanelAction:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="policyDelegate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="policyDelegate">
+      <retval></retval>
     </method>
     <method selector="preferences">
       <retval></retval>
     </method>
-    <method selector="preferencesIdentifier" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="preferencesIdentifier">
+      <retval></retval>
     </method>
-    <method selector="registerURLSchemeAsLocal:" swt_gen="true">
-      <arg name="scheme" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="registerURLSchemeAsLocal:">
+      <arg name="scheme"></arg>
+      <retval></retval>
     </method>
-    <method selector="registerViewClass:representationClass:forMIMEType:" swt_gen="true">
-      <arg name="viewClass" swt_gen="true"></arg>
-      <arg name="representationClass" swt_gen="true"></arg>
-      <arg name="MIMEType" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="registerViewClass:representationClass:forMIMEType:">
+      <arg name="viewClass"></arg>
+      <arg name="representationClass"></arg>
+      <arg name="MIMEType"></arg>
+      <retval></retval>
     </method>
     <method selector="reload:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="removeDragCaret" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="removeDragCaret">
+      <retval></retval>
     </method>
     <method selector="replaceSelectionWithArchive:">
       <arg name="archive"></arg>
       <retval></retval>
     </method>
-    <method selector="replaceSelectionWithMarkupString:" swt_gen="true">
-      <arg name="markupString" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="replaceSelectionWithMarkupString:">
+      <arg name="markupString"></arg>
+      <retval></retval>
     </method>
     <method selector="replaceSelectionWithNode:">
       <arg name="node"></arg>
       <retval></retval>
     </method>
-    <method selector="replaceSelectionWithText:" swt_gen="true">
-      <arg name="text" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="replaceSelectionWithText:">
+      <arg name="text"></arg>
+      <retval></retval>
     </method>
-    <method selector="resourceLoadDelegate" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="resourceLoadDelegate">
+      <retval></retval>
     </method>
     <method selector="searchFor:direction:caseSensitive:wrap:">
       <arg name="string"></arg>
@@ -4521,9 +4521,9 @@
       <arg name="wrapFlag"></arg>
       <retval></retval>
     </method>
-    <method selector="selectSentence:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="selectSentence:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
     <method selector="selectedDOMRange">
       <retval></retval>
@@ -4531,68 +4531,68 @@
     <method selector="selectedFrame">
       <retval></retval>
     </method>
-    <method selector="selectionAffinity" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="selectionAffinity">
+      <retval></retval>
     </method>
     <method selector="setApplicationNameForUserAgent:" swt_gen="true">
       <arg name="applicationName" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setContinuousSpellCheckingEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setContinuousSpellCheckingEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setCustomTextEncodingName:" swt_gen="true">
-      <arg name="encodingName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setCustomTextEncodingName:">
+      <arg name="encodingName"></arg>
+      <retval></retval>
     </method>
-    <method selector="setCustomUserAgent:" swt_gen="true">
-      <arg name="userAgentString" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setCustomUserAgent:">
+      <arg name="userAgentString"></arg>
+      <retval></retval>
     </method>
     <method selector="setDownloadDelegate:" swt_gen="true">
       <arg name="delegate" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setDrawsBackground:" swt_gen="true">
-      <arg name="drawsBackround" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setDrawsBackground:">
+      <arg name="drawsBackround"></arg>
+      <retval></retval>
     </method>
-    <method selector="setEditable:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setEditable:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setEditingDelegate:" swt_gen="true">
-      <arg name="delegate" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setEditingDelegate:">
+      <arg name="delegate"></arg>
+      <retval></retval>
     </method>
     <method selector="setFrameLoadDelegate:" swt_gen="true">
       <arg name="delegate" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setGroupName:" swt_gen="true">
-      <arg name="groupName" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setGroupName:">
+      <arg name="groupName"></arg>
+      <retval></retval>
     </method>
-    <method selector="setHostWindow:" swt_gen="true">
-      <arg name="hostWindow" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setHostWindow:">
+      <arg name="hostWindow"></arg>
+      <retval></retval>
     </method>
-    <method selector="setMIMETypesShownAsHTML:" swt_gen="true">
-      <arg name="MIMETypes" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setMIMETypesShownAsHTML:">
+      <arg name="MIMETypes"></arg>
+      <retval></retval>
     </method>
-    <method selector="setMainFrameURL:" swt_gen="true">
-      <arg name="URLString" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setMainFrameURL:">
+      <arg name="URLString"></arg>
+      <retval></retval>
     </method>
-    <method selector="setMaintainsBackForwardList:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setMaintainsBackForwardList:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setMediaStyle:" swt_gen="true">
-      <arg name="mediaStyle" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setMediaStyle:">
+      <arg name="mediaStyle"></arg>
+      <retval></retval>
     </method>
     <method selector="setPolicyDelegate:" swt_gen="true">
       <arg name="delegate" swt_gen="true"></arg>
@@ -4602,9 +4602,9 @@
       <arg name="prefs"></arg>
       <retval></retval>
     </method>
-    <method selector="setPreferencesIdentifier:" swt_gen="true">
-      <arg name="anIdentifier" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setPreferencesIdentifier:">
+      <arg name="anIdentifier"></arg>
+      <retval></retval>
     </method>
     <method selector="setResourceLoadDelegate:" swt_gen="true">
       <arg name="delegate" swt_gen="true"></arg>
@@ -4615,17 +4615,17 @@
       <arg name="selectionAffinity"></arg>
       <retval></retval>
     </method>
-    <method selector="setShouldCloseWithWindow:" swt_gen="true">
-      <arg name="close" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setShouldCloseWithWindow:">
+      <arg name="close"></arg>
+      <retval></retval>
     </method>
-    <method selector="setSmartInsertDeleteEnabled:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setSmartInsertDeleteEnabled:">
+      <arg name="flag"></arg>
+      <retval></retval>
     </method>
-    <method selector="setTextSizeMultiplier:" swt_gen="true">
-      <arg name="multiplier" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="setTextSizeMultiplier:">
+      <arg name="multiplier"></arg>
+      <retval></retval>
     </method>
     <method selector="setTypingStyle:">
       <arg name="style"></arg>
@@ -4635,30 +4635,30 @@
       <arg name="delegate" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="shouldCloseWithWindow" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="shouldCloseWithWindow">
+      <retval></retval>
     </method>
-    <method selector="showGuessPanel:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="showGuessPanel:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="smartInsertDeleteEnabled" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="smartInsertDeleteEnabled">
+      <retval></retval>
     </method>
-    <method selector="spellCheckerDocumentTag" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="spellCheckerDocumentTag">
+      <retval></retval>
     </method>
-    <method selector="startSpeaking:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="startSpeaking:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
     <method selector="stopLoading:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="stopSpeaking:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="stopSpeaking:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
     <method selector="stringByEvaluatingJavaScriptFromString:" swt_gen="true">
       <arg name="script" swt_gen="true"></arg>
@@ -4668,47 +4668,47 @@
       <arg name="text"></arg>
       <retval></retval>
     </method>
-    <method selector="supportsTextEncoding" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="supportsTextEncoding">
+      <retval></retval>
     </method>
-    <method selector="takeStringURLFrom:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="takeStringURLFrom:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="textSizeMultiplier" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="textSizeMultiplier">
+      <retval></retval>
     </method>
-    <method selector="toggleContinuousSpellChecking:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="toggleContinuousSpellChecking:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
-    <method selector="toggleSmartInsertDelete:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="toggleSmartInsertDelete:">
+      <arg name="sender"></arg>
+      <retval></retval>
     </method>
     <method selector="typingStyle">
       <retval></retval>
     </method>
-    <method selector="undoManager" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="undoManager">
+      <retval></retval>
     </method>
-    <method selector="userAgentForURL:" swt_gen="true">
-      <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="userAgentForURL:">
+      <arg name="URL"></arg>
+      <retval></retval>
     </method>
     <method selector="windowScriptObject">
       <retval></retval>
     </method>
-    <method selector="writeElement:withPasteboardTypes:toPasteboard:" swt_gen="true">
-      <arg name="element" swt_gen="true"></arg>
-      <arg name="types" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="writeElement:withPasteboardTypes:toPasteboard:">
+      <arg name="element"></arg>
+      <arg name="types"></arg>
+      <arg name="pasteboard"></arg>
+      <retval></retval>
     </method>
-    <method selector="writeSelectionWithPasteboardTypes:toPasteboard:" swt_gen="true">
-      <arg name="types" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method selector="writeSelectionWithPasteboardTypes:toPasteboard:">
+      <arg name="types"></arg>
+      <arg name="pasteboard"></arg>
+      <retval></retval>
     </method>
   </class>
   <informal_protocol name="WebDownloadDelegate" swt_gen="true">
