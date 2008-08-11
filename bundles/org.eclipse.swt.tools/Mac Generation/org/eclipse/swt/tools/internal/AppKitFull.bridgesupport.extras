@@ -25401,15 +25401,15 @@
       <arg name="aString" swt_gen="true"></arg>
       <arg name="selRange" swt_gen="true"></arg>
    </method>
-   <method name="validAttributesForMarkedText" swt_gen="true"></method>
-   <method name="unmarkText" swt_gen="true"></method>
-   <method name="markedRange" swt_gen="true"></method>
-   <method name="selectedRange" swt_gen="true"></method>
-   <method name="hasMarkedText" swt_gen="true"></method>
-   <method name="insertText:" swt_gen="true">
+   <method selector="validAttributesForMarkedText" swt_gen="true"></method>
+   <method selector="unmarkText" swt_gen="true"></method>
+   <method selector="markedRange" swt_gen="true"></method>
+   <method selector="selectedRange" swt_gen="true"></method>
+   <method selector="hasMarkedText" swt_gen="true"></method>
+   <method selector="insertText:" swt_gen="true">
       <arg name="aString" swt_gen="true"></arg>
    </method>
-   <method name="firstRectForCharacterRange:" swt_gen="true">
+   <method selector="firstRectForCharacterRange:" swt_gen="true">
       <arg name="theRange" swt_gen="true"></arg>
    </method>   
   </informal_protocol>
