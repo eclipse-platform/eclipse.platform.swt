@@ -1761,7 +1761,7 @@ void setItemCount (TreeItem parentItem, int count) {
 		parentItem.items = newItems;
 		parentItem.itemCount = count;
 	}
-	((NSOutlineView) view).reloadItem_ (parentItem != null ? parentItem.handle : null);
+	((NSOutlineView) view).reloadItem_reloadChildren_ (parentItem != null ? parentItem.handle : null, true);
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
