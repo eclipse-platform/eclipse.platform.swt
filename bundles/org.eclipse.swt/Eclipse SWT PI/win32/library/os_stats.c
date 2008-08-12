@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 954;
-int OS_nativeFunctionCallCount[954];
+int OS_nativeFunctionCount = 957;
+int OS_nativeFunctionCallCount[957];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -502,6 +502,7 @@ char * OS_nativeFunctionNames[] = {
 	"MAKEWORD",
 	"MAKEWPARAM",
 	"MARGINS_1sizeof",
+	"MCHITTESTINFO_1sizeof",
 	"MCIWndRegisterClass",
 	"MEASUREITEMSTRUCT_1sizeof",
 	"MENUBARINFO_1sizeof",
@@ -779,6 +780,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2",
@@ -811,6 +813,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2",

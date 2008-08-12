@@ -1081,13 +1081,16 @@ public class OS extends C {
 	public static final int MB_TOPMOST = 0x00040000;
 	public static final int MB_YESNO = 0x4;
 	public static final int MB_YESNOCANCEL = 0x3;
+	public static final int MCHT_CALENDAR = 0x20000;
+	public static final int MCHT_CALENDARDATE = MCHT_CALENDAR | 0x0001;
 	public static final int MCM_FIRST = 0x1000;
 	public static final int MCM_GETCURSEL = MCM_FIRST + 1;
+	public static final int MCM_GETMINREQRECT = MCM_FIRST + 9;
+	public static final int MCM_HITTEST = MCM_FIRST + 14;
 	public static final int MCM_SETCURSEL = MCM_FIRST + 2;
 	public static final int MCN_FIRST = 0xFFFFFD12;
 	public static final int MCN_SELCHANGE = MCN_FIRST + 1;
 	public static final int MCN_SELECT = MCN_FIRST + 4;
-	public static final int MCM_GETMINREQRECT = MCM_FIRST + 9;
 	public static final int MCS_NOTODAY = 0x0010;
 	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
 	public static final int MFS_CHECKED = 0x8;
@@ -2161,6 +2164,7 @@ public static final native int LVCOLUMN_sizeof ();
 public static final native int LVHITTESTINFO_sizeof ();
 public static final native int LVITEM_sizeof ();
 public static final native int MARGINS_sizeof ();
+public static final native int MCHITTESTINFO_sizeof ();
 public static final native int MEASUREITEMSTRUCT_sizeof ();
 public static final native int MENUBARINFO_sizeof ();
 public static final native int MENUINFO_sizeof ();
@@ -3050,6 +3054,11 @@ public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, MCHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, REBARBANDINFO lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3885,6 +3894,7 @@ public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LITEM lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVITEM lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, MARGINS lParam);
+public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, MCHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, POINT lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, REBARBANDINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, RECT lParam);
@@ -3917,6 +3927,7 @@ public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LITEM lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVITEM lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, MARGINS lParam);
+public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, MCHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, POINT lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, REBARBANDINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, RECT lParam);

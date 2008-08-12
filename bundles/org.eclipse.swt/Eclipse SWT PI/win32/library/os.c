@@ -8008,6 +8008,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(MARGINS_1sizeof)
 }
 #endif
 
+#ifndef NO_MCHITTESTINFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(MCHITTESTINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, MCHITTESTINFO_1sizeof_FUNC);
+	rc = (jint)MCHITTESTINFO_sizeof();
+	OS_NATIVE_EXIT(env, that, MCHITTESTINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_MCIWndRegisterClass
 JNIEXPORT jboolean JNICALL OS_NATIVE(MCIWndRegisterClass)
 	(JNIEnv *env, jclass that)
@@ -12363,6 +12375,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	MCHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC);
+	if (arg3) if ((lparg3 = getMCHITTESTINFOFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setMCHITTESTINFOFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -12870,6 +12898,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win3
 fail:
 	if (arg3 && lparg3) setMARGINSFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	MCHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC);
+	if (arg3) if ((lparg3 = getMCHITTESTINFOFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setMCHITTESTINFOFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC);
 	return rc;
 }
 #endif

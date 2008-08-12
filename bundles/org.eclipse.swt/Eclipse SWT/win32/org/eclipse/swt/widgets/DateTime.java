@@ -47,7 +47,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class DateTime extends Composite {
-	boolean ignoreSelection;
+	boolean doubleClick, ignoreSelection;
 	SYSTEMTIME lastSystemTime;
 	SYSTEMTIME time = new SYSTEMTIME (); // only used in calendar mode
 	static final int /*long*/ DateTimeProc;
@@ -923,24 +923,65 @@ int /*long*/ windowProc () {
 
 LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	switch (hdr.code) {
-		case OS.MCN_SELCHANGE:
-		case OS.DTN_DATETIMECHANGE:
+		case OS.MCN_SELCHANGE: {
 			if (ignoreSelection) break;
 			SYSTEMTIME systime = new SYSTEMTIME ();
-			int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
-			OS.SendMessage (handle, msg, 0, systime);
+			OS.SendMessage (handle, OS.MCM_GETCURSEL, 0, systime);
+			postEvent (SWT.Selection);
+			break;
+		}
+		case OS.DTN_DATETIMECHANGE: {
+			SYSTEMTIME systime = new SYSTEMTIME ();
+			OS.SendMessage (handle, OS.DTM_GETSYSTEMTIME, 0, systime);
 			if (lastSystemTime == null || systime.wDay != lastSystemTime.wDay || systime.wMonth != lastSystemTime.wMonth || systime.wYear != lastSystemTime.wYear) {
 				postEvent (SWT.Selection);
 				if ((style & SWT.TIME) == 0) lastSystemTime = systime;
 			}
 			break;
+		}
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);
+}
+
+LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  For some reason, when the
+	* user presses tab, return or escape, Windows beeps.
+	* The fix is to look for these keys and not call
+	* the window proc.
+	*/
+	switch ((int)/*64*/wParam) {
+		case SWT.CR:
+			postEvent (SWT.DefaultSelection);
+			// FALL THROUGH
+		case SWT.TAB:
+		case SWT.ESC: return LRESULT.ZERO;
+	}
+	return result;
+}
+
+LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {	
+	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
+	if (isDisposed ()) return LRESULT.ZERO;
+	if ((style & SWT.CALENDAR) != 0) {
+		MCHITTESTINFO pMCHitTest = new MCHITTESTINFO ();
+		pMCHitTest.cbSize = MCHITTESTINFO.sizeof;
+		POINT pt = new POINT ();
+		pt.x = OS.GET_X_LPARAM (lParam);
+		pt.y = OS.GET_Y_LPARAM (lParam);
+		pMCHitTest.pt = pt;
+		int /*long*/ code = OS.SendMessage (handle, OS.MCM_HITTEST, 0, pMCHitTest);
+		if ((code & OS.MCHT_CALENDARDATE) == OS.MCHT_CALENDARDATE) doubleClick = true;
+	}
+	return result;
 }
 
 LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
+	doubleClick = false;
 	/*
 	* Feature in Windows. For some reason, the calendar control
 	* does not take focus on WM_LBUTTONDOWN.  The fix is to
@@ -949,6 +990,14 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	if ((style & SWT.CALENDAR) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0) OS.SetFocus (handle);
 	}
+	return result;
+}
+
+LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {	
+	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
+	if (isDisposed ()) return LRESULT.ZERO;
+	if (doubleClick) postEvent (SWT.DefaultSelection);
+	doubleClick = false;
 	return result;
 }
 

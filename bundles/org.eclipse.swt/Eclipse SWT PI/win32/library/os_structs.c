@@ -2438,6 +2438,58 @@ void setMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct)
 }
 #endif
 
+#ifndef NO_MCHITTESTINFO
+typedef struct MCHITTESTINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, pt, uHit, st;
+} MCHITTESTINFO_FID_CACHE;
+
+MCHITTESTINFO_FID_CACHE MCHITTESTINFOFc;
+
+void cacheMCHITTESTINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (MCHITTESTINFOFc.cached) return;
+	MCHITTESTINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MCHITTESTINFOFc.cbSize = (*env)->GetFieldID(env, MCHITTESTINFOFc.clazz, "cbSize", "I");
+	MCHITTESTINFOFc.pt = (*env)->GetFieldID(env, MCHITTESTINFOFc.clazz, "pt", "Lorg/eclipse/swt/internal/win32/POINT;");
+	MCHITTESTINFOFc.uHit = (*env)->GetFieldID(env, MCHITTESTINFOFc.clazz, "uHit", "I");
+	MCHITTESTINFOFc.st = (*env)->GetFieldID(env, MCHITTESTINFOFc.clazz, "st", "Lorg/eclipse/swt/internal/win32/SYSTEMTIME;");
+	MCHITTESTINFOFc.cached = 1;
+}
+
+MCHITTESTINFO *getMCHITTESTINFOFields(JNIEnv *env, jobject lpObject, MCHITTESTINFO *lpStruct)
+{
+	if (!MCHITTESTINFOFc.cached) cacheMCHITTESTINFOFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, MCHITTESTINFOFc.cbSize);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, MCHITTESTINFOFc.pt);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->pt);
+	}
+	lpStruct->uHit = (*env)->GetIntField(env, lpObject, MCHITTESTINFOFc.uHit);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, MCHITTESTINFOFc.st);
+	if (lpObject1 != NULL) getSYSTEMTIMEFields(env, lpObject1, &lpStruct->st);
+	}
+	return lpStruct;
+}
+
+void setMCHITTESTINFOFields(JNIEnv *env, jobject lpObject, MCHITTESTINFO *lpStruct)
+{
+	if (!MCHITTESTINFOFc.cached) cacheMCHITTESTINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MCHITTESTINFOFc.cbSize, (jint)lpStruct->cbSize);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, MCHITTESTINFOFc.pt);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->pt);
+	}
+	(*env)->SetIntField(env, lpObject, MCHITTESTINFOFc.uHit, (jint)lpStruct->uHit);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, MCHITTESTINFOFc.st);
+	if (lpObject1 != NULL) setSYSTEMTIMEFields(env, lpObject1, &lpStruct->st);
+	}
+}
+#endif
+
 #ifndef NO_MEASUREITEMSTRUCT
 typedef struct MEASUREITEMSTRUCT_FID_CACHE {
 	int cached;

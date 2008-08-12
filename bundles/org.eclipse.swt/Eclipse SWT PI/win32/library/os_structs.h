@@ -587,6 +587,18 @@ void setMARGINSFields(JNIEnv *env, jobject lpObject, MARGINS *lpStruct);
 #define MARGINS_sizeof() 0
 #endif
 
+#ifndef NO_MCHITTESTINFO
+void cacheMCHITTESTINFOFields(JNIEnv *env, jobject lpObject);
+MCHITTESTINFO *getMCHITTESTINFOFields(JNIEnv *env, jobject lpObject, MCHITTESTINFO *lpStruct);
+void setMCHITTESTINFOFields(JNIEnv *env, jobject lpObject, MCHITTESTINFO *lpStruct);
+#define MCHITTESTINFO_sizeof() sizeof(MCHITTESTINFO)
+#else
+#define cacheMCHITTESTINFOFields(a,b)
+#define getMCHITTESTINFOFields(a,b,c) NULL
+#define setMCHITTESTINFOFields(a,b,c)
+#define MCHITTESTINFO_sizeof() 0
+#endif
+
 #ifndef NO_MEASUREITEMSTRUCT
 void cacheMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject);
 MEASUREITEMSTRUCT *getMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT *lpStruct);
