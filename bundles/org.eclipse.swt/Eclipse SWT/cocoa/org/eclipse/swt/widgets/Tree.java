@@ -1737,7 +1737,7 @@ void setItemCount (TreeItem parentItem, int count) {
 	if (count < itemCount) {
 		for (int index = count; index < itemCount; index ++) {
 			TreeItem item = children [index];
-			if (item != null && !item.isDisposed()) item.dispose();
+			if (item != null && !item.isDisposed()) item.release (false);
 		}
 	}
 	if (count > itemCount) {
@@ -1761,7 +1761,9 @@ void setItemCount (TreeItem parentItem, int count) {
 		parentItem.items = newItems;
 		parentItem.itemCount = count;
 	}
-	((NSOutlineView) view).reloadItem_reloadChildren_ (parentItem != null ? parentItem.handle : null, true);
+	NSOutlineView widget = (NSOutlineView) view;
+	widget.reloadItem_reloadChildren_ (parentItem != null ? parentItem.handle : null, true);
+	widget.noteNumberOfRowsChanged();
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
