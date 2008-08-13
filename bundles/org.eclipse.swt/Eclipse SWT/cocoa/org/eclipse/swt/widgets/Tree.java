@@ -1737,7 +1737,7 @@ void setItemCount (TreeItem parentItem, int count) {
 	if (count < itemCount) {
 		for (int index = count; index < itemCount; index ++) {
 			TreeItem item = children [index];
-			if (item != null && !item.isDisposed()) item.release (false);
+			if (item != null && !item.isDisposed()) item.dispose();
 		}
 	}
 	if (count > itemCount) {
