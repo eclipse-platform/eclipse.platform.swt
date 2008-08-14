@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="JNI Generation"/>
 	<classpathentry kind="src" path="Sleak"/>
 	<classpathentry kind="src" path="NativeStats"/>
 	<classpathentry kind="src" path="Mozilla Generation"/>
 	<classpathentry kind="src" path="Icon Exe"/>
 	<classpathentry kind="src" path="Mac Generation"/>
-	<classpathentry kind="lib" path="/Users/ssq/Desktop/eclipse/plugins/org.eclipse.swt.carbon.macosx_3.5.0.v3504a.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
