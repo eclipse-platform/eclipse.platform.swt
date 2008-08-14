@@ -348,9 +348,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	FontData[] fds = new FontData[fonts.count()];
 	for (int i = 0; i < fds.length; i++) {
 		NSString str = new NSString(fonts.objectAtIndex(i));
-		char[] buffer = new char[str.length()];
-		str.getCharacters_(buffer);
-		String nsName = new String(buffer);
+		String nsName = str.getString();
 		String name = nsName;
 		int index = nsName.indexOf('-');
 		if (index != -1) name = name.substring(0, index);
