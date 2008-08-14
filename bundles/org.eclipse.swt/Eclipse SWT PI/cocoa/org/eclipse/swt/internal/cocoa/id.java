@@ -25,7 +25,7 @@ public id(id id) {
 	this.id = id != null ? id.id : 0;
 }
 
-public int objc_getClass() {
+public int /*long*/ objc_getClass() {
 	String name = getClass().getName();
 	int index = name.lastIndexOf('.');
 	if (index != -1) name = name.substring(index + 1);
