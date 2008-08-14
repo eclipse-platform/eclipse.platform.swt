@@ -584,20 +584,6 @@ public String[] getXmls() {
 	return xmls;
 }
 
-public boolean getEditable(Node node, String attribName) {
-	String name = node.getNodeName();
-	if (name.equals("method")) {
-	} else if (name.equals("class")) {
-		if (attribName.equals("swt_superclass")) return true;
-	} else if (name.equals("retval")) {
-		if (attribName.equals("swt_java_type")) return true;
-		if (attribName.equals("swt_alloc")) return true;
-	} else if (name.equals("arg")) {
-		if (attribName.equals("swt_java_type")) return true;
-	}
-	return false;
-}
-
 private void saveExtraAttributes(String xmlPath, Document document) {
 	try {
 		String fileName = getExtraAttributesDir() + getFileName(xmlPath) + ".extras";
@@ -637,13 +623,17 @@ private Document getDocument(String xmlPath) {
 	return null;
 }
 
-public String[] getExtraAttributeNames() {
-	return new String[]{
-		"swt_gen",
-		"swt_superclass",
-		"swt_java_type",
-		"swt_alloc",
-	};
+public String[] getExtraAttributeNames(Node node) {
+	String name = node.getNodeName();
+	if (name.equals("method")) {
+	} else if (name.equals("class")) {
+		return new String[]{"swt_superclass"};
+	} else if (name.equals("retval")) {
+		return new String[]{"swt_java_type", "swt_alloc"};
+	} else if (name.equals("arg")) {
+		return new String[]{"swt_java_type"};
+	}
+	return new String[0];
 }
 
 public String getFileName(String xmlPath) {

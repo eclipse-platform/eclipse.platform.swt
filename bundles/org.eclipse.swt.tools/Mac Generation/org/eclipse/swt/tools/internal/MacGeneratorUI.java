@@ -28,6 +28,7 @@ public class MacGeneratorUI {
 	Display display;
 	Shell shell;
 	Tree nodesTree;
+	Table attribTable;
 
 	public MacGeneratorUI(String[] xmls) {
 		gen = new MacGenerator(xmls);
@@ -61,18 +62,40 @@ public class MacGeneratorUI {
 		Node idAttrib = gen.getIDAttribute(node);
 		item.setText(idAttrib != null ? idAttrib.getNodeValue() : name);
 		item.setData(node);
-		NamedNodeMap attributes = node.getAttributes();
 		checkItem(node, item);
-		for (int i = 0, length = attributes.getLength(); i < length; i++) {
-			Node attrib = attributes.item(i);
-			if (attrib.equals(idAttrib)) continue;
-			String attribName = attrib.getNodeName();
-			if (attribName.equals("swt_gen")) continue;
-			item.setText(getColumnFor(attribName), attrib.getNodeValue());
-		}
 		NodeList childNodes = node.getChildNodes();
 		if (childNodes.getLength() > 0) new TreeItem(item, SWT.NONE);
 		return item;
+	}
+	
+	void selectChild(TreeItem item) {
+		attribTable.removeAll();
+		if (!(item.getData() instanceof Node)) return;
+		Node node = (Node)item.getData();
+		NamedNodeMap attributes = node.getAttributes();
+		String[] extraAttribs = gen.getExtraAttributeNames(node);
+		for (int i = 0; i < extraAttribs.length; i++) {
+			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
+			attribItem.setText(extraAttribs[i]);
+			attribItem.setData(node);
+			attribItem.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			Node attrib = attributes.getNamedItem(extraAttribs[i]);
+			if (attrib != null) {
+				attribItem.setText(1, attrib.getNodeValue());
+			}
+			
+		}
+		checkItem(node, item);
+		for (int i = 0, length = attributes.getLength(); i < length; i++) {
+			Node attrib = attributes.item(i);
+			String attribName = attrib.getNodeName();
+			if (attribName.startsWith("swt_")) continue;
+			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
+			attribItem.setText(attribName);
+			attribItem.setText(1, attrib.getNodeValue());
+		}
+		attribTable.getColumn(0).pack();
+		attribTable.getColumn(1).setWidth(500);
 	}
 	
 	void checkPath(TreeItem item, boolean checked, boolean grayed) {
@@ -108,10 +131,10 @@ public class MacGeneratorUI {
 		}
 	}
 	
-	boolean getEditable(TreeItem item, int column) {
+	boolean getEditable(TableItem item, int column) {
 		if (!(item.getData() instanceof Node)) return false;
-		String attribName = item.getParent().getColumn(column).getText();
-		return gen.getEditable((Node)item.getData(), attribName);
+		String attribName = item.getText();
+		return attribName.startsWith("swt_");
 	}
 
 	void checkChildren(TreeItem item) {
@@ -160,43 +183,36 @@ public class MacGeneratorUI {
 	void cleanup() {
 		display.dispose();
 	}
-	
-	int getColumnFor(String attribute) {
-		TreeColumn[] columns = nodesTree.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			if (columns[i].getText().equals(attribute)) return i;
-		}
-		TreeColumn column = new TreeColumn(nodesTree, SWT.NONE);
-		column.setText(attribute);
-		return columns.length;
-	}
-	
+		
 	public void open() {
 		display = new Display();
 		shell = new Shell(display);
-		shell.setLayout(new GridLayout(2, false));
+		shell.setLayout(new GridLayout(3, false));
 
 		Composite parent = shell;
 
-		nodesTree = new Tree(parent, SWT.MULTI | SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
+		nodesTree = new Tree(parent, SWT.SINGLE | SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
 		nodesTree.setLayoutData(new GridData(GridData.FILL_BOTH));
-		nodesTree.setHeaderVisible(true);
-		nodesTree.setLinesVisible(true);
-
-		TreeColumn nodesColumn = new TreeColumn(nodesTree, SWT.NONE);
-		nodesColumn.setText("Name");
-		String[] extraAttributes = gen.getExtraAttributeNames();
-		for (int i = 0; i < extraAttributes.length; i++) {
-			if (extraAttributes[i].equals("swt_gen")) continue;
-			TreeColumn column = new TreeColumn(nodesTree, SWT.NONE);
-			column.setText(extraAttributes[i]);
-		}
 		
+		attribTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
+		attribTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+		attribTable.setLinesVisible(true);
+		attribTable.setHeaderVisible(true);
+		TableColumn nameColumn = new TableColumn(attribTable, SWT.NONE);
+		nameColumn.setText("Name");
+		nameColumn.pack();
+		TableColumn valueColumn = new TableColumn(attribTable, SWT.NONE);
+		valueColumn.setText("Value");
+		valueColumn.pack();
+
 		nodesTree.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				if (event.detail != SWT.CHECK) return;
 				TreeItem item = (TreeItem)event.item;
 				if (item == null) return;
+				if (event.detail != SWT.CHECK) {
+					selectChild(item);
+					return;
+				}
 				boolean checked = item.getChecked();
 				item.getParent().setRedraw(false);
                 checkItems(item, checked);
@@ -210,11 +226,11 @@ public class MacGeneratorUI {
 			}
 		});
 
-		final Text editorTx = new Text(nodesTree, SWT.SINGLE);
-		final TreeEditor editor = new TreeEditor(nodesTree);
+		final Text editorTx = new Text(attribTable, SWT.SINGLE);
+		final TableEditor editor = new TableEditor(attribTable);
 		editor.grabHorizontal = true;
 		editor.setEditor(editorTx);
-		Listener memberTextListener = new Listener() {
+		Listener textListener = new Listener() {
 			public void handleEvent(Event e) {
 				if (e.type == SWT.Traverse) {
 					switch (e.detail) {
@@ -226,13 +242,13 @@ public class MacGeneratorUI {
 					}
 				}
 				editorTx.setVisible(false);
-				TreeItem item = editor.getItem();
+				TableItem item = editor.getItem();
 				if (item == null) return;
 				int column = editor.getColumn();
 				String value = editorTx.getText();
 				item.setText(column, value);
 				Element node = (Element)item.getData();
-				String name = nodesTree.getColumn(column).getText();
+				String name = item.getText();
 				if (value.length() != 0) {
 					node.setAttribute(name, value);
 				} else {
@@ -240,20 +256,20 @@ public class MacGeneratorUI {
 				}
 			}
 		};
-		editorTx.addListener(SWT.DefaultSelection, memberTextListener);
-		editorTx.addListener(SWT.FocusOut, memberTextListener);
-		editorTx.addListener(SWT.Traverse, memberTextListener);
-		nodesTree.addListener(SWT.MouseDown, new Listener() {
+		editorTx.addListener(SWT.DefaultSelection, textListener);
+		editorTx.addListener(SWT.FocusOut, textListener);
+		editorTx.addListener(SWT.Traverse, textListener);
+		attribTable.addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(final Event e) {
 				e.display.asyncExec (new Runnable () {
 					public void run () {
-						if (nodesTree.isDisposed ()) return;
+						if (attribTable.isDisposed ()) return;
 						if (e.button != 1) return;
 						Point pt = new Point(e.x, e.y);
-						TreeItem item = nodesTree.getItem(pt);
+						TableItem item = attribTable.getItem(pt);
 						if (item == null) return;
 						int column = -1;
-						for (int i = 0; i < nodesTree.getColumnCount(); i++) {
+						for (int i = 0; i < attribTable.getColumnCount(); i++) {
 							if (item.getBounds(i).contains(pt)) {
 								column = i;
 								break;
