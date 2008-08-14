@@ -191,11 +191,37 @@ public class MacGeneratorUI {
 
 		Composite parent = shell;
 
+		GridData data;
+		Label label = new Label(shell, SWT.NONE);
+		label.setText("Signatures:");
+		label = new Label(shell, SWT.NONE);
+		label.setText("Properties:");
+		
+		Composite panel = new Composite(parent, SWT.NONE);
+		data = new GridData(GridData.FILL_VERTICAL);
+		data.verticalSpan = 2;
+		panel.setLayoutData(data);
+		panel.setLayout(new GridLayout(1, true));
+		
+		Button generate = new Button(panel, SWT.PUSH);
+		generate.setText("Generate");
+		generate.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				TreeItem[] items = nodesTree.getItems();
+				for (int i = 0; i < items.length; i++) {
+					updateGenAttribute(items[i]);
+				}
+				gen.generateAll();
+			}
+		});
+
 		nodesTree = new Tree(parent, SWT.SINGLE | SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
-		nodesTree.setLayoutData(new GridData(GridData.FILL_BOTH));
+		data = new GridData(GridData.FILL_BOTH);
+		nodesTree.setLayoutData(data);
 		
 		attribTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-		attribTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+		data = new GridData(GridData.FILL_BOTH);
+		attribTable.setLayoutData(data);
 		attribTable.setLinesVisible(true);
 		attribTable.setHeaderVisible(true);
 		TableColumn nameColumn = new TableColumn(attribTable, SWT.NONE);
@@ -287,21 +313,6 @@ public class MacGeneratorUI {
 				});
 			}
 		});
-		
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayout(new GridLayout(1, true));
-		
-		Button generate = new Button(panel, SWT.PUSH);
-		generate.setText("Generate");
-		generate.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				TreeItem[] items = nodesTree.getItems();
-				for (int i = 0; i < items.length; i++) {
-					updateGenAttribute(items[i]);
-				}
-				gen.generateAll();
-			}
-		});		
 
 		updateNodes();
 	}
