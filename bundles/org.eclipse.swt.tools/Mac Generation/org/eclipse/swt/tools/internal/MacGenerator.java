@@ -25,8 +25,13 @@ public class MacGenerator {
 
 	PrintStream out;
 	
-public MacGenerator(String[] xmls) {
-	this.xmls = xmls;
+public MacGenerator(String[] xmlPaths) {
+	this.xmls = xmlPaths;
+	if (xmls == null || xmls.length == 0) {
+		ArrayList array = new ArrayList();
+		list(new File("/System/Library/Frameworks"), array);
+		xmls = (String[])array.toArray(new String[array.size()]);
+	}
 	documents = new Document[xmls.length];
 	for (int i = 0; i < xmls.length; i++) {
 		String xmlPath = xmls[i];
@@ -36,6 +41,21 @@ public MacGenerator(String[] xmls) {
 		File file = new File(getExtraAttributesDir());
 		if (file.exists()) extrasPath = new File(file, extrasPath).getAbsolutePath();
 		merge(document, getDocument(extrasPath));
+	}
+}
+
+static void list(File path, ArrayList list) {
+	File[] frameworks = path.listFiles();
+	for (int i = 0; i < frameworks.length; i++) {
+		File file = frameworks[i];
+		String name = file.getName();
+		int index = name.lastIndexOf(".");
+		if (index != -1) {
+			String xml = file.getAbsolutePath() + "/Resources/BridgeSupport/" + name.substring(0, index) + "Full.bridgesupport";
+			if (new File(xml).exists()) {
+				list.add(xml);
+			}
+		}
 	}
 }
 
@@ -458,7 +478,7 @@ void generateClasses() {
 void generateExtraAttributes() {
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
-		if (document == null) continue;
+		if (document == null || !getGen(document.getDocumentElement())) continue;
 		saveExtraAttributes(xmls[x], document);
 	}
 }
@@ -1463,11 +1483,11 @@ void output(byte[] bytes, String fileName) throws IOException {
 }
 
 public static void main(String[] args) {
-	args = new String[]{
-		"./Mac Generation/org/eclipse/swt/tools/internal/AppKitFull.bridgesupport",
-		"./Mac Generation/org/eclipse/swt/tools/internal/FoundationFull.bridgesupport",
-		"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
-	};
+//	args = new String[]{
+//		"./Mac Generation/org/eclipse/swt/tools/internal/AppKitFull.bridgesupport",
+//		"./Mac Generation/org/eclipse/swt/tools/internal/FoundationFull.bridgesupport",
+//		"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
+//	};
 	try {
 		MacGenerator gen = new MacGenerator(args);
 		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
