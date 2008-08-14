@@ -533,7 +533,11 @@ public void setImages (Image [] images) {
 			sort (bestImages);
 			images = bestImages;
 		}
-		OS.SetApplicationDockTileImage (images [0].handle);
+		if (images != null && images.length > 0) {
+			OS.SetApplicationDockTileImage (images [0].handle);
+		} else {
+			OS.RestoreApplicationDockTileImage ();
+		}
 	}
 }
 
