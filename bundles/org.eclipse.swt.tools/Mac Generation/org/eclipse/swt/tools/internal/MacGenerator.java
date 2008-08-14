@@ -22,27 +22,75 @@ public class MacGenerator {
 	Document[] documents;
 	String outputDir, mainClassName;
 	String delimiter = System.getProperty("line.separator");
-	
+
 	PrintStream out;
 	
 public MacGenerator(String[] xmls) {
 	this.xmls = xmls;
 	documents = new Document[xmls.length];
 	for (int i = 0; i < xmls.length; i++) {
-//		long start = System.currentTimeMillis();
-		Document document = documents[i] = getDocument(xmls[i]);
+		String xmlPath = xmls[i];
+		Document document = documents[i] = getDocument(xmlPath);
 		if (document == null) continue;
-		HashMap extras = loadExtraAttributes(xmls[i]);
-		merge(document, document, extras);
-//		for (Iterator iterator = extras.values().iterator(); iterator.hasNext();) {
-//			Node node = (Node) iterator.next();
-//			if (getGen(node)) {
-//				Node attribName = getIDAttribute(node);
-//				System.out.println(node.getNodeName() + " " + attribName.getNodeValue());
-//			}
-//		}
-//		long end = System.currentTimeMillis();
-//		System.out.println("load=" + (end - start));
+		String extrasPath = getFileName(xmlPath) + ".extras";
+		File file = new File(getExtraAttributesDir());
+		if (file.exists()) extrasPath = new File(file, extrasPath).getAbsolutePath();
+		merge(document, getDocument(extrasPath));
+	}
+}
+
+int getLevel(Node node) {
+	int level = 0;
+	while (node != null) {
+		level++;
+		node = node.getParentNode();
+	}
+	return level;
+}
+
+void merge(Document document, Document extraDocument) {
+	if (extraDocument == null) return;
+	
+	/* Build a lookup table for extraDocument */
+	HashMap extras = new HashMap();
+	buildLookup(extraDocument, extras);
+
+	/* Merge attributes on existing elements building a lookup table for document */
+	HashMap lookup = new HashMap();
+	merge(document, extras, lookup);
+	
+	/* 
+	 * Merge new elements. Extras at this point contains only elements that were
+	 * not found in the document.
+	 */
+	ArrayList sortedNodes = Collections.list(Collections.enumeration(extras.values()));
+	Collections.sort(sortedNodes, new Comparator() {
+		public int compare(Object arg0, Object arg1) {
+			int compare = getLevel((Node)arg0) - getLevel((Node)arg1);
+			if (compare == 0) {
+				return ((Node)arg0).getNodeName().compareTo(((Node)arg1).getNodeName());
+			}
+			return compare;
+		}
+	});
+	String delimiter = System.getProperty("line.separator");
+	for (Iterator iterator = sortedNodes.iterator(); iterator.hasNext();) {
+		Node node = (Node) iterator.next();
+		Node parent = (Node)lookup.get(getKey(node.getParentNode()));
+		Element element = document.createElement(node.getNodeName());
+		String text = parent.getChildNodes().getLength() == 0 ? delimiter : "";
+		for (int i = 0, level = getLevel(parent) - 1; i < level; i++) {
+			text += "  ";
+		}
+		parent.appendChild(document.createTextNode(text));
+		parent.appendChild(element);
+		parent.appendChild(document.createTextNode(delimiter));
+		NamedNodeMap attributes = node.getAttributes();
+		for (int j = 0, length = attributes.getLength(); j < length; j++) {
+			Node attr = (Node)attributes.item(j);
+			element.setAttribute(attr.getNodeName(), attr.getNodeValue());
+		}
+		lookup.put(getKey(element), element);
 	}
 }
 
@@ -71,15 +119,13 @@ String fixDelimiter(String str) {
 	return buffer.toString();
 }
 
-void generateMethods(String className, TreeMap methods) {
-	Set methodSelectors = methods.keySet();
-	for (Iterator iterator = methodSelectors.iterator(); iterator.hasNext();) {
-		String selector = (String) iterator.next();
-		Node method = (Node)methods.get(selector);
+void generateMethods(String className, ArrayList methods) {
+	for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
+		Node method = (Node)iterator.next();
 		NamedNodeMap mthAttributes = method.getAttributes();
 		String sel = mthAttributes.getNamedItem("selector").getNodeValue();
 		out("public ");
-		boolean isStatic = mthAttributes.getNamedItem("class_method") != null; 
+		boolean isStatic = isStatic(method); 
 		if (isStatic) out("static ");
 		Node returnNode = getReturnNode(method.getChildNodes());
 		if (getType(returnNode).equals("void")) returnNode = null;
@@ -203,8 +249,80 @@ void generateMethods(String className, TreeMap methods) {
 	}
 }
 
-void generateClasses() {
-	HashMap classes = new HashMap();
+void generateExtraMethods(String className) {
+	/* Empty constructor */
+	out("public ");
+	out(className);
+	out("() {");
+	outln();
+	out("\tsuper();");
+	outln();
+	out("}");
+	outln();
+	outln();
+	/* pointer constructor */
+	out("public ");
+	out(className);
+	out("(int /*long*/ id) {");
+	outln();
+	out("\tsuper(id);");
+	outln();
+	out("}");
+	outln();
+	outln();
+	/* object constructor */
+	out("public ");
+	out(className);
+	out("(id id) {");
+	outln();
+	out("\tsuper(id);");
+	outln();
+	out("}");
+	outln();
+	outln();
+	/* NSObject helpers */
+	if (className.equals("NSObject")) {
+		out("public NSObject alloc() {");
+		outln();
+		out("\tthis.id = OS.objc_msgSend(objc_getClass(), OS.sel_alloc);");
+		outln();
+		out("\treturn this;");
+		outln();
+		out("}");
+		outln();
+		outln();
+	}
+	/* NSString helpers */
+	if (className.equals("NSString")) {
+		/* Get java string */
+		out("public String getString() {");
+		outln();
+		out("\tchar[] buffer = new char[length()];");
+		outln();
+		out("\tgetCharacters(buffer);");
+		outln();
+		out("\treturn new String(buffer);");
+		outln();
+		out("}");
+		outln();
+		outln();
+		/* create NSString */
+		out("public static NSString stringWith(String str) {");
+		outln();
+		out("\tchar[] buffer = new char[str.length()];");
+		outln();
+		out("\tstr.getChars(0, buffer.length, buffer, 0);");
+		outln();
+		out("\treturn stringWithCharacters(buffer, buffer.length);");
+		outln();
+		out("}");
+		outln();
+		outln();
+	}	
+}
+
+TreeMap getGeneratedClasses() {
+	TreeMap classes = new TreeMap();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -212,58 +330,94 @@ void generateClasses() {
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
 			if ("class".equals(node.getNodeName()) && getGen(node)) {
-				Map methods;
-				NamedNodeMap attributes = node.getAttributes();
-				String name = attributes.getNamedItem("name").getNodeValue();
+				ArrayList methods;
+				String name = node.getAttributes().getNamedItem("name").getNodeValue();
 				Object[] clazz = (Object[])classes.get(name);
 				if (clazz == null) {
-					methods = new TreeMap();
+					methods = new ArrayList();
 					classes.put(name, new Object[]{node, methods});
 				} else {
-					methods = (TreeMap)clazz[1];
+					methods = (ArrayList)clazz[1];
 				}
 				NodeList methodList = node.getChildNodes();
 				for (int j = 0; j < methodList.getLength(); j++) {
 					Node method = methodList.item(j);
 					if ("method".equals(method.getNodeName()) && getGen(method)) {
-						NamedNodeMap mthAttributes = method.getAttributes();
-						String selector = mthAttributes.getNamedItem("selector").getNodeValue();
-						Node other = (Node)methods.get(selector);
-						if (other == null) {
-							methods.put(selector, method);
-						} else {
-							boolean isStatic = mthAttributes.getNamedItem("class_method") != null;
-							boolean otherIsStatic = other.getAttributes().getNamedItem("class_method") != null;
-							if (isStatic != otherIsStatic) {
-								if (isStatic) {
-									methods.put("static_" + selector, method);
-									methods.put(selector, other);
-								} else {
-									methods.put("static_" + selector, other);
-									methods.put(selector, method);
-								}
-							}
-						}
+						methods.add(method);
 					}					
 				}
 			}
 		}
 	}
+	return classes;
+}
+
+void copyClassMethodsDown(final Map classes) {
+	ArrayList sortedClasses = Collections.list(Collections.enumeration(classes.values()));
+	Collections.sort(sortedClasses, new Comparator() {
+		int getHierarchyLevel(Node node) {
+			String superclass = getSuperclassName(node);
+			int level = 0;
+			while (!superclass.equals("id")) {
+				level++;
+				superclass = getSuperclassName((Node)((Object[])classes.get(superclass))[0]);
+			}
+			return level;			
+		}
+		public int compare(Object arg0, Object arg1) {
+			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);  
+		}
+	});
+	for (Iterator iterator = sortedClasses.iterator(); iterator.hasNext();) {
+		Object[] clazz = (Object[]) iterator.next();
+		Node node = (Node)clazz[0];
+		ArrayList methods = (ArrayList)clazz[1];
+		Object[] superclass = (Object[])classes.get(getSuperclassName(node));
+		if (superclass != null) {
+			for (Iterator iterator2 = ((ArrayList)superclass[1]).iterator(); iterator2.hasNext();) {
+				Node method = (Node) iterator2.next();
+				if (isStatic(method)) {
+					methods.add(method);
+				}
+			}
+		}
+	}
+}
+
+String getSuperclassName (Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	Node superclass = attributes.getNamedItem("swt_superclass");
+	if (superclass != null) {
+		return superclass.getNodeValue();
+	} else {
+		Node name = attributes.getNamedItem("name");
+		if (name.getNodeValue().equals("NSObject")) {
+			return "id";
+		} else {
+			return "NSObject";
+		}
+	}
+}
+
+void generateClasses() {
 	MetaData metaData = new MetaData(mainClassName);	
+	TreeMap classes = getGeneratedClasses();
+	copyClassMethodsDown(classes);
+	
 	Set classNames = classes.keySet();
 	for (Iterator iterator = classNames.iterator(); iterator.hasNext();) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		this.out = new PrintStream(out);
 
-		String className = (String) iterator.next();
-		Object[] clazz = (Object[])classes.get(className);
-		Node node = (Node)clazz[0];
-		TreeMap methods = (TreeMap)clazz[1];
-		NamedNodeMap attributes = node.getAttributes();
 		String data = metaData.getMetaData("swt_copyright", null);
 		if (data != null && data.length() != 0) {
 			out(fixDelimiter(data));
 		}
+
+		String className = (String) iterator.next();
+		Object[] clazz = (Object[])classes.get(className);
+		Node node = (Node)clazz[0];
+		ArrayList methods = (ArrayList)clazz[1];
 		out("package ");
 		String packageName = getPackageName(mainClassName);
 		out(packageName);
@@ -272,74 +426,13 @@ void generateClasses() {
 		outln();
 		out("public class ");
 		out(className);
-		if (className.equals("NSObject")) {
-			out(" extends id {");
-		} else {
-			Node superclass = attributes.getNamedItem("swt_superclass");
-			out(" extends ");
-			if (superclass != null) {
-				out(superclass.getNodeValue());
-			} else {
-				out("NSObject");
-			}
-			out(" {");
-		}
+		out(" extends ");
+		out(getSuperclassName(node));
+		out(" {");
 		outln();
-		outln();
-		out("public ");
-		out(className);
-		out("() {");
-		outln();
-		out("\tsuper();");
-		outln();
-		out("}");
-		outln();
-		outln();
-		out("public ");
-		out(className);
-		out("(int /*long*/ id) {");
-		outln();
-		out("\tsuper(id);");
-		outln();
-		out("}");
-		outln();
-		outln();
-		out("public ");
-		out(className);
-		out("(id id) {");
-		outln();
-		out("\tsuper(id);");
-		outln();
-		out("}");
-		outln();
-		outln();
-		if (className.equals("NSString")) {
-			out("public String getString() {");
-			outln();
-			out("\tchar[] buffer = new char[length()];");
-			outln();
-			out("\tgetCharacters(buffer);");
-			outln();
-			out("\treturn new String(buffer);");
-			outln();
-			out("}");
-			outln();
-			outln();
-			out("public static NSString stringWith(String str) {");
-			outln();
-			out("\tchar[] buffer = new char[str.length()];");
-			outln();
-			out("\tstr.getChars(0, buffer.length, buffer, 0);");
-			outln();
-			out("\treturn stringWithCharacters(buffer, buffer.length);");
-			outln();
-			out("}");
-			outln();
-			outln();
-		}
-		
-		generateMethods(className, methods);
-		
+		outln();		
+		generateExtraMethods(className);
+		generateMethods(className, methods);		
 		out("}");
 		outln();
 		
@@ -421,6 +514,8 @@ void generateMainClass() {
 	out("/** Sends */");
 	outln();
 	generateSends();
+	outln();
+	generateStructNatives();
 	
 	outln();
 	out(footer);
@@ -457,16 +552,6 @@ public boolean getEditable(Node node, String attribName) {
 		if (attribName.equals("swt_java_type")) return true;
 	}
 	return false;
-}
-
-private HashMap loadExtraAttributes(String xmlPath) {
-	HashMap table = new HashMap();
-	String path = getFileName(xmlPath) + ".extras";
-	File file = new File(getExtraAttributesDir());
-	if (file.exists()) path = new File(file, path).getAbsolutePath();
-	Document doc = getDocument(path);
-	if (doc != null) buildExtrasLookup(doc, table);
-	return table;
 }
 
 private void saveExtraAttributes(String xmlPath, Document document) {
@@ -567,27 +652,28 @@ public String[] getIDAttributeNames() {
 	};
 }
 
-void merge(Document document, Node node, HashMap extras) {
-	if (extras == null) return;
+void merge(Node node, HashMap extras, HashMap docLookup) {
 	NodeList list = node.getChildNodes();
 	for (int i = 0; i < list.getLength(); i++) {
 		Node childNode = list.item(i);
 		if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-			Node extra = (Node)extras.remove(getKey(childNode));
+			String key = getKey(childNode);
+			if (docLookup != null && docLookup.get(key) == null) {
+				docLookup.put(key, childNode);
+			}
+			Node extra = (Node)extras.remove(key);
 			if (extra != null) {
 				NamedNodeMap attributes = extra.getAttributes();
 				for (int j = 0, length = attributes.getLength(); j < length; j++) {
-					Attr attr = (Attr)attributes.item(j);
+					Node attr = (Node)attributes.item(j);
 					String name = attr.getNodeName();
 					if (name.startsWith("swt_")) {
-						Attr newAttr = document.createAttribute(name);
-						newAttr.setNodeValue(attr.getNodeValue());
-						((Element)childNode).setAttributeNode(newAttr);
+						((Element)childNode).setAttribute(name, attr.getNodeValue());
 					}
 				}
 			}
 		}
-		merge(document, childNode, extras);
+		merge(childNode, extras, docLookup);
 	}
 }
 
@@ -697,6 +783,12 @@ boolean getGen(Node node) {
 	return gen != null && !gen.getNodeValue().equals("false");
 }
 
+boolean isStatic(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	Node isStatic = attributes.getNamedItem("class_method");
+	return isStatic != null && isStatic.getNodeValue().equals("true");
+}
+
 boolean isStruct(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	String code = attributes.getNamedItem("type").getNodeValue();
@@ -725,17 +817,19 @@ String getExtraAttributesDir() {
 	return "./Mac Generation/org/eclipse/swt/tools/internal/";
 }
 
-void buildExtrasLookup(Node node, HashMap table) {
+void buildLookup(Node node, HashMap table) {
 	NodeList list = node.getChildNodes();
 	for (int i = 0; i < list.getLength(); i++) {
 		Node childNode = list.item(i);
-		String key = getKey(childNode);
-		table.put(key, childNode);
-		buildExtrasLookup(childNode, table);
+		if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+			String key = getKey(childNode);
+			if (table.get(key) == null) table.put(key, childNode);
+			buildLookup(childNode, table);
+		}
 	}
 }
 
-boolean isUnique(Node method, TreeMap methods) {
+boolean isUnique(Node method, ArrayList methods) {
 	String methodName = method.getAttributes().getNamedItem("selector").getNodeValue();
 	String signature = "";
 	NodeList params = method.getChildNodes();
@@ -747,7 +841,7 @@ boolean isUnique(Node method, TreeMap methods) {
 	}
 	int index = methodName.indexOf(":");
 	if (index != -1) methodName = methodName.substring(0, index);
-	for (Iterator iterator = methods.values().iterator(); iterator.hasNext();) {
+	for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
 		Node other = (Node) iterator.next();
 		NamedNodeMap attributes = other.getAttributes();
 		Node otherSel = null;
@@ -775,7 +869,7 @@ boolean isUnique(Node method, TreeMap methods) {
 }
 
 void generateSelectorsConst() {
-	HashSet set = new HashSet();
+	TreeSet set = new TreeSet();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -797,6 +891,7 @@ void generateSelectorsConst() {
 			}
 		}
 	}
+	set.add("alloc");
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String sel = (String) iterator.next();
 		String selConst = getSelConst(sel);
@@ -806,6 +901,45 @@ void generateSelectorsConst() {
 		out("sel_registerName(\"");
 		out(sel);
 		out("\");");
+		outln();
+	}
+}
+
+void generateStructNatives() {
+	TreeSet set = new TreeSet();
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("struct".equals(node.getNodeName()) && getGen(node)) {
+				set.add(getIDAttribute(node).getNodeValue());
+			}
+		}
+	}
+	out("/** Sizeof natives */");
+	outln();
+	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+		String struct = (String) iterator.next();
+		out("public static final native int ");
+		out(struct);
+		out("_sizeof();");
+		outln();
+	}
+	outln();
+	out("/** Memmove natives */");
+	outln();
+	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+		String struct = (String) iterator.next();
+		out("public static final native void memmove(");
+		out("int /*long*/ dest, ");
+		out(struct);
+		out(" src, int size);");
+		outln();
+		out("public static final native void memmove(");
+		out(struct);
+		out(" dest, int /*long*/ src, int size);");
 		outln();
 	}
 }

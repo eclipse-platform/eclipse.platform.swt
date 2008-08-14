@@ -4711,33 +4711,33 @@
       <retval></retval>
     </method>
   </class>
-  <informal_protocol name="WebDownloadDelegate" swt_gen="true">
-    <method selector="downloadWindowForAuthenticationSheet:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
+  <informal_protocol name="WebDownloadDelegate">
+    <method selector="downloadWindowForAuthenticationSheet:">
+      <arg name="download"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="WebFrameLoadDelegate" swt_gen="true">
-    <method selector="webView:didCancelClientRedirectForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+  <informal_protocol name="WebFrameLoadDelegate" swt_gen="mixed">
+    <method selector="webView:didCancelClientRedirectForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:didChangeLocationWithinPageForFrame:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="frame" swt_gen="true"></arg>
     </method>
-    <method selector="webView:didClearWindowObject:forFrame:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="windowObject" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:didClearWindowObject:forFrame:">
+      <arg name="webView"></arg>
+      <arg name="windowObject"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:didCommitLoadForFrame:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="frame" swt_gen="true"></arg>
     </method>
-    <method selector="webView:didFailLoadWithError:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:didFailLoadWithError:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="error"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:didFailProvisionalLoadWithError:forFrame:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
@@ -4748,14 +4748,14 @@
       <arg name="sender" swt_gen="true"></arg>
       <arg name="frame" swt_gen="true"></arg>
     </method>
-    <method selector="webView:didReceiveIcon:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:didReceiveIcon:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="image"></arg>
+      <arg name="frame"></arg>
     </method>
-    <method selector="webView:didReceiveServerRedirectForProvisionalLoadForFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:didReceiveServerRedirectForProvisionalLoadForFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:didReceiveTitle:forFrame:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
@@ -4766,53 +4766,53 @@
       <arg name="sender" swt_gen="true"></arg>
       <arg name="frame" swt_gen="true"></arg>
     </method>
-    <method selector="webView:willCloseFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:willCloseFrame:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
     </method>
-    <method selector="webView:willPerformClientRedirectToURL:delay:fireDate:forFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="URL" swt_gen="true"></arg>
-      <arg name="seconds" swt_gen="true"></arg>
-      <arg name="date" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:willPerformClientRedirectToURL:delay:fireDate:forFrame:">
+      <arg name="sender"></arg>
+      <arg name="URL"></arg>
+      <arg name="seconds"></arg>
+      <arg name="date"></arg>
+      <arg name="frame"></arg>
     </method>
-    <method selector="webView:windowScriptObjectAvailable:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="windowScriptObject" swt_gen="true"></arg>
+    <method selector="webView:windowScriptObjectAvailable:">
+      <arg name="webView"></arg>
+      <arg name="windowScriptObject"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="WebJavaPlugIn" swt_gen="true">
-    <method selector="webPlugInCallJava:isStatic:returnType:method:arguments:callingURL:exceptionDescription:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
-      <arg name="isStatic" swt_gen="true"></arg>
-      <arg name="returnType" swt_gen="true"></arg>
-      <arg name="method" swt_gen="true"></arg>
-      <arg name="args" swt_gen="true"></arg>
-      <arg name="url" swt_gen="true"></arg>
-      <arg name="exceptionString" swt_gen="true"></arg>
+  <informal_protocol name="WebJavaPlugIn">
+    <method selector="webPlugInCallJava:isStatic:returnType:method:arguments:callingURL:exceptionDescription:">
+      <arg name="object"></arg>
+      <arg name="isStatic"></arg>
+      <arg name="returnType"></arg>
+      <arg name="method"></arg>
+      <arg name="args"></arg>
+      <arg name="url"></arg>
+      <arg name="exceptionString"></arg>
     </method>
-    <method selector="webPlugInGetApplet" swt_gen="true"></method>
+    <method selector="webPlugInGetApplet"></method>
   </informal_protocol>
-  <informal_protocol name="WebPlugIn" swt_gen="true">
-    <method selector="objectForWebScript" swt_gen="true"></method>
-    <method selector="webPlugInDestroy" swt_gen="true"></method>
-    <method selector="webPlugInInitialize" swt_gen="true"></method>
-    <method selector="webPlugInSetIsSelected:" swt_gen="true">
-      <arg name="isSelected" swt_gen="true"></arg>
+  <informal_protocol name="WebPlugIn">
+    <method selector="objectForWebScript"></method>
+    <method selector="webPlugInDestroy"></method>
+    <method selector="webPlugInInitialize"></method>
+    <method selector="webPlugInSetIsSelected:">
+      <arg name="isSelected"></arg>
     </method>
-    <method selector="webPlugInStart" swt_gen="true"></method>
-    <method selector="webPlugInStop" swt_gen="true"></method>
+    <method selector="webPlugInStart"></method>
+    <method selector="webPlugInStop"></method>
   </informal_protocol>
-  <informal_protocol name="WebPlugInContainer" swt_gen="true">
-    <method selector="webFrame" swt_gen="true"></method>
-    <method selector="webPlugInContainerLoadRequest:inFrame:" swt_gen="true">
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="target" swt_gen="true"></arg>
+  <informal_protocol name="WebPlugInContainer">
+    <method selector="webFrame"></method>
+    <method selector="webPlugInContainerLoadRequest:inFrame:">
+      <arg name="request"></arg>
+      <arg name="target"></arg>
     </method>
-    <method selector="webPlugInContainerSelectionColor" swt_gen="true"></method>
-    <method selector="webPlugInContainerShowStatus:" swt_gen="true">
-      <arg name="message" swt_gen="true"></arg>
+    <method selector="webPlugInContainerSelectionColor"></method>
+    <method selector="webPlugInContainerShowStatus:">
+      <arg name="message"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="WebPolicyDelegate" swt_gen="true">
@@ -4843,22 +4843,22 @@
       <arg name="frame" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="WebResourceLoadDelegate" swt_gen="true">
+  <informal_protocol name="WebResourceLoadDelegate" swt_gen="mixed">
     <method selector="webView:identifierForInitialRequest:fromDataSource:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="request" swt_gen="true"></arg>
       <arg name="dataSource" swt_gen="true"></arg>
     </method>
-    <method selector="webView:plugInFailedWithError:dataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
+    <method selector="webView:plugInFailedWithError:dataSource:">
+      <arg name="sender"></arg>
+      <arg name="error"></arg>
+      <arg name="dataSource"></arg>
     </method>
-    <method selector="webView:resource:didCancelAuthenticationChallenge:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
+    <method selector="webView:resource:didCancelAuthenticationChallenge:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="challenge"></arg>
+      <arg name="dataSource"></arg>
     </method>
     <method selector="webView:resource:didFailLoadingWithError:fromDataSource:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
@@ -4871,23 +4871,23 @@
       <arg name="identifier" swt_gen="true"></arg>
       <arg name="dataSource" swt_gen="true"></arg>
     </method>
-    <method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
+    <method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="challenge"></arg>
+      <arg name="dataSource"></arg>
     </method>
-    <method selector="webView:resource:didReceiveContentLength:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="length" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
+    <method selector="webView:resource:didReceiveContentLength:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="length"></arg>
+      <arg name="dataSource"></arg>
     </method>
-    <method selector="webView:resource:didReceiveResponse:fromDataSource:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="identifier" swt_gen="true"></arg>
-      <arg name="response" swt_gen="true"></arg>
-      <arg name="dataSource" swt_gen="true"></arg>
+    <method selector="webView:resource:didReceiveResponse:fromDataSource:">
+      <arg name="sender"></arg>
+      <arg name="identifier"></arg>
+      <arg name="response"></arg>
+      <arg name="dataSource"></arg>
     </method>
     <method selector="webView:resource:willSendRequest:redirectResponse:fromDataSource:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
@@ -4897,61 +4897,61 @@
       <arg name="dataSource" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="WebScripting" swt_gen="true">
-    <method selector="finalizeForWebScript" swt_gen="true"></method>
-    <method selector="invokeDefaultMethodWithArguments:" swt_gen="true">
-      <arg name="args" swt_gen="true"></arg>
+  <informal_protocol name="WebScripting">
+    <method selector="finalizeForWebScript"></method>
+    <method selector="invokeDefaultMethodWithArguments:">
+      <arg name="args"></arg>
     </method>
-    <method selector="invokeUndefinedMethodFromWebScript:withArguments:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="args" swt_gen="true"></arg>
+    <method selector="invokeUndefinedMethodFromWebScript:withArguments:">
+      <arg name="name"></arg>
+      <arg name="args"></arg>
     </method>
-    <method class_method="true" selector="isKeyExcludedFromWebScript:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
+    <method class_method="true" selector="isKeyExcludedFromWebScript:">
+      <arg name="name"></arg>
     </method>
-    <method class_method="true" selector="isSelectorExcludedFromWebScript:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
+    <method class_method="true" selector="isSelectorExcludedFromWebScript:">
+      <arg name="aSelector"></arg>
     </method>
-    <method class_method="true" selector="webScriptNameForKey:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
+    <method class_method="true" selector="webScriptNameForKey:">
+      <arg name="name"></arg>
     </method>
-    <method class_method="true" selector="webScriptNameForSelector:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
+    <method class_method="true" selector="webScriptNameForSelector:">
+      <arg name="aSelector"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="WebUIDelegate" swt_gen="true">
+  <informal_protocol name="WebUIDelegate" swt_gen="mixed">
     <method selector="webView:contextMenuItemsForElement:defaultMenuItems:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="element" swt_gen="true"></arg>
       <arg name="defaultMenuItems" swt_gen="true"></arg>
     </method>
-    <method selector="webView:createWebViewModalDialogWithRequest:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
+    <method selector="webView:createWebViewModalDialogWithRequest:">
+      <arg name="sender"></arg>
+      <arg name="request"></arg>
     </method>
     <method selector="webView:createWebViewWithRequest:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="request" swt_gen="true"></arg>
     </method>
-    <method selector="webView:dragDestinationActionMaskForDraggingInfo:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="draggingInfo" swt_gen="true"></arg>
+    <method selector="webView:dragDestinationActionMaskForDraggingInfo:">
+      <arg name="webView"></arg>
+      <arg name="draggingInfo"></arg>
     </method>
-    <method selector="webView:dragSourceActionMaskForPoint:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="point" swt_gen="true"></arg>
+    <method selector="webView:dragSourceActionMaskForPoint:">
+      <arg name="webView"></arg>
+      <arg name="point"></arg>
     </method>
-    <method selector="webView:drawFooterInRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
+    <method selector="webView:drawFooterInRect:">
+      <arg name="sender"></arg>
+      <arg name="rect"></arg>
     </method>
-    <method selector="webView:drawHeaderInRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
+    <method selector="webView:drawHeaderInRect:">
+      <arg name="sender"></arg>
+      <arg name="rect"></arg>
     </method>
-    <method selector="webView:makeFirstResponder:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="responder" swt_gen="true"></arg>
+    <method selector="webView:makeFirstResponder:">
+      <arg name="sender"></arg>
+      <arg name="responder"></arg>
     </method>
     <method selector="webView:mouseDidMoveOverElement:modifierFlags:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
@@ -4962,47 +4962,47 @@
       <arg name="sender" swt_gen="true"></arg>
       <arg name="frameView" swt_gen="true"></arg>
     </method>
-    <method selector="webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:runJavaScriptAlertPanelWithMessage:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="message" swt_gen="true"></arg>
     </method>
-    <method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:runJavaScriptConfirmPanelWithMessage:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="message" swt_gen="true"></arg>
     </method>
-    <method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+      <arg name="frame"></arg>
     </method>
-    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="prompt" swt_gen="true"></arg>
-      <arg name="defaultText" swt_gen="true"></arg>
+    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:">
+      <arg name="sender"></arg>
+      <arg name="prompt"></arg>
+      <arg name="defaultText"></arg>
     </method>
-    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="prompt" swt_gen="true"></arg>
-      <arg name="defaultText" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:">
+      <arg name="sender"></arg>
+      <arg name="prompt"></arg>
+      <arg name="defaultText"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:runOpenPanelForFileButtonWithResultListener:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
       <arg name="resultListener" swt_gen="true"></arg>
     </method>
-    <method selector="webView:setContentRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frame" swt_gen="true"></arg>
+    <method selector="webView:setContentRect:">
+      <arg name="sender"></arg>
+      <arg name="frame"></arg>
     </method>
     <method selector="webView:setFrame:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
@@ -5024,133 +5024,146 @@
       <arg name="sender" swt_gen="true"></arg>
       <arg name="visible" swt_gen="true"></arg>
     </method>
-    <method selector="webView:shouldPerformAction:fromSender:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webView:shouldPerformAction:fromSender:">
+      <arg name="webView"></arg>
+      <arg name="action"></arg>
+      <arg name="sender"></arg>
     </method>
-    <method selector="webView:validateUserInterfaceItem:defaultValidation:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
-      <arg name="defaultValidation" swt_gen="true"></arg>
+    <method selector="webView:validateUserInterfaceItem:defaultValidation:">
+      <arg name="webView"></arg>
+      <arg name="item"></arg>
+      <arg name="defaultValidation"></arg>
     </method>
-    <method selector="webView:willPerformDragDestinationAction:forDraggingInfo:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <arg name="draggingInfo" swt_gen="true"></arg>
+    <method selector="webView:willPerformDragDestinationAction:forDraggingInfo:">
+      <arg name="webView"></arg>
+      <arg name="action"></arg>
+      <arg name="draggingInfo"></arg>
     </method>
-    <method selector="webView:willPerformDragSourceAction:fromPoint:withPasteboard:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
-      <arg name="point" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
+    <method selector="webView:willPerformDragSourceAction:fromPoint:withPasteboard:">
+      <arg name="webView"></arg>
+      <arg name="action"></arg>
+      <arg name="point"></arg>
+      <arg name="pasteboard"></arg>
     </method>
-    <method selector="webViewAreToolbarsVisible:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewAreToolbarsVisible:">
+      <arg name="sender"></arg>
     </method>
     <method selector="webViewClose:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="webViewContentRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewContentRect:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="webViewFirstResponder:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewFirstResponder:">
+      <arg name="sender"></arg>
     </method>
     <method selector="webViewFocus:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="webViewFooterHeight:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewFooterHeight:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="webViewFrame:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewFrame:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="webViewHeaderHeight:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewHeaderHeight:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="webViewIsResizable:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewIsResizable:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="webViewIsStatusBarVisible:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewIsStatusBarVisible:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="webViewRunModal:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewRunModal:">
+      <arg name="sender"></arg>
     </method>
     <method selector="webViewShow:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="webViewStatusText:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="webViewStatusText:">
+      <arg name="sender"></arg>
     </method>
     <method selector="webViewUnfocus:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="WebViewEditingDelegate" swt_gen="true">
-    <method selector="undoManagerForWebView:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
+  <informal_protocol name="WebViewEditingDelegate">
+    <method selector="undoManagerForWebView:">
+      <arg name="webView"></arg>
     </method>
-    <method selector="webView:doCommandBySelector:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="selector" swt_gen="true"></arg>
+    <method selector="webView:doCommandBySelector:">
+      <arg name="webView"></arg>
+      <arg name="selector"></arg>
     </method>
-    <method selector="webView:shouldApplyStyle:toElementsInDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="style" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
+    <method selector="webView:shouldApplyStyle:toElementsInDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="style"></arg>
+      <arg name="range"></arg>
     </method>
-    <method selector="webView:shouldBeginEditingInDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
+    <method selector="webView:shouldBeginEditingInDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="range"></arg>
     </method>
-    <method selector="webView:shouldChangeSelectedDOMRange:toDOMRange:affinity:stillSelecting:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="currentRange" swt_gen="true"></arg>
-      <arg name="proposedRange" swt_gen="true"></arg>
-      <arg name="selectionAffinity" swt_gen="true"></arg>
-      <arg name="flag" swt_gen="true"></arg>
+    <method selector="webView:shouldChangeSelectedDOMRange:toDOMRange:affinity:stillSelecting:">
+      <arg name="webView"></arg>
+      <arg name="currentRange"></arg>
+      <arg name="proposedRange"></arg>
+      <arg name="selectionAffinity"></arg>
+      <arg name="flag"></arg>
     </method>
-    <method selector="webView:shouldChangeTypingStyle:toStyle:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="currentStyle" swt_gen="true"></arg>
-      <arg name="proposedStyle" swt_gen="true"></arg>
+    <method selector="webView:shouldChangeTypingStyle:toStyle:">
+      <arg name="webView"></arg>
+      <arg name="currentStyle"></arg>
+      <arg name="proposedStyle"></arg>
     </method>
-    <method selector="webView:shouldDeleteDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
+    <method selector="webView:shouldDeleteDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="range"></arg>
     </method>
-    <method selector="webView:shouldEndEditingInDOMRange:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
+    <method selector="webView:shouldEndEditingInDOMRange:">
+      <arg name="webView"></arg>
+      <arg name="range"></arg>
     </method>
-    <method selector="webView:shouldInsertNode:replacingDOMRange:givenAction:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="node" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
+    <method selector="webView:shouldInsertNode:replacingDOMRange:givenAction:">
+      <arg name="webView"></arg>
+      <arg name="node"></arg>
+      <arg name="range"></arg>
+      <arg name="action"></arg>
     </method>
-    <method selector="webView:shouldInsertText:replacingDOMRange:givenAction:" swt_gen="true">
-      <arg name="webView" swt_gen="true"></arg>
-      <arg name="text" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
+    <method selector="webView:shouldInsertText:replacingDOMRange:givenAction:">
+      <arg name="webView"></arg>
+      <arg name="text"></arg>
+      <arg name="range"></arg>
+      <arg name="action"></arg>
     </method>
-    <method selector="webViewDidBeginEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="webViewDidBeginEditing:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="webViewDidChange:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="webViewDidChange:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="webViewDidChangeSelection:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="webViewDidChangeSelection:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="webViewDidChangeTypingStyle:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="webViewDidChangeTypingStyle:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="webViewDidEndEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="webViewDidEndEditing:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
+  <informal_protocol name="WebPolicyDecisionListener" swt_gen="true">
+    <method selector="use" swt_gen="true"></method>
+    <method selector="download" swt_gen="true"></method>
+    <method selector="ignore" swt_gen="true"></method>
+</informal_protocol>
+  <informal_protocol name="WebOpenPanelResultListener" swt_gen="true">
+    <method selector="chooseFilename:" swt_gen="true">
+      <arg name="theRange" swt_gen="true"></arg>
+</method>
+</informal_protocol>
+  <informal_protocol name="WebDocumentRepresentation" swt_gen="true">
+    <method selector="documentSource" swt_gen="true"></method>
+</informal_protocol>
 </signatures>

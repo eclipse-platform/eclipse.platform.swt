@@ -3327,9 +3327,9 @@
       <arg name="dict"></arg>
       <retval swt_java_type="NSAttributedString"></retval>
     </method>
-    <method selector="initWithString:" swt_gen="true">
-      <arg name="str" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
+    <method selector="initWithString:">
+      <arg name="str"></arg>
+      <retval swt_java_type="NSAttributedString"></retval>
     </method>
     <method selector="initWithString:attributes:" swt_gen="true">
       <arg name="str" swt_gen="true"></arg>
@@ -3357,8 +3357,8 @@
       <arg name="location"></arg>
       <retval></retval>
     </method>
-    <method selector="length" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method selector="length">
+      <retval></retval>
     </method>
     <method selector="lineBreakBeforeIndex:withinRange:">
       <arg name="location"></arg>
@@ -4417,7 +4417,7 @@
       <arg name="fileName" swt_gen="true"></arg>
       <arg name="context" swt_gen="true"></arg>
       <arg name="zone" swt_gen="true"></arg>
-      <retval></retval>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="loadNibFile:externalNameTable:withZone:">
       <arg name="fileName"></arg>
@@ -6453,8 +6453,8 @@
     <method class_method="true" selector="cellClass">
       <retval></retval>
     </method>
-    <method selector="currentEditor">
-      <retval></retval>
+    <method selector="currentEditor" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="doubleValue" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -19347,9 +19347,9 @@
       <arg name="save"></arg>
       <retval></retval>
     </method>
-    <method selector="setBackgroundColor:">
-      <arg name="color"></arg>
-      <retval></retval>
+    <method selector="setBackgroundColor:" swt_gen="true">
+      <arg name="color" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setColumnAutoresizingStyle:">
       <arg name="style"></arg>
@@ -19573,9 +19573,9 @@
     <method selector="minSize">
       <retval></retval>
     </method>
-    <method selector="paste:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="paste:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="pasteFont:">
       <arg name="sender"></arg>
@@ -19599,10 +19599,10 @@
       <arg name="rtfdData"></arg>
       <retval></retval>
     </method>
-    <method selector="replaceCharactersInRange:withString:">
-      <arg name="range"></arg>
-      <arg name="aString"></arg>
-      <retval></retval>
+    <method selector="replaceCharactersInRange:withString:" swt_gen="true">
+      <arg name="range" swt_gen="true"></arg>
+      <arg name="aString" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="scrollRangeToVisible:" swt_gen="true">
       <arg name="range" swt_gen="true"></arg>
@@ -22930,10 +22930,10 @@
       <arg name="contentRect" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method class_method="true" selector="frameRectForContentRect:styleMask:" swt_gen="true">
-      <arg name="cRect" swt_gen="true"></arg>
-      <arg name="aStyle" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+    <method class_method="true" selector="frameRectForContentRect:styleMask:">
+      <arg name="cRect"></arg>
+      <arg name="aStyle"></arg>
+      <retval></retval>
     </method>
     <method selector="gState">
       <retval></retval>
@@ -23882,284 +23882,284 @@
       <retval></retval>
     </method>
   </class>
-  <informal_protocol name="NSAccessibility" swt_gen="true">
-    <method selector="accessibilityActionDescription:" swt_gen="true">
-      <arg name="action" swt_gen="true"></arg>
+  <informal_protocol name="NSAccessibility" swt_gen="mixed">
+    <method selector="accessibilityActionDescription:">
+      <arg name="action"></arg>
     </method>
-    <method selector="accessibilityActionNames" swt_gen="true"></method>
-    <method selector="accessibilityAttributeNames" swt_gen="true"></method>
+    <method selector="accessibilityActionNames"></method>
+    <method selector="accessibilityAttributeNames"></method>
     <method selector="accessibilityAttributeValue:" swt_gen="true">
       <arg name="attribute" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilityAttributeValue:forParameter:" swt_gen="true">
-      <arg name="attribute" swt_gen="true"></arg>
-      <arg name="parameter" swt_gen="true"></arg>
+    <method selector="accessibilityAttributeValue:forParameter:">
+      <arg name="attribute"></arg>
+      <arg name="parameter"></arg>
     </method>
-    <method selector="accessibilityFocusedUIElement" swt_gen="true"></method>
-    <method selector="accessibilityHitTest:" swt_gen="true">
-      <arg name="point" swt_gen="true"></arg>
+    <method selector="accessibilityFocusedUIElement"></method>
+    <method selector="accessibilityHitTest:">
+      <arg name="point"></arg>
     </method>
-    <method selector="accessibilityIsAttributeSettable:" swt_gen="true">
-      <arg name="attribute" swt_gen="true"></arg>
+    <method selector="accessibilityIsAttributeSettable:">
+      <arg name="attribute"></arg>
     </method>
-    <method selector="accessibilityIsIgnored" swt_gen="true"></method>
-    <method selector="accessibilityParameterizedAttributeNames" swt_gen="true"></method>
-    <method selector="accessibilityPerformAction:" swt_gen="true">
-      <arg name="action" swt_gen="true"></arg>
+    <method selector="accessibilityIsIgnored"></method>
+    <method selector="accessibilityParameterizedAttributeNames"></method>
+    <method selector="accessibilityPerformAction:">
+      <arg name="action"></arg>
     </method>
-    <method selector="accessibilitySetValue:forAttribute:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="attribute" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSAccessibilityAdditions" swt_gen="true">
-    <method selector="accessibilitySetOverrideValue:forAttribute:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="attribute" swt_gen="true"></arg>
+    <method selector="accessibilitySetValue:forAttribute:">
+      <arg name="value"></arg>
+      <arg name="attribute"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSAlertDelegate" swt_gen="true">
-    <method selector="alertShowHelp:" swt_gen="true">
-      <arg name="alert" swt_gen="true"></arg>
+  <informal_protocol name="NSAccessibilityAdditions">
+    <method selector="accessibilitySetOverrideValue:forAttribute:">
+      <arg name="value"></arg>
+      <arg name="attribute"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSAnimationDelegate" swt_gen="true">
-    <method selector="animation:didReachProgressMark:" swt_gen="true">
-      <arg name="animation" swt_gen="true"></arg>
-      <arg name="progress" swt_gen="true"></arg>
-    </method>
-    <method selector="animation:valueForProgress:" swt_gen="true">
-      <arg name="animation" swt_gen="true"></arg>
-      <arg name="progress" swt_gen="true"></arg>
-    </method>
-    <method selector="animationDidEnd:" swt_gen="true">
-      <arg name="animation" swt_gen="true"></arg>
-    </method>
-    <method selector="animationDidStop:" swt_gen="true">
-      <arg name="animation" swt_gen="true"></arg>
-    </method>
-    <method selector="animationShouldStart:" swt_gen="true">
-      <arg name="animation" swt_gen="true"></arg>
+  <informal_protocol name="NSAlertDelegate">
+    <method selector="alertShowHelp:">
+      <arg name="alert"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSApplicationDelegate" swt_gen="true">
-    <method selector="application:openFile:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
+  <informal_protocol name="NSAnimationDelegate">
+    <method selector="animation:didReachProgressMark:">
+      <arg name="animation"></arg>
+      <arg name="progress"></arg>
     </method>
-    <method selector="application:openFileWithoutUI:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
+    <method selector="animation:valueForProgress:">
+      <arg name="animation"></arg>
+      <arg name="progress"></arg>
     </method>
-    <method selector="application:openFiles:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filenames" swt_gen="true"></arg>
+    <method selector="animationDidEnd:">
+      <arg name="animation"></arg>
     </method>
-    <method selector="application:openTempFile:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
+    <method selector="animationDidStop:">
+      <arg name="animation"></arg>
     </method>
-    <method selector="application:printFile:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
+    <method selector="animationShouldStart:">
+      <arg name="animation"></arg>
     </method>
-    <method selector="application:printFiles:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filenames" swt_gen="true"></arg>
+  </informal_protocol>
+  <informal_protocol name="NSApplicationDelegate" swt_gen="mixed">
+    <method selector="application:openFile:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
     </method>
-    <method selector="application:printFiles:withSettings:showPrintPanels:" swt_gen="true">
-      <arg name="application" swt_gen="true"></arg>
-      <arg name="fileNames" swt_gen="true"></arg>
-      <arg name="printSettings" swt_gen="true"></arg>
-      <arg name="showPrintPanels" swt_gen="true"></arg>
+    <method selector="application:openFileWithoutUI:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
     </method>
-    <method selector="application:willPresentError:" swt_gen="true">
-      <arg name="application" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
+    <method selector="application:openFiles:">
+      <arg name="sender"></arg>
+      <arg name="filenames"></arg>
     </method>
-    <method selector="applicationDockMenu:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="application:openTempFile:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
     </method>
-    <method selector="applicationOpenUntitledFile:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="application:printFile:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
     </method>
-    <method selector="applicationShouldHandleReopen:hasVisibleWindows:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="flag" swt_gen="true"></arg>
+    <method selector="application:printFiles:">
+      <arg name="sender"></arg>
+      <arg name="filenames"></arg>
     </method>
-    <method selector="applicationShouldOpenUntitledFile:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="application:printFiles:withSettings:showPrintPanels:">
+      <arg name="application"></arg>
+      <arg name="fileNames"></arg>
+      <arg name="printSettings"></arg>
+      <arg name="showPrintPanels"></arg>
+    </method>
+    <method selector="application:willPresentError:">
+      <arg name="application"></arg>
+      <arg name="error"></arg>
+    </method>
+    <method selector="applicationDockMenu:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="applicationOpenUntitledFile:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="applicationShouldHandleReopen:hasVisibleWindows:">
+      <arg name="sender"></arg>
+      <arg name="flag"></arg>
+    </method>
+    <method selector="applicationShouldOpenUntitledFile:">
+      <arg name="sender"></arg>
     </method>
     <method selector="applicationShouldTerminate:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="applicationShouldTerminateAfterLastWindowClosed:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="applicationShouldTerminateAfterLastWindowClosed:">
+      <arg name="sender"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSApplicationNotifications" swt_gen="true">
-    <method selector="applicationDidBecomeActive:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+  <informal_protocol name="NSApplicationNotifications" swt_gen="mixed">
+    <method selector="applicationDidBecomeActive:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationDidChangeScreenParameters:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationDidChangeScreenParameters:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationDidFinishLaunching:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationDidFinishLaunching:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationDidHide:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationDidHide:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationDidResignActive:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationDidResignActive:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationDidUnhide:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationDidUnhide:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationDidUpdate:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationDidUpdate:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationWillBecomeActive:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationWillBecomeActive:">
+      <arg name="notification"></arg>
     </method>
     <method selector="applicationWillFinishLaunching:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="applicationWillHide:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationWillHide:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationWillResignActive:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationWillResignActive:">
+      <arg name="notification"></arg>
     </method>
     <method selector="applicationWillTerminate:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="applicationWillUnhide:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="applicationWillUnhide:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="applicationWillUpdate:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSApplicationScriptingDelegation" swt_gen="true">
-    <method selector="application:delegateHandlesKey:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="applicationWillUpdate:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSBrowserDelegate" swt_gen="true">
-    <method selector="browser:acceptDrop:atRow:column:dropOperation:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="info" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="dropOperation" swt_gen="true"></arg>
+  <informal_protocol name="NSApplicationScriptingDelegation">
+    <method selector="application:delegateHandlesKey:">
+      <arg name="sender"></arg>
+      <arg name="key"></arg>
     </method>
-    <method selector="browser:canDragRowsWithIndexes:inColumn:withEvent:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="rowIndexes" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
+  </informal_protocol>
+  <informal_protocol name="NSBrowserDelegate">
+    <method selector="browser:acceptDrop:atRow:column:dropOperation:">
+      <arg name="browser"></arg>
+      <arg name="info"></arg>
+      <arg name="row"></arg>
+      <arg name="column"></arg>
+      <arg name="dropOperation"></arg>
     </method>
-    <method selector="browser:createRowsForColumn:inMatrix:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="matrix" swt_gen="true"></arg>
+    <method selector="browser:canDragRowsWithIndexes:inColumn:withEvent:">
+      <arg name="browser"></arg>
+      <arg name="rowIndexes"></arg>
+      <arg name="column"></arg>
+      <arg name="event"></arg>
     </method>
-    <method selector="browser:draggingImageForRowsWithIndexes:inColumn:withEvent:offset:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="rowIndexes" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="dragImageOffset" swt_gen="true"></arg>
+    <method selector="browser:createRowsForColumn:inMatrix:">
+      <arg name="sender"></arg>
+      <arg name="column"></arg>
+      <arg name="matrix"></arg>
     </method>
-    <method selector="browser:isColumnValid:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:draggingImageForRowsWithIndexes:inColumn:withEvent:offset:">
+      <arg name="browser"></arg>
+      <arg name="rowIndexes"></arg>
+      <arg name="column"></arg>
+      <arg name="event"></arg>
+      <arg name="dragImageOffset"></arg>
     </method>
-    <method selector="browser:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:inColumn:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="dropDestination" swt_gen="true"></arg>
-      <arg name="rowIndexes" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:isColumnValid:">
+      <arg name="sender"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:nextTypeSelectMatchFromRow:toRow:inColumn:forString:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="startRow" swt_gen="true"></arg>
-      <arg name="endRow" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="searchString" swt_gen="true"></arg>
+    <method selector="browser:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:inColumn:">
+      <arg name="browser"></arg>
+      <arg name="dropDestination"></arg>
+      <arg name="rowIndexes"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:numberOfRowsInColumn:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:nextTypeSelectMatchFromRow:toRow:inColumn:forString:">
+      <arg name="browser"></arg>
+      <arg name="startRow"></arg>
+      <arg name="endRow"></arg>
+      <arg name="column"></arg>
+      <arg name="searchString"></arg>
     </method>
-    <method selector="browser:selectCellWithString:inColumn:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="title" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:numberOfRowsInColumn:">
+      <arg name="sender"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:selectRow:inColumn:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:selectCellWithString:inColumn:">
+      <arg name="sender"></arg>
+      <arg name="title"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:shouldShowCellExpansionForRow:column:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:selectRow:inColumn:">
+      <arg name="sender"></arg>
+      <arg name="row"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:shouldSizeColumn:forUserResize:toWidth:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="columnIndex" swt_gen="true"></arg>
-      <arg name="forUserResize" swt_gen="true"></arg>
-      <arg name="suggestedWidth" swt_gen="true"></arg>
+    <method selector="browser:shouldShowCellExpansionForRow:column:">
+      <arg name="browser"></arg>
+      <arg name="row"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:shouldTypeSelectForEvent:withCurrentSearchString:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="searchString" swt_gen="true"></arg>
+    <method selector="browser:shouldSizeColumn:forUserResize:toWidth:">
+      <arg name="browser"></arg>
+      <arg name="columnIndex"></arg>
+      <arg name="forUserResize"></arg>
+      <arg name="suggestedWidth"></arg>
     </method>
-    <method selector="browser:sizeToFitWidthOfColumn:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="columnIndex" swt_gen="true"></arg>
+    <method selector="browser:shouldTypeSelectForEvent:withCurrentSearchString:">
+      <arg name="browser"></arg>
+      <arg name="event"></arg>
+      <arg name="searchString"></arg>
     </method>
-    <method selector="browser:titleOfColumn:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:sizeToFitWidthOfColumn:">
+      <arg name="browser"></arg>
+      <arg name="columnIndex"></arg>
     </method>
-    <method selector="browser:typeSelectStringForRow:inColumn:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:titleOfColumn:">
+      <arg name="sender"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:validateDrop:proposedRow:column:dropOperation:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="info" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="dropOperation" swt_gen="true"></arg>
+    <method selector="browser:typeSelectStringForRow:inColumn:">
+      <arg name="browser"></arg>
+      <arg name="row"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browser:willDisplayCell:atRow:column:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
+    <method selector="browser:validateDrop:proposedRow:column:dropOperation:">
+      <arg name="browser"></arg>
+      <arg name="info"></arg>
+      <arg name="row"></arg>
+      <arg name="column"></arg>
+      <arg name="dropOperation"></arg>
     </method>
-    <method selector="browser:writeRowsWithIndexes:inColumn:toPasteboard:" swt_gen="true">
-      <arg name="browser" swt_gen="true"></arg>
-      <arg name="rowIndexes" swt_gen="true"></arg>
-      <arg name="column" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
+    <method selector="browser:willDisplayCell:atRow:column:">
+      <arg name="sender"></arg>
+      <arg name="cell"></arg>
+      <arg name="row"></arg>
+      <arg name="column"></arg>
     </method>
-    <method selector="browserColumnConfigurationDidChange:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="browser:writeRowsWithIndexes:inColumn:toPasteboard:">
+      <arg name="browser"></arg>
+      <arg name="rowIndexes"></arg>
+      <arg name="column"></arg>
+      <arg name="pasteboard"></arg>
     </method>
-    <method selector="browserDidScroll:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="browserColumnConfigurationDidChange:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="browserWillScroll:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="browserDidScroll:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="browserWillScroll:">
+      <arg name="sender"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="NSColorPanelResponderMethod" swt_gen="true">
@@ -24167,221 +24167,221 @@
       <arg name="sender" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSComboBoxCellDataSource" swt_gen="true">
-    <method selector="comboBoxCell:completedString:" swt_gen="true">
-      <arg name="aComboBoxCell" swt_gen="true"></arg>
-      <arg name="uncompletedString" swt_gen="true"></arg>
+  <informal_protocol name="NSComboBoxCellDataSource">
+    <method selector="comboBoxCell:completedString:">
+      <arg name="aComboBoxCell"></arg>
+      <arg name="uncompletedString"></arg>
     </method>
-    <method selector="comboBoxCell:indexOfItemWithStringValue:" swt_gen="true">
-      <arg name="aComboBoxCell" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
+    <method selector="comboBoxCell:indexOfItemWithStringValue:">
+      <arg name="aComboBoxCell"></arg>
+      <arg name="string"></arg>
     </method>
-    <method selector="comboBoxCell:objectValueForItemAtIndex:" swt_gen="true">
-      <arg name="aComboBoxCell" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
+    <method selector="comboBoxCell:objectValueForItemAtIndex:">
+      <arg name="aComboBoxCell"></arg>
+      <arg name="index"></arg>
     </method>
-    <method selector="numberOfItemsInComboBoxCell:" swt_gen="true">
-      <arg name="comboBoxCell" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSComboBoxDataSource" swt_gen="true">
-    <method selector="comboBox:completedString:" swt_gen="true">
-      <arg name="aComboBox" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
-    </method>
-    <method selector="comboBox:indexOfItemWithStringValue:" swt_gen="true">
-      <arg name="aComboBox" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
-    </method>
-    <method selector="comboBox:objectValueForItemAtIndex:" swt_gen="true">
-      <arg name="aComboBox" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
-    </method>
-    <method selector="numberOfItemsInComboBox:" swt_gen="true">
-      <arg name="aComboBox" swt_gen="true"></arg>
+    <method selector="numberOfItemsInComboBoxCell:">
+      <arg name="comboBoxCell"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSComboBoxNotifications" swt_gen="true">
+  <informal_protocol name="NSComboBoxDataSource">
+    <method selector="comboBox:completedString:">
+      <arg name="aComboBox"></arg>
+      <arg name="string"></arg>
+    </method>
+    <method selector="comboBox:indexOfItemWithStringValue:">
+      <arg name="aComboBox"></arg>
+      <arg name="string"></arg>
+    </method>
+    <method selector="comboBox:objectValueForItemAtIndex:">
+      <arg name="aComboBox"></arg>
+      <arg name="index"></arg>
+    </method>
+    <method selector="numberOfItemsInComboBox:">
+      <arg name="aComboBox"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSComboBoxNotifications" swt_gen="mixed">
     <method selector="comboBoxSelectionDidChange:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="comboBoxSelectionIsChanging:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="comboBoxSelectionIsChanging:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="comboBoxWillDismiss:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="comboBoxWillDismiss:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="comboBoxWillPopUp:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSControlSubclassDelegate" swt_gen="true">
-    <method selector="control:didFailToFormatString:errorDescription:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-    </method>
-    <method selector="control:didFailToValidatePartialString:errorDescription:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-    </method>
-    <method selector="control:isValidObject:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="obj" swt_gen="true"></arg>
-    </method>
-    <method selector="control:textShouldBeginEditing:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="fieldEditor" swt_gen="true"></arg>
-    </method>
-    <method selector="control:textShouldEndEditing:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="fieldEditor" swt_gen="true"></arg>
-    </method>
-    <method selector="control:textView:completions:forPartialWordRange:indexOfSelectedItem:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="words" swt_gen="true"></arg>
-      <arg name="charRange" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
-    </method>
-    <method selector="control:textView:doCommandBySelector:" swt_gen="true">
-      <arg name="control" swt_gen="true"></arg>
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="commandSelector" swt_gen="true"></arg>
+    <method selector="comboBoxWillPopUp:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSControlSubclassNotifications" swt_gen="true">
-    <method selector="controlTextDidBeginEditing:" swt_gen="true">
-      <arg name="obj" swt_gen="true"></arg>
+  <informal_protocol name="NSControlSubclassDelegate">
+    <method selector="control:didFailToFormatString:errorDescription:">
+      <arg name="control"></arg>
+      <arg name="string"></arg>
+      <arg name="error"></arg>
     </method>
-    <method selector="controlTextDidChange:" swt_gen="true">
-      <arg name="obj" swt_gen="true"></arg>
+    <method selector="control:didFailToValidatePartialString:errorDescription:">
+      <arg name="control"></arg>
+      <arg name="string"></arg>
+      <arg name="error"></arg>
     </method>
-    <method selector="controlTextDidEndEditing:" swt_gen="true">
-      <arg name="obj" swt_gen="true"></arg>
+    <method selector="control:isValidObject:">
+      <arg name="control"></arg>
+      <arg name="obj"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSDatePickerCellDelegate" swt_gen="true">
-    <method selector="datePickerCell:validateProposedDateValue:timeInterval:" swt_gen="true">
-      <arg name="aDatePickerCell" swt_gen="true"></arg>
-      <arg name="proposedDateValue" swt_gen="true"></arg>
-      <arg name="proposedTimeInterval" swt_gen="true"></arg>
+    <method selector="control:textShouldBeginEditing:">
+      <arg name="control"></arg>
+      <arg name="fieldEditor"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSDictionaryControllerKeyValuePair" swt_gen="true">
-    <method selector="isExplicitlyIncluded" swt_gen="true"></method>
-    <method selector="key" swt_gen="true"></method>
-    <method selector="localizedKey" swt_gen="true"></method>
-    <method selector="setKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="control:textShouldEndEditing:">
+      <arg name="control"></arg>
+      <arg name="fieldEditor"></arg>
     </method>
-    <method selector="setLocalizedKey:" swt_gen="true">
-      <arg name="localizedKey" swt_gen="true"></arg>
+    <method selector="control:textView:completions:forPartialWordRange:indexOfSelectedItem:">
+      <arg name="control"></arg>
+      <arg name="textView"></arg>
+      <arg name="words"></arg>
+      <arg name="charRange"></arg>
+      <arg name="index"></arg>
     </method>
-    <method selector="setValue:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-    </method>
-    <method selector="value" swt_gen="true"></method>
-  </informal_protocol>
-  <informal_protocol name="NSDraggingDestination" swt_gen="true">
-    <method selector="concludeDragOperation:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="draggingEnded:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="draggingEntered:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="draggingExited:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="draggingUpdated:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="performDragOperation:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="prepareForDragOperation:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="wantsPeriodicDraggingUpdates" swt_gen="true"></method>
-  </informal_protocol>
-  <informal_protocol name="NSDraggingSource" swt_gen="true">
-    <method selector="draggedImage:beganAt:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="screenPoint" swt_gen="true"></arg>
-    </method>
-    <method selector="draggedImage:endedAt:deposited:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="screenPoint" swt_gen="true"></arg>
-      <arg name="flag" swt_gen="true"></arg>
-    </method>
-    <method selector="draggedImage:endedAt:operation:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="screenPoint" swt_gen="true"></arg>
-      <arg name="operation" swt_gen="true"></arg>
-    </method>
-    <method selector="draggedImage:movedTo:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="screenPoint" swt_gen="true"></arg>
-    </method>
-    <method selector="draggingSourceOperationMaskForLocal:" swt_gen="true">
-      <arg name="flag" swt_gen="true"></arg>
-    </method>
-    <method selector="ignoreModifierKeysWhileDragging" swt_gen="true"></method>
-    <method selector="namesOfPromisedFilesDroppedAtDestination:" swt_gen="true">
-      <arg name="dropDestination" swt_gen="true"></arg>
+    <method selector="control:textView:doCommandBySelector:">
+      <arg name="control"></arg>
+      <arg name="textView"></arg>
+      <arg name="commandSelector"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSDrawerDelegate" swt_gen="true">
-    <method selector="drawerShouldClose:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+  <informal_protocol name="NSControlSubclassNotifications">
+    <method selector="controlTextDidBeginEditing:">
+      <arg name="obj"></arg>
     </method>
-    <method selector="drawerShouldOpen:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="controlTextDidChange:">
+      <arg name="obj"></arg>
     </method>
-    <method selector="drawerWillResizeContents:toSize:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="contentSize" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSDrawerNotifications" swt_gen="true">
-    <method selector="drawerDidClose:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-    <method selector="drawerDidOpen:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-    <method selector="drawerWillClose:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-    <method selector="drawerWillOpen:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="controlTextDidEndEditing:">
+      <arg name="obj"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSEditor" swt_gen="true">
-    <method selector="commitEditing" swt_gen="true"></method>
-    <method selector="commitEditingWithDelegate:didCommitSelector:contextInfo:" swt_gen="true">
-      <arg name="delegate" swt_gen="true"></arg>
-      <arg name="didCommitSelector" swt_gen="true"></arg>
-      <arg name="contextInfo" swt_gen="true"></arg>
-    </method>
-    <method selector="discardEditing" swt_gen="true"></method>
-  </informal_protocol>
-  <informal_protocol name="NSEditorRegistration" swt_gen="true">
-    <method selector="objectDidBeginEditing:" swt_gen="true">
-      <arg name="editor" swt_gen="true"></arg>
-    </method>
-    <method selector="objectDidEndEditing:" swt_gen="true">
-      <arg name="editor" swt_gen="true"></arg>
+  <informal_protocol name="NSDatePickerCellDelegate">
+    <method selector="datePickerCell:validateProposedDateValue:timeInterval:">
+      <arg name="aDatePickerCell"></arg>
+      <arg name="proposedDateValue"></arg>
+      <arg name="proposedTimeInterval"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSFontManagerDelegate" swt_gen="true">
-    <method selector="fontManager:willIncludeFont:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="fontName" swt_gen="true"></arg>
+  <informal_protocol name="NSDictionaryControllerKeyValuePair">
+    <method selector="isExplicitlyIncluded"></method>
+    <method selector="key"></method>
+    <method selector="localizedKey"></method>
+    <method selector="setKey:">
+      <arg name="key"></arg>
+    </method>
+    <method selector="setLocalizedKey:">
+      <arg name="localizedKey"></arg>
+    </method>
+    <method selector="setValue:">
+      <arg name="value"></arg>
+    </method>
+    <method selector="value"></method>
+  </informal_protocol>
+  <informal_protocol name="NSDraggingDestination">
+    <method selector="concludeDragOperation:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="draggingEnded:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="draggingEntered:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="draggingExited:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="draggingUpdated:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="performDragOperation:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="prepareForDragOperation:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="wantsPeriodicDraggingUpdates"></method>
+  </informal_protocol>
+  <informal_protocol name="NSDraggingSource">
+    <method selector="draggedImage:beganAt:">
+      <arg name="image"></arg>
+      <arg name="screenPoint"></arg>
+    </method>
+    <method selector="draggedImage:endedAt:deposited:">
+      <arg name="image"></arg>
+      <arg name="screenPoint"></arg>
+      <arg name="flag"></arg>
+    </method>
+    <method selector="draggedImage:endedAt:operation:">
+      <arg name="image"></arg>
+      <arg name="screenPoint"></arg>
+      <arg name="operation"></arg>
+    </method>
+    <method selector="draggedImage:movedTo:">
+      <arg name="image"></arg>
+      <arg name="screenPoint"></arg>
+    </method>
+    <method selector="draggingSourceOperationMaskForLocal:">
+      <arg name="flag"></arg>
+    </method>
+    <method selector="ignoreModifierKeysWhileDragging"></method>
+    <method selector="namesOfPromisedFilesDroppedAtDestination:">
+      <arg name="dropDestination"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSDrawerDelegate">
+    <method selector="drawerShouldClose:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="drawerShouldOpen:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="drawerWillResizeContents:toSize:">
+      <arg name="sender"></arg>
+      <arg name="contentSize"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSDrawerNotifications">
+    <method selector="drawerDidClose:">
+      <arg name="notification"></arg>
+    </method>
+    <method selector="drawerDidOpen:">
+      <arg name="notification"></arg>
+    </method>
+    <method selector="drawerWillClose:">
+      <arg name="notification"></arg>
+    </method>
+    <method selector="drawerWillOpen:">
+      <arg name="notification"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSEditor">
+    <method selector="commitEditing"></method>
+    <method selector="commitEditingWithDelegate:didCommitSelector:contextInfo:">
+      <arg name="delegate"></arg>
+      <arg name="didCommitSelector"></arg>
+      <arg name="contextInfo"></arg>
+    </method>
+    <method selector="discardEditing"></method>
+  </informal_protocol>
+  <informal_protocol name="NSEditorRegistration">
+    <method selector="objectDidBeginEditing:">
+      <arg name="editor"></arg>
+    </method>
+    <method selector="objectDidEndEditing:">
+      <arg name="editor"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSFontManagerDelegate">
+    <method selector="fontManager:willIncludeFont:">
+      <arg name="sender"></arg>
+      <arg name="fontName"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="NSFontManagerResponderMethod" swt_gen="true">
@@ -24389,82 +24389,82 @@
       <arg name="sender" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSFontPanelValidationAdditions" swt_gen="true">
-    <method selector="validModesForFontPanel:" swt_gen="true">
-      <arg name="fontPanel" swt_gen="true"></arg>
+  <informal_protocol name="NSFontPanelValidationAdditions">
+    <method selector="validModesForFontPanel:">
+      <arg name="fontPanel"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSImageDelegate" swt_gen="true">
-    <method selector="image:didLoadPartOfRepresentation:withValidRows:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="rep" swt_gen="true"></arg>
-      <arg name="rows" swt_gen="true"></arg>
+  <informal_protocol name="NSImageDelegate">
+    <method selector="image:didLoadPartOfRepresentation:withValidRows:">
+      <arg name="image"></arg>
+      <arg name="rep"></arg>
+      <arg name="rows"></arg>
     </method>
-    <method selector="image:didLoadRepresentation:withStatus:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="rep" swt_gen="true"></arg>
-      <arg name="status" swt_gen="true"></arg>
+    <method selector="image:didLoadRepresentation:withStatus:">
+      <arg name="image"></arg>
+      <arg name="rep"></arg>
+      <arg name="status"></arg>
     </method>
-    <method selector="image:didLoadRepresentationHeader:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="rep" swt_gen="true"></arg>
+    <method selector="image:didLoadRepresentationHeader:">
+      <arg name="image"></arg>
+      <arg name="rep"></arg>
     </method>
-    <method selector="image:willLoadRepresentation:" swt_gen="true">
-      <arg name="image" swt_gen="true"></arg>
-      <arg name="rep" swt_gen="true"></arg>
+    <method selector="image:willLoadRepresentation:">
+      <arg name="image"></arg>
+      <arg name="rep"></arg>
     </method>
-    <method selector="imageDidNotDraw:inRect:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="aRect" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSKeyValueBindingCreation" swt_gen="true">
-    <method selector="bind:toObject:withKeyPath:options:" swt_gen="true">
-      <arg name="binding" swt_gen="true"></arg>
-      <arg name="observable" swt_gen="true"></arg>
-      <arg name="keyPath" swt_gen="true"></arg>
-      <arg name="options" swt_gen="true"></arg>
-    </method>
-    <method class_method="true" selector="exposeBinding:" swt_gen="true">
-      <arg name="binding" swt_gen="true"></arg>
-    </method>
-    <method selector="exposedBindings" swt_gen="true"></method>
-    <method selector="infoForBinding:" swt_gen="true">
-      <arg name="binding" swt_gen="true"></arg>
-    </method>
-    <method selector="optionDescriptionsForBinding:" swt_gen="true">
-      <arg name="aBinding" swt_gen="true"></arg>
-    </method>
-    <method selector="unbind:" swt_gen="true">
-      <arg name="binding" swt_gen="true"></arg>
-    </method>
-    <method selector="valueClassForBinding:" swt_gen="true">
-      <arg name="binding" swt_gen="true"></arg>
+    <method selector="imageDidNotDraw:inRect:">
+      <arg name="sender"></arg>
+      <arg name="aRect"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSLayoutManagerDelegate" swt_gen="true">
-    <method selector="layoutManager:didCompleteLayoutForTextContainer:atEnd:" swt_gen="true">
-      <arg name="layoutManager" swt_gen="true"></arg>
-      <arg name="textContainer" swt_gen="true"></arg>
-      <arg name="layoutFinishedFlag" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyValueBindingCreation">
+    <method selector="bind:toObject:withKeyPath:options:">
+      <arg name="binding"></arg>
+      <arg name="observable"></arg>
+      <arg name="keyPath"></arg>
+      <arg name="options"></arg>
     </method>
-    <method selector="layoutManager:shouldUseTemporaryAttributes:forDrawingToScreen:atCharacterIndex:effectiveRange:" swt_gen="true">
-      <arg name="layoutManager" swt_gen="true"></arg>
-      <arg name="attrs" swt_gen="true"></arg>
-      <arg name="toScreen" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
-      <arg name="effectiveCharRange" swt_gen="true"></arg>
+    <method class_method="true" selector="exposeBinding:">
+      <arg name="binding"></arg>
     </method>
-    <method selector="layoutManagerDidInvalidateLayout:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="exposedBindings"></method>
+    <method selector="infoForBinding:">
+      <arg name="binding"></arg>
+    </method>
+    <method selector="optionDescriptionsForBinding:">
+      <arg name="aBinding"></arg>
+    </method>
+    <method selector="unbind:">
+      <arg name="binding"></arg>
+    </method>
+    <method selector="valueClassForBinding:">
+      <arg name="binding"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSMenuDelegate" swt_gen="true">
-    <method selector="menu:updateItem:atIndex:shouldCancel:" swt_gen="true">
-      <arg name="menu" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="shouldCancel" swt_gen="true"></arg>
+  <informal_protocol name="NSLayoutManagerDelegate">
+    <method selector="layoutManager:didCompleteLayoutForTextContainer:atEnd:">
+      <arg name="layoutManager"></arg>
+      <arg name="textContainer"></arg>
+      <arg name="layoutFinishedFlag"></arg>
+    </method>
+    <method selector="layoutManager:shouldUseTemporaryAttributes:forDrawingToScreen:atCharacterIndex:effectiveRange:">
+      <arg name="layoutManager"></arg>
+      <arg name="attrs"></arg>
+      <arg name="toScreen"></arg>
+      <arg name="charIndex"></arg>
+      <arg name="effectiveCharRange"></arg>
+    </method>
+    <method selector="layoutManagerDidInvalidateLayout:">
+      <arg name="sender"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSMenuDelegate" swt_gen="mixed">
+    <method selector="menu:updateItem:atIndex:shouldCancel:">
+      <arg name="menu"></arg>
+      <arg name="item"></arg>
+      <arg name="index"></arg>
+      <arg name="shouldCancel"></arg>
     </method>
     <method selector="menu:willHighlightItem:" swt_gen="true">
       <arg name="menu" swt_gen="true"></arg>
@@ -24473,11 +24473,11 @@
     <method selector="menuDidClose:" swt_gen="true">
       <arg name="menu" swt_gen="true"></arg>
     </method>
-    <method selector="menuHasKeyEquivalent:forEvent:target:action:" swt_gen="true">
-      <arg name="menu" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="target" swt_gen="true"></arg>
-      <arg name="action" swt_gen="true"></arg>
+    <method selector="menuHasKeyEquivalent:forEvent:target:action:">
+      <arg name="menu"></arg>
+      <arg name="event"></arg>
+      <arg name="target"></arg>
+      <arg name="action"></arg>
     </method>
     <method selector="menuNeedsUpdate:" swt_gen="true">
       <arg name="menu" swt_gen="true"></arg>
@@ -24485,24 +24485,24 @@
     <method selector="menuWillOpen:" swt_gen="true">
       <arg name="menu" swt_gen="true"></arg>
     </method>
-    <method selector="numberOfItemsInMenu:" swt_gen="true">
-      <arg name="menu" swt_gen="true"></arg>
+    <method selector="numberOfItemsInMenu:">
+      <arg name="menu"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSMenuValidation" swt_gen="true">
-    <method selector="validateMenuItem:" swt_gen="true">
-      <arg name="menuItem" swt_gen="true"></arg>
+  <informal_protocol name="NSMenuValidation">
+    <method selector="validateMenuItem:">
+      <arg name="menuItem"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSNibAwaking" swt_gen="true">
-    <method selector="awakeFromNib" swt_gen="true"></method>
+  <informal_protocol name="NSNibAwaking">
+    <method selector="awakeFromNib"></method>
   </informal_protocol>
-  <informal_protocol name="NSOutlineViewDataSource" swt_gen="true">
-    <method selector="outlineView:acceptDrop:item:childIndex:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="info" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
+  <informal_protocol name="NSOutlineViewDataSource" swt_gen="mixed">
+    <method selector="outlineView:acceptDrop:item:childIndex:">
+      <arg name="outlineView"></arg>
+      <arg name="info"></arg>
+      <arg name="item"></arg>
+      <arg name="index"></arg>
     </method>
     <method selector="outlineView:child:ofItem:" swt_gen="true">
       <arg name="outlineView" swt_gen="true"></arg>
@@ -24513,14 +24513,14 @@
       <arg name="outlineView" swt_gen="true"></arg>
       <arg name="item" swt_gen="true"></arg>
     </method>
-    <method selector="outlineView:itemForPersistentObject:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="outlineView:itemForPersistentObject:">
+      <arg name="outlineView"></arg>
+      <arg name="object"></arg>
     </method>
-    <method selector="outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedItems:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="dropDestination" swt_gen="true"></arg>
-      <arg name="items" swt_gen="true"></arg>
+    <method selector="outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedItems:">
+      <arg name="outlineView"></arg>
+      <arg name="dropDestination"></arg>
+      <arg name="items"></arg>
     </method>
     <method selector="outlineView:numberOfChildrenOfItem:" swt_gen="true">
       <arg name="outlineView" swt_gen="true"></arg>
@@ -24531,9 +24531,9 @@
       <arg name="tableColumn" swt_gen="true"></arg>
       <arg name="item" swt_gen="true"></arg>
     </method>
-    <method selector="outlineView:persistentObjectForItem:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:persistentObjectForItem:">
+      <arg name="outlineView"></arg>
+      <arg name="item"></arg>
     </method>
     <method selector="outlineView:setObjectValue:forTableColumn:byItem:" swt_gen="true">
       <arg name="outlineView" swt_gen="true"></arg>
@@ -24541,107 +24541,107 @@
       <arg name="tableColumn" swt_gen="true"></arg>
       <arg name="item" swt_gen="true"></arg>
     </method>
-    <method selector="outlineView:sortDescriptorsDidChange:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="oldDescriptors" swt_gen="true"></arg>
+    <method selector="outlineView:sortDescriptorsDidChange:">
+      <arg name="outlineView"></arg>
+      <arg name="oldDescriptors"></arg>
     </method>
-    <method selector="outlineView:validateDrop:proposedItem:proposedChildIndex:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="info" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
+    <method selector="outlineView:validateDrop:proposedItem:proposedChildIndex:">
+      <arg name="outlineView"></arg>
+      <arg name="info"></arg>
+      <arg name="item"></arg>
+      <arg name="index"></arg>
     </method>
-    <method selector="outlineView:writeItems:toPasteboard:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="items" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
+    <method selector="outlineView:writeItems:toPasteboard:">
+      <arg name="outlineView"></arg>
+      <arg name="items"></arg>
+      <arg name="pasteboard"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSOutlineViewDelegate" swt_gen="true">
-    <method selector="outlineView:dataCellForTableColumn:item:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+  <informal_protocol name="NSOutlineViewDelegate" swt_gen="mixed">
+    <method selector="outlineView:dataCellForTableColumn:item:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="outlineView:didClickTableColumn:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="outlineView:didClickTableColumn:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="outlineView:didDragTableColumn:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="outlineView:didDragTableColumn:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="outlineView:heightOfRowByItem:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:heightOfRowByItem:">
+      <arg name="outlineView"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="outlineView:isGroupItem:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:isGroupItem:">
+      <arg name="outlineView"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="outlineView:mouseDownInHeaderOfTableColumn:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="outlineView:mouseDownInHeaderOfTableColumn:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="outlineView:nextTypeSelectMatchFromItem:toItem:forString:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="startItem" swt_gen="true"></arg>
-      <arg name="endItem" swt_gen="true"></arg>
-      <arg name="searchString" swt_gen="true"></arg>
+    <method selector="outlineView:nextTypeSelectMatchFromItem:toItem:forString:">
+      <arg name="outlineView"></arg>
+      <arg name="startItem"></arg>
+      <arg name="endItem"></arg>
+      <arg name="searchString"></arg>
     </method>
-    <method selector="outlineView:selectionIndexesForProposedSelection:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="proposedSelectionIndexes" swt_gen="true"></arg>
+    <method selector="outlineView:selectionIndexesForProposedSelection:">
+      <arg name="outlineView"></arg>
+      <arg name="proposedSelectionIndexes"></arg>
     </method>
     <method selector="outlineView:shouldCollapseItem:" swt_gen="true">
       <arg name="outlineView" swt_gen="true"></arg>
       <arg name="item" swt_gen="true"></arg>
     </method>
-    <method selector="outlineView:shouldEditTableColumn:item:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:shouldEditTableColumn:item:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
     </method>
     <method selector="outlineView:shouldExpandItem:" swt_gen="true">
       <arg name="outlineView" swt_gen="true"></arg>
       <arg name="item" swt_gen="true"></arg>
     </method>
-    <method selector="outlineView:shouldSelectItem:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:shouldSelectItem:">
+      <arg name="outlineView"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="outlineView:shouldSelectTableColumn:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="outlineView:shouldSelectTableColumn:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="outlineView:shouldShowCellExpansionForTableColumn:item:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:shouldShowCellExpansionForTableColumn:item:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="outlineView:shouldTrackCell:forTableColumn:item:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:shouldTrackCell:forTableColumn:item:">
+      <arg name="outlineView"></arg>
+      <arg name="cell"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="outlineView:shouldTypeSelectForEvent:withCurrentSearchString:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="searchString" swt_gen="true"></arg>
+    <method selector="outlineView:shouldTypeSelectForEvent:withCurrentSearchString:">
+      <arg name="outlineView"></arg>
+      <arg name="event"></arg>
+      <arg name="searchString"></arg>
     </method>
-    <method selector="outlineView:toolTipForCell:rect:tableColumn:item:mouseLocation:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
-      <arg name="mouseLocation" swt_gen="true"></arg>
+    <method selector="outlineView:toolTipForCell:rect:tableColumn:item:mouseLocation:">
+      <arg name="outlineView"></arg>
+      <arg name="cell"></arg>
+      <arg name="rect"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
+      <arg name="mouseLocation"></arg>
     </method>
-    <method selector="outlineView:typeSelectStringForTableColumn:item:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:typeSelectStringForTableColumn:item:">
+      <arg name="outlineView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
     </method>
     <method selector="outlineView:willDisplayCell:forTableColumn:item:" swt_gen="true">
       <arg name="outlineView" swt_gen="true"></arg>
@@ -24649,248 +24649,248 @@
       <arg name="tableColumn" swt_gen="true"></arg>
       <arg name="item" swt_gen="true"></arg>
     </method>
-    <method selector="outlineView:willDisplayOutlineCell:forTableColumn:item:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="item" swt_gen="true"></arg>
+    <method selector="outlineView:willDisplayOutlineCell:forTableColumn:item:">
+      <arg name="outlineView"></arg>
+      <arg name="cell"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="item"></arg>
     </method>
-    <method selector="selectionShouldChangeInOutlineView:" swt_gen="true">
-      <arg name="outlineView" swt_gen="true"></arg>
+    <method selector="selectionShouldChangeInOutlineView:">
+      <arg name="outlineView"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSOutlineViewNotifications" swt_gen="true">
-    <method selector="outlineViewColumnDidMove:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+  <informal_protocol name="NSOutlineViewNotifications" swt_gen="mixed">
+    <method selector="outlineViewColumnDidMove:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="outlineViewColumnDidResize:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="outlineViewColumnDidResize:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="outlineViewItemDidCollapse:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="outlineViewItemDidCollapse:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="outlineViewItemDidExpand:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="outlineViewItemDidExpand:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="outlineViewItemWillCollapse:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="outlineViewItemWillCollapse:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="outlineViewItemWillExpand:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="outlineViewItemWillExpand:">
+      <arg name="notification"></arg>
     </method>
     <method selector="outlineViewSelectionDidChange:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="outlineViewSelectionIsChanging:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="outlineViewSelectionIsChanging:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSPasteboardOwner" swt_gen="true">
-    <method selector="pasteboard:provideDataForType:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="type" swt_gen="true"></arg>
+  <informal_protocol name="NSPasteboardOwner">
+    <method selector="pasteboard:provideDataForType:">
+      <arg name="sender"></arg>
+      <arg name="type"></arg>
     </method>
-    <method selector="pasteboardChangedOwner:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSPlaceholders" swt_gen="true">
-    <method class_method="true" selector="defaultPlaceholderForMarker:withBinding:" swt_gen="true">
-      <arg name="marker" swt_gen="true"></arg>
-      <arg name="binding" swt_gen="true"></arg>
-    </method>
-    <method class_method="true" selector="setDefaultPlaceholder:forMarker:withBinding:" swt_gen="true">
-      <arg name="placeholder" swt_gen="true"></arg>
-      <arg name="marker" swt_gen="true"></arg>
-      <arg name="binding" swt_gen="true"></arg>
+    <method selector="pasteboardChangedOwner:">
+      <arg name="sender"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSRuleEditorDelegateMethods" swt_gen="true">
-    <method selector="ruleEditor:child:forCriterion:withRowType:" swt_gen="true">
-      <arg name="editor" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="criterion" swt_gen="true"></arg>
-      <arg name="rowType" swt_gen="true"></arg>
+  <informal_protocol name="NSPlaceholders">
+    <method class_method="true" selector="defaultPlaceholderForMarker:withBinding:">
+      <arg name="marker"></arg>
+      <arg name="binding"></arg>
     </method>
-    <method selector="ruleEditor:displayValueForCriterion:inRow:" swt_gen="true">
-      <arg name="editor" swt_gen="true"></arg>
-      <arg name="criterion" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-    </method>
-    <method selector="ruleEditor:numberOfChildrenForCriterion:withRowType:" swt_gen="true">
-      <arg name="editor" swt_gen="true"></arg>
-      <arg name="criterion" swt_gen="true"></arg>
-      <arg name="rowType" swt_gen="true"></arg>
-    </method>
-    <method selector="ruleEditor:predicatePartsForCriterion:withDisplayValue:inRow:" swt_gen="true">
-      <arg name="editor" swt_gen="true"></arg>
-      <arg name="criterion" swt_gen="true"></arg>
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-    </method>
-    <method selector="ruleEditorRowsDidChange:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method class_method="true" selector="setDefaultPlaceholder:forMarker:withBinding:">
+      <arg name="placeholder"></arg>
+      <arg name="marker"></arg>
+      <arg name="binding"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSSavePanelDelegate" swt_gen="true">
-    <method selector="panel:compareFilename:with:caseSensitive:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="name1" swt_gen="true"></arg>
-      <arg name="name2" swt_gen="true"></arg>
-      <arg name="caseSensitive" swt_gen="true"></arg>
+  <informal_protocol name="NSRuleEditorDelegateMethods">
+    <method selector="ruleEditor:child:forCriterion:withRowType:">
+      <arg name="editor"></arg>
+      <arg name="index"></arg>
+      <arg name="criterion"></arg>
+      <arg name="rowType"></arg>
     </method>
-    <method selector="panel:directoryDidChange:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="path" swt_gen="true"></arg>
+    <method selector="ruleEditor:displayValueForCriterion:inRow:">
+      <arg name="editor"></arg>
+      <arg name="criterion"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="panel:isValidFilename:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
+    <method selector="ruleEditor:numberOfChildrenForCriterion:withRowType:">
+      <arg name="editor"></arg>
+      <arg name="criterion"></arg>
+      <arg name="rowType"></arg>
     </method>
-    <method selector="panel:shouldShowFilename:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
+    <method selector="ruleEditor:predicatePartsForCriterion:withDisplayValue:inRow:">
+      <arg name="editor"></arg>
+      <arg name="criterion"></arg>
+      <arg name="value"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="panel:userEnteredFilename:confirmed:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="filename" swt_gen="true"></arg>
-      <arg name="okFlag" swt_gen="true"></arg>
-    </method>
-    <method selector="panel:willExpand:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="expanding" swt_gen="true"></arg>
-    </method>
-    <method selector="panelSelectionDidChange:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="ruleEditorRowsDidChange:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSServicesRequests" swt_gen="true">
-    <method selector="readSelectionFromPasteboard:" swt_gen="true">
-      <arg name="pboard" swt_gen="true"></arg>
+  <informal_protocol name="NSSavePanelDelegate">
+    <method selector="panel:compareFilename:with:caseSensitive:">
+      <arg name="sender"></arg>
+      <arg name="name1"></arg>
+      <arg name="name2"></arg>
+      <arg name="caseSensitive"></arg>
     </method>
-    <method selector="writeSelectionToPasteboard:types:" swt_gen="true">
-      <arg name="pboard" swt_gen="true"></arg>
-      <arg name="types" swt_gen="true"></arg>
+    <method selector="panel:directoryDidChange:">
+      <arg name="sender"></arg>
+      <arg name="path"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSSoundDelegateMethods" swt_gen="true">
-    <method selector="sound:didFinishPlaying:" swt_gen="true">
-      <arg name="sound" swt_gen="true"></arg>
-      <arg name="aBool" swt_gen="true"></arg>
+    <method selector="panel:isValidFilename:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSSpeechRecognizerDelegate" swt_gen="true">
-    <method selector="speechRecognizer:didRecognizeCommand:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="command" swt_gen="true"></arg>
+    <method selector="panel:shouldShowFilename:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSSpeechSynthesizerDelegate" swt_gen="true">
-    <method selector="speechSynthesizer:didEncounterErrorAtIndex:ofString:message:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="characterIndex" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
+    <method selector="panel:userEnteredFilename:confirmed:">
+      <arg name="sender"></arg>
+      <arg name="filename"></arg>
+      <arg name="okFlag"></arg>
     </method>
-    <method selector="speechSynthesizer:didEncounterSyncMessage:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="message" swt_gen="true"></arg>
+    <method selector="panel:willExpand:">
+      <arg name="sender"></arg>
+      <arg name="expanding"></arg>
     </method>
-    <method selector="speechSynthesizer:didFinishSpeaking:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="finishedSpeaking" swt_gen="true"></arg>
-    </method>
-    <method selector="speechSynthesizer:willSpeakPhoneme:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="phonemeOpcode" swt_gen="true"></arg>
-    </method>
-    <method selector="speechSynthesizer:willSpeakWord:ofString:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="characterRange" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
+    <method selector="panelSelectionDidChange:">
+      <arg name="sender"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSSplitViewDelegate" swt_gen="true">
-    <method selector="splitView:additionalEffectiveRectOfDividerAtIndex:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
+  <informal_protocol name="NSServicesRequests">
+    <method selector="readSelectionFromPasteboard:">
+      <arg name="pboard"></arg>
     </method>
-    <method selector="splitView:canCollapseSubview:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="subview" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:constrainMaxCoordinate:ofSubviewAt:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="proposedMaximumPosition" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:constrainMinCoordinate:ofSubviewAt:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="proposedMinimumPosition" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:constrainSplitPosition:ofSubviewAt:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="proposedPosition" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:effectiveRect:forDrawnRect:ofDividerAtIndex:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="proposedEffectiveRect" swt_gen="true"></arg>
-      <arg name="drawnRect" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:resizeSubviewsWithOldSize:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="oldSize" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:shouldCollapseSubview:forDoubleClickOnDividerAtIndex:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="subview" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="splitView:shouldHideDividerAtIndex:" swt_gen="true">
-      <arg name="splitView" swt_gen="true"></arg>
-      <arg name="dividerIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="splitViewDidResizeSubviews:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-    <method selector="splitViewWillResizeSubviews:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="writeSelectionToPasteboard:types:">
+      <arg name="pboard"></arg>
+      <arg name="types"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTabViewDelegate" swt_gen="true">
-    <method selector="tabView:didSelectTabViewItem:" swt_gen="true">
-      <arg name="tabView" swt_gen="true"></arg>
-      <arg name="tabViewItem" swt_gen="true"></arg>
+  <informal_protocol name="NSSoundDelegateMethods">
+    <method selector="sound:didFinishPlaying:">
+      <arg name="sound"></arg>
+      <arg name="aBool"></arg>
     </method>
-    <method selector="tabView:shouldSelectTabViewItem:" swt_gen="true">
-      <arg name="tabView" swt_gen="true"></arg>
-      <arg name="tabViewItem" swt_gen="true"></arg>
+  </informal_protocol>
+  <informal_protocol name="NSSpeechRecognizerDelegate">
+    <method selector="speechRecognizer:didRecognizeCommand:">
+      <arg name="sender"></arg>
+      <arg name="command"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSSpeechSynthesizerDelegate">
+    <method selector="speechSynthesizer:didEncounterErrorAtIndex:ofString:message:">
+      <arg name="sender"></arg>
+      <arg name="characterIndex"></arg>
+      <arg name="string"></arg>
+      <arg name="message"></arg>
+    </method>
+    <method selector="speechSynthesizer:didEncounterSyncMessage:">
+      <arg name="sender"></arg>
+      <arg name="message"></arg>
+    </method>
+    <method selector="speechSynthesizer:didFinishSpeaking:">
+      <arg name="sender"></arg>
+      <arg name="finishedSpeaking"></arg>
+    </method>
+    <method selector="speechSynthesizer:willSpeakPhoneme:">
+      <arg name="sender"></arg>
+      <arg name="phonemeOpcode"></arg>
+    </method>
+    <method selector="speechSynthesizer:willSpeakWord:ofString:">
+      <arg name="sender"></arg>
+      <arg name="characterRange"></arg>
+      <arg name="string"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSSplitViewDelegate">
+    <method selector="splitView:additionalEffectiveRectOfDividerAtIndex:">
+      <arg name="splitView"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitView:canCollapseSubview:">
+      <arg name="splitView"></arg>
+      <arg name="subview"></arg>
+    </method>
+    <method selector="splitView:constrainMaxCoordinate:ofSubviewAt:">
+      <arg name="splitView"></arg>
+      <arg name="proposedMaximumPosition"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitView:constrainMinCoordinate:ofSubviewAt:">
+      <arg name="splitView"></arg>
+      <arg name="proposedMinimumPosition"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitView:constrainSplitPosition:ofSubviewAt:">
+      <arg name="splitView"></arg>
+      <arg name="proposedPosition"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitView:effectiveRect:forDrawnRect:ofDividerAtIndex:">
+      <arg name="splitView"></arg>
+      <arg name="proposedEffectiveRect"></arg>
+      <arg name="drawnRect"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitView:resizeSubviewsWithOldSize:">
+      <arg name="splitView"></arg>
+      <arg name="oldSize"></arg>
+    </method>
+    <method selector="splitView:shouldCollapseSubview:forDoubleClickOnDividerAtIndex:">
+      <arg name="splitView"></arg>
+      <arg name="subview"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitView:shouldHideDividerAtIndex:">
+      <arg name="splitView"></arg>
+      <arg name="dividerIndex"></arg>
+    </method>
+    <method selector="splitViewDidResizeSubviews:">
+      <arg name="notification"></arg>
+    </method>
+    <method selector="splitViewWillResizeSubviews:">
+      <arg name="notification"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSTabViewDelegate" swt_gen="mixed">
+    <method selector="tabView:didSelectTabViewItem:">
+      <arg name="tabView"></arg>
+      <arg name="tabViewItem"></arg>
+    </method>
+    <method selector="tabView:shouldSelectTabViewItem:">
+      <arg name="tabView"></arg>
+      <arg name="tabViewItem"></arg>
     </method>
     <method selector="tabView:willSelectTabViewItem:" swt_gen="true">
       <arg name="tabView" swt_gen="true"></arg>
       <arg name="tabViewItem" swt_gen="true"></arg>
     </method>
-    <method selector="tabViewDidChangeNumberOfTabViewItems:" swt_gen="true">
-      <arg name="TabView" swt_gen="true"></arg>
+    <method selector="tabViewDidChangeNumberOfTabViewItems:">
+      <arg name="TabView"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTableDataSource" swt_gen="true">
+  <informal_protocol name="NSTableDataSource" swt_gen="mixed">
     <method selector="numberOfRowsInTableView:" swt_gen="true">
       <arg name="tableView" swt_gen="true"></arg>
     </method>
-    <method selector="tableView:acceptDrop:row:dropOperation:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="info" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="dropOperation" swt_gen="true"></arg>
+    <method selector="tableView:acceptDrop:row:dropOperation:">
+      <arg name="tableView"></arg>
+      <arg name="info"></arg>
+      <arg name="row"></arg>
+      <arg name="dropOperation"></arg>
     </method>
-    <method selector="tableView:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="dropDestination" swt_gen="true"></arg>
-      <arg name="indexSet" swt_gen="true"></arg>
+    <method selector="tableView:namesOfPromisedFilesDroppedAtDestination:forDraggedRowsWithIndexes:">
+      <arg name="tableView"></arg>
+      <arg name="dropDestination"></arg>
+      <arg name="indexSet"></arg>
     </method>
     <method selector="tableView:objectValueForTableColumn:row:" swt_gen="true">
       <arg name="tableView" swt_gen="true"></arg>
@@ -24903,107 +24903,107 @@
       <arg name="tableColumn" swt_gen="true"></arg>
       <arg name="row" swt_gen="true"></arg>
     </method>
-    <method selector="tableView:sortDescriptorsDidChange:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="oldDescriptors" swt_gen="true"></arg>
+    <method selector="tableView:sortDescriptorsDidChange:">
+      <arg name="tableView"></arg>
+      <arg name="oldDescriptors"></arg>
     </method>
-    <method selector="tableView:validateDrop:proposedRow:proposedDropOperation:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="info" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="dropOperation" swt_gen="true"></arg>
+    <method selector="tableView:validateDrop:proposedRow:proposedDropOperation:">
+      <arg name="tableView"></arg>
+      <arg name="info"></arg>
+      <arg name="row"></arg>
+      <arg name="dropOperation"></arg>
     </method>
-    <method selector="tableView:writeRows:toPasteboard:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="rows" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
+    <method selector="tableView:writeRows:toPasteboard:">
+      <arg name="tableView"></arg>
+      <arg name="rows"></arg>
+      <arg name="pboard"></arg>
     </method>
-    <method selector="tableView:writeRowsWithIndexes:toPasteboard:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="rowIndexes" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
+    <method selector="tableView:writeRowsWithIndexes:toPasteboard:">
+      <arg name="tableView"></arg>
+      <arg name="rowIndexes"></arg>
+      <arg name="pboard"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTableViewDelegate" swt_gen="true">
-    <method selector="selectionShouldChangeInTableView:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
+  <informal_protocol name="NSTableViewDelegate" swt_gen="mixed">
+    <method selector="selectionShouldChangeInTableView:">
+      <arg name="tableView"></arg>
     </method>
-    <method selector="tableView:dataCellForTableColumn:row:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:dataCellForTableColumn:row:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="tableView:didClickTableColumn:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="tableView:didClickTableColumn:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="tableView:didDragTableColumn:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="tableView:didDragTableColumn:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="tableView:heightOfRow:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:heightOfRow:">
+      <arg name="tableView"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="tableView:isGroupRow:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:isGroupRow:">
+      <arg name="tableView"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="tableView:mouseDownInHeaderOfTableColumn:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="tableView:mouseDownInHeaderOfTableColumn:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="tableView:nextTypeSelectMatchFromRow:toRow:forString:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="startRow" swt_gen="true"></arg>
-      <arg name="endRow" swt_gen="true"></arg>
-      <arg name="searchString" swt_gen="true"></arg>
+    <method selector="tableView:nextTypeSelectMatchFromRow:toRow:forString:">
+      <arg name="tableView"></arg>
+      <arg name="startRow"></arg>
+      <arg name="endRow"></arg>
+      <arg name="searchString"></arg>
     </method>
-    <method selector="tableView:selectionIndexesForProposedSelection:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="proposedSelectionIndexes" swt_gen="true"></arg>
+    <method selector="tableView:selectionIndexesForProposedSelection:">
+      <arg name="tableView"></arg>
+      <arg name="proposedSelectionIndexes"></arg>
     </method>
     <method selector="tableView:shouldEditTableColumn:row:" swt_gen="true">
       <arg name="tableView" swt_gen="true"></arg>
       <arg name="tableColumn" swt_gen="true"></arg>
       <arg name="row" swt_gen="true"></arg>
     </method>
-    <method selector="tableView:shouldSelectRow:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:shouldSelectRow:">
+      <arg name="tableView"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="tableView:shouldSelectTableColumn:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
+    <method selector="tableView:shouldSelectTableColumn:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
     </method>
-    <method selector="tableView:shouldShowCellExpansionForTableColumn:row:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:shouldShowCellExpansionForTableColumn:row:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="tableView:shouldTrackCell:forTableColumn:row:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:shouldTrackCell:forTableColumn:row:">
+      <arg name="tableView"></arg>
+      <arg name="cell"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="row"></arg>
     </method>
-    <method selector="tableView:shouldTypeSelectForEvent:withCurrentSearchString:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="searchString" swt_gen="true"></arg>
+    <method selector="tableView:shouldTypeSelectForEvent:withCurrentSearchString:">
+      <arg name="tableView"></arg>
+      <arg name="event"></arg>
+      <arg name="searchString"></arg>
     </method>
-    <method selector="tableView:toolTipForCell:rect:tableColumn:row:mouseLocation:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
-      <arg name="mouseLocation" swt_gen="true"></arg>
+    <method selector="tableView:toolTipForCell:rect:tableColumn:row:mouseLocation:">
+      <arg name="tableView"></arg>
+      <arg name="cell"></arg>
+      <arg name="rect"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="row"></arg>
+      <arg name="mouseLocation"></arg>
     </method>
-    <method selector="tableView:typeSelectStringForTableColumn:row:" swt_gen="true">
-      <arg name="tableView" swt_gen="true"></arg>
-      <arg name="tableColumn" swt_gen="true"></arg>
-      <arg name="row" swt_gen="true"></arg>
+    <method selector="tableView:typeSelectStringForTableColumn:row:">
+      <arg name="tableView"></arg>
+      <arg name="tableColumn"></arg>
+      <arg name="row"></arg>
     </method>
     <method selector="tableView:willDisplayCell:forTableColumn:row:" swt_gen="true">
       <arg name="tableView" swt_gen="true"></arg>
@@ -25012,355 +25012,355 @@
       <arg name="row" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTableViewNotifications" swt_gen="true">
-    <method selector="tableViewColumnDidMove:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+  <informal_protocol name="NSTableViewNotifications" swt_gen="mixed">
+    <method selector="tableViewColumnDidMove:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="tableViewColumnDidResize:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="tableViewColumnDidResize:">
+      <arg name="notification"></arg>
     </method>
     <method selector="tableViewSelectionDidChange:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="tableViewSelectionIsChanging:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="tableViewSelectionIsChanging:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTextDelegate" swt_gen="true">
-    <method selector="textDidBeginEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+  <informal_protocol name="NSTextDelegate" swt_gen="mixed">
+    <method selector="textDidBeginEditing:">
+      <arg name="notification"></arg>
     </method>
     <method selector="textDidChange:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="textDidEndEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="textDidEndEditing:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="textShouldBeginEditing:" swt_gen="true">
-      <arg name="textObject" swt_gen="true"></arg>
+    <method selector="textShouldBeginEditing:">
+      <arg name="textObject"></arg>
     </method>
-    <method selector="textShouldEndEditing:" swt_gen="true">
-      <arg name="textObject" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSTextStorageDelegate" swt_gen="true">
-    <method selector="textStorageDidProcessEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
-    </method>
-    <method selector="textStorageWillProcessEditing:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="textShouldEndEditing:">
+      <arg name="textObject"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTextViewDelegate" swt_gen="true">
-    <method selector="textView:clickedOnCell:inRect:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="cellFrame" swt_gen="true"></arg>
+  <informal_protocol name="NSTextStorageDelegate">
+    <method selector="textStorageDidProcessEditing:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="textView:clickedOnCell:inRect:atIndex:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="cellFrame" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
+    <method selector="textStorageWillProcessEditing:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="textView:clickedOnLink:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="link" swt_gen="true"></arg>
+  </informal_protocol>
+  <informal_protocol name="NSTextViewDelegate" swt_gen="mixed">
+    <method selector="textView:clickedOnCell:inRect:">
+      <arg name="textView"></arg>
+      <arg name="cell"></arg>
+      <arg name="cellFrame"></arg>
+    </method>
+    <method selector="textView:clickedOnCell:inRect:atIndex:">
+      <arg name="textView"></arg>
+      <arg name="cell"></arg>
+      <arg name="cellFrame"></arg>
+      <arg name="charIndex"></arg>
+    </method>
+    <method selector="textView:clickedOnLink:">
+      <arg name="textView"></arg>
+      <arg name="link"></arg>
     </method>
     <method selector="textView:clickedOnLink:atIndex:" swt_gen="true">
       <arg name="textView" swt_gen="true"></arg>
       <arg name="link" swt_gen="true"></arg>
       <arg name="charIndex" swt_gen="true"></arg>
     </method>
-    <method selector="textView:completions:forPartialWordRange:indexOfSelectedItem:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="words" swt_gen="true"></arg>
-      <arg name="charRange" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
+    <method selector="textView:completions:forPartialWordRange:indexOfSelectedItem:">
+      <arg name="textView"></arg>
+      <arg name="words"></arg>
+      <arg name="charRange"></arg>
+      <arg name="index"></arg>
     </method>
-    <method selector="textView:doCommandBySelector:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="commandSelector" swt_gen="true"></arg>
+    <method selector="textView:doCommandBySelector:">
+      <arg name="textView"></arg>
+      <arg name="commandSelector"></arg>
     </method>
-    <method selector="textView:doubleClickedOnCell:inRect:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="cellFrame" swt_gen="true"></arg>
+    <method selector="textView:doubleClickedOnCell:inRect:">
+      <arg name="textView"></arg>
+      <arg name="cell"></arg>
+      <arg name="cellFrame"></arg>
     </method>
-    <method selector="textView:doubleClickedOnCell:inRect:atIndex:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="cellFrame" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
+    <method selector="textView:doubleClickedOnCell:inRect:atIndex:">
+      <arg name="textView"></arg>
+      <arg name="cell"></arg>
+      <arg name="cellFrame"></arg>
+      <arg name="charIndex"></arg>
     </method>
-    <method selector="textView:draggedCell:inRect:event:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
+    <method selector="textView:draggedCell:inRect:event:">
+      <arg name="view"></arg>
+      <arg name="cell"></arg>
+      <arg name="rect"></arg>
+      <arg name="event"></arg>
     </method>
-    <method selector="textView:draggedCell:inRect:event:atIndex:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
+    <method selector="textView:draggedCell:inRect:event:atIndex:">
+      <arg name="view"></arg>
+      <arg name="cell"></arg>
+      <arg name="rect"></arg>
+      <arg name="event"></arg>
+      <arg name="charIndex"></arg>
     </method>
-    <method selector="textView:menu:forEvent:atIndex:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="menu" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
+    <method selector="textView:menu:forEvent:atIndex:">
+      <arg name="view"></arg>
+      <arg name="menu"></arg>
+      <arg name="event"></arg>
+      <arg name="charIndex"></arg>
     </method>
-    <method selector="textView:shouldChangeTextInRange:replacementString:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="affectedCharRange" swt_gen="true"></arg>
-      <arg name="replacementString" swt_gen="true"></arg>
+    <method selector="textView:shouldChangeTextInRange:replacementString:">
+      <arg name="textView"></arg>
+      <arg name="affectedCharRange"></arg>
+      <arg name="replacementString"></arg>
     </method>
-    <method selector="textView:shouldChangeTextInRanges:replacementStrings:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="affectedRanges" swt_gen="true"></arg>
-      <arg name="replacementStrings" swt_gen="true"></arg>
+    <method selector="textView:shouldChangeTextInRanges:replacementStrings:">
+      <arg name="textView"></arg>
+      <arg name="affectedRanges"></arg>
+      <arg name="replacementStrings"></arg>
     </method>
-    <method selector="textView:shouldChangeTypingAttributes:toAttributes:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="oldTypingAttributes" swt_gen="true"></arg>
-      <arg name="newTypingAttributes" swt_gen="true"></arg>
+    <method selector="textView:shouldChangeTypingAttributes:toAttributes:">
+      <arg name="textView"></arg>
+      <arg name="oldTypingAttributes"></arg>
+      <arg name="newTypingAttributes"></arg>
     </method>
-    <method selector="textView:shouldSetSpellingState:range:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="affectedCharRange" swt_gen="true"></arg>
+    <method selector="textView:shouldSetSpellingState:range:">
+      <arg name="textView"></arg>
+      <arg name="value"></arg>
+      <arg name="affectedCharRange"></arg>
     </method>
     <method selector="textView:willChangeSelectionFromCharacterRange:toCharacterRange:" swt_gen="true">
       <arg name="textView" swt_gen="true"></arg>
       <arg name="oldSelectedCharRange" swt_gen="true"></arg>
       <arg name="newSelectedCharRange" swt_gen="true"></arg>
     </method>
-    <method selector="textView:willChangeSelectionFromCharacterRanges:toCharacterRanges:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="oldSelectedCharRanges" swt_gen="true"></arg>
-      <arg name="newSelectedCharRanges" swt_gen="true"></arg>
+    <method selector="textView:willChangeSelectionFromCharacterRanges:toCharacterRanges:">
+      <arg name="textView"></arg>
+      <arg name="oldSelectedCharRanges"></arg>
+      <arg name="newSelectedCharRanges"></arg>
     </method>
-    <method selector="textView:willDisplayToolTip:forCharacterAtIndex:" swt_gen="true">
-      <arg name="textView" swt_gen="true"></arg>
-      <arg name="tooltip" swt_gen="true"></arg>
-      <arg name="characterIndex" swt_gen="true"></arg>
+    <method selector="textView:willDisplayToolTip:forCharacterAtIndex:">
+      <arg name="textView"></arg>
+      <arg name="tooltip"></arg>
+      <arg name="characterIndex"></arg>
     </method>
-    <method selector="textView:writablePasteboardTypesForCell:atIndex:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
+    <method selector="textView:writablePasteboardTypesForCell:atIndex:">
+      <arg name="view"></arg>
+      <arg name="cell"></arg>
+      <arg name="charIndex"></arg>
     </method>
-    <method selector="textView:writeCell:atIndex:toPasteboard:type:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="cell" swt_gen="true"></arg>
-      <arg name="charIndex" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
-      <arg name="type" swt_gen="true"></arg>
+    <method selector="textView:writeCell:atIndex:toPasteboard:type:">
+      <arg name="view"></arg>
+      <arg name="cell"></arg>
+      <arg name="charIndex"></arg>
+      <arg name="pboard"></arg>
+      <arg name="type"></arg>
     </method>
     <method selector="textViewDidChangeSelection:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="textViewDidChangeTypingAttributes:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="textViewDidChangeTypingAttributes:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="undoManagerForTextView:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSTokenFieldCellDelegate" swt_gen="true">
-    <method selector="tokenFieldCell:completionsForSubstring:indexOfToken:indexOfSelectedItem:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="substring" swt_gen="true"></arg>
-      <arg name="tokenIndex" swt_gen="true"></arg>
-      <arg name="selectedIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:displayStringForRepresentedObject:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:editingStringForRepresentedObject:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:hasMenuForRepresentedObject:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:menuForRepresentedObject:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:readFromPasteboard:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:representedObjectForEditingString:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="editingString" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:shouldAddObjects:atIndex:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="tokens" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:styleForRepresentedObject:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
-    </method>
-    <method selector="tokenFieldCell:writeRepresentedObjects:toPasteboard:" swt_gen="true">
-      <arg name="tokenFieldCell" swt_gen="true"></arg>
-      <arg name="objects" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
+    <method selector="undoManagerForTextView:">
+      <arg name="view"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSTokenFieldDelegate" swt_gen="true">
-    <method selector="tokenField:completionsForSubstring:indexOfToken:indexOfSelectedItem:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="substring" swt_gen="true"></arg>
-      <arg name="tokenIndex" swt_gen="true"></arg>
-      <arg name="selectedIndex" swt_gen="true"></arg>
+  <informal_protocol name="NSTokenFieldCellDelegate">
+    <method selector="tokenFieldCell:completionsForSubstring:indexOfToken:indexOfSelectedItem:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="substring"></arg>
+      <arg name="tokenIndex"></arg>
+      <arg name="selectedIndex"></arg>
     </method>
-    <method selector="tokenField:displayStringForRepresentedObject:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:displayStringForRepresentedObject:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="tokenField:editingStringForRepresentedObject:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:editingStringForRepresentedObject:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="tokenField:hasMenuForRepresentedObject:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:hasMenuForRepresentedObject:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="tokenField:menuForRepresentedObject:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:menuForRepresentedObject:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="tokenField:readFromPasteboard:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:readFromPasteboard:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="pboard"></arg>
     </method>
-    <method selector="tokenField:representedObjectForEditingString:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="editingString" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:representedObjectForEditingString:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="editingString"></arg>
     </method>
-    <method selector="tokenField:shouldAddObjects:atIndex:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="tokens" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:shouldAddObjects:atIndex:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="tokens"></arg>
+      <arg name="index"></arg>
     </method>
-    <method selector="tokenField:styleForRepresentedObject:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="representedObject" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:styleForRepresentedObject:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="tokenField:writeRepresentedObjects:toPasteboard:" swt_gen="true">
-      <arg name="tokenField" swt_gen="true"></arg>
-      <arg name="objects" swt_gen="true"></arg>
-      <arg name="pboard" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSToolTipOwner" swt_gen="true">
-    <method selector="view:stringForToolTip:point:userData:" swt_gen="true">
-      <arg name="view" swt_gen="true"></arg>
-      <arg name="tag" swt_gen="true"></arg>
-      <arg name="point" swt_gen="true"></arg>
-      <arg name="data" swt_gen="true"></arg>
+    <method selector="tokenFieldCell:writeRepresentedObjects:toPasteboard:">
+      <arg name="tokenFieldCell"></arg>
+      <arg name="objects"></arg>
+      <arg name="pboard"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSToolbarDelegate" swt_gen="true">
-    <method selector="toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:" swt_gen="true">
-      <arg name="toolbar" swt_gen="true"></arg>
-      <arg name="itemIdentifier" swt_gen="true"></arg>
-      <arg name="flag" swt_gen="true"></arg>
+  <informal_protocol name="NSTokenFieldDelegate">
+    <method selector="tokenField:completionsForSubstring:indexOfToken:indexOfSelectedItem:">
+      <arg name="tokenField"></arg>
+      <arg name="substring"></arg>
+      <arg name="tokenIndex"></arg>
+      <arg name="selectedIndex"></arg>
     </method>
-    <method selector="toolbarAllowedItemIdentifiers:" swt_gen="true">
-      <arg name="toolbar" swt_gen="true"></arg>
+    <method selector="tokenField:displayStringForRepresentedObject:">
+      <arg name="tokenField"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="toolbarDefaultItemIdentifiers:" swt_gen="true">
-      <arg name="toolbar" swt_gen="true"></arg>
+    <method selector="tokenField:editingStringForRepresentedObject:">
+      <arg name="tokenField"></arg>
+      <arg name="representedObject"></arg>
     </method>
-    <method selector="toolbarSelectableItemIdentifiers:" swt_gen="true">
-      <arg name="toolbar" swt_gen="true"></arg>
+    <method selector="tokenField:hasMenuForRepresentedObject:">
+      <arg name="tokenField"></arg>
+      <arg name="representedObject"></arg>
+    </method>
+    <method selector="tokenField:menuForRepresentedObject:">
+      <arg name="tokenField"></arg>
+      <arg name="representedObject"></arg>
+    </method>
+    <method selector="tokenField:readFromPasteboard:">
+      <arg name="tokenField"></arg>
+      <arg name="pboard"></arg>
+    </method>
+    <method selector="tokenField:representedObjectForEditingString:">
+      <arg name="tokenField"></arg>
+      <arg name="editingString"></arg>
+    </method>
+    <method selector="tokenField:shouldAddObjects:atIndex:">
+      <arg name="tokenField"></arg>
+      <arg name="tokens"></arg>
+      <arg name="index"></arg>
+    </method>
+    <method selector="tokenField:styleForRepresentedObject:">
+      <arg name="tokenField"></arg>
+      <arg name="representedObject"></arg>
+    </method>
+    <method selector="tokenField:writeRepresentedObjects:toPasteboard:">
+      <arg name="tokenField"></arg>
+      <arg name="objects"></arg>
+      <arg name="pboard"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSToolbarItemValidation" swt_gen="true">
-    <method selector="validateToolbarItem:" swt_gen="true">
-      <arg name="theItem" swt_gen="true"></arg>
+  <informal_protocol name="NSToolTipOwner">
+    <method selector="view:stringForToolTip:point:userData:">
+      <arg name="view"></arg>
+      <arg name="tag"></arg>
+      <arg name="point"></arg>
+      <arg name="data"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSToolbarNotifications" swt_gen="true">
-    <method selector="toolbarDidRemoveItem:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+  <informal_protocol name="NSToolbarDelegate">
+    <method selector="toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:">
+      <arg name="toolbar"></arg>
+      <arg name="itemIdentifier"></arg>
+      <arg name="flag"></arg>
     </method>
-    <method selector="toolbarWillAddItem:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="toolbarAllowedItemIdentifiers:">
+      <arg name="toolbar"></arg>
+    </method>
+    <method selector="toolbarDefaultItemIdentifiers:">
+      <arg name="toolbar"></arg>
+    </method>
+    <method selector="toolbarSelectableItemIdentifiers:">
+      <arg name="toolbar"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSWindowDelegate" swt_gen="true">
-    <method selector="window:shouldDragDocumentWithEvent:from:withPasteboard:" swt_gen="true">
-      <arg name="window" swt_gen="true"></arg>
-      <arg name="event" swt_gen="true"></arg>
-      <arg name="dragImageLocation" swt_gen="true"></arg>
-      <arg name="pasteboard" swt_gen="true"></arg>
+  <informal_protocol name="NSToolbarItemValidation">
+    <method selector="validateToolbarItem:">
+      <arg name="theItem"></arg>
     </method>
-    <method selector="window:shouldPopUpDocumentPathMenu:" swt_gen="true">
-      <arg name="window" swt_gen="true"></arg>
-      <arg name="menu" swt_gen="true"></arg>
+  </informal_protocol>
+  <informal_protocol name="NSToolbarNotifications">
+    <method selector="toolbarDidRemoveItem:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="window:willPositionSheet:usingRect:" swt_gen="true">
-      <arg name="window" swt_gen="true"></arg>
-      <arg name="sheet" swt_gen="true"></arg>
-      <arg name="rect" swt_gen="true"></arg>
+    <method selector="toolbarWillAddItem:">
+      <arg name="notification"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSWindowDelegate" swt_gen="mixed">
+    <method selector="window:shouldDragDocumentWithEvent:from:withPasteboard:">
+      <arg name="window"></arg>
+      <arg name="event"></arg>
+      <arg name="dragImageLocation"></arg>
+      <arg name="pasteboard"></arg>
+    </method>
+    <method selector="window:shouldPopUpDocumentPathMenu:">
+      <arg name="window"></arg>
+      <arg name="menu"></arg>
+    </method>
+    <method selector="window:willPositionSheet:usingRect:">
+      <arg name="window"></arg>
+      <arg name="sheet"></arg>
+      <arg name="rect"></arg>
     </method>
     <method selector="windowShouldClose:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="windowShouldZoom:toFrame:" swt_gen="true">
-      <arg name="window" swt_gen="true"></arg>
-      <arg name="newFrame" swt_gen="true"></arg>
+    <method selector="windowShouldZoom:toFrame:">
+      <arg name="window"></arg>
+      <arg name="newFrame"></arg>
     </method>
-    <method selector="windowWillResize:toSize:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="frameSize" swt_gen="true"></arg>
+    <method selector="windowWillResize:toSize:">
+      <arg name="sender"></arg>
+      <arg name="frameSize"></arg>
     </method>
-    <method selector="windowWillReturnFieldEditor:toObject:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="client" swt_gen="true"></arg>
+    <method selector="windowWillReturnFieldEditor:toObject:">
+      <arg name="sender"></arg>
+      <arg name="client"></arg>
     </method>
-    <method selector="windowWillReturnUndoManager:" swt_gen="true">
-      <arg name="window" swt_gen="true"></arg>
+    <method selector="windowWillReturnUndoManager:">
+      <arg name="window"></arg>
     </method>
-    <method selector="windowWillUseStandardFrame:defaultFrame:" swt_gen="true">
-      <arg name="window" swt_gen="true"></arg>
-      <arg name="newFrame" swt_gen="true"></arg>
+    <method selector="windowWillUseStandardFrame:defaultFrame:">
+      <arg name="window"></arg>
+      <arg name="newFrame"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSWindowNotifications" swt_gen="true">
+  <informal_protocol name="NSWindowNotifications" swt_gen="mixed">
     <method selector="windowDidBecomeKey:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="windowDidBecomeMain:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidBecomeMain:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowDidChangeScreen:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidChangeScreen:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowDidChangeScreenProfile:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidChangeScreenProfile:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowDidDeminiaturize:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidDeminiaturize:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowDidEndSheet:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidEndSheet:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowDidExpose:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidExpose:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowDidMiniaturize:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidMiniaturize:">
+      <arg name="notification"></arg>
     </method>
     <method selector="windowDidMove:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
@@ -25368,26 +25368,50 @@
     <method selector="windowDidResignKey:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="windowDidResignMain:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidResignMain:">
+      <arg name="notification"></arg>
     </method>
     <method selector="windowDidResize:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="windowDidUpdate:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowDidUpdate:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowWillBeginSheet:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowWillBeginSheet:">
+      <arg name="notification"></arg>
     </method>
     <method selector="windowWillClose:" swt_gen="true">
       <arg name="notification" swt_gen="true"></arg>
     </method>
-    <method selector="windowWillMiniaturize:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowWillMiniaturize:">
+      <arg name="notification"></arg>
     </method>
-    <method selector="windowWillMove:" swt_gen="true">
-      <arg name="notification" swt_gen="true"></arg>
+    <method selector="windowWillMove:">
+      <arg name="notification"></arg>
     </method>
   </informal_protocol>
+  <class name="NSSecureTextField" swt_gen="true"></class>
+  <informal_protocol name="NSTextInput" swt_gen="true">
+    <method selector="validAttributesForMarkedText" swt_gen="true"></method>
+    <method selector="markedRange" swt_gen="true"></method>
+    <method selector="insertText:" swt_gen="true">
+      <arg name="aString" swt_gen="true"></arg>
+</method>
+    <method selector="unmarkText" swt_gen="true"></method>
+    <method selector="selectedRange" swt_gen="true"></method>
+    <method selector="setMarkedText:selectedRange:" swt_gen="true">
+      <arg name="selRange" swt_gen="true"></arg>
+      <arg name="aString" swt_gen="true"></arg>
+</method>
+    <method selector="hasMarkedText" swt_gen="true"></method>
+    <method selector="characterIndexForPoint:" swt_gen="true">
+      <arg name="thePoint" swt_gen="true"></arg>
+</method>
+    <method selector="attributedSubstringFromRange:" swt_gen="true">
+      <arg name="theRange" swt_gen="true"></arg>
+</method>
+    <method selector="firstRectForCharacterRange:" swt_gen="true">
+      <arg name="theRange" swt_gen="true"></arg>
+</method>
+</informal_protocol>
 </signatures>

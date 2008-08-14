@@ -5,13 +5,13 @@
   <depends_on path="/System/Library/Frameworks/SystemConfiguration.framework"></depends_on>
   <depends_on path="/System/Library/Frameworks/CoreServices.framework"></depends_on>
   <depends_on path="/System/Library/Frameworks/Security.framework"></depends_on>
-  <struct name="NSAffineTransformStruct">
-    <field name="m11"></field>
-    <field name="m12"></field>
-    <field name="m21"></field>
-    <field name="m22"></field>
-    <field name="tX"></field>
-    <field name="tY"></field>
+  <struct name="NSAffineTransformStruct" swt_gen="true">
+    <field name="m11" swt_gen="true"></field>
+    <field name="m12" swt_gen="true"></field>
+    <field name="m21" swt_gen="true"></field>
+    <field name="m22" swt_gen="true"></field>
+    <field name="tX" swt_gen="true"></field>
+    <field name="tY" swt_gen="true"></field>
   </struct>
   <struct name="NSDecimal">
     <field name="_exponent"></field>
@@ -57,21 +57,21 @@
     <field name="release"></field>
     <field name="describe"></field>
   </struct>
-  <struct name="NSPoint">
-    <field name="x"></field>
-    <field name="y"></field>
+  <struct name="NSPoint" swt_gen="true">
+    <field name="x" swt_gen="true"></field>
+    <field name="y" swt_gen="true"></field>
   </struct>
-  <struct name="NSRange">
-    <field name="location"></field>
-    <field name="length"></field>
+  <struct name="NSRange" swt_gen="true">
+    <field name="location" swt_gen="true"></field>
+    <field name="length" swt_gen="true"></field>
   </struct>
-  <struct name="NSRect">
-    <field name="origin"></field>
-    <field name="size"></field>
+  <struct name="NSRect" swt_gen="true">
+    <field name="origin" swt_gen="true"></field>
+    <field name="size" swt_gen="true"></field>
   </struct>
-  <struct name="NSSize">
-    <field name="width"></field>
-    <field name="height"></field>
+  <struct name="NSSize" swt_gen="true">
+    <field name="width" swt_gen="true"></field>
+    <field name="height" swt_gen="true"></field>
   </struct>
   <struct name="NSSwappedDouble">
     <field name="v"></field>
@@ -7813,9 +7813,9 @@
       <arg name="key"></arg>
       <retval></retval>
     </method>
-    <method selector="conformsToProtocol:">
-      <arg name="aProtocol"></arg>
-      <retval></retval>
+    <method selector="conformsToProtocol:" swt_gen="true">
+      <arg name="aProtocol" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="conformsToProtocol:">
       <arg name="protocol"></arg>
@@ -8718,8 +8718,8 @@
       <arg name="eventCode"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="superclass" swt_gen="true">
-      <retval swt_gen="true"></retval>
+    <method class_method="true" selector="superclass">
+      <retval></retval>
     </method>
     <method selector="superclass" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -13031,840 +13031,840 @@
       <retval></retval>
     </method>
   </class>
-  <informal_protocol name="NSArchiverCallback" swt_gen="true">
-    <method selector="classForArchiver" swt_gen="true"></method>
-    <method selector="replacementObjectForArchiver:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
+  <informal_protocol name="NSArchiverCallback">
+    <method selector="classForArchiver"></method>
+    <method selector="replacementObjectForArchiver:">
+      <arg name="archiver"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSClassDescriptionPrimitives" swt_gen="true">
-    <method selector="attributeKeys" swt_gen="true"></method>
-    <method selector="classDescription" swt_gen="true"></method>
-    <method selector="inverseForRelationshipKey:" swt_gen="true">
-      <arg name="relationshipKey" swt_gen="true"></arg>
+  <informal_protocol name="NSClassDescriptionPrimitives">
+    <method selector="attributeKeys"></method>
+    <method selector="classDescription"></method>
+    <method selector="inverseForRelationshipKey:">
+      <arg name="relationshipKey"></arg>
     </method>
-    <method selector="toManyRelationshipKeys" swt_gen="true"></method>
-    <method selector="toOneRelationshipKeys" swt_gen="true"></method>
+    <method selector="toManyRelationshipKeys"></method>
+    <method selector="toOneRelationshipKeys"></method>
   </informal_protocol>
-  <informal_protocol name="NSCoderMethods" swt_gen="true">
-    <method selector="awakeAfterUsingCoder:" swt_gen="true">
-      <arg name="aDecoder" swt_gen="true"></arg>
+  <informal_protocol name="NSCoderMethods">
+    <method selector="awakeAfterUsingCoder:">
+      <arg name="aDecoder"></arg>
     </method>
-    <method selector="classForCoder" swt_gen="true"></method>
-    <method selector="replacementObjectForCoder:" swt_gen="true">
-      <arg name="aCoder" swt_gen="true"></arg>
+    <method selector="classForCoder"></method>
+    <method selector="replacementObjectForCoder:">
+      <arg name="aCoder"></arg>
     </method>
-    <method class_method="true" selector="setVersion:" swt_gen="true">
-      <arg name="aVersion" swt_gen="true"></arg>
+    <method class_method="true" selector="setVersion:">
+      <arg name="aVersion"></arg>
     </method>
-    <method class_method="true" selector="version" swt_gen="true"></method>
+    <method class_method="true" selector="version"></method>
   </informal_protocol>
-  <informal_protocol name="NSComparisonMethods" swt_gen="true">
-    <method selector="doesContain:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+  <informal_protocol name="NSComparisonMethods">
+    <method selector="doesContain:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isCaseInsensitiveLike:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isCaseInsensitiveLike:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isEqualTo:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isGreaterThan:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isGreaterThan:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isGreaterThanOrEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isGreaterThanOrEqualTo:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isLessThan:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isLessThan:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isLessThanOrEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isLessThanOrEqualTo:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isLike:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="isLike:">
+      <arg name="object"></arg>
     </method>
-    <method selector="isNotEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSConnectionDelegateMethods" swt_gen="true">
-    <method selector="authenticateComponents:withData:" swt_gen="true">
-      <arg name="components" swt_gen="true"></arg>
-      <arg name="signature" swt_gen="true"></arg>
-    </method>
-    <method selector="authenticationDataForComponents:" swt_gen="true">
-      <arg name="components" swt_gen="true"></arg>
-    </method>
-    <method selector="connection:shouldMakeNewConnection:" swt_gen="true">
-      <arg name="ancestor" swt_gen="true"></arg>
-      <arg name="conn" swt_gen="true"></arg>
-    </method>
-    <method selector="createConversationForConnection:" swt_gen="true">
-      <arg name="conn" swt_gen="true"></arg>
-    </method>
-    <method selector="makeNewConnection:sender:" swt_gen="true">
-      <arg name="conn" swt_gen="true"></arg>
-      <arg name="ancestor" swt_gen="true"></arg>
+    <method selector="isNotEqualTo:">
+      <arg name="object"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSCopyLinkMoveHandler" swt_gen="true">
-    <method selector="fileManager:shouldProceedAfterError:" swt_gen="true">
-      <arg name="fm" swt_gen="true"></arg>
-      <arg name="errorInfo" swt_gen="true"></arg>
+  <informal_protocol name="NSConnectionDelegateMethods">
+    <method selector="authenticateComponents:withData:">
+      <arg name="components"></arg>
+      <arg name="signature"></arg>
     </method>
-    <method selector="fileManager:willProcessPath:" swt_gen="true">
-      <arg name="fm" swt_gen="true"></arg>
-      <arg name="path" swt_gen="true"></arg>
+    <method selector="authenticationDataForComponents:">
+      <arg name="components"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSDelayedPerforming" swt_gen="true">
-    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:" swt_gen="true">
-      <arg name="aTarget" swt_gen="true"></arg>
+    <method selector="connection:shouldMakeNewConnection:">
+      <arg name="ancestor"></arg>
+      <arg name="conn"></arg>
     </method>
-    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:selector:object:" swt_gen="true">
-      <arg name="aTarget" swt_gen="true"></arg>
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="anArgument" swt_gen="true"></arg>
+    <method selector="createConversationForConnection:">
+      <arg name="conn"></arg>
     </method>
-    <method selector="performSelector:withObject:afterDelay:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="anArgument" swt_gen="true"></arg>
-      <arg name="delay" swt_gen="true"></arg>
-    </method>
-    <method selector="performSelector:withObject:afterDelay:inModes:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="anArgument" swt_gen="true"></arg>
-      <arg name="delay" swt_gen="true"></arg>
-      <arg name="modes" swt_gen="true"></arg>
+    <method selector="makeNewConnection:sender:">
+      <arg name="conn"></arg>
+      <arg name="ancestor"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSDeprecatedKeyValueCoding" swt_gen="true">
-    <method selector="handleQueryWithUnboundKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+  <informal_protocol name="NSCopyLinkMoveHandler">
+    <method selector="fileManager:shouldProceedAfterError:">
+      <arg name="fm"></arg>
+      <arg name="errorInfo"></arg>
     </method>
-    <method selector="handleTakeValue:forUnboundKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="storedValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="takeStoredValue:forKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="takeValue:forKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="takeValue:forKeyPath:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="keyPath" swt_gen="true"></arg>
-    </method>
-    <method selector="takeValuesFromDictionary:" swt_gen="true">
-      <arg name="properties" swt_gen="true"></arg>
-    </method>
-    <method selector="unableToSetNilForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method class_method="true" selector="useStoredAccessor" swt_gen="true"></method>
-    <method selector="valuesForKeys:" swt_gen="true">
-      <arg name="keys" swt_gen="true"></arg>
+    <method selector="fileManager:willProcessPath:">
+      <arg name="fm"></arg>
+      <arg name="path"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSDeprecatedKeyValueObservingCustomization" swt_gen="true">
-    <method class_method="true" selector="setKeys:triggerChangeNotificationsForDependentKey:" swt_gen="true">
-      <arg name="keys" swt_gen="true"></arg>
-      <arg name="dependentKey" swt_gen="true"></arg>
+  <informal_protocol name="NSDelayedPerforming">
+    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:">
+      <arg name="aTarget"></arg>
+    </method>
+    <method class_method="true" selector="cancelPreviousPerformRequestsWithTarget:selector:object:">
+      <arg name="aTarget"></arg>
+      <arg name="aSelector"></arg>
+      <arg name="anArgument"></arg>
+    </method>
+    <method selector="performSelector:withObject:afterDelay:">
+      <arg name="aSelector"></arg>
+      <arg name="anArgument"></arg>
+      <arg name="delay"></arg>
+    </method>
+    <method selector="performSelector:withObject:afterDelay:inModes:">
+      <arg name="aSelector"></arg>
+      <arg name="anArgument"></arg>
+      <arg name="delay"></arg>
+      <arg name="modes"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSDeprecatedMethods" swt_gen="true">
-    <method class_method="true" selector="poseAsClass:" swt_gen="true">
-      <arg name="aClass" swt_gen="true"></arg>
+  <informal_protocol name="NSDeprecatedKeyValueCoding">
+    <method selector="handleQueryWithUnboundKey:">
+      <arg name="key"></arg>
+    </method>
+    <method selector="handleTakeValue:forUnboundKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="storedValueForKey:">
+      <arg name="key"></arg>
+    </method>
+    <method selector="takeStoredValue:forKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="takeValue:forKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="takeValue:forKeyPath:">
+      <arg name="value"></arg>
+      <arg name="keyPath"></arg>
+    </method>
+    <method selector="takeValuesFromDictionary:">
+      <arg name="properties"></arg>
+    </method>
+    <method selector="unableToSetNilForKey:">
+      <arg name="key"></arg>
+    </method>
+    <method class_method="true" selector="useStoredAccessor"></method>
+    <method selector="valuesForKeys:">
+      <arg name="keys"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSDistantObjectRequestMethods" swt_gen="true">
-    <method selector="connection:handleRequest:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="doreq" swt_gen="true"></arg>
+  <informal_protocol name="NSDeprecatedKeyValueObservingCustomization">
+    <method class_method="true" selector="setKeys:triggerChangeNotificationsForDependentKey:">
+      <arg name="keys"></arg>
+      <arg name="dependentKey"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSDistributedObjects" swt_gen="true">
-    <method selector="classForPortCoder" swt_gen="true"></method>
-    <method selector="replacementObjectForPortCoder:" swt_gen="true">
-      <arg name="coder" swt_gen="true"></arg>
+  <informal_protocol name="NSDeprecatedMethods">
+    <method class_method="true" selector="poseAsClass:">
+      <arg name="aClass"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSErrorRecoveryAttempting" swt_gen="true">
-    <method selector="attemptRecoveryFromError:optionIndex:" swt_gen="true">
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="recoveryOptionIndex" swt_gen="true"></arg>
-    </method>
-    <method selector="attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:" swt_gen="true">
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="recoveryOptionIndex" swt_gen="true"></arg>
-      <arg name="delegate" swt_gen="true"></arg>
-      <arg name="didRecoverSelector" swt_gen="true"></arg>
-      <arg name="contextInfo" swt_gen="true"></arg>
+  <informal_protocol name="NSDistantObjectRequestMethods">
+    <method selector="connection:handleRequest:">
+      <arg name="connection"></arg>
+      <arg name="doreq"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSFileManagerFileOperationAdditions" swt_gen="true">
-    <method selector="fileManager:shouldCopyItemAtPath:toPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="srcPath" swt_gen="true"></arg>
-      <arg name="dstPath" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldLinkItemAtPath:toPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="srcPath" swt_gen="true"></arg>
-      <arg name="dstPath" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldMoveItemAtPath:toPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="srcPath" swt_gen="true"></arg>
-      <arg name="dstPath" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldProceedAfterError:copyingItemAtPath:toPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="srcPath" swt_gen="true"></arg>
-      <arg name="dstPath" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldProceedAfterError:linkingItemAtPath:toPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="srcPath" swt_gen="true"></arg>
-      <arg name="dstPath" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldProceedAfterError:movingItemAtPath:toPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="srcPath" swt_gen="true"></arg>
-      <arg name="dstPath" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldProceedAfterError:removingItemAtPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
-      <arg name="path" swt_gen="true"></arg>
-    </method>
-    <method selector="fileManager:shouldRemoveItemAtPath:" swt_gen="true">
-      <arg name="fileManager" swt_gen="true"></arg>
-      <arg name="path" swt_gen="true"></arg>
+  <informal_protocol name="NSDistributedObjects">
+    <method selector="classForPortCoder"></method>
+    <method selector="replacementObjectForPortCoder:">
+      <arg name="coder"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSKeyValueCoding" swt_gen="true">
-    <method class_method="true" selector="accessInstanceVariablesDirectly" swt_gen="true"></method>
-    <method selector="dictionaryWithValuesForKeys:" swt_gen="true">
-      <arg name="keys" swt_gen="true"></arg>
+  <informal_protocol name="NSErrorRecoveryAttempting">
+    <method selector="attemptRecoveryFromError:optionIndex:">
+      <arg name="error"></arg>
+      <arg name="recoveryOptionIndex"></arg>
     </method>
-    <method selector="mutableArrayValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="mutableArrayValueForKeyPath:" swt_gen="true">
-      <arg name="keyPath" swt_gen="true"></arg>
-    </method>
-    <method selector="mutableSetValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="mutableSetValueForKeyPath:" swt_gen="true">
-      <arg name="keyPath" swt_gen="true"></arg>
-    </method>
-    <method selector="setNilValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="setValue:forKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="setValue:forKeyPath:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="keyPath" swt_gen="true"></arg>
-    </method>
-    <method selector="setValue:forUndefinedKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="setValuesForKeysWithDictionary:" swt_gen="true">
-      <arg name="keyedValues" swt_gen="true"></arg>
-    </method>
-    <method selector="validateValue:forKey:error:" swt_gen="true">
-      <arg name="ioValue" swt_gen="true"></arg>
-      <arg name="inKey" swt_gen="true"></arg>
-      <arg name="outError" swt_gen="true"></arg>
-    </method>
-    <method selector="validateValue:forKeyPath:error:" swt_gen="true">
-      <arg name="ioValue" swt_gen="true"></arg>
-      <arg name="inKeyPath" swt_gen="true"></arg>
-      <arg name="outError" swt_gen="true"></arg>
-    </method>
-    <method selector="valueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="valueForKeyPath:" swt_gen="true">
-      <arg name="keyPath" swt_gen="true"></arg>
-    </method>
-    <method selector="valueForUndefinedKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="attemptRecoveryFromError:optionIndex:delegate:didRecoverSelector:contextInfo:">
+      <arg name="error"></arg>
+      <arg name="recoveryOptionIndex"></arg>
+      <arg name="delegate"></arg>
+      <arg name="didRecoverSelector"></arg>
+      <arg name="contextInfo"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSKeyValueObserverNotification" swt_gen="true">
-    <method selector="didChange:valuesAtIndexes:forKey:" swt_gen="true">
-      <arg name="changeKind" swt_gen="true"></arg>
-      <arg name="indexes" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+  <informal_protocol name="NSFileManagerFileOperationAdditions">
+    <method selector="fileManager:shouldCopyItemAtPath:toPath:">
+      <arg name="fileManager"></arg>
+      <arg name="srcPath"></arg>
+      <arg name="dstPath"></arg>
     </method>
-    <method selector="didChangeValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="fileManager:shouldLinkItemAtPath:toPath:">
+      <arg name="fileManager"></arg>
+      <arg name="srcPath"></arg>
+      <arg name="dstPath"></arg>
     </method>
-    <method selector="didChangeValueForKey:withSetMutation:usingObjects:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-      <arg name="mutationKind" swt_gen="true"></arg>
-      <arg name="objects" swt_gen="true"></arg>
+    <method selector="fileManager:shouldMoveItemAtPath:toPath:">
+      <arg name="fileManager"></arg>
+      <arg name="srcPath"></arg>
+      <arg name="dstPath"></arg>
     </method>
-    <method selector="willChange:valuesAtIndexes:forKey:" swt_gen="true">
-      <arg name="changeKind" swt_gen="true"></arg>
-      <arg name="indexes" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="fileManager:shouldProceedAfterError:copyingItemAtPath:toPath:">
+      <arg name="fileManager"></arg>
+      <arg name="error"></arg>
+      <arg name="srcPath"></arg>
+      <arg name="dstPath"></arg>
     </method>
-    <method selector="willChangeValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="fileManager:shouldProceedAfterError:linkingItemAtPath:toPath:">
+      <arg name="fileManager"></arg>
+      <arg name="error"></arg>
+      <arg name="srcPath"></arg>
+      <arg name="dstPath"></arg>
     </method>
-    <method selector="willChangeValueForKey:withSetMutation:usingObjects:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
-      <arg name="mutationKind" swt_gen="true"></arg>
-      <arg name="objects" swt_gen="true"></arg>
+    <method selector="fileManager:shouldProceedAfterError:movingItemAtPath:toPath:">
+      <arg name="fileManager"></arg>
+      <arg name="error"></arg>
+      <arg name="srcPath"></arg>
+      <arg name="dstPath"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSKeyValueObserverRegistration" swt_gen="true">
-    <method selector="addObserver:forKeyPath:options:context:" swt_gen="true">
-      <arg name="observer" swt_gen="true"></arg>
-      <arg name="keyPath" swt_gen="true"></arg>
-      <arg name="options" swt_gen="true"></arg>
-      <arg name="context" swt_gen="true"></arg>
+    <method selector="fileManager:shouldProceedAfterError:removingItemAtPath:">
+      <arg name="fileManager"></arg>
+      <arg name="error"></arg>
+      <arg name="path"></arg>
     </method>
-    <method selector="removeObserver:forKeyPath:" swt_gen="true">
-      <arg name="observer" swt_gen="true"></arg>
-      <arg name="keyPath" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSKeyValueObserving" swt_gen="true">
-    <method selector="observeValueForKeyPath:ofObject:change:context:" swt_gen="true">
-      <arg name="keyPath" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
-      <arg name="change" swt_gen="true"></arg>
-      <arg name="context" swt_gen="true"></arg>
+    <method selector="fileManager:shouldRemoveItemAtPath:">
+      <arg name="fileManager"></arg>
+      <arg name="path"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSKeyValueObservingCustomization" swt_gen="true">
-    <method class_method="true" selector="automaticallyNotifiesObserversForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyValueCoding">
+    <method class_method="true" selector="accessInstanceVariablesDirectly"></method>
+    <method selector="dictionaryWithValuesForKeys:">
+      <arg name="keys"></arg>
     </method>
-    <method class_method="true" selector="keyPathsForValuesAffectingValueForKey:" swt_gen="true">
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="mutableArrayValueForKey:">
+      <arg name="key"></arg>
     </method>
-    <method selector="observationInfo" swt_gen="true"></method>
-    <method selector="setObservationInfo:" swt_gen="true">
-      <arg name="observationInfo" swt_gen="true"></arg>
+    <method selector="mutableArrayValueForKeyPath:">
+      <arg name="keyPath"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSKeyedArchiverDelegate" swt_gen="true">
-    <method selector="archiver:didEncodeObject:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="mutableSetValueForKey:">
+      <arg name="key"></arg>
     </method>
-    <method selector="archiver:willEncodeObject:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="mutableSetValueForKeyPath:">
+      <arg name="keyPath"></arg>
     </method>
-    <method selector="archiver:willReplaceObject:withObject:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
-      <arg name="newObject" swt_gen="true"></arg>
+    <method selector="setNilValueForKey:">
+      <arg name="key"></arg>
     </method>
-    <method selector="archiverDidFinish:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
+    <method selector="setValue:forKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
     </method>
-    <method selector="archiverWillFinish:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
+    <method selector="setValue:forKeyPath:">
+      <arg name="value"></arg>
+      <arg name="keyPath"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSKeyedArchiverObjectSubstitution" swt_gen="true">
-    <method class_method="true" selector="classFallbacksForKeyedArchiver" swt_gen="true"></method>
-    <method selector="classForKeyedArchiver" swt_gen="true"></method>
-    <method selector="replacementObjectForKeyedArchiver:" swt_gen="true">
-      <arg name="archiver" swt_gen="true"></arg>
+    <method selector="setValue:forUndefinedKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSKeyedUnarchiverDelegate" swt_gen="true">
-    <method selector="unarchiver:cannotDecodeObjectOfClassName:originalClasses:" swt_gen="true">
-      <arg name="unarchiver" swt_gen="true"></arg>
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="classNames" swt_gen="true"></arg>
+    <method selector="setValuesForKeysWithDictionary:">
+      <arg name="keyedValues"></arg>
     </method>
-    <method selector="unarchiver:didDecodeObject:" swt_gen="true">
-      <arg name="unarchiver" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="validateValue:forKey:error:">
+      <arg name="ioValue"></arg>
+      <arg name="inKey"></arg>
+      <arg name="outError"></arg>
     </method>
-    <method selector="unarchiver:willReplaceObject:withObject:" swt_gen="true">
-      <arg name="unarchiver" swt_gen="true"></arg>
-      <arg name="object" swt_gen="true"></arg>
-      <arg name="newObject" swt_gen="true"></arg>
+    <method selector="validateValue:forKeyPath:error:">
+      <arg name="ioValue"></arg>
+      <arg name="inKeyPath"></arg>
+      <arg name="outError"></arg>
     </method>
-    <method selector="unarchiverDidFinish:" swt_gen="true">
-      <arg name="unarchiver" swt_gen="true"></arg>
+    <method selector="valueForKey:">
+      <arg name="key"></arg>
     </method>
-    <method selector="unarchiverWillFinish:" swt_gen="true">
-      <arg name="unarchiver" swt_gen="true"></arg>
+    <method selector="valueForKeyPath:">
+      <arg name="keyPath"></arg>
+    </method>
+    <method selector="valueForUndefinedKey:">
+      <arg name="key"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSKeyedUnarchiverObjectSubstitution" swt_gen="true">
-    <method class_method="true" selector="classForKeyedUnarchiver" swt_gen="true"></method>
-  </informal_protocol>
-  <informal_protocol name="NSMachPortDelegateMethods" swt_gen="true">
-    <method selector="handleMachMessage:" swt_gen="true">
-      <arg name="msg" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyValueObserverNotification">
+    <method selector="didChange:valuesAtIndexes:forKey:">
+      <arg name="changeKind"></arg>
+      <arg name="indexes"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="didChangeValueForKey:">
+      <arg name="key"></arg>
+    </method>
+    <method selector="didChangeValueForKey:withSetMutation:usingObjects:">
+      <arg name="key"></arg>
+      <arg name="mutationKind"></arg>
+      <arg name="objects"></arg>
+    </method>
+    <method selector="willChange:valuesAtIndexes:forKey:">
+      <arg name="changeKind"></arg>
+      <arg name="indexes"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="willChangeValueForKey:">
+      <arg name="key"></arg>
+    </method>
+    <method selector="willChangeValueForKey:withSetMutation:usingObjects:">
+      <arg name="key"></arg>
+      <arg name="mutationKind"></arg>
+      <arg name="objects"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSMetadataQueryDelegate" swt_gen="true">
-    <method selector="metadataQuery:replacementObjectForResultObject:" swt_gen="true">
-      <arg name="query" swt_gen="true"></arg>
-      <arg name="result" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyValueObserverRegistration">
+    <method selector="addObserver:forKeyPath:options:context:">
+      <arg name="observer"></arg>
+      <arg name="keyPath"></arg>
+      <arg name="options"></arg>
+      <arg name="context"></arg>
     </method>
-    <method selector="metadataQuery:replacementValueForAttribute:value:" swt_gen="true">
-      <arg name="query" swt_gen="true"></arg>
-      <arg name="attrName" swt_gen="true"></arg>
-      <arg name="attrValue" swt_gen="true"></arg>
-    </method>
-  </informal_protocol>
-  <informal_protocol name="NSNetServiceBrowserDelegateMethods" swt_gen="true">
-    <method selector="netServiceBrowser:didFindDomain:moreComing:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
-      <arg name="domainString" swt_gen="true"></arg>
-      <arg name="moreComing" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceBrowser:didFindService:moreComing:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
-      <arg name="aNetService" swt_gen="true"></arg>
-      <arg name="moreComing" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceBrowser:didNotSearch:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
-      <arg name="errorDict" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceBrowser:didRemoveDomain:moreComing:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
-      <arg name="domainString" swt_gen="true"></arg>
-      <arg name="moreComing" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceBrowser:didRemoveService:moreComing:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
-      <arg name="aNetService" swt_gen="true"></arg>
-      <arg name="moreComing" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceBrowserDidStopSearch:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceBrowserWillSearch:" swt_gen="true">
-      <arg name="aNetServiceBrowser" swt_gen="true"></arg>
+    <method selector="removeObserver:forKeyPath:">
+      <arg name="observer"></arg>
+      <arg name="keyPath"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSNetServiceDelegateMethods" swt_gen="true">
-    <method selector="netService:didNotPublish:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="errorDict" swt_gen="true"></arg>
-    </method>
-    <method selector="netService:didNotResolve:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="errorDict" swt_gen="true"></arg>
-    </method>
-    <method selector="netService:didUpdateTXTRecordData:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="data" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceDidPublish:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceDidResolveAddress:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceDidStop:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceWillPublish:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="netServiceWillResolve:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyValueObserving">
+    <method selector="observeValueForKeyPath:ofObject:change:context:">
+      <arg name="keyPath"></arg>
+      <arg name="object"></arg>
+      <arg name="change"></arg>
+      <arg name="context"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSPortDelegateMethods" swt_gen="true">
-    <method selector="handlePortMessage:" swt_gen="true">
-      <arg name="message" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyValueObservingCustomization">
+    <method class_method="true" selector="automaticallyNotifiesObserversForKey:">
+      <arg name="key"></arg>
+    </method>
+    <method class_method="true" selector="keyPathsForValuesAffectingValueForKey:">
+      <arg name="key"></arg>
+    </method>
+    <method selector="observationInfo"></method>
+    <method selector="setObservationInfo:">
+      <arg name="observationInfo"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSScriptClassDescription" swt_gen="true">
-    <method selector="classCode" swt_gen="true"></method>
-    <method selector="className" swt_gen="true"></method>
-  </informal_protocol>
-  <informal_protocol name="NSScriptKeyValueCoding" swt_gen="true">
-    <method selector="coerceValue:forKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyedArchiverDelegate">
+    <method selector="archiver:didEncodeObject:">
+      <arg name="archiver"></arg>
+      <arg name="object"></arg>
     </method>
-    <method selector="insertValue:atIndex:inPropertyWithKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="archiver:willEncodeObject:">
+      <arg name="archiver"></arg>
+      <arg name="object"></arg>
     </method>
-    <method selector="insertValue:inPropertyWithKey:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="archiver:willReplaceObject:withObject:">
+      <arg name="archiver"></arg>
+      <arg name="object"></arg>
+      <arg name="newObject"></arg>
     </method>
-    <method selector="removeValueAtIndex:fromPropertyWithKey:" swt_gen="true">
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="archiverDidFinish:">
+      <arg name="archiver"></arg>
     </method>
-    <method selector="replaceValueAtIndex:inPropertyWithKey:withValue:" swt_gen="true">
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-      <arg name="value" swt_gen="true"></arg>
-    </method>
-    <method selector="valueAtIndex:inPropertyWithKey:" swt_gen="true">
-      <arg name="index" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="valueWithName:inPropertyWithKey:" swt_gen="true">
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-    </method>
-    <method selector="valueWithUniqueID:inPropertyWithKey:" swt_gen="true">
-      <arg name="uniqueID" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
+    <method selector="archiverWillFinish:">
+      <arg name="archiver"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSScriptObjectSpecifiers" swt_gen="true">
-    <method selector="indicesOfObjectsByEvaluatingObjectSpecifier:" swt_gen="true">
-      <arg name="specifier" swt_gen="true"></arg>
-    </method>
-    <method selector="objectSpecifier" swt_gen="true"></method>
-  </informal_protocol>
-  <informal_protocol name="NSScripting" swt_gen="true">
-    <method selector="copyScriptingValue:forKey:withProperties:" swt_gen="true">
-      <arg name="value" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-      <arg name="properties" swt_gen="true"></arg>
-    </method>
-    <method selector="newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:" swt_gen="true">
-      <arg name="objectClass" swt_gen="true"></arg>
-      <arg name="key" swt_gen="true"></arg>
-      <arg name="contentsValue" swt_gen="true"></arg>
-      <arg name="properties" swt_gen="true"></arg>
-    </method>
-    <method selector="scriptingProperties" swt_gen="true"></method>
-    <method selector="scriptingValueForSpecifier:" swt_gen="true">
-      <arg name="objectSpecifier" swt_gen="true"></arg>
-    </method>
-    <method selector="setScriptingProperties:" swt_gen="true">
-      <arg name="properties" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyedArchiverObjectSubstitution">
+    <method class_method="true" selector="classFallbacksForKeyedArchiver"></method>
+    <method selector="classForKeyedArchiver"></method>
+    <method selector="replacementObjectForKeyedArchiver:">
+      <arg name="archiver"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSScriptingComparisonMethods" swt_gen="true">
-    <method selector="scriptingBeginsWith:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyedUnarchiverDelegate">
+    <method selector="unarchiver:cannotDecodeObjectOfClassName:originalClasses:">
+      <arg name="unarchiver"></arg>
+      <arg name="name"></arg>
+      <arg name="classNames"></arg>
     </method>
-    <method selector="scriptingContains:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="unarchiver:didDecodeObject:">
+      <arg name="unarchiver"></arg>
+      <arg name="object"></arg>
     </method>
-    <method selector="scriptingEndsWith:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="unarchiver:willReplaceObject:withObject:">
+      <arg name="unarchiver"></arg>
+      <arg name="object"></arg>
+      <arg name="newObject"></arg>
     </method>
-    <method selector="scriptingIsEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="unarchiverDidFinish:">
+      <arg name="unarchiver"></arg>
     </method>
-    <method selector="scriptingIsGreaterThan:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
-    </method>
-    <method selector="scriptingIsGreaterThanOrEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
-    </method>
-    <method selector="scriptingIsLessThan:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
-    </method>
-    <method selector="scriptingIsLessThanOrEqualTo:" swt_gen="true">
-      <arg name="object" swt_gen="true"></arg>
+    <method selector="unarchiverWillFinish:">
+      <arg name="unarchiver"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSSpellServerDelegate" swt_gen="true">
-    <method selector="spellServer:checkGrammarInString:language:details:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="stringToCheck" swt_gen="true"></arg>
-      <arg name="language" swt_gen="true"></arg>
-      <arg name="details" swt_gen="true"></arg>
-    </method>
-    <method selector="spellServer:didForgetWord:inLanguage:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="word" swt_gen="true"></arg>
-      <arg name="language" swt_gen="true"></arg>
-    </method>
-    <method selector="spellServer:didLearnWord:inLanguage:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="word" swt_gen="true"></arg>
-      <arg name="language" swt_gen="true"></arg>
-    </method>
-    <method selector="spellServer:findMisspelledWordInString:language:wordCount:countOnly:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="stringToCheck" swt_gen="true"></arg>
-      <arg name="language" swt_gen="true"></arg>
-      <arg name="wordCount" swt_gen="true"></arg>
-      <arg name="countOnly" swt_gen="true"></arg>
-    </method>
-    <method selector="spellServer:suggestCompletionsForPartialWordRange:inString:language:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="range" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
-      <arg name="language" swt_gen="true"></arg>
-    </method>
-    <method selector="spellServer:suggestGuessesForWord:inLanguage:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="word" swt_gen="true"></arg>
-      <arg name="language" swt_gen="true"></arg>
+  <informal_protocol name="NSKeyedUnarchiverObjectSubstitution">
+    <method class_method="true" selector="classForKeyedUnarchiver"></method>
+  </informal_protocol>
+  <informal_protocol name="NSMachPortDelegateMethods">
+    <method selector="handleMachMessage:">
+      <arg name="msg"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSStreamDelegateEventExtensions" swt_gen="true">
-    <method selector="stream:handleEvent:" swt_gen="true">
-      <arg name="aStream" swt_gen="true"></arg>
-      <arg name="eventCode" swt_gen="true"></arg>
+  <informal_protocol name="NSMetadataQueryDelegate">
+    <method selector="metadataQuery:replacementObjectForResultObject:">
+      <arg name="query"></arg>
+      <arg name="result"></arg>
+    </method>
+    <method selector="metadataQuery:replacementValueForAttribute:value:">
+      <arg name="query"></arg>
+      <arg name="attrName"></arg>
+      <arg name="attrValue"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSThreadPerformAdditions" swt_gen="true">
-    <method selector="performSelector:onThread:withObject:waitUntilDone:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="thr" swt_gen="true"></arg>
-      <arg name="arg" swt_gen="true"></arg>
-      <arg name="wait" swt_gen="true"></arg>
+  <informal_protocol name="NSNetServiceBrowserDelegateMethods">
+    <method selector="netServiceBrowser:didFindDomain:moreComing:">
+      <arg name="aNetServiceBrowser"></arg>
+      <arg name="domainString"></arg>
+      <arg name="moreComing"></arg>
     </method>
-    <method selector="performSelector:onThread:withObject:waitUntilDone:modes:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="thr" swt_gen="true"></arg>
-      <arg name="arg" swt_gen="true"></arg>
-      <arg name="wait" swt_gen="true"></arg>
-      <arg name="array" swt_gen="true"></arg>
+    <method selector="netServiceBrowser:didFindService:moreComing:">
+      <arg name="aNetServiceBrowser"></arg>
+      <arg name="aNetService"></arg>
+      <arg name="moreComing"></arg>
     </method>
-    <method selector="performSelectorInBackground:withObject:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="arg" swt_gen="true"></arg>
+    <method selector="netServiceBrowser:didNotSearch:">
+      <arg name="aNetServiceBrowser"></arg>
+      <arg name="errorDict"></arg>
     </method>
-    <method selector="performSelectorOnMainThread:withObject:waitUntilDone:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="arg" swt_gen="true"></arg>
-      <arg name="wait" swt_gen="true"></arg>
+    <method selector="netServiceBrowser:didRemoveDomain:moreComing:">
+      <arg name="aNetServiceBrowser"></arg>
+      <arg name="domainString"></arg>
+      <arg name="moreComing"></arg>
     </method>
-    <method selector="performSelectorOnMainThread:withObject:waitUntilDone:modes:" swt_gen="true">
-      <arg name="aSelector" swt_gen="true"></arg>
-      <arg name="arg" swt_gen="true"></arg>
-      <arg name="wait" swt_gen="true"></arg>
-      <arg name="array" swt_gen="true"></arg>
+    <method selector="netServiceBrowser:didRemoveService:moreComing:">
+      <arg name="aNetServiceBrowser"></arg>
+      <arg name="aNetService"></arg>
+      <arg name="moreComing"></arg>
     </method>
-  </informal_protocol>
-  <informal_protocol name="NSURLClient" swt_gen="true">
-    <method selector="URL:resourceDataDidBecomeAvailable:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="newBytes" swt_gen="true"></arg>
+    <method selector="netServiceBrowserDidStopSearch:">
+      <arg name="aNetServiceBrowser"></arg>
     </method>
-    <method selector="URL:resourceDidFailLoadingWithReason:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-      <arg name="reason" swt_gen="true"></arg>
-    </method>
-    <method selector="URLResourceDidCancelLoading:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
-    </method>
-    <method selector="URLResourceDidFinishLoading:" swt_gen="true">
-      <arg name="sender" swt_gen="true"></arg>
+    <method selector="netServiceBrowserWillSearch:">
+      <arg name="aNetServiceBrowser"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSURLConnectionDelegate" swt_gen="true">
-    <method selector="connection:didCancelAuthenticationChallenge:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
+  <informal_protocol name="NSNetServiceDelegateMethods">
+    <method selector="netService:didNotPublish:">
+      <arg name="sender"></arg>
+      <arg name="errorDict"></arg>
     </method>
-    <method selector="connection:didFailWithError:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
+    <method selector="netService:didNotResolve:">
+      <arg name="sender"></arg>
+      <arg name="errorDict"></arg>
     </method>
-    <method selector="connection:didReceiveAuthenticationChallenge:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
+    <method selector="netService:didUpdateTXTRecordData:">
+      <arg name="sender"></arg>
+      <arg name="data"></arg>
     </method>
-    <method selector="connection:didReceiveData:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="data" swt_gen="true"></arg>
+    <method selector="netServiceDidPublish:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="connection:didReceiveResponse:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="response" swt_gen="true"></arg>
+    <method selector="netServiceDidResolveAddress:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="connection:willCacheResponse:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="cachedResponse" swt_gen="true"></arg>
+    <method selector="netServiceDidStop:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="connection:willSendRequest:redirectResponse:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="response" swt_gen="true"></arg>
+    <method selector="netServiceWillPublish:">
+      <arg name="sender"></arg>
     </method>
-    <method selector="connectionDidFinishLoading:" swt_gen="true">
-      <arg name="connection" swt_gen="true"></arg>
+    <method selector="netServiceWillResolve:">
+      <arg name="sender"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSURLDownloadDelegate" swt_gen="true">
+  <informal_protocol name="NSPortDelegateMethods">
+    <method selector="handlePortMessage:">
+      <arg name="message"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSScriptClassDescription">
+    <method selector="classCode"></method>
+    <method selector="className"></method>
+  </informal_protocol>
+  <informal_protocol name="NSScriptKeyValueCoding">
+    <method selector="coerceValue:forKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="insertValue:atIndex:inPropertyWithKey:">
+      <arg name="value"></arg>
+      <arg name="index"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="insertValue:inPropertyWithKey:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="removeValueAtIndex:fromPropertyWithKey:">
+      <arg name="index"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="replaceValueAtIndex:inPropertyWithKey:withValue:">
+      <arg name="index"></arg>
+      <arg name="key"></arg>
+      <arg name="value"></arg>
+    </method>
+    <method selector="valueAtIndex:inPropertyWithKey:">
+      <arg name="index"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="valueWithName:inPropertyWithKey:">
+      <arg name="name"></arg>
+      <arg name="key"></arg>
+    </method>
+    <method selector="valueWithUniqueID:inPropertyWithKey:">
+      <arg name="uniqueID"></arg>
+      <arg name="key"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSScriptObjectSpecifiers">
+    <method selector="indicesOfObjectsByEvaluatingObjectSpecifier:">
+      <arg name="specifier"></arg>
+    </method>
+    <method selector="objectSpecifier"></method>
+  </informal_protocol>
+  <informal_protocol name="NSScripting">
+    <method selector="copyScriptingValue:forKey:withProperties:">
+      <arg name="value"></arg>
+      <arg name="key"></arg>
+      <arg name="properties"></arg>
+    </method>
+    <method selector="newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:">
+      <arg name="objectClass"></arg>
+      <arg name="key"></arg>
+      <arg name="contentsValue"></arg>
+      <arg name="properties"></arg>
+    </method>
+    <method selector="scriptingProperties"></method>
+    <method selector="scriptingValueForSpecifier:">
+      <arg name="objectSpecifier"></arg>
+    </method>
+    <method selector="setScriptingProperties:">
+      <arg name="properties"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSScriptingComparisonMethods">
+    <method selector="scriptingBeginsWith:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingContains:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingEndsWith:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingIsEqualTo:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingIsGreaterThan:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingIsGreaterThanOrEqualTo:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingIsLessThan:">
+      <arg name="object"></arg>
+    </method>
+    <method selector="scriptingIsLessThanOrEqualTo:">
+      <arg name="object"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSSpellServerDelegate">
+    <method selector="spellServer:checkGrammarInString:language:details:">
+      <arg name="sender"></arg>
+      <arg name="stringToCheck"></arg>
+      <arg name="language"></arg>
+      <arg name="details"></arg>
+    </method>
+    <method selector="spellServer:didForgetWord:inLanguage:">
+      <arg name="sender"></arg>
+      <arg name="word"></arg>
+      <arg name="language"></arg>
+    </method>
+    <method selector="spellServer:didLearnWord:inLanguage:">
+      <arg name="sender"></arg>
+      <arg name="word"></arg>
+      <arg name="language"></arg>
+    </method>
+    <method selector="spellServer:findMisspelledWordInString:language:wordCount:countOnly:">
+      <arg name="sender"></arg>
+      <arg name="stringToCheck"></arg>
+      <arg name="language"></arg>
+      <arg name="wordCount"></arg>
+      <arg name="countOnly"></arg>
+    </method>
+    <method selector="spellServer:suggestCompletionsForPartialWordRange:inString:language:">
+      <arg name="sender"></arg>
+      <arg name="range"></arg>
+      <arg name="string"></arg>
+      <arg name="language"></arg>
+    </method>
+    <method selector="spellServer:suggestGuessesForWord:inLanguage:">
+      <arg name="sender"></arg>
+      <arg name="word"></arg>
+      <arg name="language"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSStreamDelegateEventExtensions">
+    <method selector="stream:handleEvent:">
+      <arg name="aStream"></arg>
+      <arg name="eventCode"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSThreadPerformAdditions">
+    <method selector="performSelector:onThread:withObject:waitUntilDone:">
+      <arg name="aSelector"></arg>
+      <arg name="thr"></arg>
+      <arg name="arg"></arg>
+      <arg name="wait"></arg>
+    </method>
+    <method selector="performSelector:onThread:withObject:waitUntilDone:modes:">
+      <arg name="aSelector"></arg>
+      <arg name="thr"></arg>
+      <arg name="arg"></arg>
+      <arg name="wait"></arg>
+      <arg name="array"></arg>
+    </method>
+    <method selector="performSelectorInBackground:withObject:">
+      <arg name="aSelector"></arg>
+      <arg name="arg"></arg>
+    </method>
+    <method selector="performSelectorOnMainThread:withObject:waitUntilDone:">
+      <arg name="aSelector"></arg>
+      <arg name="arg"></arg>
+      <arg name="wait"></arg>
+    </method>
+    <method selector="performSelectorOnMainThread:withObject:waitUntilDone:modes:">
+      <arg name="aSelector"></arg>
+      <arg name="arg"></arg>
+      <arg name="wait"></arg>
+      <arg name="array"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSURLClient">
+    <method selector="URL:resourceDataDidBecomeAvailable:">
+      <arg name="sender"></arg>
+      <arg name="newBytes"></arg>
+    </method>
+    <method selector="URL:resourceDidFailLoadingWithReason:">
+      <arg name="sender"></arg>
+      <arg name="reason"></arg>
+    </method>
+    <method selector="URLResourceDidCancelLoading:">
+      <arg name="sender"></arg>
+    </method>
+    <method selector="URLResourceDidFinishLoading:">
+      <arg name="sender"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSURLConnectionDelegate">
+    <method selector="connection:didCancelAuthenticationChallenge:">
+      <arg name="connection"></arg>
+      <arg name="challenge"></arg>
+    </method>
+    <method selector="connection:didFailWithError:">
+      <arg name="connection"></arg>
+      <arg name="error"></arg>
+    </method>
+    <method selector="connection:didReceiveAuthenticationChallenge:">
+      <arg name="connection"></arg>
+      <arg name="challenge"></arg>
+    </method>
+    <method selector="connection:didReceiveData:">
+      <arg name="connection"></arg>
+      <arg name="data"></arg>
+    </method>
+    <method selector="connection:didReceiveResponse:">
+      <arg name="connection"></arg>
+      <arg name="response"></arg>
+    </method>
+    <method selector="connection:willCacheResponse:">
+      <arg name="connection"></arg>
+      <arg name="cachedResponse"></arg>
+    </method>
+    <method selector="connection:willSendRequest:redirectResponse:">
+      <arg name="connection"></arg>
+      <arg name="request"></arg>
+      <arg name="response"></arg>
+    </method>
+    <method selector="connectionDidFinishLoading:">
+      <arg name="connection"></arg>
+    </method>
+  </informal_protocol>
+  <informal_protocol name="NSURLDownloadDelegate" swt_gen="mixed">
     <method selector="download:decideDestinationWithSuggestedFilename:" swt_gen="true">
       <arg name="download" swt_gen="true"></arg>
       <arg name="filename" swt_gen="true"></arg>
     </method>
-    <method selector="download:didCancelAuthenticationChallenge:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
+    <method selector="download:didCancelAuthenticationChallenge:">
+      <arg name="download"></arg>
+      <arg name="challenge"></arg>
     </method>
-    <method selector="download:didCreateDestination:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="path" swt_gen="true"></arg>
+    <method selector="download:didCreateDestination:">
+      <arg name="download"></arg>
+      <arg name="path"></arg>
     </method>
-    <method selector="download:didFailWithError:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="error" swt_gen="true"></arg>
+    <method selector="download:didFailWithError:">
+      <arg name="download"></arg>
+      <arg name="error"></arg>
     </method>
-    <method selector="download:didReceiveAuthenticationChallenge:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="challenge" swt_gen="true"></arg>
+    <method selector="download:didReceiveAuthenticationChallenge:">
+      <arg name="download"></arg>
+      <arg name="challenge"></arg>
     </method>
-    <method selector="download:didReceiveDataOfLength:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="length" swt_gen="true"></arg>
+    <method selector="download:didReceiveDataOfLength:">
+      <arg name="download"></arg>
+      <arg name="length"></arg>
     </method>
-    <method selector="download:didReceiveResponse:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="response" swt_gen="true"></arg>
+    <method selector="download:didReceiveResponse:">
+      <arg name="download"></arg>
+      <arg name="response"></arg>
     </method>
-    <method selector="download:shouldDecodeSourceDataOfMIMEType:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="encodingType" swt_gen="true"></arg>
+    <method selector="download:shouldDecodeSourceDataOfMIMEType:">
+      <arg name="download"></arg>
+      <arg name="encodingType"></arg>
     </method>
-    <method selector="download:willResumeWithResponse:fromByte:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="response" swt_gen="true"></arg>
-      <arg name="startingByte" swt_gen="true"></arg>
+    <method selector="download:willResumeWithResponse:fromByte:">
+      <arg name="download"></arg>
+      <arg name="response"></arg>
+      <arg name="startingByte"></arg>
     </method>
-    <method selector="download:willSendRequest:redirectResponse:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
-      <arg name="request" swt_gen="true"></arg>
-      <arg name="redirectResponse" swt_gen="true"></arg>
+    <method selector="download:willSendRequest:redirectResponse:">
+      <arg name="download"></arg>
+      <arg name="request"></arg>
+      <arg name="redirectResponse"></arg>
     </method>
-    <method selector="downloadDidBegin:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
+    <method selector="downloadDidBegin:">
+      <arg name="download"></arg>
     </method>
-    <method selector="downloadDidFinish:" swt_gen="true">
-      <arg name="download" swt_gen="true"></arg>
+    <method selector="downloadDidFinish:">
+      <arg name="download"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSXMLParserDelegateEventAdditions" swt_gen="true">
-    <method selector="parser:didEndElement:namespaceURI:qualifiedName:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="elementName" swt_gen="true"></arg>
-      <arg name="namespaceURI" swt_gen="true"></arg>
-      <arg name="qName" swt_gen="true"></arg>
+  <informal_protocol name="NSXMLParserDelegateEventAdditions">
+    <method selector="parser:didEndElement:namespaceURI:qualifiedName:">
+      <arg name="parser"></arg>
+      <arg name="elementName"></arg>
+      <arg name="namespaceURI"></arg>
+      <arg name="qName"></arg>
     </method>
-    <method selector="parser:didEndMappingPrefix:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="prefix" swt_gen="true"></arg>
+    <method selector="parser:didEndMappingPrefix:">
+      <arg name="parser"></arg>
+      <arg name="prefix"></arg>
     </method>
-    <method selector="parser:didStartElement:namespaceURI:qualifiedName:attributes:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="elementName" swt_gen="true"></arg>
-      <arg name="namespaceURI" swt_gen="true"></arg>
-      <arg name="qName" swt_gen="true"></arg>
-      <arg name="attributeDict" swt_gen="true"></arg>
+    <method selector="parser:didStartElement:namespaceURI:qualifiedName:attributes:">
+      <arg name="parser"></arg>
+      <arg name="elementName"></arg>
+      <arg name="namespaceURI"></arg>
+      <arg name="qName"></arg>
+      <arg name="attributeDict"></arg>
     </method>
-    <method selector="parser:didStartMappingPrefix:toURI:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="prefix" swt_gen="true"></arg>
-      <arg name="namespaceURI" swt_gen="true"></arg>
+    <method selector="parser:didStartMappingPrefix:toURI:">
+      <arg name="parser"></arg>
+      <arg name="prefix"></arg>
+      <arg name="namespaceURI"></arg>
     </method>
-    <method selector="parser:foundAttributeDeclarationWithName:forElement:type:defaultValue:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="attributeName" swt_gen="true"></arg>
-      <arg name="elementName" swt_gen="true"></arg>
-      <arg name="type" swt_gen="true"></arg>
-      <arg name="defaultValue" swt_gen="true"></arg>
+    <method selector="parser:foundAttributeDeclarationWithName:forElement:type:defaultValue:">
+      <arg name="parser"></arg>
+      <arg name="attributeName"></arg>
+      <arg name="elementName"></arg>
+      <arg name="type"></arg>
+      <arg name="defaultValue"></arg>
     </method>
-    <method selector="parser:foundCDATA:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="CDATABlock" swt_gen="true"></arg>
+    <method selector="parser:foundCDATA:">
+      <arg name="parser"></arg>
+      <arg name="CDATABlock"></arg>
     </method>
-    <method selector="parser:foundCharacters:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="string" swt_gen="true"></arg>
+    <method selector="parser:foundCharacters:">
+      <arg name="parser"></arg>
+      <arg name="string"></arg>
     </method>
-    <method selector="parser:foundComment:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="comment" swt_gen="true"></arg>
+    <method selector="parser:foundComment:">
+      <arg name="parser"></arg>
+      <arg name="comment"></arg>
     </method>
-    <method selector="parser:foundElementDeclarationWithName:model:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="elementName" swt_gen="true"></arg>
-      <arg name="model" swt_gen="true"></arg>
+    <method selector="parser:foundElementDeclarationWithName:model:">
+      <arg name="parser"></arg>
+      <arg name="elementName"></arg>
+      <arg name="model"></arg>
     </method>
-    <method selector="parser:foundExternalEntityDeclarationWithName:publicID:systemID:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="publicID" swt_gen="true"></arg>
-      <arg name="systemID" swt_gen="true"></arg>
+    <method selector="parser:foundExternalEntityDeclarationWithName:publicID:systemID:">
+      <arg name="parser"></arg>
+      <arg name="name"></arg>
+      <arg name="publicID"></arg>
+      <arg name="systemID"></arg>
     </method>
-    <method selector="parser:foundIgnorableWhitespace:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="whitespaceString" swt_gen="true"></arg>
+    <method selector="parser:foundIgnorableWhitespace:">
+      <arg name="parser"></arg>
+      <arg name="whitespaceString"></arg>
     </method>
-    <method selector="parser:foundInternalEntityDeclarationWithName:value:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="value" swt_gen="true"></arg>
+    <method selector="parser:foundInternalEntityDeclarationWithName:value:">
+      <arg name="parser"></arg>
+      <arg name="name"></arg>
+      <arg name="value"></arg>
     </method>
-    <method selector="parser:foundNotationDeclarationWithName:publicID:systemID:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="publicID" swt_gen="true"></arg>
-      <arg name="systemID" swt_gen="true"></arg>
+    <method selector="parser:foundNotationDeclarationWithName:publicID:systemID:">
+      <arg name="parser"></arg>
+      <arg name="name"></arg>
+      <arg name="publicID"></arg>
+      <arg name="systemID"></arg>
     </method>
-    <method selector="parser:foundProcessingInstructionWithTarget:data:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="target" swt_gen="true"></arg>
-      <arg name="data" swt_gen="true"></arg>
+    <method selector="parser:foundProcessingInstructionWithTarget:data:">
+      <arg name="parser"></arg>
+      <arg name="target"></arg>
+      <arg name="data"></arg>
     </method>
-    <method selector="parser:foundUnparsedEntityDeclarationWithName:publicID:systemID:notationName:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="publicID" swt_gen="true"></arg>
-      <arg name="systemID" swt_gen="true"></arg>
-      <arg name="notationName" swt_gen="true"></arg>
+    <method selector="parser:foundUnparsedEntityDeclarationWithName:publicID:systemID:notationName:">
+      <arg name="parser"></arg>
+      <arg name="name"></arg>
+      <arg name="publicID"></arg>
+      <arg name="systemID"></arg>
+      <arg name="notationName"></arg>
     </method>
-    <method selector="parser:parseErrorOccurred:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="parseError" swt_gen="true"></arg>
+    <method selector="parser:parseErrorOccurred:">
+      <arg name="parser"></arg>
+      <arg name="parseError"></arg>
     </method>
-    <method selector="parser:resolveExternalEntityName:systemID:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="name" swt_gen="true"></arg>
-      <arg name="systemID" swt_gen="true"></arg>
+    <method selector="parser:resolveExternalEntityName:systemID:">
+      <arg name="parser"></arg>
+      <arg name="name"></arg>
+      <arg name="systemID"></arg>
     </method>
-    <method selector="parser:validationErrorOccurred:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
-      <arg name="validationError" swt_gen="true"></arg>
+    <method selector="parser:validationErrorOccurred:">
+      <arg name="parser"></arg>
+      <arg name="validationError"></arg>
     </method>
-    <method selector="parserDidEndDocument:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
+    <method selector="parserDidEndDocument:">
+      <arg name="parser"></arg>
     </method>
-    <method selector="parserDidStartDocument:" swt_gen="true">
-      <arg name="parser" swt_gen="true"></arg>
+    <method selector="parserDidStartDocument:">
+      <arg name="parser"></arg>
     </method>
   </informal_protocol>
 </signatures>
