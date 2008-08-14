@@ -98,7 +98,7 @@ public void generateAll() {
 	generateExtraAttributes();
 	generateMainClass();
 	generateClasses();
-//	generateMetadata();
+	generateMetadata();
 }
 
 String fixDelimiter(String str) {
@@ -141,6 +141,7 @@ void generateMethods(String className, ArrayList methods) {
 			int index = methodName.indexOf(":");
 			if (index != -1) methodName = methodName.substring(0, index);
 		} else {
+			//TODO improve this selector
 			methodName = methodName.replaceAll(":", "_");
 			if (isStatic) methodName = "static_" + methodName;
 		}
@@ -235,7 +236,13 @@ void generateMethods(String className, ArrayList methods) {
 				out("(result) : null);");
 			} else {
 				out("\treturn result != 0 ? new ");
-				out(returnType);
+				NamedNodeMap attributes = returnNode.getAttributes();
+				Node swt_alloc = attributes.getNamedItem("swt_alloc");
+				if (swt_alloc != null && swt_alloc.getNodeValue().equals("true")) {
+					out(className);
+				} else {
+					out(returnType);
+				}
 				out("(result) : null;");
 			}
 			outln();
@@ -529,8 +536,44 @@ void generateMainClass() {
 }
 
 void generateMetadata() {
+	if (!new File(getMetaDataDir()).exists()) {
+		System.out.println("Warning: Meta data output dir does not exist");
+		return;
+	}
+	
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	this.out = new PrintStream(out);
+
+	String fileName = getMetaDataDir() + mainClassName + ".properties";
+	FileInputStream is = null;
+	try {
+		InputStreamReader input = new InputStreamReader(new BufferedInputStream(is = new FileInputStream(fileName)));
+		StringBuffer str = new StringBuffer();
+		char[] buffer = new char[4096];
+		int read;
+		while ((read = input.read(buffer)) != -1) {
+			str.append(buffer, 0, read);
+		}
+		out(str.toString());
+	} catch (IOException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	
 	generateConstantsMetaData();
 	generateSendsMetaData();
+	generateStructsMetaData();
+	
+	try {
+		out.flush();
+		
+		if (out.size() > 0) output(out.toByteArray(), fileName);
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
 }
 
 public Document[] getDocuments() {
@@ -544,11 +587,12 @@ public String[] getXmls() {
 public boolean getEditable(Node node, String attribName) {
 	String name = node.getNodeName();
 	if (name.equals("method")) {
-		if (attribName.equals("swt_vararg_max")) return true;
-		if (attribName.equals("swt_not_static")) return true;
 	} else if (name.equals("class")) {
 		if (attribName.equals("swt_superclass")) return true;
-	} else if (name.equals("retval") || name.equals("arg")) {
+	} else if (name.equals("retval")) {
+		if (attribName.equals("swt_java_type")) return true;
+		if (attribName.equals("swt_alloc")) return true;
+	} else if (name.equals("arg")) {
 		if (attribName.equals("swt_java_type")) return true;
 	}
 	return false;
@@ -598,8 +642,7 @@ public String[] getExtraAttributeNames() {
 		"swt_gen",
 		"swt_superclass",
 		"swt_java_type",
-		"swt_vararg_max",
-		"swt_not_static",
+		"swt_alloc",
 	};
 }
 
@@ -726,9 +769,10 @@ void generateConstantsMetaData() {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("constant".equals(node.getNodeName())) {
+			if ("constant".equals(node.getNodeName()) && getGen(node)) {
 				NamedNodeMap attributes = node.getAttributes();
-				out("OS_");
+				out(getClassName(mainClassName));
+				out("_");
 				out(attributes.getNamedItem("name").getNodeValue());
 				out("=flags=const");
 				outln();
@@ -905,6 +949,73 @@ void generateSelectorsConst() {
 	}
 }
 
+void generateStructsMetaData() {
+	TreeSet set = new TreeSet();
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("struct".equals(node.getNodeName()) && getGen(node)) {
+				set.add(getIDAttribute(node).getNodeValue());
+			}
+		}
+	}
+	String className = getClassName(mainClassName);
+	String packageName = getPackageName(mainClassName).replace('.', '_');
+	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+		String struct = (String) iterator.next();
+		{
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(className);
+			buffer.append("_memmove__IL");
+			buffer.append(packageName);
+			buffer.append("_");
+			buffer.append(struct);
+			buffer.append("_2I");
+			String key = buffer.toString();
+			out(key);
+			out("=");
+			outln();
+			out(key);
+			out("_0=cast=(void *)");
+			outln();
+			out(key);
+			out("_1=cast=(void *)");
+			outln();
+			out(key);
+			out("=");
+			outln();
+			outln();
+		}
+		
+		{
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(className);
+			buffer.append("_memmove__L");
+			buffer.append(packageName);
+			buffer.append("_");
+			buffer.append(struct);
+			buffer.append("_2II");
+			String key = buffer.toString();
+			out(key);
+			out("=");
+			outln();
+			out(key);
+			out("_0=cast=(void *)");
+			outln();
+			out(key);
+			out("_1=cast=(void *)");
+			outln();
+			out(key);
+			out("=");
+			outln();
+			outln();
+		}
+	}
+}
+
 void generateStructNatives() {
 	TreeSet set = new TreeSet();
 	for (int x = 0; x < xmls.length; x++) {
@@ -1005,6 +1116,8 @@ void generateSends() {
 }
 
 void generateSendsMetaData() {
+	String className = getClassName(mainClassName);
+	String packageName = getPackageName(mainClassName).replace('.', '_');
 	HashMap set = new HashMap();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
@@ -1012,45 +1125,46 @@ void generateSendsMetaData() {
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getNodeName())) {
-//				NamedNodeMap attributes = node.getAttributes();
-//				String name = attributes.getNamedItem("name").getNodeValue();
-//				if (getGenerateClass(name)) {
-					NodeList methods = node.getChildNodes();
-					for (int j = 0; j < methods.getLength(); j++) {
-						Node method = methods.item(j);
-						if ("method".equals(method.getNodeName())) {
-							Node returnNode = getReturnNode(method.getChildNodes());
-							StringBuffer buffer = new StringBuffer();
-							if (returnNode != null && isStruct(returnNode)) {
-								buffer.append("OS_objc_1msgSend_1stret__");
-								buffer.append("Lorg_eclipse_swt_internal_cocoa_");
-								buffer.append(getJavaType(returnNode));
-								buffer.append("_2");
-							} else if (returnNode != null && isFloatingPoint(returnNode)) {
-								buffer.append("OS_objc_1msgSend_1fpret__");
-							} else {
-								buffer.append("OS_objc_1msgSend__");
-							}
-							buffer.append("II");
-							NodeList params = method.getChildNodes();
-							for (int k = 0; k < params.getLength(); k++) {
-								Node param = params.item(k);
-								if ("arg".equals(param.getNodeName())) {
-									if (isStruct(param)) {
-										buffer.append("Lorg_eclipse_swt_internal_cocoa_");
-										buffer.append(getJavaType(param));
-										buffer.append("_2");
-									} else {
-										buffer.append(getJNIType(param));
-									}
+			if ("class".equals(node.getNodeName()) && getGen(node)) {
+				NodeList methods = node.getChildNodes();
+				for (int j = 0; j < methods.getLength(); j++) {
+					Node method = methods.item(j);
+					if ("method".equals(method.getNodeName())) {
+						Node returnNode = getReturnNode(method.getChildNodes());
+						StringBuffer buffer = new StringBuffer();
+						buffer.append(className);
+						if (returnNode != null && isStruct(returnNode)) {
+							buffer.append("_objc_1msgSend_1stret__");
+							buffer.append("L");
+							buffer.append(packageName);
+							buffer.append(".");
+							buffer.append(getJavaType(returnNode));
+							buffer.append("_2");
+						} else if (returnNode != null && isFloatingPoint(returnNode)) {
+							buffer.append("_objc_1msgSend_1fpret__");
+						} else {
+							buffer.append("_objc_1msgSend__");
+						}
+						buffer.append("II");
+						NodeList params = method.getChildNodes();
+						for (int k = 0; k < params.getLength(); k++) {
+							Node param = params.item(k);
+							if ("arg".equals(param.getNodeName())) {
+								if (isStruct(param)) {
+									buffer.append("L");
+									buffer.append(packageName);
+									buffer.append("_");
+									buffer.append(getJavaType(param));
+									buffer.append("_2");
+								} else {
+									buffer.append(getJNIType(param));
 								}
 							}
-							String key = buffer.toString();
-							if (set.get(key) == null) set.put(key, method);
 						}
+						String key = buffer.toString();
+						if (set.get(key) == null) set.put(key, method);
 					}
-//				}
+				}
 			}
 		}
 	}
@@ -1101,7 +1215,7 @@ void generateSendsMetaData() {
 
 
 String getSelConst(String sel) {
-	return "sel_" + sel.replaceAll(":", "_1");
+	return "sel_" + sel.replaceAll(":", "_");
 }
 
 void generateClassesConst() {
@@ -1164,10 +1278,20 @@ void generateProtocolsConst() {
 	}
 }
 
+String getMetaDataDir() {
+	return "./JNI Generation/org/eclipse/swt/tools/internal/";
+}
+
 String getPackageName(String className) {
 	int dot = mainClassName.lastIndexOf('.');
 	if (dot == -1) return "";
 	return mainClassName.substring(0, dot);
+}
+
+String getClassName(String className) {
+	int dot = mainClassName.lastIndexOf('.');
+	if (dot == -1) return mainClassName;
+	return mainClassName.substring(dot + 1);
 }
 
 Node getReturnNode(NodeList list) {
@@ -1349,6 +1473,11 @@ void output(byte[] bytes, String fileName) throws IOException {
 }
 
 public static void main(String[] args) {
+	args = new String[]{
+		"./Mac Generation/org/eclipse/swt/tools/internal/AppKitFull.bridgesupport",
+		"./Mac Generation/org/eclipse/swt/tools/internal/FoundationFull.bridgesupport",
+		"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
+	};
 	try {
 		MacGenerator gen = new MacGenerator(args);
 		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");

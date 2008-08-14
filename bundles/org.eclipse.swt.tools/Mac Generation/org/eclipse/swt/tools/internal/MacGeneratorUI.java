@@ -349,10 +349,15 @@ public class MacGeneratorUI {
 	}
 
 	public static void main(String[] args) {
+		args = new String[]{
+			"./Mac Generation/org/eclipse/swt/tools/internal/AppKitFull.bridgesupport",
+			"./Mac Generation/org/eclipse/swt/tools/internal/FoundationFull.bridgesupport",
+			"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
+		};
 		try {
-		MacGeneratorUI ui = new MacGeneratorUI(args);
-		ui.open();
-		ui.run();
+			MacGeneratorUI ui = new MacGeneratorUI(args);
+			ui.open();
+			ui.run();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
