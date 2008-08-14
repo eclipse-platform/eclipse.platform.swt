@@ -1366,7 +1366,7 @@ boolean insertText (int id, int sel, int string) {
 			}
 			int length = str.length ();
 			char[] buffer = new char [length];
-			str.getCharacters_ (buffer);
+			str.getCharacters(buffer);
 			for (int i = 0; i < buffer.length; i++) {
 				Event event = new Event ();
 				if (length == 1) setKeyState (event, SWT.KeyDown, nsEvent);
@@ -1574,7 +1574,7 @@ public boolean isVisible () {
 
 void keyDown (int id, int sel, int theEvent) {
 	if (view.window ().firstResponder ().id == id) {
-		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_1, OS.objc_getProtocol ("NSTextInput")) != 0;
+		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
 		if (!textInput) {
 			NSEvent nsEvent = new NSEvent (theEvent);
 			boolean [] consume = new boolean [1];
@@ -2795,7 +2795,7 @@ public boolean setParent (Composite parent) {
 	NSView topView = topView ();
 	topView.retain();
 	topView.removeFromSuperview();
-	parent.contentView().addSubview_positioned_relativeTo_(topView, OS.NSWindowBelow, null);
+	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 	topView.release();
 	this.parent = parent;
 	return true;
@@ -3004,14 +3004,14 @@ public void setVisible (boolean visible) {
 
 void setZOrder () {
 	NSView topView = topView ();
-	parent.contentView().addSubview_positioned_relativeTo_(topView, OS.NSWindowBelow, null);
+	parent.contentView().addSubview(topView, OS.NSWindowBelow, null);
 }
 
 void setZOrder (Control control, boolean above) {
 	NSView otherView = control == null ? null : control.topView ();
 	view.retain();
 	view.removeFromSuperview();
-	parent.contentView().addSubview_positioned_relativeTo_(view, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
+	parent.contentView().addSubview(view, above ? OS.NSWindowAbove : OS.NSWindowBelow, otherView);
 	view.release();
 }
 

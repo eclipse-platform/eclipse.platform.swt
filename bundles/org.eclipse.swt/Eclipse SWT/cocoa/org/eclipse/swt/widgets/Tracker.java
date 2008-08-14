@@ -725,7 +725,7 @@ public boolean open () {
 	frame.y = minY;
 	frame.width = maxX - minX;
 	frame.height = maxY - minY;
-	window = window.initWithContentRect_styleMask_backing_defer_(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+	window = window.initWithContentRect(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 	window.setOpaque(false);
 	window.setContentView(null);
 	NSGraphicsContext context = window.graphicsContext();

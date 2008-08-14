@@ -32,12 +32,6 @@ public abstract class Transfer {
 
 static String[] TYPES = new String[4];
 
-static String getString (NSString str) {
-	char[] chars = new char[str.length()];
-	str.getCharacters_(chars);
-	return new String(chars);
-}
-
 /**
  * Returns a list of the platform specific data types that can be converted using 
  * this transfer agent.

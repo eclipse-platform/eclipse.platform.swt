@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	static FileTransfer _instance = new FileTransfer();
-	static final String ID_NAME = getString(OS.NSFilenamesPboardType);
+	static final String ID_NAME = OS.NSFilenamesPboardType.getString();
 	static final int ID = registerType(ID_NAME);
 	
 FileTransfer() {}
@@ -95,9 +95,7 @@ public Object nativeToJava(TransferData transferData) {
 	String[] fileNames = new String[count];
 	for (int i=0; i<count; i++) {
 		NSString string = new NSString(array.objectAtIndex(i));
-		char[] chars = new char[string.length()];
-		string.getCharacters_(chars);
-		fileNames[i] = new String(chars);
+		fileNames[i] = string.getString();
 	}
 	return fileNames;
 }

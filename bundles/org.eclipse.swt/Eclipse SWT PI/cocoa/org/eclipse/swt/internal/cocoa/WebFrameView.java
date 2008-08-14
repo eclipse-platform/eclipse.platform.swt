@@ -16,21 +16,12 @@ public WebFrameView() {
 	super();
 }
 
-public WebFrameView(int id) {
+public WebFrameView(int /*long*/ id) {
 	super(id);
 }
 
-public boolean allowsScrolling() {
-	return OS.objc_msgSend(this.id, OS.sel_allowsScrolling) != 0;
-}
-
-public boolean canPrintHeadersAndFooters() {
-	return OS.objc_msgSend(this.id, OS.sel_canPrintHeadersAndFooters) != 0;
-}
-
-public NSView  documentView() {
-	int result = OS.objc_msgSend(this.id, OS.sel_documentView);
-	return result != 0 ? new NSView (result) : null;
+public WebFrameView(id id) {
+	super(id);
 }
 
 public boolean documentViewShouldHandlePrint() {
@@ -42,17 +33,8 @@ public void printDocumentView() {
 }
 
 public NSPrintOperation printOperationWithPrintInfo(NSPrintInfo printInfo) {
-	int result = OS.objc_msgSend(this.id, OS.sel_printOperationWithPrintInfo_1, printInfo != null ? printInfo.id : 0);
+	int result = OS.objc_msgSend(this.id, OS.sel_printOperationWithPrintInfo_, printInfo != null ? printInfo.id : 0);
 	return result != 0 ? new NSPrintOperation(result) : null;
-}
-
-public void setAllowsScrolling(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setAllowsScrolling_1, flag);
-}
-
-public WebFrame webFrame() {
-	int result = OS.objc_msgSend(this.id, OS.sel_webFrame);
-	return result != 0 ? new WebFrame(result) : null;
 }
 
 }

@@ -176,26 +176,26 @@ NSAttributedString createString (int index) {
 	if (foreground == null) foreground = parent.foreground;
 	if (foreground != null) {
 		NSColor color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName ());
+		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
 	Font font = cellFont != null ? cellFont [index] : null;
 	if (font == null) font = this.font;
 	if (font == null) font = parent.font;
 	if (font != null) {
-		dict.setObject (font.handle, OS.NSFontAttributeName ());
+		dict.setObject (font.handle, OS.NSFontAttributeName);
 	}
 	Color background = cellBackground != null ? cellBackground [index] : null;
 	if (background == null) background = this.background;
 	if (background != null) {
 		NSColor color = NSColor.colorWithDeviceRed(background.handle [0], background.handle [1], background.handle [2], 1);
-		dict.setObject(color, OS.NSBackgroundColorAttributeName ());
+		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
 	String text = getText (index);
 	int length = text.length ();
 	char[] chars = new char [length];
 	text.getChars(0, length, chars, 0);
 	NSString str = NSString.stringWithCharacters (chars, length);
-	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString_attributes_ (str, dict);
+	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (str, dict);
 	attribStr.autorelease ();
 	return attribStr;
 }
@@ -263,9 +263,7 @@ public Rectangle getBounds () {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	NSTableView tableView = (NSTableView) parent.view;
 	NSRect rect = tableView.rectOfRow (parent.indexOf (this));
-	rect = tableView.convertRect_toView_ (rect, parent.scrollView);
-	Rectangle result = new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
-	return result;
+	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 /**
@@ -286,9 +284,7 @@ public Rectangle getBounds (int index) {
 	NSTableView tableView = (NSTableView) parent.view;
 	if ((parent.style & SWT.CHECK) != 0) index ++;
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	rect = tableView.convertRect_toView_ (rect, parent.scrollView);
-	Rectangle result = new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
-	return result;
+	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 /**
@@ -456,28 +452,13 @@ public Image getImage (int index) {
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-//	parent.checkItems (true);
-//	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
-//	Rect rect = new Rect();
-//	int itemIndex = parent.indexOf (this);
-//	int id = itemIndex + 1;
-//	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
-//	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
-//		return new Rectangle (0, 0, 0, 0);
-//	}
-//	int x = rect.left, y = rect.top;
-//	int width = 0;
-//	if (index == 0 && image != null) {
-//		Rectangle bounds = image.getBounds ();
-//		width += bounds.width;
-//	}
-//	if (index != 0 && images != null && images[index] != null) {
-//		Rectangle bounds = images [index].getBounds ();
-//		width += bounds.width;
-//	}
-//	int height = rect.bottom - rect.top + 1;
-//	return new Rectangle (x, y, width, height);
-	return null;
+	NSTableView tableView = (NSTableView) parent.view;
+	if ((parent.style & SWT.CHECK) != 0) index ++;
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	//TODO is this right?
+	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
+	rect.width = image != null ? image.getBounds().width : 0; 
+	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 /**
@@ -568,44 +549,17 @@ public String getText (int index) {
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-//	parent.checkItems (true);
-//	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
-//	Rect rect = new Rect();
-//	int itemIndex = parent.indexOf (this);
-//	int id = itemIndex + 1;
-//	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
-//	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
-//		return new Rectangle (0, 0, 0, 0);
-//	}
-//	int imageWidth = 0;
-//	int margin = parent.getInsetWidth () / 2;
-//	Image image = getImage (index);
-//	if (image != null) {
-//		Rectangle bounds = image.getBounds ();
-//		imageWidth = bounds.width + parent.getGap ();
-//	}
-//	int x, y, width, height;
-//	if (OS.VERSION >= 0x1040) {
-//		if (parent.getLinesVisible ()) {
-//			rect.left += Table.GRID_WIDTH;
-//			rect.top += Table.GRID_WIDTH;
-//		}
-//		x = rect.left + imageWidth + margin;
-//		y = rect.top;
-//		width = Math.max (0, rect.right - rect.left - imageWidth - margin * 2);
-//		height = rect.bottom - rect.top;
-//	} else {
-//		Rect rect2 = new Rect();
-//		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
-//			return new Rectangle (0, 0, 0, 0);
-//		}
-//		x = rect2.left + imageWidth + margin;
-//		y = rect2.top;
-//		width = Math.max (0, rect.right - rect2.left + 1 - imageWidth - margin * 2);
-//		height = rect2.bottom - rect2.top + 1;
-//	}
-//	return new Rectangle (x, y, width, height);
-	return null;
+	NSTableView tableView = (NSTableView) parent.view;
+	if ((parent.style & SWT.CHECK) != 0) index ++;
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	//TODO is this right?
+	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
+	if (image != null) {
+		int imageWidth = image.getBounds().width;
+		rect.x += imageWidth;
+		rect.width -= imageWidth;
+	}
+	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 void redraw () {

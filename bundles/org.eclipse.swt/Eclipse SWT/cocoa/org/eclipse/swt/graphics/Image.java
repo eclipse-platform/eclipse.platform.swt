@@ -232,7 +232,7 @@ public Image(Device device, Image srcImage, int flag) {
 	handle = (NSImage)new NSImage().alloc();
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.samplesPerPixel() == 4, srcRep.isPlanar(), new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, srcRep.bytesPerRow(), srcRep.bitsPerPixel());
+	rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.samplesPerPixel() == 4, srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, srcRep.bytesPerRow(), srcRep.bitsPerPixel());
 	handle.addRepresentation(rep);
 	
 	int data = rep.bitmapData();
@@ -678,7 +678,7 @@ public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	image.handle = nsImage;
 	NSImageRep rep = nsImage.bestRepresentationForDevice(null);
 	rep.retain();
-	if (rep.isKindOfClass(NSBitmapImageRep.static_class())) { 
+	if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
 		image.imageRep = new NSBitmapImageRep(rep.id);
 	}
 	return image;
@@ -712,7 +712,7 @@ void init(int width, int height) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(0, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
 //	rep.release();
@@ -821,8 +821,7 @@ void init(ImageData image) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = imageRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(
-			0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
 //	rep.release();
@@ -854,8 +853,7 @@ public int internal_new_GC (GCData data) {
 		if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
 		data.bitmapDataAddress = OS.malloc(4);
 		OS.memmove(data.bitmapDataAddress, new int[] {bitmapData}, 4);
-		rep = rep.initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_(
-				data.bitmapDataAddress, width, height, 8, 3, false, false, new NSString(OS.NSDeviceRGBColorSpace()), OS.NSAlphaFirstBitmapFormat , bpr, 32);
+		rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
 		rep.autorelease();
 	}
 	handle.setCacheMode(OS.NSImageCacheNever);

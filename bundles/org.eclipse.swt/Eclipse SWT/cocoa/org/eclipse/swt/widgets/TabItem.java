@@ -136,9 +136,9 @@ void destroyWidget () {
 public Rectangle getBounds() {
 	checkWidget();
 	Rectangle result = new Rectangle (0, 0, 0, 0);
-	if (nsItem.respondsToSelector (OS.sel_accessibilityAttributeValue_1)) {
-		int posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_1, OS.NSAccessibilityPositionAttribute ());
-		int sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_1, OS.NSAccessibilitySizeAttribute ());		
+	if (nsItem.respondsToSelector (OS.sel_accessibilityAttributeValue_)) {
+		int posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
+		int sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());		
 		NSValue val = new NSValue (posValue);
 		NSPoint pt = val.pointValue ();
 		NSWindow window = parent.view.window ();

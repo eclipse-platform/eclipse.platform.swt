@@ -140,7 +140,7 @@ void createItem (ToolItem item, int index) {
 		items = newItems;
 	}
 	item.createWidget();
-	view.addSubview_(item.view);
+	view.addSubview(item.view);
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	relayout ();

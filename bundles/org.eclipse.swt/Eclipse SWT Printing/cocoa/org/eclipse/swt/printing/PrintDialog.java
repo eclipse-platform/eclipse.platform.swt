@@ -126,36 +126,34 @@ public PrinterData getPrinterData() {
 public PrinterData open() {
 	PrinterData data = null;
 	NSPrintPanel panel = NSPrintPanel.printPanel();
-	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy().id);
-	NSDictionary dict = printInfo.dictionary();	
+	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy());
+	NSMutableDictionary dict = printInfo.dictionary();	
 	if (printToFile) {
-		dict.setValue_forKey_(new NSString(OS.NSPrintSaveJob()), new NSString(OS.NSPrintJobDisposition()));
+		dict.setValue(OS.NSPrintSaveJob, OS.NSPrintJobDisposition);
 	}
 	//TODO - setting range not work. why?
-	dict.setValue_forKey_(NSNumber.numberWithBool(scope == PrinterData.ALL_PAGES), new NSString(OS.NSPrintAllPages()));
+	dict.setValue(NSNumber.numberWithBool(scope == PrinterData.ALL_PAGES), OS.NSPrintAllPages);
 	if (scope == PrinterData.PAGE_RANGE) {
-		dict.setValue_forKey_(NSNumber.numberWithInt(startPage), new NSString(OS.NSPrintFirstPage()));
-		dict.setValue_forKey_(NSNumber.numberWithInt(endPage), new NSString(OS.NSPrintLastPage()));
+		dict.setValue(NSNumber.numberWithInt(startPage), OS.NSPrintFirstPage);
+		dict.setValue(NSNumber.numberWithInt(endPage), OS.NSPrintLastPage);
 	}
 	panel.setOptions(OS.NSPrintPanelShowsPageSetupAccessory | panel.options());
 	if (panel.runModalWithPrintInfo(printInfo) != OS.NSCancelButton) {
 		NSPrinter printer = printInfo.printer();
 		NSString str = printer.name();
-		char[] buffer = new char[str.length()];
-		str.getCharacters_(buffer);
-		data = new PrinterData(Printer.DRIVER, new String(buffer));
-		data.printToFile = printInfo.jobDisposition().isEqual(new NSString(OS.NSPrintSaveJob()));
+		data = new PrinterData(Printer.DRIVER, str.getString());
+		data.printToFile = printInfo.jobDisposition().isEqual(OS.NSPrintSaveJob);
 		if (data.printToFile) {
-			NSString filename = new NSString(dict.objectForKey(new NSString(OS.NSPrintSavePath())).id);
+			NSString filename = new NSString(dict.objectForKey(OS.NSPrintSavePath));
 			data.fileName = filename.getString();
 		}
-		data.scope = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintAllPages())).id).intValue() != 0 ? PrinterData.ALL_PAGES : PrinterData.PAGE_RANGE;
+		data.scope = new NSNumber(dict.objectForKey(OS.NSPrintAllPages)).intValue() != 0 ? PrinterData.ALL_PAGES : PrinterData.PAGE_RANGE;
 		if (data.scope == PrinterData.PAGE_RANGE) {
-			data.startPage = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintFirstPage())).id).intValue();
-			data.endPage = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintLastPage())).id).intValue();
+			data.startPage = new NSNumber(dict.objectForKey(OS.NSPrintFirstPage)).intValue();
+			data.endPage = new NSNumber(dict.objectForKey(OS.NSPrintLastPage)).intValue();
 		}
-		data.collate = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintMustCollate())).id).intValue() != 0;
-		data.copyCount = new NSNumber(dict.objectForKey(new NSString(OS.NSPrintCopies())).id).intValue();
+		data.collate = new NSNumber(dict.objectForKey(OS.NSPrintMustCollate)).intValue() != 0;
+		data.copyCount = new NSNumber(dict.objectForKey(OS.NSPrintCopies)).intValue();
 		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
 		data.otherData = new byte[nsData.length()];
 		OS.memmove(data.otherData, nsData.bytes(), data.otherData.length);

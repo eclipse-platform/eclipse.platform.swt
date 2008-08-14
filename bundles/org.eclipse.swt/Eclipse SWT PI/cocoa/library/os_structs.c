@@ -172,58 +172,6 @@ void setNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTra
 }
 #endif
 
-#ifndef NO_NSDecimal
-typedef struct NSDecimal_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID _exponent, _length, _isNegative, _isCompact, _reserved, _mantissa;
-} NSDecimal_FID_CACHE;
-
-NSDecimal_FID_CACHE NSDecimalFc;
-
-void cacheNSDecimalFields(JNIEnv *env, jobject lpObject)
-{
-	if (NSDecimalFc.cached) return;
-	NSDecimalFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSDecimalFc._exponent = (*env)->GetFieldID(env, NSDecimalFc.clazz, "_exponent", "I");
-	NSDecimalFc._length = (*env)->GetFieldID(env, NSDecimalFc.clazz, "_length", "I");
-	NSDecimalFc._isNegative = (*env)->GetFieldID(env, NSDecimalFc.clazz, "_isNegative", "I");
-	NSDecimalFc._isCompact = (*env)->GetFieldID(env, NSDecimalFc.clazz, "_isCompact", "I");
-	NSDecimalFc._reserved = (*env)->GetFieldID(env, NSDecimalFc.clazz, "_reserved", "I");
-	NSDecimalFc._mantissa = (*env)->GetFieldID(env, NSDecimalFc.clazz, "_mantissa", "[S");
-	NSDecimalFc.cached = 1;
-}
-
-NSDecimal *getNSDecimalFields(JNIEnv *env, jobject lpObject, NSDecimal *lpStruct)
-{
-	if (!NSDecimalFc.cached) cacheNSDecimalFields(env, lpObject);
-	lpStruct->_exponent = (*env)->GetIntField(env, lpObject, NSDecimalFc._exponent);
-	lpStruct->_length = (*env)->GetIntField(env, lpObject, NSDecimalFc._length);
-	lpStruct->_isNegative = (*env)->GetIntField(env, lpObject, NSDecimalFc._isNegative);
-	lpStruct->_isCompact = (*env)->GetIntField(env, lpObject, NSDecimalFc._isCompact);
-	lpStruct->_reserved = (*env)->GetIntField(env, lpObject, NSDecimalFc._reserved);
-	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, NSDecimalFc._mantissa);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->_mantissa) / 2, (jshort *)lpStruct->_mantissa);
-	}
-	return lpStruct;
-}
-
-void setNSDecimalFields(JNIEnv *env, jobject lpObject, NSDecimal *lpStruct)
-{
-	if (!NSDecimalFc.cached) cacheNSDecimalFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NSDecimalFc._exponent, (jint)lpStruct->_exponent);
-	(*env)->SetIntField(env, lpObject, NSDecimalFc._length, (jint)lpStruct->_length);
-	(*env)->SetIntField(env, lpObject, NSDecimalFc._isNegative, (jint)lpStruct->_isNegative);
-	(*env)->SetIntField(env, lpObject, NSDecimalFc._isCompact, (jint)lpStruct->_isCompact);
-	(*env)->SetIntField(env, lpObject, NSDecimalFc._reserved, (jint)lpStruct->_reserved);
-	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, NSDecimalFc._mantissa);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->_mantissa) / 2, (jshort *)lpStruct->_mantissa);
-	}
-}
-#endif
-
 #ifndef NO_NSPoint
 typedef struct NSPoint_FID_CACHE {
 	int cached;
@@ -363,68 +311,6 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct)
 	if (!NSSizeFc.cached) cacheNSSizeFields(env, lpObject);
 	(*env)->SetFloatField(env, lpObject, NSSizeFc.width, (jfloat)lpStruct->width);
 	(*env)->SetFloatField(env, lpObject, NSSizeFc.height, (jfloat)lpStruct->height);
-}
-#endif
-
-#ifndef NO_NSSwappedDouble
-typedef struct NSSwappedDouble_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID v;
-} NSSwappedDouble_FID_CACHE;
-
-NSSwappedDouble_FID_CACHE NSSwappedDoubleFc;
-
-void cacheNSSwappedDoubleFields(JNIEnv *env, jobject lpObject)
-{
-	if (NSSwappedDoubleFc.cached) return;
-	NSSwappedDoubleFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSSwappedDoubleFc.v = (*env)->GetFieldID(env, NSSwappedDoubleFc.clazz, "v", "J");
-	NSSwappedDoubleFc.cached = 1;
-}
-
-NSSwappedDouble *getNSSwappedDoubleFields(JNIEnv *env, jobject lpObject, NSSwappedDouble *lpStruct)
-{
-	if (!NSSwappedDoubleFc.cached) cacheNSSwappedDoubleFields(env, lpObject);
-	lpStruct->v = (*env)->GetLongField(env, lpObject, NSSwappedDoubleFc.v);
-	return lpStruct;
-}
-
-void setNSSwappedDoubleFields(JNIEnv *env, jobject lpObject, NSSwappedDouble *lpStruct)
-{
-	if (!NSSwappedDoubleFc.cached) cacheNSSwappedDoubleFields(env, lpObject);
-	(*env)->SetLongField(env, lpObject, NSSwappedDoubleFc.v, (jlong)lpStruct->v);
-}
-#endif
-
-#ifndef NO_NSSwappedFloat
-typedef struct NSSwappedFloat_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID v;
-} NSSwappedFloat_FID_CACHE;
-
-NSSwappedFloat_FID_CACHE NSSwappedFloatFc;
-
-void cacheNSSwappedFloatFields(JNIEnv *env, jobject lpObject)
-{
-	if (NSSwappedFloatFc.cached) return;
-	NSSwappedFloatFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSSwappedFloatFc.v = (*env)->GetFieldID(env, NSSwappedFloatFc.clazz, "v", "I");
-	NSSwappedFloatFc.cached = 1;
-}
-
-NSSwappedFloat *getNSSwappedFloatFields(JNIEnv *env, jobject lpObject, NSSwappedFloat *lpStruct)
-{
-	if (!NSSwappedFloatFc.cached) cacheNSSwappedFloatFields(env, lpObject);
-	lpStruct->v = (*env)->GetIntField(env, lpObject, NSSwappedFloatFc.v);
-	return lpStruct;
-}
-
-void setNSSwappedFloatFields(JNIEnv *env, jobject lpObject, NSSwappedFloat *lpStruct)
-{
-	if (!NSSwappedFloatFc.cached) cacheNSSwappedFloatFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NSSwappedFloatFc.v, (jint)lpStruct->v);
 }
 #endif
 

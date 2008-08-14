@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class HTMLTransfer extends ByteArrayTransfer {
 
 	static HTMLTransfer _instance = new HTMLTransfer();
-	static final String HTML = getString(OS.NSStringPboardType);
+	static final String HTML = OS.NSStringPboardType.getString();
 	static final int HTMLID = registerType(HTML);
 
 HTMLTransfer() {}
@@ -73,9 +73,7 @@ public void javaToNative (Object object, TransferData transferData){
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSString string = (NSString) transferData.data;
-	char[] chars = new char[string.length()];
-	string.getCharacters_(chars);
-	return new String(chars);
+	return string.getString();
 }
 
 protected int[] getTypeIds() {

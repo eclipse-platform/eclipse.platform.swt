@@ -517,9 +517,7 @@ public String getItem (int index) {
 		str = new NSString(((NSComboBox)view).itemObjectValueAtIndex(index));
 	}
 	if (str == null) error(SWT.ERROR_CANNOT_GET_ITEM);
-	char[] buffer = new char[str.length()];
-	str.getCharacters_(buffer);
-	return new String (buffer);
+	return str.getString();
 }
 
 /**
@@ -689,7 +687,7 @@ char [] getText (int start, int end) {
 		range.length = end - start;
 	}
 	char [] buffer= new char [range.length];
-	str.getCharacters_range_(buffer, range);
+	str.getCharacters(buffer, range);
 	return buffer;
 }
 

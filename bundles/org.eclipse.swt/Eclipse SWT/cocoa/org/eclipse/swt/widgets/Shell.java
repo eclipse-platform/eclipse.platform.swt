@@ -460,7 +460,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.y = trim.y;
 	rect.width = trim.width;
 	rect.height = trim.height;
-	rect = NSWindow.static_frameRectForContentRect_styleMask_(rect, window.styleMask());
+	rect = window.frameRectForContentRect(rect);
 	return new Rectangle ((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
@@ -484,7 +484,7 @@ void createHandle () {
 		NSScreen primaryScreen = new NSScreen(NSScreen.screens().objectAtIndex(0));
 		if (parent != null) screen = parent.getShell().window.screen();
 		if (screen == null) screen = primaryScreen;
-		window = window.initWithContentRect_styleMask_backing_defer_screen_(new NSRect(), styleMask, OS.NSBackingStoreBuffered, false, screen);
+		window = window.initWithContentRect(new NSRect(), styleMask, OS.NSBackingStoreBuffered, false, screen);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			window.setHasShadow (true);
 		}
@@ -496,7 +496,7 @@ void createHandle () {
 		frame.y = primaryFrame.height - ((primaryFrame.height - (frame.y + frame.height)) + height);
 		frame.width = width;
 		frame.height = height;
-		window.setFrame_display_(frame, false);
+		window.setFrame(frame, false);
 		if ((style & SWT.ON_TOP) != 0) {
 			window.setLevel(OS.NSStatusWindowLevel);
 		}
@@ -641,7 +641,7 @@ public Rectangle getBounds () {
 public Rectangle getClientArea () {
 	checkWidget();
 	//TODO why super implementation fails
-	NSRect rect = window.contentRectForFrameRect_(window.frame());
+	NSRect rect = window.contentRectForFrameRect(window.frame());
 	int width = (int)rect.width, height = (int)rect.height;
 	if (scrollView != null) {
 		NSSize size = new NSSize();
@@ -1068,7 +1068,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	frame.y = screenHeight - (int)(y + height);
 	frame.width = width;
 	frame.height = height;
-	window.setFrame_display_(frame, false);
+	window.setFrame(frame, false);
 }
 
 public void setEnabled (boolean enabled) {
@@ -1317,14 +1317,14 @@ int regionToRects(int message, int rgn, int r, int path) {
 		OS.memmove(rect, r, rect.length * 2);
 		pt.x = rect[1];
 		pt.y = rect[0];
-		OS.objc_msgSend(path, OS.sel_moveToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_moveToPoint_, pt);
 		pt.x = rect[3];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
 		pt.x = rect[3];
 		pt.y = rect[2];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
 		pt.x = rect[1];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
 		OS.objc_msgSend(path, OS.sel_closePath);
 	}
 	return 0;

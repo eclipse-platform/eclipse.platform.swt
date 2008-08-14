@@ -130,13 +130,13 @@ public RGB open() {
 	panel.setDelegate(delegate);
 	rgb = null;
 	panel.orderFront(null);
-	NSApplication.sharedApplication().runModalForWindow_(panel);
+	NSApplication.sharedApplication().runModalForWindow(panel);
 	panel.setDelegate(null);
 	delegate.release();
 	OS.DeleteGlobalRef(jniRef);
 	NSColor color = panel.color();
 	if (color != null) {
-		color = color.colorUsingColorSpaceName_(NSString.stringWith("NSCalibratedRGBColorSpace"));
+		color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
 		rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
 	}
 	return rgb;

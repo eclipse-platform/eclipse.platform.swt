@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	static RTFTransfer _instance = new RTFTransfer();
-	static final String RTF = getString(OS.NSRTFPboardType);
+	static final String RTF = OS.NSRTFPboardType.getString();
 	static final int RTFID = registerType(RTF);
 
 RTFTransfer() {}
@@ -73,9 +73,7 @@ public void javaToNative (Object object, TransferData transferData){
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSString string = (NSString) transferData.data;
-	char[] chars = new char[string.length()];
-	string.getCharacters_(chars);
-	return new String(chars);
+	return string.getString();
 }
 
 protected int[] getTypeIds() {

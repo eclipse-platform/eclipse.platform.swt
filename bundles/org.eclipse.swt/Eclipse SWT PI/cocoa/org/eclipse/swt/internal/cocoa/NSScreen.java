@@ -16,13 +16,12 @@ public NSScreen() {
 	super();
 }
 
-public NSScreen(int id) {
+public NSScreen(int /*long*/ id) {
 	super(id);
 }
 
-public static NSScreen deepestScreen() {
-	int result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_deepestScreen);
-	return result != 0 ? new NSScreen(result) : null;
+public NSScreen(id id) {
+	super(id);
 }
 
 public int depth() {
@@ -48,14 +47,6 @@ public static NSScreen mainScreen() {
 public static NSArray screens() {
 	int result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_screens);
 	return result != 0 ? new NSArray(result) : null;
-}
-
-public int supportedWindowDepths() {
-	return OS.objc_msgSend(this.id, OS.sel_supportedWindowDepths);
-}
-
-public float userSpaceScaleFactor() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
 }
 
 public NSRect visibleFrame() {

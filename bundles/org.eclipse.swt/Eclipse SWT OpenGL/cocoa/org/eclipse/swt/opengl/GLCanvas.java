@@ -115,7 +115,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	glView.initWithFrame(parent.view.bounds(), pixelFormat);
 	glView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-	parent.view.addSubview_(glView);
+	parent.view.addSubview(glView);
 
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {

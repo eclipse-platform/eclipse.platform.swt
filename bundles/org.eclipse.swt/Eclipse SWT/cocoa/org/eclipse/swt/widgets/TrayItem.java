@@ -440,8 +440,8 @@ void rightMouseDown(int id, int sel, int theEvent) {
 	showMenu();
 }
 
-void drawRect(int id, NSRect rect) {
+void drawRect(int id, int sel, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
-	super.drawRect(id, rect);
+	super.drawRect(id, sel, rect);
 }
 }

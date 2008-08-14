@@ -212,7 +212,7 @@ void drawInteriorFrame_inView (int cellFrame, int view) {
 	NSAttributedString attrString = null;
 	if (displayText != null) {
 		NSString string = NSString.stringWith (displayText);
-		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString_attributes_ (string, null);
+		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, null);
 		stringSize = attrString.size ();
 		contentWidth += stringSize.width;
 		if (image != null) contentWidth += MARGIN; /* space between image and text */

@@ -217,7 +217,7 @@ void _setVisible (boolean visible) {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
 		NSEvent nsEvent = NSEvent.otherEventWithType(OS.NSApplicationDefined, location, 0, 0.0, window.windowNumber(), window.graphicsContext(), (short)0, 0, 0);
-		NSMenu.static_popUpContextMenu_withEvent_forView_ (nsMenu, nsEvent, shell.view);
+		NSMenu.popUpContextMenu(nsMenu, nsEvent, shell.view);
 	} else {
 		nsMenu.cancelTracking ();
 	}
@@ -659,7 +659,7 @@ void menuNeedsUpdate(int menu) {
 	sendEvent (SWT.Show);
 }
 
-void menuWillClose(int menu) {
+void menuDidClose(int menu) {
 	sendEvent (SWT.Hide);
 }
 

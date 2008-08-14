@@ -196,7 +196,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	NSPoint center = new NSPoint();
 	float sAngle = -startAngle;
 	float eAngle = -(startAngle + arcAngle);
-	path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_(center, 1, sAngle,  eAngle, arcAngle>0);
+	path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 	path.transformUsingAffineTransform(transform);
 	handle.appendBezierPath(path);
 }
@@ -266,7 +266,7 @@ public void addString(String string, float x, float y, Font font) {
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSString str = NSString.stringWith(string);
 	NSTextStorage textStorage = ((NSTextStorage)new NSTextStorage().alloc());
-	textStorage.initWithString_(str);
+	textStorage.initWithString(str);
 	NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 	NSTextContainer textContainer = (NSTextContainer)new NSTextContainer().alloc();
 	NSSize size = new NSSize();
@@ -278,7 +278,7 @@ public void addString(String string, float x, float y, Font font) {
 	NSRange range = new NSRange();
 	range.length = str.length();
 	textStorage.beginEditing();
-	textStorage.addAttribute(OS.NSFontAttributeName(), font.handle, range);
+	textStorage.addAttribute(OS.NSFontAttributeName, font.handle, range);
 	textStorage.endEditing();
 	range = layoutManager.glyphRangeForTextContainer(textContainer);
 	if (range.length != 0) {
@@ -454,7 +454,7 @@ public PathData getPathData() {
 	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	NSPoint pt = new NSPoint();
 	for (int i = 0; i < count; i++) {
-		int element = handle.elementAtIndex_associatedPoints_(i, points);
+		int element = handle.elementAtIndex(i, points);
 		switch (element) {
 			case OS.NSMoveToBezierPathElement:
 				types[typeCount++] = SWT.PATH_MOVE_TO;

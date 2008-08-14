@@ -1229,21 +1229,21 @@ int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, in
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	if (foreground != null) {
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName());
+		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
 	if (font != null) {
-		dict.setObject(font.handle, OS.NSFontAttributeName());
+		dict.setObject(font.handle, OS.NSFontAttributeName);
 	}
 	if (background != null) {
 		NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
-		dict.setObject(color, OS.NSBackgroundColorAttributeName());
+		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
 	String text = items[rowIndex];
 	int length = text.length();
 	char[] chars = new char[length];
 	text.getChars(0, length, chars, 0);
 	NSString str = NSString.stringWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
 	attribStr.autorelease();
 	return attribStr.id;
 }

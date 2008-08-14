@@ -16,17 +16,12 @@ public WebDataSource() {
 	super();
 }
 
-public WebDataSource(int id) {
+public WebDataSource(int /*long*/ id) {
 	super(id);
 }
 
-public NSData data() {
-	int result = OS.objc_msgSend(this.id, OS.sel_data);
-	return result != 0 ? new NSData(result) : null;
-}
-
-public boolean isLoading() {
-	return OS.objc_msgSend(this.id, OS.sel_isLoading) != 0;
+public WebDataSource(id id) {
+	super(id);
 }
 
 public NSString pageTitle() {
@@ -42,16 +37,6 @@ public WebDocumentRepresentation representation() {
 public NSMutableURLRequest request() {
 	int result = OS.objc_msgSend(this.id, OS.sel_request);
 	return result != 0 ? new NSMutableURLRequest(result) : null;
-}
-
-public NSURLResponse response() {
-	int result = OS.objc_msgSend(this.id, OS.sel_response);
-	return result != 0 ? new NSURLResponse(result) : null;
-}
-
-public NSString textEncodingName() {
-	int result = OS.objc_msgSend(this.id, OS.sel_textEncodingName);
-	return result != 0 ? new NSString(result) : null;
 }
 
 public WebFrame webFrame() {

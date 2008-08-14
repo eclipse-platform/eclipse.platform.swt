@@ -218,7 +218,7 @@ void createHandle () {
 	} else {
 		NSView widget = (NSView)new SWTView().alloc();
 		widget.initWithFrame(new NSRect());
-		parent.contentView().addSubview_(widget);
+		parent.contentView().addSubview(widget);
 		button = (NSButton)new SWTButton().alloc();
 		button.initWithFrame(new NSRect());
 		button.setBordered(false);
@@ -230,7 +230,7 @@ void createHandle () {
 		NSString emptyStr = NSString.stringWith("");
 		button.setTitle(emptyStr);
 		button.setEnabled(parent.getEnabled());
-		widget.addSubview_(button);
+		widget.addSubview(button);
 		if ((style & SWT.DROP_DOWN) != 0) {
 			arrow = (NSButton)new SWTButton().alloc();
 			arrow.initWithFrame(new NSRect());
@@ -239,7 +239,7 @@ void createHandle () {
 			arrow.setTarget(arrow);
 			arrow.setTitle(emptyStr);
 			arrow.setEnabled(parent.getEnabled());
-			widget.addSubview_(arrow);
+			widget.addSubview(arrow);
 		}
 		view = widget;
 	}
@@ -250,11 +250,11 @@ NSAttributedString createString() {
 	Color foreground = parent.foreground;
 	if (foreground != null) {
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-		dict.setObject(color, OS.NSForegroundColorAttributeName());
+		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
 	Font font = parent.font;
 	if (font != null) {
-		dict.setObject(font.handle, OS.NSFontAttributeName());
+		dict.setObject(font.handle, OS.NSFontAttributeName);
 	}
 	char [] chars = new char [text.length ()];
 	text.getChars (0, chars.length, chars, 0);
@@ -263,10 +263,10 @@ NSAttributedString createString() {
 	NSMutableParagraphStyle pStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	pStyle.autorelease();
 	pStyle.setAlignment(OS.NSCenterTextAlignment);
-	dict.setObject(pStyle, OS.NSParagraphStyleAttributeName());
+	dict.setObject(pStyle, OS.NSParagraphStyleAttributeName);
 	
 	NSString str = NSString.stringWithCharacters(chars, length);
-	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
 	attribStr.autorelease();
 	return attribStr;
 }

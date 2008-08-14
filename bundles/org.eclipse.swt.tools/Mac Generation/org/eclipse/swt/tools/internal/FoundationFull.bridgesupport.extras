@@ -2131,7 +2131,7 @@
     </method>
     <method class_method="true" selector="arrayWithObject:" swt_gen="true">
       <arg name="anObject" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_java_type="NSArray"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSArray"></retval>
     </method>
     <method class_method="true" selector="arrayWithObjects:">
       <arg name="arrayWithObjects"></arg>
@@ -3723,7 +3723,7 @@
     </method>
     <method class_method="true" selector="dateWithTimeIntervalSinceNow:" swt_gen="true">
       <arg name="secs" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_java_type="NSDate"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSDate"></retval>
     </method>
     <method class_method="true" selector="dateWithTimeIntervalSinceReferenceDate:">
       <arg name="secs"></arg>
@@ -3743,7 +3743,7 @@
       <retval></retval>
     </method>
     <method class_method="true" selector="distantFuture" swt_gen="true">
-      <retval swt_gen="true" swt_java_type="NSDate"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSDate"></retval>
     </method>
     <method class_method="true" selector="distantPast">
       <retval></retval>
@@ -4344,7 +4344,7 @@
     <method class_method="true" selector="dictionaryWithObject:forKey:" swt_gen="true">
       <arg name="object" swt_gen="true"></arg>
       <arg name="key" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_java_type="NSDictionary"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSDictionary"></retval>
     </method>
     <method class_method="true" selector="dictionaryWithObjects:forKeys:">
       <arg name="objects"></arg>
@@ -10149,7 +10149,7 @@
       <retval></retval>
     </method>
     <method class_method="true" selector="set" swt_gen="true">
-      <retval swt_gen="true" swt_java_type="NSSet"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSSet"></retval>
     </method>
     <method selector="setByAddingObject:">
       <arg name="anObject"></arg>
@@ -10919,7 +10919,7 @@
     <method class_method="true" selector="stringWithCharacters:length:" swt_gen="true">
       <arg name="characters" swt_gen="true" swt_java_type="char[]"></arg>
       <arg name="length" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_java_type="NSString"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSString"></retval>
     </method>
     <method class_method="true" selector="stringWithContentsOfFile:">
       <arg name="path"></arg>
@@ -11921,7 +11921,7 @@
     </method>
     <method class_method="true" selector="requestWithURL:" swt_gen="true">
       <arg name="URL" swt_gen="true"></arg>
-      <retval swt_gen="true" swt_java_type="NSURLRequest"></retval>
+      <retval swt_alloc="true" swt_gen="true" swt_java_type="NSURLRequest"></retval>
     </method>
     <method class_method="true" selector="requestWithURL:cachePolicy:timeoutInterval:">
       <arg name="URL"></arg>

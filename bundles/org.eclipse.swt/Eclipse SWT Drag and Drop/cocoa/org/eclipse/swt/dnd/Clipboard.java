@@ -282,7 +282,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 	NSString type = pasteboard.availableTypeFromArray(types);
 	if (type != null) {
 		TransferData tdata = new TransferData();
-		tdata.type = Transfer.registerType(Transfer.getString(type));
+		tdata.type = Transfer.registerType(type.getString());
 		if (type.isEqual(OS.NSStringPboardType) || type.isEqual(OS.NSRTFPboardType)) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSFilenamesPboardType)) {
@@ -512,7 +512,7 @@ public TransferData[] getAvailableTypes(int clipboards) {
 	TransferData[] result = new TransferData[count];
 	for (int i = 0; i < count; i++) {
 		result[i] = new TransferData();
-		result[i].type = Transfer.registerType(Transfer.getString(new NSString(types.objectAtIndex(i))));
+		result[i].type = Transfer.registerType(new NSString(types.objectAtIndex(i)).getString());
 	}
 	return result;
 }
@@ -540,7 +540,7 @@ public String[] getAvailableTypeNames() {
 	int count = types.count();
 	String[] result = new String[count];
 	for (int i = 0; i < count; i++) {
-		result[i] = Transfer.getString(new NSString(types.objectAtIndex(i)));
+		result[i] = new NSString(types.objectAtIndex(i)).getString();
 	}
 	return result;
 }

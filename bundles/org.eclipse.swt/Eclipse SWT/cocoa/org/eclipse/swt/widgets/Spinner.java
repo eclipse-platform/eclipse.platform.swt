@@ -189,12 +189,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	float width = 0, height = 0;
 	String string = Double.toString (buttonView.maxValue ());
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (1);
-	dict.setObject(textView.font (), OS.NSFontAttributeName ());
+	dict.setObject(textView.font (), OS.NSFontAttributeName);
 	int length = string.length ();
 	char [] chars = new char [length];
 	string.getChars (0, length, chars, 0);
 	NSString nsString = NSString.stringWithCharacters (chars, length);
-	NSAttributedString str = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString_attributes_ (nsString, dict);
+	NSAttributedString str = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (nsString, dict);
 	NSSize size = str.size ();
 	str.release ();
 	width = size.width;
@@ -258,8 +258,8 @@ void createHandle () {
 	textWidget.initWithFrame(new NSRect());
 //	textWidget.setTarget(widget);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
-	widget.addSubview_(textWidget);
-	widget.addSubview_(buttonWidget);
+	widget.addSubview(textWidget);
+	widget.addSubview(buttonWidget);
 	buttonView = buttonWidget;
 	textView = textWidget;
 	view = widget;

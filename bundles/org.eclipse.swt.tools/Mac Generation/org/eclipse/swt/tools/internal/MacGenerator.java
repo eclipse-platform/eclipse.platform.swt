@@ -751,7 +751,7 @@ void generateConstants() {
 					if (attributes.getNamedItem("declared_type").getNodeValue().equals("NSString*")) {
 						out("public static final NSString ");
 						out(constName);
-						out("= new NSString(");
+						out(" = new NSString(");
 						out(constName);
 						out("());");
 						outln();

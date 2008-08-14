@@ -11,8 +11,7 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class NSRange {
-public int location;
-public int length;
-
-public static int sizeof = 8;
+	public int /*long*/ location;
+	public int /*long*/ length;
+	public static int sizeof = OS.NSRange_sizeof();
 }

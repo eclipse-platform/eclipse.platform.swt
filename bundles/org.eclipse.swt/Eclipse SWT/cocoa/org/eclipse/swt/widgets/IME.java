@@ -94,7 +94,7 @@ int attributedSubstringFromRange (int id, int sel, int rangePtr) {
 	int end = range.location + range.length;
 	if (event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
 		NSString str = NSString.stringWith (event.text.substring(start - event.start, end - event.start));
-		NSAttributedString attriStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, null);
+		NSAttributedString attriStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, null);
 		attriStr.autorelease ();
 		return attriStr.id;
 	}
@@ -257,35 +257,35 @@ TextStyle getStyle (NSDictionary attribs) {
 	TextStyle style = new TextStyle ();
 	for (int j = 0; j < count; j++) {
 		NSString key = new NSString (keys.objectAtIndex (j));
-		if (key.isEqualTo (new NSString (OS.NSBackgroundColorAttributeName ()))) {
-			NSColor color = new NSColor (attribs.objectForKey (key).id).colorUsingColorSpaceName_ (OS.NSCalibratedRGBColorSpace);
+		if (key.isEqualTo (OS.NSBackgroundColorAttributeName)) {
+			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
 			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
 			style.background = Color.cocoa_new (display, rgbColor);
-		} else if (key.isEqualTo (new NSString (OS.NSForegroundColorAttributeName ()))) {
-			NSColor color = new NSColor (attribs.objectForKey (key).id).colorUsingColorSpaceName_ (OS.NSCalibratedRGBColorSpace);
+		} else if (key.isEqualTo (OS.NSForegroundColorAttributeName)) {
+			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
 			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
 			style.foreground = Color.cocoa_new (display, rgbColor);
-		} else if (key.isEqualTo (new NSString (OS.NSUnderlineColorAttributeName ()))) {
-			NSColor color = new NSColor (attribs.objectForKey (key).id).colorUsingColorSpaceName_ (OS.NSCalibratedRGBColorSpace);
+		} else if (key.isEqualTo (OS.NSUnderlineColorAttributeName)) {
+			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
 			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
 			style.underlineColor = Color.cocoa_new (display, rgbColor);
-		} else if (key.isEqualTo (new NSString (OS.NSUnderlineStyleAttributeName ()))) {
-			NSNumber value = new NSNumber (attribs.objectForKey (key).id);
+		} else if (key.isEqualTo (OS.NSUnderlineStyleAttributeName)) {
+			NSNumber value = new NSNumber (attribs.objectForKey (key));
 			switch (value.intValue ()) {
 				case OS.NSUnderlineStyleSingle: style.underlineStyle = SWT.UNDERLINE_SINGLE; break;
 				case OS.NSUnderlineStyleDouble: style.underlineStyle = SWT.UNDERLINE_DOUBLE; break;
 				case OS.NSUnderlineStyleThick: style.underlineStyle = UNDERLINE_THICK; break;
 			}
 			style.underline = value.intValue () != OS.NSUnderlineStyleNone;
-		} else if (key.isEqualTo (new NSString (OS.NSStrikethroughColorAttributeName ()))) {
-			NSColor color = new NSColor (attribs.objectForKey (key).id).colorUsingColorSpaceName_ (OS.NSCalibratedRGBColorSpace);
+		} else if (key.isEqualTo (OS.NSStrikethroughColorAttributeName)) {
+			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
 			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
 			style.strikeoutColor = Color.cocoa_new (display, rgbColor);
-		} else if (key.isEqualTo (new NSString (OS.NSStrikethroughStyleAttributeName ()))) {
-			NSNumber value = new NSNumber (attribs.objectForKey (key).id);
+		} else if (key.isEqualTo (OS.NSStrikethroughStyleAttributeName)) {
+			NSNumber value = new NSNumber (attribs.objectForKey (key));
 			style.strikeout = value.intValue () != OS.NSUnderlineStyleNone;
-		} else if (key.isEqualTo (new NSString (OS.NSFontAttributeName ()))) {
-			NSFont font = new NSFont (attribs.objectForKey (key).id);
+		} else if (key.isEqualTo (OS.NSFontAttributeName)) {
+			NSFont font = new NSFont (attribs.objectForKey (key));
 			style.font = Font.cocoa_new (display, font);
 		} 
 	}
@@ -341,8 +341,6 @@ boolean insertText (int id, int sel, int string) {
 		str = new NSAttributedString (string).string ();
 	}
 	int length = str.length ();
-	char[] chars = new char [length];
-	str.getCharacters_ (chars);
 	int end = startOffset + text.length ();
 	ranges = null;
 	styles = null;
@@ -351,7 +349,7 @@ boolean insertText (int id, int sel, int string) {
 	event.detail = SWT.COMPOSITION_CHANGED;
 	event.start = startOffset;
 	event.end = end;
-	event.text = text = new String (chars);
+	event.text = text = str.getString();
 	sendEvent (SWT.ImeComposition, event);
 	text = "";
 	caretOffset = commitCount = 0;
@@ -448,7 +446,7 @@ boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) 
 		int rangeCount = 0;
 		int /*long*/ ptr = OS.malloc (NSRange.sizeof);
 		for (int i = 0; i < length;) {
-			NSDictionary attribs = attribStr.attributesAtIndex_longestEffectiveRange_inRange_ (i, ptr, rangeLimit);
+			NSDictionary attribs = attribStr.attributesAtIndex(i, ptr, rangeLimit);
 			OS.memmove (effectiveRange, ptr, NSRange.sizeof);
 			i = effectiveRange.location + effectiveRange.length;
 			ranges [rangeCount * 2] = effectiveRange.location;
@@ -473,13 +471,11 @@ boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) 
 	NSRange range = new NSRange ();
 	OS.memmove (range, selRange, NSRange.sizeof);
 	caretOffset = range.location;
-	char [] chars = new char [length];
-	str.getCharacters_ (chars);
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_CHANGED;
 	event.start = startOffset;
 	event.end = end;
-	event.text = text = new String (chars);
+	event.text = text = str.getString();
 	sendEvent (SWT.ImeComposition, event);
 	return true;
 }

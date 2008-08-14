@@ -110,10 +110,8 @@ public void addSelectionListener (SelectionListener listener) {
 
 boolean clickOnLink(int textView, int link, int charIndex) {
 	NSString str = new NSString (link);
-	char [] buffer = new char [str.length ()];
-	str.getCharacters_ (buffer);
 	Event event = new Event ();
-	event.text = new String (buffer);
+	event.text = str.getString();
 	sendEvent (SWT.Selection, event);
 	return true;
 }
@@ -375,7 +373,7 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 }
 
 void setFont(NSFont font) {
-	((NSTextView) view).setFont_(font);
+	((NSTextView) view).setFont(font);
 }
 
 /**
@@ -413,7 +411,7 @@ public void setText (String string) {
 	for (int i = 0; i < offsets.length; i++) {
 		range.location = offsets[i].x;
 		range.length = offsets[i].y - offsets[i].x + 1;
-		textStorage.addAttribute(OS.NSLinkAttributeName(), NSString.stringWith(ids[i]), range);
+		textStorage.addAttribute(OS.NSLinkAttributeName, NSString.stringWith(ids[i]), range);
 	}
 }
 

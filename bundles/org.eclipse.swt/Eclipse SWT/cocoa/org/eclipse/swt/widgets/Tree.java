@@ -251,7 +251,7 @@ void clear (TreeItem parentItem, int index, boolean all) {
 	TreeItem item = _getItem (parentItem, index, false);
 	if (item != null) {
 		item.clear();
-		((NSOutlineView) view).reloadItem_ (item.handle);
+		((NSOutlineView) view).reloadItem (item.handle);
 		if (all) {
 			clearAll (item, true);
 		}
@@ -266,7 +266,7 @@ void clearAll (TreeItem parentItem, boolean all) {
 		TreeItem item = children [i];
 		if (item != null) {
 			item.clear ();
-			((NSOutlineView) view).reloadItem_ (item.handle);
+			((NSOutlineView) view).reloadItem (item.handle);
 			if (all) clearAll (item, true);
 		}
 	}
@@ -724,10 +724,10 @@ void destroyItem (TreeItem item) {
 	items [count] = null;
 	if (parentItem != null) {
 		parentItem.itemCount = count;
-		((NSOutlineView) view).reloadItem_reloadChildren_ (parentItem.handle, true);
+		((NSOutlineView) view).reloadItem (parentItem.handle, true);
 	} else {
 		this.itemCount = count;
-		((NSOutlineView) view).reloadItem_ (null);
+		((NSOutlineView) view).reloadItem (null);
 	}
 	
 	//noteNumberOfRowsChanged was causing crashes whenever
@@ -1388,7 +1388,7 @@ boolean outlineView_shouldCollapseItem (int outlineView, int ref) {
 		sendEvent (SWT.Collapse, event);
 		item.expanded = false;
 		ignoreExpand = true;
-		((NSOutlineView) view).collapseItem_ (item.handle);
+		((NSOutlineView) view).collapseItem (item.handle);
 		ignoreExpand = false;
 		return false;
 	}
@@ -1403,7 +1403,7 @@ boolean outlineView_shouldExpandItem (int outlineView, int ref) {
 		sendEvent (SWT.Expand, event);
 		item.expanded = true;
 		ignoreExpand = true;
-		((NSOutlineView) view).expandItem_ (item.handle);
+		((NSOutlineView) view).expandItem (item.handle);
 		ignoreExpand = false;
 		return false;
 	}
@@ -1473,7 +1473,7 @@ public void removeAll () {
 	}
 	items = new TreeItem [4];
 	itemCount = 0;
-	((NSOutlineView) view).reloadItem_ (null);
+	((NSOutlineView) view).reloadItem (null);
 }
 
 /**
@@ -1772,7 +1772,7 @@ void setItemCount (TreeItem parentItem, int count) {
 		parentItem.itemCount = count;
 	}
 	NSOutlineView widget = (NSOutlineView) view;
-	widget.reloadItem_reloadChildren_ (parentItem != null ? parentItem.handle : null, true);
+	widget.reloadItem (parentItem != null ? parentItem.handle : null, true);
 	widget.noteNumberOfRowsChanged();
 }
 

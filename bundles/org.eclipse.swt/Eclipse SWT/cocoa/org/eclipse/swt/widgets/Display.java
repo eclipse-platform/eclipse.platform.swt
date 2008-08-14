@@ -685,8 +685,8 @@ void createDisplay (DeviceData data) {
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	String className = "SWTApplication";
 	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_1untilDate_1inMode_1dequeue_1, proc6, "@:i@@B");
+	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
 	OS.objc_registerClassPair(cls);
 	application = NSApplication.sharedApplication();
 	OS.object_setClass(application.id, cls);
@@ -1631,14 +1631,14 @@ void initApplicationDelegate() {
 
 	String className = "SWTApplicationDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_terminate_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_hideOtherApplications_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_hide_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_unhideAllApplications_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_1, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_applicationWillTerminate_1, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_applicationWillTerminate_, appProc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
@@ -1646,29 +1646,29 @@ void initApplicationDelegate() {
 }
 
 void addEventMethods (int cls, int proc2, int proc3, int drawRectProc) {
-	OS.class_addMethod(cls, OS.sel_mouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_scrollWheel_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_rightMouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_rightMouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_otherMouseDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_otherMouseUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseDragged_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseMoved_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseEntered_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_mouseExited_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuForEvent_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_scrollWheel_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_rightMouseDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_rightMouseUp_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_otherMouseDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_otherMouseUp_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseDragged_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseMoved_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseEntered_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_mouseExited_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_flagsChanged_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_drawRect_1, drawRectProc, "@:{NSRect}");
+	OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_flagsChanged_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_drawRect_, drawRectProc, "@:{NSRect}");
 }
 
 void addFrameMethods(int cls, int setFrameOriginProc, int setFrameSizeProc) {
-	OS.class_addMethod(cls, OS.sel_setFrameOrigin_1, setFrameOriginProc, "@:{NSPoint}");	
-	OS.class_addMethod(cls, OS.sel_setFrameSize_1, setFrameSizeProc, "@:{NSSize}");	
+	OS.class_addMethod(cls, OS.sel_setFrameOrigin_, setFrameOriginProc, "@:{NSPoint}");	
+	OS.class_addMethod(cls, OS.sel_setFrameSize_, setFrameSizeProc, "@:{NSSize}");	
 }
 
 void initClasses () {
@@ -1708,30 +1708,30 @@ void initClasses () {
 	String className = "SWTWindowDelegate";
 	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_windowDidResize_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowDidMove_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowShouldClose_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowWillClose_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowDidResignKey_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_timerProc_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidResize_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidMove_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowShouldClose_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowWillClose_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowWillClose_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidResignKey_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_timerProc_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTPanelDelegate";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_windowWillClose_1, dialogProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_changeColor_1, dialogProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_changeFont_1, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_windowWillClose_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_changeColor_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_changeFont_, dialogProc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTMenu";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenu, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_menuWillClose_1, proc3, "@:@");	
-	OS.class_addMethod(cls, OS.sel_menu_1willHighlightItem_1, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");	
+	OS.class_addMethod(cls, OS.sel_menu_willHighlightItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTView";
@@ -1741,20 +1741,20 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_hitTest_1, hitTestProc, "@:{NSPoint}");
+	OS.class_addMethod(cls, OS.sel_hitTest_, hitTestProc, "@:{NSPoint}");
 	
 	//NSTextInput protocol
 	OS.class_addMethod(cls, OS.sel_hasMarkedText, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_markedRange, markedRangeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_selectedRange, selectedRangeProc, "@:");
-	OS.class_addMethod(cls, OS.sel_setMarkedText_1selectedRange_1, setMarkedText_selectedRangeProc, "@:@{NSRange}");
+	OS.class_addMethod(cls, OS.sel_setMarkedText_selectedRange_, setMarkedText_selectedRangeProc, "@:@{NSRange}");
 	OS.class_addMethod(cls, OS.sel_unmarkText, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_validAttributesForMarkedText, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_attributedSubstringFromRange_1, attributedSubstringFromRangeProc, "@:{NSRange}");
-	OS.class_addMethod(cls, OS.sel_insertText_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_characterIndexForPoint_1, characterIndexForPointProc, "@:{NSPoint}");
-	OS.class_addMethod(cls, OS.sel_firstRectForCharacterRange_1, firstRectForCharacterRangeProc, "@:{NSRange}");
-	OS.class_addMethod(cls, OS.sel_doCommandBySelector_1, proc3, "@::");
+	OS.class_addMethod(cls, OS.sel_attributedSubstringFromRange_, attributedSubstringFromRangeProc, "@:{NSRange}");
+	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_characterIndexForPoint_, characterIndexForPointProc, "@:{NSPoint}");
+	OS.class_addMethod(cls, OS.sel_firstRectForCharacterRange_, firstRectForCharacterRangeProc, "@:{NSRange}");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -1765,8 +1765,8 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_pageDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_pageUp_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_pageDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_pageUp_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -1784,12 +1784,12 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_tableView_1objectValueForTableColumn_1row_1, proc5, "@:@:@:@");
-	OS.class_addMethod(cls, OS.sel_tableView_1shouldEditTableColumn_1row_1, proc5, "@:@:@:@");
-	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1, proc6, "@:@@@i");
-	OS.class_addMethod(cls, OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1, proc6, "@:@@@i");
+	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@:@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@:@:@");
+	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
+	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -1797,22 +1797,22 @@ void initClasses () {
 	className = "SWTTableHeaderCell";
 	cls = OS.objc_allocateClassPair (OS.class_NSTableHeaderCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log (C.PTR_SIZEOF) / Math.log (2)), "i");
-	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_1inView_1, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1shouldCollapseItem_1, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1shouldExpandItem_1, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1child_1ofItem_1, proc5, "@:@i@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1isItemExpandable_1, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1numberOfChildrenOfItem_1, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1objectValueForTableColumn_1byItem_1, proc5, "@:@@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1, proc6, "@:@@@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldCollapseItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldExpandItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
+	OS.class_addMethod(cls, OS.sel_outlineView_isItemExpandable_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -1825,7 +1825,7 @@ void initClasses () {
 	className = "SWTTabView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_tabView_1willSelectTabViewItem_1, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_tabView_willSelectTabViewItem_, proc4, "@:@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -1862,11 +1862,11 @@ void initClasses () {
 	className = "SWTComboBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_textDidChange_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
+	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -1913,18 +1913,18 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
-	OS.class_addMethod(cls, OS.sel_insertText_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_doCommandBySelector_1, proc3, "@::");
-	OS.class_addMethod(cls, OS.sel_textDidChange_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
+	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_keyDown_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_keyUp_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_insertText_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_doCommandBySelector_1, proc3, "@::");
+	OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextField";
@@ -1932,9 +1932,9 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
-	OS.class_addMethod(cls, OS.sel_textDidChange_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
+	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTSearchField";
@@ -1942,9 +1942,9 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
-	OS.class_addMethod(cls, OS.sel_textDidChange_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
+	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTSecureTextField";
@@ -1952,16 +1952,16 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
-	OS.class_addMethod(cls, OS.sel_textDidChange_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
+	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTWindow";
 	cls = OS.objc_allocateClassPair(OS.class_NSWindow, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
-	OS.class_addMethod(cls, OS.sel_sendEvent_1, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_helpRequested_1, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -1990,7 +1990,7 @@ public int internal_new_GC (GCData data) {
 	if (screenWindow == null) {
 		NSWindow window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
-		window = window.initWithContentRect_styleMask_backing_defer_(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		window = window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 		screenWindow = window;
 	}
 	NSGraphicsContext context = screenWindow.graphicsContext();
@@ -3219,7 +3219,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		nsTimers = newTimerIds;
 	}
 	NSNumber userInfo = NSNumber.numberWithInt(index);
-	NSTimer timer = NSTimer.static_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_1, userInfo.id, false);
+	NSTimer timer = NSTimer.scheduledTimerWithTimeInterval(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_, userInfo, false);
 	timer.retain();
 	if (timer != null) {
 		nsTimers [index] = timer;
@@ -3289,7 +3289,7 @@ public void wake () {
 
 void wakeThread () {
 	NSObject object = new NSObject().alloc().init();
-	object.performSelectorOnMainThread_withObject_waitUntilDone_(OS.sel_release, null, false);
+	object.performSelectorOnMainThread(OS.sel_release, null, false);
 }
 
 Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim, boolean checkWindows) {
@@ -3415,7 +3415,7 @@ void applicationSendEvent (int id, int sel, int event) {
 }
 
 int applicationProc(int id, int sel, int event) {
-	if (sel == OS.sel_sendEvent_1) {
+	if (sel == OS.sel_sendEvent_) {
 		applicationSendEvent (id, sel, event);
 		return 0;
 	}
@@ -3423,19 +3423,19 @@ int applicationProc(int id, int sel, int event) {
 }
 
 int applicationProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) {
-	if (sel == OS.sel_nextEventMatchingMask_1untilDate_1inMode_1dequeue_1) {
+	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
 		return applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
 
 int applicationDelegateProc(int id, int sel, int arg0) {
-	if (sel == OS.sel_applicationWillFinishLaunching_1) {
-		id dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
+	if (sel == OS.sel_applicationWillFinishLaunching_) {
+		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
 		NSString nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
-		if (!NSBundle.loadNibFile(nibFile, dict, null)) {
+		if (!NSBundle.loadNibFile(nibFile, dict, 0)) {
 			nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Resources/English.lproj/DefaultApp.nib");
-			NSBundle.loadNibFile(nibFile, dict, null);	
+			NSBundle.loadNibFile(nibFile, dict, 0);	
 		}
 		//replace %@ with application name
 		NSMenu mainmenu = application.mainMenu();
@@ -3445,22 +3445,22 @@ int applicationDelegateProc(int id, int sel, int arg0) {
 			NSArray ia = sm.itemArray();
 			for(int i = 0; i < ia.count(); i++) {
 				NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
-				NSString title = ni.title().stringByReplacingOccurrencesOfString_withString_(NSString.stringWith("%@"), NSString.stringWith(APP_NAME));
+				NSString title = ni.title().stringByReplacingOccurrencesOfString(NSString.stringWith("%@"), NSString.stringWith(APP_NAME));
 				ni.setTitle(title);
 			}
 		}
-	} else if (sel == OS.sel_terminate_1) {
+	} else if (sel == OS.sel_terminate_) {
 		application.terminate(application);
-	} else if (sel == OS.sel_orderFrontStandardAboutPanel_1) {
+	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
 //		Event event = new Event ();
 //		sendEvent (SWT.ABORT, event);
-	} else if (sel == OS.sel_hideOtherApplications_1) {
+	} else if (sel == OS.sel_hideOtherApplications_) {
 		application.hideOtherApplications(application);
-	} else if (sel == OS.sel_hide_1) {
+	} else if (sel == OS.sel_hide_) {
 		application.hide(application);
-	} else if (sel == OS.sel_unhideAllApplications_1) {
+	} else if (sel == OS.sel_unhideAllApplications_) {
 		application.unhideAllApplications(application);
-	} else if (sel == OS.sel_applicationShouldTerminate_1) {
+	} else if (sel == OS.sel_applicationShouldTerminate_) {
 		if (!disposing) {
 			Event event = new Event ();
 			sendEvent (SWT.Close, event);
@@ -3469,7 +3469,7 @@ int applicationDelegateProc(int id, int sel, int arg0) {
 			}
 		}
 		return OS.NSTerminateCancel;
-	} else if (sel == OS.sel_applicationWillTerminate_1) {
+	} else if (sel == OS.sel_applicationWillTerminate_) {
 		dispose();
 	} 
 	return 0;
@@ -3479,15 +3479,15 @@ int dialogProc(int id, int sel, int arg0) {
 	int [] jniRef = new int [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
-	if (sel == OS.sel_changeColor_1) {
+	if (sel == OS.sel_changeColor_) {
 		ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.changeColor(arg0);
-	} else if (sel == OS.sel_changeFont_1) {
+	} else if (sel == OS.sel_changeFont_) {
 		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.changeFont(arg0);
-	} else if (sel == OS.sel_windowWillClose_1) {
+	} else if (sel == OS.sel_windowWillClose_) {
 		Object object = OS.JNIGetObject(jniRef[0]);
 		if (object instanceof FontDialog) {
 			((FontDialog)object).windowWillClose(arg0);
@@ -3544,111 +3544,111 @@ int windowDelegateProc(int id, int sel) {
 }
 
 int windowDelegateProc(int id, int sel, int arg0) {
-	if (sel == OS.sel_timerProc_1) {
+	if (sel == OS.sel_timerProc_) {
 		return timerProc (arg0);
 	}
 	Widget widget = getWidget(id);
-	if (widget == null && (sel == OS.sel_keyDown_1 ||sel == OS.sel_keyUp_1 ||sel == OS.sel_insertText_1 ||sel == OS.sel_doCommandBySelector_1))  {
+	if (widget == null && (sel == OS.sel_keyDown_ ||sel == OS.sel_keyUp_ ||sel == OS.sel_insertText_ ||sel == OS.sel_doCommandBySelector_))  {
 		widget = getFocusControl (new NSView (id).window ());
 	}
 	if (widget == null) return 0;
-	if (sel == OS.sel_windowWillClose_1) {
+	if (sel == OS.sel_windowWillClose_) {
 		widget.windowWillClose(arg0);
-	} else if (sel == OS.sel_drawRect_1) {
+	} else if (sel == OS.sel_drawRect_) {
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
-		widget.drawRect(id, rect);
-	} else if (sel == OS.sel_setFrameOrigin_1) {
+		widget.drawRect(id, sel, rect);
+	} else if (sel == OS.sel_setFrameOrigin_) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg0, NSPoint.sizeof);
 		widget.setFrameOrigin(id, sel, point);
-	} else if (sel == OS.sel_setFrameSize_1) {
+	} else if (sel == OS.sel_setFrameSize_) {
 		NSSize size = new NSSize();
 		OS.memmove(size, arg0, NSSize.sizeof);
 		widget.setFrameSize(id, sel, size);
-	} else if (sel == OS.sel_hitTest_1) {
+	} else if (sel == OS.sel_hitTest_) {
 		NSPoint point = new NSPoint();
 		OS.memmove(point, arg0, NSPoint.sizeof);
 		return widget.hitTest(id, sel, point);
-	} else if (sel == OS.sel_windowShouldClose_1) {
+	} else if (sel == OS.sel_windowShouldClose_) {
 		return widget.windowShouldClose(arg0) ? 1 : 0;
-	} else if (sel == OS.sel_mouseDown_1) {
+	} else if (sel == OS.sel_mouseDown_) {
 		widget.mouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_keyDown_1) {
+	} else if (sel == OS.sel_keyDown_) {
 		widget.keyDown(id, sel, arg0);
-	} else if (sel == OS.sel_keyUp_1) {
+	} else if (sel == OS.sel_keyUp_) {
 		widget.keyUp(id, sel, arg0);
-	} else if (sel == OS.sel_flagsChanged_1) {
+	} else if (sel == OS.sel_flagsChanged_) {
 		widget.flagsChanged(id, sel, arg0);
-	} else if (sel == OS.sel_mouseUp_1) {
+	} else if (sel == OS.sel_mouseUp_) {
 		widget.mouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseDown_1) {
+	} else if (sel == OS.sel_rightMouseDown_) {
 		widget.rightMouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_rightMouseUp_1) {
+	} else if (sel == OS.sel_rightMouseUp_) {
 		widget.rightMouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseDown_1) {
+	} else if (sel == OS.sel_otherMouseDown_) {
 		widget.otherMouseDown(id, sel, arg0);
-	} else if (sel == OS.sel_otherMouseUp_1) {
+	} else if (sel == OS.sel_otherMouseUp_) {
 		widget.otherMouseUp(id, sel, arg0);
-	} else if (sel == OS.sel_mouseMoved_1) {
+	} else if (sel == OS.sel_mouseMoved_) {
 		widget.mouseMoved(id, sel, arg0);
-	} else if (sel == OS.sel_mouseDragged_1) {
+	} else if (sel == OS.sel_mouseDragged_) {
 		widget.mouseDragged(id, sel, arg0);
-	} else if (sel == OS.sel_mouseEntered_1) {
+	} else if (sel == OS.sel_mouseEntered_) {
 		widget.mouseEntered(id, sel, arg0);
-	} else if (sel == OS.sel_mouseExited_1) {
+	} else if (sel == OS.sel_mouseExited_) {
 		widget.mouseExited(id, sel, arg0);
-	} else if (sel == OS.sel_menuForEvent_1) {
+	} else if (sel == OS.sel_menuForEvent_) {
 		return widget.menuForEvent(id, sel, arg0);
-	} else if (sel == OS.sel_numberOfRowsInTableView_1) {
+	} else if (sel == OS.sel_numberOfRowsInTableView_) {
 		return widget.numberOfRowsInTableView(arg0);
-	} else if (sel == OS.sel_comboBoxSelectionDidChange_1) {
+	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
 		widget.comboBoxSelectionDidChange(arg0);
-	} else if (sel == OS.sel_tableViewSelectionDidChange_1) {
+	} else if (sel == OS.sel_tableViewSelectionDidChange_) {
 		widget.tableViewSelectionDidChange(arg0);
-	} else if (sel == OS.sel_windowDidResignKey_1) {
+	} else if (sel == OS.sel_windowDidResignKey_) {
 		widget.windowDidResignKey(arg0);
-	} else if (sel == OS.sel_windowDidBecomeKey_1) {
+	} else if (sel == OS.sel_windowDidBecomeKey_) {
 		widget.windowDidBecomeKey(arg0);
-	} else if (sel == OS.sel_windowDidResize_1) {
+	} else if (sel == OS.sel_windowDidResize_) {
 		widget.windowDidResize(arg0);
-	} else if (sel == OS.sel_windowDidMove_1) {
+	} else if (sel == OS.sel_windowDidMove_) {
 		widget.windowDidMove(arg0);
-	} else if (sel == OS.sel_menuWillOpen_1) {
+	} else if (sel == OS.sel_menuWillOpen_) {
 		widget.menuWillOpen(arg0);
-	} else if (sel == OS.sel_menuWillClose_1) {
-		widget.menuWillClose(arg0);
-	} else if (sel == OS.sel_menuNeedsUpdate_1) {
+	} else if (sel == OS.sel_menuDidClose_) {
+		widget.menuDidClose(arg0);
+	} else if (sel == OS.sel_menuNeedsUpdate_) {
 		widget.menuNeedsUpdate(arg0);
-	} else if (sel == OS.sel_outlineViewSelectionDidChange_1) {
+	} else if (sel == OS.sel_outlineViewSelectionDidChange_) {
 		widget.outlineViewSelectionDidChange(arg0);
-	} else if (sel == OS.sel_sendEvent_1) {
-		widget.windowSendEvent(id, arg0);
-	} else if (sel == OS.sel_helpRequested_1) {
+	} else if (sel == OS.sel_sendEvent_) {
+		widget.windowSendEvent(id, sel, arg0);
+	} else if (sel == OS.sel_helpRequested_) {
 		widget.helpRequested(arg0);
-	} else if (sel == OS.sel_scrollWheel_1) {
+	} else if (sel == OS.sel_scrollWheel_) {
 		widget.scrollWheel(id, sel, arg0);
-	} else if (sel == OS.sel_pageDown_1) {
+	} else if (sel == OS.sel_pageDown_) {
 		widget.pageDown(id, sel, arg0);
-	} else if (sel == OS.sel_pageUp_1) {
+	} else if (sel == OS.sel_pageUp_) {
 		widget.pageUp(id, sel, arg0);
-	} else if (sel == OS.sel_textViewDidChangeSelection_1) {
+	} else if (sel == OS.sel_textViewDidChangeSelection_) {
 		widget.textViewDidChangeSelection(arg0);
-	} else if (sel == OS.sel_textDidChange_1) {
+	} else if (sel == OS.sel_textDidChange_) {
 		widget.textDidChange(arg0);
-	} else if (sel == OS.sel_attributedSubstringFromRange_1) {
+	} else if (sel == OS.sel_attributedSubstringFromRange_) {
 		return widget.attributedSubstringFromRange (id, sel, arg0);
-	} else if (sel == OS.sel_characterIndexForPoint_1) {
+	} else if (sel == OS.sel_characterIndexForPoint_) {
 		return widget.characterIndexForPoint (id, sel, arg0);
-	} else if (sel == OS.sel_firstRectForCharacterRange_1) {
+	} else if (sel == OS.sel_firstRectForCharacterRange_) {
 		NSRect rect = widget.firstRectForCharacterRange (id, sel, arg0);
 		/* NOTE that this is freed in C */
 		int /*long*/ result = OS.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
-	} else if (sel == OS.sel_insertText_1) {
+	} else if (sel == OS.sel_insertText_) {
 		widget.insertText (id, sel, arg0);
-	} else if (sel == OS.sel_doCommandBySelector_1) {
+	} else if (sel == OS.sel_doCommandBySelector_) {
 		widget.doCommandBySelector (id, sel, arg0);
 	}
 	return 0;
@@ -3657,21 +3657,21 @@ int windowDelegateProc(int id, int sel, int arg0) {
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tabView_1willSelectTabViewItem_1) {
+	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
 		widget.willSelectTabViewItem(arg0, arg1);
-	} else if (sel == OS.sel_outlineView_1isItemExpandable_1) {
+	} else if (sel == OS.sel_outlineView_isItemExpandable_) {
 		return widget.outlineView_isItemExpandable(arg0, arg1) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_1numberOfChildrenOfItem_1) {
+	} else if (sel == OS.sel_outlineView_numberOfChildrenOfItem_) {
 		return widget.outlineView_numberOfChildrenOfItem(arg0, arg1);
-	} else if (sel == OS.sel_outlineView_1shouldCollapseItem_1) {
+	} else if (sel == OS.sel_outlineView_shouldCollapseItem_) {
 		return widget.outlineView_shouldCollapseItem(arg0, arg1) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_1shouldExpandItem_1) {
+	} else if (sel == OS.sel_outlineView_shouldExpandItem_) {
 		return widget.outlineView_shouldExpandItem(arg0, arg1) ? 1 : 0;
-	} else if (sel == OS.sel_menu_1willHighlightItem_1) {
+	} else if (sel == OS.sel_menu_willHighlightItem_) {
 		widget.menu_willHighlightItem(arg0, arg1);
-	} else if (sel == OS.sel_setMarkedText_1selectedRange_1) {
+	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
 		widget.setMarkedText_selectedRange (delegate, sel, arg0, arg1);
-	} else if (sel == OS.sel_drawInteriorWithFrame_1inView_1) {
+	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
 		widget.drawInteriorFrame_inView (arg0, arg1);
 	}
 	return 0;
@@ -3680,17 +3680,17 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tableView_1objectValueForTableColumn_1row_1) {
+	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
 		return widget.tableView_objectValueForTableColumn_row(arg0, arg1, arg2);
-	} else if (sel == OS.sel_tableView_1shouldEditTableColumn_1row_1) {
+	} else if (sel == OS.sel_tableView_shouldEditTableColumn_row_) {
 		return widget.tableView_shouldEditTableColumn_row(arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_textView_1clickedOnLink_1atIndex_1) {
+	} else if (sel == OS.sel_textView_clickedOnLink_atIndex_) {
 		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;
-	} else if (sel == OS.sel_outlineView_1child_1ofItem_1) {
+	} else if (sel == OS.sel_outlineView_child_ofItem_) {
 		 return widget.outlineView_child_ofItem(arg0, arg1, arg2);
-	} else if (sel == OS.sel_outlineView_1objectValueForTableColumn_1byItem_1) {
+	} else if (sel == OS.sel_outlineView_objectValueForTableColumn_byItem_) {
 		 return widget.outlineView_objectValueForTableColumn_byItem(arg0, arg1, arg2);
-	} else if (sel == OS.sel_textView_1willChangeSelectionFromCharacterRange_1toCharacterRange_1) {
+	} else if (sel == OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_) {
 		NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(arg0, arg1, arg2);
 		/* NOTE that this is freed in C */
 		int /*long*/ result = OS.malloc (NSRange.sizeof);
@@ -3703,13 +3703,13 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2, int arg3) {
 	Widget widget = getWidget(delegate);
 	if (widget == null) return 0;
-	if (sel == OS.sel_tableView_1willDisplayCell_1forTableColumn_1row_1) {
+	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
 		widget.tableView_willDisplayCell_forTableColumn_row(arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_outlineView_1willDisplayCell_1forTableColumn_1item_1) {
+	} else if (sel == OS.sel_outlineView_willDisplayCell_forTableColumn_item_) {
 		widget.outlineView_willDisplayCell_forTableColumn_item(arg0, arg1, arg2, arg3);
-	} else  if (sel == OS.sel_outlineView_1setObjectValue_1forTableColumn_1byItem_1) {
+	} else  if (sel == OS.sel_outlineView_setObjectValue_forTableColumn_byItem_) {
 		widget.outlineView_setObjectValue_forTableColumn_byItem(arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_tableView_1setObjectValue_1forTableColumn_1row_1) {
+	} else if (sel == OS.sel_tableView_setObjectValue_forTableColumn_row_) {
 		widget.tableView_setObjectValue_forTableColumn_row(arg0, arg1, arg2, arg3);
 	}
 	return 0;

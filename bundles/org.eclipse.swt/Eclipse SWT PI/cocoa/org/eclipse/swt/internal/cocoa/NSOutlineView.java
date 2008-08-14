@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
@@ -16,117 +16,61 @@ public NSOutlineView() {
 	super();
 }
 
-public NSOutlineView(int id) {
+public NSOutlineView(int /*long*/ id) {
 	super(id);
 }
 
-public boolean autoresizesOutlineColumn() {
-	return OS.objc_msgSend(this.id, OS.sel_autoresizesOutlineColumn) != 0;
+public NSOutlineView(id id) {
+	super(id);
 }
 
-public boolean autosaveExpandedItems() {
-	return OS.objc_msgSend(this.id, OS.sel_autosaveExpandedItems) != 0;
+public void collapseItem(id item) {
+	OS.objc_msgSend(this.id, OS.sel_collapseItem_, item != null ? item.id : 0);
 }
 
-public void collapseItem_(id item) {
-	OS.objc_msgSend(this.id, OS.sel_collapseItem_1, item != null ? item.id : 0);
-}
-
-public void collapseItem_collapseChildren_(id item, boolean collapseChildren) {
-	OS.objc_msgSend(this.id, OS.sel_collapseItem_1collapseChildren_1, item != null ? item.id : 0, collapseChildren);
-}
-
-public void expandItem_(id item) {
-	OS.objc_msgSend(this.id, OS.sel_expandItem_1, item != null ? item.id : 0);
-}
-
-public void expandItem_expandChildren_(id item, boolean expandChildren) {
-	OS.objc_msgSend(this.id, OS.sel_expandItem_1expandChildren_1, item != null ? item.id : 0, expandChildren);
-}
-
-public NSRect frameOfOutlineCellAtRow(int row) {
-	NSRect result = new NSRect();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfOutlineCellAtRow_1, row);
-	return result;
-}
-
-public boolean indentationMarkerFollowsCell() {
-	return OS.objc_msgSend(this.id, OS.sel_indentationMarkerFollowsCell) != 0;
+public void expandItem(id item) {
+	OS.objc_msgSend(this.id, OS.sel_expandItem_, item != null ? item.id : 0);
 }
 
 public float indentationPerLevel() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_indentationPerLevel);
 }
 
-public boolean isExpandable(id item) {
-	return OS.objc_msgSend(this.id, OS.sel_isExpandable_1, item != null ? item.id : 0) != 0;
-}
-
-public boolean isItemExpanded(id item) {
-	return OS.objc_msgSend(this.id, OS.sel_isItemExpanded_1, item != null ? item.id : 0) != 0;
-}
-
 public id itemAtRow(int row) {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_1, row);
+	int result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_, row);
 	return result != 0 ? new id(result) : null;
 }
 
 public int levelForItem(id item) {
-	return OS.objc_msgSend(this.id, OS.sel_levelForItem_1, item != null ? item.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
 }
 
-public int levelForRow(int row) {
-	return OS.objc_msgSend(this.id, OS.sel_levelForRow_1, row);
+public void reloadItem(id item) {
+	OS.objc_msgSend(this.id, OS.sel_reloadItem_, item != null ? item.id : 0);
 }
 
-public NSTableColumn outlineTableColumn() {
-	int result = OS.objc_msgSend(this.id, OS.sel_outlineTableColumn);
-	return result != 0 ? new NSTableColumn(result) : null;
-}
-
-public id parentForItem(id item) {
-	int result = OS.objc_msgSend(this.id, OS.sel_parentForItem_1, item != null ? item.id : 0);
-	return result != 0 ? new id(result) : null;
-}
-
-public void reloadItem_(id item) {
-	OS.objc_msgSend(this.id, OS.sel_reloadItem_1, item != null ? item.id : 0);
-}
-
-public void reloadItem_reloadChildren_(id item, boolean reloadChildren) {
-	OS.objc_msgSend(this.id, OS.sel_reloadItem_1reloadChildren_1, item != null ? item.id : 0, reloadChildren);
+public void reloadItem(id item, boolean reloadChildren) {
+	OS.objc_msgSend(this.id, OS.sel_reloadItem_reloadChildren_, item != null ? item.id : 0, reloadChildren);
 }
 
 public int rowForItem(id item) {
-	return OS.objc_msgSend(this.id, OS.sel_rowForItem_1, item != null ? item.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
 }
 
 public void setAutoresizesOutlineColumn(boolean resize) {
-	OS.objc_msgSend(this.id, OS.sel_setAutoresizesOutlineColumn_1, resize);
+	OS.objc_msgSend(this.id, OS.sel_setAutoresizesOutlineColumn_, resize);
 }
 
 public void setAutosaveExpandedItems(boolean save) {
-	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_1, save);
-}
-
-public void setDropItem(id item, int index) {
-	OS.objc_msgSend(this.id, OS.sel_setDropItem_1dropChildIndex_1, item != null ? item.id : 0, index);
-}
-
-public void setIndentationMarkerFollowsCell(boolean drawInCell) {
-	OS.objc_msgSend(this.id, OS.sel_setIndentationMarkerFollowsCell_1, drawInCell);
+	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, save);
 }
 
 public void setIndentationPerLevel(float indentationPerLevel) {
-	OS.objc_msgSend(this.id, OS.sel_setIndentationPerLevel_1, indentationPerLevel);
+	OS.objc_msgSend(this.id, OS.sel_setIndentationPerLevel_, indentationPerLevel);
 }
 
 public void setOutlineTableColumn(NSTableColumn outlineTableColumn) {
-	OS.objc_msgSend(this.id, OS.sel_setOutlineTableColumn_1, outlineTableColumn != null ? outlineTableColumn.id : 0);
-}
-
-public boolean shouldCollapseAutoExpandedItemsForDeposited(boolean deposited) {
-	return OS.objc_msgSend(this.id, OS.sel_shouldCollapseAutoExpandedItemsForDeposited_1, deposited) != 0;
+	OS.objc_msgSend(this.id, OS.sel_setOutlineTableColumn_, outlineTableColumn != null ? outlineTableColumn.id : 0);
 }
 
 }

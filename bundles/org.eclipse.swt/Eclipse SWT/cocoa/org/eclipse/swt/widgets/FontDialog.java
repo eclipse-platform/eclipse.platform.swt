@@ -217,7 +217,7 @@ public FontData open () {
 	fontData = null;
 	selected = false;
 	panel.orderFront(null);
-	NSApplication.sharedApplication().runModalForWindow_(panel);
+	NSApplication.sharedApplication().runModalForWindow(panel);
 	if (selected) {
 		NSFont nsFont = panel.panelConvertFont(font.handle);
 		if (nsFont != null) {

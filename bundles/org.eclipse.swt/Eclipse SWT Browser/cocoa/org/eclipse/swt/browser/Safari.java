@@ -95,39 +95,39 @@ public void create (Composite parent, int style) {
 
 		int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1didChangeLocationWithinPageForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1didFinishLoadForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1didReceiveTitle_1forFrame_1, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1didStartProvisionalLoadForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1didCommitLoadForFrame_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1resource_1didFinishLoadingFromDataSource_1, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1resource_1didFailLoadingWithError_1fromDataSource_1, proc6, "@:@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1identifierForInitialRequest_1fromDataSource_1, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1resource_1willSendRequest_1redirectResponse_1fromDataSource_1, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_handleNotification_1, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1createWebViewWithRequest_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewShow_1, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewClose_1, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1contextMenuItemsForElement_1defaultMenuItems_1, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1setStatusBarVisible_1, proc4, "@:@B"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1setResizable_1, proc4, "@:@B"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1setToolbarsVisible_1, proc4, "@:@B"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1setStatusText_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewFocus_1, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webViewUnfocus_1, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptAlertPanelWithMessage_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1runJavaScriptConfirmPanelWithMessage_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1runOpenPanelForFileButtonWithResultListener_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1mouseDidMoveOverElement_1modifierFlags_1, proc5, "@:@@I"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1printFrameView_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNavigationAction_1request_1frame_1decisionListener_1, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1, proc7, "@:@@@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1unableToImplementPolicyWithError_1frame_1, proc5, "@:@@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_download_1decideDestinationWithSuggestedFilename_1, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_handleEvent_1, proc3, "@:@"); //$NON-NLS-1$
-		OS.class_addMethod(cls, OS.sel_webView_1setFrame_1, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_didChangeLocationWithinPageForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_didFailProvisionalLoadWithError_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_didFinishLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_didReceiveTitle_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_didStartProvisionalLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_didCommitLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_resource_didFinishLoadingFromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_, proc6, "@:@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_identifierForInitialRequest_fromDataSource_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_handleNotification_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_createWebViewWithRequest_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewShow_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewClose_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_contextMenuItemsForElement_defaultMenuItems_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_setStatusBarVisible_, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_setResizable_, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_setToolbarsVisible_, proc4, "@:@B"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_setStatusText_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewFocus_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webViewUnfocus_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_runJavaScriptAlertPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_runJavaScriptConfirmPanelWithMessage_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_runOpenPanelForFileButtonWithResultListener_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_mouseDidMoveOverElement_modifierFlags_, proc5, "@:@@I"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_printFrameView_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_decidePolicyForMIMEType_request_frame_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_, proc7, "@:@@@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_unableToImplementPolicyWithError_frame_, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_download_decideDestinationWithSuggestedFilename_, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_handleEvent_, proc3, "@:@"); //$NON-NLS-1$
+		OS.class_addMethod(cls, OS.sel_webView_setFrame_, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
 		OS.objc_registerClassPair(cls);
 	}
 
@@ -146,7 +146,7 @@ public void create (Composite parent, int style) {
 	display.setData(ADD_WIDGET_KEY, new Object[] {delegate, browser});
 	this.delegate = delegate;
 	this.webView = webView;
-	browser.view.addSubview_(webView);
+	browser.view.addSubview(webView);
 
 	final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
@@ -194,7 +194,7 @@ public void create (Composite parent, int style) {
 	webView.setFrameLoadDelegate(delegate);
 	webView.setResourceLoadDelegate(delegate);
 	webView.setUIDelegate(delegate);	
-	notificationCenter.addObserver(delegate, OS.sel_handleNotification_1, null, webView);
+	notificationCenter.addObserver(delegate, OS.sel_handleNotification_, null, webView);
 	webView.setPolicyDelegate(delegate);
 	webView.setDownloadDelegate(delegate);
 	webView.setApplicationNameForUserAgent(NSString.stringWith(AGENT_STRING));
@@ -215,17 +215,17 @@ static int browserProc(int id, int sel, int arg0) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
-	if (sel == OS.sel_handleNotification_1) {
+	if (sel == OS.sel_handleNotification_) {
 		safari.handleNotification(arg0);
-	} else if (sel == OS.sel_webViewShow_1) {
+	} else if (sel == OS.sel_webViewShow_) {
 		safari.webViewShow(arg0);
-	} else if (sel == OS.sel_webViewClose_1) {
+	} else if (sel == OS.sel_webViewClose_) {
 		safari.webViewClose(arg0);
-	} else if (sel == OS.sel_webViewFocus_1) {
+	} else if (sel == OS.sel_webViewFocus_) {
 		safari.webViewFocus(arg0);
-	} else if (sel == OS.sel_webViewUnfocus_1) {
+	} else if (sel == OS.sel_webViewUnfocus_) {
 		safari.webViewUnfocus(arg0);
-	} else if (sel == OS.sel_handleEvent_1) {
+	} else if (sel == OS.sel_handleEvent_) {
 		safari.handleEvent(arg0);
 	}
 	return 0;
@@ -235,35 +235,35 @@ static int browserProc(int id, int sel, int arg0, int arg1) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
-	if (sel == OS.sel_webView_1didChangeLocationWithinPageForFrame_1) {
+	if (sel == OS.sel_webView_didChangeLocationWithinPageForFrame_) {
 		safari.webView_didChangeLocationWithinPageForFrame(arg0, arg1);
-	} else if (sel == OS.sel_webView_1didFinishLoadForFrame_1) {
+	} else if (sel == OS.sel_webView_didFinishLoadForFrame_) {
 		safari.webView_didFinishLoadForFrame(arg0, arg1);
-	} else if (sel == OS.sel_webView_1didStartProvisionalLoadForFrame_1) {
+	} else if (sel == OS.sel_webView_didStartProvisionalLoadForFrame_) {
 		safari.webView_didStartProvisionalLoadForFrame(arg0, arg1);
-	} else if (sel == OS.sel_webView_1didCommitLoadForFrame_1) {
+	} else if (sel == OS.sel_webView_didCommitLoadForFrame_) {
 		safari.webView_didCommitLoadForFrame(arg0, arg1);
-	} else if (sel == OS.sel_webView_1setFrame_1) {
+	} else if (sel == OS.sel_webView_setFrame_) {
 		safari.webView_setFrame(arg0, arg1);
-	} else if (sel == OS.sel_webView_1createWebViewWithRequest_1) {
+	} else if (sel == OS.sel_webView_createWebViewWithRequest_) {
 		return safari.webView_createWebViewWithRequest(arg0, arg1);		
-	} else if (sel == OS.sel_webView_1setStatusBarVisible_1) {
+	} else if (sel == OS.sel_webView_setStatusBarVisible_) {
 		safari.webView_setStatusBarVisible(arg0, arg1);
-	} else if (sel == OS.sel_webView_1setResizable_1) {
+	} else if (sel == OS.sel_webView_setResizable_) {
 		safari.webView_setResizable(arg0, arg1);
-	} else if (sel == OS.sel_webView_1setStatusText_1) {
+	} else if (sel == OS.sel_webView_setStatusText_) {
 		safari.webView_setStatusText(arg0, arg1);
-	} else if (sel == OS.sel_webView_1setToolbarsVisible_1) {
+	} else if (sel == OS.sel_webView_setToolbarsVisible_) {
 		safari.webView_setToolbarsVisible(arg0, arg1);
-	} else if (sel == OS.sel_webView_1runJavaScriptAlertPanelWithMessage_1) {
+	} else if (sel == OS.sel_webView_runJavaScriptAlertPanelWithMessage_) {
 		safari.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
-	} else if (sel == OS.sel_webView_1runJavaScriptConfirmPanelWithMessage_1) {
+	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_) {
 		return safari.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
-	} else if (sel == OS.sel_webView_1runOpenPanelForFileButtonWithResultListener_1) {
+	} else if (sel == OS.sel_webView_runOpenPanelForFileButtonWithResultListener_) {
 		safari.webView_runOpenPanelForFileButtonWithResultListener(arg0, arg1);
-	} else if (sel == OS.sel_download_1decideDestinationWithSuggestedFilename_1) {
+	} else if (sel == OS.sel_download_decideDestinationWithSuggestedFilename_) {
 		safari.download_decideDestinationWithSuggestedFilename(arg0, arg1);
-	} else if (sel == OS.sel_webView_1printFrameView_1) {
+	} else if (sel == OS.sel_webView_printFrameView_) {
 		safari.webView_printFrameView(arg0, arg1);
 	}
 	return 0;
@@ -273,19 +273,19 @@ static int browserProc(int id, int sel, int arg0, int arg1, int arg2) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
-	if (sel == OS.sel_webView_1didFailProvisionalLoadWithError_1forFrame_1) {
+	if (sel == OS.sel_webView_didFailProvisionalLoadWithError_forFrame_) {
 		safari.webView_didFailProvisionalLoadWithError_forFrame(arg0, arg1, arg2);
-	} else if (sel == OS.sel_webView_1didReceiveTitle_1forFrame_1) {
+	} else if (sel == OS.sel_webView_didReceiveTitle_forFrame_) {
 		safari.webView_didReceiveTitle_forFrame(arg0, arg1, arg2);
-	} else if (sel == OS.sel_webView_1resource_1didFinishLoadingFromDataSource_1) {
+	} else if (sel == OS.sel_webView_resource_didFinishLoadingFromDataSource_) {
 		safari.webView_resource_didFinishLoadingFromDataSource(arg0, arg1, arg2);
-	} else if (sel == OS.sel_webView_1identifierForInitialRequest_1fromDataSource_1) {
+	} else if (sel == OS.sel_webView_identifierForInitialRequest_fromDataSource_) {
 		return safari.webView_identifierForInitialRequest_fromDataSource(arg0, arg1, arg2);
-	} else if (sel == OS.sel_webView_1contextMenuItemsForElement_1defaultMenuItems_1) {
+	} else if (sel == OS.sel_webView_contextMenuItemsForElement_defaultMenuItems_) {
 		return safari.webView_contextMenuItemsForElement_defaultMenuItems(arg0, arg1, arg2);
-	} else if (sel == OS.sel_webView_1mouseDidMoveOverElement_1modifierFlags_1) {
+	} else if (sel == OS.sel_webView_mouseDidMoveOverElement_modifierFlags_) {
 		safari.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
-	} else if (sel == OS.sel_webView_1unableToImplementPolicyWithError_1frame_1) {
+	} else if (sel == OS.sel_webView_unableToImplementPolicyWithError_frame_) {
 		safari.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
 	}
 	return 0;
@@ -295,7 +295,7 @@ static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) 
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
-	if (sel == OS.sel_webView_1resource_1didFailLoadingWithError_1fromDataSource_1) {
+	if (sel == OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_) {
 		safari.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
 	}	
 	return 0;
@@ -305,13 +305,13 @@ static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3, 
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
-	if (sel == OS.sel_webView_1resource_1willSendRequest_1redirectResponse_1fromDataSource_1) {
+	if (sel == OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_) {
 		return safari.webView_resource_willSendRequest_redirectResponse_fromDataSource(arg0, arg1, arg2, arg3, arg4);
-	} else if (sel == OS.sel_webView_1decidePolicyForMIMEType_1request_1frame_1decisionListener_1) {
+	} else if (sel == OS.sel_webView_decidePolicyForMIMEType_request_frame_decisionListener_) {
 		safari.webView_decidePolicyForMIMEType_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
-	} else if (sel == OS.sel_webView_1decidePolicyForNavigationAction_1request_1frame_1decisionListener_1) {
+	} else if (sel == OS.sel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_) {
 		safari.webView_decidePolicyForNavigationAction_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
-	} else if (sel == OS.sel_webView_1decidePolicyForNewWindowAction_1request_1newFrameName_1decisionListener_1) {
+	} else if (sel == OS.sel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_) {
 		safari.webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	}
 	return 0;
@@ -338,9 +338,7 @@ public String getText() {
 	if (representation == null) return "";	//$NON-NLS-1$
 	NSString source = representation.documentSource();
 	if (source == null) return "";	//$NON-NLS-1$
-	char[] buffer = new char[source.length()];
-	source.getCharacters_(buffer);
-	return new String(buffer);
+	return source.getString();
 }
 
 public String getUrl() {
@@ -376,7 +374,7 @@ public boolean setText(String html) {
 void _setText(String html) {	
 	NSString string = NSString.stringWith(html);
 	NSString URLString = NSString.stringWith(URI_FROMMEMORY);
-	NSURL URL = NSURL.static_URLWithString_(URLString);
+	NSURL URL = NSURL.URLWithString(URLString);
 	WebFrame mainFrame = webView.mainFrame();
 	mainFrame.loadHTMLString(string, URL);
 }
@@ -393,13 +391,13 @@ public boolean setUrl(String url) {
 		if (url.indexOf(':') == -1) {
 			url = PROTOCOL_HTTP + "//" + url; //$NON-NLS-1$
 		}
-		inURL = NSURL.static_URLWithString_(NSString.stringWith(url.toString()));
+		inURL = NSURL.URLWithString(NSString.stringWith(url.toString()));
 	} else {
-		inURL = NSURL.static_fileURLWithPath_(NSString.stringWith(url.toString()));
+		inURL = NSURL.fileURLWithPath(NSString.stringWith(url.toString()));
 	}
 	if (inURL == null) return false;
 
-	NSURLRequest request = NSURLRequest.static_requestWithURL_(inURL);
+	NSURLRequest request = NSURLRequest.requestWithURL(inURL);
 	WebFrame mainFrame= webView.mainFrame();
 	mainFrame.loadRequest(request);
 	return true;
@@ -420,9 +418,7 @@ void webView_didChangeLocationWithinPageForFrame(int sender, int frameID) {
 	NSString s = url.absoluteString();
 	int length = s.length();
 	if (length == 0) return;
-	char[] buffer = new char[length];
-	s.getCharacters_(buffer);
-	String url2 = new String(buffer);
+	String url2 = s.getString();
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -474,19 +470,15 @@ void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int
 	if (errorCode <= OS.NSURLErrorBadURL) {
 		NSString description = nserror.localizedDescription();
 		if (description != null) {
-			char[] buffer = new char[description.length()];
-			description.getCharacters_(buffer);
-			String descriptionString = new String(buffer);
+			String descriptionString = description.getString();
 			String urlString = null;
 			NSDictionary info = nserror.userInfo();
 			if (info != null) {
 				NSString key = new NSString(OS.NSErrorFailingURLStringKey());
 				id id = info.valueForKey(key);
 				if (id != null) {
-					NSString url = new NSString(id.id);
-					buffer = new char[url.length()];
-					url.getCharacters_(buffer);
-					urlString = new String(buffer);
+					NSString url = new NSString(id);
+					urlString = url.getString();
 				}
 			}
 			String message = urlString != null ? urlString + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
@@ -588,10 +580,10 @@ void hookDOMKeyListeners(int frameID) {
 	DOMDocument document = frame.DOMDocument();
 
 	NSString type = NSString.stringWith(DOMEVENT_KEYDOWN);
-	document.addEventListener_listener_useCapture(type, delegate, false);
+	document.addEventListener(type, delegate, false);
 
 	type = NSString.stringWith(DOMEVENT_KEYUP);
-	document.addEventListener_listener_useCapture(type, delegate, false);
+	document.addEventListener(type, delegate, false);
 }
 
 void hookDOMMouseListeners(int frameID) {
@@ -599,24 +591,22 @@ void hookDOMMouseListeners(int frameID) {
 	DOMDocument document = frame.DOMDocument();
 
 	NSString type = NSString.stringWith(DOMEVENT_MOUSEDOWN);
-	document.addEventListener_listener_useCapture(type, delegate, false);
+	document.addEventListener(type, delegate, false);
 
 	type = NSString.stringWith(DOMEVENT_MOUSEUP);
-	document.addEventListener_listener_useCapture(type, delegate, false);
+	document.addEventListener(type, delegate, false);
 
 	type = NSString.stringWith(DOMEVENT_MOUSEMOVE);
-	document.addEventListener_listener_useCapture(type, delegate, false);
+	document.addEventListener(type, delegate, false);
 
 	type = NSString.stringWith(DOMEVENT_MOUSEWHEEL);
-	document.addEventListener_listener_useCapture(type, delegate, false);
+	document.addEventListener(type, delegate, false);
 }
 
 void webView_didReceiveTitle_forFrame(int sender, int titleID, int frameID) {
 	if (frameID == webView.mainFrame().id) {
 		NSString title = new NSString(titleID);
-		char[] buffer = new char[title.length()];
-		title.getCharacters_(buffer);
-		String newTitle = new String(buffer);
+		String newTitle = title.getString();
 		TitleEvent newEvent = new TitleEvent(browser);
 		newEvent.display = browser.getDisplay();
 		newEvent.widget = browser;
@@ -648,9 +638,7 @@ void webView_didCommitLoadForFrame(int sender, int frameID) {
 	NSString s = url.absoluteString();
 	int length = s.length();
 	if (length == 0) return;
-	char[] buffer = new char[length];
-	s.getCharacters_(buffer);
-	String url2 = new String(buffer);
+	String url2 = s.getString();
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -877,9 +865,7 @@ void webViewUnfocus(int sender) {
 
 void webView_runJavaScriptAlertPanelWithMessage(int sender, int messageID) {
 	NSString message = new NSString(messageID);
-	char[] buffer = new char[message.length()];
-	message.getCharacters_(buffer);
-	String text = new String(buffer);
+	String text = message.getString();
 
 	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_WARNING);
 	messageBox.setText("Javascript");	//$NON-NLS-1$
@@ -889,9 +875,7 @@ void webView_runJavaScriptAlertPanelWithMessage(int sender, int messageID) {
 
 int webView_runJavaScriptConfirmPanelWithMessage(int sender, int messageID) {
 	NSString message = new NSString(messageID);
-	char[] buffer = new char[message.length()];
-	message.getCharacters_(buffer);
-	String text = new String(buffer);
+	String text = message.getString();
 
 	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
 	messageBox.setText("Javascript");	//$NON-NLS-1$
@@ -962,13 +946,11 @@ void webView_setStatusText(int sender, int textID) {
 	NSString text = new NSString(textID);
 	int length = text.length();
 	if (length == 0) return;
-	char[] buffer = new char[length];
-	text.getCharacters_(buffer);
 
 	StatusTextEvent statusText = new StatusTextEvent(browser);
 	statusText.display = browser.getDisplay();
 	statusText.widget = browser;
-	statusText.text = new String(buffer);
+	statusText.text = text.getString();
 	for (int i = 0; i < statusTextListeners.length; i++) {
 		statusTextListeners[i].changed(statusText);
 	}
@@ -1008,9 +990,7 @@ void webView_mouseDidMoveOverElement_modifierFlags (int sender, int elementInfor
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
 	} else {
-		char[] buffer = new char[length];
-		url.getCharacters_(buffer);
-		urlString = new String(buffer);
+		urlString = url.getString();
 	}
 	if (urlString.equals(lastHoveredLinkURL)) return;
 
@@ -1057,9 +1037,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 		return;
 	}
 	NSString s = url.absoluteString();
-	char[] buffer = new char[s.length()];
-	s.getCharacters_(buffer);
-	String url2 = new String(buffer);
+	String url2 = s.getString();
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -1102,9 +1080,7 @@ void webView_unableToImplementPolicyWithError_frame(int sender, int error, int f
 
 void download_decideDestinationWithSuggestedFilename(int downloadId, int filename) {
 	NSString string = new NSString(filename);
-	char[] buffer = new char[string.length()];
-	string.getCharacters_(buffer);
-	String name = new String(buffer);
+	String name = string.getString();
 	FileDialog dialog = new FileDialog(browser.getShell(), SWT.SAVE);
 	dialog.setText(SWT.getMessage ("SWT_FileDownload")); //$NON-NLS-1$
 	dialog.setFileName(name);
@@ -1121,11 +1097,8 @@ void download_decideDestinationWithSuggestedFilename(int downloadId, int filenam
 /* DOMEventListener */
 
 void handleEvent(int evtId) {
-	DOMEvent evt = new DOMEvent(evtId);
-	NSString string = evt.type();
-	char[] buffer = new char[string.length()];
-	string.getCharacters_(buffer);
-	String type = new String(buffer);
+	NSString string = new NSString(OS.objc_msgSend(evtId, OS.sel_type));
+	String type = string.getString();
 
 	if (DOMEVENT_KEYDOWN.equals(type) || DOMEVENT_KEYUP.equals(type)) {
 		DOMKeyboardEvent event = new DOMKeyboardEvent(evtId);

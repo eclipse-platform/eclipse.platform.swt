@@ -11,12 +11,24 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class id {
-public int id;
+
+public int /*long*/ id;
 
 public id() {
 }
 
-public id(int id) {
+public id(int /*long*/ id) {
 	this.id = id;
+}
+
+public id(id id) {
+	this.id = id != null ? id.id : 0;
+}
+
+public int objc_getClass() {
+	String name = getClass().getName();
+	int index = name.lastIndexOf('.');
+	if (index != -1) name = name.substring(index + 1);
+	return OS.objc_getClass(name);
 }
 }

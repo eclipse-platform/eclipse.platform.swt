@@ -16,22 +16,16 @@ public WebPreferences() {
 	super();
 }
 
-public WebPreferences(int id) {
+public WebPreferences(int /*long*/ id) {
 	super(id);
 }
 
-public NSString identifier() {
-	int result = OS.objc_msgSend(this.id, OS.sel_identifier);
-	return result != 0 ? new NSString(result) : null;
-}
-
-public id initWithIdentifier(NSString anIdentifier) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_1, anIdentifier != null ? anIdentifier.id : 0);
-	return result != 0 ? new id(result) : null;
+public WebPreferences(id id) {
+	super(id);
 }
 
 public void setJavaEnabled(boolean flag) {
-	OS.objc_msgSend(this.id, OS.sel_setJavaEnabled_1, flag);
+	OS.objc_msgSend(this.id, OS.sel_setJavaEnabled_, flag);
 }
 
 public static WebPreferences standardPreferences() {

@@ -16,26 +16,17 @@ public NSSearchField() {
 	super();
 }
 
-public NSSearchField(int id) {
+public NSSearchField(int /*long*/ id) {
+	super(id);
+}
+
+public NSSearchField(id id) {
 	super(id);
 }
 
 public NSArray recentSearches() {
 	int result = OS.objc_msgSend(this.id, OS.sel_recentSearches);
 	return result != 0 ? new NSArray(result) : null;
-}
-
-public NSString recentsAutosaveName() {
-	int result = OS.objc_msgSend(this.id, OS.sel_recentsAutosaveName);
-	return result != 0 ? new NSString(result) : null;
-}
-
-public void setRecentSearches(NSArray searches) {
-	OS.objc_msgSend(this.id, OS.sel_setRecentSearches_1, searches != null ? searches.id : 0);
-}
-
-public void setRecentsAutosaveName(NSString string) {
-	OS.objc_msgSend(this.id, OS.sel_setRecentsAutosaveName_1, string != null ? string.id : 0);
 }
 
 }

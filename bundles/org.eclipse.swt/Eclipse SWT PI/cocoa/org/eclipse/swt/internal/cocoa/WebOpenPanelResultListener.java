@@ -21,6 +21,6 @@ public void cancel() {
 }
 
 public void chooseFilename(NSString string) {
-	OS.objc_msgSend(id, OS.sel_chooseFilename_1, string != null ? string.id : 0);
+	OS.objc_msgSend(id, OS.sel_chooseFilename_, string != null ? string.id : 0);
 }
 }

@@ -103,7 +103,7 @@ void computeRuns() {
 	if (textStorage != null) return;
 	NSString str = NSString.stringWith(text);
 	textStorage = ((NSTextStorage)new NSTextStorage().alloc());
-	textStorage.initWithString_(str);
+	textStorage.initWithString(str);
 	layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 	textContainer = (NSTextContainer)new NSTextContainer().alloc();
 	NSSize size = new NSSize();
@@ -117,7 +117,7 @@ void computeRuns() {
 	Font defaultFont = font != null ? font : device.systemFont;
 	NSRange range = new NSRange();
 	range.length = str.length();
-	textStorage.addAttribute(OS.NSFontAttributeName(), defaultFont.handle, range);
+	textStorage.addAttribute(OS.NSFontAttributeName, defaultFont.handle, range);
 	
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	int align = OS.NSLeftTextAlignment;
@@ -138,7 +138,7 @@ void computeRuns() {
 	
 	//TODO tabs ascend descent wrap
 	
-	textStorage.addAttribute(OS.NSParagraphStyleAttributeName(), paragraph, range);
+	textStorage.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
 	paragraph.release();
 	
 	int textLength = str.length();
@@ -150,24 +150,24 @@ void computeRuns() {
 		range.length = translateOffset(styles[i + 1].start) - range.location;
 		Font font = style.font;
 		if (font != null) {
-			textStorage.addAttribute(OS.NSFontAttributeName(), font.handle, range);
+			textStorage.addAttribute(OS.NSFontAttributeName, font.handle, range);
 		}
 		Color foreground = style.foreground;
 		if (foreground != null) {
 			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
-			textStorage.addAttribute(OS.NSForegroundColorAttributeName(), color, range);
+			textStorage.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 		}
 		Color background = style.background;
 		if (background != null) {
 			NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
-			textStorage.addAttribute(OS.NSBackgroundColorAttributeName(), color, range);
+			textStorage.addAttribute(OS.NSBackgroundColorAttributeName, color, range);
 		}
 		if (style.strikeout) {
-			textStorage.addAttribute(OS.NSStrikethroughStyleAttributeName(), NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
+			textStorage.addAttribute(OS.NSStrikethroughStyleAttributeName, NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
 			Color strikeColor = style.strikeoutColor;
 			if (strikeColor != null) {
 				NSColor color = NSColor.colorWithDeviceRed(strikeColor.handle[0], strikeColor.handle[1], strikeColor.handle[2], 1);
-				textStorage.addAttribute(OS.NSStrikethroughColorAttributeName(), color, range);
+				textStorage.addAttribute(OS.NSStrikethroughColorAttributeName, color, range);
 			}
 		}
 		if (style.underline) {
@@ -184,16 +184,16 @@ void computeRuns() {
 					break;
 			}
 			if (underlineStyle != 0) {
-				textStorage.addAttribute(OS.NSUnderlineStyleAttributeName(), NSNumber.numberWithInt(underlineStyle), range);
+				textStorage.addAttribute(OS.NSUnderlineStyleAttributeName, NSNumber.numberWithInt(underlineStyle), range);
 				Color underlineColor = style.underlineColor;
 				if (underlineColor != null) {
 					NSColor color = NSColor.colorWithDeviceRed(underlineColor.handle[0], underlineColor.handle[1], underlineColor.handle[2], 1);
-					textStorage.addAttribute(OS.NSUnderlineColorAttributeName(), color, range);
+					textStorage.addAttribute(OS.NSUnderlineColorAttributeName, color, range);
 				}
 			}
 		}
 		if (style.rise != 0) {
-			textStorage.addAttribute(OS.NSBaselineOffsetAttributeName(), NSNumber.numberWithInt(style.rise), range);
+			textStorage.addAttribute(OS.NSBaselineOffsetAttributeName, NSNumber.numberWithInt(style.rise), range);
 		}
 		if (style.metrics != null) {
 			//TODO
@@ -208,7 +208,7 @@ void computeRuns() {
 	int rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, true);
+	    layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    index = lineRange.location + lineRange.length;
 	}
@@ -216,7 +216,7 @@ void computeRuns() {
 	int[] offsets = new int[numberOfLines + 1];
 	NSRect[] bounds = new NSRect[numberOfLines];
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_(index, rangePtr, true);
+		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    offsets[numberOfLines] = lineRange.location;
 	    index = lineRange.location + lineRange.length;
@@ -704,7 +704,7 @@ public Point getLocation(int offset, boolean trailing) {
 	if (length == 0) return new Point(0, 0);
 	offset = translateOffset(offset);
 	int glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
-	NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex_effectiveRange_(glyphIndex, 0);
+	NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(glyphIndex, 0);
 	NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
 	if (trailing) {
 		NSRange range = new NSRange();
@@ -836,7 +836,7 @@ public int getOffset(int x, int y, int[] trailing) {
 	pt.x = x;
 	pt.y = y;
 	float[] partialFration = new float[1];
-	int glyphIndex = layoutManager.glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_(pt, textContainer, partialFration);
+	int glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFration);
 	int offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
 	if (trailing != null) trailing[0] = Math.round(partialFration[0]);
 	return Math.min(untranslateOffset(offset), length - 1);

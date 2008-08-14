@@ -30,7 +30,7 @@ public class TextTransfer extends ByteArrayTransfer {
 
 	static TextTransfer _instance = new TextTransfer();
 	
-	static final String ID_NAME = getString(OS.NSStringPboardType);
+	static final String ID_NAME = OS.NSStringPboardType.getString();
 	static final int ID = registerType(ID_NAME);
 
 TextTransfer() {}
@@ -73,9 +73,7 @@ public void javaToNative (Object object, TransferData transferData) {
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSString string = (NSString) transferData.data;
-	char[] chars = new char[string.length()];
-	string.getCharacters_(chars);
-	return new String(chars);
+	return string.getString();
 }
 
 protected int[] getTypeIds() {

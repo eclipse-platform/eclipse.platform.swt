@@ -461,7 +461,7 @@ public void cut () {
 					insertEditText (newText);
 				} else {
 					NSTextView widget = (NSTextView) view;
-					widget.replaceCharactersInRange_withString_ (widget.selectedRange (), NSString.stringWith (newText));
+					widget.replaceCharactersInRange (widget.selectedRange (), NSString.stringWith (newText));
 				}
 				cut = false;
 			}
@@ -658,7 +658,7 @@ char [] getEditText () {
 	} else {
 		NSRange range = new NSRange ();
 		range.length = length;
-		str.getCharacters_range_ (buffer, range);
+		str.getCharacters (buffer, range);
 	}
 	return buffer;
 }
@@ -676,7 +676,7 @@ char [] getEditText (int start, int end) {
 	if (hiddenText != null) {
 		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
 	} else {
-		str.getCharacters_range_ (buffer, range);
+		str.getCharacters (buffer, range);
 	}
 	return buffer;
 }
@@ -859,7 +859,7 @@ public String getSelectionText () {
 		NSRange range = widget.selectedRange ();
 		NSString str = widget.textStorage ().string ();
 		char[] buffer = new char [range.length];
-		str.getCharacters_range_ (buffer, range);
+		str.getCharacters (buffer, range);
 		return new String (buffer);
 	}
 }
@@ -906,9 +906,7 @@ public String getText () {
 	} else {
 		str = ((NSTextView)view).textStorage ().string ();
 	}
-	char[] buffer = new char[str.length ()];
-	str.getCharacters_ (buffer);
-	return new String (buffer);
+	return str.getString();
 }
 
 /**
@@ -944,9 +942,7 @@ public String getText (int start, int end) {
 	range.length = end - start + 1;
 	NSAttributedString substring = storage.attributedSubstringFromRange (range);
 	NSString string = substring.string ();
-	char[] buffer = new char [range.length];
-	string.getCharacters_ (buffer);
-	return new String (buffer);
+	return string.getString();
 }
 
 /**
@@ -1047,7 +1043,7 @@ public void insert (String string) {
 		NSString str = NSString.stringWith (string);
 		NSTextView widget = (NSTextView) view;
 		NSRange range = widget.selectedRange ();
-		widget.textStorage ().replaceCharactersInRange_withString_ (range, str);
+		widget.textStorage ().replaceCharactersInRange (range, str);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
@@ -1066,7 +1062,7 @@ void insertEditText (String string) {
 		string.getChars (0, buffer.length, buffer, 0);
 		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
 		NSText editor = ((NSTextField) view).currentEditor ();
-		editor.replaceCharactersInRange_withString_ (editor.selectedRange (), nsstring);
+		editor.replaceCharactersInRange (editor.selectedRange (), nsstring);
 		selectionRange = null;
 	} else {
 		String oldText = getText ();
@@ -1110,7 +1106,7 @@ public void paste () {
 					insertEditText (newText);
 				} else {
 					NSTextView textView = (NSTextView) view;
-					textView.replaceCharactersInRange_withString_ (textView.selectedRange (), NSString.stringWith (newText));
+					textView.replaceCharactersInRange (textView.selectedRange (), NSString.stringWith (newText));
 				}
 				paste = false;
 			}
@@ -1405,7 +1401,7 @@ void setEditText (String string) {
 
 void setFont(NSFont font) {
 	if ((style & SWT.MULTI) !=  0) {
-		((NSTextView) view).setFont_ (font);
+		((NSTextView) view).setFont (font);
 		return;
 	}
 	super.setFont (font);
@@ -1421,7 +1417,7 @@ void setForeground (float [] color) {
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setTextColor (nsColor);
 	} else {
-		((NSTextView) view).setTextColor_ (nsColor);
+		((NSTextView) view).setTextColor (nsColor);
 	}
 }
 
@@ -1701,10 +1697,10 @@ public void setTopIndex (int index) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	//TODO no working
-	NSTextView widget = (NSTextView) view;
-	NSRange range = new NSRange ();
-	NSRect rect = widget.firstRectForCharacterRange (range);
-	view.scrollRectToVisible (rect);
+//	NSTextView widget = (NSTextView) view;
+//	NSRange range = new NSRange ();
+//	NSRect rect = widget.firstRectForCharacterRange (range);
+//	view.scrollRectToVisible (rect);
 }
 
 /**

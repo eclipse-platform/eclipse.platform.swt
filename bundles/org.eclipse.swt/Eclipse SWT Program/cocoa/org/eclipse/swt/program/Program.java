@@ -204,7 +204,7 @@ public static boolean launch (String fileName) {
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 	//TODO use CFURLCreateStringByAddingPercentEscapes instead
 	NSString str = NSString.stringWith(fileName).stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
-	return workspace.openURL(NSURL.static_URLWithString_(str));
+	return workspace.openURL(NSURL.URLWithString(str));
 }
 
 /**
@@ -225,11 +225,11 @@ public boolean execute (String fileName) {
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 	NSString fullPath = NSString.stringWith(fileName);
 	if (fileName.indexOf(':') == -1) {
-		return workspace.openFile_withApplication_(fullPath, NSString.stringWith(name));
+		return workspace.openFile(fullPath, NSString.stringWith(name));
 	}
 	//TODO use CFURLCreateStringByAddingPercentEscapes instead
 	NSString str = fullPath.stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
-	NSArray urls = NSArray.arrayWithObject(NSURL.static_URLWithString_(str));
+	NSArray urls = NSArray.arrayWithObject(NSURL.URLWithString(str));
 	return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
 }
 
@@ -254,9 +254,9 @@ public ImageData getImageData () {
 			NSSize size = new NSSize();
 			size.width = size.height = 16;
 			nsImage.setSize(size);
-			NSImageRep rep = nsImage.bestRepresentationForDevice(null);
 			NSBitmapImageRep imageRep = null;
-			if (rep.isKindOfClass(NSBitmapImageRep.static_class())) { 
+			NSImageRep rep = nsImage.bestRepresentationForDevice(null);
+			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
 				imageRep = new NSBitmapImageRep(rep.id);
 			}
 			if (imageRep != null) {

@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.*;
 public class ImageTransfer extends ByteArrayTransfer {
 
 static ImageTransfer _instance = new ImageTransfer();
-static final String TIFF = getString(OS.NSTIFFPboardType);
+static final String TIFF = OS.NSTIFFPboardType.getString();
 static final int TIFFID = registerType(TIFF);
 
 ImageTransfer() {

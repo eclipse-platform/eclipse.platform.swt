@@ -27,5 +27,5 @@ public class NSRect {
 	public float y;
 	public float width;
 	public float height;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.NSRect_sizeof();
 }

@@ -625,12 +625,12 @@ NSAttributedString createString(String string, int flags) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	float[] foreground = data.foreground;
 	NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], data.alpha / 255f);
-	dict.setObject(color, OS.NSForegroundColorAttributeName());
-	dict.setObject(data.font.handle, OS.NSFontAttributeName());
+	dict.setObject(color, OS.NSForegroundColorAttributeName);
+	dict.setObject(data.font.handle, OS.NSFontAttributeName);
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 		float[] background = data.background;
 		color = NSColor.colorWithDeviceRed(background[0], background[1], background[2], data.alpha / 255f);
-		dict.setObject(color, OS.NSBackgroundColorAttributeName());
+		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
 	int length = string.length();
 	char[] chars = new char[length];
@@ -671,7 +671,7 @@ NSAttributedString createString(String string, int flags) {
 //		length = j;
 //	}
 	NSString str = NSString.stringWithCharacters(chars, length);
-	return ((NSAttributedString)new NSAttributedString().alloc()).initWithString_attributes_(str, dict);
+	return ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
 }
 
 void destroy() {
@@ -749,7 +749,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	NSPoint center = new NSPoint();
 	float sAngle = -startAngle;
 	float eAngle = -(startAngle + arcAngle);
-	path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_(center, 1, sAngle,  eAngle, arcAngle>0);
+	path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 	path.transformUsingAffineTransform(transform);
 	path.stroke();
 	path.removeAllPoints();
@@ -1442,7 +1442,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	path.moveToPoint(center);
 	float sAngle = -startAngle;
 	float eAngle = -(startAngle + arcAngle);
-	path.appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_(center, 1, sAngle,  eAngle, arcAngle>0);
+	path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 	path.closePath();
 	path.transformUsingAffineTransform(transform);
 	path.fill();
@@ -1507,7 +1507,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		rect.y = y;
 		rect.width = width;
 		rect.height = height;
-		gradient.drawInRect_angle_(rect, vertical ? 90 : 0);
+		gradient.drawInRect(rect, vertical ? 90 : 0);
 		gradient.release();
 	}
 	uncheckGC();
@@ -2005,7 +2005,7 @@ public void getClipping(Region region) {
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		NSPoint pt = new NSPoint();
 		for (int i = 0; i < count; i++) {
-			int element = clip.elementAtIndex_associatedPoints_(i, points);
+			int element = clip.elementAtIndex(i, points);
 			switch (element) {
 				case OS.NSMoveToBezierPathElement:
 					if (pointCount != 0) clipRgn.add(pointArray, pointCount);

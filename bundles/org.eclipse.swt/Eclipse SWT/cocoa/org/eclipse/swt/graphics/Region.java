@@ -338,14 +338,14 @@ int regionToRects(int message, int rgn, int r, int path) {
 		OS.memmove(rect, r, rect.length * 2);
 		pt.x = rect[1];
 		pt.y = rect[0];
-		OS.objc_msgSend(path, OS.sel_moveToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_moveToPoint_, pt);
 		pt.x = rect[3];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
 		pt.x = rect[3];
 		pt.y = rect[2];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
 		pt.x = rect[1];
-		OS.objc_msgSend(path, OS.sel_lineToPoint_1, pt);
+		OS.objc_msgSend(path, OS.sel_lineToPoint_, pt);
 		OS.objc_msgSend(path, OS.sel_closePath);
 	}
 	return 0;

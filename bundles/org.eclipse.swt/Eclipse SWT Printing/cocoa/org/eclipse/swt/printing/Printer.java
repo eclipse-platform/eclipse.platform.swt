@@ -59,9 +59,7 @@ public static PrinterData[] getPrinterList() {
 	PrinterData[] result = new PrinterData[count];
 	for (int i = 0; i < count; i++) {
 		NSString str = new NSString(printers.objectAtIndex(i));
-		char[] buffer = new char[str.length()];
-		str.getCharacters_(buffer);
-		result[i] = new PrinterData(DRIVER, new String(buffer));
+		result[i] = new PrinterData(DRIVER, str.getString());
 	}
 	return result;
 }
@@ -79,9 +77,7 @@ public static PrinterData getDefaultPrinterData() {
 	NSPrinter printer = NSPrintInfo.defaultPrinter();
 	if (printer == null) return null;
 	NSString str = printer.name();
-	char[] buffer = new char[str.length()];
-	str.getCharacters_(buffer);
-	return new PrinterData(DRIVER, new String(buffer));
+	return new PrinterData(DRIVER, str.getString());
 	
 }
 
@@ -185,7 +181,7 @@ protected void create(DeviceData deviceData) {
 		printInfo = NSPrintInfo.sharedPrintInfo();
 	}
 	printInfo.retain();
-	printer = NSPrinter.static_printerWithName_(NSString.stringWith(data.name));
+	printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
 	if (printer != null) {
 		printer.retain();
 		printInfo.setPrinter(printer);
@@ -200,11 +196,11 @@ protected void create(DeviceData deviceData) {
 	}
 	NSRect rect = new NSRect();
 	window = (NSWindow)new NSWindow().alloc();
-	window.initWithContentRect_styleMask_backing_defer_(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+	window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 	view = (NSView)new NSView().alloc();
 	view.initWithFrame(rect);
 	window.setContentView(view);
-	operation = NSPrintOperation.static_printOperationWithView_printInfo_(view, printInfo);
+	operation = NSPrintOperation.printOperationWithView(view, printInfo);
 	operation.retain();
 	operation.setShowsPrintPanel(false);
 	operation.setShowsProgressPanel(false);

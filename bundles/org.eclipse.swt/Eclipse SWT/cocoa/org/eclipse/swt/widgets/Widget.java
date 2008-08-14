@@ -415,21 +415,22 @@ void drawBackground (int control, int context) {
 void drawInteriorFrame_inView (int cellFrame, int view) {
 }
 
-void drawRect (int id, NSRect rect) {
+void drawRect (int id, int sel, NSRect rect) {
 	//TODO offset region to view coordinates
 	//TODO use region from control as well shell region
+	NSGraphicsContext current = NSGraphicsContext.currentContext();
 	NSBezierPath path = getClipping ();
 	if (path != null) {
-		NSGraphicsContext.static_saveGraphicsState();
+		current.saveGraphicsState();
 		path.addClip ();
 	}
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, OS.sel_drawRect_1, rect);
+	OS.objc_msgSendSuper(super_struct, sel, rect);
 	drawWidget (id, rect);
 	if (path != null) {
-		NSGraphicsContext.static_restoreGraphicsState();
+		current.restoreGraphicsState();
 	}
 }
 
@@ -752,7 +753,7 @@ NSRange markedRange (int id, int sel) {
 void menu_willHighlightItem(int menu, int item) {
 }
 
-void menuWillClose(int menu) {
+void menuDidClose(int menu) {
 }
 
 void menuWillOpen(int menu) {
@@ -1317,8 +1318,8 @@ void windowDidResignKey(int notification) {
 void windowDidBecomeKey(int notification) {
 }
 
-void windowSendEvent(int id, int event) {
-	callSuper(id, OS.sel_sendEvent_1, event);
+void windowSendEvent(int id, int sel, int event) {
+	callSuper(id, sel, event);
 }
 
 boolean windowShouldClose(int window) {

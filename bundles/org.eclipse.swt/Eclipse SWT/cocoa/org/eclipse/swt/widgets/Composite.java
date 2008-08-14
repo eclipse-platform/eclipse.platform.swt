@@ -96,7 +96,7 @@ Control [] _getChildren () {
 	if (count == 0) return children;
 	int j = 0;
 	for (int i=0; i<count; i++){
-		Widget widget = display.getWidget (views.objectAtIndex (count - i - 1));
+		Widget widget = display.getWidget (views.objectAtIndex (count - i - 1).id);
 		if (widget != null && widget != this && widget instanceof Control) {
 			children [j++] = (Control) widget;
 		}

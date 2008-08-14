@@ -174,7 +174,7 @@ protected Object nativeToJava(TransferData transferData) {
 	NSData data = (NSData) transferData.data;
 	if (data.length() == 0) return null;
 	byte[] bytes = new byte[data.length()];
-	data.getBytes_(bytes);
+	data.getBytes(bytes);
 	return bytes;
 }
 boolean checkByteArray(Object object) {

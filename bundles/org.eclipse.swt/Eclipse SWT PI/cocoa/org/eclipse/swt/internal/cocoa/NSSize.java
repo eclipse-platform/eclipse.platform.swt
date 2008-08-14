@@ -15,5 +15,5 @@ package org.eclipse.swt.internal.cocoa;
 public class NSSize {
 	public float width;
 	public float height;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.NSSize_sizeof();
 }

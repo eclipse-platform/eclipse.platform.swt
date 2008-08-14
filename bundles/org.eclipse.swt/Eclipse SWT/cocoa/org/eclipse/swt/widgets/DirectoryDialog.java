@@ -128,9 +128,7 @@ public String open () {
 	int response = panel.runModal();
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
-		char[] buffer = new char[filename.length()];
-		filename.getCharacters_(buffer);
-		directoryPath = filterPath = new String(buffer);
+		directoryPath = filterPath = filename.getString();
 	}
 //	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
 	return directoryPath;

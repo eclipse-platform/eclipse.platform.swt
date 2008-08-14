@@ -25,5 +25,5 @@ package org.eclipse.swt.internal.cocoa;
 public class NSPoint {
 	public float x;
 	public float y;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.NSPoint_sizeof();
 }

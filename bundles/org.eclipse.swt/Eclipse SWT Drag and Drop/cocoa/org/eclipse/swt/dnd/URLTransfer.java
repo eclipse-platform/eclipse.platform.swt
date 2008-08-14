@@ -24,7 +24,7 @@
  *  	be filled in on return with the platform specific format of the data
  * 
  * @see Transfer#nativeToJava
- */public void javaToNative (Object object, TransferData transferData){	if (!checkURL(object) || !isSupportedType(transferData)) {		DND.error(DND.ERROR_INVALID_DATA);	}	String url = (String)object;	NSString nsString = NSString.stringWith(url);	transferData.data = NSURL.static_URLWithString_(nsString);}/**
+ */public void javaToNative (Object object, TransferData transferData){	if (!checkURL(object) || !isSupportedType(transferData)) {		DND.error(DND.ERROR_INVALID_DATA);	}	String url = (String)object;	NSString nsString = NSString.stringWith(url);	transferData.data = NSURL.URLWithString(nsString);}/**
  * This implementation of <code>nativeToJava</code> converts a platform 
  * specific representation of a URL to a java <code>String</code>.
  * 
@@ -33,4 +33,4 @@
  * 		otherwise null
  * 
  * @see Transfer#javaToNative
- */public Object nativeToJava(TransferData transferData){	if (!isSupportedType(transferData) || transferData.data == null) return null;	NSURL nsUrl = (NSURL) transferData.data;	NSString nsString = nsUrl.absoluteString();	return getString(nsString);}protected int[] getTypeIds(){	return new int[] {URL_ID};}protected String[] getTypeNames(){	return new String[] {URL}; }boolean checkURL(Object object) {	return object != null && (object instanceof String) && ((String)object).length() > 0;}protected boolean validate(Object object) {	return checkURL(object);}}
+ */public Object nativeToJava(TransferData transferData){	if (!isSupportedType(transferData) || transferData.data == null) return null;	NSURL nsUrl = (NSURL) transferData.data;	NSString nsString = nsUrl.absoluteString();	return nsString.getString();}protected int[] getTypeIds(){	return new int[] {URL_ID};}protected String[] getTypeNames(){	return new String[] {URL}; }boolean checkURL(Object object) {	return object != null && (object instanceof String) && ((String)object).length() > 0;}protected boolean validate(Object object) {	return checkURL(object);}}

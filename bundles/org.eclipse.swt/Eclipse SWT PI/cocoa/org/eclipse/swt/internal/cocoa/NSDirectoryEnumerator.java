@@ -16,18 +16,12 @@ public NSDirectoryEnumerator() {
 	super();
 }
 
-public NSDirectoryEnumerator(int id) {
+public NSDirectoryEnumerator(int /*long*/ id) {
 	super(id);
 }
 
-public NSDictionary directoryAttributes() {
-	int result = OS.objc_msgSend(this.id, OS.sel_directoryAttributes);
-	return result != 0 ? new NSDictionary(result) : null;
-}
-
-public NSDictionary fileAttributes() {
-	int result = OS.objc_msgSend(this.id, OS.sel_fileAttributes);
-	return result != 0 ? new NSDictionary(result) : null;
+public NSDirectoryEnumerator(id id) {
+	super(id);
 }
 
 public void skipDescendents() {

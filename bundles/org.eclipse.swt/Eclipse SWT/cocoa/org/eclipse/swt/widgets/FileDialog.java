@@ -205,18 +205,14 @@ public String open () {
 	int response = panel.runModal();
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
-		char[] buffer = new char[filename.length()];
-		filename.getCharacters_(buffer);
-		fullPath = new String(buffer);
+		fullPath = filename.getString();
 		if ((style & SWT.SAVE) == 0) {
 			NSArray filenames = ((NSOpenPanel)panel).filenames();
 			int count = filenames.count();
 			fileNames = new String[count];
 			for (int i = 0; i < count; i++) {
 				filename = new NSString(filenames.objectAtIndex(i));
-				buffer = new char[filename.length()];
-				filename.getCharacters_(buffer);
-				fileNames[i] = new String(buffer);
+				fileNames[i] = filename.getString();
 			}
 		}
 		filterIndex = -1;

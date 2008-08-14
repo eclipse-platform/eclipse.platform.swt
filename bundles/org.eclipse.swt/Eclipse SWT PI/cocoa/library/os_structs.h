@@ -59,18 +59,6 @@ void setNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTra
 #define NSAffineTransformStruct_sizeof() 0
 #endif
 
-#ifndef NO_NSDecimal
-void cacheNSDecimalFields(JNIEnv *env, jobject lpObject);
-NSDecimal *getNSDecimalFields(JNIEnv *env, jobject lpObject, NSDecimal *lpStruct);
-void setNSDecimalFields(JNIEnv *env, jobject lpObject, NSDecimal *lpStruct);
-#define NSDecimal_sizeof() sizeof(NSDecimal)
-#else
-#define cacheNSDecimalFields(a,b)
-#define getNSDecimalFields(a,b,c) NULL
-#define setNSDecimalFields(a,b,c)
-#define NSDecimal_sizeof() 0
-#endif
-
 #ifndef NO_NSPoint
 void cacheNSPointFields(JNIEnv *env, jobject lpObject);
 NSPoint *getNSPointFields(JNIEnv *env, jobject lpObject, NSPoint *lpStruct);
@@ -117,30 +105,6 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct);
 #define getNSSizeFields(a,b,c) NULL
 #define setNSSizeFields(a,b,c)
 #define NSSize_sizeof() 0
-#endif
-
-#ifndef NO_NSSwappedDouble
-void cacheNSSwappedDoubleFields(JNIEnv *env, jobject lpObject);
-NSSwappedDouble *getNSSwappedDoubleFields(JNIEnv *env, jobject lpObject, NSSwappedDouble *lpStruct);
-void setNSSwappedDoubleFields(JNIEnv *env, jobject lpObject, NSSwappedDouble *lpStruct);
-#define NSSwappedDouble_sizeof() sizeof(NSSwappedDouble)
-#else
-#define cacheNSSwappedDoubleFields(a,b)
-#define getNSSwappedDoubleFields(a,b,c) NULL
-#define setNSSwappedDoubleFields(a,b,c)
-#define NSSwappedDouble_sizeof() 0
-#endif
-
-#ifndef NO_NSSwappedFloat
-void cacheNSSwappedFloatFields(JNIEnv *env, jobject lpObject);
-NSSwappedFloat *getNSSwappedFloatFields(JNIEnv *env, jobject lpObject, NSSwappedFloat *lpStruct);
-void setNSSwappedFloatFields(JNIEnv *env, jobject lpObject, NSSwappedFloat *lpStruct);
-#define NSSwappedFloat_sizeof() sizeof(NSSwappedFloat)
-#else
-#define cacheNSSwappedFloatFields(a,b)
-#define getNSSwappedFloatFields(a,b,c) NULL
-#define setNSSwappedFloatFields(a,b,c)
-#define NSSwappedFloat_sizeof() 0
 #endif
 
 #ifndef NO_objc_super
