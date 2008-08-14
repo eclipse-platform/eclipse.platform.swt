@@ -1639,6 +1639,16 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
+void setBackground (float [] color) {
+	NSColor nsColor;
+	if (color == null) {
+		nsColor = null;
+	} else {
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+	}
+	((NSTableView) view).setBackgroundColor (nsColor);
+}
+
 /**
  * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
