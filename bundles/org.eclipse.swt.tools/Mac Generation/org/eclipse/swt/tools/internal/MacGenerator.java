@@ -30,6 +30,8 @@ public MacGenerator(String[] xmlPaths) {
 	if (xmls == null || xmls.length == 0) {
 		ArrayList array = new ArrayList();
 		list(new File("/System/Library/Frameworks"), array);
+		list(new File("/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks"), array);
+		Collections.sort(array);
 		xmls = (String[])array.toArray(new String[array.size()]);
 	}
 	documents = new Document[xmls.length];
