@@ -430,6 +430,7 @@ public class MacGeneratorUI {
 			}
 			index++;
 		}
+		display.beep();
 	}
 	
 	void selectNode(Node node) {

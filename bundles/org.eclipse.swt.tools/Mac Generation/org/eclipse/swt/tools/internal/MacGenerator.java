@@ -949,7 +949,7 @@ void generateSelectorsConst() {
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String sel = (String) iterator.next();
 		String selConst = getSelConst(sel);
-		out("public static final int ");
+		out("public static final int /*long*/ ");
 		out(selConst);
 		out(" = ");
 		out("sel_registerName(\"");
