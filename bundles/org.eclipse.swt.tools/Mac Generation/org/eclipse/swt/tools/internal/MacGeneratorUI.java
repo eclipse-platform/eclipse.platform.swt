@@ -68,36 +68,6 @@ public class MacGeneratorUI {
 		return item;
 	}
 	
-	void selectChild(TreeItem item) {
-		attribTable.removeAll();
-		if (!(item.getData() instanceof Node)) return;
-		Node node = (Node)item.getData();
-		NamedNodeMap attributes = node.getAttributes();
-		String[] extraAttribs = gen.getExtraAttributeNames(node);
-		for (int i = 0; i < extraAttribs.length; i++) {
-			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
-			attribItem.setText(extraAttribs[i]);
-			attribItem.setData(node);
-			attribItem.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-			Node attrib = attributes.getNamedItem(extraAttribs[i]);
-			if (attrib != null) {
-				attribItem.setText(1, attrib.getNodeValue());
-			}
-			
-		}
-		checkItem(node, item);
-		for (int i = 0, length = attributes.getLength(); i < length; i++) {
-			Node attrib = attributes.item(i);
-			String attribName = attrib.getNodeName();
-			if (attribName.startsWith("swt_")) continue;
-			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
-			attribItem.setText(attribName);
-			attribItem.setText(1, attrib.getNodeValue());
-		}
-		attribTable.getColumn(0).pack();
-		attribTable.getColumn(1).setWidth(500);
-	}
-	
 	void checkPath(TreeItem item, boolean checked, boolean grayed) {
 	    if (item == null) return;
 	    if (grayed) {
@@ -135,6 +105,12 @@ public class MacGeneratorUI {
 		if (!(item.getData() instanceof Node)) return false;
 		String attribName = item.getText();
 		return attribName.startsWith("swt_");
+	}
+
+	String getPrettyText(String text) {
+		if (text.equals("class")) return "Classes";
+		if (text.equals("depends_on")) return "Depends_on";
+		return text.substring(0, 1).toUpperCase() + text.substring(1) + "s";
 	}
 
 	void checkChildren(TreeItem item) {
@@ -183,54 +159,32 @@ public class MacGeneratorUI {
 	void cleanup() {
 		display.dispose();
 	}
+
+	Composite createSignaturesPanel(Composite parent) {
+		Composite comp = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginLeft = 5;
+		layout.marginWidth = 0;
+		comp.setLayout(layout);
 		
-	public void open() {
-		display = new Display();
-		shell = new Shell(display);
-		shell.setLayout(new GridLayout(3, false));
-
-		Composite parent = shell;
-
-		GridData data;
-		Label label = new Label(shell, SWT.NONE);
+		Label label = new Label(comp, SWT.NONE);
 		label.setText("Signatures:");
-		label = new Label(shell, SWT.NONE);
-		label.setText("Properties:");
 		
-		Composite panel = new Composite(parent, SWT.NONE);
-		data = new GridData(GridData.FILL_VERTICAL);
-		data.verticalSpan = 2;
-		panel.setLayoutData(data);
-		panel.setLayout(new GridLayout(1, true));
-		
-		Button generate = new Button(panel, SWT.PUSH);
-		generate.setText("Generate");
-		generate.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				TreeItem[] items = nodesTree.getItems();
-				for (int i = 0; i < items.length; i++) {
-					updateGenAttribute(items[i]);
-				}
-				gen.generateAll();
+		final Text search = new Text(comp, SWT.BORDER | SWT.SINGLE | SWT.SEARCH);
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		search.setLayoutData(data);
+		search.setText(".*");
+		search.addListener(SWT.DefaultSelection, new Listener() {
+			public void handleEvent(Event arg0) {
+				searchFor(search.getText());
 			}
 		});
-
-		nodesTree = new Tree(parent, SWT.SINGLE | SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
+		
+		nodesTree = new Tree(comp, SWT.SINGLE | SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
 		data = new GridData(GridData.FILL_BOTH);
+		data.horizontalSpan = 2;
 		nodesTree.setLayoutData(data);
 		
-		attribTable = new Table(parent, SWT.BORDER | SWT.FULL_SELECTION);
-		data = new GridData(GridData.FILL_BOTH);
-		attribTable.setLayoutData(data);
-		attribTable.setLinesVisible(true);
-		attribTable.setHeaderVisible(true);
-		TableColumn nameColumn = new TableColumn(attribTable, SWT.NONE);
-		nameColumn.setText("Name");
-		nameColumn.pack();
-		TableColumn valueColumn = new TableColumn(attribTable, SWT.NONE);
-		valueColumn.setText("Value");
-		valueColumn.pack();
-
 		nodesTree.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				TreeItem item = (TreeItem)event.item;
@@ -251,7 +205,31 @@ public class MacGeneratorUI {
 				checkChildren((TreeItem)event.item);				
 			}
 		});
-
+		
+		return comp;
+	}
+	
+	Composite createPropertiesPanel(Composite parent) {
+		Composite comp = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(1, false);
+		layout.marginWidth = 0;
+		comp.setLayout(layout);
+		
+		Label label = new Label(comp, SWT.NONE);
+		label.setText("Properties:");
+		
+		attribTable = new Table(comp, SWT.BORDER | SWT.FULL_SELECTION);
+		GridData data = new GridData(GridData.FILL_BOTH);
+		attribTable.setLayoutData(data);
+		attribTable.setLinesVisible(true);
+		attribTable.setHeaderVisible(true);
+		TableColumn nameColumn = new TableColumn(attribTable, SWT.NONE);
+		nameColumn.setText("Name");
+		nameColumn.pack();
+		TableColumn valueColumn = new TableColumn(attribTable, SWT.NONE);
+		valueColumn.setText("Value");
+		valueColumn.pack();
+		
 		final Text editorTx = new Text(attribTable, SWT.SINGLE);
 		final TableEditor editor = new TableEditor(attribTable);
 		editor.grabHorizontal = true;
@@ -313,6 +291,83 @@ public class MacGeneratorUI {
 				});
 			}
 		});
+		
+		return comp;
+	}
+	
+	Composite createActionsPanel(Composite parent) {
+		Composite panel = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(1, true);
+		layout.marginWidth = 10;
+		panel.setLayout(layout);
+		
+		Button generate = new Button(panel, SWT.PUSH);
+		generate.setText("Generate");
+		generate.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				TreeItem[] items = nodesTree.getItems();
+				for (int i = 0; i < items.length; i++) {
+					updateGenAttribute(items[i]);
+				}
+				gen.generateAll();
+			}
+		});
+		return panel;
+	}
+	
+	public void open() {
+		display = new Display();
+		shell = new Shell(display);
+
+		Composite parent = shell;
+		FormLayout layout = new FormLayout();
+		parent.setLayout(layout);
+		
+		Composite signaturePanel = createSignaturesPanel(parent);
+		final Sash sash = new Sash(parent, SWT.SMOOTH | SWT.VERTICAL);
+		Composite propertiesPanel = createPropertiesPanel(parent);
+		Composite actionsPanel = createActionsPanel(parent);
+
+		FormData data;
+		
+		data = new FormData();		
+		data.left = new FormAttachment(0, 0);
+		data.top = new FormAttachment(0, 0);
+		data.right = new FormAttachment(sash, 0);
+		data.bottom = new FormAttachment(100, 0);
+		signaturePanel.setLayoutData(data);
+		
+		data = new FormData();
+		data.left = new FormAttachment(null, Math.max(200, shell.getSize().x / 2));
+		data.top = new FormAttachment(0, 0);
+		data.bottom = new FormAttachment(100, 0);
+		sash.setLayoutData(data);
+		
+		data = new FormData();
+		data.left = new FormAttachment(sash, sash.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
+		data.top = new FormAttachment(0, 0);
+		data.right = new FormAttachment(actionsPanel, 0);
+		data.bottom = new FormAttachment(100, 0);
+		propertiesPanel.setLayoutData(data);
+
+		data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		data.bottom = new FormAttachment(100, 0);
+		actionsPanel.setLayoutData(data);
+		
+		sash.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				Composite parent = sash.getParent();
+				Rectangle rect = parent.getClientArea();
+				event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
+				if (event.detail != SWT.DRAG) {
+					FormData data = (FormData)sash.getLayoutData();
+					data.left.offset = event.x;
+					parent.layout(true);
+				}
+			}
+		});
 
 		updateNodes();
 	}
@@ -325,11 +380,39 @@ public class MacGeneratorUI {
 		}
 		cleanup();
 	}
+	
+	void searchFor(String name) {
 
-	String getPrettyText(String text) {
-		if (text.equals("class")) return "Classes";
-		if (text.equals("depends_on")) return "Depends_on";
-		return text.substring(0, 1).toUpperCase() + text.substring(1) + "s";
+	}
+	
+	void selectChild(TreeItem item) {
+		attribTable.removeAll();
+		if (!(item.getData() instanceof Node)) return;
+		Node node = (Node)item.getData();
+		NamedNodeMap attributes = node.getAttributes();
+		String[] extraAttribs = gen.getExtraAttributeNames(node);
+		for (int i = 0; i < extraAttribs.length; i++) {
+			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
+			attribItem.setText(extraAttribs[i]);
+			attribItem.setData(node);
+			attribItem.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			Node attrib = attributes.getNamedItem(extraAttribs[i]);
+			if (attrib != null) {
+				attribItem.setText(1, attrib.getNodeValue());
+			}
+			
+		}
+		checkItem(node, item);
+		for (int i = 0, length = attributes.getLength(); i < length; i++) {
+			Node attrib = attributes.item(i);
+			String attribName = attrib.getNodeName();
+			if (attribName.startsWith("swt_")) continue;
+			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
+			attribItem.setText(attribName);
+			attribItem.setText(1, attrib.getNodeValue());
+		}
+		attribTable.getColumn(0).pack();
+		attribTable.getColumn(1).setWidth(500);
 	}
 	
 	void updateGenAttribute (TreeItem item) {
