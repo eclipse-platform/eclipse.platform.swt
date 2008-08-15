@@ -754,7 +754,15 @@ void generateConstants() {
 				if (getGen(node)) {
 					NamedNodeMap attributes = node.getAttributes();
 					String constName = attributes.getNamedItem("name").getNodeValue();
-					out("public static final native int ");
+					out("public static final native ");
+					String type = getType(node), type64 = getType64(node);
+					out(type);
+					if (!type.equals(type64)) {
+						out(" /*");
+						out(type64);
+						out("*/");
+					}
+					out(" ");
 					out(constName);
 					out("();");
 					outln();
@@ -1056,17 +1064,67 @@ void generateStructNatives() {
 		out("public static final native void memmove(");
 		out("int /*long*/ dest, ");
 		out(struct);
-		out(" src, int size);");
+		out(" src, int /*long*/ size);");
 		outln();
 		out("public static final native void memmove(");
 		out(struct);
-		out(" dest, int /*long*/ src, int size);");
+		out(" dest, int /*long*/ src, int /*long*/ size);");
 		outln();
 	}
 }
 
+String buildSend(Node method, boolean tags, boolean only64) {
+	Node returnNode = getReturnNode(method.getChildNodes());
+	StringBuffer buffer = new StringBuffer();
+	buffer.append("public static final native "); 
+	if (returnNode != null && isStruct(returnNode)) {
+		buffer.append("void objc_msgSend_stret(");
+		buffer.append(getJavaType(returnNode));
+		buffer.append(" result, ");
+	} else if (returnNode != null && isFloatingPoint(returnNode)) {
+		buffer.append("double objc_msgSend_fpret(");
+	} else {
+		buffer.append("int objc_msgSend(");
+	}
+	if (only64) {
+		buffer.append("long id, long sel");
+	} else {		
+		if (tags) {
+			buffer.append("int /*long*/ id, int /*long*/ sel");
+		} else {
+			buffer.append("int id, int sel");
+		}
+	}
+	NodeList params = method.getChildNodes();
+	boolean first = false;
+	int count = 0;
+	for (int k = 0; k < params.getLength(); k++) {
+		Node param = params.item(k);
+		if ("arg".equals(param.getNodeName())) {
+			if (!first) buffer.append(", ");
+			if (isStruct(param)) {
+				buffer.append(getJavaType(param));
+			} else {
+				String type = getType(param), type64 = getType64(param);
+				buffer.append(only64 ? type64 : type);
+				if (!only64 && tags && !type.equals(type64)) {
+					buffer.append(" /*");
+					buffer.append(type64);
+					buffer.append("*/");
+				}
+			}
+			first = false;
+			buffer.append(" arg");
+			buffer.append(String.valueOf(count++));
+		}
+	}
+	buffer.append(");");
+	return buffer.toString();
+}
+
 void generateSends() {
 	HashSet set = new HashSet();
+	HashSet tagsSet = new HashSet();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1080,38 +1138,15 @@ void generateSends() {
 						Node method = methods.item(j);
 						if ("method".equals(method.getNodeName())) {
 							if (getGen(method)) {
-								Node returnNode = getReturnNode(method.getChildNodes());
-								StringBuffer buffer = new StringBuffer();
-								buffer.append("public static final native "); 
-								if (returnNode != null && isStruct(returnNode)) {
-									buffer.append("void objc_msgSend_stret(");
-									buffer.append(getJavaType(returnNode));
-									buffer.append(" result, ");
-								} else if (returnNode != null && isFloatingPoint(returnNode)) {
-									buffer.append("double objc_msgSend_fpret(");
+								String code = buildSend(method, false, false);
+								String codeTags = buildSend(method, true, false);
+								if (set.contains(code) && !tagsSet.contains(codeTags)) {
+									String code64 = buildSend(method, false, true);
+									tagsSet.add(code64);
 								} else {
-									buffer.append("int objc_msgSend(");
+									tagsSet.add(codeTags);
 								}
-								buffer.append("int id, int sel");
-								NodeList params = method.getChildNodes();
-								boolean first = false;
-								int count = 0;
-								for (int k = 0; k < params.getLength(); k++) {
-									Node param = params.item(k);
-									if ("arg".equals(param.getNodeName())) {
-										if (!first) buffer.append(", ");
-										if (isStruct(param)) {
-											buffer.append(getJavaType(param));
-										} else {
-											buffer.append(getType(param));
-										}
-										first = false;
-										buffer.append(" arg");
-										buffer.append(String.valueOf(count++));
-									}
-								}
-								buffer.append(");");
-								set.add(buffer.toString());
+								set.add(code);
 							}
 						}
 					}
@@ -1119,7 +1154,7 @@ void generateSends() {
 			}
 		}
 	}
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+	for (Iterator iterator = tagsSet.iterator(); iterator.hasNext();) {
 		out(iterator.next().toString());
 		outln();
 	}
@@ -1319,6 +1354,21 @@ String getType(Node node) {
 	Node javaType = attributes.getNamedItem("swt_java_type");
 	if (javaType != null) return javaType.getNodeValue();
 	String code = attributes.getNamedItem("type").getNodeValue();
+	return getType(code, attributes, false);
+}
+
+String getType64(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	Node javaType = attributes.getNamedItem("swt_java_type");
+	if (javaType != null) return "";
+	Node attrib = attributes.getNamedItem("type");
+	String code = attrib.getNodeValue();
+	Node attrib64 = attributes.getNamedItem("type64");
+	if (attrib64 != null) code = attrib64.getNodeValue();
+	return getType(code, attributes, true);
+}
+
+String getType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
 	if (code.equals("s")) return "short";
@@ -1333,18 +1383,17 @@ String getType(Node node) {
 	if (code.equals("d")) return "double";
 	if (code.equals("B")) return "boolean";
 	if (code.equals("v")) return "void";
-	if (code.equals("*")) return "int";
-	if (code.equals("@")) return "int";
-	if (code.equals("#")) return "int";
-	if (code.equals(":")) return "int";
-	if (code.startsWith("^")) return "int";
-	if (code.startsWith("[")) return "BAD " + code;
+	if (code.equals("*")) return is64 ? "long" : "int";
+	if (code.equals("@")) return is64 ? "long" : "int";
+	if (code.equals("#")) return is64 ? "long" : "int";
+	if (code.equals(":")) return is64 ? "long" : "int";
+	if (code.startsWith("^")) return is64 ? "long" : "int";
 	if (code.startsWith("{")) {		
 		return attributes.getNamedItem("declared_type").getNodeValue();
 	}
-	if (code.startsWith("(")) return "BAD " + code;
 	return "BAD " + code;
 }
+
 String getJNIType(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	String code = attributes.getNamedItem("type").getNodeValue();
@@ -1428,7 +1477,13 @@ void generateFunctions() {
 					out("public static final native ");
 					Node returnNode = getReturnNode(node.getChildNodes());
 					if (returnNode != null) {
-						out(getType(returnNode));
+						String type = getType(returnNode), type64 = getType64(returnNode);
+						out(type);
+						if (!type.equals(type64)) {
+							out(" /*");
+							out(type64);
+							out("*/");
+						}
 						out(" ");
 					} else {
 						out("void ");
@@ -1442,8 +1497,14 @@ void generateFunctions() {
 						if ("arg".equals(param.getNodeName())) {
 							NamedNodeMap paramAttributes = param.getAttributes();
 							if (!first) out(", ");
-							out(getType(param));
 							first = false;
+							String type = getType(param), type64 = getType64(param);
+							out(type);
+							if (!type.equals(type64)) {
+								out(" /*");
+								out(type64);
+								out("*/");
+							}
 							out(" ");
 							out(paramAttributes.getNamedItem("name").getNodeValue());
 						}
