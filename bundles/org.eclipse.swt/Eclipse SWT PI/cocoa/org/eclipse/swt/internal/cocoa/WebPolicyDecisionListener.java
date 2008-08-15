@@ -12,7 +12,15 @@ package org.eclipse.swt.internal.cocoa;
 
 public class WebPolicyDecisionListener extends NSObject {
 
-public WebPolicyDecisionListener(int id) {
+public WebPolicyDecisionListener() {
+	super();
+}
+
+public WebPolicyDecisionListener(int /*long*/ id) {
+	super(id);
+}
+
+public WebPolicyDecisionListener(id id) {
 	super(id);
 }
 	

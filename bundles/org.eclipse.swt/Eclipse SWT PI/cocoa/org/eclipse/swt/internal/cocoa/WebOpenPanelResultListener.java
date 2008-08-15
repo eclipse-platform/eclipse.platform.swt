@@ -12,7 +12,15 @@ package org.eclipse.swt.internal.cocoa;
 
 public class WebOpenPanelResultListener extends NSObject {
 
-public WebOpenPanelResultListener(int id) {
+public WebOpenPanelResultListener() {
+	super();
+}
+
+public WebOpenPanelResultListener(int /*long*/ id) {
+	super(id);
+}
+
+public WebOpenPanelResultListener(id id) {
 	super(id);
 }
 

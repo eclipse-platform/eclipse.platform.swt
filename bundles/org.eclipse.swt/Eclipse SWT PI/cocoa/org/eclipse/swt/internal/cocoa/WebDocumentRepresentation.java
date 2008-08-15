@@ -12,7 +12,15 @@ package org.eclipse.swt.internal.cocoa;
 
 public class WebDocumentRepresentation extends NSObject {
 
-public WebDocumentRepresentation(int id) {
+public WebDocumentRepresentation() {
+	super();
+}
+
+public WebDocumentRepresentation(int /*long*/ id) {
+	super(id);
+}
+
+public WebDocumentRepresentation(id id) {
 	super(id);
 }
 
