@@ -111,7 +111,7 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct);
 void cacheobjc_superFields(JNIEnv *env, jobject lpObject);
 struct objc_super *getobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStruct);
 void setobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStruct);
-#define objc_super_sizeof() sizeof(objc_super)
+#define objc_super_sizeof() sizeof(struct objc_super)
 #else
 #define cacheobjc_superFields(a,b)
 #define getobjc_superFields(a,b,c) NULL

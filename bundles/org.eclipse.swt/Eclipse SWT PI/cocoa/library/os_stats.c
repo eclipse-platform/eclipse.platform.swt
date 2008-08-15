@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 199;
-int OS_nativeFunctionCallCount[199];
+int OS_nativeFunctionCount = 200;
+int OS_nativeFunctionCallCount[200];
 char * OS_nativeFunctionNames[] = {
 	"CGPoint_1sizeof",
 	"CGRect_1sizeof",
@@ -204,6 +204,7 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I",
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI",
 	"objc_1registerClassPair",
+	"objc_1super_1sizeof",
 	"object_1getClassName",
 	"object_1getInstanceVariable",
 	"object_1setClass",

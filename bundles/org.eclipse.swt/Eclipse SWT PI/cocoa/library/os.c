@@ -2873,6 +2873,18 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1registerClassPair)
 }
 #endif
 
+#ifndef NO_objc_1super_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1super_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1super_1sizeof_FUNC);
+	rc = (jint)objc_super_sizeof();
+	OS_NATIVE_EXIT(env, that, objc_1super_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_object_1getClassName
 JNIEXPORT jint JNICALL OS_NATIVE(object_1getClassName)
 	(JNIEnv *env, jclass that, jint arg0)

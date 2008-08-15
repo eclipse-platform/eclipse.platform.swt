@@ -212,6 +212,7 @@ typedef enum {
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC,
 	objc_1registerClassPair_FUNC,
+	objc_1super_1sizeof_FUNC,
 	object_1getClassName_FUNC,
 	object_1getInstanceVariable_FUNC,
 	object_1setClass_FUNC,

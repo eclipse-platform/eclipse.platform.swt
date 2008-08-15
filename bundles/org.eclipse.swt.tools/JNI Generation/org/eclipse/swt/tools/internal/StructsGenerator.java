@@ -183,6 +183,9 @@ void generatePrototypes(Class clazz) {
 	output("#define ");
 	output(clazzName);
 	output("_sizeof() sizeof(");
+	if (classData.getFlag(Flags.FLAG_STRUCT)) {
+		output("struct ");
+	}
 	output(clazzName);
 	outputln(")");
 }
