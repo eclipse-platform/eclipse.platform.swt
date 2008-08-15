@@ -659,10 +659,8 @@ public String[] getExtraAttributeNames(Node node) {
 }
 
 public String getFileName(String xmlPath) {
-	String fileName = xmlPath;
-	int index = fileName.lastIndexOf(File.separatorChar);
-	if (index != -1) fileName = fileName.substring(index + 1);
-	return fileName;
+	File file = new File(xmlPath);
+	return file.getName();
 }
 
 private String getKey (Node node) {
