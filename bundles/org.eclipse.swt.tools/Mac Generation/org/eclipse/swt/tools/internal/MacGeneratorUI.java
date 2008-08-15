@@ -41,8 +41,8 @@ public class MacGeneratorUI {
 
 	TreeItem lastParent;
 	TreeItem addChild (Node node, TreeItem superItem) {
+		if (node.getNodeType() == Node.TEXT_NODE) return null;
 		String name = node.getNodeName();
-		if (name.equals("#text")) return null;
 		TreeItem parentItem = null;
 		if (lastParent != null && lastParent.getParentItem() == superItem && name.equals(lastParent.getData())) {
 			parentItem = lastParent;
@@ -137,10 +137,6 @@ public class MacGeneratorUI {
 				items[i].setChecked(checkedCount != 0);
 				items[i].setGrayed(checkedCount != children.length);
 			}
-			TreeColumn[] columns = nodesTree.getColumns();
-			for (int i = 0; i < columns.length; i++) {
-				columns[i].pack();
-			}
 		}
 	}
 	void checkItems(TreeItem item, boolean checked) {
@@ -180,6 +176,13 @@ public class MacGeneratorUI {
 		search.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event arg0) {
 				searchFor(search.getText());
+			}
+		});
+		search.addListener(SWT.KeyDown, new Listener() {
+			public void handleEvent(Event event) {
+				if (event.keyCode == SWT.F6) {
+					searchFor(search.getText());					
+				}
 			}
 		});
 		
@@ -264,7 +267,7 @@ public class MacGeneratorUI {
 			}
 		};
 		editorTx.addListener(SWT.DefaultSelection, textListener);
-		editorTx.addListener(SWT.FocusOut, textListener);
+//		editorTx.addListener(SWT.FocusOut, textListener);
 		editorTx.addListener(SWT.Traverse, textListener);
 		attribTable.addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(final Event e) {
