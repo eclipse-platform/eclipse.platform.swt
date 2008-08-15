@@ -11,6 +11,7 @@
 package org.eclipse.swt.tools.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -429,11 +430,39 @@ public class MacGeneratorUI {
 	}
 	
 	void selectNode(Node node) {
-		System.out.println(gen.getIDAttribute(node).getNodeValue());
+		ArrayList path = new ArrayList();
+		do {
+			path.add(node);
+			node = node.getParentNode();
+		} while (node != null);
+		TreeItem[] items = nodesTree.getItems();
+		Collections.reverse(path);
+		path.remove(0);
+		while (true) {
+			TreeItem item = findItem(items, (Node)path.remove(0));
+			if (path.isEmpty()) {
+				nodesTree.setSelection(item);
+				return;
+			}
+			items = item.getItems();
+		}
+	}
+	
+	TreeItem findItem(TreeItem[] items, Node node) {
+		for (int i = 0; i < items.length; i++) {
+			TreeItem item = items[i];
+			checkChildren(item);
+			if (item.getData() == node) return item;
+		}
+		for (int i = 0; i < items.length; i++) {
+			TreeItem child = findItem(items[i].getItems(), node);
+			if (child != null) return child;
+		}
+		return null;
 	}
 	
 	void addNodes(Node node, ArrayList list) {
-		if ("#text".equals(node.getNodeName())) return;
+		if (node.getNodeType() == Node.TEXT_NODE) return;
 		list.add(node);
 		NodeList children = node.getChildNodes();
 		for (int i = 0, length = children.getLength(); i < length; i++) {
