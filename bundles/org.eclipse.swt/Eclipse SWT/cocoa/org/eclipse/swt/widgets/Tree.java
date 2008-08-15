@@ -546,9 +546,9 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	} else {
 		this.itemCount = count;
 	}
-	//TODO ?
 	ignoreExpand = true;
-	((NSTableView) view).reloadData ();
+	NSOutlineView widget = (NSOutlineView)view;
+	widget.reloadItem(parentItem != null ? parentItem.handle : null, true);
 	ignoreExpand = false;
 }
 
@@ -1938,6 +1938,7 @@ public void setSelection (TreeItem [] items) {
 	ignoreSelect = true;
 	outlineView.selectRowIndexes (rows, false);
 	ignoreSelect = false;
+	if (items.length > 0) showItem(items[0], true);
 }
 
 /**
