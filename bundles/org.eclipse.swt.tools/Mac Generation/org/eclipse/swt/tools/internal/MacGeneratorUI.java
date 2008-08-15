@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
+import java.util.ArrayList;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -381,8 +383,63 @@ public class MacGeneratorUI {
 		cleanup();
 	}
 	
+	ArrayList flatNodes;
 	void searchFor(String name) {
-
+		TreeItem[] selection = nodesTree.getSelection();
+		Node node = null;
+		if (selection.length != 0) {
+			if (selection[0].getData() instanceof Node) {
+				node = (Node)selection[0].getData();
+			} else {
+				if (selection[0].getItemCount() > 0 && selection[0].getItem(0).getData() instanceof Node) {
+					node = (Node)selection[0].getItem(0).getData();
+				}
+			}
+		}
+		Document[] documents = gen.getDocuments();
+		if (node == null && documents.length > 0) node = gen.getDocuments()[0];
+		if (flatNodes == null) {
+			flatNodes = new ArrayList();
+			for (int i = 0; i < documents.length; i++) {
+				addNodes(documents[i], flatNodes);
+			}
+		}
+		int index = 0;
+		while (flatNodes.get(index++) != node);		
+		int start = index;
+		while (index < flatNodes.size()) {
+			Node child = (Node)flatNodes.get(index);
+			Node attribName = gen.getIDAttribute(child);
+			if (attribName != null && attribName.getNodeValue().matches(name)) {
+				selectNode(child);
+				return;
+			}
+			index++;
+		}
+		index = 0;
+		while (index < start) {
+			Node child = (Node)flatNodes.get(index);
+			Node attribName = gen.getIDAttribute(child);
+			if (attribName != null && attribName.getNodeValue().matches(name)) {
+				selectNode(child);
+				return;
+			}
+			index++;
+		}
+	}
+	
+	void selectNode(Node node) {
+		System.out.println(gen.getIDAttribute(node).getNodeValue());
+	}
+	
+	void addNodes(Node node, ArrayList list) {
+		if ("#text".equals(node.getNodeName())) return;
+		list.add(node);
+		NodeList children = node.getChildNodes();
+		for (int i = 0, length = children.getLength(); i < length; i++) {
+			Node child = children.item(i);
+			addNodes(child, list);
+		}	
 	}
 	
 	void selectChild(TreeItem item) {
