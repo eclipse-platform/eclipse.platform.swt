@@ -23,7 +23,7 @@ package org.eclipse.swt.internal.cocoa;
 
 
 public class NSPoint {
-	public float x;
-	public float y;
+	public float /*double*/ x;
+	public float /*double*/ y;
 	public static final int sizeof = OS.NSPoint_sizeof();
 }

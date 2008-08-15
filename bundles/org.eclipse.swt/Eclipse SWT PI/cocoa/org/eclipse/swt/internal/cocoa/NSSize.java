@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.cocoa;
 
 
 public class NSSize {
-	public float width;
-	public float height;
+	public float /*double*/ width;
+	public float /*double*/ height;
 	public static final int sizeof = OS.NSSize_sizeof();
 }

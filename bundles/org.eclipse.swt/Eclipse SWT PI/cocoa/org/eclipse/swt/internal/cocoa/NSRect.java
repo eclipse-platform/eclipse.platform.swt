@@ -23,9 +23,9 @@ package org.eclipse.swt.internal.cocoa;
 
 
 public class NSRect {
-	public float x;
-	public float y;
-	public float width;
-	public float height;
+	public float /*double*/ x;
+	public float /*double*/ y;
+	public float /*double*/ width;
+	public float /*double*/ height;
 	public static final int sizeof = OS.NSRect_sizeof();
 }

@@ -116,6 +116,7 @@ public static final native int /*long*/ object_getInstanceVariable(int /*long*/ 
 public static final native int /*long*/ object_setInstanceVariable(int /*long*/ obj, String name, int /*long*/ value);//TODO should value be a int[]
 public static final native int /*long*/ object_setClass(int /*long*/ obj, int /*long*/ clazz);
 public static final native int /*long*/ sel_registerName(String selectorName);
+public static final native int objc_super_sizeof();
 
 /** This section is auto generated */
 
