@@ -153,7 +153,13 @@ void generateMethods(String className, ArrayList methods) {
 		if (getType(returnNode).equals("void")) returnNode = null;
 		String returnType = "";
 		if (returnNode != null) {
-			out(returnType = getJavaType(returnNode));
+			String type = getJavaType(returnNode), type64 = getJavaType64(returnNode);
+			out(returnType = type);
+			if (!type.equals(type64)) {
+				out(" /*");
+				out(type64);
+				out("*/");
+			}
 			out(" ");
 		} else {
 			out("void ");
@@ -176,7 +182,13 @@ void generateMethods(String className, ArrayList methods) {
 			if ("arg".equals(param.getNodeName())) {
 				NamedNodeMap paramAttributes = param.getAttributes();
 				if (!first) out(", ");
-				out(getJavaType(param));
+				String type = getJavaType(param), type64 = getJavaType64(param);
+				out( type);
+				if (!type.equals(type64)) {
+					out(" /*");
+					out(type64);
+					out("*/");
+				}
 				first = false;
 				out(" ");
 				String paramName = paramAttributes.getNamedItem("name").getNodeValue();
@@ -188,28 +200,25 @@ void generateMethods(String className, ArrayList methods) {
 		out(") {");
 		outln();
 		if (returnNode != null && isStruct(returnNode)) {
-			String type = getJavaType(returnNode);
 			out("\t");
-			out(type);
+			out(returnType);
 			out(" result = new ");
-			out(type);
+			out(returnType);
 			out("();");
 			outln();
 			out("\tOS.objc_msgSend_stret(result, ");
 		} else if (returnNode != null && isFloatingPoint(returnNode)) {
-			String type = getJavaType(returnNode);
 			out("\treturn ");
-			if (type.equals("float")) out("(float)");
+			if (returnType.equals("float")) out("(float)");
 			out("OS.objc_msgSend_fpret(");
 		} else if (returnNode != null && isObject(returnNode)) {
-			out("\tint result = OS.objc_msgSend(");
+			out("\tint /*long*/ result = OS.objc_msgSend(");
 		} else {
 			if (returnNode != null) {
 				out("\treturn ");
-				String type = getJavaType(returnNode);
-				if (!(type.equals("int") || type.equals("boolean"))) {
+				if (!(returnType.equals("int") || returnType.equals("boolean"))) {
 					out("(");
-					out(type);
+					out(returnType);
 					out(")");
 				}
 			} else {
@@ -606,7 +615,7 @@ public String[] getXmls() {
 	return xmls;
 }
 
-private void saveExtraAttributes(String xmlPath, Document document) {
+void saveExtraAttributes(String xmlPath, Document document) {
 	try {
 		String fileName = getExtraAttributesDir() + getFileName(xmlPath) + ".extras";
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -633,7 +642,7 @@ public void setMainClass(String mainClassName) {
 	this.mainClassName = mainClassName;
 }
 
-private Document getDocument(String xmlPath) {
+Document getDocument(String xmlPath) {
 	try {
 		InputStream is = null;
 		if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
@@ -651,9 +660,9 @@ public String[] getExtraAttributeNames(Node node) {
 	} else if (name.equals("class")) {
 		return new String[]{"swt_superclass"};
 	} else if (name.equals("retval")) {
-		return new String[]{"swt_java_type", "swt_alloc"};
+		return new String[]{"swt_java_type", "swt_java_type64", "swt_alloc"};
 	} else if (name.equals("arg")) {
-		return new String[]{"swt_java_type"};
+		return new String[]{"swt_java_type", "swt_java_type64"};
 	}
 	return new String[0];
 }
@@ -663,7 +672,7 @@ public String getFileName(String xmlPath) {
 	return file.getName();
 }
 
-private String getKey (Node node) {
+String getKey (Node node) {
 	StringBuffer buffer = new StringBuffer();
 	while (node != null) {
 		if (buffer.length() > 0) buffer.append("_");
@@ -731,13 +740,13 @@ void merge(Node node, HashMap extras, HashMap docLookup) {
 }
 
 	
-private void out(String str) {
+void out(String str) {
 	PrintStream out = this.out;
 	if (out == null) out = System.out;
 	out.print(str);
 }
 
-private void outln() {
+void outln() {
 	PrintStream out = this.out;
 	if (out == null) out = System.out;
 	out.println();
@@ -1084,7 +1093,16 @@ String buildSend(Node method, boolean tags, boolean only64) {
 	} else if (returnNode != null && isFloatingPoint(returnNode)) {
 		buffer.append("double objc_msgSend_fpret(");
 	} else {
-		buffer.append("int objc_msgSend(");
+		if (only64) {
+			buffer.append("long");
+		} else {		
+			if (tags) {
+				buffer.append("int /*long*/");
+			} else {
+				buffer.append("int");
+			}
+		}
+		buffer.append(" objc_msgSend(");
 	}
 	if (only64) {
 		buffer.append("long id, long sel");
@@ -1107,6 +1125,9 @@ String buildSend(Node method, boolean tags, boolean only64) {
 			} else {
 				String type = getType(param), type64 = getType64(param);
 				buffer.append(only64 ? type64 : type);
+				if (type64.length() == 0) {
+					System.out.println(getIDAttribute(method) + " " + getIDAttribute(method.getParentNode()));
+				}
 				if (!only64 && tags && !type.equals(type64)) {
 					buffer.append(" /*");
 					buffer.append(type64);
@@ -1123,8 +1144,7 @@ String buildSend(Node method, boolean tags, boolean only64) {
 }
 
 void generateSends() {
-	HashSet set = new HashSet();
-	HashSet tagsSet = new HashSet();
+	TreeSet set = new TreeSet();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1139,13 +1159,8 @@ void generateSends() {
 						if ("method".equals(method.getNodeName())) {
 							if (getGen(method)) {
 								String code = buildSend(method, false, false);
-								String codeTags = buildSend(method, true, false);
-								if (set.contains(code) && !tagsSet.contains(codeTags)) {
-									String code64 = buildSend(method, false, true);
-									tagsSet.add(code64);
-								} else {
-									tagsSet.add(codeTags);
-								}
+								String code64 = buildSend(method, false, true);
+								set.add(code64);
 								set.add(code);
 							}
 						}
@@ -1154,7 +1169,9 @@ void generateSends() {
 			}
 		}
 	}
-	for (Iterator iterator = tagsSet.iterator(); iterator.hasNext();) {
+	out("//TODO - trim unused 64 bit calls");
+	outln();
+	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		out(iterator.next().toString());
 		outln();
 	}
@@ -1360,7 +1377,10 @@ String getType(Node node) {
 String getType64(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	Node javaType = attributes.getNamedItem("swt_java_type");
-	if (javaType != null) return "";
+	if (javaType != null) {
+		Node javaType64 = attributes.getNamedItem("swt_java_type64");
+		return javaType64 != null ? javaType64.getNodeValue() : javaType.getNodeValue();
+	}
 	Node attrib = attributes.getNamedItem("type");
 	String code = attrib.getNodeValue();
 	Node attrib64 = attributes.getNamedItem("type64");
@@ -1429,6 +1449,24 @@ String getJavaType(Node node) {
 	Node javaType = attributes.getNamedItem("swt_java_type");
 	if (javaType != null) return javaType.getNodeValue();
 	String code = attributes.getNamedItem("type").getNodeValue();
+	return getJavaType(code, attributes, false);
+}
+
+String getJavaType64(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	Node javaType = attributes.getNamedItem("swt_java_type");
+	if (javaType != null) {
+		Node javaType64 = attributes.getNamedItem("swt_java_type64");
+		return javaType64 != null ? javaType64.getNodeValue() : javaType.getNodeValue();
+	}
+	Node attrib = attributes.getNamedItem("type");
+	String code = attrib.getNodeValue();
+	Node attrib64 = attributes.getNamedItem("type64");
+	if (attrib64 != null) code = attrib64.getNodeValue();
+	return getJavaType(code, attributes, true);
+}
+	
+String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.equals("c")) return "byte";
 	if (code.equals("i")) return "int";
 	if (code.equals("s")) return "short";
@@ -1443,7 +1481,10 @@ String getJavaType(Node node) {
 	if (code.equals("d")) return "double";
 	if (code.equals("B")) return "boolean";
 	if (code.equals("v")) return "void";
-	if (code.equals("*")) return "int";
+	if (code.equals("*")) return is64 ? "long" : "int";
+	if (code.equals("#")) return is64 ? "long" : "int";
+	if (code.equals(":")) return is64 ? "long" : "int";
+	if (code.startsWith("^")) return is64 ? "long" : "int";
 	if (code.equals("@")) {
 		String type = attributes.getNamedItem("declared_type").getNodeValue();
 		int index = type.indexOf('*');
@@ -1452,14 +1493,9 @@ String getJavaType(Node node) {
 		if (index != -1) type = type.substring(0, index);
 		return type;
 	}
-	if (code.equals("#")) return "int";
-	if (code.equals(":")) return "int";
-	if (code.startsWith("^")) return "int";
-	if (code.startsWith("[")) return "BAD " + code;
 	if (code.startsWith("{")) {		
 		return attributes.getNamedItem("declared_type").getNodeValue();
 	}
-	if (code.startsWith("(")) return "BAD " + code;
 	return "BAD " + code;
 }
 
