@@ -25,6 +25,9 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	CGPoint_1sizeof_FUNC,
+	CGRect_1sizeof_FUNC,
+	CGSize_1sizeof_FUNC,
 	CGWarpMouseCursorPosition_FUNC,
 	CloseRgn_FUNC,
 	CopyRgn_FUNC,
@@ -104,11 +107,17 @@ typedef enum {
 	hitTest_1CALLBACK_FUNC,
 	instrumentObjcMessageSends_FUNC,
 	markedRange_1CALLBACK_FUNC,
+	memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I_FUNC,
+	memmove__ILorg_eclipse_swt_internal_cocoa_CGRect_2I_FUNC,
+	memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2II_FUNC,
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2II_FUNC,
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC,

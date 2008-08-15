@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class CGRect {
-public CGPoint origin = new CGPoint();
-public CGSize size = new CGSize();
+	public CGPoint origin = new CGPoint();
+	public CGSize size = new CGSize();
+	public static final int sizeof = OS.CGRect_sizeof();
 }

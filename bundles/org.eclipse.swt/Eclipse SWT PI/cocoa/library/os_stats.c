@@ -14,9 +14,12 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 190;
-int OS_nativeFunctionCallCount[190];
+int OS_nativeFunctionCount = 199;
+int OS_nativeFunctionCallCount[199];
 char * OS_nativeFunctionNames[] = {
+	"CGPoint_1sizeof",
+	"CGRect_1sizeof",
+	"CGSize_1sizeof",
 	"CGWarpMouseCursorPosition",
 	"CloseRgn",
 	"CopyRgn",
@@ -96,11 +99,17 @@ char * OS_nativeFunctionNames[] = {
 	"hitTest_1CALLBACK",
 	"instrumentObjcMessageSends",
 	"markedRange_1CALLBACK",
+	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I",
+	"memmove__ILorg_eclipse_swt_internal_cocoa_CGRect_2I",
+	"memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I",
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2II",
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2II",
+	"memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
