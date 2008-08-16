@@ -3414,7 +3414,7 @@ void applicationSendEvent (int id, int sel, int event) {
 //	application.stop(null);
 }
 
-int applicationProc(int id, int sel, int event) {
+int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	if (sel == OS.sel_sendEvent_) {
 		applicationSendEvent (id, sel, event);
 		return 0;
@@ -3422,14 +3422,14 @@ int applicationProc(int id, int sel, int event) {
 	return 0;
 }
 
-int applicationProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) {
+int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
 		return applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
 
-int applicationDelegateProc(int id, int sel, int arg0) {
+int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	if (sel == OS.sel_applicationWillFinishLaunching_) {
 		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
 		NSString nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
@@ -3475,8 +3475,8 @@ int applicationDelegateProc(int id, int sel, int arg0) {
 	return 0;
 }
 
-int dialogProc(int id, int sel, int arg0) {
-	int [] jniRef = new int [1];
+int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	int /*long*/ [] jniRef = new int /*long*/ [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
 	if (sel == OS.sel_changeColor_) {
@@ -3498,7 +3498,7 @@ int dialogProc(int id, int sel, int arg0) {
 	return 0;
 }
 
-int windowDelegateProc(int id, int sel) {
+int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_isFlipped) {
@@ -3543,7 +3543,7 @@ int windowDelegateProc(int id, int sel) {
 	return 0;
 }
 
-int windowDelegateProc(int id, int sel, int arg0) {
+int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	if (sel == OS.sel_timerProc_) {
 		return timerProc (arg0);
 	}
@@ -3654,8 +3654,8 @@ int windowDelegateProc(int id, int sel, int arg0) {
 	return 0;
 }
 
-int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
-	Widget widget = getWidget(delegate);
+int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
 		widget.willSelectTabViewItem(arg0, arg1);
@@ -3670,15 +3670,15 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1) {
 	} else if (sel == OS.sel_menu_willHighlightItem_) {
 		widget.menu_willHighlightItem(arg0, arg1);
 	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
-		widget.setMarkedText_selectedRange (delegate, sel, arg0, arg1);
+		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
 		widget.drawInteriorFrame_inView (arg0, arg1);
 	}
 	return 0;
 }
 
-int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
-	Widget widget = getWidget(delegate);
+int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
 		return widget.tableView_objectValueForTableColumn_row(arg0, arg1, arg2);
@@ -3700,8 +3700,8 @@ int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2) {
 	return 0;
 }
 
-int windowDelegateProc(int delegate, int sel, int arg0, int arg1, int arg2, int arg3) {
-	Widget widget = getWidget(delegate);
+int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
 		widget.tableView_willDisplayCell_forTableColumn_row(arg0, arg1, arg2, arg3);

@@ -211,7 +211,7 @@ public boolean back() {
 	return webView.goBack();
 }
 
-static int browserProc(int id, int sel, int arg0) {
+static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
@@ -231,7 +231,7 @@ static int browserProc(int id, int sel, int arg0) {
 	return 0;
 }
 
-static int browserProc(int id, int sel, int arg0, int arg1) {
+static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
@@ -269,7 +269,7 @@ static int browserProc(int id, int sel, int arg0, int arg1) {
 	return 0;
 }
 
-static int browserProc(int id, int sel, int arg0, int arg1, int arg2) {
+static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
@@ -291,7 +291,7 @@ static int browserProc(int id, int sel, int arg0, int arg1, int arg2) {
 	return 0;
 }
 
-static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) {
+static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
@@ -301,7 +301,7 @@ static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3) 
 	return 0;
 }
 
-static int browserProc(int id, int sel, int arg0, int arg1, int arg2, int arg3, int arg4) {
+static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
 	Safari safari = (Safari)((Browser)widget).webBrowser;
