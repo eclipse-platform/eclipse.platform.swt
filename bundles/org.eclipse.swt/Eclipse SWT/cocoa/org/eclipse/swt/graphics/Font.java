@@ -186,7 +186,7 @@ public FontData[] getFontData() {
 	if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
 	if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
 	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-	FontData data = new FontData(name, handle.pointSize() * screenDPI.y / dpi.y, style);
+	FontData data = new FontData(name, (float)/*64*/handle.pointSize() * screenDPI.y / dpi.y, style);
 	data.nsName = nsName;
 	return new FontData[]{data};
 }
@@ -225,7 +225,7 @@ public static Font cocoa_new(Device device, NSFont handle) {
  * @see #equals
  */
 public int hashCode() {
-	return handle != null ? handle.id : 0;
+	return handle != null ? (int)/*64*/handle.id : 0;
 }
 
 void init(String name, float height, int style, String nsName) {

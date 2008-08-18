@@ -508,7 +508,7 @@ public TransferData[] getAvailableTypes(int clipboards) {
 	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0];
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
 	NSArray types = pasteboard.types();
-	int count = types.count();
+	int count = (int)/*64*/types.count();
 	TransferData[] result = new TransferData[count];
 	for (int i = 0; i < count; i++) {
 		result[i] = new TransferData();
@@ -537,7 +537,7 @@ public String[] getAvailableTypeNames() {
 	checkWidget();
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
 	NSArray types = pasteboard.types();
-	int count = types.count();
+	int count = (int)/*64*/types.count();
 	String[] result = new String[count];
 	for (int i = 0; i < count; i++) {
 		result[i] = new NSString(types.objectAtIndex(i)).getString();

@@ -265,7 +265,7 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-boolean becomeFirstResponder (int id, int sel) {
+boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	receivingFocus = true;
 	boolean result = super.becomeFirstResponder (id, sel);
 	receivingFocus = false;
@@ -330,7 +330,7 @@ public void clearSelection () {
 	}
 }
 
-void comboBoxSelectionDidChange(int notification) {
+void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	sendSelection();
 }
 
@@ -487,7 +487,7 @@ int getCharCount() {
 	} else {
 		str = new NSCell(((NSComboBox)view).cell()).title();
 	}
-	return str.length();
+	return (int)/*64*/str.length();
 }
 
 /**
@@ -533,9 +533,9 @@ public String getItem (int index) {
 public int getItemCount () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		return ((NSPopUpButton)view).numberOfItems();
+		return (int)/*64*/((NSPopUpButton)view).numberOfItems();
 	} else {
-		return ((NSComboBox)view).numberOfItems();
+		return (int)/*64*/((NSComboBox)view).numberOfItems();
 	}
 }
 
@@ -627,9 +627,9 @@ public Point getSelection () {
 	} else {
 		if (selectionRange == null) {
 			NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
-			return new Point(str.length (), str.length ());
+			return new Point((int)/*64*/str.length (), (int)/*64*/str.length ());
 		}
-		return new Point(selectionRange.location, selectionRange.location + selectionRange.length);
+		return new Point((int)/*64*/selectionRange.location, (int)/*64*/(selectionRange.location + selectionRange.length));
 	}
 }
 
@@ -647,7 +647,7 @@ public Point getSelection () {
 public int getSelectionIndex () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		return ((NSPopUpButton)view).indexOfSelectedItem();
+		return (int)/*64*/((NSPopUpButton)view).indexOfSelectedItem();
 	} else {
 		return indexOf (getText ());
 	}
@@ -681,12 +681,12 @@ char [] getText (int start, int end) {
 	NSRange range = new NSRange ();
 	range.location = start;
 	if (end == -1) {
-		int length = str.length();
+		int /*long*/ length = str.length();
 		range.length = length - start;
 	} else {
 		range.length = end - start;
 	}
-	char [] buffer= new char [range.length];
+	char [] buffer= new char [(int)/*64*/range.length];
 	str.getCharacters(buffer, range);
 	return buffer;
 }
@@ -749,7 +749,7 @@ public int getVisibleItemCount () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return getItemCount ();
 	} else {
-		return ((NSComboBox)view).numberOfVisibleItems();
+		return (int)/*64*/((NSComboBox)view).numberOfVisibleItems();
 	}
 }
 	
@@ -1261,7 +1261,7 @@ public void setSelection (Point selection) {
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) == 0) {
 		NSString str = new NSCell(((NSComboBox)view).cell()).title();
-		int length = str.length();
+		int length = (int)/*64*/str.length();
 		int start = Math.min (Math.max (Math.min (selection.x, selection.y), 0), length);
 		int end = Math.min (Math.max (Math.max (selection.x, selection.y), 0), length);
 		selectionRange = new NSRange();
@@ -1374,17 +1374,17 @@ public void setVisibleItemCount (int count) {
 	}
 }
 
-void textViewDidChangeSelection(int aNotification) {
+void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification(aNotification);
 	NSText editor = new NSText(notification.object().id);
 	selectionRange = editor.selectedRange();
 }
 
-void textDidChange (int aNotification) {
+void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	postEvent (SWT.Modify);
 }
 
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
 	* then return the receiver's last selection range, otherwise the full

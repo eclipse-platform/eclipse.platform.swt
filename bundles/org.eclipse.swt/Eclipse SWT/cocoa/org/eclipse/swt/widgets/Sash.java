@@ -120,7 +120,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-boolean becomeFirstResponder (int id, int sel) {
+boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	boolean result = super.becomeFirstResponder(id, sel);
 	NSRect frame = view.frame();
 	lastX = (int)frame.x;
@@ -147,7 +147,7 @@ void createHandle () {
 	view = widget;
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	fillBackground (view, context, rect);
 	super.drawWidget (id, rect);
@@ -172,7 +172,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 		case 124: /* Right arrow */ {
 			int xChange = 0, yChange = 0;
 			int stepSize = PAGE_INCREMENT;
-			int modifiers = nsEvent.modifierFlags();
+			int /*long*/ modifiers = nsEvent.modifierFlags();
 			if ((modifiers & OS.NSControlKeyMask) != 0) stepSize = INCREMENT;
 			if ((style & SWT.VERTICAL) != 0) {
 				if (keyCode == 126 || keyCode == 125) break;
@@ -221,7 +221,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	return true;
 }
 
-void mouseDown(int id, int sel, int theEvent) {
+void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 //	super.mouseDown(id, sel, theEvent);
 	NSEvent nsEvent = new NSEvent(theEvent);
@@ -246,7 +246,7 @@ void mouseDown(int id, int sel, int theEvent) {
 	}
 }
 
-void mouseDragged(int id, int sel, int theEvent) {
+void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 //	super.mouseDragged(id, sel, theEvent);
 	if (!dragging) return;
@@ -276,7 +276,7 @@ void mouseDragged(int id, int sel, int theEvent) {
 	}
 }
 
-void mouseUp(int id, int sel, int theEvent) {
+void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	//TODO use sendMouseEvent
 //	super.mouseUp(id, sel, theEvent);
 	if (!dragging) return;

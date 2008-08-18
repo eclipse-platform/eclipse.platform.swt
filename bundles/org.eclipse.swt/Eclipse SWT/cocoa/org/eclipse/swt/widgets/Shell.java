@@ -490,7 +490,7 @@ void createHandle () {
 		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
-		float width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
+		double /*float*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
 		NSRect frame = window.frame();
 		NSRect primaryFrame = primaryScreen.frame();
 		frame.y = primaryFrame.height - ((primaryFrame.height - (frame.y + frame.height)) + height);
@@ -556,7 +556,7 @@ void destroyWidget () {
 	}
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	if (regionPath != null && background == null) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
@@ -634,7 +634,7 @@ public int getAlpha () {
 public Rectangle getBounds () {
 	checkWidget();
 	NSRect frame = window.frame();
-	float y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+	double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 }
 
@@ -702,7 +702,7 @@ public int getImeInputMode () {
 public Point getLocation () {
 	checkWidget();
 	NSRect frame = window.frame();
-	float y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+	double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Point ((int)frame.x, (int)y);
 }
 
@@ -825,7 +825,7 @@ boolean hasBorder () {
 	return false;
 }
 
-void helpRequested(int theEvent) {
+void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	Control control = display.getFocusControl();
 	while (control != null) {
 		if (control.hooks (SWT.Help)) {
@@ -1429,8 +1429,8 @@ void updateSystemUIMode () {
 //	}
 }
 
-void windowDidBecomeKey(int notification) {
-	super.windowDidBecomeKey(notification);
+void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	super.windowDidBecomeKey(id, sel, notification);
 	Display display = this.display;
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
@@ -1440,12 +1440,12 @@ void windowDidBecomeKey(int notification) {
 //	}
 }
 
-void windowDidMove(int notification) {
+void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	moved = true;
 	sendEvent(SWT.Move);
 }
 
-void windowDidResize(int notification) {
+void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	resized = true;
 	sendEvent (SWT.Resize);
 	if (isDisposed ()) return;
@@ -1455,8 +1455,8 @@ void windowDidResize(int notification) {
 	}
 }
 
-void windowDidResignKey(int notification) {
-	super.windowDidResignKey(notification);
+void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	super.windowDidResignKey(id, sel, notification);
 	Display display = this.display;
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
@@ -1476,12 +1476,9 @@ void windowDidResignKey(int notification) {
 	display.setMenuBar (null);
 }
 
-boolean windowShouldClose(int window) {
+boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {
 	closeWidget ();
 	return false;
-}
-
-void windowWillClose(int notification) {
 }
 
 }

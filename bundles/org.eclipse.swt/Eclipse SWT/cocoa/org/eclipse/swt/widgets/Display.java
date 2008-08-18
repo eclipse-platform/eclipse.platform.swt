@@ -678,13 +678,13 @@ void createDisplay (DeviceData data) {
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	
 	applicationCallback3 = new Callback(this, "applicationProc", 3);
-	int proc3 = applicationCallback3.getAddress();
+	int /*long*/ proc3 = applicationCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	applicationCallback6 = new Callback(this, "applicationProc", 6);
-	int proc6 = applicationCallback6.getAddress();
+	int /*long*/ proc6 = applicationCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	String className = "SWTApplication";
-	int cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
+	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
 	OS.objc_registerClassPair(cls);
@@ -781,7 +781,7 @@ boolean filters (int eventType) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Widget findWidget (int handle) {
+public Widget findWidget (int /*long*/ handle) {
 	checkDevice ();
 	return getWidget (handle);
 }
@@ -808,9 +808,9 @@ public Widget findWidget (int handle) {
  * 
  * @since 3.1
  */
-public Widget findWidget (int handle, int id) {
+public Widget findWidget (int /*long*/ handle, int id) {
 	checkDevice ();
-	return null;
+	return getWidget (handle);
 }
 
 /**
@@ -900,14 +900,14 @@ public Rectangle getBounds () {
 
 Rectangle getBounds (NSArray screens) {
 	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
-	float minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
-	float minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
-	int count = screens.count();
+	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
+	int /*long*/ count = screens.count();
 	for (int i = 0; i < count; i++) {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
-		float x1 = frame.x, x2 = frame.x + frame.width;
-		float y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
+		double /*float*/ x1 = frame.x, x2 = frame.x + frame.width;
+		double /*float*/ y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
 		if (x1 < minX) minX = x1;
 		if (x2 < minX) minX = x2;
 		if (x1 > maxX) maxX = x1;
@@ -956,7 +956,7 @@ public Rectangle getClientArea () {
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect frame = screen.frame();
 	NSRect visibleFrame = screen.visibleFrame();
-	float y = frame.height - (visibleFrame.y + visibleFrame.height);
+	double /*float*/ y = frame.height - (visibleFrame.y + visibleFrame.height);
 	return new Rectangle((int)visibleFrame.x, (int)y, (int)visibleFrame.width, (int)visibleFrame.height);
 }
 
@@ -1270,7 +1270,7 @@ public Monitor [] getMonitors () {
 	checkDevice ();
 	NSArray screens = NSScreen.screens();
 	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
-	int count = screens.count();
+	int count = (int)/*64*/screens.count();
 	Monitor [] monitors = new Monitor [count];
 	for (int i=0; i<count; i++) {
 		Monitor monitor = new Monitor ();
@@ -1335,7 +1335,7 @@ public Shell [] getShells () {
 	checkDevice ();
 	NSArray windows = application.windows();
 	int index = 0;
-	Shell [] result = new Shell [windows.count()];
+	Shell [] result = new Shell [(int)/*64*/windows.count()];
 	for (int i = 0; i < result.length; i++) {
 		NSWindow window = new NSWindow(windows.objectAtIndex(i));
 		Widget widget = getWidget(window.contentView());
@@ -1436,7 +1436,7 @@ public Color getSystemColor (int id) {
 	if (color == null) return super.getSystemColor(id);
 	color = color.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace());
 	if (color == null) return super.getSystemColor(id);
-	float[] components = new float[color.numberOfComponents()];
+	float[] components = new float[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	
 	return Color.cocoa_new (this, new float[]{components[0], components[1], components[2], components[3]});
 }
@@ -1588,9 +1588,9 @@ int getToolTipTime () {
 	return 560;
 }
 
-Widget getWidget (int id) {
+Widget getWidget (int /*long*/ id) {
 	if (id == 0) return null;
-	int [] jniRef = new int [1];
+	int /*long*/ [] jniRef = new int /*long*/ [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return null;
 	return (Widget)OS.JNIGetObject(jniRef[0]);
@@ -1626,11 +1626,11 @@ protected void init () {
 
 void initApplicationDelegate() {
 	applicationDelegateCallback3 = new Callback(this, "applicationDelegateProc", 3);
-	int appProc3 = applicationDelegateCallback3.getAddress();
+	int /*long*/ appProc3 = applicationDelegateCallback3.getAddress();
 	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	String className = "SWTApplicationDelegate";
-	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
@@ -1645,7 +1645,7 @@ void initApplicationDelegate() {
 	application.setDelegate(applicationDelegate);
 }
 
-void addEventMethods (int cls, int proc2, int proc3, int drawRectProc) {
+void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ drawRectProc) {
 	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_mouseUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_scrollWheel_, proc3, "@:@");
@@ -1666,47 +1666,47 @@ void addEventMethods (int cls, int proc2, int proc3, int drawRectProc) {
 	OS.class_addMethod(cls, OS.sel_drawRect_, drawRectProc, "@:{NSRect}");
 }
 
-void addFrameMethods(int cls, int setFrameOriginProc, int setFrameSizeProc) {
+void addFrameMethods(int /*long*/ cls, int /*long*/ setFrameOriginProc, int /*long*/ setFrameSizeProc) {
 	OS.class_addMethod(cls, OS.sel_setFrameOrigin_, setFrameOriginProc, "@:{NSPoint}");	
 	OS.class_addMethod(cls, OS.sel_setFrameSize_, setFrameSizeProc, "@:{NSSize}");	
 }
 
 void initClasses () {
 	dialogCallback3 = new Callback(this, "dialogProc", 3);
-	int dialogProc3 = dialogCallback3.getAddress();
+	int /*long*/ dialogProc3 = dialogCallback3.getAddress();
 	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	windowDelegateCallback3 = new Callback(this, "windowDelegateProc", 3);
-	int proc3 = windowDelegateCallback3.getAddress();
+	int /*long*/ proc3 = windowDelegateCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowDelegateCallback2 = new Callback(this, "windowDelegateProc", 2);
-	int proc2 = windowDelegateCallback2.getAddress();
+	int /*long*/ proc2 = windowDelegateCallback2.getAddress();
 	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowDelegateCallback4 = new Callback(this, "windowDelegateProc", 4);
-	int proc4 = windowDelegateCallback4.getAddress();
+	int /*long*/ proc4 = windowDelegateCallback4.getAddress();
 	if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowDelegateCallback5 = new Callback(this, "windowDelegateProc", 5);
-	int proc5 = windowDelegateCallback5.getAddress();
+	int /*long*/ proc5 = windowDelegateCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowDelegateCallback6 = new Callback(this, "windowDelegateProc", 6);
-	int proc6 = windowDelegateCallback6.getAddress();
+	int /*long*/ proc6 = windowDelegateCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	int drawRectProc = OS.drawRect_CALLBACK(proc3);
-	int drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
-	int setFrameOriginProc = OS.setFrame_CALLBACK(proc3);
-	int setFrameSizeProc = OS.setFrame_CALLBACK(proc3);
-	int hitTestProc = OS.hitTest_CALLBACK(proc3);
-	int markedRangeProc = OS.markedRange_CALLBACK(proc2);
-	int selectedRangeProc = OS.selectedRange_CALLBACK(proc2);
-	int setMarkedText_selectedRangeProc = OS.setMarkedText_selectedRange_CALLBACK(proc4);
-	int attributedSubstringFromRangeProc = OS.attributedSubstringFromRange_CALLBACK(proc3);
-	int characterIndexForPointProc = OS.characterIndexForPoint_CALLBACK(proc3);
-	int firstRectForCharacterRangeProc = OS.firstRectForCharacterRange_CALLBACK(proc3);	
-	int textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
+	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
+	int /*long*/ drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
+	int /*long*/ setFrameOriginProc = OS.setFrame_CALLBACK(proc3);
+	int /*long*/ setFrameSizeProc = OS.setFrame_CALLBACK(proc3);
+	int /*long*/ hitTestProc = OS.hitTest_CALLBACK(proc3);
+	int /*long*/ markedRangeProc = OS.markedRange_CALLBACK(proc2);
+	int /*long*/ selectedRangeProc = OS.selectedRange_CALLBACK(proc2);
+	int /*long*/ setMarkedText_selectedRangeProc = OS.setMarkedText_selectedRange_CALLBACK(proc4);
+	int /*long*/ attributedSubstringFromRangeProc = OS.attributedSubstringFromRange_CALLBACK(proc3);
+	int /*long*/ characterIndexForPointProc = OS.characterIndexForPoint_CALLBACK(proc3);
+	int /*long*/ firstRectForCharacterRangeProc = OS.firstRectForCharacterRange_CALLBACK(proc3);	
+	int /*long*/ textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
 
 	String className = "SWTWindowDelegate";
-	int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
 	OS.class_addMethod(cls, OS.sel_windowDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidMove_, proc3, "@:@");
@@ -1985,7 +1985,7 @@ void initClasses () {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (screenWindow == null) {
 		NSWindow window = (NSWindow) new NSWindow ().alloc ();
@@ -2025,7 +2025,7 @@ public int internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int context, GCData data) {
+public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	
 }
@@ -2706,7 +2706,7 @@ public void removeListener (int eventType, Listener listener) {
 
 Widget removeWidget (NSObject view) {
 	if (view == null) return null;
-	int [] jniRef = new int [1];
+	int /*long*/ [] jniRef = new int /*long*/ [1];
 	OS.object_getInstanceVariable(view.id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return null;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef[0]);
@@ -3022,7 +3022,7 @@ void setMenuBar (Menu menu) {
 	menuBar = menu;
 	//remove all existing menu items except the application menu
 	NSMenu menubar = application.mainMenu();
-	int count = menubar.numberOfItems();
+	int /*long*/ count = menubar.numberOfItems();
 	while (count > 1) {
 		menubar.removeItemAtIndex(count - 1);
 		count--;
@@ -3227,8 +3227,8 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 }
 
-int timerProc (int id) {
-	NSTimer timer = new NSTimer (id);
+int /*long*/ timerProc (int /*long*/ id, int /*long*/ sel, int /*long*/ timerID) {
+	NSTimer timer = new NSTimer (timerID);
 	NSNumber number = new NSNumber(timer.userInfo());
 	int index = number.intValue();
 	if (timerList == null) return 0;
@@ -3325,11 +3325,11 @@ Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim, bool
 	return control;
 }
 
-int applicationNextEventMatchingMask (int id, int sel, int mask, int expiration, int mode, int dequeue) {
+int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel, int /*long*/ mask, int /*long*/ expiration, int /*long*/ mode, int /*long*/ dequeue) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
-	int result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue);
+	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
 	if (result != 0) {
 		if (trackingControl != null && dequeue != 0) {
 			NSEvent nsEvent = new NSEvent(result);
@@ -3342,7 +3342,7 @@ int applicationNextEventMatchingMask (int id, int sel, int mask, int expiration,
 void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 	if (send) runDeferredEvents();
 	boolean up = false;
-	int type = nsEvent.type();
+	int type = (int)/*64*/nsEvent.type();
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
@@ -3399,7 +3399,7 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 	}
 }
 
-void applicationSendEvent (int id, int sel, int event) {
+void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
 	applicationSendMouseEvent(nsEvent, false);
 	objc_super super_struct = new objc_super();
@@ -3422,7 +3422,7 @@ int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ eve
 	return 0;
 }
 
-int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
 		return applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
 	}
@@ -3482,17 +3482,17 @@ int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	if (sel == OS.sel_changeColor_) {
 		ColorDialog dialog = (ColorDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
-		dialog.changeColor(arg0);
+		dialog.changeColor(id, sel, arg0);
 	} else if (sel == OS.sel_changeFont_) {
 		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
-		dialog.changeFont(arg0);
+		dialog.changeFont(id, sel, arg0);
 	} else if (sel == OS.sel_windowWillClose_) {
 		Object object = OS.JNIGetObject(jniRef[0]);
 		if (object instanceof FontDialog) {
-			((FontDialog)object).windowWillClose(arg0);
+			((FontDialog)object).windowWillClose(id, sel, arg0);
 		} else if (object instanceof ColorDialog) {
-			((ColorDialog)object).windowWillClose(arg0);
+			((ColorDialog)object).windowWillClose(id, sel, arg0);
 		}
 	}
 	return 0;
@@ -3501,9 +3501,7 @@ int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	Widget widget = getWidget(id);
 	if (widget == null) return 0;
-	if (sel == OS.sel_isFlipped) {
-		return widget.isFlipped() ? 1 : 0;
-	} else if (sel == OS.sel_sendSelection) {
+	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
 	} else if (sel == OS.sel_sendArrowSelection) {
 		widget.sendArrowSelection();
@@ -3519,6 +3517,8 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.becomeFirstResponder(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_resignFirstResponder) {
 		return widget.resignFirstResponder(id, sel) ? 1 : 0;
+	} else 	if (sel == OS.sel_isFlipped) {
+		return widget.isFlipped(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_isOpaque) {
 		return widget.isOpaque(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_unmarkText) {
@@ -3545,7 +3545,7 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 
 int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	if (sel == OS.sel_timerProc_) {
-		return timerProc (arg0);
+		return timerProc (id, sel, arg0);
 	}
 	Widget widget = getWidget(id);
 	if (widget == null && (sel == OS.sel_keyDown_ ||sel == OS.sel_keyUp_ ||sel == OS.sel_insertText_ ||sel == OS.sel_doCommandBySelector_))  {
@@ -3553,7 +3553,7 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	}
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_) {
-		widget.windowWillClose(arg0);
+		widget.windowWillClose(id, sel, arg0);
 	} else if (sel == OS.sel_drawRect_) {
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
@@ -3571,7 +3571,7 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		OS.memmove(point, arg0, NSPoint.sizeof);
 		return widget.hitTest(id, sel, point);
 	} else if (sel == OS.sel_windowShouldClose_) {
-		return widget.windowShouldClose(arg0) ? 1 : 0;
+		return widget.windowShouldClose(id, sel, arg0) ? 1 : 0;
 	} else if (sel == OS.sel_mouseDown_) {
 		widget.mouseDown(id, sel, arg0);
 	} else if (sel == OS.sel_keyDown_) {
@@ -3601,31 +3601,31 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	} else if (sel == OS.sel_menuForEvent_) {
 		return widget.menuForEvent(id, sel, arg0);
 	} else if (sel == OS.sel_numberOfRowsInTableView_) {
-		return widget.numberOfRowsInTableView(arg0);
+		return widget.numberOfRowsInTableView(id, sel, arg0);
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
-		widget.comboBoxSelectionDidChange(arg0);
+		widget.comboBoxSelectionDidChange(id, sel, arg0);
 	} else if (sel == OS.sel_tableViewSelectionDidChange_) {
-		widget.tableViewSelectionDidChange(arg0);
+		widget.tableViewSelectionDidChange(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidResignKey_) {
-		widget.windowDidResignKey(arg0);
+		widget.windowDidResignKey(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidBecomeKey_) {
-		widget.windowDidBecomeKey(arg0);
+		widget.windowDidBecomeKey(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidResize_) {
-		widget.windowDidResize(arg0);
+		widget.windowDidResize(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidMove_) {
-		widget.windowDidMove(arg0);
+		widget.windowDidMove(id, sel, arg0);
 	} else if (sel == OS.sel_menuWillOpen_) {
-		widget.menuWillOpen(arg0);
+		widget.menuWillOpen(id, sel, arg0);
 	} else if (sel == OS.sel_menuDidClose_) {
-		widget.menuDidClose(arg0);
+		widget.menuDidClose(id, sel, arg0);
 	} else if (sel == OS.sel_menuNeedsUpdate_) {
-		widget.menuNeedsUpdate(arg0);
+		widget.menuNeedsUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_) {
-		widget.outlineViewSelectionDidChange(arg0);
+		widget.outlineViewSelectionDidChange(id, sel, arg0);
 	} else if (sel == OS.sel_sendEvent_) {
 		widget.windowSendEvent(id, sel, arg0);
 	} else if (sel == OS.sel_helpRequested_) {
-		widget.helpRequested(arg0);
+		widget.helpRequested(id, sel, arg0);
 	} else if (sel == OS.sel_scrollWheel_) {
 		widget.scrollWheel(id, sel, arg0);
 	} else if (sel == OS.sel_pageDown_) {
@@ -3633,9 +3633,9 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	} else if (sel == OS.sel_pageUp_) {
 		widget.pageUp(id, sel, arg0);
 	} else if (sel == OS.sel_textViewDidChangeSelection_) {
-		widget.textViewDidChangeSelection(arg0);
+		widget.textViewDidChangeSelection(id, sel, arg0);
 	} else if (sel == OS.sel_textDidChange_) {
-		widget.textDidChange(arg0);
+		widget.textDidChange(id, sel, arg0);
 	} else if (sel == OS.sel_attributedSubstringFromRange_) {
 		return widget.attributedSubstringFromRange (id, sel, arg0);
 	} else if (sel == OS.sel_characterIndexForPoint_) {
@@ -3658,21 +3658,21 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
-		widget.willSelectTabViewItem(arg0, arg1);
+		widget.tabView_willSelectTabViewItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_isItemExpandable_) {
-		return widget.outlineView_isItemExpandable(arg0, arg1) ? 1 : 0;
+		return widget.outlineView_isItemExpandable(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_numberOfChildrenOfItem_) {
-		return widget.outlineView_numberOfChildrenOfItem(arg0, arg1);
+		return widget.outlineView_numberOfChildrenOfItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_shouldCollapseItem_) {
-		return widget.outlineView_shouldCollapseItem(arg0, arg1) ? 1 : 0;
+		return widget.outlineView_shouldCollapseItem(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_shouldExpandItem_) {
-		return widget.outlineView_shouldExpandItem(arg0, arg1) ? 1 : 0;
+		return widget.outlineView_shouldExpandItem(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_menu_willHighlightItem_) {
-		widget.menu_willHighlightItem(arg0, arg1);
+		widget.menu_willHighlightItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
 		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
-		widget.drawInteriorFrame_inView (arg0, arg1);
+		widget.drawInteriorFrame_inView (id, sel, arg0, arg1);
 	}
 	return 0;
 }
@@ -3681,17 +3681,17 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
-		return widget.tableView_objectValueForTableColumn_row(arg0, arg1, arg2);
+		return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
 	} else if (sel == OS.sel_tableView_shouldEditTableColumn_row_) {
-		return widget.tableView_shouldEditTableColumn_row(arg0, arg1, arg2) ? 1 : 0;
+		return widget.tableView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_textView_clickedOnLink_atIndex_) {
-		 return widget.clickOnLink(arg0, arg1, arg2) ? 1 : 0;
+		 return widget.textView_clickOnLink_atIndex(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_child_ofItem_) {
-		 return widget.outlineView_child_ofItem(arg0, arg1, arg2);
+		 return widget.outlineView_child_ofItem(id, sel, arg0, arg1, arg2);
 	} else if (sel == OS.sel_outlineView_objectValueForTableColumn_byItem_) {
-		 return widget.outlineView_objectValueForTableColumn_byItem(arg0, arg1, arg2);
+		 return widget.outlineView_objectValueForTableColumn_byItem(id, sel, arg0, arg1, arg2);
 	} else if (sel == OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_) {
-		NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(arg0, arg1, arg2);
+		NSRange range = widget.textView_willChangeSelectionFromCharacterRange_toCharacterRange(id, sel, arg0, arg1, arg2);
 		/* NOTE that this is freed in C */
 		int /*long*/ result = OS.malloc (NSRange.sizeof);
 		OS.memmove (result, range, NSRange.sizeof);
@@ -3704,13 +3704,13 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	Widget widget = getWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
-		widget.tableView_willDisplayCell_forTableColumn_row(arg0, arg1, arg2, arg3);
+		widget.tableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_outlineView_willDisplayCell_forTableColumn_item_) {
-		widget.outlineView_willDisplayCell_forTableColumn_item(arg0, arg1, arg2, arg3);
+		widget.outlineView_willDisplayCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3);
 	} else  if (sel == OS.sel_outlineView_setObjectValue_forTableColumn_byItem_) {
-		widget.outlineView_setObjectValue_forTableColumn_byItem(arg0, arg1, arg2, arg3);
+		widget.outlineView_setObjectValue_forTableColumn_byItem(id, sel, arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_tableView_setObjectValue_forTableColumn_row_) {
-		widget.tableView_setObjectValue_forTableColumn_row(arg0, arg1, arg2, arg3);
+		widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }

@@ -89,7 +89,7 @@ public ColorDialog(Shell parent, int style) {
 	checkSubclass ();
 }
 
-void changeColor(int sender) {
+void changeColor(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
 	//TODO
 }
 
@@ -124,7 +124,7 @@ public RGB open() {
 		panel.setColor(color);
 	}
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
-	int jniRef = OS.NewGlobalRef(this);
+	int /*long*/ jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
@@ -154,7 +154,7 @@ public void setRGB(RGB rgb) {
 	this.rgb = rgb;
 }
 
-void windowWillClose(int sender) {
+void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
 	NSApplication.sharedApplication().stop(null);
 }
 }

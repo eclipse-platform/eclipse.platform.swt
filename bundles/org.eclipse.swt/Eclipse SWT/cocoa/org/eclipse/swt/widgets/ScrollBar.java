@@ -89,7 +89,7 @@ public class ScrollBar extends Widget {
 	int increment = 1;
 	int pageIncrement = 10;
 	id target;
-	int actionSelector;;
+	int /*long*/ actionSelector;;
 
 ScrollBar () {
 	/* Do nothing */
@@ -413,7 +413,7 @@ void sendSelection () {
 		value = getSelection ();
 	}
 	Event event = new Event();
-	int hitPart = ((NSScroller)view).hitPart();
+	int hitPart = (int)/*64*/((NSScroller)view).hitPart();
 	switch (hitPart) {
 	    case OS.NSScrollerDecrementLine:
 	        value -= increment;

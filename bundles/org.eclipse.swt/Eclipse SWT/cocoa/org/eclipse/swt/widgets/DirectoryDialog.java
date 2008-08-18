@@ -125,7 +125,7 @@ public String open () {
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	panel.setCanChooseFiles(false);
 	panel.setCanChooseDirectories(true);
-	int response = panel.runModal();
+	int /*long*/ response = panel.runModal();
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		directoryPath = filterPath = filename.getString();

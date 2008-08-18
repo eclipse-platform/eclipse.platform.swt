@@ -167,12 +167,12 @@ public void getElements(float[] elements) {
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSAffineTransformStruct struct = handle.transformStruct();
-	elements[0] = struct.m11;
-	elements[1] = struct.m12;
-	elements[2] = struct.m21;
-	elements[3] = struct.m22;
-	elements[4] = struct.tX;
-	elements[5] = struct.tY;
+	elements[0] = (float)/*64*/struct.m11;
+	elements[1] = (float)/*64*/struct.m12;
+	elements[2] = (float)/*64*/struct.m21;
+	elements[3] = (float)/*64*/struct.m22;
+	elements[4] = (float)/*64*/struct.tX;
+	elements[5] = (float)/*64*/struct.tY;
 }
 
 /**
@@ -368,8 +368,8 @@ public void transform(float[] pointArray) {
 		point.x = pointArray[j];
 		point.y = pointArray[j + 1];
 		point = handle.transformPoint(point);
-		pointArray[j] = point.x;				
-		pointArray[j + 1] = point.y;				
+		pointArray[j] = (float)/*64*/point.x;				
+		pointArray[j + 1] = (float)/*64*/point.y;				
 	}
 }
 

@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
  
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 import java.io.*;
@@ -218,7 +219,7 @@ public Image(Device device, Image srcImage, int flag) {
  	int width = (int)size.width;
  	int height = (int)size.height;
  	NSBitmapImageRep srcRep = srcImage.imageRep;
- 	int bpr = srcRep.bytesPerRow();
+ 	int /*long*/ bpr = srcRep.bytesPerRow();
 
 	/* Copy transparent pixel and alpha data when necessary */
 	transparentPixel = srcImage.transparentPixel;
@@ -235,7 +236,7 @@ public Image(Device device, Image srcImage, int flag) {
 	rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.samplesPerPixel() == 4, srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, srcRep.bytesPerRow(), srcRep.bitsPerPixel());
 	handle.addRepresentation(rep);
 	
-	int data = rep.bitmapData();
+	int /*long*/ data = rep.bitmapData();
 	OS.memmove(data, srcImage.imageRep.bitmapData(), width * height * 4);
 	if (flag != SWT.IMAGE_COPY) {
 		
@@ -252,7 +253,7 @@ public Image(Device device, Image srcImage, int flag) {
 				byte oneRed = (byte)oneRGB.red;
 				byte oneGreen = (byte)oneRGB.green;
 				byte oneBlue = (byte)oneRGB.blue;
-				byte[] line = new byte[bpr];
+				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
 					int offset = 0;
@@ -277,7 +278,7 @@ public Image(Device device, Image srcImage, int flag) {
 				break;
 			}
 			case SWT.IMAGE_GRAY: {			
-				byte[] line = new byte[bpr];
+				byte[] line = new byte[(int)/*64*/bpr];
 				for (int y=0; y<height; y++) {
 					OS.memmove(line, data + (y * bpr), bpr);
 					int offset = 0;
@@ -489,9 +490,9 @@ void createAlpha () {
 	if (transparentPixel == -1 && alpha == -1 && alphaData == null) return;
 	NSSize size = handle.size();
 	int height = (int)size.height;
-	int bpr = imageRep.bytesPerRow();
-	int dataSize = height * bpr;
-	byte[] srcData = new byte[dataSize];
+	int /*long*/ bpr = imageRep.bytesPerRow();
+	int /*long*/ dataSize = height * bpr;
+	byte[] srcData = new byte[(int)/*64*/dataSize];
 	OS.memmove(srcData, imageRep.bitmapData(), dataSize);
 	if (transparentPixel != -1) {
 		for (int i=0; i<dataSize; i+=4) {
@@ -613,15 +614,15 @@ public ImageData getImageData() {
 	int width = (int)size.width;
 	int height = (int)size.height;
 	NSBitmapImageRep imageRep = this.imageRep;
-	int bpr = imageRep.bytesPerRow();
-	int bpp = imageRep.bitsPerPixel();
-	int dataSize = height * bpr;
-	byte[] srcData = new byte[dataSize];
+	int /*long*/ bpr = imageRep.bytesPerRow();
+	int /*long*/ bpp = imageRep.bitsPerPixel();
+	int /*long*/ dataSize = height * bpr;
+	byte[] srcData = new byte[(int)/*64*/dataSize];
 	OS.memmove(srcData, imageRep.bitmapData(), dataSize);
 	
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-	ImageData data = new ImageData(width, height, bpp, palette, 4, srcData);
-	data.bytesPerLine = bpr;
+	ImageData data = new ImageData(width, height, (int)/*64*/bpp, palette, 4, srcData);
+	data.bytesPerLine = (int)/*64*/bpr;
 
 	data.transparentPixel = transparentPixel;
 	if (transparentPixel == -1 && type == SWT.ICON) {
@@ -695,7 +696,7 @@ public static Image cocoa_new(Device device, int type, NSImage nsImage) {
  * @see #equals
  */
 public int hashCode () {
-	return handle != null ? handle.id : 0;
+	return handle != null ? (int)/*64*/handle.id : 0;
 }
 
 void init(int width, int height) {
@@ -840,7 +841,7 @@ void init(ImageData image) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -849,10 +850,10 @@ public int internal_new_GC (GCData data) {
 	if (imageRep.hasAlpha()) {
 		int bpr = width * 4;
 		rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		int bitmapData = imageRep.bitmapData();
+		int /*long*/ bitmapData = imageRep.bitmapData();
 		if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
-		data.bitmapDataAddress = OS.malloc(4);
-		OS.memmove(data.bitmapDataAddress, new int[] {bitmapData}, 4);
+		data.bitmapDataAddress = OS.malloc(C.PTR_SIZEOF);
+		OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, 4);
 		rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
 		rep.autorelease();
 	}
@@ -891,7 +892,7 @@ public int internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int context, GCData data) {
+public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
 	data.bitmapDataAddress = 0;
 //	handle.setCacheMode(OS.NSImageCacheDefault);

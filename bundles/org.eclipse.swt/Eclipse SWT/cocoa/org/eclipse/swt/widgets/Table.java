@@ -980,7 +980,7 @@ public TableItem getItem (Point point) {
 	NSPoint pt = new NSPoint();
 	pt.x = point.x;
 	pt.y = point.y;
-	int row = widget.rowAtPoint(pt);
+	int row = (int)/*64*/widget.rowAtPoint(pt);
 	if (row == -1) return null;
 	return items[row];
 }
@@ -1090,7 +1090,7 @@ public TableItem [] getSelection () {
 		return new TableItem [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = selection.count();
+	int count = (int)/*64*/selection.count();
 	int [] indexBuffer = new int [count];
 	selection.getIndexes(indexBuffer, count, 0);
 	TableItem [] result = new TableItem  [count];
@@ -1112,7 +1112,7 @@ public TableItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return ((NSTableView)view).numberOfSelectedRows();
+	return (int)/*64*/((NSTableView)view).numberOfSelectedRows();
 }
 
 /**
@@ -1133,7 +1133,7 @@ public int getSelectionIndex () {
 		return -1;
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = selection.count();
+	int count = (int)/*64*/selection.count();
 	int [] result = new int [count];
 	selection.getIndexes(result, count, 0);
 	return result [0];
@@ -1162,7 +1162,7 @@ public int [] getSelectionIndices () {
 		return new int [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = selection.count();
+	int count = (int)/*64*/selection.count();
 	int [] result = new int [count];
 	selection.getIndexes(result, count, 0);
 	return result;
@@ -1229,7 +1229,7 @@ public int getTopIndex () {
 	NSPoint point = new NSPoint();
 	point.x = rect.x;
 	point.y = rect.y;
-    return ((NSTableView)view).rowAtPoint(point);
+    return (int)/*64*/((NSTableView)view).rowAtPoint(point);
 }
 
 
@@ -1315,7 +1315,7 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
-int numberOfRowsInTableView(int aTableView) {
+int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
 }
 
@@ -2220,10 +2220,10 @@ void sendDoubleSelection() {
 	postEvent (SWT.DefaultSelection);
 }
 
-void tableViewSelectionDidChange (int aNotification) {
+void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	if (ignoreSelect) return;
 	NSTableView widget = (NSTableView) view;
-	int row = widget.selectedRow ();
+	int row = (int)/*64*/widget.selectedRow ();
 	if(row == -1)
 		postEvent (SWT.Selection);
 	else {
@@ -2235,8 +2235,8 @@ void tableViewSelectionDidChange (int aNotification) {
 	}
 }
 
-int tableView_objectValueForTableColumn_row (int aTableView, int aTableColumn, int rowIndex) {
-	TableItem item = _getItem (rowIndex);
+int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
+	TableItem item = _getItem ((int)/*64*/rowIndex);
 	if (checkColumn != null && aTableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
@@ -2254,25 +2254,25 @@ int tableView_objectValueForTableColumn_row (int aTableView, int aTableColumn, i
 	return item.createString (0).id;
 }
 
-void tableView_setObjectValue_forTableColumn_row (int aTableView, int anObject, int aTableColumn, int rowIndex) {
-	TableItem item = items [rowIndex];
+void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
+	TableItem item = items [(int)/*64*/rowIndex];
 	if (checkColumn != null && aTableColumn == checkColumn.id)  {
 		item.checked = !item.checked;
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
-		event.index = rowIndex;
+		event.index = (int)/*64*/rowIndex;
 		postEvent (SWT.Selection, event);
 	}
 }
 
-boolean tableView_shouldEditTableColumn_row (int aTableView, int aTableColumn, int rowIndex) {
+boolean tableView_shouldEditTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	return false;
 }
 
-void tableView_willDisplayCell_forTableColumn_row (int aTableView, int aCell, int aTableColumn, int rowIndex) {
+void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aCell, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	if (checkColumn != null && aTableColumn == checkColumn.id) return;
-	TableItem item = items [rowIndex];
+	TableItem item = items [(int)/*64*/rowIndex];
 	Image image = item.image;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == aTableColumn) {

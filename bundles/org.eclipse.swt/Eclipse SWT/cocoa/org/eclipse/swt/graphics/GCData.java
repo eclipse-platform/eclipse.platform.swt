@@ -45,11 +45,11 @@ public final class GCData {
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
-	public int bitmapDataAddress;
+	public int /*long*/ bitmapDataAddress;
 
 	public Image image;
 	
-	public float drawXOffset, drawYOffset;
+	public double /*float*/ drawXOffset, drawYOffset;
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;

@@ -32,7 +32,9 @@
 <target name="replace.32.to.64" depends="init">
 	<echo>Converting java files to 64 bit in org.eclipse.swt project</echo>
 	<replace dir="." includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
+	<replace dir="." includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
 	<replace dir="." includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
+	<replace dir="." includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
 	<antcall target="build.cfiles"/>
 </target>
 	
@@ -40,7 +42,8 @@
 <target name="replace.64.to.32" depends="init">
 	<echo>Converting java files to 32 bit in org.eclipse.swt project</echo>
 	<replace dir="." includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
-	<replace dir="." includes="**/*.java" token="double /*long*/" value="float /*double*/"/>
+	<replace dir="." includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
+	<replace dir="." includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
 	<antcall target="build.cfiles"/>
 </target>
 

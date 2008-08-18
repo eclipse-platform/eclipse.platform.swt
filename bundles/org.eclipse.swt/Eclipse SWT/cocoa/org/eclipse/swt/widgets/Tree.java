@@ -80,7 +80,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	float levelIndent;
+	double /*float*/ levelIndent;
 	boolean ignoreExpand, ignoreSelect;
 
 /**
@@ -351,7 +351,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint;
 	}
 	if (hHint == SWT.DEFAULT) {
-		height = ((NSTableView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
+		height = (int)/*64*/((NSTableView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
 	} else {
 		height = hHint;
 	}
@@ -1014,7 +1014,7 @@ public TreeItem getItem (Point point) {
 	NSPoint pt = new NSPoint();
 	pt.x = point.x;
 	pt.y = point.y;
-	int row = widget.rowAtPoint(pt);
+	int row = (int)/*64*/widget.rowAtPoint(pt);
 	if (row == -1) return null;
 	id id = widget.itemAtRow(row);
 	Widget item = display.getWidget (id.id);
@@ -1152,7 +1152,7 @@ public TreeItem [] getSelection () {
 		return new TreeItem [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes ();
-	int count = selection.count ();
+	int count = (int)/*64*/selection.count ();
 	int [] indexBuffer = new int [count];
 	selection.getIndexes (indexBuffer, count, 0);
 	TreeItem [] result = new TreeItem [count];
@@ -1179,7 +1179,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return ((NSTableView) view).numberOfSelectedRows ();
+	return (int)/*64*/((NSTableView) view).numberOfSelectedRows ();
 }
 
 /**
@@ -1315,15 +1315,15 @@ public int indexOf (TreeItem item) {
 	return -1;
 }
 
-int outlineView_child_ofItem (int outlineView, int index, int ref) {
-	TreeItem parent = (TreeItem) display.getWidget (ref);
-	TreeItem item = _getItem (parent, index, true);
+int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ itemID) {
+	TreeItem parent = (TreeItem) display.getWidget (itemID);
+	TreeItem item = _getItem (parent, (int)/*64*/index, true);
 	checkData (item, false);
 	return item.handle.id;
 }
 
-int outlineView_objectValueForTableColumn_byItem (int outlineView, int tableColumn, int ref) {
-	TreeItem item = (TreeItem) display.getWidget (ref);
+int /*long*/ outlineView_objectValueForTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ itemID) {
+	TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (checkColumn != null && tableColumn == checkColumn.id) {
 		NSNumber value;
 		if (item.checked && item.grayed) {
@@ -1341,19 +1341,19 @@ int outlineView_objectValueForTableColumn_byItem (int outlineView, int tableColu
 	return item.createString (0).id;
 }
 
-boolean outlineView_isItemExpandable (int outlineView, int ref) {
-	if (ref == 0) return true;
-	return ((TreeItem) display.getWidget (ref)).itemCount != 0;
+boolean outlineView_isItemExpandable (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
+	if (item == 0) return true;
+	return ((TreeItem) display.getWidget (item)).itemCount != 0;
 }
 
-int outlineView_numberOfChildrenOfItem (int outlineView, int ref) {
-	if (ref == 0) return itemCount;
-	return ((TreeItem) display.getWidget (ref)).itemCount;
+int /*long*/ outlineView_numberOfChildrenOfItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
+	if (item == 0) return itemCount;
+	return ((TreeItem) display.getWidget (item)).itemCount;
 }
 
-void outlineView_willDisplayCell_forTableColumn_item (int outlineView, int cell, int tableColumn, int ref) {
+void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
-	TreeItem item = (TreeItem) display.getWidget(ref);
+	TreeItem item = (TreeItem) display.getWidget(itemID);
 	Image image = item.image;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
@@ -1364,10 +1364,10 @@ void outlineView_willDisplayCell_forTableColumn_item (int outlineView, int cell,
 	browserCell.setImage (image != null ? image.handle : null);
 }
 
-void outlineViewSelectionDidChange (int notification) {
+void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	if (ignoreSelect) return;
 	NSOutlineView widget = (NSOutlineView) view;
-	int row = widget.selectedRow ();
+	int row = (int)/*64*/widget.selectedRow ();
 	if(row == -1)
 		postEvent (SWT.Selection);
 	else {
@@ -1380,8 +1380,8 @@ void outlineViewSelectionDidChange (int notification) {
 	}
 }
 
-boolean outlineView_shouldCollapseItem (int outlineView, int ref) {
-	TreeItem item = (TreeItem) display.getWidget (ref);
+boolean outlineView_shouldCollapseItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
+	TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (!ignoreExpand) {
 		Event event = new Event ();
 		event.item = item;
@@ -1395,8 +1395,8 @@ boolean outlineView_shouldCollapseItem (int outlineView, int ref) {
 	return !item.expanded;
 }
 
-boolean outlineView_shouldExpandItem (int outlineView, int ref) {
-	final TreeItem item = (TreeItem) display.getWidget (ref);
+boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ itemID) {
+	final TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (!ignoreExpand) {
 		Event event = new Event ();
 		event.item = item;
@@ -1410,8 +1410,8 @@ boolean outlineView_shouldExpandItem (int outlineView, int ref) {
 	return item.expanded;
 }
 
-void outlineView_setObjectValue_forTableColumn_byItem (int outlineView, int object, int tableColumn, int ref) {
-	TreeItem item = (TreeItem) display.getWidget (ref);
+void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {
+	TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (checkColumn != null && tableColumn == checkColumn.id)  {
 		item.checked = !item.checked;
 		Event event = new Event ();
@@ -1592,8 +1592,7 @@ public void select (TreeItem item) {
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	showItem (item);
 	NSOutlineView outlineView = (NSOutlineView) view;
-	int row = outlineView.rowForItem (item.handle);
-	outlineView.selectRow (row, false);
+	outlineView.selectRow (outlineView.rowForItem (item.handle), false);
 }
 
 void sendDoubleSelection() {
@@ -1931,8 +1930,7 @@ public void setSelection (TreeItem [] items) {
 			if (items [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 			TreeItem item = items [i];
 			showItem (items [i], false);
-			int row = outlineView.rowForItem (item.handle);
-			rows.addIndex (row);
+			rows.addIndex (outlineView.rowForItem (item.handle));
 		}
 	}
 	ignoreSelect = true;
@@ -2031,9 +2029,8 @@ public void setTopItem (TreeItem item) {
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	showItem (item, false);
 	NSOutlineView outlineView = (NSOutlineView) view;
-	int row = outlineView.rowForItem (item.handle);
 	//FIXME
-	((NSTableView) view).scrollRowToVisible (row);
+	((NSTableView) view).scrollRowToVisible (outlineView.rowForItem (item.handle));
 }
 
 /**
@@ -2097,8 +2094,7 @@ void showItem (TreeItem item, boolean scroll) {
 	}
 	if (scroll) {
 		NSOutlineView outlineView = (NSOutlineView) view;
-		int row = outlineView.rowForItem (item.handle);
-		outlineView.scrollRowToVisible (row);
+		outlineView.scrollRowToVisible (outlineView.rowForItem (item.handle));
 	}
 }
 

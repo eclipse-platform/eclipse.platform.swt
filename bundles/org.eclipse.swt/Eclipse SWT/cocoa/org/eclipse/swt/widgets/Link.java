@@ -108,7 +108,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-boolean clickOnLink(int textView, int link, int charIndex) {
+boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ textView, int /*long*/ link, int /*long*/ charIndex) {
 	NSString str = new NSString (link);
 	Event event = new Event ();
 	event.text = str.getString();

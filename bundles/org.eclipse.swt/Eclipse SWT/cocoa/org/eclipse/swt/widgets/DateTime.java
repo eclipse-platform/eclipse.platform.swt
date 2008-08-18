@@ -192,7 +192,7 @@ NSCalendarDate getCalendarDate () {
  */
 public int getDay () {
 	checkWidget ();
-	return getCalendarDate().dayOfMonth();
+	return (int)/*64*/getCalendarDate().dayOfMonth();
 }
 
 /**
@@ -210,7 +210,7 @@ public int getDay () {
  */
 public int getHours () {
 	checkWidget ();
-	return getCalendarDate().hourOfDay();
+	return (int)/*64*/getCalendarDate().hourOfDay();
 }
 
 /**
@@ -228,7 +228,7 @@ public int getHours () {
  */
 public int getMinutes () {
 	checkWidget ();
-	return getCalendarDate().minuteOfHour();
+	return (int)/*64*/getCalendarDate().minuteOfHour();
 }
 
 /**
@@ -246,7 +246,7 @@ public int getMinutes () {
  */
 public int getMonth () {
 	checkWidget ();
-	return getCalendarDate().monthOfYear() - 1;
+	return (int)/*64*/getCalendarDate().monthOfYear() - 1;
 }
 
 String getNameText() {
@@ -269,7 +269,7 @@ String getNameText() {
  */
 public int getSeconds () {
 	checkWidget ();
-	return getCalendarDate().secondOfMinute();
+	return (int)/*64*/getCalendarDate().secondOfMinute();
 }
 
 /**
@@ -287,7 +287,7 @@ public int getSeconds () {
  */
 public int getYear () {
 	checkWidget ();
-	return getCalendarDate().yearOfCommonEra();
+	return (int)/*64*/getCalendarDate().yearOfCommonEra();
 }
 
 /**

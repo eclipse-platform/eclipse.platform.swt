@@ -216,7 +216,7 @@ void createHandle () {
 	_setAlignment(style);
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;

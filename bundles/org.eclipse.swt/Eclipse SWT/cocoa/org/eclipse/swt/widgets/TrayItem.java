@@ -337,7 +337,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
 	view.setImage(image != null ? image.handle : null);
-	float width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	double /*float*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
 	item.setLength(width);
 }
 
@@ -404,7 +404,7 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	float width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	double /*float*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
 	item.setLength(width);
 	if (!visible) sendEvent (SWT.Hide);
 }
@@ -418,29 +418,27 @@ void showMenu () {
 	_setToolTipText (toolTipText);
 }
 
-void mouseDown(int id, int sel, int event) {
+void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
-	int mask = nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask;
-	if (mask == OS.NSControlKeyMask) {
+	if ((nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == OS.NSControlKeyMask) {
 		showMenu();
 	} else {
 		highlight = true;
 		view.setNeedsDisplay(true);
-		int clickCount = nsEvent.clickCount();
-		postEvent(clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+		postEvent(nsEvent.clickCount() == 2 ? SWT.DefaultSelection : SWT.Selection);
 	}
 }
 
-void mouseUp(int id, int sel, int theEvent) {
+void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	highlight = false;
 	view.setNeedsDisplay(true);
 }
 
-void rightMouseDown(int id, int sel, int theEvent) {
+void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	showMenu();
 }
 
-void drawRect(int id, int sel, NSRect rect) {
+void drawRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
 	super.drawRect(id, sel, rect);
 }

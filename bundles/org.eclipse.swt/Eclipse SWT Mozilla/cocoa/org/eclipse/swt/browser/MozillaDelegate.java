@@ -26,7 +26,7 @@ MozillaDelegate (Browser browser) {
 	this.browser = browser;
 }
 
-static Browser findBrowser (int handle) {
+static Browser findBrowser (int /*long*/ handle) {
 	Display display = Display.getCurrent ();
 	return (Browser)display.findWidget (handle);
 }
@@ -71,7 +71,7 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return string.getBytes();
 }
 
-int getHandle () {
+int /*long*/ getHandle () {
 	return browser.view.id;
 }
 
@@ -117,7 +117,7 @@ boolean needsSpinup () {
 	return false;
 }
 
-void onDispose (int embedHandle) {
+void onDispose (int /*long*/ embedHandle) {
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		browser.getShell ().removeListener (SWT.Deactivate, listener);
@@ -126,7 +126,7 @@ void onDispose (int embedHandle) {
 	browser = null;
 }
 
-void setSize (int embedHandle, int width, int height) {
+void setSize (int /*long*/ embedHandle, int width, int height) {
 	// TODO
 }
 

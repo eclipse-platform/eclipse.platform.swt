@@ -168,7 +168,7 @@ public int open () {
 	NSAlert alert = NSAlert.alertWithMessageText(NSString.stringWith(""), defaultButton, alternateButton, otherButton, message);
 	new NSWindow(alert.window().id).setTitle(title);
 	alert.setAlertStyle(alertType);
-	int response = alert.runModal();
+	int response = (int)/*64*/alert.runModal();
 	switch (bits) {
 		case SWT.OK:
 			switch (response) {

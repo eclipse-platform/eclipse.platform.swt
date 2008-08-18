@@ -375,7 +375,7 @@ void fixSelection (int index, boolean add) {
  */
 public int getFocusIndex () {
 	checkWidget();
-	return ((NSTableView)view).selectedRow();
+	return (int)/*64*/((NSTableView)view).selectedRow();
 }
 
 /**
@@ -476,7 +476,7 @@ public String [] getSelection () {
 		return new String [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = selection.count();
+	int count = (int)/*64*/selection.count();
 	int [] indexBuffer = new int [count];
 	selection.getIndexes(indexBuffer, count, 0);
 	String [] result = new String  [count];
@@ -498,7 +498,7 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return ((NSTableView)view).numberOfSelectedRows();
+	return (int)/*64*/((NSTableView)view).numberOfSelectedRows();
 }
 
 /**
@@ -519,7 +519,7 @@ public int getSelectionIndex () {
 		return -1;
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = selection.count();
+	int count = (int)/*64*/selection.count();
 	int [] result = new int [count];
 	selection.getIndexes(result, count, 0);
 	return result [0];
@@ -548,7 +548,7 @@ public int [] getSelectionIndices () {
 		return new int [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = selection.count();
+	int count = (int)/*64*/selection.count();
 	int [] result = new int [count];
 	selection.getIndexes(result, count, 0);
 	return result;
@@ -573,7 +573,7 @@ public int getTopIndex () {
 	NSPoint point = new NSPoint();
 	point.x = rect.x;
 	point.y = rect.y;
-    int result = ((NSTableView)view).rowAtPoint(point);
+    int result = (int)/*64*/((NSTableView)view).rowAtPoint(point);
     if (result == -1) result = 0;
     return result;
 }
@@ -653,7 +653,7 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
-int numberOfRowsInTableView(int aTableView) {
+int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
 }
 
@@ -1216,16 +1216,16 @@ public void showSelection () {
 	if (index >= 0) showIndex (index);
 }
 
-void tableViewSelectionDidChange (int aNotification) {
+void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	if (ignoreSelect) return;
 	postEvent (SWT.Selection);
 }
 
-boolean tableView_shouldEditTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
+boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	return false;
 }
 
-int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, int rowIndex) {
+int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 	if (foreground != null) {
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
@@ -1238,7 +1238,7 @@ int tableView_objectValueForTableColumn_row(int aTableView, int aTableColumn, in
 		NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
 		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
-	String text = items[rowIndex];
+	String text = items[(int)/*64*/rowIndex];
 	int length = text.length();
 	char[] chars = new char[length];
 	text.getChars(0, length, chars, 0);

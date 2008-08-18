@@ -39,7 +39,7 @@ public final class Region extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public int /*long*/ handle;
 
 /**
  * Constructs a new empty region.
@@ -107,7 +107,7 @@ public void add (int[] pointArray) {
 	
 void add(int[] pointArray, int count) {
 	if (count <= 2) return;
-	int polyRgn = OS.NewRgn();
+	int /*long*/ polyRgn = OS.NewRgn();
 	OS.OpenRgn();
 	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
 	for (int i = 1; i < count / 2; i++) {
@@ -161,7 +161,7 @@ public void add(Rectangle rect) {
 public void add(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.NewRgn();
+	int /*long*/ rectRgn = OS.NewRgn();
 	short[] r = new short[4];
 	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	OS.RectRgn(rectRgn, r);
@@ -232,9 +232,9 @@ public boolean contains(Point pt) {
 
 NSAffineTransform transform;
 void convertRgn(NSAffineTransform transform) {
-	int newRgn = OS.NewRgn();
+	int /*long*/ newRgn = OS.NewRgn();
 	Callback callback = new Callback(this, "convertRgn", 4);
-	int proc = callback.getAddress();
+	int /*long*/ proc = callback.getAddress();
 	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	this.transform = transform;
 	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, proc, newRgn);
@@ -244,12 +244,12 @@ void convertRgn(NSAffineTransform transform) {
 	OS.DisposeRgn(newRgn);
 }
 
-int convertRgn(int message, int rgn, int r, int newRgn) {
+int /*long*/ convertRgn(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ newRgn) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		short[] rect = new short[4];
 		OS.memmove(rect, r, rect.length * 2);
 		NSPoint point = new NSPoint(); 
-		int polyRgn = OS.NewRgn();
+		int /*long*/ polyRgn = OS.NewRgn();
 		OS.OpenRgn();
 		point.x = rect[1];
 		point.y = rect[0];
@@ -366,7 +366,7 @@ public static Region carbon_new(Device device, int handle) {
  * @see #equals
  */
 public int hashCode() {
-	return handle;
+	return (int)/*64*/handle;
 }
 
 /**
@@ -412,7 +412,7 @@ public void intersect(Rectangle rect) {
 public void intersect(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.NewRgn();
+	int /*long*/ rectRgn = OS.NewRgn();
 	short[] r = new short[4];
 	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	OS.RectRgn(rectRgn, r);
@@ -539,7 +539,7 @@ public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pointArray.length < 2) return;
-	int polyRgn = OS.NewRgn();
+	int /*long*/ polyRgn = OS.NewRgn();
 	OS.OpenRgn();
 	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
 	for (int i = 1; i < pointArray.length / 2; i++) {
@@ -594,7 +594,7 @@ public void subtract(Rectangle rect) {
 public void subtract(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn = OS.NewRgn();
+	int /*long*/ rectRgn = OS.NewRgn();
 	short[] r = new short[4];
 	OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	OS.RectRgn(rectRgn, r);

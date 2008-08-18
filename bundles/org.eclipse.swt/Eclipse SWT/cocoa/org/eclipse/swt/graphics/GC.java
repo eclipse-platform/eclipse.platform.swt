@@ -147,7 +147,7 @@ public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
 	data.style = checkStyle(style);
-	int contextId = drawable.internal_new_GC(data);
+	int /*long*/ contextId = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -180,7 +180,7 @@ static int checkStyle (int style) {
  */
 public static GC cocoa_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
-	int context = drawable.internal_new_GC(data);
+	int /*long*/ context = drawable.internal_new_GC(data);
 	gc.device = data.device;
 	gc.init(drawable, data, context);
 	return gc;
@@ -336,9 +336,9 @@ void checkGC (int mask) {
 		if (data.transform != null) {
 			size = data.transform.transformSize(size);
 		}
-		float scaling = size.width;
+		double /*float*/ scaling = size.width;
 		if (scaling < 0) scaling = -scaling;
-		float strokeWidth = data.lineWidth * scaling;
+		double /*float*/ strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
 			data.drawXOffset = 0.5f / scaling;
 		}
@@ -742,7 +742,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	checkGC(DRAW);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 	transform.scaleXBy(width / 2f, height / 2f);
 	NSBezierPath path = data.path;
@@ -1064,7 +1064,7 @@ public void drawPolygon(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pointArray.length < 4) return;
 	checkGC(DRAW);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
 	pt.x = pointArray[0] + xOffset;
@@ -1104,7 +1104,7 @@ public void drawPolyline(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pointArray.length < 4) return;
 	checkGC(DRAW);
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
 	pt.x = pointArray[0] + xOffset;
@@ -1434,7 +1434,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	checkGC(FILL);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
-	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 	transform.scaleXBy(width / 2f, height / 2f);
 	NSBezierPath path = data.path;
@@ -1997,15 +1997,15 @@ public void getClipping(Region region) {
 	}
 	if (data.clipPath != null) {
 		NSBezierPath clip = data.clipPath.bezierPathByFlatteningPath();
-		int count = clip.elementCount();
+		int count = (int)/*64*/clip.elementCount();
 		int pointCount = 0;
 		Region clipRgn = new Region(device);
 		int[] pointArray = new int[count * 2];
-		int points = OS.malloc(NSPoint.sizeof);
+		int /*long*/ points = OS.malloc(NSPoint.sizeof);
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		NSPoint pt = new NSPoint();
 		for (int i = 0; i < count; i++) {
-			int element = clip.elementAtIndex(i, points);
+			int element = (int)/*64*/clip.elementAtIndex(i, points);
 			switch (element) {
 				case OS.NSMoveToBezierPathElement:
 					if (pointCount != 0) clipRgn.add(pointArray, pointCount);
@@ -2162,7 +2162,7 @@ public GCData getGCData() {
  */
 public int getInterpolation() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int interpolation = handle.imageInterpolation();
+	int interpolation = (int)/*64*/handle.imageInterpolation();
 	switch (interpolation) {
 		case OS.NSImageInterpolationDefault: return SWT.DEFAULT;
 		case OS.NSImageInterpolationNone: return SWT.NONE;
@@ -2394,10 +2394,10 @@ public boolean getXORMode() {
  * @see #equals
  */
 public int hashCode() {
-	return handle != null ? handle.id : 0;
+	return handle != null ? (int)/*64*/handle.id : 0;
 }
 
-void init(Drawable drawable, GCData data, int context) {
+void init(Drawable drawable, GCData data, int /*long*/ context) {
 	if (data.foreground != null) data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 	if (data.background != null)  data.state &= ~BACKGROUND;
 	if (data.font != null) data.state &= ~FONT;

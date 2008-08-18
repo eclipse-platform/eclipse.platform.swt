@@ -118,7 +118,7 @@ public Path (Device device, Path path, float flatness) {
 	if (flatness == 0) {
 		handle = new NSBezierPath(path.handle.copy().id);
 	} else {
-		float defaultFlatness = NSBezierPath.defaultFlatness();
+		double /*float*/ defaultFlatness = NSBezierPath.defaultFlatness();
 		NSBezierPath.setDefaultFlatness(flatness);
 		handle = path.handle.bezierPathByFlatteningPath();
 		NSBezierPath.setDefaultFlatness(defaultFlatness);		
@@ -282,7 +282,7 @@ public void addString(String string, float x, float y, Font font) {
 	textStorage.endEditing();
 	range = layoutManager.glyphRangeForTextContainer(textContainer);
 	if (range.length != 0) {
-		int glyphs = OS.malloc(4 * range.length * 2);
+		int /*long*/ glyphs = OS.malloc(4 * range.length * 2);
 		layoutManager.getGlyphs(glyphs, range);
 		NSBezierPath path = NSBezierPath.bezierPath();
 		NSPoint point = new NSPoint();
@@ -404,10 +404,10 @@ public void getBounds(float[] bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSRect rect = handle.controlPointBounds();
-	bounds[0] = rect.x;
-	bounds[1] = rect.y;
-	bounds[2] = rect.width;
-	bounds[3] = rect.height;
+	bounds[0] = (float)/*64*/rect.x;
+	bounds[1] = (float)/*64*/rect.y;
+	bounds[2] = (float)/*64*/rect.width;
+	bounds[3] = (float)/*64*/rect.height;
 }
 
 /**
@@ -429,8 +429,8 @@ public void getCurrentPoint(float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	NSPoint pt = handle.currentPoint();
-	point[0] = pt.x;
-	point[1] = pt.y;
+	point[0] = (float)/*64*/pt.x;
+	point[1] = (float)/*64*/pt.y;
 }
 
 /**
@@ -446,15 +446,15 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int count = handle.elementCount();
+	int count = (int)/*64*/handle.elementCount();
 	int pointCount = 0, typeCount = 0;
 	byte[] types = new byte[count];
 	float[] pointArray = new float[count * 6];
-	int points = OS.malloc(3 * NSPoint.sizeof);
+	int /*long*/ points = OS.malloc(3 * NSPoint.sizeof);
 	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	NSPoint pt = new NSPoint();
 	for (int i = 0; i < count; i++) {
-		int element = handle.elementAtIndex(i, points);
+		int element = (int)/*64*/handle.elementAtIndex(i, points);
 		switch (element) {
 			case OS.NSMoveToBezierPathElement:
 				types[typeCount++] = SWT.PATH_MOVE_TO;

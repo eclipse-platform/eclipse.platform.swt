@@ -22,7 +22,7 @@ class Safari extends WebBrowser {
 	boolean changingLocation;
 	String lastHoveredLinkURL;
 	String html;
-	int identifier;
+	int /*long*/ identifier;
 	int resourceCount;
 	String url = ""; //$NON-NLS-1$
 	Point location;
@@ -60,7 +60,7 @@ class Safari extends WebBrowser {
 			public void run() {
 				NSHTTPCookieStorage storage = NSHTTPCookieStorage.sharedHTTPCookieStorage();
 				NSArray cookies = storage.cookies();
-				int count = cookies.count();
+				int /*long*/ count = cookies.count();
 				for (int i = 0; i < count; i++) {
 					NSHTTPCookie cookie = new NSHTTPCookie(cookies.objectAtIndex(i));
 					if (cookie.isSessionOnly()) {
@@ -76,24 +76,24 @@ public void create (Composite parent, int style) {
 	if (OS.objc_lookUpClass(className) == 0) {
 		Class safariClass = this.getClass();
 		Callback3 = new Callback(safariClass, "browserProc", 3); //$NON-NLS-1$
-		int proc3 = Callback3.getAddress();
+		int /*long*/ proc3 = Callback3.getAddress();
 		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback4 = new Callback(safariClass, "browserProc", 4); //$NON-NLS-1$
-		int proc4 = Callback4.getAddress();
+		int /*long*/ proc4 = Callback4.getAddress();
 		if (proc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback5 = new Callback(safariClass, "browserProc", 5); //$NON-NLS-1$
-		int proc5 = Callback5.getAddress();
+		int /*long*/ proc5 = Callback5.getAddress();
 		if (proc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback6 = new Callback(safariClass, "browserProc", 6); //$NON-NLS-1$
-		int proc6 = Callback6.getAddress();
+		int /*long*/ proc6 = Callback6.getAddress();
 		if (proc6 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback7 = new Callback(safariClass, "browserProc", 7); //$NON-NLS-1$
-		int proc7 = Callback7.getAddress();
+		int /*long*/ proc7 = Callback7.getAddress();
 		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		int setFrameProc = OS.webView_setFrame_CALLBACK(proc4);
+		int /*long*/ setFrameProc = OS.webView_setFrame_CALLBACK(proc4);
 		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		int cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i"); //$NON-NLS-1$
 		OS.class_addMethod(cls, OS.sel_webView_didChangeLocationWithinPageForFrame_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(cls, OS.sel_webView_didFailProvisionalLoadWithError_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
@@ -248,13 +248,13 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	} else if (sel == OS.sel_webView_createWebViewWithRequest_) {
 		return safari.webView_createWebViewWithRequest(arg0, arg1);		
 	} else if (sel == OS.sel_webView_setStatusBarVisible_) {
-		safari.webView_setStatusBarVisible(arg0, arg1);
+		safari.webView_setStatusBarVisible(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_setResizable_) {
-		safari.webView_setResizable(arg0, arg1);
+		safari.webView_setResizable(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_setStatusText_) {
 		safari.webView_setStatusText(arg0, arg1);
 	} else if (sel == OS.sel_webView_setToolbarsVisible_) {
-		safari.webView_setToolbarsVisible(arg0, arg1);
+		safari.webView_setToolbarsVisible(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_runJavaScriptAlertPanelWithMessage_) {
 		safari.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_) {
@@ -410,13 +410,13 @@ public void stop() {
 
 /* WebFrameLoadDelegate */
 
-void webView_didChangeLocationWithinPageForFrame(int sender, int frameID) {
+void webView_didChangeLocationWithinPageForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	WebFrame frame = new WebFrame(frameID);
 	WebDataSource dataSource = frame.dataSource();
 	NSURLRequest request = dataSource.request();
 	NSURL url = request.URL();
 	NSString s = url.absoluteString();
-	int length = s.length();
+	int length = (int)/*64*/s.length();
 	if (length == 0) return;
 	String url2 = s.getString();
 	/*
@@ -447,7 +447,7 @@ void webView_didChangeLocationWithinPageForFrame(int sender, int frameID) {
 	}
 }
 
-void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int frame) {
+void webView_didFailProvisionalLoadWithError_forFrame(int /*long*/ sender, int /*long*/ error, int /*long*/ frame) {
 	if (frame == webView.mainFrame().id) {
 		/*
 		* Feature on Safari.  The identifier is used here as a marker for the events 
@@ -466,7 +466,7 @@ void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int
 	}
 
 	NSError nserror = new NSError(error);
-	int errorCode = nserror.code();
+	int /*long*/ errorCode = nserror.code();
 	if (errorCode <= OS.NSURLErrorBadURL) {
 		NSString description = nserror.localizedDescription();
 		if (description != null) {
@@ -490,7 +490,7 @@ void webView_didFailProvisionalLoadWithError_forFrame(int sender, int error, int
 	}
 }
 
-void webView_didFinishLoadForFrame(int sender, int frameID) {
+void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	hookDOMMouseListeners(frameID);
 	if (frameID == webView.mainFrame().id) {
 		hookDOMKeyListeners(frameID);
@@ -575,7 +575,7 @@ void webView_didFinishLoadForFrame(int sender, int frameID) {
 	}
 }
 
-void hookDOMKeyListeners(int frameID) {
+void hookDOMKeyListeners(int /*long*/ frameID) {
 	WebFrame frame = new WebFrame(frameID);
 	DOMDocument document = frame.DOMDocument();
 
@@ -586,7 +586,7 @@ void hookDOMKeyListeners(int frameID) {
 	document.addEventListener(type, delegate, false);
 }
 
-void hookDOMMouseListeners(int frameID) {
+void hookDOMMouseListeners(int /*long*/ frameID) {
 	WebFrame frame = new WebFrame(frameID);
 	DOMDocument document = frame.DOMDocument();
 
@@ -603,7 +603,7 @@ void hookDOMMouseListeners(int frameID) {
 	document.addEventListener(type, delegate, false);
 }
 
-void webView_didReceiveTitle_forFrame(int sender, int titleID, int frameID) {
+void webView_didReceiveTitle_forFrame(int /*long*/ sender, int /*long*/ titleID, int /*long*/ frameID) {
 	if (frameID == webView.mainFrame().id) {
 		NSString title = new NSString(titleID);
 		String newTitle = title.getString();
@@ -617,7 +617,7 @@ void webView_didReceiveTitle_forFrame(int sender, int titleID, int frameID) {
 	}
 }
 
-void webView_didStartProvisionalLoadForFrame(int sender, int frameID) {
+void webView_didStartProvisionalLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	/* 
 	* This code is intentionally commented.  WebFrameLoadDelegate:didStartProvisionalLoadForFrame is
 	* called before WebResourceLoadDelegate:willSendRequest and
@@ -630,13 +630,13 @@ void webView_didStartProvisionalLoadForFrame(int sender, int frameID) {
 //	}
 }
 
-void webView_didCommitLoadForFrame(int sender, int frameID) {
+void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	WebFrame frame = new WebFrame(frameID);
 	WebDataSource dataSource = frame.dataSource();
 	NSURLRequest request = dataSource.request();
 	NSURL url = request.URL();
 	NSString s = url.absoluteString();
-	int length = s.length();
+	int length = (int)/*64*/s.length();
 	if (length == 0) return;
 	String url2 = s.getString();
 	/*
@@ -698,7 +698,7 @@ void webView_didCommitLoadForFrame(int sender, int frameID) {
 
 /* WebResourceLoadDelegate */
 
-void webView_resource_didFinishLoadingFromDataSource(int sender, int identifier, int dataSource) {
+void webView_resource_didFinishLoadingFromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ dataSource) {
 	/*
 	* Feature on Safari.  The identifier is used here as a marker for the events 
 	* related to the top frame and the URL changes related to that top frame as 
@@ -716,7 +716,7 @@ void webView_resource_didFinishLoadingFromDataSource(int sender, int identifier,
 	//if (this.identifier == identifier) this.identifier = 0;
 }
 
-void webView_resource_didFailLoadingWithError_fromDataSource(int sender, int identifier, int error, int dataSource) {
+void webView_resource_didFailLoadingWithError_fromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ error, int /*long*/ dataSource) {
 	/*
 	* Feature on Safari.  The identifier is used here as a marker for the events 
 	* related to the top frame and the URL changes related to that top frame as 
@@ -734,7 +734,7 @@ void webView_resource_didFailLoadingWithError_fromDataSource(int sender, int ide
 	//if (this.identifier == identifier) this.identifier = 0;
 }
 
-int webView_identifierForInitialRequest_fromDataSource(int sender, int request, int dataSourceID) {
+int /*long*/ webView_identifierForInitialRequest_fromDataSource(int /*long*/ sender, int /*long*/ request, int /*long*/ dataSourceID) {
 	final Display display = browser.getDisplay();
 	final ProgressEvent progress = new ProgressEvent(browser);
 	progress.display = display;
@@ -772,18 +772,18 @@ int webView_identifierForInitialRequest_fromDataSource(int sender, int request, 
 		
 }
 
-int webView_resource_willSendRequest_redirectResponse_fromDataSource(int sender, int identifier, int request, int redirectResponse, int dataSource) {
+int /*long*/ webView_resource_willSendRequest_redirectResponse_fromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ dataSource) {
 	return request;
 }
 
 /* handleNotification */
 
-void handleNotification(int notification) {	
+void handleNotification(int /*long*/ notification) {	
 }
 
 /* UIDelegate */
 
-int webView_createWebViewWithRequest(int sender, int request) {
+int /*long*/ webView_createWebViewWithRequest(int /*long*/ sender, int /*long*/ request) {
 	WindowEvent newEvent = new WindowEvent(browser);
 	newEvent.display = browser.getDisplay();
 	newEvent.widget = browser;
@@ -808,7 +808,7 @@ int webView_createWebViewWithRequest(int sender, int request) {
 	return result != null ? result.id : 0;
 }
 
-void webViewShow(int sender) {
+void webViewShow(int /*long*/ sender) {
 	/*
 	* Feature on WebKit.  The Safari WebKit expects the application
 	* to create a new Window using the Objective C Cocoa API in response
@@ -848,7 +848,7 @@ void webViewShow(int sender) {
 	size = null;
 }
 
-void webView_setFrame(int sender, int frame) {
+void webView_setFrame(int /*long*/ sender, int /*long*/ frame) {
 	NSRect rect = new NSRect();
 	OS.memmove(rect, frame, NSRect.sizeof);
 	/* convert to SWT system coordinates */
@@ -857,13 +857,13 @@ void webView_setFrame(int sender, int frame) {
 	size = new Point((int)rect.width, (int)rect.height);
 }
 
-void webViewFocus(int sender) {
+void webViewFocus(int /*long*/ sender) {
 }
 
-void webViewUnfocus(int sender) {
+void webViewUnfocus(int /*long*/ sender) {
 }
 
-void webView_runJavaScriptAlertPanelWithMessage(int sender, int messageID) {
+void webView_runJavaScriptAlertPanelWithMessage(int /*long*/ sender, int /*long*/ messageID) {
 	NSString message = new NSString(messageID);
 	String text = message.getString();
 
@@ -873,7 +873,7 @@ void webView_runJavaScriptAlertPanelWithMessage(int sender, int messageID) {
 	messageBox.open();
 }
 
-int webView_runJavaScriptConfirmPanelWithMessage(int sender, int messageID) {
+int webView_runJavaScriptConfirmPanelWithMessage(int /*long*/ sender, int /*long*/ messageID) {
 	NSString message = new NSString(messageID);
 	String text = message.getString();
 
@@ -883,7 +883,7 @@ int webView_runJavaScriptConfirmPanelWithMessage(int sender, int messageID) {
 	return messageBox.open() == SWT.OK ? 1 : 0;
 }
 
-void webView_runOpenPanelForFileButtonWithResultListener(int sender, int resultListenerID) {
+void webView_runOpenPanelForFileButtonWithResultListener(int /*long*/ sender, int /*long*/ resultListenerID) {
 	FileDialog dialog = new FileDialog(browser.getShell(), SWT.NONE);
 	String result = dialog.open();
 	WebOpenPanelResultListener resultListener = new WebOpenPanelResultListener(resultListenerID);
@@ -894,7 +894,7 @@ void webView_runOpenPanelForFileButtonWithResultListener(int sender, int resultL
 	resultListener.chooseFilename(NSString.stringWith(result));
 }
 
-void webViewClose(int sender) {
+void webViewClose(int /*long*/ sender) {
 	Shell parent = browser.getShell();
 	WindowEvent newEvent = new WindowEvent(browser);
 	newEvent.display = browser.getDisplay();
@@ -919,7 +919,7 @@ void webViewClose(int sender) {
 	parent.setSize(pt.x, pt.y);
 }
 
-int webView_contextMenuItemsForElement_defaultMenuItems(int sender, int element, int defaultMenuItems) {
+int /*long*/ webView_contextMenuItemsForElement_defaultMenuItems(int /*long*/ sender, int /*long*/ element, int /*long*/ defaultMenuItems) {
 	Point pt = browser.getDisplay().getCursorLocation();
 	Event event = new Event();
 	event.x = pt.x;
@@ -937,14 +937,14 @@ int webView_contextMenuItemsForElement_defaultMenuItems(int sender, int element,
 	return defaultMenuItems;
 }
 
-void webView_setStatusBarVisible(int sender, int visible) {
+void webView_setStatusBarVisible(int /*long*/ sender, boolean visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
-	statusBar = visible != 0;
+	statusBar = visible;
 }
 
-void webView_setStatusText(int sender, int textID) {
+void webView_setStatusText(int /*long*/ sender, int /*long*/ textID) {
 	NSString text = new NSString(textID);
-	int length = text.length();
+	int length = (int)/*64*/text.length();
 	if (length == 0) return;
 
 	StatusTextEvent statusText = new StatusTextEvent(browser);
@@ -956,15 +956,15 @@ void webView_setStatusText(int sender, int textID) {
 	}
 }
 
-void webView_setResizable(int sender, int visible) {
+void webView_setResizable(int /*long*/ sender, boolean visible) {
 }
 
-void webView_setToolbarsVisible(int sender, int visible) {
+void webView_setToolbarsVisible(int /*long*/ sender, boolean visible) {
 	/* Note.  Webkit only emits the notification when the tool bar should be hidden. */
-	toolBar = visible != 0;
+	toolBar = visible;
 }
 
-void webView_mouseDidMoveOverElement_modifierFlags (int sender, int elementInformationID, int modifierFlags) {
+void webView_mouseDidMoveOverElement_modifierFlags (int /*long*/ sender, int /*long*/ elementInformationID, int /*long*/ modifierFlags) {
 	if (elementInformationID == 0) return;
 
 	NSString key = NSString.stringWith(WebElementLinkURLKey);
@@ -985,7 +985,7 @@ void webView_mouseDidMoveOverElement_modifierFlags (int sender, int elementInfor
 	}
 
 	NSString url = new NSURL(value.id).absoluteString();
-	int length = url.length();
+	int length = (int)/*64*/url.length();
 	String urlString;
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
@@ -1004,7 +1004,7 @@ void webView_mouseDidMoveOverElement_modifierFlags (int sender, int elementInfor
 	}
 }
 
-void webView_printFrameView (int sender, int frameViewID) {
+void webView_printFrameView (int /*long*/ sender, int /*long*/ frameViewID) {
 	WebFrameView view = new WebFrameView(frameViewID);
 	boolean viewPrint = view.documentViewShouldHandlePrint();
 	if (viewPrint) {
@@ -1018,7 +1018,7 @@ void webView_printFrameView (int sender, int frameViewID) {
 
 /* PolicyDelegate */
 
-void webView_decidePolicyForMIMEType_request_frame_decisionListener(int sender, int type, int request, int frame, int listenerID) {
+void webView_decidePolicyForMIMEType_request_frame_decisionListener(int /*long*/ sender, int /*long*/ type, int /*long*/ request, int /*long*/ frame, int /*long*/ listenerID) {
 	boolean canShow = WebView.canShowMIMEType(new NSString(type));
 	WebPolicyDecisionListener listener = new WebPolicyDecisionListener(listenerID);
 	if (canShow) {
@@ -1028,7 +1028,7 @@ void webView_decidePolicyForMIMEType_request_frame_decisionListener(int sender, 
 	}
 }
 
-void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int sender, int actionInformation, int request, int frame, int listenerID) {
+void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int /*long*/ sender, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frame, int /*long*/ listenerID) {
 	NSURL url = new NSURLRequest(request).URL();
 	WebPolicyDecisionListener listener = new WebPolicyDecisionListener(listenerID);
 	if (url == null) {
@@ -1068,17 +1068,17 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 	}
 }
 
-void webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(int sender, int actionInformation, int request, int frameName, int listenerID) {
+void webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(int /*long*/ sender, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frameName, int /*long*/ listenerID) {
 	WebPolicyDecisionListener listener = new WebPolicyDecisionListener(listenerID);
 	listener.use();
 }
 
-void webView_unableToImplementPolicyWithError_frame(int sender, int error, int frame) {
+void webView_unableToImplementPolicyWithError_frame(int /*long*/ sender, int /*long*/ error, int /*long*/ frame) {
 }
 
 /* WebDownload */
 
-void download_decideDestinationWithSuggestedFilename(int downloadId, int filename) {
+void download_decideDestinationWithSuggestedFilename(int /*long*/ downloadId, int /*long*/ filename) {
 	NSString string = new NSString(filename);
 	String name = string.getString();
 	FileDialog dialog = new FileDialog(browser.getShell(), SWT.SAVE);
@@ -1096,7 +1096,7 @@ void download_decideDestinationWithSuggestedFilename(int downloadId, int filenam
 
 /* DOMEventListener */
 
-void handleEvent(int evtId) {
+void handleEvent(int /*long*/ evtId) {
 	NSString string = new NSString(OS.objc_msgSend(evtId, OS.sel_type));
 	String type = string.getString();
 

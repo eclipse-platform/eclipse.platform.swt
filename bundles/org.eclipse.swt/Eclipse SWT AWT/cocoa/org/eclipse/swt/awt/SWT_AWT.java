@@ -98,7 +98,7 @@ public static Frame new_Frame(final Composite parent) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	//TODO - the call to the constructor hangs in nextEventMachingMask:
-	final int handle = parent.view.id;
+	final int /*long*/ handle = parent.view.id;
 
 	
 	Class clazz = null;

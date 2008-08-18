@@ -283,7 +283,7 @@ void destroyWidget() {
 	super.destroyWidget();
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	if (id == view.id && getSelection ()) {
 		NSRect bounds = view.bounds();
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
@@ -514,11 +514,11 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int menuForEvent (int id, int sel, int theEvent) {
+int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	return parent.menuForEvent (id, sel, theEvent);
 }
 
-void mouseDown(int id, int sel, int theEvent) {
+void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	Display display = this.display;
 	display.trackingControl = parent;
 	super.mouseDown(id, sel, theEvent);

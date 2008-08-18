@@ -357,7 +357,7 @@ public boolean equals (Object object) {
  * @see #equals
  */
 public int hashCode () {
-	return handle != null ? handle.id : 0;
+	return handle != null ? (int)/*64*/handle.id : 0;
 }
 
 /**

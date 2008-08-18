@@ -141,7 +141,7 @@ void computeRuns() {
 	textStorage.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
 	paragraph.release();
 	
-	int textLength = str.length();
+	int /*long*/ textLength = str.length();
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem run = styles[i];
 		if (run.style == null) continue;
@@ -204,8 +204,9 @@ void computeRuns() {
 	textContainer.setLineFragmentPadding(0);	
 	layoutManager.glyphRangeForTextContainer(textContainer);
 	
-	int numberOfLines, index, numberOfGlyphs = layoutManager.numberOfGlyphs();
-	int rangePtr = OS.malloc(NSRange.sizeof);
+	int numberOfLines;
+	int /*long*/ numberOfGlyphs = layoutManager.numberOfGlyphs(), index;
+	int /*long*/ rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
 	    layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
@@ -218,7 +219,7 @@ void computeRuns() {
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
 		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    offsets[numberOfLines] = lineRange.location;
+	    offsets[numberOfLines] = (int)/*64*/lineRange.location;
 	    index = lineRange.location + lineRange.length;
 	}
 	if (numberOfLines == 0) {
@@ -228,7 +229,7 @@ void computeRuns() {
 		bounds[0].height = Math.max(layoutManager.defaultLineHeightForFont(nsFont), ascent + descent);
 	}
 	OS.free(rangePtr);
-	offsets[numberOfLines] = textStorage.length();
+	offsets[numberOfLines] = (int)/*64*/textStorage.length();
 	this.lineOffsets = offsets;
 	this.lineBounds = bounds;
 }
@@ -703,7 +704,7 @@ public Point getLocation(int offset, boolean trailing) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return new Point(0, 0);
 	offset = translateOffset(offset);
-	int glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
+	int /*long*/ glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
 	NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(glyphIndex, 0);
 	NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
 	if (trailing) {
@@ -757,15 +758,15 @@ int _getOffset (int offset, int movement, boolean forward) {
 			return Math.max(0, Math.min(length, untranslateOffset(offset)));
 		}
 		case SWT.MOVEMENT_WORD: {
-			return untranslateOffset(textStorage.nextWordFromIndex(offset, forward));
+			return untranslateOffset((int)/*64*/textStorage.nextWordFromIndex(offset, forward));
 		}
 		case SWT.MOVEMENT_WORD_END: {
 			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
-			return untranslateOffset(range.location + range.length);
+			return untranslateOffset((int)/*64*/(range.location + range.length));
 		}
 		case SWT.MOVEMENT_WORD_START: {
 			NSRange range = textStorage.doubleClickAtIndex(length == offset ? length - 1 : offset);
-			return untranslateOffset(range.location);
+			return untranslateOffset((int)/*64*/range.location);
 		}
 		default:
 			break;
@@ -836,10 +837,10 @@ public int getOffset(int x, int y, int[] trailing) {
 	pt.x = x;
 	pt.y = y;
 	float[] partialFration = new float[1];
-	int glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFration);
-	int offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
+	int /*long*/ glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFration);
+	int /*long*/ offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
 	if (trailing != null) trailing[0] = Math.round(partialFration[0]);
-	return Math.min(untranslateOffset(offset), length - 1);
+	return Math.min(untranslateOffset((int)/*64*/offset), length - 1);
 }
 
 /**

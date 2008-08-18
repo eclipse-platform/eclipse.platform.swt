@@ -255,8 +255,7 @@ int calculateWidth (int index, GC gc, boolean recurse) {
 	//		width = event.width;
 	//	}
 		if (index == 0) {
-			int level = ((NSOutlineView) parent.view).levelForItem (handle);
-			width += parent.levelIndent * level;
+			width += parent.levelIndent * ((NSOutlineView) parent.view).levelForItem (handle);
 			this.width = width;
 		}
 	}
@@ -438,8 +437,7 @@ public Rectangle getBounds () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	int row = outlineView.rowForItem (handle);
-	NSRect rect = outlineView.rectOfRow (row);
+	NSRect rect = outlineView.rectOfRow (outlineView.rowForItem (handle));
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
@@ -462,9 +460,8 @@ public Rectangle getBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	int row = outlineView.rowForItem (handle);
 	if ((parent.style & SWT.CHECK) != 0) index ++;
-	NSRect rect = outlineView.frameOfCellAtColumn (index, row);
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
@@ -658,9 +655,8 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	int row = outlineView.rowForItem (handle);
 	if ((parent.style & SWT.CHECK) != 0) index ++;
-	NSRect rect = outlineView.frameOfCellAtColumn (index, row);
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	//TODO is this right?
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	rect.width = image != null ? image.getBounds().width : 0; 
@@ -827,9 +823,8 @@ public Rectangle getTextBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	int row = outlineView.rowForItem (handle);
 	if ((parent.style & SWT.CHECK) != 0) index ++;
-	NSRect rect = outlineView.frameOfCellAtColumn (index, row);
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	//TODO is this right?
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if (image != null) {

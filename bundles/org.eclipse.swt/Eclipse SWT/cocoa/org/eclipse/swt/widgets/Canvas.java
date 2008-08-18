@@ -45,17 +45,17 @@ Canvas () {
 	/* Do nothing */
 }
 
-int attributedSubstringFromRange (int id, int sel, int range) {
+int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
 	if (ime != null) return ime.attributedSubstringFromRange (id, sel, range);
 	return super.attributedSubstringFromRange(id, sel, range);
 }
 
-boolean becomeFirstResponder (int id, int sel) {
+boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if (caret != null) caret.setFocus ();
 	return super.becomeFirstResponder(id, sel);
 }
 
-boolean resignFirstResponder (int id, int sel) {
+boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if (caret != null) caret.killFocus ();
 	return super.resignFirstResponder(id, sel);
 }
@@ -92,7 +92,7 @@ public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
 
-int characterIndexForPoint (int id, int sel, int point) {
+int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
 	if (ime != null) return ime.characterIndexForPoint (id, sel, point);
 	return super.characterIndexForPoint (id, sel, point);
 }
@@ -135,7 +135,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	}
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	super.drawWidget (id, rect);
 	if (caret == null) return;
 	if (caret.isShowing) {
@@ -168,7 +168,7 @@ void drawWidget (int id, NSRect rect) {
 	}
 }
 
-NSRect firstRectForCharacterRange (int id, int sel, int range) {
+NSRect firstRectForCharacterRange (int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
 	if (ime != null) return ime.firstRectForCharacterRange (id, sel, range);
 	return super.firstRectForCharacterRange (id, sel, range);
 }
@@ -213,19 +213,19 @@ public IME getIME () {
     return ime;
 }
 
-boolean hasMarkedText (int id, int sel) {
+boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 	if (ime != null) return ime.hasMarkedText (id, sel);
 	return super.hasMarkedText (id, sel);
 }
 
-boolean insertText (int id, int sel, int string) {
+boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (ime != null) {
 		if (!ime.insertText (id, sel, string)) return false;
 	}
 	return super.insertText (id, sel, string);
 }
 
-NSRange markedRange (int id, int sel) {
+NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
 	if (ime != null) return ime.markedRange (id, sel);
 	return super.markedRange (id, sel);
 }
@@ -323,7 +323,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
-NSRange selectedRange (int id, int sel) {
+NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
 	if (ime != null) return ime.selectedRange (id, sel);
 	return super.selectedRange (id, sel);
 }
@@ -394,14 +394,14 @@ public void setIME (IME ime) {
 	this.ime = ime;
 }
 
-boolean setMarkedText_selectedRange (int id, int sel, int string, int range) {
+boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
 	if (ime != null) {
 		if (!ime.setMarkedText_selectedRange (id, sel, string, range)) return false;
 	}
 	return super.setMarkedText_selectedRange (id, sel, string, range);
 }
 
-int validAttributesForMarkedText (int id, int sel) {
+int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
 	if (ime != null) return ime.validAttributesForMarkedText (id, sel);
 	return super.validAttributesForMarkedText(id, sel);
 }

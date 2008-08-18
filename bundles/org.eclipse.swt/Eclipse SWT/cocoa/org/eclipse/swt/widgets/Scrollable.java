@@ -124,7 +124,7 @@ ScrollBar createScrollBar (int style) {
 	bar.style = style;
 	bar.display = display;
 	NSScroller scroller;
-	int actionSelector;
+	int /*long*/ actionSelector;
 	NSRect rect = new NSRect();
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect.width = 1;

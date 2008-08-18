@@ -312,7 +312,7 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void sendSelection () {
 	Event event = new Event();
-	int hitPart = ((NSScroller)view).hitPart();
+	int hitPart = (int)/*64*/((NSScroller)view).hitPart();
 	int value = getSelection ();
 	switch (hitPart) {
 	    case OS.NSScrollerDecrementLine:

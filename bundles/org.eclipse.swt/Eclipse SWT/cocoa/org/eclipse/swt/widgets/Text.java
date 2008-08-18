@@ -251,7 +251,7 @@ public void append (String string) {
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
 
-boolean becomeFirstResponder (int id, int sel) {
+boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	receivingFocus = true;
 	boolean result = super.becomeFirstResponder (id, sel);
 	receivingFocus = false;
@@ -569,7 +569,7 @@ public int getCaretPosition () {
 		return 0;
 	} else {
 		NSRange range = ((NSTextView)view).selectedRange();
-		return range.location;
+		return (int)/*64*/range.location;
 	}
 }
 
@@ -586,9 +586,9 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		return new NSCell (((NSControl) view).cell ()).title ().length ();
+		return (int)/*64*/new NSCell (((NSControl) view).cell ()).title ().length ();
 	} else {
-		return ((NSTextView) view).textStorage ().length ();
+		return (int)/*64*/((NSTextView) view).textStorage ().length ();
 	}
 }
 
@@ -651,7 +651,7 @@ public boolean getEditable () {
 
 char [] getEditText () {
 	NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
-	int length = str.length ();
+	int length = (int)/*64*/str.length ();
 	char [] buffer = new char [length];
 	if (hiddenText != null) {
 		hiddenText.getChars (0, length, buffer, 0);
@@ -665,16 +665,16 @@ char [] getEditText () {
 
 char [] getEditText (int start, int end) {
 	NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
-	int length = str.length ();
+	int length = (int)/*64*/str.length ();
 	end = Math.min (end, length - 1);
 	if (start > end) return new char [0];
 	start = Math.max (0, start);
 	NSRange range = new NSRange ();
 	range.location = start;
 	range.length = Math.max (0, end - start + 1);
-	char [] buffer = new char [range.length];
+	char [] buffer = new char [(int)/*64*/range.length];
 	if (hiddenText != null) {
-		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
+		hiddenText.getChars ((int)/*64*/range.location, (int)/*64*/(range.location + range.length), buffer, 0);
 	} else {
 		str.getCharacters (buffer, range);
 	}
@@ -694,7 +694,7 @@ char [] getEditText (int start, int end) {
 public int getLineCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	return ((NSTextView) view).textStorage ().paragraphs ().count ();
+	return (int)/*64*/((NSTextView) view).textStorage ().paragraphs ().count ();
 }
 
 /**
@@ -807,13 +807,13 @@ public Point getSelection () {
 	if ((style & SWT.SINGLE) != 0) {
 		if (selectionRange == null) {
 			NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
-			return new Point(str.length (), str.length ());
+			return new Point((int)/*64*/str.length (), (int)/*64*/str.length ());
 		}
-		return new Point (selectionRange.location, selectionRange.location + selectionRange.length);
+		return new Point ((int)/*64*/selectionRange.location, (int)/*64*/(selectionRange.location + selectionRange.length));
 	} else {
 		NSTextView widget = (NSTextView) view;
 		NSRange range = widget.selectedRange ();
-		return new Point (range.location, range.location + range.length);
+		return new Point ((int)/*64*/range.location, (int)/*64*/(range.location + range.length));
 	}
 }
 
@@ -830,11 +830,11 @@ public Point getSelection () {
 public int getSelectionCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		return selectionRange != null ? selectionRange.length : 0;
+		return selectionRange != null ? (int)/*64*/selectionRange.length : 0;
 	} else {
 		NSTextView widget = (NSTextView) view;
 		NSRange range = widget.selectedRange ();
-		return range.length;
+		return (int)/*64*/range.length;
 	}
 }
 
@@ -858,7 +858,7 @@ public String getSelectionText () {
 		NSTextView widget = (NSTextView) view;
 		NSRange range = widget.selectedRange ();
 		NSString str = widget.textStorage ().string ();
-		char[] buffer = new char [range.length];
+		char[] buffer = new char [(int)/*64*/range.length];
 		str.getCharacters (buffer, range);
 		return new String (buffer);
 	}
@@ -934,7 +934,7 @@ public String getText (int start, int end) {
 		return new String (getEditText (start, end));
 	}
 	NSTextStorage storage = ((NSTextView) view).textStorage ();
-	end = Math.min (end, storage.length () - 1);
+	end = Math.min (end, (int)/*64*/storage.length () - 1);
 	if (start > end) return ""; //$NON-NLS-1$
 	start = Math.max (0, start);
 	NSRange range = new NSRange ();
@@ -1535,7 +1535,7 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		NSString str = new NSCell (((NSTextField) view).cell ()).title ();
-		int length = str.length ();
+		int length = (int)/*64*/str.length ();
 		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
 		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
 		selectionRange = new NSRange ();
@@ -1546,7 +1546,7 @@ public void setSelection (int start, int end) {
 			editor.setSelectedRange (selectionRange);
 		}
 	} else {
-		int length = ((NSTextView) view).textStorage ().length ();
+		int length = (int)/*64*/((NSTextView) view).textStorage ().length ();
 		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
 		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
 		NSRange range = new NSRange ();
@@ -1726,17 +1726,17 @@ public void showSelection () {
 	}
 }
 
-void textViewDidChangeSelection(int aNotification) {
+void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSText editor = new NSText (notification.object ().id);
 	selectionRange = editor.selectedRange ();
 }
 
-void textDidChange (int aNotification) {
+void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	postEvent (SWT.Modify);
 }
 
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (int aTextView, int oldSelectedCharRange, int newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
 	* then return the receiver's last selection range, otherwise the full
@@ -1756,7 +1756,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
 		if (key == 48 /* Tab */ && theEvent != null) {
-			int modifiers = theEvent.modifierFlags ();
+			int /*long*/ modifiers = theEvent.modifierFlags ();
 			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
 			if (next && (modifiers & OS.NSControlKeyMask) == 0) {
 				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);

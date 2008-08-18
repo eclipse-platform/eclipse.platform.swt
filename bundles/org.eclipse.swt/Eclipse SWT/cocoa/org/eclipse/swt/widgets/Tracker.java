@@ -530,7 +530,7 @@ void mouse (NSEvent nsEvent) {
 		}
 		oldX = newX;  oldY = newY;
 	}
-	switch (nsEvent.type()) {
+	switch ((int)/*64*/nsEvent.type()) {
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
@@ -541,7 +541,7 @@ void mouse (NSEvent nsEvent) {
 void key (NSEvent nsEvent) {
 	//TODO send event
 //	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-	int modifierFlags = nsEvent.modifierFlags();
+	int /*long*/ modifierFlags = nsEvent.modifierFlags();
 	int stepSize = (modifierFlags & OS.NSControlKeyMask) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
 	switch (nsEvent.keyCode()) {
@@ -703,14 +703,14 @@ public boolean open () {
 	tracking = true;
 	window = (NSWindow)new NSWindow().alloc();
 	NSArray screens = NSScreen.screens();
-	float minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
-	float minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;	
-	int count = screens.count();
+	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;	
+	int count = (int)/*64*/screens.count();
 	for (int i = 0; i < count; i++) {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
-		float x1 = frame.x, x2 = frame.x + frame.width;
-		float y1 = frame.y, y2 = frame.y + frame.height;
+		double /*float*/ x1 = frame.x, x2 = frame.x + frame.width;
+		double /*float*/ y1 = frame.y, y2 = frame.y + frame.height;
 		if (x1 < minX) minX = x1;
 		if (x2 < minX) minX = x2;
 		if (x1 > maxX) maxX = x1;
@@ -754,7 +754,7 @@ public boolean open () {
 	boolean down = false;
 	NSApplication application = NSApplication.sharedApplication();
 	NSEvent currentEvent = application.currentEvent();
-	switch (currentEvent.type()) {
+	switch ((int)/*64*/currentEvent.type()) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown:
@@ -779,7 +779,7 @@ public boolean open () {
 		NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 		NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
 		if (event == null) continue;
-		int type = event.type();
+		int type = (int)/*64*/event.type();
 		switch (type) {
 			case OS.NSLeftMouseUp:
 			case OS.NSRightMouseUp:

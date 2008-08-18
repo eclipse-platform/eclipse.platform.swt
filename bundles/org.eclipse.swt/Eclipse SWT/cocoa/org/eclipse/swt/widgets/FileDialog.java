@@ -202,13 +202,13 @@ public String open () {
 	}
 	if (filterPath != null) panel.setDirectory(NSString.stringWith(filterPath));
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
-	int response = panel.runModal();
+	int /*long*/ response = panel.runModal();
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		fullPath = filename.getString();
 		if ((style & SWT.SAVE) == 0) {
 			NSArray filenames = ((NSOpenPanel)panel).filenames();
-			int count = filenames.count();
+			int count = (int)/*64*/filenames.count();
 			fileNames = new String[count];
 			for (int i = 0; i < count; i++) {
 				filename = new NSString(filenames.objectAtIndex(i));

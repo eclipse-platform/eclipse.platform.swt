@@ -647,7 +647,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-void menu_willHighlightItem(int menu, int itemID) {
+void menu_willHighlightItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menu, int /*long*/ itemID) {
 	Widget widget = display.getWidget(itemID);
 	if (widget instanceof MenuItem) {
 		MenuItem item = (MenuItem)widget;
@@ -655,15 +655,12 @@ void menu_willHighlightItem(int menu, int itemID) {
 	}
 }
 
-void menuNeedsUpdate(int menu) {
+void menuNeedsUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	sendEvent (SWT.Show);
 }
 
-void menuDidClose(int menu) {
+void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	sendEvent (SWT.Hide);
-}
-
-void menuWillOpen(int menu) {
 }
 
 int modifierIndex (String accelText) {

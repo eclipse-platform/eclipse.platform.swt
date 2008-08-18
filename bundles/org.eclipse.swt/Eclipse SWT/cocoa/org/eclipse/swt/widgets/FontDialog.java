@@ -84,7 +84,7 @@ public FontDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-void changeFont(int arg0) {
+void changeFont(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	selected = true;
 }
 
@@ -210,7 +210,7 @@ public FontData open () {
 	Font font = create ? new Font(display, fontData) : display.getSystemFont();
 	panel.setPanelFont(font.handle, false);
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
-	int jniRef = OS.NewGlobalRef(this);
+	int /*long*/ jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
@@ -278,7 +278,7 @@ public void setRGB (RGB rgb) {
 	this.rgb = rgb;
 }
 
-void windowWillClose(int sender) {
+void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
 	NSApplication.sharedApplication().stop(null);
 }
 

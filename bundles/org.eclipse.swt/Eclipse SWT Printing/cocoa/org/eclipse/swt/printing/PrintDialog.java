@@ -155,7 +155,7 @@ public PrinterData open() {
 		data.collate = new NSNumber(dict.objectForKey(OS.NSPrintMustCollate)).intValue() != 0;
 		data.copyCount = new NSNumber(dict.objectForKey(OS.NSPrintCopies)).intValue();
 		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
-		data.otherData = new byte[nsData.length()];
+		data.otherData = new byte[(int)/*64*/nsData.length()];
 		OS.memmove(data.otherData, nsData.bytes(), data.otherData.length);
 
 		printToFile = data.printToFile;

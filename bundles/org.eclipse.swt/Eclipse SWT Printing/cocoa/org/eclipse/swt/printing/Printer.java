@@ -55,7 +55,7 @@ public final class Printer extends Device {
  */
 public static PrinterData[] getPrinterList() {
 	NSArray printers = NSPrinter.printerNames();
-	int count = printers.count();
+	int count = (int)/*64*/printers.count();
 	PrinterData[] result = new PrinterData[count];
 	for (int i = 0; i < count; i++) {
 		NSString str = new NSString(printers.objectAtIndex(i));
@@ -236,7 +236,7 @@ protected void destroy() {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC(GCData data) {
+public int /*long*/ internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -267,7 +267,7 @@ protected void init () {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC(int context, GCData data) {
+public void internal_dispose_GC(int /*long*/ context, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 

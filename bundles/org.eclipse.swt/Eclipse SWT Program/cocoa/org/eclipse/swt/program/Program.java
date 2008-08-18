@@ -87,7 +87,7 @@ public static String [] getExtensions () {
 	NSString CFBundleDocumentTypes = NSString.stringWith("CFBundleDocumentTypes");
 	NSString CFBundleTypeExtensions = NSString.stringWith("CFBundleTypeExtensions");
 	NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
-	int count = array.count();
+	int count = (int)/*64*/array.count();
 	for (int i = 0; i < count; i++) {
 		NSString path = new NSString(array.objectAtIndex(i));
 		NSFileManager fileManager = NSFileManager.defaultManager();
@@ -117,7 +117,7 @@ public static String [] getExtensions () {
 		}
 	}
 	int i = 0;
-	String[] exts = new String[supportedDocumentTypes.count()];
+	String[] exts = new String[(int)/*64*/supportedDocumentTypes.count()];
 	NSEnumerator enumerator = supportedDocumentTypes.objectEnumerator();
 	id id;
 	while ((id = enumerator.nextObject()) != null) {
@@ -163,7 +163,7 @@ public static Program [] getPrograms () {
 	Vector vector = new Vector();
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 	NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
-	int count = array.count();
+	int count = (int)/*64*/array.count();
 	for (int i = 0; i < count; i++) {
 		NSString path = new NSString(array.objectAtIndex(i));
 		NSFileManager fileManager = NSFileManager.defaultManager();
@@ -260,10 +260,10 @@ public ImageData getImageData () {
 				imageRep = new NSBitmapImageRep(rep.id);
 			}
 			if (imageRep != null) {
-				int width = imageRep.pixelsWide();
-				int height = imageRep.pixelsHigh();
-				int bpr = imageRep.bytesPerRow();
-				int bpp = imageRep.bitsPerPixel();
+				int width = (int)/*64*/imageRep.pixelsWide();
+				int height = (int)/*64*/imageRep.pixelsHigh();
+				int bpr = (int)/*64*/imageRep.bytesPerRow();
+				int bpp = (int)/*64*/imageRep.bitsPerPixel();
 				int dataSize = height * bpr;
 				byte[] srcData = new byte[dataSize];
 				OS.memmove(srcData, imageRep.bitmapData(), dataSize);

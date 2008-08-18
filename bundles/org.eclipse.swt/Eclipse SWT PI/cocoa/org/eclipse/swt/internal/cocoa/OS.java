@@ -108,8 +108,8 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0);
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSPoint arg0);
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int arg0);
-public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int arg0, int arg1, int arg2, int arg3);
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
 public static final native void objc_registerClassPair(int /*long*/ cls);
 public static final native int /*long*/ object_getClassName(int /*long*/ obj);
 public static final native int /*long*/ object_getInstanceVariable(int /*long*/ obj, String name, int /*long*/ [] outValue);

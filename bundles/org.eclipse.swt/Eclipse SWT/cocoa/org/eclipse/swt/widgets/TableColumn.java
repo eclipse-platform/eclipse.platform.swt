@@ -199,7 +199,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void drawInteriorFrame_inView (int cellFrame, int view) {
+void drawInteriorFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
 	NSRect cellRect = new NSRect ();
 	OS.memmove (cellRect, cellFrame, NSRect.sizeof);
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();

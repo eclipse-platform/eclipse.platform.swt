@@ -80,7 +80,7 @@ public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-boolean acceptsFirstResponder(int id, int sel) {
+boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
 	if (id == view.id) return false;
 	return super.acceptsFirstResponder (id, sel);
 }
@@ -197,8 +197,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSAttributedString str = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (nsString, dict);
 	NSSize size = str.size ();
 	str.release ();
-	width = size.width;
-	height = size.height;
+	width = (int)/*64*/size.width;
+	height = (int)/*64*/size.height;
 	NSRect frameRect = textView.frame();
 	NSCell cell = new NSCell (textView.cell ());
 	NSRect cellRect = cell.drawingRectForBounds(frameRect);
@@ -210,7 +210,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSRect newRect = buttonView.frame ();
 	buttonView.setFrame (oldRect);
 	width += newRect.width;
-	height = Math.max (height, newRect.height);
+	height = Math.max (height, (int)/*64*/newRect.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, (int) width, (int) height);
@@ -687,7 +687,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		}
 		NSCell cell = new NSCell(textView.cell());
 		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			int length = cell.title().length();
+			int length = (int)/*64*/cell.title().length();
 			string = verifyText (string, 0, length, null);
 			if (string == null) return;
 		}
@@ -738,7 +738,7 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	setSelection (selection, true, true, false);
 }
 
-void textDidChange (int aNotification) {
+void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	postEvent (SWT.Modify);
 }
 

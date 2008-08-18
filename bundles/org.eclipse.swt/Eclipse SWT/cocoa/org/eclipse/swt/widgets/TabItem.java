@@ -137,8 +137,8 @@ public Rectangle getBounds() {
 	checkWidget();
 	Rectangle result = new Rectangle (0, 0, 0, 0);
 	if (nsItem.respondsToSelector (OS.sel_accessibilityAttributeValue_)) {
-		int posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
-		int sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());		
+		int /*long*/ posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
+		int /*long*/ sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());		
 		NSValue val = new NSValue (posValue);
 		NSPoint pt = val.pointValue ();
 		NSWindow window = parent.view.window ();

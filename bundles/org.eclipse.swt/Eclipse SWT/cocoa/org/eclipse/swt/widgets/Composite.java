@@ -91,7 +91,7 @@ public Composite (Composite parent, int style) {
 
 Control [] _getChildren () {
 	NSArray views = contentView().subviews();
-	int count = views.count();
+	int count = (int)/*64*/views.count();
 	Control [] children = new Control [count];
 	if (count == 0) return children;
 	int j = 0;
@@ -125,7 +125,7 @@ Control [] _getTabList () {
 	return tabList;
 }
 
-boolean acceptsFirstResponder (int id, int sel) {
+boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & CANVAS) != 0) {
 		return ((style & SWT.NO_FOCUS) == 0);
 	}
@@ -242,7 +242,7 @@ void createHandle () {
 	view = widget;
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			NSGraphicsContext context = NSGraphicsContext.currentContext();
@@ -458,7 +458,7 @@ public boolean isLayoutDeferred () {
 	return findDeferredControl () != null;
 }
 
-boolean isOpaque (int id, int sel) {
+boolean isOpaque (int /*long*/ id, int /*long*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if (id == view.id) {
 			if (region == null && background != null && background.handle[3] == 1) {
@@ -474,7 +474,7 @@ boolean isTabGroup () {
 	return super.isTabGroup ();
 }
 
-void keyDown (int id, int sel, int theEvent) {
+void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));
 		view.interpretKeyEvents (array);
@@ -680,12 +680,12 @@ Point minimumSize (int wHint, int Hint, boolean changed) {
 	return new Point (width, height);
 }
 
-void pageDown(int id, int sel, int sender) {
+void pageDown(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
 	if ((state & CANVAS) != 0) return;
 	super.pageDown(id, sel, sender);
 }
 
-void pageUp(int id, int sel, int sender) {
+void pageUp(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
 	if ((state & CANVAS) != 0) return;
 	super.pageUp(id, sel, sender);
 }
@@ -719,12 +719,12 @@ void resized () {
 	}
 }
 
-void scrollWheel (int id, int sel, int theEvent) {
+void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		NSView view = scrollView != null ? scrollView : this.view;
 		if (id == view.id) {
 			NSEvent nsEvent = new NSEvent(theEvent);
-			float delta = nsEvent.deltaY();
+			double /*float*/ delta = nsEvent.deltaY();
 			if (delta != 0) {
 				if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
 					if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {

@@ -105,13 +105,13 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
-boolean becomeFirstResponder (int id, int sel) {
+boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	boolean result = super.becomeFirstResponder (id, sel);
 	if (result && id == focusView ().id) sendFocusEvent (SWT.FocusIn, false);
 	return result;
 }
 
-boolean resignFirstResponder (int id, int sel) {
+boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	boolean result = super.resignFirstResponder (id, sel);
 	if (result && id == focusView ().id) sendFocusEvent (SWT.FocusOut, false);
 	return result;
@@ -644,7 +644,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-boolean doCommandBySelector (int id, int sel, int selector) {
+boolean doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
@@ -770,7 +770,7 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawWidget (int id, NSRect rect) {
+void drawWidget (int /*long*/ id, NSRect rect) {
 	if (id != view.id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
@@ -854,12 +854,12 @@ void fixFocus (Control focusControl) {
 //	OS.ClearKeyboardFocus (window);
 }
 
-void flagsChanged (int id, int sel, int theEvent) {
+void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		if ((state & SAFARI_EVENTS_FIX) == 0) {
 			int mask = 0;
 			NSEvent nsEvent = new NSEvent (theEvent);
-			int modifiers = nsEvent.modifierFlags ();
+			int /*long*/ modifiers = nsEvent.modifierFlags ();
 			int keyCode = Display.translateKey (nsEvent.keyCode ());
 			switch (keyCode) {
 				case SWT.ALT: mask = OS.NSAlternateKeyMask; break;
@@ -1351,12 +1351,12 @@ boolean hasFocus () {
 	return this == display.getFocusControl ();
 }
 
-int hitTest (int id, int sel, NSPoint point) {
+int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	if ((state & DISABLED) != 0) return 0;
 	return super.hitTest(id, sel, point);
 }
 
-boolean insertText (int id, int sel, int string) {
+boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
@@ -1364,7 +1364,7 @@ boolean insertText (int id, int sel, int string) {
 			if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
 				str = new NSAttributedString (string).string ();
 			}
-			int length = str.length ();
+			int length = (int)/*64*/str.length ();
 			char[] buffer = new char [length];
 			str.getCharacters(buffer);
 			for (int i = 0; i < buffer.length; i++) {
@@ -1392,9 +1392,9 @@ boolean insertText (int id, int sel, int string) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget();
-	int context = 0;
+	int /*long*/ context = 0;
 	if (data != null && data.paintRect != null) {
 		context = NSGraphicsContext.currentContext().id;
 	} else {
@@ -1432,7 +1432,7 @@ public int internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int context, GCData data) {
+public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	checkWidget ();
 	NSGraphicsContext graphicsContext = new NSGraphicsContext (context);
 	display.removeContext (graphicsContext);
@@ -1572,7 +1572,7 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
-void keyDown (int id, int sel, int theEvent) {
+void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
 		if (!textInput) {
@@ -1587,7 +1587,7 @@ void keyDown (int id, int sel, int theEvent) {
 	super.keyDown (id, sel, theEvent);
 }
 
-void keyUp (int id, int sel, int theEvent) {
+void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = new NSEvent (theEvent);
 		if (!sendKeyEvent (nsEvent, SWT.KeyUp)) return;
@@ -1599,7 +1599,7 @@ void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }
 
-int menuForEvent (int id, int sel, int theEvent) {
+int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSPoint pt = NSEvent.mouseLocation();
 	pt.y = (int) (display.getPrimaryFrame().height - pt.y);
 	int x = (int) pt.x;
@@ -1623,7 +1623,7 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
-void scrollWheel (int id, int sel, int theEvent) {
+void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (id == view.id) {
 		if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
 			NSEvent nsEvent = new NSEvent(theEvent);
@@ -1637,7 +1637,7 @@ void scrollWheel (int id, int sel, int theEvent) {
 	super.scrollWheel(id, sel, theEvent);
 }
 
-void mouseDown(int id, int sel, int theEvent) {
+void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	Display display = this.display;
 	display.trackingControl = this;
 	super.mouseDown(id, sel, theEvent);
@@ -2259,7 +2259,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			//FALL THROUGH
 		case SWT.MouseUp:
 		case SWT.MouseDoubleClick:
-			int button = nsEvent.buttonNumber();
+			int button = (int)/*64*/nsEvent.buttonNumber();
 			switch (button) {
 				case 0: event.button = 1; break;
 				case 1: event.button = 3; break;
@@ -2270,11 +2270,11 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			break;
 		case SWT.MouseWheel:
 			event.detail = SWT.SCROLL_LINE;
-			float delta = nsEvent.deltaY();
+			double /*float*/ delta = nsEvent.deltaY();
 			event.count = delta > 0 ? Math.max (1, (int)delta) : Math.min (-1, (int)delta);
 			break;
 	}
-	if (event.button != 0) event.count = nsEvent.clickCount();
+	if (event.button != 0) event.count = (int)/*64*/nsEvent.clickCount();
 	NSPoint windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation());
 	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
 	event.x = (int) point.x;
@@ -2642,7 +2642,7 @@ void setForeground (int control, float [] color) {
 //	OS.SetControlFontStyle (control, fontStyle);
 }
 
-void setFrameOrigin (int id, int sel, NSPoint point) {
+void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	NSView topView = topView ();
 	if (topView.id != id) {
 		super.setFrameOrigin(id, sel, point);
@@ -2655,7 +2655,7 @@ void setFrameOrigin (int id, int sel, NSPoint point) {
 	}
 }
 
-void setFrameSize (int id, int sel, NSSize size) {
+void setFrameSize (int /*long*/ id, int /*long*/ sel, NSSize size) {
 	NSView topView = topView ();
 	if (topView.id != id) {
 		super.setFrameSize(id, sel, size);
@@ -3138,7 +3138,7 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 			break;
 		}
 		case 48: /* Tab */ {
-			int modifiers = theEvent.modifierFlags ();
+			int /*long*/ modifiers = theEvent.modifierFlags ();
 			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
@@ -3154,7 +3154,7 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {
 		case 116: /* Page up */
 		case 121: /* Page down */ {
 			all = true;
-			int modifiers = theEvent.modifierFlags ();
+			int /*long*/ modifiers = theEvent.modifierFlags ();
 			if ((modifiers & OS.NSControlKeyMask) == 0) return false;
 			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;

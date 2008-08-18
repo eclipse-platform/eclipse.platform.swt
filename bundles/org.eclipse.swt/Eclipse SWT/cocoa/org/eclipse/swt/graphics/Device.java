@@ -303,7 +303,7 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();	
-	return OS.NSBitsPerPixelFromDepth(getPrimaryScreen().depth());
+	return (int)/*64*/OS.NSBitsPerPixelFromDepth(getPrimaryScreen().depth());
 }
 
 /**
@@ -345,7 +345,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	if (!scalable) return new FontData[0];
 	NSArray fonts = NSFontManager.sharedFontManager().availableFonts();
 	int count = 0;
-	FontData[] fds = new FontData[fonts.count()];
+	FontData[] fds = new FontData[(int)/*64*/fonts.count()];
 	for (int i = 0; i < fds.length; i++) {
 		NSString str = new NSString(fonts.objectAtIndex(i));
 		String nsName = str.getString();
@@ -506,7 +506,7 @@ protected void init () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public abstract int internal_new_GC (GCData data);
+public abstract int /*long*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -521,7 +521,7 @@ public abstract int internal_new_GC (GCData data);
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public abstract void internal_dispose_GC (int handle, GCData data);
+public abstract void internal_dispose_GC (int /*long*/ handle, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,

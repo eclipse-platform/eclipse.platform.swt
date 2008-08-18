@@ -591,7 +591,7 @@ boolean traversePage (boolean next) {
 	return index == getSelectionIndex ();
 }
 
-void willSelectTabViewItem(int tabView, int tabViewItem) {
+void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
 	if (tabViewItem == 0) return;
 	for (int i = 0; i < itemCount; i++) {
 		TabItem item = items [i];

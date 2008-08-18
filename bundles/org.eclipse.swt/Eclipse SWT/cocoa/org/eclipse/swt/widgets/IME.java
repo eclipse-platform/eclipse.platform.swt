@@ -84,14 +84,14 @@ public IME (Canvas parent, int style) {
 	createWidget ();
 }
 
-int attributedSubstringFromRange (int id, int sel, int rangePtr) {
+int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, int /*long*/ rangePtr) {
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_SELECTION;
 	sendEvent (SWT.ImeComposition, event);
 	NSRange range = new NSRange ();
 	OS.memmove (range, rangePtr, NSRange.sizeof);
-	int start = range.location;
-	int end = range.location + range.length;
+	int start = (int)/*64*/range.location;
+	int end = (int)/*64*/(range.location + range.length);
 	if (event.start <= start && start <= event.end && event.start <= end && end <= event.end) {
 		NSString str = NSString.stringWith (event.text.substring(start - event.start, end - event.start));
 		NSAttributedString attriStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, null);
@@ -101,7 +101,7 @@ int attributedSubstringFromRange (int id, int sel, int rangePtr) {
 	return 0;
 }
 
-int characterIndexForPoint (int id, int sel, int point) {
+int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
 	if (!isInlineEnabled ()) return OS.NSNotFound;
 	NSPoint pt = new NSPoint ();
 	OS.memmove (pt, point, NSPoint.sizeof);
@@ -125,7 +125,7 @@ void createWidget () {
 	}
 }
 
-NSRect firstRectForCharacterRange(int id, int sel, int range) {
+NSRect firstRectForCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
 	NSRect rect = new NSRect ();
 	Caret caret = parent.caret;
 	if (caret != null) {
@@ -253,21 +253,21 @@ public TextStyle [] getStyles () {
 
 TextStyle getStyle (NSDictionary attribs) {
 	NSArray keys = attribs.allKeys ();
-	int count = keys.count ();
+	int /*long*/ count = keys.count ();
 	TextStyle style = new TextStyle ();
 	for (int j = 0; j < count; j++) {
 		NSString key = new NSString (keys.objectAtIndex (j));
 		if (key.isEqualTo (OS.NSBackgroundColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
+			float [] rgbColor = new float []{(float)/*64*/color.redComponent(), (float)/*64*/color.greenComponent(), (float)/*64*/color.blueComponent(), (float)/*64*/color.alphaComponent()};
 			style.background = Color.cocoa_new (display, rgbColor);
 		} else if (key.isEqualTo (OS.NSForegroundColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
+			float [] rgbColor = new float []{(float)/*64*/color.redComponent(), (float)/*64*/color.greenComponent(), (float)/*64*/color.blueComponent(), (float)/*64*/color.alphaComponent()};
 			style.foreground = Color.cocoa_new (display, rgbColor);
 		} else if (key.isEqualTo (OS.NSUnderlineColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
+			float [] rgbColor = new float []{(float)/*64*/color.redComponent(), (float)/*64*/color.greenComponent(), (float)/*64*/color.blueComponent(), (float)/*64*/color.alphaComponent()};
 			style.underlineColor = Color.cocoa_new (display, rgbColor);
 		} else if (key.isEqualTo (OS.NSUnderlineStyleAttributeName)) {
 			NSNumber value = new NSNumber (attribs.objectForKey (key));
@@ -279,7 +279,7 @@ TextStyle getStyle (NSDictionary attribs) {
 			style.underline = value.intValue () != OS.NSUnderlineStyleNone;
 		} else if (key.isEqualTo (OS.NSStrikethroughColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float [] rgbColor = new float []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
+			float [] rgbColor = new float []{(float)/*64*/color.redComponent(), (float)/*64*/color.greenComponent(), (float)/*64*/color.blueComponent(), (float)/*64*/color.alphaComponent()};
 			style.strikeoutColor = Color.cocoa_new (display, rgbColor);
 		} else if (key.isEqualTo (OS.NSStrikethroughStyleAttributeName)) {
 			NSNumber value = new NSNumber (attribs.objectForKey (key));
@@ -330,17 +330,17 @@ public boolean getWideCaret() {
 	return false; 
 }
 
-boolean hasMarkedText (int id, int sel) {
+boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 	return text.length () != 0;
 }
 
-boolean insertText (int id, int sel, int string) {
+boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 	if (startOffset == -1) return true;
 	NSString str = new NSString (string);
 	if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
 		str = new NSAttributedString (string).string ();
 	}
-	int length = str.length ();
+	int length = (int)/*64*/str.length ();
 	int end = startOffset + text.length ();
 	ranges = null;
 	styles = null;
@@ -361,7 +361,7 @@ boolean isInlineEnabled () {
 	return hooks (SWT.ImeComposition);
 }
 
-NSRange markedRange (int id, int sel) {
+NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
 	if (startOffset == -1) {
 		Event event = new Event ();
 		event.detail = SWT.COMPOSITION_SELECTION;
@@ -387,7 +387,7 @@ void releaseWidget () {
 	ranges = null;
 }
 
-NSRange selectedRange (int id, int sel) {
+NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_SELECTION;
 	sendEvent (SWT.ImeComposition, event);
@@ -421,7 +421,7 @@ public void setCompositionOffset (int offset) {
 	}
 }
 
-boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) {
+boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ selRange) {
 	if (!isInlineEnabled ()) return true;
 	ranges = null;
 	styles = null;
@@ -438,7 +438,7 @@ boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) 
 	if (str.isKindOfClass (OS.objc_getClass ("NSAttributedString"))) {
 		NSAttributedString attribStr = new NSAttributedString (string);
 		str = attribStr.string ();
-		int length = str.length ();
+		int length = (int)/*64*/str.length ();
 		styles = new TextStyle [length];
 		ranges = new int [length * 2];
 		NSRange rangeLimit = new NSRange (), effectiveRange = new NSRange ();
@@ -448,9 +448,9 @@ boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) 
 		for (int i = 0; i < length;) {
 			NSDictionary attribs = attribStr.attributesAtIndex(i, ptr, rangeLimit);
 			OS.memmove (effectiveRange, ptr, NSRange.sizeof);
-			i = effectiveRange.location + effectiveRange.length;
-			ranges [rangeCount * 2] = effectiveRange.location;
-			ranges [rangeCount * 2 + 1] = effectiveRange.location + effectiveRange.length - 1;
+			i = (int)/*64*/(effectiveRange.location + effectiveRange.length);
+			ranges [rangeCount * 2] = (int)/*64*/effectiveRange.location;
+			ranges [rangeCount * 2 + 1] = (int)/*64*/(effectiveRange.location + effectiveRange.length - 1);
 			styles [rangeCount++] = getStyle (attribs);
 		}
 		OS.free (ptr);
@@ -463,14 +463,14 @@ boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) 
 			ranges = newRanges;
 		}
 	}
-	int length = str.length ();
+	int length = (int)/*64*/str.length ();
 	if (ranges == null && length > 0) {
 		styles = new TextStyle []{getStyle (display.markedAttributes)};
 		ranges = new int[]{0, length - 1};
 	}
 	NSRange range = new NSRange ();
 	OS.memmove (range, selRange, NSRange.sizeof);
-	caretOffset = range.location;
+	caretOffset = (int)/*64*/range.location;
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_CHANGED;
 	event.start = startOffset;
@@ -480,7 +480,7 @@ boolean setMarkedText_selectedRange (int id, int sel, int string, int selRange) 
 	return true;
 }
 
-int validAttributesForMarkedText (int id, int sel) {
+int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
 	NSMutableArray attribs = NSMutableArray.arrayWithCapacity (6);
 	attribs.addObject (new NSString (OS.NSForegroundColorAttributeName ()));
 	attribs.addObject (new NSString (OS.NSBackgroundColorAttributeName ()));
