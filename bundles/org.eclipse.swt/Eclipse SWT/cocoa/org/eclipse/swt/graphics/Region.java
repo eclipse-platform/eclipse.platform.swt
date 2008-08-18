@@ -333,7 +333,7 @@ NSBezierPath getPath() {
 
 NSPoint pt = new NSPoint();
 short[] rect = new short[4];
-int regionToRects(int message, int rgn, int r, int path) {
+int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ path) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		OS.memmove(rect, r, rect.length * 2);
 		pt.x = rect[1];

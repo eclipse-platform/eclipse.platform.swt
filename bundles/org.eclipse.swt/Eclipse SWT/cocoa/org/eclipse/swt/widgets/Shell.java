@@ -1310,7 +1310,7 @@ NSBezierPath getPath(Region region) {
 	return path;
 }
 
-int regionToRects(int message, int rgn, int r, int path) {
+int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ path) {
 	NSPoint pt = new NSPoint();
 	short[] rect = new short[4];
 	if (message == OS.kQDRegionToRectsMsgParse) {
