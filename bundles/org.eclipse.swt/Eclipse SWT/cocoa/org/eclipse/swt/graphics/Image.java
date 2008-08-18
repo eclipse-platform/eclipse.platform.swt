@@ -678,8 +678,8 @@ public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	image.type = type;
 	image.handle = nsImage;
 	NSImageRep rep = nsImage.bestRepresentationForDevice(null);
-	rep.retain();
 	if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) { 
+		rep.retain();
 		image.imageRep = new NSBitmapImageRep(rep.id);
 	}
 	return image;
