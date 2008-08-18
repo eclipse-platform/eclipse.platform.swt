@@ -16,7 +16,7 @@ public WebDocumentRepresentation() {
 	super();
 }
 
-public WebDocumentRepresentation(long /*int*/ id) {
+public WebDocumentRepresentation(int /*long*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public WebDocumentRepresentation(id id) {
 }
 
 public NSString documentSource() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_documentSource);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_documentSource);
 	return result != 0 ? new NSString(result) : null;
 }
 }
