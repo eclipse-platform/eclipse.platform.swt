@@ -69,6 +69,14 @@ boolean convertTo32Bit(Class[] paramTypes) {
 			paramTypes[i] = Integer.TYPE;
 			changed = true;
 		}
+		if (paramType == Double.TYPE) {
+			paramTypes[i] = Float.TYPE;
+			changed = true;
+		}
+		if (paramType == double[].class) {
+			paramTypes[i] = float[].class;
+			changed = true;
+		}
 		if (paramType == long[].class) {
 			paramTypes[i] = int[].class;
 			changed = true;
