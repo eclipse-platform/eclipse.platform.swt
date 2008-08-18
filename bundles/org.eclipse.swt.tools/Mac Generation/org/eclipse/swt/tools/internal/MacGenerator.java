@@ -216,10 +216,13 @@ void generateMethods(String className, ArrayList methods) {
 		} else {
 			if (returnNode != null) {
 				out("\treturn ");
-				if (!(returnType.equals("int") || returnType.equals("boolean"))) {
+				if (!(returnType.equals("boolean"))) {
 					out("(");
 					out(returnType);
 					out(")");
+					if (returnType.equals("int")) {
+						out("/*64*/");
+					}
 				}
 			} else {
 				out("\t");
