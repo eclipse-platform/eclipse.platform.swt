@@ -14,6 +14,9 @@
 
 /*#define NDEBUG*/
 
+//TODO this is needed for objc_super, is it correct?
+#define __OBJC2__ 1
+
 #include <Cocoa/Cocoa.h>
 #include <WebKit/WebView.h>
 #import <objc/objc-runtime.h>
