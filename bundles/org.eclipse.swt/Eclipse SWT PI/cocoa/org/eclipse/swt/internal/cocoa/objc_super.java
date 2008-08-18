@@ -12,6 +12,6 @@ package org.eclipse.swt.internal.cocoa;
 
 public class objc_super {
 	public int /*long*/ receiver;
-	public int /*long*/ cls;
+	public int /*long*/ super_class;
 	public static final int sizeof = OS.objc_super_sizeof();	
 }

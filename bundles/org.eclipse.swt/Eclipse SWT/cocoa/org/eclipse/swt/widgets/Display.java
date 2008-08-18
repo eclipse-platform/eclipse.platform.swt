@@ -1694,8 +1694,8 @@ void initClasses () {
 
 	int /*long*/ drawRectProc = OS.drawRect_CALLBACK(proc3);
 	int /*long*/ drawInteriorWithFrameInViewProc = OS.drawInteriorWithFrame_inView_CALLBACK (proc4);
-	int /*long*/ setFrameOriginProc = OS.setFrame_CALLBACK(proc3);
-	int /*long*/ setFrameSizeProc = OS.setFrame_CALLBACK(proc3);
+	int /*long*/ setFrameOriginProc = OS.setFrameOrigin_CALLBACK(proc3);
+	int /*long*/ setFrameSizeProc = OS.setFrameSize_CALLBACK(proc3);
 	int /*long*/ hitTestProc = OS.hitTest_CALLBACK(proc3);
 	int /*long*/ markedRangeProc = OS.markedRange_CALLBACK(proc2);
 	int /*long*/ selectedRangeProc = OS.selectedRange_CALLBACK(proc2);
@@ -1707,7 +1707,7 @@ void initClasses () {
 
 	String className = "SWTWindowDelegate";
 	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_windowDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_, proc3, "@:@");
@@ -1720,7 +1720,7 @@ void initClasses () {
 	
 	className = "SWTPanelDelegate";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeColor_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeFont_, dialogProc3, "@:@");
@@ -1728,7 +1728,7 @@ void initClasses () {
 	
 	className = "SWTMenu";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenu, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");	
 	OS.class_addMethod(cls, OS.sel_menu_willHighlightItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_, proc3, "@:@");
@@ -1737,7 +1737,7 @@ void initClasses () {
 	className = "SWTView";
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_isFlipped, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
@@ -1762,7 +1762,7 @@ void initClasses () {
 	
 	className = "SWTScrollView";
 	cls = OS.objc_allocateClassPair(OS.class_NSScrollView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendVerticalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_pageDown_, proc3, "@:@");
@@ -1773,7 +1773,7 @@ void initClasses () {
 	
 	className = "SWTButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_sendArrowSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
@@ -1782,7 +1782,7 @@ void initClasses () {
 	
 	className = "SWTTableView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@:@:@");
@@ -1796,13 +1796,13 @@ void initClasses () {
 
 	className = "SWTTableHeaderCell";
 	cls = OS.objc_allocateClassPair (OS.class_NSTableHeaderCell, className, 0);
-	OS.class_addIvar (cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log (C.PTR_SIZEOF) / Math.log (2)), "i");
+	OS.class_addIvar (cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldCollapseItem_, proc4, "@:@@");
@@ -1819,12 +1819,12 @@ void initClasses () {
 
 	className = "SWTTreeItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTabView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_tabView_willSelectTabViewItem_, proc4, "@:@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -1832,28 +1832,28 @@ void initClasses () {
 	
 	className = "SWTBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSBox, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTProgressIndicator";
 	cls = OS.objc_allocateClassPair(OS.class_NSProgressIndicator, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
 	cls = OS.objc_allocateClassPair(OS.class_NSSlider, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -1861,7 +1861,7 @@ void initClasses () {
 	
 	className = "SWTComboBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -1873,7 +1873,7 @@ void initClasses () {
 	
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -1881,14 +1881,14 @@ void initClasses () {
 
 	className = "SWTImageView";
 	cls = OS.objc_allocateClassPair(OS.class_NSImageView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTStepper";
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -1896,7 +1896,7 @@ void initClasses () {
 
 	className = "SWTScroller";
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -1904,13 +1904,13 @@ void initClasses () {
 
 	className = "SWTMenuItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTextView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
@@ -1920,7 +1920,7 @@ void initClasses () {
 	
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
@@ -1929,7 +1929,7 @@ void initClasses () {
 	
 	className = "SWTTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextField, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -1939,7 +1939,7 @@ void initClasses () {
 	
 	className = "SWTSearchField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -1949,7 +1949,7 @@ void initClasses () {
 	
 	className = "SWTSecureTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSecureTextField, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -1959,7 +1959,7 @@ void initClasses () {
 	
 	className = "SWTWindow";
 	cls = OS.objc_allocateClassPair(OS.class_NSWindow, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "i");
+	OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)C.PTR_SIZEOF, "^v");
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
@@ -3328,7 +3328,7 @@ Control findControl (NSEvent nsEvent, boolean checkGrab, boolean checkTrim, bool
 int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel, int /*long*/ mask, int /*long*/ expiration, int /*long*/ mode, int /*long*/ dequeue) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
 	if (result != 0) {
 		if (trackingControl != null && dequeue != 0) {
@@ -3404,7 +3404,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 	applicationSendMouseEvent(nsEvent, false);
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, event);
 //	if (nsEvent.type() == OS.NSApplicationDefined && nsEvent.subtype() == SWT_IDLE_TYPE) {
 //		idle = true;

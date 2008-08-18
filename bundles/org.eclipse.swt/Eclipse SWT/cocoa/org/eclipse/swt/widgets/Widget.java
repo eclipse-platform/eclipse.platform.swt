@@ -146,14 +146,14 @@ int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, in
 void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel) != 0;
 }
 
@@ -426,7 +426,7 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	}
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, rect);
 	drawWidget (id, rect);
 	if (path != null) {
@@ -618,7 +618,7 @@ void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
@@ -739,7 +739,7 @@ void mouseExited(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, theEvent);
 }
 
@@ -1149,14 +1149,14 @@ public void setData (String key, Object value) {
 void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
 void setFrameSize (int /*long*/ id, int /*long*/ sel, NSSize size) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
-	super_struct.cls = OS.objc_msgSend(id, OS.sel_superclass);
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, size);
 }
 

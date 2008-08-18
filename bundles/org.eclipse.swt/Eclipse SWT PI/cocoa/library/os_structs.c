@@ -318,7 +318,7 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct)
 typedef struct objc_super_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID receiver, cls;
+	jfieldID receiver, super_class;
 } objc_super_FID_CACHE;
 
 objc_super_FID_CACHE objc_superFc;
@@ -328,7 +328,7 @@ void cacheobjc_superFields(JNIEnv *env, jobject lpObject)
 	if (objc_superFc.cached) return;
 	objc_superFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	objc_superFc.receiver = (*env)->GetFieldID(env, objc_superFc.clazz, "receiver", "I");
-	objc_superFc.cls = (*env)->GetFieldID(env, objc_superFc.clazz, "cls", "I");
+	objc_superFc.super_class = (*env)->GetFieldID(env, objc_superFc.clazz, "super_class", "I");
 	objc_superFc.cached = 1;
 }
 
@@ -336,7 +336,7 @@ struct objc_super *getobjc_superFields(JNIEnv *env, jobject lpObject, struct obj
 {
 	if (!objc_superFc.cached) cacheobjc_superFields(env, lpObject);
 	lpStruct->receiver = (id)(*env)->GetIntField(env, lpObject, objc_superFc.receiver);
-	lpStruct->class = (Class)(*env)->GetIntField(env, lpObject, objc_superFc.cls);
+	lpStruct->class = (Class)(*env)->GetIntField(env, lpObject, objc_superFc.super_class);
 	return lpStruct;
 }
 
@@ -344,7 +344,7 @@ void setobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStr
 {
 	if (!objc_superFc.cached) cacheobjc_superFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, objc_superFc.receiver, (jint)lpStruct->receiver);
-	(*env)->SetIntField(env, lpObject, objc_superFc.cls, (jint)lpStruct->class);
+	(*env)->SetIntField(env, lpObject, objc_superFc.super_class, (jint)lpStruct->class);
 }
 #endif
 
