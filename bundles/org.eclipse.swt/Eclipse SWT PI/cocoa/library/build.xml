@@ -25,7 +25,7 @@
 		classpath="./bin:../org.eclipse.swt.tools/bin">
 		<arg value="all"/>
 	</java>
-	<antcall target="refresh"/>
+	<antcall target="init"/>
 </target>
 	
 <!-- Convert SWT 32 bit java and C source to 64 bit  -->
