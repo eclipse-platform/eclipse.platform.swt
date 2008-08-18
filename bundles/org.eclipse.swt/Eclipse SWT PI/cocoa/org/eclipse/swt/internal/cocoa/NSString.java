@@ -54,7 +54,7 @@ public NSString lastPathComponent() {
 }
 
 public int /*long*/ length() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_length);
+	return OS.objc_msgSend(this.id, OS.sel_length);
 }
 
 public NSString lowercaseString() {

@@ -101,7 +101,7 @@ public float /*double*/ greenComponent() {
 }
 
 public int /*long*/ numberOfComponents() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfComponents);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfComponents);
 }
 
 public float /*double*/ redComponent() {

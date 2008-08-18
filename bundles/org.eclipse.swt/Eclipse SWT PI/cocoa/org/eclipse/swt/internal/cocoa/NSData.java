@@ -25,7 +25,7 @@ public NSData(id id) {
 }
 
 public int /*long*/ bytes() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bytes);
+	return OS.objc_msgSend(this.id, OS.sel_bytes);
 }
 
 public static NSData dataWithBytes(byte[] bytes, int /*long*/ length) {
@@ -42,7 +42,7 @@ public void getBytes(int /*long*/ buffer, int /*long*/ length) {
 }
 
 public int /*long*/ length() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_length);
+	return OS.objc_msgSend(this.id, OS.sel_length);
 }
 
 }

@@ -106,11 +106,11 @@ public static float /*double*/ defaultFlatness() {
 }
 
 public int /*long*/ elementAtIndex(int /*long*/ index, int /*long*/ points) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_elementAtIndex_associatedPoints_, index, points);
+	return OS.objc_msgSend(this.id, OS.sel_elementAtIndex_associatedPoints_, index, points);
 }
 
 public int /*long*/ elementCount() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_elementCount);
+	return OS.objc_msgSend(this.id, OS.sel_elementCount);
 }
 
 public void fill() {

@@ -78,11 +78,11 @@ public id retain() {
 }
 
 public int /*long*/ retainCount() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_retainCount);
+	return OS.objc_msgSend(this.id, OS.sel_retainCount);
 }
 
 public int /*long*/ superclass() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_superclass);
+	return OS.objc_msgSend(this.id, OS.sel_superclass);
 }
 
 public void addEventListener(NSString type, id  listener, boolean useCapture) {

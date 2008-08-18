@@ -30,7 +30,7 @@ public static NSArray arrayWithObject(id anObject) {
 }
 
 public int /*long*/ count() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_count);
+	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
 public id objectAtIndex(int /*long*/ index) {

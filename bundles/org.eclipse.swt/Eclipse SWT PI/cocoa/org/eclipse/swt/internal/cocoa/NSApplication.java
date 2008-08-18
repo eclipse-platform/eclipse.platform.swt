@@ -74,7 +74,7 @@ public void run() {
 }
 
 public int /*long*/ runModalForWindow(NSWindow theWindow) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModalForWindow_, theWindow != null ? theWindow.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_runModalForWindow_, theWindow != null ? theWindow.id : 0);
 }
 
 public void sendEvent(NSEvent theEvent) {

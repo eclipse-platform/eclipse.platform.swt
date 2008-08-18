@@ -35,7 +35,7 @@ public id initWithIdentifier(id identifier) {
 }
 
 public int /*long*/ resizingMask() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_resizingMask);
+	return OS.objc_msgSend(this.id, OS.sel_resizingMask);
 }
 
 public void setDataCell(NSCell cell) {

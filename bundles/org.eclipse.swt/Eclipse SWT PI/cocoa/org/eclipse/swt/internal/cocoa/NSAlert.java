@@ -30,7 +30,7 @@ public static NSAlert alertWithMessageText(NSString message, NSString defaultBut
 }
 
 public int /*long*/ runModal() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModal);
+	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
 public void setAlertStyle(int /*long*/ style) {

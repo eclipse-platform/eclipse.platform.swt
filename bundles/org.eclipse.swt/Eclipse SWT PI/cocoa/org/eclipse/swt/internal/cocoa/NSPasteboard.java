@@ -25,7 +25,7 @@ public NSPasteboard(id id) {
 }
 
 public int /*long*/ addTypes(NSArray newTypes, id newOwner) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_addTypes_owner_, newTypes != null ? newTypes.id : 0, newOwner != null ? newOwner.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_addTypes_owner_, newTypes != null ? newTypes.id : 0, newOwner != null ? newOwner.id : 0);
 }
 
 public NSString availableTypeFromArray(NSArray types) {
@@ -39,7 +39,7 @@ public NSData dataForType(NSString dataType) {
 }
 
 public int /*long*/ declareTypes(NSArray newTypes, id newOwner) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_declareTypes_owner_, newTypes != null ? newTypes.id : 0, newOwner != null ? newOwner.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_declareTypes_owner_, newTypes != null ? newTypes.id : 0, newOwner != null ? newOwner.id : 0);
 }
 
 public static NSPasteboard generalPasteboard() {

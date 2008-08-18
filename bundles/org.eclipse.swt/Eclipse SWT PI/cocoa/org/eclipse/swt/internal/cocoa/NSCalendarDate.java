@@ -35,23 +35,23 @@ public static NSCalendarDate dateWithYear(int /*long*/ year, int /*long*/ month,
 }
 
 public int /*long*/ dayOfMonth() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_dayOfMonth);
+	return OS.objc_msgSend(this.id, OS.sel_dayOfMonth);
 }
 
 public int /*long*/ hourOfDay() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_hourOfDay);
+	return OS.objc_msgSend(this.id, OS.sel_hourOfDay);
 }
 
 public int /*long*/ minuteOfHour() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_minuteOfHour);
+	return OS.objc_msgSend(this.id, OS.sel_minuteOfHour);
 }
 
 public int /*long*/ monthOfYear() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_monthOfYear);
+	return OS.objc_msgSend(this.id, OS.sel_monthOfYear);
 }
 
 public int /*long*/ secondOfMinute() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_secondOfMinute);
+	return OS.objc_msgSend(this.id, OS.sel_secondOfMinute);
 }
 
 public NSTimeZone timeZone() {
@@ -60,7 +60,7 @@ public NSTimeZone timeZone() {
 }
 
 public int /*long*/ yearOfCommonEra() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_yearOfCommonEra);
+	return OS.objc_msgSend(this.id, OS.sel_yearOfCommonEra);
 }
 
 public static NSDate dateWithTimeIntervalSinceNow(double secs) {

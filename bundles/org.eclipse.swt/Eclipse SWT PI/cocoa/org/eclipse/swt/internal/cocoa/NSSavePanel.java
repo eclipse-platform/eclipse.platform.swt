@@ -30,7 +30,7 @@ public NSString filename() {
 }
 
 public int /*long*/ runModal() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModal);
+	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
 public static NSSavePanel savePanel() {

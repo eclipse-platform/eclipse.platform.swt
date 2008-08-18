@@ -42,7 +42,7 @@ public id itemAtRow(int /*long*/ row) {
 }
 
 public int /*long*/ levelForItem(id item) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
 }
 
 public void reloadItem(id item) {
@@ -54,7 +54,7 @@ public void reloadItem(id item, boolean reloadChildren) {
 }
 
 public int /*long*/ rowForItem(id item) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
 }
 
 public void setAutoresizesOutlineColumn(boolean resize) {

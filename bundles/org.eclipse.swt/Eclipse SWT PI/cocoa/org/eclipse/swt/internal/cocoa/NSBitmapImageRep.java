@@ -25,19 +25,19 @@ public NSBitmapImageRep(id id) {
 }
 
 public int /*long*/ bitmapData() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bitmapData);
+	return OS.objc_msgSend(this.id, OS.sel_bitmapData);
 }
 
 public int /*long*/ bitsPerPixel() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bitsPerPixel);
+	return OS.objc_msgSend(this.id, OS.sel_bitsPerPixel);
 }
 
 public int /*long*/ bytesPerPlane() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bytesPerPlane);
+	return OS.objc_msgSend(this.id, OS.sel_bytesPerPlane);
 }
 
 public int /*long*/ bytesPerRow() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bytesPerRow);
+	return OS.objc_msgSend(this.id, OS.sel_bytesPerRow);
 }
 
 public NSBitmapImageRep initWithBitmapDataPlanes(int /*long*/ planes, int /*long*/ width, int /*long*/ height, int /*long*/ bps, int /*long*/ spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int /*long*/ bitmapFormat, int /*long*/ rBytes, int /*long*/ pBits) {
@@ -55,7 +55,7 @@ public boolean isPlanar() {
 }
 
 public int /*long*/ samplesPerPixel() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_samplesPerPixel);
+	return OS.objc_msgSend(this.id, OS.sel_samplesPerPixel);
 }
 
 }

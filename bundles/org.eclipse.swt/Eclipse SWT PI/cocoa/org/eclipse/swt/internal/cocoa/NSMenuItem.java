@@ -75,7 +75,7 @@ public void setTitle(NSString aString) {
 }
 
 public int /*long*/ state() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_state);
+	return OS.objc_msgSend(this.id, OS.sel_state);
 }
 
 public NSMenu submenu() {

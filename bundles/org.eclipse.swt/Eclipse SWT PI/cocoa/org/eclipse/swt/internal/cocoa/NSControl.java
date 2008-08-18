@@ -25,7 +25,7 @@ public NSControl(id id) {
 }
 
 public int /*long*/ action() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_action);
+	return OS.objc_msgSend(this.id, OS.sel_action);
 }
 
 public NSCell cell() {

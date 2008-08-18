@@ -25,7 +25,7 @@ public NSPrintPanel(id id) {
 }
 
 public int /*long*/ options() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_options);
+	return OS.objc_msgSend(this.id, OS.sel_options);
 }
 
 public static NSPrintPanel printPanel() {
@@ -34,7 +34,7 @@ public static NSPrintPanel printPanel() {
 }
 
 public int /*long*/ runModalWithPrintInfo(NSPrintInfo printInfo) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModalWithPrintInfo_, printInfo != null ? printInfo.id : 0);
+	return OS.objc_msgSend(this.id, OS.sel_runModalWithPrintInfo_, printInfo != null ? printInfo.id : 0);
 }
 
 public void setOptions(int /*long*/ options) {

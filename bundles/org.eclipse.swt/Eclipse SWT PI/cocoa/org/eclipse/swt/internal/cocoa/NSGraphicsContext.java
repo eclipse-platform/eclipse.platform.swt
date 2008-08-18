@@ -44,7 +44,7 @@ public static NSGraphicsContext graphicsContextWithWindow(NSWindow window) {
 }
 
 public int /*long*/ imageInterpolation() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_imageInterpolation);
+	return OS.objc_msgSend(this.id, OS.sel_imageInterpolation);
 }
 
 public void restoreGraphicsState() {

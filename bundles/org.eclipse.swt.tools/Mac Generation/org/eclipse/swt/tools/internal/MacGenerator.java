@@ -151,10 +151,10 @@ void generateMethods(String className, ArrayList methods) {
 		if (isStatic) out("static ");
 		Node returnNode = getReturnNode(method.getChildNodes());
 		if (getType(returnNode).equals("void")) returnNode = null;
-		String returnType = "";
+		String returnType = "", returnType64 = "";
 		if (returnNode != null) {
-			String type = getJavaType(returnNode), type64 = getJavaType64(returnNode);
-			out(returnType = type);
+			String type = returnType = getJavaType(returnNode), type64 = returnType64 = getJavaType64(returnNode);
+			out(type);
 			if (!type.equals(type64)) {
 				out(" /*");
 				out(type64);
@@ -216,11 +216,13 @@ void generateMethods(String className, ArrayList methods) {
 		} else {
 			if (returnNode != null) {
 				out("\treturn ");
-				if (!(returnType.equals("boolean"))) {
-					out("(");
-					out(returnType);
-					out(")");
-					if (returnType.equals("int")) {
+				if (!returnType.equals("boolean")) {
+					if ((returnType.equals("int") && returnType64.equals("int")) || !returnType.equals("int")) {
+						out("(");
+						out(returnType);
+						out(")");
+					}
+					if (returnType.equals("int") && returnType64.equals("int")) {
 						out("/*64*/");
 					}
 				}

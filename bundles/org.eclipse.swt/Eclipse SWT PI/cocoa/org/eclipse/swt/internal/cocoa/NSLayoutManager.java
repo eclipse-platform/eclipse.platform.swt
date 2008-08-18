@@ -39,7 +39,7 @@ public NSRect boundingRectForGlyphRange(NSRange glyphRange, NSTextContainer cont
 }
 
 public int /*long*/ characterIndexForGlyphAtIndex(int /*long*/ glyphIndex) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_characterIndexForGlyphAtIndex_, glyphIndex);
+	return OS.objc_msgSend(this.id, OS.sel_characterIndexForGlyphAtIndex_, glyphIndex);
 }
 
 public float /*double*/ defaultLineHeightForFont(NSFont theFont) {
@@ -55,15 +55,15 @@ public void drawGlyphsForGlyphRange(NSRange glyphsToShow, NSPoint origin) {
 }
 
 public int /*long*/ getGlyphs(int /*long*/ glyphArray, NSRange glyphRange) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_getGlyphs_range_, glyphArray, glyphRange);
+	return OS.objc_msgSend(this.id, OS.sel_getGlyphs_range_, glyphArray, glyphRange);
 }
 
 public int /*long*/ glyphIndexForCharacterAtIndex(int /*long*/ charIndex) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_glyphIndexForCharacterAtIndex_, charIndex);
+	return OS.objc_msgSend(this.id, OS.sel_glyphIndexForCharacterAtIndex_, charIndex);
 }
 
 public int /*long*/ glyphIndexForPoint(NSPoint point, NSTextContainer container, float[] /*double[]*/ partialFraction) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_, point, container != null ? container.id : 0, partialFraction);
+	return OS.objc_msgSend(this.id, OS.sel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_, point, container != null ? container.id : 0, partialFraction);
 }
 
 public NSRange glyphRangeForTextContainer(NSTextContainer container) {
@@ -91,7 +91,7 @@ public NSPoint locationForGlyphAtIndex(int /*long*/ glyphIndex) {
 }
 
 public int /*long*/ numberOfGlyphs() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfGlyphs);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfGlyphs);
 }
 
 public void removeTemporaryAttribute(NSString attrName, NSRange charRange) {

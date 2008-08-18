@@ -174,11 +174,11 @@ public void setTitle(NSString aString) {
 }
 
 public int /*long*/ styleMask() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_styleMask);
+	return OS.objc_msgSend(this.id, OS.sel_styleMask);
 }
 
 public int /*long*/ windowNumber() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_windowNumber);
+	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }
 
 }

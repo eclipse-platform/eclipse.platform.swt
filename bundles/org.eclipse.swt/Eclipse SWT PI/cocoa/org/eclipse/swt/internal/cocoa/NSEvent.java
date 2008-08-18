@@ -25,7 +25,7 @@ public NSEvent(id id) {
 }
 
 public int /*long*/ buttonNumber() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_buttonNumber);
+	return OS.objc_msgSend(this.id, OS.sel_buttonNumber);
 }
 
 public NSString characters() {
@@ -39,7 +39,7 @@ public NSString charactersIgnoringModifiers() {
 }
 
 public int /*long*/ clickCount() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_clickCount);
+	return OS.objc_msgSend(this.id, OS.sel_clickCount);
 }
 
 public float /*double*/ deltaX() {
@@ -61,7 +61,7 @@ public NSPoint locationInWindow() {
 }
 
 public int /*long*/ modifierFlags() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_modifierFlags);
+	return OS.objc_msgSend(this.id, OS.sel_modifierFlags);
 }
 
 public static NSPoint mouseLocation() {
@@ -76,7 +76,7 @@ public static NSEvent otherEventWithType(int /*long*/ type, NSPoint location, in
 }
 
 public int /*long*/ type() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_type);
+	return OS.objc_msgSend(this.id, OS.sel_type);
 }
 
 public NSWindow window() {

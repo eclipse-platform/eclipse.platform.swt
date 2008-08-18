@@ -52,7 +52,7 @@ public NSMenuItem itemAtIndex(int /*long*/ index) {
 }
 
 public int /*long*/ numberOfItems() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
 public static void popUpContextMenu(NSMenu menu, NSEvent event, NSView view) {

@@ -25,7 +25,7 @@ public NSPopUpButton(id id) {
 }
 
 public int /*long*/ indexOfSelectedItem() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
 public NSPopUpButton initWithFrame(NSRect buttonFrame, boolean flag) {
@@ -49,7 +49,7 @@ public NSMenu menu() {
 }
 
 public int /*long*/ numberOfItems() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
 public void removeAllItems() {

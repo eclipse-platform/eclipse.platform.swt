@@ -25,7 +25,7 @@ public NSImageRep(id id) {
 }
 
 public int /*long*/ bitsPerSample() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bitsPerSample);
+	return OS.objc_msgSend(this.id, OS.sel_bitsPerSample);
 }
 
 public boolean hasAlpha() {
@@ -33,11 +33,11 @@ public boolean hasAlpha() {
 }
 
 public int /*long*/ pixelsHigh() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_pixelsHigh);
+	return OS.objc_msgSend(this.id, OS.sel_pixelsHigh);
 }
 
 public int /*long*/ pixelsWide() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_pixelsWide);
+	return OS.objc_msgSend(this.id, OS.sel_pixelsWide);
 }
 
 }

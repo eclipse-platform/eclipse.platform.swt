@@ -25,7 +25,7 @@ public NSError(id id) {
 }
 
 public int /*long*/ code() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_code);
+	return OS.objc_msgSend(this.id, OS.sel_code);
 }
 
 public NSString localizedDescription() {

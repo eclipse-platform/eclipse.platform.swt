@@ -30,7 +30,7 @@ public NSArray allKeys() {
 }
 
 public int /*long*/ count() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_count);
+	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
 public static NSDictionary dictionaryWithObject(id object, id key) {

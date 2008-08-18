@@ -25,7 +25,7 @@ public NSTableHeaderView(id id) {
 }
 
 public int /*long*/ columnAtPoint(NSPoint point) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_columnAtPoint_, point);
+	return OS.objc_msgSend(this.id, OS.sel_columnAtPoint_, point);
 }
 
 public NSRect headerRectOfColumn(int /*long*/ column) {

@@ -25,7 +25,7 @@ public NSSet(id id) {
 }
 
 public int /*long*/ count() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_count);
+	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
 public NSEnumerator objectEnumerator() {

@@ -60,15 +60,15 @@ public void noteNumberOfRowsChanged() {
 }
 
 public int /*long*/ numberOfColumns() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfColumns);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfColumns);
 }
 
 public int /*long*/ numberOfRows() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfRows);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfRows);
 }
 
 public int /*long*/ numberOfSelectedRows() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
 }
 
 public NSRect rectOfRow(int /*long*/ row) {
@@ -86,7 +86,7 @@ public void removeTableColumn(NSTableColumn column) {
 }
 
 public int /*long*/ rowAtPoint(NSPoint point) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_rowAtPoint_, point);
+	return OS.objc_msgSend(this.id, OS.sel_rowAtPoint_, point);
 }
 
 public float /*double*/ rowHeight() {
@@ -114,7 +114,7 @@ public void selectRowIndexes(NSIndexSet indexes, boolean extend) {
 }
 
 public int /*long*/ selectedRow() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_selectedRow);
+	return OS.objc_msgSend(this.id, OS.sel_selectedRow);
 }
 
 public NSIndexSet selectedRowIndexes() {

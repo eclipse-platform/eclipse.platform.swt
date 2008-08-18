@@ -25,7 +25,7 @@ public NSScroller(id id) {
 }
 
 public int /*long*/ hitPart() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_hitPart);
+	return OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
 public static float /*double*/ scrollerWidth() {

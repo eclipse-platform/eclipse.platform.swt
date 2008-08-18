@@ -33,7 +33,7 @@ public void deselectItemAtIndex(int /*long*/ index) {
 }
 
 public int /*long*/ indexOfSelectedItem() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
+	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
 public void insertItemWithObjectValue(id object, int /*long*/ index) {
@@ -46,11 +46,11 @@ public id itemObjectValueAtIndex(int /*long*/ index) {
 }
 
 public int /*long*/ numberOfItems() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
 public int /*long*/ numberOfVisibleItems() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfVisibleItems);
+	return OS.objc_msgSend(this.id, OS.sel_numberOfVisibleItems);
 }
 
 public void removeAllItems() {

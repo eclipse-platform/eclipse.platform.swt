@@ -49,7 +49,7 @@ public NSAttributedString initWithString(NSString str, NSDictionary attrs) {
 }
 
 public int /*long*/ nextWordFromIndex(int /*long*/ location, boolean isForward) {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_nextWordFromIndex_forward_, location, isForward);
+	return OS.objc_msgSend(this.id, OS.sel_nextWordFromIndex_forward_, location, isForward);
 }
 
 public NSSize size() {
@@ -69,7 +69,7 @@ public NSAttributedString initWithString(NSString str) {
 }
 
 public int /*long*/ length() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_length);
+	return OS.objc_msgSend(this.id, OS.sel_length);
 }
 
 public NSString string() {
