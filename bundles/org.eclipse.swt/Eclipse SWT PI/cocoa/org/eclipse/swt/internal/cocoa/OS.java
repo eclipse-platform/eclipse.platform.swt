@@ -603,6 +603,7 @@ public static final int /*long*/ sel_isEqual_ = sel_registerName("isEqual:");
 public static final int /*long*/ sel_isEqualTo_ = sel_registerName("isEqualTo:");
 public static final int /*long*/ sel_isFilePackageAtPath_ = sel_registerName("isFilePackageAtPath:");
 public static final int /*long*/ sel_isFlipped = sel_registerName("isFlipped");
+public static final int /*long*/ sel_isKeyWindow = sel_registerName("isKeyWindow");
 public static final int /*long*/ sel_isKindOfClass_ = sel_registerName("isKindOfClass:");
 public static final int /*long*/ sel_isOpaque = sel_registerName("isOpaque");
 public static final int /*long*/ sel_isPlanar = sel_registerName("isPlanar");

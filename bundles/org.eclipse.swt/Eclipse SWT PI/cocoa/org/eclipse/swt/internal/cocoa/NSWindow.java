@@ -98,6 +98,10 @@ public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
 }
 
+public boolean isKeyWindow() {
+	return OS.objc_msgSend(this.id, OS.sel_isKeyWindow) != 0;
+}
+
 public boolean isVisible() {
 	return OS.objc_msgSend(this.id, OS.sel_isVisible) != 0;
 }
