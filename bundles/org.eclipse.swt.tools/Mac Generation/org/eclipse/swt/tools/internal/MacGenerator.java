@@ -1144,34 +1144,59 @@ String buildSend(Node method, boolean tags, boolean only64) {
 }
 
 void generateSends() {
-	TreeSet set = new TreeSet();
+	TreeMap set = new TreeMap();
+	TreeMap set64 = new TreeMap();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("class".equals(node.getNodeName())) {
-				if (getGen(node)) {
-					NodeList methods = node.getChildNodes();
-					for (int j = 0; j < methods.getLength(); j++) {
-						Node method = methods.item(j);
-						if ("method".equals(method.getNodeName())) {
-							if (getGen(method)) {
-								String code = buildSend(method, false, false);
-								String code64 = buildSend(method, false, true);
-								set.add(code64);
-								set.add(code);
-							}
+			if ("class".equals(node.getNodeName()) && getGen(node)) {
+				NodeList methods = node.getChildNodes();
+				for (int j = 0; j < methods.getLength(); j++) {
+					Node method = methods.item(j);
+					if ("method".equals(method.getNodeName()) && getGen(method)) {
+						String code = buildSend(method, false, false);
+						String code64 = buildSend(method, false, true);
+						if (set.get(code) == null) {
+							set.put(code, method);
+						}
+						if (set64.get(code64) == null) {
+							set64.put(code64, method);
 						}
 					}
 				}
 			}
 		}
 	}
-	out("//TODO - trim unused 64 bit calls");
 	outln();
-	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+	TreeMap tagsSet = new TreeMap();
+	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
+		String key = (String)iterator.next();
+		Node method = (Node)set.get(key);
+		String tagCode = buildSend(method, false, true);
+		if (set64.get(tagCode) != null) {
+			tagsSet.put(key, method);
+			iterator.remove();
+			set64.remove(tagCode);
+		}
+	}
+	TreeSet all = new TreeSet();
+	for (Iterator iterator = tagsSet.keySet().iterator(); iterator.hasNext();) {
+		String key = (String) iterator.next();
+		Node method = (Node)tagsSet.get(key);
+		all.add(buildSend(method, true, false));
+	}
+	for (Iterator iterator = set.keySet().iterator(); iterator.hasNext();) {
+		String key = (String) iterator.next();
+		all.add(key);
+	}
+	for (Iterator iterator = set64.keySet().iterator(); iterator.hasNext();) {
+		String key = (String) iterator.next();
+		all.add(key);
+	}
+	for (Iterator iterator = all.iterator(); iterator.hasNext();) {
 		out(iterator.next().toString());
 		outln();
 	}
