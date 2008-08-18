@@ -242,6 +242,9 @@ public class MacGeneratorUI {
 		editor.setEditor(editorTx);
 		Listener textListener = new Listener() {
 			public void handleEvent(Event e) {
+				if (e.type == SWT.KeyDown) {
+					if (e.keyCode != SWT.F6) return;
+				}
 				if (e.type == SWT.Traverse) {
 					switch (e.detail) {
 						case SWT.TRAVERSE_ESCAPE:
@@ -268,6 +271,7 @@ public class MacGeneratorUI {
 		};
 		editorTx.addListener(SWT.DefaultSelection, textListener);
 //		editorTx.addListener(SWT.FocusOut, textListener);
+		editorTx.addListener(SWT.KeyDown, textListener);
 		editorTx.addListener(SWT.Traverse, textListener);
 		attribTable.addListener(SWT.MouseDown, new Listener() {
 			public void handleEvent(final Event e) {
@@ -446,6 +450,7 @@ public class MacGeneratorUI {
 			TreeItem item = findItem(items, (Node)path.remove(0));
 			if (path.isEmpty()) {
 				nodesTree.setSelection(item);
+				selectChild(item);
 				return;
 			}
 			items = item.getItems();
