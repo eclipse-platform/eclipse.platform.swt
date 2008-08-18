@@ -1153,7 +1153,7 @@ public TreeItem [] getSelection () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes ();
 	int count = (int)/*64*/selection.count ();
-	int [] indexBuffer = new int [count];
+	int /*long*/ [] indexBuffer = new int /*long*/ [count];
 	selection.getIndexes (indexBuffer, count, 0);
 	TreeItem [] result = new TreeItem [count];
 	for (int i=0; i<count; i++) {

@@ -1091,11 +1091,11 @@ public TableItem [] getSelection () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
 	int count = (int)/*64*/selection.count();
-	int [] indexBuffer = new int [count];
+	int /*long*/ [] indexBuffer = new int /*long*/ [count];
 	selection.getIndexes(indexBuffer, count, 0);
 	TableItem [] result = new TableItem  [count];
 	for (int i=0; i<count; i++) {
-		result [i] = _getItem (indexBuffer [i]);
+		result [i] = _getItem ((int)/*64*/indexBuffer [i]);
 	}
 	return result;
 }
@@ -1134,9 +1134,9 @@ public int getSelectionIndex () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
 	int count = (int)/*64*/selection.count();
-	int [] result = new int [count];
+	int /*long*/ [] result = new int /*long*/ [count];
 	selection.getIndexes(result, count, 0);
-	return result [0];
+	return (int)/*64*/result [0];
 }
 
 /**
@@ -1163,8 +1163,12 @@ public int [] getSelectionIndices () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
 	int count = (int)/*64*/selection.count();
+	int /*long*/ [] indices = new int /*long*/ [count];
+	selection.getIndexes(indices, count, 0);
 	int [] result = new int [count];
-	selection.getIndexes(result, count, 0);
+	for (int i = 0; i < indices.length; i++) {
+		result [i] = (int)/*64*/indices [i];
+	}
 	return result;
 }
 

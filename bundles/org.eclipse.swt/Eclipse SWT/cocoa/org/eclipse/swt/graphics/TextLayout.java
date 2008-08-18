@@ -836,10 +836,10 @@ public int getOffset(int x, int y, int[] trailing) {
 	NSPoint pt = new NSPoint();
 	pt.x = x;
 	pt.y = y;
-	float[] partialFration = new float[1];
+	float /*double*/[] partialFration = new float /*double*/[1];
 	int /*long*/ glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFration);
 	int /*long*/ offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
-	if (trailing != null) trailing[0] = Math.round(partialFration[0]);
+	if (trailing != null) trailing[0] = Math.round((float)/*64*/partialFration[0]);
 	return Math.min(untranslateOffset((int)/*64*/offset), length - 1);
 }
 

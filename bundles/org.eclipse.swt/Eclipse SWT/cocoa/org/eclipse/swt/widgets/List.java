@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.cocoa.*;
 
 import org.eclipse.swt.*;
@@ -477,11 +478,11 @@ public String [] getSelection () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
 	int count = (int)/*64*/selection.count();
-	int [] indexBuffer = new int [count];
+	int /*long*/ [] indexBuffer = new int /*long*/ [count];
 	selection.getIndexes(indexBuffer, count, 0);
 	String [] result = new String  [count];
 	for (int i=0; i<count; i++) {
-		result [i] = items [indexBuffer [i]];
+		result [i] = items [(int)/*64*/indexBuffer [i]];
 	}
 	return result;
 }
@@ -520,9 +521,9 @@ public int getSelectionIndex () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
 	int count = (int)/*64*/selection.count();
-	int [] result = new int [count];
+	int /*long*/ [] result = new int /*long*/ [count];
 	selection.getIndexes(result, count, 0);
-	return result [0];
+	return (int)/*64*/result [0];
 }
 
 /**
@@ -549,8 +550,12 @@ public int [] getSelectionIndices () {
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
 	int count = (int)/*64*/selection.count();
+	int /*long*/ [] indices = new int /*long*/ [count];
+	selection.getIndexes(indices, count, 0);
 	int [] result = new int [count];
-	selection.getIndexes(result, count, 0);
+	for (int i = 0; i < result.length; i++) {
+		result [i] = (int)/*64*/indices [i];
+	}
 	return result;
 }
 

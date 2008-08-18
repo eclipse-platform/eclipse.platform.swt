@@ -1436,9 +1436,9 @@ public Color getSystemColor (int id) {
 	if (color == null) return super.getSystemColor(id);
 	color = color.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace());
 	if (color == null) return super.getSystemColor(id);
-	float[] components = new float[(int)/*64*/color.numberOfComponents()];
+	float /*double*/[] components = new float /*double*/[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	
-	return Color.cocoa_new (this, new float[]{components[0], components[1], components[2], components[3]});
+	return Color.cocoa_new (this, new float[]{(float)/*64*/components[0], (float)/*64*/components[1], (float)/*64*/components[2], (float)/*64*/components[3]});
 }
 
 /**
