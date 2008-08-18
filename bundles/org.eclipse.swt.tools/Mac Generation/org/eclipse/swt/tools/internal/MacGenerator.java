@@ -335,7 +335,7 @@ void generateExtraMethods(String className) {
 		/* Get java string */
 		out("public String getString() {");
 		outln();
-		out("\tchar[] buffer = new char[length()];");
+		out("\tchar[] buffer = new char[(int)/*64*/length()];");
 		outln();
 		out("\tgetCharacters(buffer);");
 		outln();
