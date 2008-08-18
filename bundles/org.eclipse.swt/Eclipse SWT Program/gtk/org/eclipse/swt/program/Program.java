@@ -94,7 +94,7 @@ static int getDesktop(final Display display) {
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] gnomeName = Converter.wcsToMbcs(null, "_NET_SUPPORTING_WM_CHECK", true);
 		int /*long*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
-		if (gnome != OS.None && gnome_init()) {
+		if (gnome != OS.None && (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) && gnome_init()) {
 			desktop = DESKTOP_GNOME;
 			int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
 			display.setData(ICON_THEME_DATA, new LONG(icon_theme));
