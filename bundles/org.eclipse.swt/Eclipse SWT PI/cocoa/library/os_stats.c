@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 200;
-int OS_nativeFunctionCallCount[200];
+int OS_nativeFunctionCount = 202;
+int OS_nativeFunctionCallCount[202];
 char * OS_nativeFunctionNames[] = {
 	"CGPoint_1sizeof",
 	"CGRect_1sizeof",
@@ -176,9 +176,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__II_3FIF",
 	"objc_1msgSend__II_3I",
 	"objc_1msgSend__II_3III",
+	"objc_1msgSend__JJFD",
+	"objc_1msgSend__JJI",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II",
-	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII",
+	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSSize_2",

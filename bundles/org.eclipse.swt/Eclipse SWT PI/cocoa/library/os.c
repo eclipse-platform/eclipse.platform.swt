@@ -2374,6 +2374,30 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend__JJFD
+JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJFD)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jfloat arg2, jdouble arg3)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJFD_FUNC);
+	rc = (jlong)((jlong (*)(id, SEL, jfloat, jdouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJFD_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__JJI
+JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJI)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJI_FUNC);
+	rc = (jlong)((jlong (*)(id, SEL, jint))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJI_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I
 JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
@@ -2406,18 +2430,18 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII
-JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+#ifndef NO_objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ
+JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5)
 {
 	struct objc_super _arg0, *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII_FUNC);
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ_FUNC);
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jint)((jint (*)(id, SEL, jint, jint, jint, jint))objc_msgSendSuper)((id)lparg0, (SEL)arg1, arg2, arg3, arg4, arg5);
+	rc = (jint)((jint (*)(id, SEL, jint, jint, jint, jboolean))objc_msgSendSuper)((id)lparg0, (SEL)arg1, arg2, arg3, arg4, arg5);
 fail:
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIII_FUNC);
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ_FUNC);
 	return rc;
 }
 #endif
