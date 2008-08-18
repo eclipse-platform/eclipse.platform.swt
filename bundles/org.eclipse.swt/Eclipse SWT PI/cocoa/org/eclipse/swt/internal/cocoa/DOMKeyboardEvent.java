@@ -29,7 +29,7 @@ public boolean altKey() {
 }
 
 public int charCode() {
-	return OS.objc_msgSend(this.id, OS.sel_charCode);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_charCode);
 }
 
 public boolean ctrlKey() {
@@ -37,7 +37,7 @@ public boolean ctrlKey() {
 }
 
 public int keyCode() {
-	return OS.objc_msgSend(this.id, OS.sel_keyCode);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_keyCode);
 }
 
 public boolean metaKey() {

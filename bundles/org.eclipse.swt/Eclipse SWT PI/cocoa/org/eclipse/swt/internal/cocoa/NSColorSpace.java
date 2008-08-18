@@ -25,7 +25,7 @@ public NSColorSpace(id id) {
 }
 
 public static NSColorSpace deviceRGBColorSpace() {
-	int result = OS.objc_msgSend(OS.class_NSColorSpace, OS.sel_deviceRGBColorSpace);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColorSpace, OS.sel_deviceRGBColorSpace);
 	return result != 0 ? new NSColorSpace(result) : null;
 }
 

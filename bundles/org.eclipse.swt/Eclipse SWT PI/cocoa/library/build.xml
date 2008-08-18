@@ -43,6 +43,7 @@
 	<echo>Converting java files to 32 bit in org.eclipse.swt project</echo>
 	<replace dir="." includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
 	<replace dir="." includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
+	<replace dir="." includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
 	<replace dir="." includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
 	<antcall target="build.cfiles"/>
 </target>

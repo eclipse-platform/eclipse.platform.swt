@@ -25,7 +25,7 @@ public NSFontPanel(id id) {
 }
 
 public NSFont panelConvertFont(NSFont fontObj) {
-	int result = OS.objc_msgSend(this.id, OS.sel_panelConvertFont_, fontObj != null ? fontObj.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_panelConvertFont_, fontObj != null ? fontObj.id : 0);
 	return result != 0 ? new NSFont(result) : null;
 }
 
@@ -34,7 +34,7 @@ public void setPanelFont(NSFont fontObj, boolean flag) {
 }
 
 public static NSFontPanel sharedFontPanel() {
-	int result = OS.objc_msgSend(OS.class_NSFontPanel, OS.sel_sharedFontPanel);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSFontPanel, OS.sel_sharedFontPanel);
 	return result != 0 ? new NSFontPanel(result) : null;
 }
 

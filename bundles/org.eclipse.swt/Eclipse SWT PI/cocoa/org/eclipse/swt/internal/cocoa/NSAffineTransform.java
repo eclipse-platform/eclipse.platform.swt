@@ -29,7 +29,7 @@ public void concat() {
 }
 
 public NSAffineTransform initWithTransform(NSAffineTransform transform) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_, transform != null ? transform.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_, transform != null ? transform.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSAffineTransform(result) : null);
 }
 
@@ -41,11 +41,11 @@ public void prependTransform(NSAffineTransform transform) {
 	OS.objc_msgSend(this.id, OS.sel_prependTransform_, transform != null ? transform.id : 0);
 }
 
-public void rotateByDegrees(float angle) {
+public void rotateByDegrees(float /*double*/ angle) {
 	OS.objc_msgSend(this.id, OS.sel_rotateByDegrees_, angle);
 }
 
-public void scaleXBy(float scaleX, float scaleY) {
+public void scaleXBy(float /*double*/ scaleX, float /*double*/ scaleY) {
 	OS.objc_msgSend(this.id, OS.sel_scaleXBy_yBy_, scaleX, scaleY);
 }
 
@@ -58,7 +58,7 @@ public void setTransformStruct(NSAffineTransformStruct transformStruct) {
 }
 
 public static NSAffineTransform transform() {
-	int result = OS.objc_msgSend(OS.class_NSAffineTransform, OS.sel_transform);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSAffineTransform, OS.sel_transform);
 	return result != 0 ? new NSAffineTransform(result) : null;
 }
 
@@ -80,7 +80,7 @@ public NSAffineTransformStruct transformStruct() {
 	return result;
 }
 
-public void translateXBy(float deltaX, float deltaY) {
+public void translateXBy(float /*double*/ deltaX, float /*double*/ deltaY) {
 	OS.objc_msgSend(this.id, OS.sel_translateXBy_yBy_, deltaX, deltaY);
 }
 

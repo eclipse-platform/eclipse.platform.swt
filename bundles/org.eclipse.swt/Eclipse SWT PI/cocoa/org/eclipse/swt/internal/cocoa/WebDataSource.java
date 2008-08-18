@@ -25,22 +25,22 @@ public WebDataSource(id id) {
 }
 
 public NSString pageTitle() {
-	int result = OS.objc_msgSend(this.id, OS.sel_pageTitle);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_pageTitle);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public WebDocumentRepresentation representation() {
-	int result = OS.objc_msgSend(this.id, OS.sel_representation);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_representation);
 	return result != 0 ? new WebDocumentRepresentation(result) : null;
 }
 
 public NSMutableURLRequest request() {
-	int result = OS.objc_msgSend(this.id, OS.sel_request);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_request);
 	return result != 0 ? new NSMutableURLRequest(result) : null;
 }
 
 public WebFrame webFrame() {
-	int result = OS.objc_msgSend(this.id, OS.sel_webFrame);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_webFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
 

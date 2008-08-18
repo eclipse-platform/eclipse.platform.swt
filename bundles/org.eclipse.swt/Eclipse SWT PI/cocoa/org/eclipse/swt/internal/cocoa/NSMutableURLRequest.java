@@ -29,7 +29,7 @@ public void setURL(NSURL URL) {
 }
 
 public static NSURLRequest requestWithURL(NSURL URL) {
-	int result = OS.objc_msgSend(OS.class_NSMutableURLRequest, OS.sel_requestWithURL_, URL != null ? URL.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableURLRequest, OS.sel_requestWithURL_, URL != null ? URL.id : 0);
 	return result != 0 ? new NSMutableURLRequest(result) : null;
 }
 

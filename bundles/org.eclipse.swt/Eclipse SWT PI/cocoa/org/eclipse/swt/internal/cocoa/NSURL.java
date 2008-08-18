@@ -25,17 +25,17 @@ public NSURL(id id) {
 }
 
 public static NSURL URLWithString(NSString URLString) {
-	int result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLWithString_, URLString != null ? URLString.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLWithString_, URLString != null ? URLString.id : 0);
 	return result != 0 ? new NSURL(result) : null;
 }
 
 public NSString absoluteString() {
-	int result = OS.objc_msgSend(this.id, OS.sel_absoluteString);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_absoluteString);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public static NSURL fileURLWithPath(NSString path) {
-	int result = OS.objc_msgSend(OS.class_NSURL, OS.sel_fileURLWithPath_, path != null ? path.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_fileURLWithPath_, path != null ? path.id : 0);
 	return result != 0 ? new NSURL(result) : null;
 }
 

@@ -24,20 +24,20 @@ public NSPrintPanel(id id) {
 	super(id);
 }
 
-public int options() {
-	return OS.objc_msgSend(this.id, OS.sel_options);
+public int /*long*/ options() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_options);
 }
 
 public static NSPrintPanel printPanel() {
-	int result = OS.objc_msgSend(OS.class_NSPrintPanel, OS.sel_printPanel);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintPanel, OS.sel_printPanel);
 	return result != 0 ? new NSPrintPanel(result) : null;
 }
 
-public int runModalWithPrintInfo(NSPrintInfo printInfo) {
-	return OS.objc_msgSend(this.id, OS.sel_runModalWithPrintInfo_, printInfo != null ? printInfo.id : 0);
+public int /*long*/ runModalWithPrintInfo(NSPrintInfo printInfo) {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModalWithPrintInfo_, printInfo != null ? printInfo.id : 0);
 }
 
-public void setOptions(int options) {
+public void setOptions(int /*long*/ options) {
 	OS.objc_msgSend(this.id, OS.sel_setOptions_, options);
 }
 

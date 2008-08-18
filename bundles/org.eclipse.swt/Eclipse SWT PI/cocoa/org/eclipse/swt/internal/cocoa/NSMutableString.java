@@ -28,8 +28,8 @@ public void appendString(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_appendString_, aString != null ? aString.id : 0);
 }
 
-public static NSString stringWithCharacters(char[] characters, int length) {
-	int result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithCharacters_length_, characters, length);
+public static NSString stringWithCharacters(char[] characters, int /*long*/ length) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithCharacters_length_, characters, length);
 	return result != 0 ? new NSMutableString(result) : null;
 }
 

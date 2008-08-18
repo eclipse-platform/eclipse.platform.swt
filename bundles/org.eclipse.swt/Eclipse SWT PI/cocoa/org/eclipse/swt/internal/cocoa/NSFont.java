@@ -24,43 +24,43 @@ public NSFont(id id) {
 	super(id);
 }
 
-public float ascender() {
+public float /*double*/ ascender() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
 }
 
-public float descender() {
+public float /*double*/ descender() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_descender);
 }
 
 public NSString familyName() {
-	int result = OS.objc_msgSend(this.id, OS.sel_familyName);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_familyName);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString fontName() {
-	int result = OS.objc_msgSend(this.id, OS.sel_fontName);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_fontName);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public static NSFont fontWithName(NSString fontName, float fontSize) {
-	int result = OS.objc_msgSend(OS.class_NSFont, OS.sel_fontWithName_size_, fontName != null ? fontName.id : 0, fontSize);
+public static NSFont fontWithName(NSString fontName, float /*double*/ fontSize) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_fontWithName_size_, fontName != null ? fontName.id : 0, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public float leading() {
+public float /*double*/ leading() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_leading);
 }
 
-public float pointSize() {
+public float /*double*/ pointSize() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
 }
 
-public static NSFont systemFontOfSize(float fontSize) {
-	int result = OS.objc_msgSend(OS.class_NSFont, OS.sel_systemFontOfSize_, fontSize);
+public static NSFont systemFontOfSize(float /*double*/ fontSize) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_systemFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public static float systemFontSize() {
+public static float /*double*/ systemFontSize() {
 	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSize);
 }
 

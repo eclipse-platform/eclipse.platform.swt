@@ -24,7 +24,7 @@ public NSMutableIndexSet(id id) {
 	super(id);
 }
 
-public void addIndex(int value) {
+public void addIndex(int /*long*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_addIndex_, value);
 }
 

@@ -490,7 +490,7 @@ void createHandle () {
 		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
-		double /*float*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
+		float /*double*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
 		NSRect frame = window.frame();
 		NSRect primaryFrame = primaryScreen.frame();
 		frame.y = primaryFrame.height - ((primaryFrame.height - (frame.y + frame.height)) + height);
@@ -634,7 +634,7 @@ public int getAlpha () {
 public Rectangle getBounds () {
 	checkWidget();
 	NSRect frame = window.frame();
-	double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 }
 
@@ -702,7 +702,7 @@ public int getImeInputMode () {
 public Point getLocation () {
 	checkWidget();
 	NSRect frame = window.frame();
-	double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Point ((int)frame.x, (int)y);
 }
 

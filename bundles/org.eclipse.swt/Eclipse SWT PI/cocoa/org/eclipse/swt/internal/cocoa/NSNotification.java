@@ -25,7 +25,7 @@ public NSNotification(id id) {
 }
 
 public id object() {
-	int result = OS.objc_msgSend(this.id, OS.sel_object);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_object);
 	return result != 0 ? new id(result) : null;
 }
 

@@ -336,9 +336,9 @@ void checkGC (int mask) {
 		if (data.transform != null) {
 			size = data.transform.transformSize(size);
 		}
-		double /*float*/ scaling = size.width;
+		float /*double*/ scaling = size.width;
 		if (scaling < 0) scaling = -scaling;
-		double /*float*/ strokeWidth = data.lineWidth * scaling;
+		float /*double*/ strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
 			data.drawXOffset = 0.5f / scaling;
 		}
@@ -742,7 +742,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	checkGC(DRAW);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
-	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 	transform.scaleXBy(width / 2f, height / 2f);
 	NSBezierPath path = data.path;
@@ -1064,7 +1064,7 @@ public void drawPolygon(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pointArray.length < 4) return;
 	checkGC(DRAW);
-	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
 	pt.x = pointArray[0] + xOffset;
@@ -1104,7 +1104,7 @@ public void drawPolyline(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pointArray.length < 4) return;
 	checkGC(DRAW);
-	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	NSBezierPath path = data.path;
 	NSPoint pt = new NSPoint();
 	pt.x = pointArray[0] + xOffset;
@@ -1434,7 +1434,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	checkGC(FILL);
 	handle.saveGraphicsState();
 	NSAffineTransform transform = NSAffineTransform.transform();
-	double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 	transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 	transform.scaleXBy(width / 2f, height / 2f);
 	NSBezierPath path = data.path;

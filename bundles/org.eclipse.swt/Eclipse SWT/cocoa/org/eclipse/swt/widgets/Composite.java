@@ -724,7 +724,7 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		NSView view = scrollView != null ? scrollView : this.view;
 		if (id == view.id) {
 			NSEvent nsEvent = new NSEvent(theEvent);
-			double /*float*/ delta = nsEvent.deltaY();
+			float /*double*/ delta = nsEvent.deltaY();
 			if (delta != 0) {
 				if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
 					if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {

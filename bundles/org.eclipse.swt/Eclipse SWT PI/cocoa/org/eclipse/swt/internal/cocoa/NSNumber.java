@@ -25,36 +25,36 @@ public NSNumber(id id) {
 }
 
 public int intValue() {
-	return OS.objc_msgSend(this.id, OS.sel_intValue);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_intValue);
 }
 
 public static NSNumber numberWithBool(boolean value) {
-	int result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithBool_, value);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithBool_, value);
 	return result != 0 ? new NSNumber(result) : null;
 }
 
 public static NSNumber numberWithInt(int value) {
-	int result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithInt_, value);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithInt_, value);
 	return result != 0 ? new NSNumber(result) : null;
 }
 
 public static NSValue valueWithPoint(NSPoint point) {
-	int result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithPoint_, point);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithPoint_, point);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithRange(NSRange range) {
-	int result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithRange_, range);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithRange_, range);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithRect(NSRect rect) {
-	int result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithRect_, rect);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithRect_, rect);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithSize(NSSize size) {
-	int result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithSize_, size);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithSize_, size);
 	return result != 0 ? new NSValue(result) : null;
 }
 

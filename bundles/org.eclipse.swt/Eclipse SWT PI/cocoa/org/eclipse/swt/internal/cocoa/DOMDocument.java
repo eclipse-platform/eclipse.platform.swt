@@ -25,7 +25,7 @@ public DOMDocument(id id) {
 }
 
 public WebFrame webFrame() {
-	int result = OS.objc_msgSend(this.id, OS.sel_webFrame);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_webFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
 

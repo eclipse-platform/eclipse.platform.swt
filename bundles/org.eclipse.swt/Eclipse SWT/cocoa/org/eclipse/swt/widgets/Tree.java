@@ -80,7 +80,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	double /*float*/ levelIndent;
+	float /*double*/ levelIndent;
 	boolean ignoreExpand, ignoreSelect;
 
 /**

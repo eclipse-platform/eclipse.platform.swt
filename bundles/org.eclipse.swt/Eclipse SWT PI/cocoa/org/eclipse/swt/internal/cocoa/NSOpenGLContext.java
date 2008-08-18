@@ -29,7 +29,7 @@ public static void clearCurrentContext() {
 }
 
 public static NSOpenGLContext currentContext() {
-	int result = OS.objc_msgSend(OS.class_NSOpenGLContext, OS.sel_currentContext);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSOpenGLContext, OS.sel_currentContext);
 	return result != 0 ? new NSOpenGLContext(result) : null;
 }
 

@@ -33,26 +33,26 @@ public void cancelTracking() {
 }
 
 public NSMenu initWithTitle(NSString aTitle) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_, aTitle != null ? aTitle.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_, aTitle != null ? aTitle.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSMenu(result) : null);
 }
 
-public void insertItem(NSMenuItem newItem, int index) {
+public void insertItem(NSMenuItem newItem, int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_insertItem_atIndex_, newItem != null ? newItem.id : 0, index);
 }
 
 public NSArray itemArray() {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemArray);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemArray);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public NSMenuItem itemAtIndex(int index) {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
+public NSMenuItem itemAtIndex(int /*long*/ index) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public int numberOfItems() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+public int /*long*/ numberOfItems() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
 public static void popUpContextMenu(NSMenu menu, NSEvent event, NSView view) {
@@ -63,7 +63,7 @@ public void removeItem(NSMenuItem item) {
 	OS.objc_msgSend(this.id, OS.sel_removeItem_, item != null ? item.id : 0);
 }
 
-public void removeItemAtIndex(int index) {
+public void removeItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 

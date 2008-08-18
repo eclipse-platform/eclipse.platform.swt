@@ -25,7 +25,7 @@ public NSOpenGLPixelFormat(id id) {
 }
 
 public id initWithAttributes(int[] attribs) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithAttributes_, attribs);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithAttributes_, attribs);
 	return result != 0 ? new id(result) : null;
 }
 

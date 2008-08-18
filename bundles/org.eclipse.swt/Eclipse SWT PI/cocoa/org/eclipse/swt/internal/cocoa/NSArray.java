@@ -25,16 +25,16 @@ public NSArray(id id) {
 }
 
 public static NSArray arrayWithObject(id anObject) {
-	int result = OS.objc_msgSend(OS.class_NSArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public int count() {
-	return OS.objc_msgSend(this.id, OS.sel_count);
+public int /*long*/ count() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_count);
 }
 
-public id objectAtIndex(int index) {
-	int result = OS.objc_msgSend(this.id, OS.sel_objectAtIndex_, index);
+public id objectAtIndex(int /*long*/ index) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectAtIndex_, index);
 	return result != 0 ? new id(result) : null;
 }
 

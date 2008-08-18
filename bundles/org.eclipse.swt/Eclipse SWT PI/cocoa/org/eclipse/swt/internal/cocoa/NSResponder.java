@@ -32,7 +32,7 @@ public boolean becomeFirstResponder() {
 	return OS.objc_msgSend(this.id, OS.sel_becomeFirstResponder) != 0;
 }
 
-public void doCommandBySelector(int aSelector) {
+public void doCommandBySelector(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_doCommandBySelector_, aSelector);
 }
 

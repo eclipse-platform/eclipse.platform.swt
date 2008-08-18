@@ -24,7 +24,7 @@ public NSTypesetter(id id) {
 	super(id);
 }
 
-public float baselineOffsetInLayoutManager(NSLayoutManager layoutMgr, int glyphIndex) {
+public float /*double*/ baselineOffsetInLayoutManager(NSLayoutManager layoutMgr, int /*long*/ glyphIndex) {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_baselineOffsetInLayoutManager_glyphIndex_, layoutMgr != null ? layoutMgr.id : 0, glyphIndex);
 }
 

@@ -25,7 +25,7 @@ public NSAppleEventDescriptor(id id) {
 }
 
 public NSAppleEventDescriptor initListDescriptor() {
-	int result = OS.objc_msgSend(this.id, OS.sel_initListDescriptor);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initListDescriptor);
 	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 

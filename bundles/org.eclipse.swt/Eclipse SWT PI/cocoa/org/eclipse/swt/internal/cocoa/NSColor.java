@@ -24,102 +24,102 @@ public NSColor(id id) {
 	super(id);
 }
 
-public float alphaComponent() {
+public float /*double*/ alphaComponent() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaComponent);
 }
 
 public static NSColor blackColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_blackColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_blackColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public float blueComponent() {
+public float /*double*/ blueComponent() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_blueComponent);
 }
 
 public static NSColor clearColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_clearColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_clearColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public NSColor colorUsingColorSpace(NSColorSpace space) {
-	int result = OS.objc_msgSend(this.id, OS.sel_colorUsingColorSpace_, space != null ? space.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorUsingColorSpace_, space != null ? space.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSColor(result) : null);
 }
 
 public NSColor colorUsingColorSpaceName(NSString colorSpace) {
-	int result = OS.objc_msgSend(this.id, OS.sel_colorUsingColorSpaceName_, colorSpace != null ? colorSpace.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorUsingColorSpaceName_, colorSpace != null ? colorSpace.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSColor(result) : null);
 }
 
-public static NSColor colorWithDeviceRed(float red, float green, float blue, float alpha) {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha);
+public static NSColor colorWithDeviceRed(float /*double*/ red, float /*double*/ green, float /*double*/ blue, float /*double*/ alpha) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor colorWithPatternImage(NSImage image) {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithPatternImage_, image != null ? image.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithPatternImage_, image != null ? image.id : 0);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor controlDarkShadowColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlDarkShadowColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlDarkShadowColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor controlHighlightColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlHighlightColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlHighlightColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor controlLightHighlightColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlLightHighlightColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlLightHighlightColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor controlShadowColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlShadowColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlShadowColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor controlTextColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlTextColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_controlTextColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor disabledControlTextColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_disabledControlTextColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_disabledControlTextColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public void getComponents(float[] components) {
+public void getComponents(float[] /*double[]*/ components) {
 	OS.objc_msgSend(this.id, OS.sel_getComponents_, components);
 }
 
-public float greenComponent() {
+public float /*double*/ greenComponent() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_greenComponent);
 }
 
-public int numberOfComponents() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfComponents);
+public int /*long*/ numberOfComponents() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfComponents);
 }
 
-public float redComponent() {
+public float /*double*/ redComponent() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_redComponent);
 }
 
 public static NSColor secondarySelectedControlColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_secondarySelectedControlColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_secondarySelectedControlColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor selectedTextBackgroundColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedTextBackgroundColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedTextBackgroundColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor selectedTextColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedTextColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedTextColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
@@ -136,27 +136,27 @@ public void setStroke() {
 }
 
 public static NSColor textBackgroundColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_textBackgroundColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_textBackgroundColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor textColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_textColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_textColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor windowBackgroundColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowBackgroundColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowBackgroundColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor windowFrameColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowFrameColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowFrameColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public static NSColor windowFrameTextColor() {
-	int result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowFrameTextColor);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowFrameTextColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 

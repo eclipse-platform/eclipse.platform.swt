@@ -900,14 +900,14 @@ public Rectangle getBounds () {
 
 Rectangle getBounds (NSArray screens) {
 	NSRect primaryFrame = new NSScreen(screens.objectAtIndex(0)).frame();
-	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
-	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
+	float /*double*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+	float /*double*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;
 	int /*long*/ count = screens.count();
 	for (int i = 0; i < count; i++) {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
-		double /*float*/ x1 = frame.x, x2 = frame.x + frame.width;
-		double /*float*/ y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
+		float /*double*/ x1 = frame.x, x2 = frame.x + frame.width;
+		float /*double*/ y1 = primaryFrame.height - frame.y, y2 = primaryFrame.height - (frame.y + frame.height);
 		if (x1 < minX) minX = x1;
 		if (x2 < minX) minX = x2;
 		if (x1 > maxX) maxX = x1;
@@ -956,7 +956,7 @@ public Rectangle getClientArea () {
 	NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 	NSRect frame = screen.frame();
 	NSRect visibleFrame = screen.visibleFrame();
-	double /*float*/ y = frame.height - (visibleFrame.y + visibleFrame.height);
+	float /*double*/ y = frame.height - (visibleFrame.y + visibleFrame.height);
 	return new Rectangle((int)visibleFrame.x, (int)y, (int)visibleFrame.width, (int)visibleFrame.height);
 }
 

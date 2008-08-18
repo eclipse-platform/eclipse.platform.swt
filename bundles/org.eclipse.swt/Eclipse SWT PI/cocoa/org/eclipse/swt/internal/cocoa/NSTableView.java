@@ -32,26 +32,26 @@ public void deselectAll(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_deselectAll_, sender != null ? sender.id : 0);
 }
 
-public void deselectRow(int row) {
+public void deselectRow(int /*long*/ row) {
 	OS.objc_msgSend(this.id, OS.sel_deselectRow_, row);
 }
 
-public NSRect frameOfCellAtColumn(int column, int row) {
+public NSRect frameOfCellAtColumn(int /*long*/ column, int /*long*/ row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfCellAtColumn_row_, column, row);
 	return result;
 }
 
 public NSTableHeaderView headerView() {
-	int result = OS.objc_msgSend(this.id, OS.sel_headerView);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_headerView);
 	return result != 0 ? new NSTableHeaderView(result) : null;
 }
 
-public boolean isRowSelected(int row) {
+public boolean isRowSelected(int /*long*/ row) {
 	return OS.objc_msgSend(this.id, OS.sel_isRowSelected_, row) != 0;
 }
 
-public void moveColumn(int column, int newIndex) {
+public void moveColumn(int /*long*/ column, int /*long*/ newIndex) {
 	OS.objc_msgSend(this.id, OS.sel_moveColumn_toColumn_, column, newIndex);
 }
 
@@ -59,19 +59,19 @@ public void noteNumberOfRowsChanged() {
 	OS.objc_msgSend(this.id, OS.sel_noteNumberOfRowsChanged);
 }
 
-public int numberOfColumns() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfColumns);
+public int /*long*/ numberOfColumns() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfColumns);
 }
 
-public int numberOfRows() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfRows);
+public int /*long*/ numberOfRows() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfRows);
 }
 
-public int numberOfSelectedRows() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
+public int /*long*/ numberOfSelectedRows() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
 }
 
-public NSRect rectOfRow(int row) {
+public NSRect rectOfRow(int /*long*/ row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfRow_, row);
 	return result;
@@ -85,19 +85,19 @@ public void removeTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_removeTableColumn_, column != null ? column.id : 0);
 }
 
-public int rowAtPoint(NSPoint point) {
-	return OS.objc_msgSend(this.id, OS.sel_rowAtPoint_, point);
+public int /*long*/ rowAtPoint(NSPoint point) {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_rowAtPoint_, point);
 }
 
-public float rowHeight() {
+public float /*double*/ rowHeight() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_rowHeight);
 }
 
-public void scrollColumnToVisible(int column) {
+public void scrollColumnToVisible(int /*long*/ column) {
 	OS.objc_msgSend(this.id, OS.sel_scrollColumnToVisible_, column);
 }
 
-public void scrollRowToVisible(int row) {
+public void scrollRowToVisible(int /*long*/ row) {
 	OS.objc_msgSend(this.id, OS.sel_scrollRowToVisible_, row);
 }
 
@@ -105,7 +105,7 @@ public void selectAll(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_selectAll_, sender != null ? sender.id : 0);
 }
 
-public void selectRow(int row, boolean extend) {
+public void selectRow(int /*long*/ row, boolean extend) {
 	OS.objc_msgSend(this.id, OS.sel_selectRow_byExtendingSelection_, row, extend);
 }
 
@@ -113,12 +113,12 @@ public void selectRowIndexes(NSIndexSet indexes, boolean extend) {
 	OS.objc_msgSend(this.id, OS.sel_selectRowIndexes_byExtendingSelection_, indexes != null ? indexes.id : 0, extend);
 }
 
-public int selectedRow() {
-	return OS.objc_msgSend(this.id, OS.sel_selectedRow);
+public int /*long*/ selectedRow() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_selectedRow);
 }
 
 public NSIndexSet selectedRowIndexes() {
-	int result = OS.objc_msgSend(this.id, OS.sel_selectedRowIndexes);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_selectedRowIndexes);
 	return result != 0 ? new NSIndexSet(result) : null;
 }
 
@@ -138,7 +138,7 @@ public void setDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
-public void setDoubleAction(int aSelector) {
+public void setDoubleAction(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setDoubleAction_, aSelector);
 }
 

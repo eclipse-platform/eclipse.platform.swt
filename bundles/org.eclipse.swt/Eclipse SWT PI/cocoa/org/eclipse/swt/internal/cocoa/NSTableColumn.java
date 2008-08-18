@@ -25,17 +25,17 @@ public NSTableColumn(id id) {
 }
 
 public NSTableHeaderCell headerCell() {
-	int result = OS.objc_msgSend(this.id, OS.sel_headerCell);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_headerCell);
 	return result != 0 ? new NSTableHeaderCell(result) : null;
 }
 
 public id initWithIdentifier(id identifier) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
-public int resizingMask() {
-	return OS.objc_msgSend(this.id, OS.sel_resizingMask);
+public int /*long*/ resizingMask() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_resizingMask);
 }
 
 public void setDataCell(NSCell cell) {
@@ -50,19 +50,19 @@ public void setHeaderCell(NSCell cell) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderCell_, cell != null ? cell.id : 0);
 }
 
-public void setMinWidth(float minWidth) {
+public void setMinWidth(float /*double*/ minWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setMinWidth_, minWidth);
 }
 
-public void setResizingMask(int resizingMask) {
+public void setResizingMask(int /*long*/ resizingMask) {
 	OS.objc_msgSend(this.id, OS.sel_setResizingMask_, resizingMask);
 }
 
-public void setWidth(float width) {
+public void setWidth(float /*double*/ width) {
 	OS.objc_msgSend(this.id, OS.sel_setWidth_, width);
 }
 
-public float width() {
+public float /*double*/ width() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_width);
 }
 

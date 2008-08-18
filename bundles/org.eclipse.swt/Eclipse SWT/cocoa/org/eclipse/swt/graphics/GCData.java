@@ -49,7 +49,7 @@ public final class GCData {
 
 	public Image image;
 	
-	public double /*float*/ drawXOffset, drawYOffset;
+	public float /*double*/ drawXOffset, drawYOffset;
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;

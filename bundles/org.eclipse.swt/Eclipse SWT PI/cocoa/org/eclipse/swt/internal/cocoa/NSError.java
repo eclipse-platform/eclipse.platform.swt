@@ -24,17 +24,17 @@ public NSError(id id) {
 	super(id);
 }
 
-public int code() {
-	return OS.objc_msgSend(this.id, OS.sel_code);
+public int /*long*/ code() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_code);
 }
 
 public NSString localizedDescription() {
-	int result = OS.objc_msgSend(this.id, OS.sel_localizedDescription);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_localizedDescription);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSDictionary userInfo() {
-	int result = OS.objc_msgSend(this.id, OS.sel_userInfo);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_userInfo);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 

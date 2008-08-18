@@ -24,29 +24,29 @@ public NSBitmapImageRep(id id) {
 	super(id);
 }
 
-public int bitmapData() {
-	return OS.objc_msgSend(this.id, OS.sel_bitmapData);
+public int /*long*/ bitmapData() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bitmapData);
 }
 
-public int bitsPerPixel() {
-	return OS.objc_msgSend(this.id, OS.sel_bitsPerPixel);
+public int /*long*/ bitsPerPixel() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bitsPerPixel);
 }
 
-public int bytesPerPlane() {
-	return OS.objc_msgSend(this.id, OS.sel_bytesPerPlane);
+public int /*long*/ bytesPerPlane() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bytesPerPlane);
 }
 
-public int bytesPerRow() {
-	return OS.objc_msgSend(this.id, OS.sel_bytesPerRow);
+public int /*long*/ bytesPerRow() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bytesPerRow);
 }
 
-public NSBitmapImageRep initWithBitmapDataPlanes(int planes, int width, int height, int bps, int spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int bitmapFormat, int rBytes, int pBits) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_, planes, width, height, bps, spp, alpha, isPlanar, colorSpaceName != null ? colorSpaceName.id : 0, bitmapFormat, rBytes, pBits);
+public NSBitmapImageRep initWithBitmapDataPlanes(int /*long*/ planes, int /*long*/ width, int /*long*/ height, int /*long*/ bps, int /*long*/ spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int /*long*/ bitmapFormat, int /*long*/ rBytes, int /*long*/ pBits) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_, planes, width, height, bps, spp, alpha, isPlanar, colorSpaceName != null ? colorSpaceName.id : 0, bitmapFormat, rBytes, pBits);
 	return result == this.id ? this : (result != 0 ? new NSBitmapImageRep(result) : null);
 }
 
-public NSBitmapImageRep initWithBitmapDataPlanes(int planes, int width, int height, int bps, int spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int rBytes, int pBits) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_, planes, width, height, bps, spp, alpha, isPlanar, colorSpaceName != null ? colorSpaceName.id : 0, rBytes, pBits);
+public NSBitmapImageRep initWithBitmapDataPlanes(int /*long*/ planes, int /*long*/ width, int /*long*/ height, int /*long*/ bps, int /*long*/ spp, boolean alpha, boolean isPlanar, NSString colorSpaceName, int /*long*/ rBytes, int /*long*/ pBits) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_, planes, width, height, bps, spp, alpha, isPlanar, colorSpaceName != null ? colorSpaceName.id : 0, rBytes, pBits);
 	return result == this.id ? this : (result != 0 ? new NSBitmapImageRep(result) : null);
 }
 
@@ -54,8 +54,8 @@ public boolean isPlanar() {
 	return OS.objc_msgSend(this.id, OS.sel_isPlanar) != 0;
 }
 
-public int samplesPerPixel() {
-	return OS.objc_msgSend(this.id, OS.sel_samplesPerPixel);
+public int /*long*/ samplesPerPixel() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_samplesPerPixel);
 }
 
 }

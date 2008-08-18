@@ -28,13 +28,13 @@ public void removeStatusItem(NSStatusItem item) {
 	OS.objc_msgSend(this.id, OS.sel_removeStatusItem_, item != null ? item.id : 0);
 }
 
-public NSStatusItem statusItemWithLength(float length) {
-	int result = OS.objc_msgSend(this.id, OS.sel_statusItemWithLength_, length);
+public NSStatusItem statusItemWithLength(float /*double*/ length) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_statusItemWithLength_, length);
 	return result != 0 ? new NSStatusItem(result) : null;
 }
 
 public static NSStatusBar systemStatusBar() {
-	int result = OS.objc_msgSend(OS.class_NSStatusBar, OS.sel_systemStatusBar);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSStatusBar, OS.sel_systemStatusBar);
 	return result != 0 ? new NSStatusBar(result) : null;
 }
 

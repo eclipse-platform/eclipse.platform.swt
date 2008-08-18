@@ -30,7 +30,7 @@ public NSObject alloc() {
 }
 
 public id autorelease() {
-	int result = OS.objc_msgSend(this.id, OS.sel_autorelease);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_autorelease);
 	return result != 0 ? new id(result) : null;
 }
 
@@ -39,12 +39,12 @@ public boolean conformsToProtocol(Protocol aProtocol) {
 }
 
 public id copy() {
-	int result = OS.objc_msgSend(this.id, OS.sel_copy);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_copy);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSObject init() {
-	int result = OS.objc_msgSend(this.id, OS.sel_init);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_init);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
@@ -56,11 +56,11 @@ public boolean isEqualTo(id object) {
 	return OS.objc_msgSend(this.id, OS.sel_isEqualTo_, object != null ? object.id : 0) != 0;
 }
 
-public boolean isKindOfClass(int aClass) {
+public boolean isKindOfClass(int /*long*/ aClass) {
 	return OS.objc_msgSend(this.id, OS.sel_isKindOfClass_, aClass) != 0;
 }
 
-public void performSelectorOnMainThread(int aSelector, id arg, boolean wait) {
+public void performSelectorOnMainThread(int /*long*/ aSelector, id arg, boolean wait) {
 	OS.objc_msgSend(this.id, OS.sel_performSelectorOnMainThread_withObject_waitUntilDone_, aSelector, arg != null ? arg.id : 0, wait);
 }
 
@@ -68,21 +68,21 @@ public void release() {
 	OS.objc_msgSend(this.id, OS.sel_release);
 }
 
-public boolean respondsToSelector(int aSelector) {
+public boolean respondsToSelector(int /*long*/ aSelector) {
 	return OS.objc_msgSend(this.id, OS.sel_respondsToSelector_, aSelector) != 0;
 }
 
 public id retain() {
-	int result = OS.objc_msgSend(this.id, OS.sel_retain);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_retain);
 	return result != 0 ? new id(result) : null;
 }
 
-public int retainCount() {
-	return OS.objc_msgSend(this.id, OS.sel_retainCount);
+public int /*long*/ retainCount() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_retainCount);
 }
 
-public int superclass() {
-	return OS.objc_msgSend(this.id, OS.sel_superclass);
+public int /*long*/ superclass() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_superclass);
 }
 
 public void addEventListener(NSString type, id  listener, boolean useCapture) {

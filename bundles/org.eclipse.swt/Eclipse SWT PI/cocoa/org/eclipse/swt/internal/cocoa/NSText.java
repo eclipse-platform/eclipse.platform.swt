@@ -54,7 +54,7 @@ public NSRange selectedRange() {
 	return result;
 }
 
-public void setAlignment(int mode) {
+public void setAlignment(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 

@@ -25,7 +25,7 @@ public NSTextView(id id) {
 }
 
 public NSDictionary markedTextAttributes() {
-	int result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
@@ -34,12 +34,12 @@ public void setRichText(boolean flag) {
 }
 
 public NSTextContainer textContainer() {
-	int result = OS.objc_msgSend(this.id, OS.sel_textContainer);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_textContainer);
 	return result != 0 ? new NSTextContainer(result) : null;
 }
 
 public NSTextStorage textStorage() {
-	int result = OS.objc_msgSend(this.id, OS.sel_textStorage);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_textStorage);
 	return result != 0 ? new NSTextStorage(result) : null;
 }
 

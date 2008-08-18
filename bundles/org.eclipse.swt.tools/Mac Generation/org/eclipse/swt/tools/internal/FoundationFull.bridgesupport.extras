@@ -5464,7 +5464,7 @@
       <retval></retval>
     </method>
     <method selector="getIndexes:maxCount:inIndexRange:" swt_gen="true">
-      <arg name="indexBuffer" swt_gen="true" swt_java_type="int[]"></arg>
+      <arg name="indexBuffer" swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
       <arg name="bufferSize" swt_gen="true"></arg>
       <arg name="range" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>

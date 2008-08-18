@@ -24,12 +24,12 @@ public NSNotificationCenter(id id) {
 	super(id);
 }
 
-public void addObserver(id observer, int aSelector, NSString aName, id anObject) {
+public void addObserver(id observer, int /*long*/ aSelector, NSString aName, id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_addObserver_selector_name_object_, observer != null ? observer.id : 0, aSelector, aName != null ? aName.id : 0, anObject != null ? anObject.id : 0);
 }
 
 public static NSNotificationCenter defaultCenter() {
-	int result = OS.objc_msgSend(OS.class_NSNotificationCenter, OS.sel_defaultCenter);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNotificationCenter, OS.sel_defaultCenter);
 	return result != 0 ? new NSNotificationCenter(result) : null;
 }
 

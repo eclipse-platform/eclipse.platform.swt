@@ -25,11 +25,11 @@ public NSScreen(id id) {
 }
 
 public int depth() {
-	return OS.objc_msgSend(this.id, OS.sel_depth);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_depth);
 }
 
 public NSDictionary deviceDescription() {
-	int result = OS.objc_msgSend(this.id, OS.sel_deviceDescription);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_deviceDescription);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
@@ -40,12 +40,12 @@ public NSRect frame() {
 }
 
 public static NSScreen mainScreen() {
-	int result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_mainScreen);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_mainScreen);
 	return result != 0 ? new NSScreen(result) : null;
 }
 
 public static NSArray screens() {
-	int result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_screens);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_screens);
 	return result != 0 ? new NSArray(result) : null;
 }
 

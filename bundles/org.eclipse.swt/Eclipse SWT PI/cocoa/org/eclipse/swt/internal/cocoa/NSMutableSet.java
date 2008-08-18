@@ -29,7 +29,7 @@ public void addObjectsFromArray(NSArray array) {
 }
 
 public static NSSet set() {
-	int result = OS.objc_msgSend(OS.class_NSMutableSet, OS.sel_set);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableSet, OS.sel_set);
 	return result != 0 ? new NSMutableSet(result) : null;
 }
 

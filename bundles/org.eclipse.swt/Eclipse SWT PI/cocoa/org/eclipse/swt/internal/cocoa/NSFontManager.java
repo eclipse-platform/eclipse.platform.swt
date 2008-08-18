@@ -25,12 +25,12 @@ public NSFontManager(id id) {
 }
 
 public NSArray availableFonts() {
-	int result = OS.objc_msgSend(this.id, OS.sel_availableFonts);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableFonts);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSFontManager sharedFontManager() {
-	int result = OS.objc_msgSend(OS.class_NSFontManager, OS.sel_sharedFontManager);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSFontManager, OS.sel_sharedFontManager);
 	return result != 0 ? new NSFontManager(result) : null;
 }
 

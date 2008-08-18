@@ -25,12 +25,12 @@ public WebFrame(id id) {
 }
 
 public DOMDocument DOMDocument() {
-	int result = OS.objc_msgSend(this.id, OS.sel_DOMDocument);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_DOMDocument);
 	return result != 0 ? new DOMDocument(result) : null;
 }
 
 public WebDataSource dataSource() {
-	int result = OS.objc_msgSend(this.id, OS.sel_dataSource);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dataSource);
 	return result != 0 ? new WebDataSource(result) : null;
 }
 

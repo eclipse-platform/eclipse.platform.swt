@@ -25,7 +25,7 @@ public NSGraphicsContext(id id) {
 }
 
 public static NSGraphicsContext currentContext() {
-	int result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_currentContext);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_currentContext);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
@@ -34,17 +34,17 @@ public void flushGraphics() {
 }
 
 public static NSGraphicsContext graphicsContextWithBitmapImageRep(NSBitmapImageRep bitmapRep) {
-	int result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithBitmapImageRep_, bitmapRep != null ? bitmapRep.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithBitmapImageRep_, bitmapRep != null ? bitmapRep.id : 0);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
 public static NSGraphicsContext graphicsContextWithWindow(NSWindow window) {
-	int result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithWindow_, window != null ? window.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithWindow_, window != null ? window.id : 0);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
-public int imageInterpolation() {
-	return OS.objc_msgSend(this.id, OS.sel_imageInterpolation);
+public int /*long*/ imageInterpolation() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_imageInterpolation);
 }
 
 public void restoreGraphicsState() {
@@ -55,7 +55,7 @@ public void saveGraphicsState() {
 	OS.objc_msgSend(this.id, OS.sel_saveGraphicsState);
 }
 
-public void setCompositingOperation(int operation) {
+public void setCompositingOperation(int /*long*/ operation) {
 	OS.objc_msgSend(this.id, OS.sel_setCompositingOperation_, operation);
 }
 
@@ -63,7 +63,7 @@ public static void setCurrentContext(NSGraphicsContext context) {
 	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_setCurrentContext_, context != null ? context.id : 0);
 }
 
-public void setImageInterpolation(int interpolation) {
+public void setImageInterpolation(int /*long*/ interpolation) {
 	OS.objc_msgSend(this.id, OS.sel_setImageInterpolation_, interpolation);
 }
 

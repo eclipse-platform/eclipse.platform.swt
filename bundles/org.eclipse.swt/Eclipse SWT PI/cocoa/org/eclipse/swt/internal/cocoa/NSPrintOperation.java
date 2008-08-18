@@ -29,12 +29,12 @@ public void cleanUpOperation() {
 }
 
 public NSGraphicsContext context() {
-	int result = OS.objc_msgSend(this.id, OS.sel_context);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_context);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
 public NSGraphicsContext createContext() {
-	int result = OS.objc_msgSend(this.id, OS.sel_createContext);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_createContext);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
@@ -47,7 +47,7 @@ public void destroyContext() {
 }
 
 public static NSPrintOperation printOperationWithView(NSView view, NSPrintInfo printInfo) {
-	int result = OS.objc_msgSend(OS.class_NSPrintOperation, OS.sel_printOperationWithView_printInfo_, view != null ? view.id : 0, printInfo != null ? printInfo.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintOperation, OS.sel_printOperationWithView_printInfo_, view != null ? view.id : 0, printInfo != null ? printInfo.id : 0);
 	return result != 0 ? new NSPrintOperation(result) : null;
 }
 

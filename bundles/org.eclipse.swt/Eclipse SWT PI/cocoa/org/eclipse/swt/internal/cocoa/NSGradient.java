@@ -24,16 +24,16 @@ public NSGradient(id id) {
 	super(id);
 }
 
-public void drawFromPoint(NSPoint startingPoint, NSPoint endingPoint, int options) {
+public void drawFromPoint(NSPoint startingPoint, NSPoint endingPoint, int /*long*/ options) {
 	OS.objc_msgSend(this.id, OS.sel_drawFromPoint_toPoint_options_, startingPoint, endingPoint, options);
 }
 
-public void drawInRect(NSRect rect, float angle) {
+public void drawInRect(NSRect rect, float /*double*/ angle) {
 	OS.objc_msgSend(this.id, OS.sel_drawInRect_angle_, rect, angle);
 }
 
 public NSGradient initWithStartingColor(NSColor startingColor, NSColor endingColor) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithStartingColor_endingColor_, startingColor != null ? startingColor.id : 0, endingColor != null ? endingColor.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithStartingColor_endingColor_, startingColor != null ? startingColor.id : 0, endingColor != null ? endingColor.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSGradient(result) : null);
 }
 

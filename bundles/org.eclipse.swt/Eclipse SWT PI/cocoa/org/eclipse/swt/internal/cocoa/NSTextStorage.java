@@ -29,7 +29,7 @@ public void addLayoutManager(NSLayoutManager obj) {
 }
 
 public NSArray paragraphs() {
-	int result = OS.objc_msgSend(this.id, OS.sel_paragraphs);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_paragraphs);
 	return result != 0 ? new NSArray(result) : null;
 }
 

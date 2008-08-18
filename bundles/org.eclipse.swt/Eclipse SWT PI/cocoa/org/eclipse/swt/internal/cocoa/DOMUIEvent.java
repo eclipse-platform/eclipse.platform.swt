@@ -25,7 +25,7 @@ public DOMUIEvent(id id) {
 }
 
 public int detail() {
-	return OS.objc_msgSend(this.id, OS.sel_detail);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_detail);
 }
 
 }

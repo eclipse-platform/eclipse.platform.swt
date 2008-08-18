@@ -33,11 +33,11 @@ public short button() {
 }
 
 public int clientX() {
-	return OS.objc_msgSend(this.id, OS.sel_clientX);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_clientX);
 }
 
 public int clientY() {
-	return OS.objc_msgSend(this.id, OS.sel_clientY);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_clientY);
 }
 
 public boolean ctrlKey() {

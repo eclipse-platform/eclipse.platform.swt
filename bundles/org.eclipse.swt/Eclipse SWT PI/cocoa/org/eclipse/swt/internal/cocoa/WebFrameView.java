@@ -33,7 +33,7 @@ public void printDocumentView() {
 }
 
 public NSPrintOperation printOperationWithPrintInfo(NSPrintInfo printInfo) {
-	int result = OS.objc_msgSend(this.id, OS.sel_printOperationWithPrintInfo_, printInfo != null ? printInfo.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_printOperationWithPrintInfo_, printInfo != null ? printInfo.id : 0);
 	return result != 0 ? new NSPrintOperation(result) : null;
 }
 

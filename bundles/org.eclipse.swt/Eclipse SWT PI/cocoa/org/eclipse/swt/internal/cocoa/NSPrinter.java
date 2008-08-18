@@ -25,17 +25,17 @@ public NSPrinter(id id) {
 }
 
 public NSString name() {
-	int result = OS.objc_msgSend(this.id, OS.sel_name);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_name);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public static NSArray printerNames() {
-	int result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerNames);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerNames);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSPrinter printerWithName(NSString name) {
-	int result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerWithName_, name != null ? name.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerWithName_, name != null ? name.id : 0);
 	return result != 0 ? new NSPrinter(result) : null;
 }
 

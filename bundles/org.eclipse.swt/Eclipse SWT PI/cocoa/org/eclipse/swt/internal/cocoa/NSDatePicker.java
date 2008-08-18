@@ -25,7 +25,7 @@ public NSDatePicker(id id) {
 }
 
 public NSDate dateValue() {
-	int result = OS.objc_msgSend(this.id, OS.sel_dateValue);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dateValue);
 	return result != 0 ? new NSDate(result) : null;
 }
 
@@ -33,11 +33,11 @@ public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
 }
 
-public void setDatePickerElements(int elementFlags) {
+public void setDatePickerElements(int /*long*/ elementFlags) {
 	OS.objc_msgSend(this.id, OS.sel_setDatePickerElements_, elementFlags);
 }
 
-public void setDatePickerStyle(int newStyle) {
+public void setDatePickerStyle(int /*long*/ newStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setDatePickerStyle_, newStyle);
 }
 

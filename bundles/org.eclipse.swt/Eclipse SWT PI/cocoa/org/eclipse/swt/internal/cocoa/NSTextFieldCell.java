@@ -29,7 +29,7 @@ public void setTextColor(NSColor color) {
 }
 
 public NSColor textColor() {
-	int result = OS.objc_msgSend(this.id, OS.sel_textColor);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_textColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 

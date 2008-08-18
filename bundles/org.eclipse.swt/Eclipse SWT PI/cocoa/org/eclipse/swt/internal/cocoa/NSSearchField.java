@@ -25,7 +25,7 @@ public NSSearchField(id id) {
 }
 
 public NSArray recentSearches() {
-	int result = OS.objc_msgSend(this.id, OS.sel_recentSearches);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_recentSearches);
 	return result != 0 ? new NSArray(result) : null;
 }
 

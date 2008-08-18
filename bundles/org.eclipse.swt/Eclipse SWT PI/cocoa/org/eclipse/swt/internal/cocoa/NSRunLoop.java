@@ -25,12 +25,12 @@ public NSRunLoop(id id) {
 }
 
 public static NSRunLoop currentRunLoop() {
-	int result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_currentRunLoop);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_currentRunLoop);
 	return result != 0 ? new NSRunLoop(result) : null;
 }
 
 public static NSRunLoop mainRunLoop() {
-	int result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_mainRunLoop);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_mainRunLoop);
 	return result != 0 ? new NSRunLoop(result) : null;
 }
 

@@ -24,20 +24,20 @@ public NSImageRep(id id) {
 	super(id);
 }
 
-public int bitsPerSample() {
-	return OS.objc_msgSend(this.id, OS.sel_bitsPerSample);
+public int /*long*/ bitsPerSample() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_bitsPerSample);
 }
 
 public boolean hasAlpha() {
 	return OS.objc_msgSend(this.id, OS.sel_hasAlpha) != 0;
 }
 
-public int pixelsHigh() {
-	return OS.objc_msgSend(this.id, OS.sel_pixelsHigh);
+public int /*long*/ pixelsHigh() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_pixelsHigh);
 }
 
-public int pixelsWide() {
-	return OS.objc_msgSend(this.id, OS.sel_pixelsWide);
+public int /*long*/ pixelsWide() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_pixelsWide);
 }
 
 }

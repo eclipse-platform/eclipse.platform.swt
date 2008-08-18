@@ -25,7 +25,7 @@ public NSEnumerator(id id) {
 }
 
 public id nextObject() {
-	int result = OS.objc_msgSend(this.id, OS.sel_nextObject);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_nextObject);
 	return result != 0 ? new id(result) : null;
 }
 

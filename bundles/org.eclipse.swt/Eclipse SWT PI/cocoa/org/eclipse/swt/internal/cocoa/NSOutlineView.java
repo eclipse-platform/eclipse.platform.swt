@@ -32,17 +32,17 @@ public void expandItem(id item) {
 	OS.objc_msgSend(this.id, OS.sel_expandItem_, item != null ? item.id : 0);
 }
 
-public float indentationPerLevel() {
+public float /*double*/ indentationPerLevel() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_indentationPerLevel);
 }
 
-public id itemAtRow(int row) {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_, row);
+public id itemAtRow(int /*long*/ row) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_, row);
 	return result != 0 ? new id(result) : null;
 }
 
-public int levelForItem(id item) {
-	return OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
+public int /*long*/ levelForItem(id item) {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
 }
 
 public void reloadItem(id item) {
@@ -53,8 +53,8 @@ public void reloadItem(id item, boolean reloadChildren) {
 	OS.objc_msgSend(this.id, OS.sel_reloadItem_reloadChildren_, item != null ? item.id : 0, reloadChildren);
 }
 
-public int rowForItem(id item) {
-	return OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
+public int /*long*/ rowForItem(id item) {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
 }
 
 public void setAutoresizesOutlineColumn(boolean resize) {
@@ -65,7 +65,7 @@ public void setAutosaveExpandedItems(boolean save) {
 	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, save);
 }
 
-public void setIndentationPerLevel(float indentationPerLevel) {
+public void setIndentationPerLevel(float /*double*/ indentationPerLevel) {
 	OS.objc_msgSend(this.id, OS.sel_setIndentationPerLevel_, indentationPerLevel);
 }
 

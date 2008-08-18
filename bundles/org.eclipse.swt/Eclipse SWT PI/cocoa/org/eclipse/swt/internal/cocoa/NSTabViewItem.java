@@ -25,7 +25,7 @@ public NSTabViewItem(id id) {
 }
 
 public id initWithIdentifier(id identifier) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 

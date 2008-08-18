@@ -24,15 +24,15 @@ public NSMutableParagraphStyle(id id) {
 	super(id);
 }
 
-public void setAlignment(int alignment) {
+public void setAlignment(int /*long*/ alignment) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
-public void setFirstLineHeadIndent(float aFloat) {
+public void setFirstLineHeadIndent(float /*double*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setFirstLineHeadIndent_, aFloat);
 }
 
-public void setLineSpacing(float aFloat) {
+public void setLineSpacing(float /*double*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setLineSpacing_, aFloat);
 }
 

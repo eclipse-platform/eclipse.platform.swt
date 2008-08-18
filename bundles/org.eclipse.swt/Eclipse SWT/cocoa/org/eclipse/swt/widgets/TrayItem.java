@@ -337,7 +337,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
 	view.setImage(image != null ? image.handle : null);
-	double /*float*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	float /*double*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
 	item.setLength(width);
 }
 
@@ -404,7 +404,7 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	double /*float*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	float /*double*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
 	item.setLength(width);
 	if (!visible) sendEvent (SWT.Hide);
 }

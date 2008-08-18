@@ -34,7 +34,7 @@ public NSRect contentRect() {
 	return result;
 }
 
-public void insertTabViewItem(NSTabViewItem tabViewItem, int index) {
+public void insertTabViewItem(NSTabViewItem tabViewItem, int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_insertTabViewItem_atIndex_, tabViewItem != null ? tabViewItem.id : 0, index);
 }
 
@@ -48,12 +48,12 @@ public void removeTabViewItem(NSTabViewItem tabViewItem) {
 	OS.objc_msgSend(this.id, OS.sel_removeTabViewItem_, tabViewItem != null ? tabViewItem.id : 0);
 }
 
-public void selectTabViewItemAtIndex(int index) {
+public void selectTabViewItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_selectTabViewItemAtIndex_, index);
 }
 
 public NSTabViewItem selectedTabViewItem() {
-	int result = OS.objc_msgSend(this.id, OS.sel_selectedTabViewItem);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_selectedTabViewItem);
 	return result != 0 ? new NSTabViewItem(result) : null;
 }
 
@@ -65,12 +65,12 @@ public void setFont(NSFont font) {
 	OS.objc_msgSend(this.id, OS.sel_setFont_, font != null ? font.id : 0);
 }
 
-public void setTabViewType(int tabViewType) {
+public void setTabViewType(int /*long*/ tabViewType) {
 	OS.objc_msgSend(this.id, OS.sel_setTabViewType_, tabViewType);
 }
 
 public NSTabViewItem tabViewItemAtPoint(NSPoint point) {
-	int result = OS.objc_msgSend(this.id, OS.sel_tabViewItemAtPoint_, point);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_tabViewItemAtPoint_, point);
 	return result != 0 ? new NSTabViewItem(result) : null;
 }
 

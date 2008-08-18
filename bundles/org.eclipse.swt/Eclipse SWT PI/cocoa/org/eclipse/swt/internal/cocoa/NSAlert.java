@@ -25,20 +25,20 @@ public NSAlert(id id) {
 }
 
 public static NSAlert alertWithMessageText(NSString message, NSString defaultButton, NSString alternateButton, NSString otherButton, NSString informativeTextWithFormat) {
-	int result = OS.objc_msgSend(OS.class_NSAlert, OS.sel_alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat_, message != null ? message.id : 0, defaultButton != null ? defaultButton.id : 0, alternateButton != null ? alternateButton.id : 0, otherButton != null ? otherButton.id : 0, informativeTextWithFormat != null ? informativeTextWithFormat.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSAlert, OS.sel_alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat_, message != null ? message.id : 0, defaultButton != null ? defaultButton.id : 0, alternateButton != null ? alternateButton.id : 0, otherButton != null ? otherButton.id : 0, informativeTextWithFormat != null ? informativeTextWithFormat.id : 0);
 	return result != 0 ? new NSAlert(result) : null;
 }
 
-public int runModal() {
-	return OS.objc_msgSend(this.id, OS.sel_runModal);
+public int /*long*/ runModal() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
-public void setAlertStyle(int style) {
+public void setAlertStyle(int /*long*/ style) {
 	OS.objc_msgSend(this.id, OS.sel_setAlertStyle_, style);
 }
 
 public NSWindow window() {
-	int result = OS.objc_msgSend(this.id, OS.sel_window);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_window);
 	return result != 0 ? new NSWindow(result) : null;
 }
 

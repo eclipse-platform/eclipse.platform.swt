@@ -3670,7 +3670,7 @@
       <retval swt_gen="true"></retval>
     </method>
     <method selector="setLineDash:count:phase:" swt_gen="true">
-      <arg name="pattern" swt_gen="true" swt_java_type="float[]"></arg>
+      <arg name="pattern" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
       <arg name="count" swt_gen="true"></arg>
       <arg name="phase" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
@@ -5727,7 +5727,7 @@
       <retval></retval>
     </method>
     <method selector="getComponents:" swt_gen="true">
-      <arg name="components" swt_gen="true" swt_java_type="float[]"></arg>
+      <arg name="components" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="getCyan:magenta:yellow:black:alpha:">
@@ -9985,7 +9985,7 @@
     <method selector="glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:" swt_gen="true">
       <arg name="point" swt_gen="true"></arg>
       <arg name="container" swt_gen="true"></arg>
-      <arg name="partialFraction" swt_gen="true" swt_java_type="float[]"></arg>
+      <arg name="partialFraction" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
       <retval swt_gen="true"></retval>
     </method>
     <method selector="glyphRangeForBoundingRect:inTextContainer:">

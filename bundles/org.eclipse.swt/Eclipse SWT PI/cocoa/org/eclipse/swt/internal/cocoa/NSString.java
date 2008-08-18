@@ -25,7 +25,7 @@ public NSString(id id) {
 }
 
 public String getString() {
-	char[] buffer = new char[length()];
+	char[] buffer = new char[(int)/*64*/length()];
 	getCharacters(buffer);
 	return new String(buffer);
 }
@@ -36,7 +36,7 @@ public static NSString stringWith(String str) {
 	return stringWithCharacters(buffer, buffer.length);
 }
 
-public short characterAtIndex(int index) {
+public short characterAtIndex(int /*long*/ index) {
 	return (short)OS.objc_msgSend(this.id, OS.sel_characterAtIndex_, index);
 }
 
@@ -49,41 +49,41 @@ public void getCharacters(char[] buffer, NSRange aRange) {
 }
 
 public NSString lastPathComponent() {
-	int result = OS.objc_msgSend(this.id, OS.sel_lastPathComponent);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_lastPathComponent);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
-public int length() {
-	return OS.objc_msgSend(this.id, OS.sel_length);
+public int /*long*/ length() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_length);
 }
 
 public NSString lowercaseString() {
-	int result = OS.objc_msgSend(this.id, OS.sel_lowercaseString);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_lowercaseString);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
-public NSString stringByAddingPercentEscapesUsingEncoding(int enc) {
-	int result = OS.objc_msgSend(this.id, OS.sel_stringByAddingPercentEscapesUsingEncoding_, enc);
+public NSString stringByAddingPercentEscapesUsingEncoding(int /*long*/ enc) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAddingPercentEscapesUsingEncoding_, enc);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
 public NSString stringByAppendingPathComponent(NSString str) {
-	int result = OS.objc_msgSend(this.id, OS.sel_stringByAppendingPathComponent_, str != null ? str.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAppendingPathComponent_, str != null ? str.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
 public NSString stringByDeletingPathExtension() {
-	int result = OS.objc_msgSend(this.id, OS.sel_stringByDeletingPathExtension);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByDeletingPathExtension);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
 public NSString stringByReplacingOccurrencesOfString(NSString target, NSString replacement) {
-	int result = OS.objc_msgSend(this.id, OS.sel_stringByReplacingOccurrencesOfString_withString_, target != null ? target.id : 0, replacement != null ? replacement.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByReplacingOccurrencesOfString_withString_, target != null ? target.id : 0, replacement != null ? replacement.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
-public static NSString stringWithCharacters(char[] characters, int length) {
-	int result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_length_, characters, length);
+public static NSString stringWithCharacters(char[] characters, int /*long*/ length) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_length_, characters, length);
 	return result != 0 ? new NSString(result) : null;
 }
 

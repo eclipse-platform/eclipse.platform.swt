@@ -45,12 +45,12 @@ public boolean goForward() {
 }
 
 public WebView initWithFrame(NSRect frame, NSString frameName, NSString groupName) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_frameName_groupName_, frame, frameName != null ? frameName.id : 0, groupName != null ? groupName.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_frameName_groupName_, frame, frameName != null ? frameName.id : 0, groupName != null ? groupName.id : 0);
 	return result == this.id ? this : (result != 0 ? new WebView(result) : null);
 }
 
 public WebFrame mainFrame() {
-	int result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
 
@@ -87,7 +87,7 @@ public void stopLoading(id sender) {
 }
 
 public NSString stringByEvaluatingJavaScriptFromString(NSString script) {
-	int result = OS.objc_msgSend(this.id, OS.sel_stringByEvaluatingJavaScriptFromString_, script != null ? script.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByEvaluatingJavaScriptFromString_, script != null ? script.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 

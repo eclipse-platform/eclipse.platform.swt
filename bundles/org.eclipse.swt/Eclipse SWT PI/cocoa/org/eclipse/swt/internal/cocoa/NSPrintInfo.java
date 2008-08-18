@@ -25,12 +25,12 @@ public NSPrintInfo(id id) {
 }
 
 public static NSPrinter defaultPrinter() {
-	int result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_defaultPrinter);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_defaultPrinter);
 	return result != 0 ? new NSPrinter(result) : null;
 }
 
 public NSMutableDictionary dictionary() {
-	int result = OS.objc_msgSend(this.id, OS.sel_dictionary);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dictionary);
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
@@ -41,12 +41,12 @@ public NSRect imageablePageBounds() {
 }
 
 public NSPrintInfo initWithDictionary(NSDictionary attributes) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithDictionary_, attributes != null ? attributes.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithDictionary_, attributes != null ? attributes.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSPrintInfo(result) : null);
 }
 
 public NSString jobDisposition() {
-	int result = OS.objc_msgSend(this.id, OS.sel_jobDisposition);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_jobDisposition);
 	return result != 0 ? new NSString(result) : null;
 }
 
@@ -57,7 +57,7 @@ public NSSize paperSize() {
 }
 
 public NSPrinter printer() {
-	int result = OS.objc_msgSend(this.id, OS.sel_printer);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_printer);
 	return result != 0 ? new NSPrinter(result) : null;
 }
 
@@ -74,7 +74,7 @@ public void setUpPrintOperationDefaultValues() {
 }
 
 public static NSPrintInfo sharedPrintInfo() {
-	int result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_sharedPrintInfo);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_sharedPrintInfo);
 	return result != 0 ? new NSPrintInfo(result) : null;
 }
 

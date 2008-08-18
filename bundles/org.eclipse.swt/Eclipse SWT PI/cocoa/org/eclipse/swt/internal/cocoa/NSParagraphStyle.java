@@ -24,8 +24,8 @@ public NSParagraphStyle(id id) {
 	super(id);
 }
 
-public int alignment() {
-	return OS.objc_msgSend(this.id, OS.sel_alignment);
+public int /*long*/ alignment() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_alignment);
 }
 
 }

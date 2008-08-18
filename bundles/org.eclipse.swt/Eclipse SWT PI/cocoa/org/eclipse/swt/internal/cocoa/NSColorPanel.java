@@ -25,7 +25,7 @@ public NSColorPanel(id id) {
 }
 
 public NSColor color() {
-	int result = OS.objc_msgSend(this.id, OS.sel_color);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_color);
 	return result != 0 ? new NSColor(result) : null;
 }
 
@@ -34,7 +34,7 @@ public void setColor(NSColor color) {
 }
 
 public static NSColorPanel sharedColorPanel() {
-	int result = OS.objc_msgSend(OS.class_NSColorPanel, OS.sel_sharedColorPanel);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColorPanel, OS.sel_sharedColorPanel);
 	return result != 0 ? new NSColorPanel(result) : null;
 }
 

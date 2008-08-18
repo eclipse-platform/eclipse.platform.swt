@@ -24,7 +24,7 @@ public NSWindow(id id) {
 	super(id);
 }
 
-public float alphaValue() {
+public float /*double*/ alphaValue() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
 }
 
@@ -45,7 +45,7 @@ public NSRect contentRectForFrameRect(NSRect frameRect) {
 }
 
 public NSView contentView() {
-	int result = OS.objc_msgSend(this.id, OS.sel_contentView);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSView(result) : null;
 }
 
@@ -62,12 +62,12 @@ public NSPoint convertScreenToBase(NSPoint aPoint) {
 }
 
 public NSText fieldEditor(boolean createFlag, id anObject) {
-	int result = OS.objc_msgSend(this.id, OS.sel_fieldEditor_forObject_, createFlag, anObject != null ? anObject.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_fieldEditor_forObject_, createFlag, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSText(result) : null;
 }
 
 public NSResponder firstResponder() {
-	int result = OS.objc_msgSend(this.id, OS.sel_firstResponder);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_firstResponder);
 	return result != 0 ? new NSResponder(result) : null;
 }
 
@@ -84,17 +84,17 @@ public NSRect frameRectForContentRect(NSRect contentRect) {
 }
 
 public NSGraphicsContext graphicsContext() {
-	int result = OS.objc_msgSend(this.id, OS.sel_graphicsContext);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_graphicsContext);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
-public NSWindow initWithContentRect(NSRect contentRect, int aStyle, int bufferingType, boolean flag) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag);
+public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int /*long*/ bufferingType, boolean flag) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
 }
 
-public NSWindow initWithContentRect(NSRect contentRect, int aStyle, int bufferingType, boolean flag, NSScreen screen) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, screen != null ? screen.id : 0);
+public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int /*long*/ bufferingType, boolean flag, NSScreen screen) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, screen != null ? screen.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
 }
 
@@ -129,7 +129,7 @@ public void orderOut(id sender) {
 }
 
 public NSScreen screen() {
-	int result = OS.objc_msgSend(this.id, OS.sel_screen);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_screen);
 	return result != 0 ? new NSScreen(result) : null;
 }
 
@@ -137,7 +137,7 @@ public void setAcceptsMouseMovedEvents(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAcceptsMouseMovedEvents_, flag);
 }
 
-public void setAlphaValue(float windowAlpha) {
+public void setAlphaValue(float /*double*/ windowAlpha) {
 	OS.objc_msgSend(this.id, OS.sel_setAlphaValue_, windowAlpha);
 }
 
@@ -161,7 +161,7 @@ public void setHasShadow(boolean hasShadow) {
 	OS.objc_msgSend(this.id, OS.sel_setHasShadow_, hasShadow);
 }
 
-public void setLevel(int newLevel) {
+public void setLevel(int /*long*/ newLevel) {
 	OS.objc_msgSend(this.id, OS.sel_setLevel_, newLevel);
 }
 
@@ -173,12 +173,12 @@ public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
-public int styleMask() {
-	return OS.objc_msgSend(this.id, OS.sel_styleMask);
+public int /*long*/ styleMask() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_styleMask);
 }
 
-public int windowNumber() {
-	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
+public int /*long*/ windowNumber() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }
 
 }

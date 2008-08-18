@@ -25,12 +25,12 @@ public NSOpenPanel(id id) {
 }
 
 public NSArray filenames() {
-	int result = OS.objc_msgSend(this.id, OS.sel_filenames);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_filenames);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSOpenPanel openPanel() {
-	int result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_openPanel);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_openPanel);
 	return result != 0 ? new NSOpenPanel(result) : null;
 }
 
@@ -47,7 +47,7 @@ public void setCanChooseFiles(boolean flag) {
 }
 
 public static NSSavePanel savePanel() {
-	int result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_savePanel);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_savePanel);
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 

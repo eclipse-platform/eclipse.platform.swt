@@ -118,7 +118,7 @@ public Path (Device device, Path path, float flatness) {
 	if (flatness == 0) {
 		handle = new NSBezierPath(path.handle.copy().id);
 	} else {
-		double /*float*/ defaultFlatness = NSBezierPath.defaultFlatness();
+		float /*double*/ defaultFlatness = NSBezierPath.defaultFlatness();
 		NSBezierPath.setDefaultFlatness(flatness);
 		handle = path.handle.bezierPathByFlatteningPath();
 		NSBezierPath.setDefaultFlatness(defaultFlatness);		

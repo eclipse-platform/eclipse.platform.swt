@@ -24,17 +24,17 @@ public NSControl(id id) {
 	super(id);
 }
 
-public int action() {
-	return OS.objc_msgSend(this.id, OS.sel_action);
+public int /*long*/ action() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_action);
 }
 
 public NSCell cell() {
-	int result = OS.objc_msgSend(this.id, OS.sel_cell);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_cell);
 	return result != 0 ? new NSCell(result) : null;
 }
 
 public NSText currentEditor() {
-	int result = OS.objc_msgSend(this.id, OS.sel_currentEditor);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_currentEditor);
 	return result != 0 ? new NSText(result) : null;
 }
 
@@ -47,19 +47,19 @@ public float floatValue() {
 }
 
 public NSFont font() {
-	int result = OS.objc_msgSend(this.id, OS.sel_font);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public boolean sendAction(int theAction, id theTarget) {
+public boolean sendAction(int /*long*/ theAction, id theTarget) {
 	return OS.objc_msgSend(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0) != 0;
 }
 
-public void setAction(int aSelector) {
+public void setAction(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
 }
 
-public void setAlignment(int mode) {
+public void setAlignment(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 
@@ -84,7 +84,7 @@ public void sizeToFit() {
 }
 
 public id target() {
-	int result = OS.objc_msgSend(this.id, OS.sel_target);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_target);
 	return result != 0 ? new id(result) : null;
 }
 

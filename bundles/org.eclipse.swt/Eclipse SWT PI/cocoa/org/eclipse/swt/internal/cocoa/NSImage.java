@@ -25,7 +25,7 @@ public NSImage(id id) {
 }
 
 public NSData TIFFRepresentation() {
-	int result = OS.objc_msgSend(this.id, OS.sel_TIFFRepresentation);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_TIFFRepresentation);
 	return result != 0 ? new NSData(result) : null;
 }
 
@@ -34,29 +34,29 @@ public void addRepresentation(NSImageRep imageRep) {
 }
 
 public NSImageRep bestRepresentationForDevice(NSDictionary deviceDescription) {
-	int result = OS.objc_msgSend(this.id, OS.sel_bestRepresentationForDevice_, deviceDescription != null ? deviceDescription.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_bestRepresentationForDevice_, deviceDescription != null ? deviceDescription.id : 0);
 	return result != 0 ? new NSImageRep(result) : null;
 }
 
-public void drawAtPoint(NSPoint point, NSRect fromRect, int op, float delta) {
+public void drawAtPoint(NSPoint point, NSRect fromRect, int /*long*/ op, float /*double*/ delta) {
 	OS.objc_msgSend(this.id, OS.sel_drawAtPoint_fromRect_operation_fraction_, point, fromRect, op, delta);
 }
 
-public void drawInRect(NSRect rect, NSRect fromRect, int op, float delta) {
+public void drawInRect(NSRect rect, NSRect fromRect, int /*long*/ op, float /*double*/ delta) {
 	OS.objc_msgSend(this.id, OS.sel_drawInRect_fromRect_operation_fraction_, rect, fromRect, op, delta);
 }
 
 public id initWithData(NSData data) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSImage initWithSize(NSSize aSize) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithSize_, aSize);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithSize_, aSize);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
-public void setCacheMode(int mode) {
+public void setCacheMode(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setCacheMode_, mode);
 }
 

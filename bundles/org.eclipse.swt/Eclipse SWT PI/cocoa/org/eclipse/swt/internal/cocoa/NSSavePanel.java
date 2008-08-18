@@ -25,16 +25,16 @@ public NSSavePanel(id id) {
 }
 
 public NSString filename() {
-	int result = OS.objc_msgSend(this.id, OS.sel_filename);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_filename);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public int runModal() {
-	return OS.objc_msgSend(this.id, OS.sel_runModal);
+public int /*long*/ runModal() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
 public static NSSavePanel savePanel() {
-	int result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 

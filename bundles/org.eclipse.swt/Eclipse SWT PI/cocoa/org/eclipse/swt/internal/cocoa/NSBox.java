@@ -30,15 +30,15 @@ public NSSize contentViewMargins() {
 	return result;
 }
 
-public void setBorderType(int aType) {
+public void setBorderType(int /*long*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderType_, aType);
 }
 
-public void setBorderWidth(float borderWidth) {
+public void setBorderWidth(float /*double*/ borderWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderWidth_, borderWidth);
 }
 
-public void setBoxType(int boxType) {
+public void setBoxType(int /*long*/ boxType) {
 	OS.objc_msgSend(this.id, OS.sel_setBoxType_, boxType);
 }
 
@@ -58,7 +58,7 @@ public void setTitleFont(NSFont fontObj) {
 	OS.objc_msgSend(this.id, OS.sel_setTitleFont_, fontObj != null ? fontObj.id : 0);
 }
 
-public void setTitlePosition(int aPosition) {
+public void setTitlePosition(int /*long*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setTitlePosition_, aPosition);
 }
 

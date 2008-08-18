@@ -24,39 +24,39 @@ public NSPopUpButton(id id) {
 	super(id);
 }
 
-public int indexOfSelectedItem() {
-	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
+public int /*long*/ indexOfSelectedItem() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
 public NSPopUpButton initWithFrame(NSRect buttonFrame, boolean flag) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_pullsDown_, buttonFrame, flag);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_pullsDown_, buttonFrame, flag);
 	return result == this.id ? this : (result != 0 ? new NSPopUpButton(result) : null);
 }
 
-public NSMenuItem itemAtIndex(int index) {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
+public NSMenuItem itemAtIndex(int /*long*/ index) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public NSString itemTitleAtIndex(int index) {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemTitleAtIndex_, index);
+public NSString itemTitleAtIndex(int /*long*/ index) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemTitleAtIndex_, index);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSMenu menu() {
-	int result = OS.objc_msgSend(this.id, OS.sel_menu);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_menu);
 	return result != 0 ? new NSMenu(result) : null;
 }
 
-public int numberOfItems() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+public int /*long*/ numberOfItems() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
 public void removeAllItems() {
 	OS.objc_msgSend(this.id, OS.sel_removeAllItems);
 }
 
-public void removeItemAtIndex(int index) {
+public void removeItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 
@@ -64,7 +64,7 @@ public void selectItem(NSMenuItem item) {
 	OS.objc_msgSend(this.id, OS.sel_selectItem_, item != null ? item.id : 0);
 }
 
-public void selectItemAtIndex(int index) {
+public void selectItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_selectItemAtIndex_, index);
 }
 
@@ -77,7 +77,7 @@ public void setPullsDown(boolean flag) {
 }
 
 public NSString titleOfSelectedItem() {
-	int result = OS.objc_msgSend(this.id, OS.sel_titleOfSelectedItem);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_titleOfSelectedItem);
 	return result != 0 ? new NSString(result) : null;
 }
 

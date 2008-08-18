@@ -2270,7 +2270,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			break;
 		case SWT.MouseWheel:
 			event.detail = SWT.SCROLL_LINE;
-			double /*float*/ delta = nsEvent.deltaY();
+			float /*double*/ delta = nsEvent.deltaY();
 			event.count = delta > 0 ? Math.max (1, (int)delta) : Math.min (-1, (int)delta);
 			break;
 	}

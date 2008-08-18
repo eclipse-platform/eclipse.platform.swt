@@ -55,7 +55,7 @@ public void setWraps(boolean flag) {
 }
 
 public NSString title() {
-	int result = OS.objc_msgSend(this.id, OS.sel_title);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
 }
 

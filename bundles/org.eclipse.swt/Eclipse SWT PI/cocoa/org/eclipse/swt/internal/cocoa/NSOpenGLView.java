@@ -29,12 +29,12 @@ public void clearGLContext() {
 }
 
 public id initWithFrame(NSRect frameRect, NSOpenGLPixelFormat format) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_pixelFormat_, frameRect, format != null ? format.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_pixelFormat_, frameRect, format != null ? format.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSOpenGLContext openGLContext() {
-	int result = OS.objc_msgSend(this.id, OS.sel_openGLContext);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_openGLContext);
 	return result != 0 ? new NSOpenGLContext(result) : null;
 }
 

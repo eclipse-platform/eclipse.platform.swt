@@ -24,17 +24,17 @@ public NSSet(id id) {
 	super(id);
 }
 
-public int count() {
-	return OS.objc_msgSend(this.id, OS.sel_count);
+public int /*long*/ count() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_count);
 }
 
 public NSEnumerator objectEnumerator() {
-	int result = OS.objc_msgSend(this.id, OS.sel_objectEnumerator);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectEnumerator);
 	return result != 0 ? new NSEnumerator(result) : null;
 }
 
 public static NSSet set() {
-	int result = OS.objc_msgSend(OS.class_NSSet, OS.sel_set);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSSet, OS.sel_set);
 	return result != 0 ? new NSSet(result) : null;
 }
 

@@ -24,15 +24,15 @@ public NSScroller(id id) {
 	super(id);
 }
 
-public int hitPart() {
-	return OS.objc_msgSend(this.id, OS.sel_hitPart);
+public int /*long*/ hitPart() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
-public static float scrollerWidth() {
+public static float /*double*/ scrollerWidth() {
 	return (float)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
 }
 
-public void setFloatValue(float aFloat, float proportion) {
+public void setFloatValue(float aFloat, float /*double*/ proportion) {
 	OS.objc_msgSend(this.id, OS.sel_setFloatValue_knobProportion_, aFloat, proportion);
 }
 

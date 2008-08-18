@@ -29,7 +29,7 @@ public void activateIgnoringOtherApps(boolean flag) {
 }
 
 public NSEvent currentEvent() {
-	int result = OS.objc_msgSend(this.id, OS.sel_currentEvent);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_currentEvent);
 	return result != 0 ? new NSEvent(result) : null;
 }
 
@@ -46,17 +46,17 @@ public void hideOtherApplications(id sender) {
 }
 
 public NSWindow keyWindow() {
-	int result = OS.objc_msgSend(this.id, OS.sel_keyWindow);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_keyWindow);
 	return result != 0 ? new NSWindow(result) : null;
 }
 
 public NSMenu mainMenu() {
-	int result = OS.objc_msgSend(this.id, OS.sel_mainMenu);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mainMenu);
 	return result != 0 ? new NSMenu(result) : null;
 }
 
-public NSEvent nextEventMatchingMask(int mask, NSDate expiration, NSString mode, boolean deqFlag) {
-	int result = OS.objc_msgSend(this.id, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, expiration != null ? expiration.id : 0, mode != null ? mode.id : 0, deqFlag);
+public NSEvent nextEventMatchingMask(int /*long*/ mask, NSDate expiration, NSString mode, boolean deqFlag) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, expiration != null ? expiration.id : 0, mode != null ? mode.id : 0, deqFlag);
 	return result != 0 ? new NSEvent(result) : null;
 }
 
@@ -65,7 +65,7 @@ public void orderFrontStandardAboutPanel(id sender) {
 }
 
 public NSArray orderedWindows() {
-	int result = OS.objc_msgSend(this.id, OS.sel_orderedWindows);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_orderedWindows);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -73,8 +73,8 @@ public void run() {
 	OS.objc_msgSend(this.id, OS.sel_run);
 }
 
-public int runModalForWindow(NSWindow theWindow) {
-	return OS.objc_msgSend(this.id, OS.sel_runModalForWindow_, theWindow != null ? theWindow.id : 0);
+public int /*long*/ runModalForWindow(NSWindow theWindow) {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_runModalForWindow_, theWindow != null ? theWindow.id : 0);
 }
 
 public void sendEvent(NSEvent theEvent) {
@@ -86,7 +86,7 @@ public void setDelegate(id anObject) {
 }
 
 public static NSApplication sharedApplication() {
-	int result = OS.objc_msgSend(OS.class_NSApplication, OS.sel_sharedApplication);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSApplication, OS.sel_sharedApplication);
 	return result != 0 ? new NSApplication(result) : null;
 }
 
@@ -103,7 +103,7 @@ public void unhideAllApplications(id sender) {
 }
 
 public NSArray windows() {
-	int result = OS.objc_msgSend(this.id, OS.sel_windows);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_windows);
 	return result != 0 ? new NSArray(result) : null;
 }
 

@@ -28,11 +28,11 @@ public void setImage(NSImage newImage) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, newImage != null ? newImage.id : 0);
 }
 
-public void setImageAlignment(int newAlign) {
+public void setImageAlignment(int /*long*/ newAlign) {
 	OS.objc_msgSend(this.id, OS.sel_setImageAlignment_, newAlign);
 }
 
-public void setImageScaling(int newScaling) {
+public void setImageScaling(int /*long*/ newScaling) {
 	OS.objc_msgSend(this.id, OS.sel_setImageScaling_, newScaling);
 }
 

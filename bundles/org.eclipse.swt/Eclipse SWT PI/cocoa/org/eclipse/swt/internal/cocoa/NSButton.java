@@ -32,7 +32,7 @@ public void setAttributedTitle(NSAttributedString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedTitle_, aString != null ? aString.id : 0);
 }
 
-public void setBezelStyle(int bezelStyle) {
+public void setBezelStyle(int /*long*/ bezelStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setBezelStyle_, bezelStyle);
 }
 
@@ -40,7 +40,7 @@ public void setBordered(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setBordered_, flag);
 }
 
-public void setButtonType(int aType) {
+public void setButtonType(int /*long*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setButtonType_, aType);
 }
 
@@ -48,11 +48,11 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setImagePosition(int aPosition) {
+public void setImagePosition(int /*long*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
 }
 
-public void setState(int value) {
+public void setState(int /*long*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_setState_, value);
 }
 
@@ -60,8 +60,8 @@ public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
-public int state() {
-	return OS.objc_msgSend(this.id, OS.sel_state);
+public int /*long*/ state() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_state);
 }
 
 }

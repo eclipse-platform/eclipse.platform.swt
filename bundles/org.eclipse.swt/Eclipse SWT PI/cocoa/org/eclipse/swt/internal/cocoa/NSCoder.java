@@ -25,7 +25,7 @@ public NSCoder(id id) {
 }
 
 public int systemVersion() {
-	return OS.objc_msgSend(this.id, OS.sel_systemVersion);
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_systemVersion);
 }
 
 }

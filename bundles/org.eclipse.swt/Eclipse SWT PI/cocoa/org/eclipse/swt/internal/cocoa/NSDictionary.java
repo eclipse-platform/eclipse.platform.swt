@@ -25,31 +25,31 @@ public NSDictionary(id id) {
 }
 
 public NSArray allKeys() {
-	int result = OS.objc_msgSend(this.id, OS.sel_allKeys);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_allKeys);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public int count() {
-	return OS.objc_msgSend(this.id, OS.sel_count);
+public int /*long*/ count() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_count);
 }
 
 public static NSDictionary dictionaryWithObject(id object, id key) {
-	int result = OS.objc_msgSend(OS.class_NSDictionary, OS.sel_dictionaryWithObject_forKey_, object != null ? object.id : 0, key != null ? key.id : 0);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSDictionary, OS.sel_dictionaryWithObject_forKey_, object != null ? object.id : 0, key != null ? key.id : 0);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
 public NSEnumerator objectEnumerator() {
-	int result = OS.objc_msgSend(this.id, OS.sel_objectEnumerator);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectEnumerator);
 	return result != 0 ? new NSEnumerator(result) : null;
 }
 
 public id objectForKey(id aKey) {
-	int result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, aKey != null ? aKey.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, aKey != null ? aKey.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
 public id valueForKey(NSString key) {
-	int result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 

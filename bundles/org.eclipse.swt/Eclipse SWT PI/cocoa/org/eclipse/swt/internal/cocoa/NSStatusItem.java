@@ -32,7 +32,7 @@ public void setHighlightMode(boolean highlightMode) {
 	OS.objc_msgSend(this.id, OS.sel_setHighlightMode_, highlightMode);
 }
 
-public void setLength(float length) {
+public void setLength(float /*double*/ length) {
 	OS.objc_msgSend(this.id, OS.sel_setLength_, length);
 }
 

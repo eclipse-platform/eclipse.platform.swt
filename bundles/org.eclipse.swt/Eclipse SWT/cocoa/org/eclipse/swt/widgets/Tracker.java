@@ -703,14 +703,14 @@ public boolean open () {
 	tracking = true;
 	window = (NSWindow)new NSWindow().alloc();
 	NSArray screens = NSScreen.screens();
-	double /*float*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
-	double /*float*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;	
+	float /*double*/ minX = Float.MAX_VALUE, maxX = Float.MIN_VALUE;
+	float /*double*/ minY = Float.MAX_VALUE, maxY = Float.MIN_VALUE;	
 	int count = (int)/*64*/screens.count();
 	for (int i = 0; i < count; i++) {
 		NSScreen screen = new NSScreen(screens.objectAtIndex(i));
 		NSRect frame = screen.frame();
-		double /*float*/ x1 = frame.x, x2 = frame.x + frame.width;
-		double /*float*/ y1 = frame.y, y2 = frame.y + frame.height;
+		float /*double*/ x1 = frame.x, x2 = frame.x + frame.width;
+		float /*double*/ y1 = frame.y, y2 = frame.y + frame.height;
 		if (x1 < minX) minX = x1;
 		if (x2 < minX) minX = x2;
 		if (x1 > maxX) maxX = x1;

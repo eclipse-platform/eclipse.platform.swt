@@ -28,16 +28,16 @@ public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
 }
 
-public void setButtonType(int aType) {
+public void setButtonType(int /*long*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setButtonType_, aType);
 }
 
-public void setImagePosition(int aPosition) {
+public void setImagePosition(int /*long*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
 }
 
 public NSString title() {
-	int result = OS.objc_msgSend(this.id, OS.sel_title);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
 }
 

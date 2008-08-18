@@ -25,7 +25,7 @@ public NSHTTPCookieStorage(id id) {
 }
 
 public NSArray cookies() {
-	int result = OS.objc_msgSend(this.id, OS.sel_cookies);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_cookies);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -34,7 +34,7 @@ public void deleteCookie(NSHTTPCookie cookie) {
 }
 
 public static NSHTTPCookieStorage sharedHTTPCookieStorage() {
-	int result = OS.objc_msgSend(OS.class_NSHTTPCookieStorage, OS.sel_sharedHTTPCookieStorage);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSHTTPCookieStorage, OS.sel_sharedHTTPCookieStorage);
 	return result != 0 ? new NSHTTPCookieStorage(result) : null;
 }
 

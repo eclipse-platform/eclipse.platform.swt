@@ -25,17 +25,17 @@ public NSDate(id id) {
 }
 
 public NSCalendarDate dateWithCalendarFormat(NSString format, NSTimeZone aTimeZone) {
-	int result = OS.objc_msgSend(this.id, OS.sel_dateWithCalendarFormat_timeZone_, format != null ? format.id : 0, aTimeZone != null ? aTimeZone.id : 0);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dateWithCalendarFormat_timeZone_, format != null ? format.id : 0, aTimeZone != null ? aTimeZone.id : 0);
 	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
 public static NSDate dateWithTimeIntervalSinceNow(double secs) {
-	int result = OS.objc_msgSend(OS.class_NSDate, OS.sel_dateWithTimeIntervalSinceNow_, secs);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSDate, OS.sel_dateWithTimeIntervalSinceNow_, secs);
 	return result != 0 ? new NSDate(result) : null;
 }
 
 public static NSDate distantFuture() {
-	int result = OS.objc_msgSend(OS.class_NSDate, OS.sel_distantFuture);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSDate, OS.sel_distantFuture);
 	return result != 0 ? new NSDate(result) : null;
 }
 

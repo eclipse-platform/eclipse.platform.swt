@@ -25,7 +25,7 @@ public NSInputManager(id id) {
 }
 
 public static NSInputManager currentInputManager() {
-	int result = OS.objc_msgSend(OS.class_NSInputManager, OS.sel_currentInputManager);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSInputManager, OS.sel_currentInputManager);
 	return result != 0 ? new NSInputManager(result) : null;
 }
 

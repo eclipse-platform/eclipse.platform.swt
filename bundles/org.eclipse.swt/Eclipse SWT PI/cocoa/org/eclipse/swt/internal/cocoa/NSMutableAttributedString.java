@@ -25,7 +25,7 @@ public NSMutableAttributedString(id id) {
 }
 
 public NSMutableString mutableString() {
-	int result = OS.objc_msgSend(this.id, OS.sel_mutableString);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mutableString);
 	return result != 0 ? new NSMutableString(result) : null;
 }
 

@@ -28,44 +28,44 @@ public void addItemWithObjectValue(id object) {
 	OS.objc_msgSend(this.id, OS.sel_addItemWithObjectValue_, object != null ? object.id : 0);
 }
 
-public void deselectItemAtIndex(int index) {
+public void deselectItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_deselectItemAtIndex_, index);
 }
 
-public int indexOfSelectedItem() {
-	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
+public int /*long*/ indexOfSelectedItem() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
-public void insertItemWithObjectValue(id object, int index) {
+public void insertItemWithObjectValue(id object, int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_insertItemWithObjectValue_atIndex_, object != null ? object.id : 0, index);
 }
 
-public id itemObjectValueAtIndex(int index) {
-	int result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_, index);
+public id itemObjectValueAtIndex(int /*long*/ index) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_, index);
 	return result != 0 ? new id(result) : null;
 }
 
-public int numberOfItems() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+public int /*long*/ numberOfItems() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
-public int numberOfVisibleItems() {
-	return OS.objc_msgSend(this.id, OS.sel_numberOfVisibleItems);
+public int /*long*/ numberOfVisibleItems() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_numberOfVisibleItems);
 }
 
 public void removeAllItems() {
 	OS.objc_msgSend(this.id, OS.sel_removeAllItems);
 }
 
-public void removeItemAtIndex(int index) {
+public void removeItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 
-public void selectItemAtIndex(int index) {
+public void selectItemAtIndex(int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_selectItemAtIndex_, index);
 }
 
-public void setNumberOfVisibleItems(int visibleItems) {
+public void setNumberOfVisibleItems(int /*long*/ visibleItems) {
 	OS.objc_msgSend(this.id, OS.sel_setNumberOfVisibleItems_, visibleItems);
 }
 

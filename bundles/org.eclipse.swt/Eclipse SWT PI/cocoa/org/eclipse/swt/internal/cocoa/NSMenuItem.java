@@ -24,17 +24,17 @@ public NSMenuItem(id id) {
 	super(id);
 }
 
-public NSMenuItem initWithTitle(NSString aString, int aSelector, NSString charCode) {
-	int result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
+public NSMenuItem initWithTitle(NSString aString, int /*long*/ aSelector, NSString charCode) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSMenuItem(result) : null);
 }
 
 public static NSMenuItem separatorItem() {
-	int result = OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_separatorItem);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_separatorItem);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public void setAction(int aSelector) {
+public void setAction(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
 }
 
@@ -50,7 +50,7 @@ public void setKeyEquivalent(NSString aKeyEquivalent) {
 	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, aKeyEquivalent != null ? aKeyEquivalent.id : 0);
 }
 
-public void setKeyEquivalentModifierMask(int mask) {
+public void setKeyEquivalentModifierMask(int /*long*/ mask) {
 	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalentModifierMask_, mask);
 }
 
@@ -58,7 +58,7 @@ public void setMenu(NSMenu menu) {
 	OS.objc_msgSend(this.id, OS.sel_setMenu_, menu != null ? menu.id : 0);
 }
 
-public void setState(int state) {
+public void setState(int /*long*/ state) {
 	OS.objc_msgSend(this.id, OS.sel_setState_, state);
 }
 
@@ -74,17 +74,17 @@ public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
-public int state() {
-	return OS.objc_msgSend(this.id, OS.sel_state);
+public int /*long*/ state() {
+	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_state);
 }
 
 public NSMenu submenu() {
-	int result = OS.objc_msgSend(this.id, OS.sel_submenu);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_submenu);
 	return result != 0 ? new NSMenu(result) : null;
 }
 
 public NSString title() {
-	int result = OS.objc_msgSend(this.id, OS.sel_title);
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
 }
 

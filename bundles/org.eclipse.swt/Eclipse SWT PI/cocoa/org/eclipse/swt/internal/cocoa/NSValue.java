@@ -37,22 +37,22 @@ public NSSize sizeValue() {
 }
 
 public static NSValue valueWithPoint(NSPoint point) {
-	int result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithPoint_, point);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithPoint_, point);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithRange(NSRange range) {
-	int result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRange_, range);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRange_, range);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithRect(NSRect rect) {
-	int result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRect_, rect);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRect_, rect);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithSize(NSSize size) {
-	int result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithSize_, size);
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithSize_, size);
 	return result != 0 ? new NSValue(result) : null;
 }
 
