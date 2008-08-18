@@ -853,7 +853,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		int /*long*/ bitmapData = imageRep.bitmapData();
 		if (data.bitmapDataAddress != 0) OS.free(data.bitmapDataAddress);
 		data.bitmapDataAddress = OS.malloc(C.PTR_SIZEOF);
-		OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, 4);
+		OS.memmove(data.bitmapDataAddress, new int /*long*/[] {bitmapData}, C.PTR_SIZEOF);
 		rep = rep.initWithBitmapDataPlanes(data.bitmapDataAddress, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat , bpr, 32);
 		rep.autorelease();
 	}
