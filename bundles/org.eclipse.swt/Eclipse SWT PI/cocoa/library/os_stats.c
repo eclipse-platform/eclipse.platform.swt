@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 202;
-int OS_nativeFunctionCallCount[202];
+int OS_nativeFunctionCount = 203;
+int OS_nativeFunctionCallCount[203];
 char * OS_nativeFunctionNames[] = {
 	"CGPoint_1sizeof",
 	"CGRect_1sizeof",
@@ -48,6 +48,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSFilenamesPboardType",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
+	"NSGetSizeAndAlignment",
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
 	"NSParagraphStyleAttributeName",

@@ -56,6 +56,7 @@ typedef enum {
 	NSFilenamesPboardType_FUNC,
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
+	NSGetSizeAndAlignment_FUNC,
 	NSIntersectionRect_FUNC,
 	NSLinkAttributeName_FUNC,
 	NSParagraphStyleAttributeName_FUNC,

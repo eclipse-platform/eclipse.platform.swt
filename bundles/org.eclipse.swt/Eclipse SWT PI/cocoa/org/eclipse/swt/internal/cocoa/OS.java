@@ -2914,6 +2914,7 @@ public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFa
 public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
 public static final native int /*long*/ NSFileTypeForHFSTypeCode(int hfsFileTypeCode);
+public static final native int /*long*/ NSGetSizeAndAlignment(int /*long*/ typePtr, int[] /*long[]*/ sizep, int[] /*long[]*/ alignp);
 public static final native int /*long*/ NSSearchPathForDirectoriesInDomains(int /*long*/ directory, int /*long*/ domainMask, boolean expandTilde);
 public static final native int /*long*/ NSTemporaryDirectory();
 

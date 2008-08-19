@@ -504,6 +504,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSForegroundColorAttributeName)
 }
 #endif
 
+#ifndef NO_NSGetSizeAndAlignment
+JNIEXPORT jint JNICALL OS_NATIVE(NSGetSizeAndAlignment)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NSGetSizeAndAlignment_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)NSGetSizeAndAlignment((char*)arg0, (NSUInteger*)lparg1, (NSUInteger*)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, NSGetSizeAndAlignment_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSLinkAttributeName
 JNIEXPORT jint JNICALL OS_NATIVE(NSLinkAttributeName)
 	(JNIEnv *env, jclass that)
