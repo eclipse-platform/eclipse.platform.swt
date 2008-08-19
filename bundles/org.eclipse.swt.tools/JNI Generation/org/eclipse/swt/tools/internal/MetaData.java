@@ -61,7 +61,7 @@ public FieldData getMetaData(Field field) {
 	return new FieldData(field, value);
 }
 
-boolean convertTo32Bit(Class[] paramTypes) {
+boolean convertTo32Bit(Class[] paramTypes, boolean floatingPointTypes) {
 	boolean changed = false;
 	for (int i = 0; i < paramTypes.length; i++) {
 		Class paramType = paramTypes[i];
@@ -69,17 +69,19 @@ boolean convertTo32Bit(Class[] paramTypes) {
 			paramTypes[i] = Integer.TYPE;
 			changed = true;
 		}
-		if (paramType == Double.TYPE) {
-			paramTypes[i] = Float.TYPE;
-			changed = true;
-		}
-		if (paramType == double[].class) {
-			paramTypes[i] = float[].class;
-			changed = true;
-		}
 		if (paramType == long[].class) {
 			paramTypes[i] = int[].class;
 			changed = true;
+		}
+		if (floatingPointTypes) {
+			if (paramType == Double.TYPE) {
+				paramTypes[i] = Float.TYPE;
+				changed = true;
+			}
+			if (paramType == double[].class) {
+				paramTypes[i] = float[].class;
+				changed = true;
+			}
 		}
 	}
 	return changed;	
@@ -98,9 +100,16 @@ public MethodData getMetaData(Method method) {
 	*/
 	if (value == null) {
 		Class[] paramTypes = method.getParameterTypes();
-		if (convertTo32Bit(paramTypes)) {
+		if (convertTo32Bit(paramTypes, true)) {
 			key = className + "_" + JNIGenerator.getFunctionName(method, paramTypes);
 			value = getMetaData(key, null);
+		}
+		if (value == null) {
+			paramTypes = method.getParameterTypes();
+			if (convertTo32Bit(paramTypes, false)) {
+				key = className + "_" + JNIGenerator.getFunctionName(method, paramTypes);
+				value = getMetaData(key, null);
+			}
 		}
 	}
 	/*
@@ -131,9 +140,16 @@ public ParameterData getMetaData(Method method, int parameter) {
 	*/
 	if (value == null) {
 		Class[] paramTypes = method.getParameterTypes();
-		if (convertTo32Bit(paramTypes)) {
+		if (convertTo32Bit(paramTypes, true)) {
 			key = className + "_" + JNIGenerator.getFunctionName(method, paramTypes) + "_" + parameter;
 			value = getMetaData(key, null);
+		}
+		if (value == null) {
+			paramTypes = method.getParameterTypes();
+			if (convertTo32Bit(paramTypes, false)) {
+				key = className + "_" + JNIGenerator.getFunctionName(method, paramTypes) + "_" + parameter;
+				value = getMetaData(key, null);
+			}
 		}
 	}
 	/*
