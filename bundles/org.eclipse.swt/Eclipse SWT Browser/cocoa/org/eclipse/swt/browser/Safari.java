@@ -93,8 +93,19 @@ public void create (Composite parent, int style) {
 		int /*long*/ setFrameProc = OS.webView_setFrame_CALLBACK(proc4);
 		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+		String types = "*"; //$NON-NLS-1$
+		byte [] bytes = new byte [types.length() + 1];
+		for (int i = 0; i < types.length(); i++) {
+			bytes[i] = (byte)types.charAt(i);
+		}
+		int /*long*/ ptr = OS.malloc(bytes.length);
+		OS.memmove(ptr, bytes, bytes.length);
+		int /*long*/ [] sizep = new int /*long*/ [1], alignp = new int /*long*/ [1];
+		OS.NSGetSizeAndAlignment(ptr, sizep, alignp);
+		OS.free(ptr);
+
 		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-		OS.class_addIvar(cls, SWT_OBJECT, C.PTR_SIZEOF, (byte)(Math.log(C.PTR_SIZEOF) / Math.log(2)), "^v"); //$NON-NLS-1$
+		OS.class_addIvar(cls, SWT_OBJECT, sizep [0], (byte)alignp [0], types);
 		OS.class_addMethod(cls, OS.sel_webView_didChangeLocationWithinPageForFrame_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(cls, OS.sel_webView_didFailProvisionalLoadWithError_forFrame_, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(cls, OS.sel_webView_didFinishLoadForFrame_, proc4, "@:@@"); //$NON-NLS-1$
