@@ -256,7 +256,7 @@ public Scrollable getParent () {
 public int getSelection () {
 	checkWidget();
 	NSScroller widget = (NSScroller)view;
-	float value = widget.floatValue();
+	double value = widget.doubleValue();
     return (int)((maximum - thumb - minimum) * value + minimum);
 }
 

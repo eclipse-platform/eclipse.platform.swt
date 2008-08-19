@@ -42,10 +42,6 @@ public double doubleValue() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_doubleValue);
 }
 
-public float floatValue() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_floatValue);
-}
-
 public NSFont font() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;

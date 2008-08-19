@@ -34,6 +34,11 @@ public id autorelease() {
 	return result != 0 ? new id(result) : null;
 }
 
+public NSString className() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_className);
+	return result != 0 ? new NSString(result) : null;
+}
+
 public boolean conformsToProtocol(Protocol aProtocol) {
 	return OS.objc_msgSend(this.id, OS.sel_conformsToProtocol_, aProtocol != null ? aProtocol.id : 0) != 0;
 }
