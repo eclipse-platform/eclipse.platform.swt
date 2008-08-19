@@ -94,7 +94,7 @@ public void create (Composite parent, int style) {
 		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		String types = "*"; //$NON-NLS-1$
-		int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 8;
+		int size = C.PTR_SIZEOF, align = (int)(Math.log10 (C.PTR_SIZEOF) / Math.log10 (2));
 
 		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);

@@ -1709,7 +1709,7 @@ void initClasses () {
 	int /*long*/ textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
 
 	String types = "*";
-	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 8;
+	int size = C.PTR_SIZEOF, align = (int)(Math.log10 (C.PTR_SIZEOF) / Math.log10 (2));
 
 	String className = "SWTWindowDelegate";
 	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
@@ -1926,7 +1926,6 @@ void initClasses () {
 	
 	className = "SWTEditorView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTextView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_keyDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_keyUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
