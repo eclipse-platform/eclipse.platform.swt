@@ -28,6 +28,12 @@ extern "C" {
 
 extern int IS_JNI_1_2;
 
+#ifndef SWT_PTR_SIZE_64
+#if __x86_64__
+#define SWT_PTR_SIZE_64
+#endif
+#endif
+
 /* 64 bit support */
 #ifndef SWT_PTR_SIZE_64
 
