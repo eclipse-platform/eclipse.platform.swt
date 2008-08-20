@@ -182,7 +182,7 @@ int Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName,
 	nsISupports supports = new nsISupports (aTarget);
 	int /*long*/[] result = new int /*long*/[1];
 	rc = supports.QueryInterface (nsIURI.NS_IURI_IID, result);
-	if (rc == 0) {	/* >= 1.7 */
+	if (rc == XPCOM.NS_OK) {	/* >= 1.7 */
 		nsIURI target = new nsIURI (result[0]);
 		result[0] = 0;
 		int /*long*/ aPath = XPCOM.nsEmbedCString_new ();

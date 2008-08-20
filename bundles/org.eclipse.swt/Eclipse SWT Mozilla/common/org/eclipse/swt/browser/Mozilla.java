@@ -895,17 +895,6 @@ public void create (Composite parent, int style) {
 		}
 		factory.Release ();
 		
-		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
-		dialogFactory.AddRef ();
-		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
-		aClassName = MozillaDelegate.wcsToMbcs (null, "Helper App Launcher Dialog", true); //$NON-NLS-1$
-		rc = componentRegistrar.RegisterFactory (XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress ());
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
-		}
-		dialogFactory.Release ();
-
 		/*
 		* This Download factory will be used if the GRE version is < 1.8.
 		* If the GRE version is 1.8.x then the Download factory that is registered later for
@@ -1099,6 +1088,29 @@ public void create (Composite parent, int style) {
 	if (!PerformedVersionCheck) {
 		PerformedVersionCheck = true;
 
+		rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		if (result[0] == 0) {
+			browser.dispose ();
+			error (XPCOM.NS_NOINTERFACE);
+		}
+		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
+		result[0] = 0;
+
+		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
+		dialogFactory.AddRef ();
+		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
+		byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "Helper App Launcher Dialog", true); //$NON-NLS-1$
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress ());
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		dialogFactory.Release ();
+
 		/*
 		* Check for the availability of the pre-1.8 implementation of nsIDocShell
 		* to determine if the GRE's version is < 1.8.
@@ -1136,28 +1148,17 @@ public void create (Composite parent, int style) {
 			if (rc == XPCOM.NS_OK && result[0] != 0) { /* 1.8 */
 				new nsISupports (result[0]).Release ();
 				result[0] = 0;
-				rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
-				if (rc != XPCOM.NS_OK) {
-					browser.dispose ();
-					error (rc);
-				}
-				if (result[0] == 0) {
-					browser.dispose ();
-					error (XPCOM.NS_NOINTERFACE);
-				}
 
-				nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
 				DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
 				downloadFactory_1_8.AddRef ();
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
-				byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "Transfer", true); //$NON-NLS-1$
+				aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
+				aClassName = MozillaDelegate.wcsToMbcs (null, "Transfer", true); //$NON-NLS-1$
 				rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
 				if (rc != XPCOM.NS_OK) {
 					browser.dispose ();
 					error (rc);
 				}
 				downloadFactory_1_8.Release ();
-				componentRegistrar.Release ();
 			} else { /* >= 1.9 */
 				/*
 				 * Bug in XULRunner 1.9.  Mozilla no longer clears its background before initial content has
@@ -1182,10 +1183,13 @@ public void create (Composite parent, int style) {
 			    ABOUT_BLANK.getChars (0, ABOUT_BLANK.length (), uri, 0);
 				rc = webNavigation.LoadURI (uri, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
 				webNavigation.Release ();
+
+				dialogFactory.isPre_1_9 = false;
 			}
 		}
 		result[0] = 0;
 		interfaceRequestor.Release ();
+		componentRegistrar.Release ();
 	}
 	componentManager.Release ();
 
@@ -2772,7 +2776,7 @@ int IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredContentType, in
 			/* First try to use the nsIWebNavigationInfo if it's available (>= mozilla 1.8) */
 			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WEBNAVIGATIONINFO_CONTRACTID, true);
 			rc = serviceManager.GetServiceByContractID (aContractID, nsIWebNavigationInfo.NS_IWEBNAVIGATIONINFO_IID, result);
-			if (rc == 0) {
+			if (rc == XPCOM.NS_OK) {
 				byte[] bytes = MozillaDelegate.wcsToMbcs (null, contentType, true);
 				int /*long*/ typePtr = XPCOM.nsEmbedCString_new (bytes, bytes.length);
 				nsIWebNavigationInfo info = new nsIWebNavigationInfo (result[0]);
