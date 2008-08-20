@@ -143,7 +143,7 @@ public Object nativeToJava(TransferData transferData) {
 	formatetc.tymed = COM.TYMED_HGLOBAL;
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	stgmedium.tymed = COM.TYMED_HGLOBAL;
-	transferData.result = dataObject.GetData(formatetc, stgmedium);
+	transferData.result = getData(dataObject, formatetc, stgmedium);
 
 	if (transferData.result != COM.S_OK) return null;
 	int /*long*/ hMem = stgmedium.unionField;

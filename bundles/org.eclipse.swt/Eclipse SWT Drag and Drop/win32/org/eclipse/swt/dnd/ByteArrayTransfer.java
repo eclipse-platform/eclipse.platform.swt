@@ -193,7 +193,7 @@ protected Object nativeToJava(TransferData transferData) {
 	FORMATETC formatetc = transferData.formatetc;
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	stgmedium.tymed = COM.TYMED_HGLOBAL;	
-	transferData.result = data.GetData(formatetc, stgmedium);
+	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();
 	if (transferData.result != COM.S_OK) return null;
 	int /*long*/ hMem = stgmedium.unionField;
