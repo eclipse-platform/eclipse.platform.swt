@@ -8,10 +8,18 @@
    	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
 </target>
 	
-<target name="build_cocoa_lib" depends="init">
+<target name="build_cocoa_lib_x86_and_ppc" depends="init">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
-		<arg line="install"/>
+		<arg value="install"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
+</target>
+	
+<target name="build_cocoa_lib_x86_64" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build64.sh"/>
+		<arg value="install"/>
 	</exec>
 	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
 </target>

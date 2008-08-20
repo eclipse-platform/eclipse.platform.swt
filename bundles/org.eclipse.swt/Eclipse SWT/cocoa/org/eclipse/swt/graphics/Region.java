@@ -83,6 +83,73 @@ Region(Device device, int handle) {
 	this.handle = handle;
 }
 
+public static Region cocoa_new(Device device, int handle) {
+	return new Region(device, handle);
+}
+
+public static int /*long*/ polyToRgn(int[] poly, int length) {
+	int /*long*/ polyRgn = OS.NewRgn();
+	int minY = poly[1], maxY = poly[1];
+	for (int y = 3; y < length; y += 2) {
+		if (poly[y] < minY) minY = poly[y];
+		if (poly[y] > maxY) maxY = poly[y];
+	}
+	int[] inter = new int[length + 1];
+	for (int y = minY; y <= maxY; y++) {
+		int count = 0;
+		int x1 = poly[0], y1 = poly[1];
+		for (int p = 2; p < length; p += 2) {
+			int x2 = poly[p], y2 = poly[p + 1];
+			if (y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1))) {
+				inter[count++] = (int)((((y - y1) / (float)(y2 - y1)) * (x2 - x1)) + x1 + 0.5f);
+			}
+			x1 = x2;
+			y1 = y2;
+		}
+		int x2 = poly[0], y2 = poly[1];			
+		if (y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1))) {
+			inter[count++] = (int)((((y - y1) / (float)(y2 - y1)) * (x2 - x1)) + x1 + 0.5f);
+		}
+		for (int gap=length/2; gap>0; gap/=2) {
+			for (int i=gap; i<count; i++) {
+				for (int j=i-gap; j>=0; j-=gap) {
+					if ((inter[j] - inter[j + gap]) <= 0)
+						break;
+					int temp = inter[j];
+					inter[j] = inter[j + gap];
+					inter[j + gap] = temp;
+				}
+			}
+		}
+		int /*long*/ rectRgn = OS.NewRgn();
+		short[] r = new short[4];
+		for (int i = 0; i < count; i += 2) {
+			OS.SetRect(r, (short)inter[i], (short)y, (short)(inter[i + 1]),(short)(y + 1));
+			OS.RectRgn(rectRgn, r);
+			OS.UnionRgn(polyRgn, rectRgn, polyRgn);
+		}
+		OS.DisposeRgn(rectRgn);
+	}
+	return polyRgn;
+}
+
+static int /*long*/ polyRgn(int[] pointArray, int count) {
+	int /*long*/ polyRgn;
+	if (C.PTR_SIZEOF == 4) {
+		polyRgn = OS.NewRgn();
+		OS.OpenRgn();
+		OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
+		for (int i = 1; i < count / 2; i++) {
+			OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
+		}
+		OS.LineTo((short)pointArray[0], (short)pointArray[1]);
+		OS.CloseRgn(polyRgn);
+	} else {
+		polyRgn = polyToRgn(pointArray, count);
+	}
+	return polyRgn;
+}
+
 /**
  * Adds the given polygon to the collection of polygons
  * the receiver maintains to describe its area.
@@ -107,14 +174,7 @@ public void add (int[] pointArray) {
 	
 void add(int[] pointArray, int count) {
 	if (count <= 2) return;
-	int /*long*/ polyRgn = OS.NewRgn();
-	OS.OpenRgn();
-	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i = 1; i < count / 2; i++) {
-		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
-	}
-	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
-	OS.CloseRgn(polyRgn);
+	int /*long*/ polyRgn = polyRgn(pointArray, count);
 	OS.UnionRgn(handle, polyRgn, handle);
 	OS.DisposeRgn(polyRgn);
 }
@@ -248,28 +308,33 @@ int /*long*/ convertRgn(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, 
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		short[] rect = new short[4];
 		OS.memmove(rect, r, rect.length * 2);
-		NSPoint point = new NSPoint(); 
-		int /*long*/ polyRgn = OS.NewRgn();
-		OS.OpenRgn();
+		int i = 0;
+		NSPoint point = new NSPoint();
+		int[] points = new int[10];
 		point.x = rect[1];
 		point.y = rect[0];
 		point = transform.transformPoint(point);
 		short startX, startY;
-		OS.MoveTo(startX = (short)point.x, startY = (short)point.y);
+		points[i++] = startX = (short)point.x;
+		points[i++] = startY = (short)point.y;
 		point.x = rect[3];
 		point.y = rect[0];
 		point = transform.transformPoint(point);
-		OS.LineTo((short)Math.round(point.x), (short)point.y);
+		points[i++] = (short)Math.round(point.x);
+		points[i++] = (short)point.y;
 		point.x = rect[3];
 		point.y = rect[2];
 		point = transform.transformPoint(point);
-		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
+		points[i++] = (short)Math.round(point.x);
+		points[i++] = (short)Math.round(point.y);
 		point.x = rect[1];
 		point.y = rect[2];
 		point = transform.transformPoint(point);
-		OS.LineTo((short)point.x, (short)Math.round(point.y));
-		OS.LineTo(startX, startY);
-		OS.CloseRgn(polyRgn);
+		points[i++] = (short)point.x;
+		points[i++] = (short)Math.round(point.y);
+		points[i++] = startX;
+		points[i++] = startY;
+		int /*long*/ polyRgn = polyRgn(points, points.length);
 		OS.UnionRgn(newRgn, polyRgn, newRgn);
 		OS.DisposeRgn(polyRgn);
 	}
@@ -349,10 +414,6 @@ int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ 
 		OS.objc_msgSend(path, OS.sel_closePath);
 	}
 	return 0;
-}
-
-public static Region carbon_new(Device device, int handle) {
-	return new Region(device, handle);
 }
 
 /**
@@ -539,14 +600,7 @@ public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pointArray.length < 2) return;
-	int /*long*/ polyRgn = OS.NewRgn();
-	OS.OpenRgn();
-	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-	for (int i = 1; i < pointArray.length / 2; i++) {
-		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
-	}
-	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
-	OS.CloseRgn(polyRgn);
+	int /*long*/ polyRgn = polyRgn(pointArray, pointArray.length);
 	OS.DiffRgn(handle, polyRgn, handle);
 	OS.DisposeRgn(polyRgn);
 }
