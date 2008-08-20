@@ -45,7 +45,11 @@ public class MozillaGenerator {
 		"  NS_IMETHOD ",
 		"  NS_IMETHOD_(nsrefcnt) ",
 		"  NS_IMETHOD_(void *) ",
-		"  NS_IMETHOD_(void) "
+		"  NS_IMETHOD_(void) ",
+		"  NS_SCRIPTABLE NS_IMETHOD ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(nsrefcnt) ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(void *) ",
+		"  NS_SCRIPTABLE NS_IMETHOD_(void) ",
 	};
 	static String NO_SUPER_CLASS = "SWT_NO_SUPER_CLASS";
 	
@@ -438,15 +442,20 @@ public class MozillaGenerator {
 		}
 	}
 
-	// assume a declaration matching: "class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {"
-	// returns nsIWebBrowserChrome
-	// special case for nsISupports that has no super class: class NS_NO_VTABLE nsISupports {
+	// Assume a declaration matching: "class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {"
+	// or "class NS_NO_VTABLE NS_SCRIPTABLE nsIWebBrowserChrome : public nsISupports {" returns nsIWebBrowserChrome.
+	// Special case for nsISupports that has no super class: class NS_NO_VTABLE nsISupports {
 	String getClassName(String declaration) {
 		int endIndex = declaration.indexOf(" :");
 		// nsISupports special case (no super class)
 		if (endIndex == -1) endIndex = declaration.indexOf(" {");
-		return declaration.substring(declaration.indexOf("class NS_NO_VTABLE ")
-				+ "class NS_NO_VTABLE ".length(), endIndex);
+		String searchString = "class NS_NO_VTABLE NS_SCRIPTABLE";
+		int startIndex = declaration.indexOf(searchString);
+		if (startIndex == -1) {
+			searchString = "class NS_NO_VTABLE ";
+			startIndex = declaration.indexOf(searchString);
+		}
+		return declaration.substring(startIndex + searchString.length(), endIndex);
 	}
 
 	// assume a declaration matching: "class NS_NO_VTABLE nsIWebBrowserChrome : public nsISupports {"
