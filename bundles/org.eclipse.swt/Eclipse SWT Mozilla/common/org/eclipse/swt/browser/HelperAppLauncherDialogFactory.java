@@ -17,6 +17,7 @@ class HelperAppLauncherDialogFactory {
 	XPCOMObject supports;
 	XPCOMObject factory;
 	int refCount = 0;
+	boolean isPre_1_9 = true;
 
 HelperAppLauncherDialogFactory () {
 	createCOMInterfaces ();
@@ -88,9 +89,15 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	HelperAppLauncherDialog helperAppLauncherDialog = new HelperAppLauncherDialog ();
-	helperAppLauncherDialog.AddRef ();
-	XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
+	if (isPre_1_9) {
+		HelperAppLauncherDialog helperAppLauncherDialog = new HelperAppLauncherDialog ();
+		helperAppLauncherDialog.AddRef ();
+		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
+	} else {
+		HelperAppLauncherDialog_1_9 helperAppLauncherDialog = new HelperAppLauncherDialog_1_9 ();
+		helperAppLauncherDialog.AddRef ();
+		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
+	}
 	return XPCOM.NS_OK;
 }
 
