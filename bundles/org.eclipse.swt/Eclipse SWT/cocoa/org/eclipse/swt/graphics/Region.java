@@ -110,7 +110,7 @@ public static int /*long*/ polyToRgn(int[] poly, int length) {
 		if (y1 != y2 && ((y1 <= y && y < y2) || (y2 <= y && y < y1))) {
 			inter[count++] = (int)((((y - y1) / (float)(y2 - y1)) * (x2 - x1)) + x1 + 0.5f);
 		}
-		for (int gap=length/2; gap>0; gap/=2) {
+		for (int gap=count/2; gap>0; gap/=2) {
 			for (int i=gap; i<count; i++) {
 				for (int j=i-gap; j>=0; j-=gap) {
 					if ((inter[j] - inter[j + gap]) <= 0)
