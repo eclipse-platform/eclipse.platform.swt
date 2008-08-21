@@ -43,18 +43,18 @@ public nsID(String id) {
 }
 
 public boolean Equals(nsID other) {
-	int /*long*/ ptr = XPCOM.nsID_new();
-	XPCOM.memmove(ptr, this, nsID.sizeof);
-	int /*long*/ otherPtr = XPCOM.nsID_new();
-	XPCOM.memmove(otherPtr, other, nsID.sizeof);
-	boolean result = XPCOM.nsID_Equals(ptr, otherPtr) != 0;
-	XPCOM.nsID_delete(ptr);
-	XPCOM.nsID_delete(otherPtr);
+	int /*long*/ ptr = XPCOM.nsID_new ();
+	XPCOM.memmove (ptr, this, nsID.sizeof);
+	int /*long*/ otherPtr = XPCOM.nsID_new ();
+	XPCOM.memmove (otherPtr, other, nsID.sizeof);
+	boolean result = XPCOM.nsID_Equals (ptr, otherPtr) != 0;
+	XPCOM.nsID_delete (ptr);
+	XPCOM.nsID_delete (otherPtr);
 	return result;
 }
 
 public void Parse (String aIDStr) {
-	if(aIDStr == null) throw new Error ();
+	if (aIDStr == null) throw new Error ();
 	int i = 0;
 	for (; i < 8; i++) m0 = (m0 << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16);
 	if (aIDStr.charAt (i++) != '-') throw new Error ();
@@ -73,4 +73,14 @@ public void Parse (String aIDStr) {
 	for (; i < 36; i++) m3[7] = (byte)((m3[7] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
 }
 
+public String toString () {
+	int /*long*/ ptr = XPCOM.nsID_new ();
+	XPCOM.memmove (ptr, this, nsID.sizeof);
+	int /*long*/ string = XPCOM.nsID_ToString (ptr);
+	XPCOM.nsID_delete (ptr);
+	int size = XPCOM.strlen (string);
+	byte[] bytes = new byte[size];
+	XPCOM.memmove (bytes, string, size);
+	return new String (bytes);
+}
 }

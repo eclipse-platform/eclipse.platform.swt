@@ -3246,6 +3246,19 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsID_1Equals)
 }
 #endif
 
+#ifndef NO_nsID_1ToString
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(nsID_1ToString)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsID_1ToString)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, nsID_1ToString_FUNC);
+	rc = (jint)((nsID *)arg0)->ToString();
+	XPCOM_NATIVE_EXIT(env, that, nsID_1ToString_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_nsID_1delete
 extern "C" JNIEXPORT void JNICALL XPCOM_NATIVE(nsID_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsID_1delete)
