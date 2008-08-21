@@ -73,14 +73,4 @@ public void Parse (String aIDStr) {
 	for (; i < 36; i++) m3[7] = (byte)((m3[7] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
 }
 
-public String toString () {
-	int /*long*/ ptr = XPCOM.nsID_new ();
-	XPCOM.memmove (ptr, this, nsID.sizeof);
-	int /*long*/ string = XPCOM.nsID_ToString (ptr);
-	XPCOM.nsID_delete (ptr);
-	int size = XPCOM.strlen (string);
-	byte[] bytes = new byte[size];
-	XPCOM.memmove (bytes, string, size);
-	return new String (bytes);
-}
 }

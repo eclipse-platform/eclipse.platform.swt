@@ -140,7 +140,6 @@ public static final native int /*long*/ nsEmbedCString_get(int /*long*/ ptr);
 public static final native void nsID_delete(int /*long*/ ptr);
 public static final native int /*long*/ nsID_new();
 public static final native int nsID_Equals(int /*long*/ ptr, int /*long*/ other);
-public static final native int /*long*/ nsID_ToString(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedString_new();
 public static final native int /*long*/ nsEmbedString_new(char[] aString);
 public static final native void nsEmbedString_delete(int /*long*/ ptr);
