@@ -15,6 +15,12 @@ import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * This class implements the nsIHelperAppLauncherDialog interface for mozilla
+ * versions >= 1.9.  For mozilla versions 1.4 - 1.8.x this interface is
+ * implemented by class HelperAppLauncherDialog.  HelperAppLauncherDialogFactory
+ * determines at runtime which of these classes to instantiate. 
+ */
 class HelperAppLauncherDialog_1_9 {
 	XPCOMObject supports;
 	XPCOMObject helperAppLauncherDialog;

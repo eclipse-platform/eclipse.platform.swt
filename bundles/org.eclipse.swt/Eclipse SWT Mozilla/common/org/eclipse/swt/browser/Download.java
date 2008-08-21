@@ -16,6 +16,12 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * This class implements the nsIDownload interface for mozilla
+ * versions 1.4 - 1.7.x.  For mozilla version 1.8.x this interface
+ * is implemented by class nsIDownload_1_8.  Later versions of
+ * mozilla do not need to call this interface. 
+ */
 class Download {
 	XPCOMObject supports;
 	XPCOMObject download;
