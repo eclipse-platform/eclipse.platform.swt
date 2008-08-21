@@ -113,11 +113,13 @@ public class Display extends Device {
 	Callback windowCallback;
 	int /*long*/ windowProc;
 	int threadId;
-	TCHAR windowClass, windowShadowClass;
+	TCHAR windowClass, windowShadowClass, windowOwnDCClass;
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
+	static final String WindowOwnDCName = "SWT_WindowOwnDC"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
+	boolean useOwnDC;
 
 	/* Widget Table */
 	int freeSlot;
@@ -196,6 +198,7 @@ public class Display extends Device {
 	boolean runMessages = true, runMessagesInIdle = false, runMessagesInMessageProc = true;
 	static final String RUN_MESSAGES_IN_IDLE_KEY = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	static final String RUN_MESSAGES_IN_MESSAGE_PROC_KEY = "org.eclipse.swt.internal.win32.runMessagesInMessageProc"; //$NON-NLS-1$
+	static final String USE_OWNDC_KEY = "org.eclipse.swt.internal.win32.useOwnDC"; //$NON-NLS-1$
 	Thread thread;
 
 	/* Display Shutdown */
@@ -1587,6 +1590,9 @@ public Object getData (String key) {
 	if (key.equals (RUN_MESSAGES_IN_MESSAGE_PROC_KEY)) {
 		return new Boolean (runMessagesInMessageProc);
 	}
+	if (key.equals (USE_OWNDC_KEY)) {
+		return new Boolean (useOwnDC);
+	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -2506,6 +2512,7 @@ protected void init () {
 	/* Use the character encoding for the default locale */
 	windowClass = new TCHAR (0, WindowName + WindowClassCount, true);
 	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
+	windowOwnDCClass = new TCHAR (0, WindowOwnDCName + WindowClassCount, true);
 	WindowClassCount++;
 
 	/* Register the SWT window class */
@@ -2547,6 +2554,16 @@ protected void init () {
 	byteCount = windowShadowClass.length () * TCHAR.sizeof;
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
+	OS.RegisterClass (lpWndClass);
+	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	
+	/* Register the CS_OWNDC window class */
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		lpWndClass.style |= OS.CS_OWNDC;
+	}
+	byteCount = windowOwnDCClass.length () * TCHAR.sizeof;
+	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpWndClass.lpszClassName, windowOwnDCClass, byteCount);
 	OS.RegisterClass (lpWndClass);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
 	
@@ -3537,9 +3554,10 @@ void releaseDisplay () {
 	int /*long*/ hInstance = OS.GetModuleHandle (null);
 	OS.UnregisterClass (windowClass, hInstance);
 	
-	/* Unregister the SWT drop shadow window class */
+	/* Unregister the SWT drop shadow and CS_OWNDC window class */
 	OS.UnregisterClass (windowShadowClass, hInstance);
-	windowClass = windowShadowClass = null;
+	OS.UnregisterClass (windowOwnDCClass, hInstance);
+	windowClass = windowShadowClass = windowOwnDCClass = null;
 	windowCallback.dispose ();
 	windowCallback = null;
 	windowProc = 0;
@@ -4040,7 +4058,11 @@ public void setData (String key, Object value) {
 		runMessagesInMessageProc = data != null && data.booleanValue ();
 		return;
 	}
-	
+	if (key.equals (USE_OWNDC_KEY)) {
+		Boolean data = (Boolean) value;
+		useOwnDC = data != null && data.booleanValue ();
+		return;
+	}	
 	/* Remove the key/value pair */
 	if (value == null) {
 		if (keys == null) return;

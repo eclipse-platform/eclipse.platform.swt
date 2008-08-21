@@ -501,6 +501,7 @@ public class OS extends C {
 	public static final int CS_GLOBALCLASS = 0x4000;
 	public static final int CS_HREDRAW = 0x2;
 	public static final int CS_VREDRAW = 0x1;
+	public static final int CS_OWNDC = 0x20;
 	public static final int CW_USEDEFAULT = 0x80000000;
 	public static final String DATETIMEPICK_CLASS = "SysDateTimePick32"; //$NON-NLS-1$
 	public static final int DATE_LONGDATE = 0x00000002;

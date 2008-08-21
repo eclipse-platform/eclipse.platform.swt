@@ -324,6 +324,11 @@ public void setIME (IME ime) {
 	this.ime = ime;
 }
 
+TCHAR windowClass () {
+	if (display.useOwnDC) return display.windowOwnDCClass;
+	return super.windowClass ();
+}
+
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (msg == Display.SWT_RESTORECARET) {
 		if ((state & CANVAS) != 0) {
