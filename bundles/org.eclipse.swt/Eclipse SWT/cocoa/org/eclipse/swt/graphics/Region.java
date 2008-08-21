@@ -88,7 +88,8 @@ public static Region cocoa_new(Device device, int handle) {
 }
 
 public static int /*long*/ polyToRgn(int[] poly, int length) {
-	int /*long*/ polyRgn = OS.NewRgn();
+	short[] r = new short[4];
+	int /*long*/ polyRgn = OS.NewRgn(), rectRgn = OS.NewRgn();
 	int minY = poly[1], maxY = poly[1];
 	for (int y = 3; y < length; y += 2) {
 		if (poly[y] < minY) minY = poly[y];
@@ -121,15 +122,13 @@ public static int /*long*/ polyToRgn(int[] poly, int length) {
 				}
 			}
 		}
-		int /*long*/ rectRgn = OS.NewRgn();
-		short[] r = new short[4];
 		for (int i = 0; i < count; i += 2) {
 			OS.SetRect(r, (short)inter[i], (short)y, (short)(inter[i + 1]),(short)(y + 1));
 			OS.RectRgn(rectRgn, r);
 			OS.UnionRgn(polyRgn, rectRgn, polyRgn);
 		}
-		OS.DisposeRgn(rectRgn);
 	}
+	OS.DisposeRgn(rectRgn);
 	return polyRgn;
 }
 
