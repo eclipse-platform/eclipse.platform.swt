@@ -636,7 +636,7 @@ void createDisplay (DeviceData data) {
 	*/
 	int [] psn = new int [2];
 	if (OS.GetCurrentProcess (psn) == OS.noErr) {
-		int ptr = OS.getenv (ascii ("APP_NAME_" + OS.getpid ()));
+		int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + OS.getpid ()));
 		if (ptr  == 0 && APP_NAME != null) {
 			ptr = NSString.stringWith(APP_NAME).UTF8String();	
 		}
