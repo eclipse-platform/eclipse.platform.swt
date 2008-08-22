@@ -48,7 +48,7 @@ public class Tracker extends Widget {
 	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	int /*long*/ hwndTransparent, oldProc;
+	int /*long*/ hwndTransparent, hwndOpaque, oldProc;
 	int oldX, oldY;
 
 	/*
@@ -360,7 +360,7 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
 			rect1.top = rect.y - bandWidth;
 			rect1.right = rect.x + rect.width + bandWidth * 2;
 			rect1.bottom = rect.y + rect.height + bandWidth * 2;
-			OS.RedrawWindow (hwndTransparent, rect1, 0, OS.RDW_INVALIDATE);
+			OS.RedrawWindow (hwndOpaque != 0 ? hwndOpaque : hwndTransparent, rect1, 0, OS.RDW_INVALIDATE);
 		}
 		return;
 	}
@@ -495,15 +495,32 @@ public boolean open () {
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		oldProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
+		
+		if (isVista) {
+			OS.SetLayeredWindowAttributes (hwndTransparent, 0xFFFFFF, (byte)0x01, OS.LWA_ALPHA);
+		}
+		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
+		if (isVista) {
+			hwndOpaque = OS.CreateWindowEx (
+					OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+					display.windowClass,
+					null,
+					OS.WS_POPUP,
+					0, 0,
+					width, height,
+					hwndTransparent,
+					0,
+					OS.GetModuleHandle (null),
+					null);
+		}
+		int hwnd = isVista ? hwndOpaque : hwndTransparent;
+		oldProc = OS.GetWindowLongPtr (hwnd, OS.GWLP_WNDPROC);
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		int /*long*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
-		if (isVista) {
-			OS.SetLayeredWindowAttributes (hwndTransparent, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
-		}
-		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
+		OS.SetWindowLongPtr (hwnd, OS.GWLP_WNDPROC, newProcAddress);
+		OS.SetLayeredWindowAttributes (hwnd, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+		OS.ShowWindow (hwnd, OS.SW_SHOWNOACTIVATE);
 	}
 
 	update ();
@@ -574,6 +591,7 @@ public boolean open () {
 			OS.DestroyWindow (hwndTransparent);
 			hwndTransparent = 0;
 		}
+		hwndOpaque = 0;
 		if (newProc != null) {
 			newProc.dispose ();
 			oldProc = 0;
