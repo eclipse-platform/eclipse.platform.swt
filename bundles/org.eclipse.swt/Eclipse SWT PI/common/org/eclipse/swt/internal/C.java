@@ -24,7 +24,7 @@ public class C extends Platform {
 	public static final int PTR_SIZEOF = PTR_sizeof ();
 
 public static final native void free (int /*long*/ ptr);
-public static final native int /*long*/ getenv (byte[] wcsToMbcs);
+public static final native int /*long*/ getenv (byte[] env);
 public static final native int /*long*/ malloc (int /*long*/ size);
 public static final native void memmove (int /*long*/ dest, byte[] src, int /*long*/ size);
 public static final native void memmove (int /*long*/ dest, char[] src, int /*long*/ size);
