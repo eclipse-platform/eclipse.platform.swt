@@ -67,6 +67,22 @@ fail:
 }
 #endif
 
+#ifndef NO_CPSSetProcessName
+JNIEXPORT jint JNICALL OS_NATIVE(CPSSetProcessName)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
+{
+	jint *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CPSSetProcessName_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)CPSSetProcessName(lparg0, arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, CPSSetProcessName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CloseRgn
 JNIEXPORT void JNICALL OS_NATIVE(CloseRgn)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1210,6 +1226,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addProtocol)
 	OS_NATIVE_ENTER(env, that, class_1addProtocol_FUNC);
 	rc = (jboolean)class_addProtocol((Class)arg0, (Protocol *)arg1);
 	OS_NATIVE_EXIT(env, that, class_1addProtocol_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_getpid
+JNIEXPORT jint JNICALL OS_NATIVE(getpid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, getpid_FUNC);
+	rc = (jint)getpid();
+	OS_NATIVE_EXIT(env, that, getpid_FUNC);
 	return rc;
 }
 #endif

@@ -636,32 +636,11 @@ void createDisplay (DeviceData data) {
 	*/
 	int [] psn = new int [2];
 	if (OS.GetCurrentProcess (psn) == OS.noErr) {
-//		int pid = OS.getpid ();
-//		byte [] buffer = null;
-//		int ptr = OS.getenv (ascii ("APP_NAME_" + pid));
-//		if (ptr != 0) {
-//			buffer = new byte [OS.strlen (ptr) + 1];
-//			OS.memmove (buffer, ptr, buffer.length);
-//		} else {
-//			if (APP_NAME != null) {
-//				char [] chars = new char [APP_NAME.length ()];
-//				APP_NAME.getChars (0, chars.length, chars, 0);
-//				int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-//				if (cfstring != 0) {
-//					CFRange range = new CFRange ();
-//					range.length = chars.length;
-//					int encoding = OS.CFStringGetSystemEncoding ();
-//					int [] size = new int [1];
-//					int numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, null, 0, size);
-//					if (numChars != 0) {
-//						buffer = new byte [size [0] + 1];
-//						numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, buffer, size [0], size);
-//					}
-//					OS.CFRelease (cfstring);
-//				}
-//			}
-//		}
-//		if (buffer != null) OS.CPSSetProcessName (psn, buffer);	
+		int ptr = OS.getenv (ascii ("APP_NAME_" + OS.getpid ()));
+		if (ptr  == 0 && APP_NAME != null) {
+			ptr = NSString.stringWith(APP_NAME).UTF8String();	
+		}
+		if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 		OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
 		OS.SetFrontProcess (psn);
 //		ptr = OS.getenv (ascii ("APP_ICON_" + pid));

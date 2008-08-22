@@ -14,13 +14,14 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 203;
-int OS_nativeFunctionCallCount[203];
+int OS_nativeFunctionCount = 205;
+int OS_nativeFunctionCallCount[205];
 char * OS_nativeFunctionNames[] = {
 	"CGPoint_1sizeof",
 	"CGRect_1sizeof",
 	"CGSize_1sizeof",
 	"CGWarpMouseCursorPosition",
+	"CPSSetProcessName",
 	"CloseRgn",
 	"CopyRgn",
 	"DeleteGlobalRef",
@@ -97,6 +98,7 @@ char * OS_nativeFunctionNames[] = {
 	"drawInteriorWithFrame_1inView_1CALLBACK",
 	"drawRect_1CALLBACK",
 	"firstRectForCharacterRange_1CALLBACK",
+	"getpid",
 	"hitTest_1CALLBACK",
 	"instrumentObjcMessageSends",
 	"markedRange_1CALLBACK",

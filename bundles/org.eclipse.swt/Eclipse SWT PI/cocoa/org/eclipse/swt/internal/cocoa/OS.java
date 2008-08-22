@@ -49,6 +49,10 @@ public static final native int Gestalt(int selector, int[] response);
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int TransformProcessType(int[] psn, int transformState);
+public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
+
+/** C calls */
+public static final native int getpid();
 
 /** QuickDraw calls */
 public static final native int /*long*/ NewRgn();
@@ -281,6 +285,7 @@ public static final int /*long*/ sel_IBeamCursor = sel_registerName("IBeamCursor
 public static final int /*long*/ sel_TIFFRepresentation = sel_registerName("TIFFRepresentation");
 public static final int /*long*/ sel_URL = sel_registerName("URL");
 public static final int /*long*/ sel_URLWithString_ = sel_registerName("URLWithString:");
+public static final int /*long*/ sel_UTF8String = sel_registerName("UTF8String");
 public static final int /*long*/ sel_absoluteString = sel_registerName("absoluteString");
 public static final int /*long*/ sel_acceptsFirstResponder = sel_registerName("acceptsFirstResponder");
 public static final int /*long*/ sel_accessibilityAttributeValue_ = sel_registerName("accessibilityAttributeValue:");

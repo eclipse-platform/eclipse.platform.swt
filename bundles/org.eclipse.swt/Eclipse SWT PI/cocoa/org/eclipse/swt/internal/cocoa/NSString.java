@@ -36,6 +36,10 @@ public static NSString stringWith(String str) {
 	return stringWithCharacters(buffer, buffer.length);
 }
 
+public int /*long*/ UTF8String() {
+	return OS.objc_msgSend(this.id, OS.sel_UTF8String);
+}
+
 public short characterAtIndex(int /*long*/ index) {
 	return (short)OS.objc_msgSend(this.id, OS.sel_characterAtIndex_, index);
 }
