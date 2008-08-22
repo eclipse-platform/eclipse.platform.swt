@@ -273,7 +273,11 @@ static DropTarget FindDropTarget(int theWindow, int theDrag) {
 	CGPoint inPoint = new CGPoint();
 	inPoint.x = mouse.h - rect.left;
 	inPoint.y = mouse.v - rect.top;
-	OS.HIViewGetSubviewHit(theRoot[0], inPoint, true, theControl);
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassMouse, OS.kEventMouseDown, 0.0, 0, event);
+	OS.SetEventParameter (event[0], OS.kEventParamWindowMouseLocation, OS.typeHIPoint, CGPoint.sizeof, inPoint);
+	OS.HIViewGetViewForMouseEvent (theRoot [0], event [0], theControl);
+	OS.ReleaseEvent(event[0]);
 	if (!OS.IsControlEnabled(theControl[0])) return null;				
 	Widget widget = display.findWidget(theControl[0]);
 	if (widget == null) return null;

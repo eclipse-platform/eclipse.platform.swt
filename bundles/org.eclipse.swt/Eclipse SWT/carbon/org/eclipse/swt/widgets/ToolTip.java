@@ -154,7 +154,7 @@ void configure () {
 	int w = size.x;
 	int h = size.y;
 	int t = (style & SWT.BALLOON) != 0 ? TIP_HEIGHT : 0;
-	int i = (style & SWT.BALLOON) != 0 ? 16 : 0;
+	int i = (style & SWT.BALLOON) != 0 ? 17 : 0;
 	tip.setSize (w, h + t);
 	int [] polyline;
 	spikeAbove = dest.height >= y + size.y + t;
@@ -583,7 +583,7 @@ public void setVisible (boolean visible) {
 		if (!autohide || (style & SWT.BALLOON) != 0) {
 			// Show tip
 			if (tip == null) {
-				tip = new Shell (parent, SWT.ON_TOP | SWT.NO_TRIM);
+				tip = new Shell (parent, SWT.ON_TOP | SWT.NO_TRIM | SWT.TOOL);
 				Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 				tip.setBackground (background);
 				Listener listener = new Listener () {
