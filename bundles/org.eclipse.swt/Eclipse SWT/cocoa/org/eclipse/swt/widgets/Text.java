@@ -358,7 +358,7 @@ public void copy () {
 	} else {
 		NSText text = (NSText) view;
 		if (text.selectedRange ().length == 0) return;
-		text.copy (text);
+		text.copy (null);
 	}
 }
 
@@ -1078,6 +1078,41 @@ void insertEditText (String string) {
 	}
 }
 
+void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSEvent event = new NSEvent (theEvent);
+	int stateMask = 0;
+	int /*long*/ modifierFlags = event.modifierFlags();
+	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
+	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
+	if (stateMask == SWT.COMMAND) {
+		short keyCode = event.keyCode ();
+		switch (keyCode) {
+			case 7: /* X */
+				cut ();
+				return;
+			case 8: /* C */
+				copy ();
+				return;
+			case 9: /* V */
+				paste ();
+				return;
+		}
+	}
+	if ((style & SWT.SINGLE) != 0) {
+		short keyCode = event.keyCode ();
+		switch (keyCode) {
+			case 76: /* KP Enter */
+			case 36: { /* Return */
+				postEvent (SWT.DefaultSelection);
+				return;
+			}
+		}
+	}
+	super.keyDown (id, sel, theEvent);
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
@@ -1118,8 +1153,7 @@ public void paste () {
 			insertEditText (oldText);
 		} else {
 			//TODO check text limit
-			NSTextView textView = (NSTextView) view;
-			textView.paste (null);
+			((NSTextView) view).paste (null);
 		}
 	}
 	sendEvent (SWT.Modify);
