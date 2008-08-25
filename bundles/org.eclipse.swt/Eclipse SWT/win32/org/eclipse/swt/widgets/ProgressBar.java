@@ -324,8 +324,8 @@ public void setSelection (int value) {
 	int /*long*/ state = 0;
 	boolean fixSelection = false;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		int minumum = /*64*/OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
-		int selection = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
+		int /*long*/ minumum = OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
+		int /*long*/ selection = OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
 		if (selection == minumum) {
 			fixSelection = true;
 			state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
