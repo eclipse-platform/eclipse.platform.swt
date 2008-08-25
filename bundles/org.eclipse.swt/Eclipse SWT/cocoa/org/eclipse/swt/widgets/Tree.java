@@ -1315,6 +1315,19 @@ public int indexOf (TreeItem item) {
 	return -1;
 }
 
+void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	super.keyDown (id, sel, theEvent);
+	NSEvent event = new NSEvent (theEvent);
+	short keyCode = event.keyCode ();
+	switch (keyCode) {
+		case 76: /* KP Enter */
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+	}
+}
+
 int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
 	TreeItem item = _getItem (parent, (int)/*64*/index, true);

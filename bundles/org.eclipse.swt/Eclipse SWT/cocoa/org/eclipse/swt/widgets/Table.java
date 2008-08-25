@@ -1319,6 +1319,19 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
+void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	super.keyDown (id, sel, theEvent);
+	NSEvent event = new NSEvent (theEvent);
+	short keyCode = event.keyCode ();
+	switch (keyCode) {
+		case 76: /* KP Enter */
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+	}
+}
+
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
 }
