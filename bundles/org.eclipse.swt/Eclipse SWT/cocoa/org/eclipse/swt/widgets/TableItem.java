@@ -453,10 +453,10 @@ public Rectangle getImageBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	NSTableView tableView = (NSTableView) parent.view;
+	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if ((parent.style & SWT.CHECK) != 0) index ++;
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	//TODO is this right?
-	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	rect.width = image != null ? image.getBounds().width : 0; 
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
@@ -550,10 +550,10 @@ public Rectangle getTextBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	NSTableView tableView = (NSTableView) parent.view;
+	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if ((parent.style & SWT.CHECK) != 0) index ++;
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	//TODO is this right?
-	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
 	if (image != null) {
 		int imageWidth = image.getBounds().width;
 		rect.x += imageWidth;
