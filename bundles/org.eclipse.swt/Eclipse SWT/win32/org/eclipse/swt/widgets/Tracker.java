@@ -513,7 +513,7 @@ public boolean open () {
 					OS.GetModuleHandle (null),
 					null);
 		}
-		int hwnd = isVista ? hwndOpaque : hwndTransparent;
+		int /*long*/ hwnd = isVista ? hwndOpaque : hwndTransparent;
 		oldProc = OS.GetWindowLongPtr (hwnd, OS.GWLP_WNDPROC);
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		int /*long*/ newProcAddress = newProc.getAddress ();
