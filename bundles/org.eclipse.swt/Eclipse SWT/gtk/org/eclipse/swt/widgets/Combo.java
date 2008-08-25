@@ -1119,7 +1119,9 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-		if (gdkEvent.type == OS.GDK_BUTTON_PRESS) return 0;
+		if (gdkEvent.type == OS.GDK_BUTTON_PRESS && gdkEvent.button == 1 && (style & SWT.READ_ONLY) != 0) {
+			return gtk_button_press_event(widget, event, false);
+		}
 	}
 	return super.gtk_button_press_event (widget, event);
 }
@@ -1274,7 +1276,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 				GdkEventButton gdkEventButton = new GdkEventButton ();
 				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
 				if (gdkEventButton.button == 1) {
-					if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
+					if ((style & SWT.READ_ONLY) != 0 && !sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
 						return 1;
 					}
 					if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
