@@ -635,41 +635,41 @@ NSAttributedString createString(String string, int flags) {
 	int length = string.length();
 	char[] chars = new char[length];
 	string.getChars(0, length, chars, 0);
-//	int breakCount = 0;
-//	int[] breaks = null;
-//	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
-//		int i=0, j=0;
-//		while (i < chars.length) {
-//			char c = chars [j++] = chars [i++];
-//			switch (c) {
-//				case '&': {
-//					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
-//						if (i == chars.length) {continue;}
-//						if (chars [i] == '&') {i++; continue;}
-//						j--;
-//					}
-//					break;
-//				}
-//				case '\r':
-//				case '\n': {
-//					if ((flags & SWT.DRAW_DELIMITER) != 0) {
-//						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
-//						j--;
-//						if (breaks == null) {
-//							breaks = new int[4];
-//						} else if (breakCount == breaks.length) {
-//							int[] newBreaks = new int[breaks.length + 4];
-//							System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
-//							breaks = newBreaks;
-//						}
-//						breaks[breakCount++] = j;
-//					}
-//					break;
-//				}
-//			}
-//		}
-//		length = j;
-//	}
+	int breakCount = 0;
+	int[] breaks = null;
+	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
+		int i=0, j=0;
+		while (i < chars.length) {
+			char c = chars [j++] = chars [i++];
+			switch (c) {
+				case '&': {
+					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
+						if (i == chars.length) {continue;}
+						if (chars [i] == '&') {i++; continue;}
+						j--;
+					}
+					break;
+				}
+				case '\r':
+				case '\n': {
+					if ((flags & SWT.DRAW_DELIMITER) != 0) {
+						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
+						j--;
+						if (breaks == null) {
+							breaks = new int[4];
+						} else if (breakCount == breaks.length) {
+							int[] newBreaks = new int[breaks.length + 4];
+							System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
+							breaks = newBreaks;
+						}
+						breaks[breakCount++] = j;
+					}
+					break;
+				}
+			}
+		}
+		length = j;
+	}
 	NSString str = NSString.stringWithCharacters(chars, length);
 	return ((NSAttributedString)new NSAttributedString().alloc()).initWithString(str, dict);
 }
