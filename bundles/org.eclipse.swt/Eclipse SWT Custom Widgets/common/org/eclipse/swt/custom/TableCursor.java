@@ -138,7 +138,7 @@ public class TableCursor extends Canvas {
 	Table table;
 	TableItem row = null;
 	TableColumn column = null;
-	Listener tableListener, resizeListener, disposeItemListener, disposeColumnListener;
+	Listener listener, tableListener, resizeListener, disposeItemListener, disposeColumnListener;
 
 	Color background = null;
 	Color foreground = null;
@@ -181,11 +181,11 @@ public TableCursor(Table parent, int style) {
 	setBackground(null);
 	setForeground(null);
 	
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose :
-					dispose(event);
+					onDispose(event);
 					break;
 				case SWT.FocusIn :
 				case SWT.FocusOut :
@@ -298,7 +298,11 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection, typedListener);
 }
 
-void dispose(Event event) {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	table.removeListener(SWT.FocusIn, tableListener);
 	table.removeListener(SWT.MouseDown, tableListener);
 	unhookRowColumnListeners();

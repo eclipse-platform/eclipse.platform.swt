@@ -43,6 +43,7 @@ public class TableTree extends Composite {
 	Table table;
 	TableTreeItem[] items = EMPTY_ITEMS;
 	Image plusImage, minusImage, sizeImage;
+	Listener listener;
 
 	/*
 	* TableTreeItems are not treated as children but rather as items.
@@ -113,7 +114,7 @@ public TableTree(Composite parent, int style) {
 		table.addListener(tableEvents[i], tableListener);
 	}
 	
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 			case SWT.Dispose: onDispose(e); break;
@@ -438,6 +439,9 @@ public int indexOf (TableTreeItem item) {
 }
 
 void onDispose(Event e) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, e);
+	e.type = SWT.None;
 	/*
 	 * Usually when an item is disposed, destroyItem will change the size of the items array
 	 * and dispose of the underlying table items.

@@ -116,6 +116,7 @@ public class ViewForm extends Composite {
 	Point oldSize;
 	
 	Color selectionBackground;
+	Listener listener;
 	
 	static final int OFFSCREEN = -200;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
@@ -153,10 +154,10 @@ public ViewForm(Composite parent, int style) {
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
 	
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
-				case SWT.Dispose: onDispose(); break;
+				case SWT.Dispose: onDispose(e); break;
 				case SWT.Paint: onPaint(e.gc); break;
 				case SWT.Resize: onResize(); break;
 			}
@@ -239,7 +240,11 @@ public Control getTopRight() {
 	//checkWidget();
 	return topRight;
 }
-void onDispose() {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	topLeft = null;
 	topCenter = null;
 	topRight = null;

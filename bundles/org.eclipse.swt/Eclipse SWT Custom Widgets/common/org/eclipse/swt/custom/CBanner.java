@@ -61,6 +61,7 @@ public class CBanner extends Composite {
 	Cursor resizeCursor;
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
+	Listener listener;
 	
 	static final int OFFSCREEN = -200;
 	static final int BORDER_BOTTOM = 2;
@@ -102,11 +103,11 @@ public CBanner(Composite parent, int style) {
 	super.setLayout(new CBannerLayout());
 	resizeCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
 	
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose:
-					onDispose(); break;
+					onDispose(e); break;
 				case SWT.MouseDown:
 					onMouseDown (e.x, e.y); break;
 				case SWT.MouseExit:
@@ -254,7 +255,11 @@ public boolean getSimple() {
 	checkWidget();
 	return simple;
 }
-void onDispose() {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, listener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	if (resizeCursor != null) resizeCursor.dispose();
 	resizeCursor = null;
 	left = null;

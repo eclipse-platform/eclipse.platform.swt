@@ -70,6 +70,7 @@ public class CLabel extends Canvas {
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	private Color background;
+	private Listener disposeListener;
 	
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -117,12 +118,6 @@ public CLabel(Composite parent, int style) {
 		}
 	});
 	
-	addDisposeListener(new DisposeListener(){
-		public void widgetDisposed(DisposeEvent event) {
-			onDispose(event);
-		}
-	});
-
 	addTraverseListener(new TraverseListener() {
 		public void keyTraversed(TraverseEvent event) {
 			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
@@ -130,6 +125,12 @@ public CLabel(Composite parent, int style) {
 			}
 		}
 	});
+	
+	disposeListener = new Listener() {
+		public void handleEvent(Event event) {
+			onDispose(event);
+		}
+	};
 	
 	initAccessible();
 
@@ -308,7 +309,11 @@ private void initAccessible() {
 		}
 	});
 }
-void onDispose(DisposeEvent event) {
+void onDispose(Event event) {
+	removeListener(SWT.Dispose, disposeListener);
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
+
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;

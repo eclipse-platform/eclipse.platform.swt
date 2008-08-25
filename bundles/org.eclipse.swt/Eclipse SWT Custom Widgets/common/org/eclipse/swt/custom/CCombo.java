@@ -353,6 +353,10 @@ public void clearSelection () {
 void comboEvent (Event event) {
 	switch (event.type) {
 		case SWT.Dispose:
+			removeListener(SWT.Dispose, listener);
+			notifyListeners(SWT.Dispose, event);
+			event.type = SWT.None;
+
 			if (popup != null && !popup.isDisposed ()) {
 				list.removeListener (SWT.Dispose, listener);
 				popup.dispose ();
