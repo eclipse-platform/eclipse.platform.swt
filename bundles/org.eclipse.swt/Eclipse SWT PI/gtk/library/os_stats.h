@@ -186,6 +186,7 @@ typedef enum {
 	_1XSetErrorHandler_FUNC,
 	_1XSetIOErrorHandler_FUNC,
 	_1XSetInputFocus_FUNC,
+	_1XSetTransientForHint_FUNC,
 	_1XSynchronize_FUNC,
 	_1XTestFakeButtonEvent_FUNC,
 	_1XTestFakeKeyEvent_FUNC,

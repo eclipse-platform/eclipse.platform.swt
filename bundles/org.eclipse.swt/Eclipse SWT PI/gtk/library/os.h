@@ -59,6 +59,7 @@
 #define NO__1XSynchronize
 #define NO__1XSetErrorHandler
 #define NO__1XSetIOErrorHandler
+#define NO__1XSetTransientForHint
 #define NO__1XTestFakeButtonEvent
 #define NO__1XTestFakeKeyEvent
 #define NO__1XTestFakeMotionEvent

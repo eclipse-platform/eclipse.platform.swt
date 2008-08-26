@@ -2104,6 +2104,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XSetInputFocus)
 }
 #endif
 
+#ifndef NO__1XSetTransientForHint
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetTransientForHint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XSetTransientForHint_FUNC);
+	rc = (jint)XSetTransientForHint((Display *)arg0, (Window)arg1, (Window)arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetTransientForHint_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XSynchronize
 JNIEXPORT jint JNICALL OS_NATIVE(_1XSynchronize)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
