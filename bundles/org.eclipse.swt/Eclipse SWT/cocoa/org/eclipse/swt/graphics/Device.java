@@ -561,6 +561,7 @@ public boolean loadFont (String path) {
 	boolean result = false;
 	char [] chars = new char [path.length ()];
 	path.getChars (0, chars.length, chars, 0);
+	//TODO not done
 	return result;
 }
 
