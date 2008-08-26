@@ -1076,6 +1076,7 @@ public class OS extends C {
 	public static final int MB_OKCANCEL = 0x1;
 	public static final int MB_PRECOMPOSED = 0x1;
 	public static final int MB_RETRYCANCEL = 0x5;
+	public static final int MB_RIGHT = 0x00080000;
 	public static final int MB_RTLREADING = 0x100000;
 	public static final int MB_SYSTEMMODAL = 0x1000;
 	public static final int MB_TASKMODAL = 0x2000;

@@ -150,10 +150,10 @@ public int open () {
 	}
 
 	int bits = buttonBits | iconBits | modalBits;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.MB_RTLREADING;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.MB_RTLREADING | OS.MB_RIGHT;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
 		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-			bits |= OS.MB_RTLREADING;
+			bits |= OS.MB_RTLREADING | OS.MB_RIGHT;
 		}
 	}
 	
