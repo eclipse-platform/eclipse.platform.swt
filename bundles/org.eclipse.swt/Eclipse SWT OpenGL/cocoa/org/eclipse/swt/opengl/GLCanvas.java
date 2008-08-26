@@ -48,7 +48,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int attrib [] = new int [MAX_ATTRIBUTES];
 	int pos = 0;
-	//TODO this is not working
+	//TODO use color options
 //	attrib [pos++] = OS.AGL_RGBA;
 	if (data.doubleBuffer) attrib [pos++] = OS.NSOpenGLPFADoubleBuffer;
 	if (data.stereo) attrib [pos++] = OS.NSOpenGLPFAStereo;
@@ -148,6 +148,7 @@ public GLData getGLData () {
 	checkWidget ();
 	GLData data = new GLData ();
 	int [] value = new int [1];
+	//TODO implement getGLData()
 //	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_DOUBLEBUFFER, value);
 //	data.doubleBuffer = value [0] != 0;
 //	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_STEREO, value);
