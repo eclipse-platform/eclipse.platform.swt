@@ -1937,6 +1937,15 @@ public static final void XSetTile(int display, int gc, int pixmap) {
 		lock.unlock();
 	}
 }
+public static final native int _XSetTransientForHint(int display, int w, int prop_window);
+public static final int XSetTransientForHint(int display, int w, int prop_window) {
+	lock.lock();
+	try {
+		return _XSetTransientForHint(display, w, prop_window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _XSetTSOrigin(int display, int gc, int ts_x_origin, int ts_y_origin);
 public static final void XSetTSOrigin(int display, int gc, int ts_x_origin, int ts_y_origin) {
 	lock.lock();
