@@ -232,7 +232,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	int result = super.kEventTextInputUnicodeForKeyEvent(nextHandler, theEvent, userData);
 	if (result != OS.noErr) {
 		if (caret != null) {
-			OS.CGDisplayHideCursor (OS.CGMainDisplayID ());
+			if (OS.CGCursorIsVisible ()) OS.CGDisplayHideCursor (OS.CGMainDisplayID ());
 		}
 	}
 	return result;

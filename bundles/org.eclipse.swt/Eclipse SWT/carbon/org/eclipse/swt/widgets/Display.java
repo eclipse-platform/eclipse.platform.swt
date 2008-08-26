@@ -2876,7 +2876,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventMouseDragged:
 		case OS.kEventMouseMoved:
 			mouseMoved = true;
-			OS.CGDisplayShowCursor (OS.CGMainDisplayID ());
+			if (!OS.CGCursorIsVisible ()) OS.CGDisplayShowCursor (OS.CGMainDisplayID ());
 	}
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();

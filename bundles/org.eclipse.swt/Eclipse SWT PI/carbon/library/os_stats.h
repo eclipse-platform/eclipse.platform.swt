@@ -215,6 +215,7 @@ typedef enum {
 	CGContextStrokeRect_FUNC,
 	CGContextSynchronize_FUNC,
 	CGContextTranslateCTM_FUNC,
+	CGCursorIsVisible_FUNC,
 	CGDataProviderCreateWithData_FUNC,
 	CGDataProviderCreateWithURL_FUNC,
 	CGDataProviderRelease_FUNC,

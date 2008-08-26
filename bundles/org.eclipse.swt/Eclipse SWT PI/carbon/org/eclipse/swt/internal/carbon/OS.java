@@ -1228,6 +1228,7 @@ public static final native void CGContextShowTextAtPoint (int ctx, float x, floa
 public static final native void CGContextSetTextMatrix (int ctx, float[] transform);
 public static final native void CGContextStrokePath (int ctx);
 public static final native void CGContextSynchronize (int ctx);
+public static final native boolean CGCursorIsVisible ();
 public static final native int CGFunctionCreate (int info, int domainDimension, float[] domain, int rangeDimension, float[] range, CGFunctionCallbacks callbacks);
 public static final native void CGFunctionRelease (int function);
 public static final native int CGDataProviderCreateWithData (int info, int data, int size, int releaseData);
