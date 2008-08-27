@@ -507,16 +507,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-    int oldSelection = getSelection ();
-    int result = OS.CallNextEventHandler (nextHandler, theEvent);
-    int newSelection = getSelection ();
-    if (oldSelection != newSelection) {
-    	Event event = new Event ();
-		event.detail = newSelection < oldSelection ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
-        sendEvent (SWT.Selection, event);
-        parent.redrawBackgroundImage ();
-    }
-    return result;
+    return parent.kEventMouseWheelMoved (nextHandler, theEvent, userData);
 }
 
 void redraw () {
