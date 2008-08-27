@@ -1372,7 +1372,11 @@ public Control getCursorControl () {
 	int [] theRoot = new int [1];
 	OS.GetRootControl (theWindow [0], theRoot);
 	int [] theControl = new int [1];
-	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassMouse, OS.kEventMouseDown, 0.0, 0, event);
+	OS.SetEventParameter (event[0], OS.kEventParamWindowMouseLocation, OS.typeHIPoint, CGPoint.sizeof, inPoint);
+	OS.HIViewGetViewForMouseEvent (theRoot [0], event [0], theControl);
+	OS.ReleaseEvent(event[0]);
 	while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
 		OS.GetSuperControl (theControl [0], theControl);
 	}
@@ -3355,7 +3359,11 @@ boolean runEnterExit () {
 			inPoint.y = where.v - rect.top;
 			int [] theRoot = new int [1];
 			OS.GetRootControl (theWindow [0], theRoot);
-			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			int[] event = new int[1];
+			OS.CreateEvent (0, OS.kEventClassMouse, OS.kEventMouseDown, 0.0, 0, event);
+			OS.SetEventParameter (event[0], OS.kEventParamWindowMouseLocation, OS.typeHIPoint, CGPoint.sizeof, inPoint);
+			OS.HIViewGetViewForMouseEvent (theRoot [0], event [0], theControl);
+			OS.ReleaseEvent(event[0]);
 			while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
 				OS.GetSuperControl (theControl [0], theControl);
 			}
