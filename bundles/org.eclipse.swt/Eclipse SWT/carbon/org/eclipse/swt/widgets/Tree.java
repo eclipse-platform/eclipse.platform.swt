@@ -603,9 +603,6 @@ void createHandle () {
 		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricDisclosureTriangleAndContentGap, false, inset);
 		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricIconAndTextGap, false, inset);
 	}
-	if (OS.VERSION >= 0x1050) {
-		OS.DataBrowserChangeAttributes (handle, OS.kDataBrowserAttributeAutoHideScrollBars, 0);
-	}
 	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
 		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
@@ -798,6 +795,9 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
+	if (OS.VERSION >= 0x1050) {
+		OS.DataBrowserChangeAttributes (handle, OS.kDataBrowserAttributeAutoHideScrollBars, 0);
+	}
 }
 
 Color defaultBackground () {
