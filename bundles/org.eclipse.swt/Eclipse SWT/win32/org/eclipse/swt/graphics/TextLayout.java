@@ -722,7 +722,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			if (run.length == 0) continue;
 			if (drawX > clip.x + clip.width) break;
 			if (drawX + run.width >= clip.x) {
-				if (!run.tab && (!run.lineBreak || run.softBreak) && !(run.style != null && run.style.metrics != null)) {
+				boolean drawTab = run.tab;
+				if (run.style != null && (run.style.underline || run.style.borderStyle != SWT.NONE)) drawTab = false;
+				if (!drawTab && (!run.lineBreak || run.softBreak) && !(run.style != null && run.style.metrics != null)) {
 					int end = run.start + run.length - 1;
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 					boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
