@@ -1240,6 +1240,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1PLUG)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1SOCKET
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1SOCKET)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1SOCKET_FUNC);
+	rc = (jboolean)GTK_IS_SOCKET(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1SOCKET_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1WINDOW
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1WINDOW)
 	(JNIEnv *env, jclass that, jint arg0)
