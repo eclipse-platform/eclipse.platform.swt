@@ -129,7 +129,7 @@ public class Display extends Device {
 	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	Callback windowDelegateCallback6;
 	Callback dialogCallback3;
-	Callback applicationCallback3, applicationCallback6;
+	Callback applicationCallback2, applicationCallback3, applicationCallback6;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -655,6 +655,9 @@ void createDisplay (DeviceData data) {
 	
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	
+	applicationCallback2 = new Callback(this, "applicationProc", 2);
+	int /*long*/ proc2 = applicationCallback2.getAddress();
+	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	applicationCallback3 = new Callback(this, "applicationProc", 3);
 	int /*long*/ proc3 = applicationCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -665,6 +668,7 @@ void createDisplay (DeviceData data) {
 	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
+	OS.class_addMethod(cls, OS.sel_isRunning_, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	application = NSApplication.sharedApplication();
 	OS.object_setClass(application.id, cls);
@@ -2598,6 +2602,7 @@ void releaseDisplay () {
 	if (pool != null) pool.release();
 	pool = null;
 
+	if (applicationCallback2 != null) applicationCallback2.dispose ();
 	if (applicationCallback3 != null) applicationCallback3.dispose ();
 	if (applicationCallback6 != null) applicationCallback6.dispose ();
 	if (applicationDelegateCallback3 != null) applicationDelegateCallback3.dispose();
@@ -2609,7 +2614,7 @@ void releaseDisplay () {
 	if (dialogCallback3 != null) dialogCallback3.dispose ();
 	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = null;
 	windowDelegateCallback6 = windowDelegateCallback5 = null;
-	applicationCallback3 = dialogCallback3 = applicationDelegateCallback3 = null;
+	applicationCallback2 = applicationCallback3 = dialogCallback3 = applicationDelegateCallback3 = null;
 	applicationCallback6 = null;
 }
 
@@ -3396,6 +3401,14 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 //		idle = false;
 //	}
 //	application.stop(null);
+}
+
+// #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
+int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
+	if (sel == OS.sel_isRunning_) {
+		return 1;
+	}
+	return 0;
 }
 
 int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {

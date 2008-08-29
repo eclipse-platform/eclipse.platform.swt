@@ -97,9 +97,8 @@ public static Frame new_Frame(final Composite parent) {
 	if ((parent.getStyle() & SWT.EMBEDDED) == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//TODO - the call to the constructor hangs in nextEventMachingMask:
-	final int /*long*/ handle = parent.view.id;
 
+	final int /*long*/ handle = parent.view.id;
 	
 	Class clazz = null;
 	try {
