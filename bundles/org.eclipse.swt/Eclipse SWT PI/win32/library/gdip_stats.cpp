@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 176;
-int Gdip_nativeFunctionCallCount[176];
+int Gdip_nativeFunctionCount = 178;
+int Gdip_nativeFunctionCallCount[178];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -69,7 +69,8 @@ char * Gdip_nativeFunctionNames[] = {
 	"GraphicsPath_1new__I",
 	"GraphicsPath_1new___3I_3BII",
 	"Graphics_1DrawArc",
-	"Graphics_1DrawDriverString",
+	"Graphics_1DrawDriverString__IIIIILorg_eclipse_swt_internal_gdip_PointF_2II",
+	"Graphics_1DrawDriverString__IIIII_3FII",
 	"Graphics_1DrawEllipse",
 	"Graphics_1DrawImage__IIII",
 	"Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII",
@@ -148,6 +149,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"Matrix_1Translate",
 	"Matrix_1delete",
 	"Matrix_1new",
+	"MeasureDriverString",
 	"MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I",
 	"MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II",
 	"PathGradientBrush_1SetCenterColor",

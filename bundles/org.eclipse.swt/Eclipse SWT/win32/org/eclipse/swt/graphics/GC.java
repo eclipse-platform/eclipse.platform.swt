@@ -2082,15 +2082,38 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	int /*long*/ gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		checkGC(FONT | FOREGROUND | (isTransparent ? 0 : BACKGROUND));
-		PointF pt = new PointF();
-		int /*long*/ format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
-		int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
-		if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
-		Gdip.StringFormat_SetFormatFlags(format, formatFlags);
-		if (!isTransparent) {
-			RectF bounds = new RectF();
-			Gdip.Graphics_MeasureString(gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
-			Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, x, y, Math.round(bounds.Width), Math.round(bounds.Height));
+		int nGlyphs = (length * 3 / 2) + 16;
+		GCP_RESULTS result = new GCP_RESULTS();
+		result.lStructSize = GCP_RESULTS.sizeof;
+		result.nGlyphs = nGlyphs;
+		int /*long*/ hHeap = OS.GetProcessHeap();
+		int /*long*/ lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
+		int /*long*/ lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 2);
+		int dwFlags = OS.GCP_GLYPHSHAPE | OS.GCP_REORDER | OS.GCP_LIGATE;
+		int /*long*/ hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+		if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
+		OS.GetCharacterPlacementW(hdc, buffer, length, 0, result, dwFlags);
+		if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) & ~OS.LAYOUT_RTL);
+		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+		OS.GetTextMetrics(hdc, lptm);
+		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+		nGlyphs = result.nGlyphs;
+		int drawX = x, drawY = y + lptm.tmAscent;
+		int[] dx = new int[nGlyphs];
+		OS.MoveMemory(dx, result.lpDx, nGlyphs * 4);
+		float[] points = new float[dx.length * 2];
+		for (int i = 0, j = 0; i < dx.length; i++) {
+			points[j++] = drawX;
+			points[j++] = drawY;
+			drawX += dx[i];
+		}
+		RectF bounds = null;
+		if (!isTransparent || (data.style & SWT.MIRRORED) != 0) {
+			bounds = new RectF();
+			Gdip.Graphics_MeasureDriverString(gdipGraphics, lpGlyphs, nGlyphs, data.gdipFont, points, 0, 0, bounds);
+			if (!isTransparent) {
+				Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, x, y, Math.round(bounds.Width), Math.round(bounds.Height));
+			}
 		}
 		int gstate = 0;
 		int /*long*/ brush = getFgBrush();
@@ -2098,20 +2121,18 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 			switch (Gdip.Brush_GetType(brush)) {
 				case Gdip.BrushTypeLinearGradient:
 					Gdip.LinearGradientBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
-					Gdip.LinearGradientBrush_TranslateTransform(brush, - 2 * x, 0, Gdip.MatrixOrderPrepend);	
+					Gdip.LinearGradientBrush_TranslateTransform(brush, - 2 * x - bounds.Width, 0, Gdip.MatrixOrderPrepend);	
 					break;			
 				case Gdip.BrushTypeTextureFill:
 					Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
-					Gdip.TextureBrush_TranslateTransform(brush, - 2 * x, 0, Gdip.MatrixOrderPrepend);	
+					Gdip.TextureBrush_TranslateTransform(brush, - 2 * x - bounds.Width, 0, Gdip.MatrixOrderPrepend);	
 					break;			
 			}
 			gstate = Gdip.Graphics_Save(gdipGraphics);
 			Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
-			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x, 0, Gdip.MatrixOrderPrepend);		 		 		 
+			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x - bounds.Width, 0, Gdip.MatrixOrderPrepend);		 		 		 
 		}
-		pt.X = x;
-		pt.Y = y;
-		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, brush);
+		Gdip.Graphics_DrawDriverString(gdipGraphics, lpGlyphs, result.nGlyphs, data.gdipFont, brush, points, 0, 0);
 		if ((data.style & SWT.MIRRORED) != 0) {
 			switch (Gdip.Brush_GetType(brush)) {
 				case Gdip.BrushTypeLinearGradient:
@@ -2123,7 +2144,8 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 			}
 			Gdip.Graphics_Restore(gdipGraphics, gstate);
 		}
-		Gdip.StringFormat_delete(format);
+		OS.HeapFree(hHeap, 0, lpGlyphs);
+		OS.HeapFree(hHeap, 0, lpDx);
 		return;
 	}
 	int rop2 = 0;
@@ -4682,8 +4704,8 @@ public Point stringExtent(String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FONT);
 	int length = string.length();
-	if (data.gdipGraphics != 0) {
-		PointF pt = new PointF();
+	int /*long*/ gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		RectF bounds = new RectF();
 		char[] buffer;
 		if (length != 0) {
@@ -4692,12 +4714,30 @@ public Point stringExtent(String string) {
 		} else {
 			buffer = new char[]{' '};
 		}
-		int /*long*/ format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
-		int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
-		if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
-		Gdip.StringFormat_SetFormatFlags(format, formatFlags);
-		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, data.gdipFont, pt, format, bounds);
-		Gdip.StringFormat_delete(format);
+		int nGlyphs = (length * 3 / 2) + 16;
+		GCP_RESULTS result = new GCP_RESULTS();
+		result.lStructSize = GCP_RESULTS.sizeof;
+		result.nGlyphs = nGlyphs;
+		int /*long*/ hHeap = OS.GetProcessHeap();
+		int /*long*/ lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
+		int /*long*/ lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 2);
+		int dwFlags = OS.GCP_GLYPHSHAPE | OS.GCP_REORDER | OS.GCP_LIGATE;
+		int /*long*/ hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+		if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
+		OS.GetCharacterPlacementW(hdc, buffer, length, 0, result, dwFlags);
+		if ((data.style & SWT.MIRRORED) != 0) OS.SetLayout(hdc, OS.GetLayout(hdc) & ~OS.LAYOUT_RTL);
+		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+		int drawX = 0;
+		int[] dx = new int[result.nGlyphs];
+		OS.MoveMemory(dx, lpDx, result.nGlyphs * 4);	
+		float[] points = new float[dx.length * 2];
+		for (int i = 0, j = 0; i < dx.length; i++, j += 2) {
+			points[j] = drawX;
+			drawX += dx[i];
+		}
+		Gdip.Graphics_MeasureDriverString(gdipGraphics, lpGlyphs, result.nGlyphs, data.gdipFont, points, 0, 0, bounds);
+		OS.HeapFree(hHeap, 0, lpGlyphs);
+		OS.HeapFree(hHeap, 0, lpDx);
 		return new Point(length == 0 ? 0 : Math.round(bounds.Width), Math.round(bounds.Height));
 	}
 	SIZE size = new SIZE();

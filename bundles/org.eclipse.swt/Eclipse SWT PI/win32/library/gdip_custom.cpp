@@ -275,4 +275,61 @@ fail:
 }
 #endif
 
+#ifndef NO_Graphics_1DrawDriverString__IIIII_3FII
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawDriverString__IIIII_3FII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jfloatArray arg5, jint arg6, jint arg7);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawDriverString__IIIII_3FII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jfloatArray arg5, jint arg6, jint arg7)
+{
+	PointF *points=NULL;
+	jfloat *lparg5=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawDriverString__IIIII_3FII_FUNC);
+	if (arg5) if ((lparg5 = env->GetFloatArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (lparg5) {
+		points = new PointF[arg2];
+		for (int i=0, j=0; i<arg2; i++, j+=2) {
+			PointF *point = new PointF(lparg5[j], lparg5[j + 1]);
+			points[i] = *point;
+			delete point;
+		}
+	}
+	rc = (jint)((Graphics *)arg0)->DrawDriverString((const UINT16 *)arg1, arg2, (const Font *)arg3, (const Brush *)arg4, points, arg6, (const Matrix *)arg7);
+fail:
+	if (arg5 && lparg5) env->ReleaseFloatArrayElements(arg5, lparg5, 0);
+	if (lparg5 && points) delete points;
+	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawDriverString__IIIII_3FII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1MeasureDriverString
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureDriverString)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jfloatArray arg4, jint arg5, jint arg6, jobject arg7);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureDriverString)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jfloatArray arg4, jint arg5, jint arg6, jobject arg7)
+{
+	PointF *points=NULL;
+	jfloat *lparg4=NULL;
+	RectF _arg7, *lparg7=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1MeasureDriverString_FUNC);
+	if (arg4) if ((lparg4 = env->GetFloatArrayElements(arg4, NULL)) == NULL) goto fail;
+	if (lparg4) {
+		points = new PointF[arg2];
+		for (int i=0, j=0; i<arg2; i++, j+=2) {
+			PointF *point = new PointF(lparg4[j], lparg4[j + 1]);
+			points[i] = *point;
+			delete point;
+		}
+	}
+	if (arg7) if ((lparg7 = getRectFFields(env, arg7, &_arg7)) == NULL) goto fail;
+	rc = (jint)((Graphics *)arg0)->MeasureDriverString((const UINT16 *)arg1, arg2, (const Font *)arg3, points, arg5, (const Matrix *)arg6, lparg7);
+fail:
+	if (arg7 && lparg7) setRectFFields(env, arg7, lparg7);
+	if (arg4 && lparg4) env->ReleaseFloatArrayElements(arg4, lparg4, 0);
+	if (lparg4 && points) delete points;
+	Gdip_NATIVE_EXIT(env, that, Graphics_1MeasureDriverString_FUNC);
+	return rc;
+}
+#endif
+
 }

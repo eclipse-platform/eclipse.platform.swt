@@ -170,7 +170,8 @@ public static final native int FontFamily_GetFamilyName(int /*long*/ family, cha
 public static final native int /*long*/ Graphics_new(int /*long*/ hdc);
 public static final native void Graphics_delete(int /*long*/ graphics);
 public static final native int Graphics_DrawArc(int /*long*/ graphics, int /*long*/ pen, int x, int y, int width, int height, float startAngle, float sweepAngle);
-public static final native int Graphics_DrawDriverString( int /*long*/ graphics, int /*long*/ text, int length, int /*long*/ font, int /*long*/ brush, PointF /*long*/ positions, int flags, int /*long*/ matrix);
+public static final native int Graphics_DrawDriverString(int /*long*/ graphics, int /*long*/ text, int length, int /*long*/ font, int /*long*/ brush, PointF /*long*/ positions, int flags, int /*long*/ matrix);
+public static final native int Graphics_DrawDriverString(int /*long*/ graphics, int /*long*/ text, int length, int /*long*/ font, int /*long*/ brush, float[] positions, int flags, int /*long*/ matrix);
 public static final native int Graphics_DrawEllipse(int /*long*/ graphics, int /*long*/ pen, int x, int y, int width, int height);
 public static final native int Graphics_DrawImage(int /*long*/ graphics, int /*long*/ image, int x, int y);
 public static final native int Graphics_DrawImage(int /*long*/ graphics, int /*long*/ image, Rect destRect, int srcx, int srcy, int srcwidth, int srcheight, int srcUnit, int /*long*/ imageAttributes, int /*long*/ callback, int /*long*/ callbackData);
@@ -197,6 +198,7 @@ public static final native int Graphics_GetSmoothingMode(int /*long*/ graphics);
 public static final native int Graphics_GetTextRenderingHint(int /*long*/ graphics);
 public static final native int Graphics_GetTransform(int /*long*/ graphics, int /*long*/ matrix);
 public static final native int Graphics_GetVisibleClipBounds(int /*long*/ graphics, Rect rect);
+public static final native int Graphics_MeasureDriverString(int /*long*/ graphics, int /*long*/ text, int length, int /*long*/ font, float[] positions, int flags, int /*long*/ matrix, RectF boundingBox);
 public static final native int Graphics_MeasureString(int /*long*/ graphics, char[] string, int length, int /*long*/ font, PointF origin, RectF boundingBox);
 public static final native int Graphics_MeasureString(int /*long*/ graphics, char[] string, int length, int /*long*/ font, PointF origin, int /*long*/ format, RectF boundingBox);
 public static final native int Graphics_ResetClip(int /*long*/ graphics);

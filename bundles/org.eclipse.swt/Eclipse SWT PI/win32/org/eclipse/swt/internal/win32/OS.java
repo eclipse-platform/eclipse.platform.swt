@@ -665,6 +665,10 @@ public class OS extends C {
 	public static final int FVIRTKEY = 0x1;
 	public static final int GBS_NORMAL = 1;
 	public static final int GBS_DISABLED = 2;
+	public static final int GCP_REORDER = 0x0002;
+	public static final int GCP_GLYPHSHAPE = 0x0010;
+	public static final int GCP_CLASSIN = 0x00080000;
+	public static final int GCP_LIGATE = 0x0020;
 	public static final int GCS_COMPSTR = 0x8;
 	public static final int GCS_RESULTSTR = 0x800;
 	public static final int GCS_COMPATTR = 0x0010;
