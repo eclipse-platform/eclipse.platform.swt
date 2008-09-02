@@ -3406,7 +3406,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 // #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
 int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
 	if (sel == OS.sel_isRunning_) {
-		return 1;
+		return (isDisposed() ? 0 : 1);
 	}
 	return 0;
 }
