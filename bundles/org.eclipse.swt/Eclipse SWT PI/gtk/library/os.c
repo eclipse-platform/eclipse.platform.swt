@@ -14896,6 +14896,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1vbox_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1viewport_1get_1shadow_1type
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1viewport_1get_1shadow_1type)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1viewport_1get_1shadow_1type_FUNC);
+	rc = (jint)gtk_viewport_get_shadow_type((GtkViewport *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1viewport_1get_1shadow_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1viewport_1set_1shadow_1type
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1viewport_1set_1shadow_1type)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1viewport_1set_1shadow_1type_FUNC);
+	gtk_viewport_set_shadow_type((GtkViewport *)arg0, (GtkShadowType)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1viewport_1set_1shadow_1type_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1vscale_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1vscale_1new)
 	(JNIEnv *env, jclass that, jint arg0)

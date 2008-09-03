@@ -8924,6 +8924,24 @@ public static final int /*long*/ gtk_vbox_new(boolean homogeneous, int spacing) 
 		lock.unlock();
 	}
 }
+public static final native int _gtk_viewport_get_shadow_type(int /*long*/ viewport);
+public static final int gtk_viewport_get_shadow_type(int /*long*/ viewport) {
+	lock.lock();
+	try {
+		return _gtk_viewport_get_shadow_type(viewport);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_viewport_set_shadow_type(int /*long*/ viewport, int type);
+public static final void gtk_viewport_set_shadow_type(int /*long*/ viewport, int type) {
+	lock.lock();
+	try {
+		_gtk_viewport_set_shadow_type(viewport, type);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_vscale_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_vscale_new(int /*long*/ adjustment) {
 	lock.lock();

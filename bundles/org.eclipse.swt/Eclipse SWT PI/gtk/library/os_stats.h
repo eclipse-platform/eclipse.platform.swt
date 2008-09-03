@@ -1034,6 +1034,8 @@ typedef enum {
 	_1gtk_1tree_1view_1unset_1rows_1drag_1dest_FUNC,
 	_1gtk_1tree_1view_1widget_1to_1tree_1coords_FUNC,
 	_1gtk_1vbox_1new_FUNC,
+	_1gtk_1viewport_1get_1shadow_1type_FUNC,
+	_1gtk_1viewport_1set_1shadow_1type_FUNC,
 	_1gtk_1vscale_1new_FUNC,
 	_1gtk_1vscrollbar_1new_FUNC,
 	_1gtk_1vseparator_1new_FUNC,
