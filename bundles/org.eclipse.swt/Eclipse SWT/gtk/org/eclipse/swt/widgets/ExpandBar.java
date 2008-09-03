@@ -158,6 +158,8 @@ void createHandle (int index) {
 			OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_AUTOMATIC);
 			OS.gtk_container_add (fixedHandle, scrolledHandle);
 			OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+			int /*long*/ viewport = OS.gtk_bin_get_child (scrolledHandle);
+			OS.gtk_viewport_set_shadow_type (viewport, OS.GTK_SHADOW_NONE);
 		} else {
 			OS.gtk_container_add (fixedHandle, handle);
 		}
@@ -260,6 +262,15 @@ boolean hasFocus () {
 		}
 	}
 	return super.hasFocus();
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (scrolledHandle != 0) {
+			OS.g_signal_connect_closure (scrolledHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
+		}
+	}
 }
 
 int getBandHeight () {
@@ -541,6 +552,12 @@ void layoutItems (int index, boolean setScrollbar) {
 		}
 		if (setScrollbar) setScrollbar ();
 	}
+}
+
+int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+	int /*long*/ result = super.gtk_size_allocate (widget, allocation);
+	layoutItems (0, false);
+	return result;
 }
 
 int /*long*/ parentingHandle () {
