@@ -94,7 +94,7 @@ extern int IS_JNI_1_2;
 		static void *var = NULL; \
 		if (!initialized) { \
 			void* handle = dlopen(name##_LIB, RTLD_LAZY); \
-			if (hm) var = dlsym(handle, #name); \
+			if (handle) var = dlsym(handle, #name); \
 			initialized = 1; \
 		}
 #endif
