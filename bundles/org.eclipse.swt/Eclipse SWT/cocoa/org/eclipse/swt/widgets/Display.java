@@ -668,7 +668,7 @@ void createDisplay (DeviceData data) {
 	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
-	OS.class_addMethod(cls, OS.sel_isRunning_, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	application = NSApplication.sharedApplication();
 	OS.object_setClass(application.id, cls);
@@ -3405,7 +3405,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 
 // #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
 int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
-	if (sel == OS.sel_isRunning_) {
+	if (sel == OS.sel_isRunning) {
 		return (isDisposed() ? 0 : 1);
 	}
 	return 0;
