@@ -209,37 +209,39 @@ public static GC carbon_new(int context, GCData data) {
 }
 
 void checkGC (int mask) {
-	NSGraphicsContext.setCurrentContext(handle);		
-	NSView view = data.view;
-	if (view != null && data.paintRect == null) {
-		NSRect rect = view.convertRect_toView_(view.bounds(), null);
-		NSRect visibleRect = view.visibleRect();
-		if (data.windowRect == null || rect.x != data.windowRect.x || rect.y != data.windowRect.y ||
-			rect.width != data.windowRect.width || rect.height != data.windowRect.height ||
-			visibleRect.x != data.visibleRect.x || visibleRect.y != data.visibleRect.y ||
-			visibleRect.width != data.visibleRect.width || visibleRect.height != data.visibleRect.height)
-		{
-			data.state &= ~CLIPPING;
-			data.windowRect = rect;
-			data.visibleRect = visibleRect;
-		}
-	}
-	if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0) {
-		handle.restoreGraphicsState();
-		handle.saveGraphicsState();
+	if ((mask & (CLIPPING | TRANSFORM)) != 0) {
+		NSGraphicsContext.setCurrentContext(handle);
+		NSView view = data.view;
 		if (view != null && data.paintRect == null) {
-			NSAffineTransform transform = NSAffineTransform.transform();
-			NSRect rect = data.windowRect;
-			transform.translateXBy(rect.x, rect.y + rect.height);
-			transform.scaleXBy(1, -1);
-			transform.concat();
-			NSBezierPath.bezierPathWithRect(data.visibleRect).addClip();
+			NSRect rect = view.convertRect_toView_(view.bounds(), null);
+			NSRect visibleRect = view.visibleRect();
+			if (data.windowRect == null || rect.x != data.windowRect.x || rect.y != data.windowRect.y ||
+				rect.width != data.windowRect.width || rect.height != data.windowRect.height ||
+				visibleRect.x != data.visibleRect.x || visibleRect.y != data.visibleRect.y ||
+				visibleRect.width != data.visibleRect.width || visibleRect.height != data.visibleRect.height)
+			{
+				data.state &= ~CLIPPING;
+				data.windowRect = rect;
+				data.visibleRect = visibleRect;
+			}
 		}
-		if (data.clipPath != null) data.clipPath.addClip();
-		if (data.transform != null) data.transform.concat();
-		mask &= ~(TRANSFORM | CLIPPING);
-		data.state |= TRANSFORM | CLIPPING;
-		data.state &= ~(BACKGROUND | FOREGROUND);
+		if ((data.state & CLIPPING) == 0 || (data.state & TRANSFORM) == 0) {
+			handle.restoreGraphicsState();
+			handle.saveGraphicsState();
+			if (view != null && data.paintRect == null) {
+				NSAffineTransform transform = NSAffineTransform.transform();
+				NSRect rect = data.windowRect;
+				transform.translateXBy(rect.x, rect.y + rect.height);
+				transform.scaleXBy(1, -1);
+				transform.concat();
+				NSBezierPath.bezierPathWithRect(data.visibleRect).addClip();
+			}
+			if (data.clipPath != null) data.clipPath.addClip();
+			if (data.transform != null) data.transform.concat();
+			mask &= ~(TRANSFORM | CLIPPING);
+			data.state |= TRANSFORM | CLIPPING;
+			data.state &= ~(BACKGROUND | FOREGROUND);
+		}
 	}
 
 	int state = data.state;
@@ -1029,7 +1031,7 @@ public void drawPath(Path path) {
  */
 public void drawPoint(int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	checkGC(FOREGROUND_FILL);
+	checkGC(FOREGROUND_FILL | CLIPPING | TRANSFORM);
 	NSRect rect = new NSRect();
 	rect.x = x;
 	rect.y = y;
@@ -2086,6 +2088,7 @@ public FontMetrics getFontMetrics() {
 	int descent = (int)(0.5f + (-font.descender() + font.leading()));	
 	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
 	int averageCharWidth = stringExtent(s).x / s.length();
+	uncheckGC();
 	return FontMetrics.cocoa_new(ascent, descent, averageCharWidth, 0, ascent + descent);
 }
 
@@ -3379,6 +3382,7 @@ public Point textExtent(String string, int flags) {
 	checkGC(FONT);
 	NSAttributedString str = createString(string, flags);
 	NSSize size = str.size();
+	uncheckGC();
 	return new Point((int)size.width, (int)size.height);
 }
 
