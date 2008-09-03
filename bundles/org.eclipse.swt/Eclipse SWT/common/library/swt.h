@@ -67,6 +67,35 @@ extern int IS_JNI_1_2;
 
 #endif
 
+#ifdef __APPLE__
+#define LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR(name##_LIB)); \
+			if (bundle) var = CFBundleGetFunctionPointerForName(bundle, CFSTR(#name)); \
+			initialized = 1; \
+		} 
+#elif defined (_WIN32) || defined (_WIN32_WCE)
+#define LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			HMODULE hm = LoadLibrary(name##_LIB); \
+			if (hm) var = GetProcAddress(hm, #name); \
+			initialized = 1; \
+		}
+#else
+#define LOAD_FUNCTION(var, name) \
+		static int initialized = 0; \
+		static void *var = NULL; \
+		if (!initialized) { \
+			void* handle = dlopen(name##_LIB, RTLD_LAZY); \
+			if (hm) var = dlsym(handle, #name); \
+			initialized = 1; \
+		}
+#endif
+
 void throwOutOfMemory(JNIEnv *env);
 
 #define CHECK_NULL_VOID(ptr) \
