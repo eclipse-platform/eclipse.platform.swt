@@ -45,6 +45,10 @@ public void hideOtherApplications(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_hideOtherApplications_, sender != null ? sender.id : 0);
 }
 
+public boolean isRunning() {
+	return OS.objc_msgSend(this.id, OS.sel_isRunning) != 0;
+}
+
 public NSWindow keyWindow() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_keyWindow);
 	return result != 0 ? new NSWindow(result) : null;
