@@ -409,6 +409,21 @@ void resizeControl (int yScroll) {
 				OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);				
 				y += property [0] * 2;
 				height -= property [0] * 2;
+				
+				/*
+				* Feature in GTK. When the ExpandBar is resize too small the control
+				* shows up on top of the vertical scrollbar. This happen because the 
+				* GtkExpander does not set the size of child smaller than the request
+				* size of its parent and because the control is not parented in the 
+				* hierarchy of the GtkScrolledWindow.
+				* The fix is calculate the width ourselves when the scrollbar is visible.
+				*/
+				ScrollBar vBar = parent.verticalBar;
+				if (vBar != null) {
+					if (OS.GTK_WIDGET_VISIBLE (vBar.handle)) {
+						width = OS.GTK_WIDGET_WIDTH (parent.scrolledHandle) - parent.vScrollBarWidth () - 2 * parent.spacing;
+					}
+				}
 				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
 			}
 		}
