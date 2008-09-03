@@ -155,8 +155,7 @@ void createHandle (int index) {
 		if ((style & SWT.V_SCROLL) != 0) {
 			scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 			if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
-			OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, vsp);
+			OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_AUTOMATIC);
 			OS.gtk_container_add (fixedHandle, scrolledHandle);
 			OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
 		} else {
