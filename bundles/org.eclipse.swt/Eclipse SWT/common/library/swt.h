@@ -68,6 +68,7 @@ extern int IS_JNI_1_2;
 #endif
 
 #ifdef __APPLE__
+#define CALLING_CONVENTION
 #define LOAD_FUNCTION(var, name) \
 		static int initialized = 0; \
 		static void *var = NULL; \
@@ -77,6 +78,7 @@ extern int IS_JNI_1_2;
 			initialized = 1; \
 		} 
 #elif defined (_WIN32) || defined (_WIN32_WCE)
+#define CALLING_CONVENTION CALLBACK
 #define LOAD_FUNCTION(var, name) \
 		static int initialized = 0; \
 		static void *var = NULL; \
@@ -86,6 +88,7 @@ extern int IS_JNI_1_2;
 			initialized = 1; \
 		}
 #else
+#define CALLING_CONVENTION
 #define LOAD_FUNCTION(var, name) \
 		static int initialized = 0; \
 		static void *var = NULL; \
