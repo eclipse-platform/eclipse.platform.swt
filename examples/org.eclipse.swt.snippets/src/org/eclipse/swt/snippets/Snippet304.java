@@ -44,10 +44,14 @@ public class Snippet304 {
         shell.pack();
         shell.open();
 
-        postEvent(SWT.CONTROL, SWT.KeyDown);
-        postEvent(SWT.END, SWT.KeyDown);
-        postEvent(SWT.END, SWT.KeyUp);
-        postEvent(SWT.CONTROL, SWT.KeyUp);
+    	new Thread(){
+    		public void run(){
+    	        postEvent(SWT.CONTROL, SWT.KeyDown);
+    	        postEvent(SWT.END, SWT.KeyDown);
+    	        postEvent(SWT.END, SWT.KeyUp);
+    	        postEvent(SWT.CONTROL, SWT.KeyUp);
+    		}
+    	}.start();
         
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
