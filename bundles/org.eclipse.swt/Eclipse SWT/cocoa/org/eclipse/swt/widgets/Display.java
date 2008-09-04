@@ -117,6 +117,7 @@ public class Display extends Device {
 	Menu[] menus, popups;
 
 	NSApplication application;
+	int /*long*/ applicationClass;
 	NSWindow screenWindow;
 	NSAutoreleasePool pool;
 	boolean idle;
@@ -671,7 +672,7 @@ void createDisplay (DeviceData data) {
 	OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	application = NSApplication.sharedApplication();
-	OS.object_setClass(application.id, cls);
+	applicationClass = OS.object_setClass(application.id, cls);
 //	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
 }
 
@@ -2601,6 +2602,12 @@ void releaseDisplay () {
 	/* The release pool needs to be released before the call backs. */
 	if (pool != null) pool.release();
 	pool = null;
+
+	if (application != null && applicationClass != 0) {
+		OS.object_setClass (application.id, applicationClass);
+	}
+	application = null;
+	applicationClass = 0;
 
 	if (applicationCallback2 != null) applicationCallback2.dispose ();
 	if (applicationCallback3 != null) applicationCallback3.dispose ();
