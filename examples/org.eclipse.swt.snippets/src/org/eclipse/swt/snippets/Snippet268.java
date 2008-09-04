@@ -21,7 +21,6 @@ package org.eclipse.swt.snippets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.*;
 
 public class Snippet268 {
@@ -43,7 +42,6 @@ public static void main(String[] args) {
 			System.out.println("Mouse Wheel event " + e);
 		}
 	});
-	final Point pt = display.map(shell, null, 50, 50);
 	new Thread(){
 		Event event;
 		public void run() {
@@ -51,8 +49,6 @@ public static void main(String[] args) {
 				event = new Event();
 				event.type = SWT.MouseWheel;
 				event.detail = SWT.SCROLL_LINE;
-				event.x = pt.x;
-				event.y = pt.y;
 				event.count = -2;
 				display.post(event);
 				try {
