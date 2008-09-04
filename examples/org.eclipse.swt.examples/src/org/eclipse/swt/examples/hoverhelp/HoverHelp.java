@@ -139,12 +139,17 @@ public class HoverHelp {
 		layout.numColumns = 3;
 		frame.setLayout(layout);
 	
+		String platform = SWT.getPlatform();
+		String helpKey = "F1";
+		if (platform.equals("gtk")) helpKey = "Ctrl+F1";
+		if (platform.equals("carbon") || platform.equals("cocoa")) helpKey = "Help";
+
 		ToolBar bar = new ToolBar (frame, SWT.BORDER);
 		for (int i=0; i<5; i++) {
 			ToolItem item = new ToolItem (bar, SWT.PUSH);
 			item.setText (getResourceString("ToolItem.text", new Object[] { new Integer(i) }));
 			item.setData ("TIP_TEXT", getResourceString("ToolItem.tooltip",
-				new Object[] { item.getText() }));
+				new Object[] { item.getText(), helpKey }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
@@ -164,7 +169,7 @@ public class HoverHelp {
 			item.setData ("TIP_IMAGE", images[hhiInformation]);
 			item.setText (getResourceString("TableItem.text", new Object[] { new Integer(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TableItem.tooltip",
-				new Object[] { item.getText() }));
+				new Object[] { item.getText(), helpKey }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
@@ -182,7 +187,7 @@ public class HoverHelp {
 			item.setData ("TIP_IMAGE", images[hhiWarning]);
 			item.setText (getResourceString("TreeItem.text", new Object[] { new Integer(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TreeItem.tooltip",
-				new Object[] { item.getText() }));
+				new Object[] { item.getText(), helpKey}));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
