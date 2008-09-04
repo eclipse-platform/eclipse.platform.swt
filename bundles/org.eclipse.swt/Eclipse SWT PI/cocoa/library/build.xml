@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build_cocoa_lib" basedir="../../..">
+<project default="build_cocoa_lib_x86_and_ppc" basedir="../../..">
 
 <target name="init">
 	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
