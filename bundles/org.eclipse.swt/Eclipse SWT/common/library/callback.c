@@ -490,8 +490,11 @@ JNIEXPORT jintLong JNICALL Java_org_eclipse_swt_internal_Callback_bind
 			return (jintLong) fnx_array[argCount][i];
 #else
 			{
-			int j = 0, k, pad = 0;
+			int j = 0, k;
 			unsigned char* code;
+#ifdef __APPLE__
+			int pad = 0;
+#endif
 			if (callbackCode == NULL) {
 #if defined (_WIN32) || defined (_WIN32_WCE)
 				callbackCode = VirtualAlloc(NULL, CALLBACK_THUNK_SIZE * MAX_CALLBACKS, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
