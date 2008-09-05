@@ -42,7 +42,7 @@ XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS)
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include 
 XULRUNNERLFLAGS = $(LFLAGS)
 
-all: $(SWT_LIB) $(SWTPI_LIB) #$(XULRUNNER_LIB)
+all: $(SWT_LIB) $(SWTPI_LIB) $(XULRUNNER_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c
