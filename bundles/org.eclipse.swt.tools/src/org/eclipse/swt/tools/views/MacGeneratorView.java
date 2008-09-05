@@ -44,7 +44,7 @@ public class MacGeneratorView extends ViewPart {
 	
 	class GenJob extends Job {
 		public GenJob() {
-			super("Mac Genarator");
+			super("Mac Generator");
 		}
 		protected IStatus run(IProgressMonitor monitor) {
 			ui.generate();
