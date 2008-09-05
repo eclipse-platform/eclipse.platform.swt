@@ -653,7 +653,7 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	//TODO - range check
+	if (!(0 <= index && index < itemCount)) return false;
 	return ((NSTableView)view).isRowSelected(index);
 }
 
