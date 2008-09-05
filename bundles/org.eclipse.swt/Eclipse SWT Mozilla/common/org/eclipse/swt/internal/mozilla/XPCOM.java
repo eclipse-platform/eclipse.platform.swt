@@ -133,7 +133,7 @@ public static final native int NS_NewLocalFile(int /*long*/ path, int followLink
 public static final native int strlen_PRUnichar(int /*long*/ s);
 public static final native int /*long*/ nsEmbedCString_new();
 public static final native int /*long*/ nsEmbedCString_new(byte[] aString, int length);
-public static final native int /*long*/ nsEmbedCString_new(int aString, int length);
+public static final native int /*long*/ nsEmbedCString_new(int /*long*/ aString, int length);
 public static final native void nsEmbedCString_delete(int /*long*/ ptr);
 public static final native int nsEmbedCString_Length(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedCString_get(int /*long*/ ptr);
