@@ -835,6 +835,7 @@ public static final int /*long*/ sel_printerNames = sel_registerName("printerNam
 public static final int /*long*/ sel_printerWithName_ = sel_registerName("printerWithName:");
 public static final int /*long*/ sel_propertyListForType_ = sel_registerName("propertyListForType:");
 public static final int /*long*/ sel_recentSearches = sel_registerName("recentSearches");
+public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
 public static final int /*long*/ sel_rectOfRow_ = sel_registerName("rectOfRow:");
 public static final int /*long*/ sel_redComponent = sel_registerName("redComponent");
 public static final int /*long*/ sel_release = sel_registerName("release");

@@ -364,6 +364,23 @@ NSAttributedString createString(int index) {
 		NSColor color = NSColor.colorWithDeviceRed (background.handle [0], background.handle [1], background.handle [2], 1);
 		dict.setObject (color, OS.NSBackgroundColorAttributeName);
 	}
+	if (parent.getColumnCount () > 0) {
+		NSMutableParagraphStyle paragraphStyle = null;
+		TreeColumn column = parent.getColumn (index);
+		int style = column.getStyle ();
+		if ((style & SWT.CENTER) != 0) {
+			paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
+		} else if ((style & SWT.RIGHT) != 0) {
+			paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
+		}
+		if (paragraphStyle != null) {
+			dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+			paragraphStyle.autorelease ();
+		}
+	}
+
 	String text = getText (index);
 	NSString str = NSString.stringWith(text);
 	NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (str, dict);

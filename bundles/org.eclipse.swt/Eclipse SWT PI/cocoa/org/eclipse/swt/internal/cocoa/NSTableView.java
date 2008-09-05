@@ -71,9 +71,15 @@ public int /*long*/ numberOfSelectedRows() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
 }
 
-public NSRect rectOfRow(int /*long*/ row) {
+public NSRect rectOfColumn(int columnIndex) {
 	NSRect result = new NSRect();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfRow_, row);
+	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfColumn_, columnIndex);
+	return result;
+}
+
+public NSRect rectOfRow(int rowIndex) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfRow_, rowIndex);
 	return result;
 }
 

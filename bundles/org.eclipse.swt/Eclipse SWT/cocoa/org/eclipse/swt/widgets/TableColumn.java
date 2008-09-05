@@ -511,7 +511,8 @@ public void setAlignment (int alignment) {
 	if (headerView == null) return;
 	NSRect rect = headerView.headerRectOfColumn (index + 1);
 	headerView.setNeedsDisplayInRect (rect);
-	// TODO change alignment of items in column
+	rect = ((NSTableView)parent.view).rectOfColumn (index + 1);
+	parent.view.setNeedsDisplayInRect (rect);
 }
 
 public void setImage (Image image) {
