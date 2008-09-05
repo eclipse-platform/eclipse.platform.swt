@@ -112,6 +112,12 @@ int Release () {
 	return refCount;
 }
 
+Browser getBrowser (int /*long*/ aDOMWindow) {
+	if (aDOMWindow == 0) return null;
+	nsIDOMWindow window = new nsIDOMWindow (aDOMWindow);
+	return Mozilla.findBrowser (window);
+}
+
 /*
  * As of Mozilla 1.8 some of nsIFilePicker's string arguments changed type.  This method
  * answers a java string based on the type of string that is appropriate for the Mozilla
@@ -141,10 +147,12 @@ int Show (int /*long*/ _retval) {
 	/* picking a file */
 	int style = mode == nsIFilePicker.modeSave ? SWT.SAVE : SWT.OPEN;
 	if (mode == nsIFilePicker.modeOpenMultiple) style |= SWT.MULTI;
-	Display display = Display.getCurrent ();
-	Shell parent = null; // TODO compute parent
-	if (parent == null) {
-		parent = new Shell (display);
+	Browser browser = getBrowser (parentHandle);
+	Shell parent = null;
+	if (browser != null) {
+		parent = browser.getShell ();
+	} else {
+		parent = new Shell ();
 	}
 	FileDialog dialog = new FileDialog (parent, style);
 	if (title != null) dialog.setText (title);
@@ -162,10 +170,12 @@ int Show (int /*long*/ _retval) {
 }
 
 int showDirectoryPicker () {
-	Display display = Display.getCurrent ();
-	Shell parent = null; // TODO compute parent
-	if (parent == null) {
-		parent = new Shell (display);
+	Browser browser = getBrowser (parentHandle);
+	Shell parent = null;
+	if (browser != null) {
+		parent = browser.getShell ();
+	} else {
+		parent = new Shell ();
 	}
 	DirectoryDialog dialog = new DirectoryDialog (parent, SWT.NONE);
 	if (title != null) dialog.setText (title);

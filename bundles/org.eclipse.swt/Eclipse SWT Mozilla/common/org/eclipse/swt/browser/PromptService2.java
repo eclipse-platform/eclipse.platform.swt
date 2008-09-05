@@ -123,49 +123,8 @@ int Release () {
 
 Browser getBrowser (int /*long*/ aDOMWindow) {
 	if (aDOMWindow == 0) return null;
-
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-	
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;
-	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
-	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	serviceManager.Release ();
-	
-	nsIWindowWatcher windowWatcher = new nsIWindowWatcher (result[0]);
-	result[0] = 0;
-	/* the chrome will only be answered for the top-level nsIDOMWindow */
 	nsIDOMWindow window = new nsIDOMWindow (aDOMWindow);
-	rc = window.GetTop (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-	aDOMWindow = result[0];
-	result[0] = 0;
-	rc = windowWatcher.GetChromeForWindow (aDOMWindow, result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	windowWatcher.Release ();	
-	
-	nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (result[0]);
-	result[0] = 0;
-	rc = webBrowserChrome.QueryInterface (nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	webBrowserChrome.Release ();
-	
-	nsIEmbeddingSiteWindow embeddingSiteWindow = new nsIEmbeddingSiteWindow (result[0]);
-	result[0] = 0;
-	rc = embeddingSiteWindow.GetSiteWindow (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
-	embeddingSiteWindow.Release ();
-	
-	return Mozilla.findBrowser (result[0]); 
+	return Mozilla.findBrowser (window);
 }
 
 String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
