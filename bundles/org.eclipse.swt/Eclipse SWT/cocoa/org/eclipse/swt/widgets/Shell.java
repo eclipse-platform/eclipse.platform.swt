@@ -548,11 +548,16 @@ void deregister () {
 
 void destroyWidget () {
 	NSWindow window = this.window;
+	Display display = this.display;
 	releaseHandle ();
 	if (window != null) {
 //		NSArray array = new NSArray(NSArray.arrayWithObject(OS.NSDefaultRunLoopMode).id);
 //		NSRunLoop.currentRunLoop().performSelector(OS.sel_close, window, null, 0, array);
 		window.close();
+	}
+	//If another shell is not going to become active, clear the menu bar.
+	if (!display.isDisposed () && display.getShells ().length == 0) {
+		display.setMenuBar (null);
 	}
 }
 
@@ -1473,7 +1478,6 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 //		display.ignoreFocus = false;
 //		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, false);
 //	}
-	display.setMenuBar (null);
 }
 
 boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {
