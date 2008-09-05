@@ -23,7 +23,7 @@
 
 #include "os_custom.h"
 
-extern jint CPSSetProcessName(void *, SWT_PTR);
+extern jint CPSSetProcessName(void *, jintLong);
 
 #ifndef __i386__
 #define objc_msgSend_fpret objc_msgSend

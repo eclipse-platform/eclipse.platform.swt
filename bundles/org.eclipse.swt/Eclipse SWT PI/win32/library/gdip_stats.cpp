@@ -24,9 +24,21 @@ char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1LockBits",
 	"Bitmap_1UnlockBits",
 	"Bitmap_1delete",
+#ifndef JNI64
 	"Bitmap_1new__I",
+#else
+	"Bitmap_1new__J",
+#endif
+#ifndef JNI64
 	"Bitmap_1new__II",
+#else
+	"Bitmap_1new__JJ",
+#endif
+#ifndef JNI64
 	"Bitmap_1new__IIIII",
+#else
+	"Bitmap_1new__IIIIJ",
+#endif
 	"Bitmap_1new___3CZ",
 	"Brush_1Clone",
 	"Brush_1GetType",
@@ -41,8 +53,16 @@ char * Gdip_nativeFunctionNames[] = {
 	"Font_1GetStyle",
 	"Font_1IsAvailable",
 	"Font_1delete",
+#ifndef JNI64
 	"Font_1new__II",
+#else
+	"Font_1new__JJ",
+#endif
+#ifndef JNI64
 	"Font_1new___3CFIII",
+#else
+	"Font_1new___3CFIIJ",
+#endif
 	"GdiplusShutdown",
 	"GdiplusStartup",
 	"GdiplusStartupInput_1sizeof",
@@ -69,18 +89,42 @@ char * Gdip_nativeFunctionNames[] = {
 	"GraphicsPath_1new__I",
 	"GraphicsPath_1new___3I_3BII",
 	"Graphics_1DrawArc",
+#ifndef JNI64
 	"Graphics_1DrawDriverString__IIIIILorg_eclipse_swt_internal_gdip_PointF_2II",
+#else
+	"Graphics_1DrawDriverString__JJIJJLorg_eclipse_swt_internal_gdip_PointF_2IJ",
+#endif
+#ifndef JNI64
 	"Graphics_1DrawDriverString__IIIII_3FII",
+#else
+	"Graphics_1DrawDriverString__JJIJJ_3FIJ",
+#endif
 	"Graphics_1DrawEllipse",
+#ifndef JNI64
 	"Graphics_1DrawImage__IIII",
+#else
+	"Graphics_1DrawImage__JJII",
+#endif
+#ifndef JNI64
 	"Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII",
+#else
+	"Graphics_1DrawImage__JJLorg_eclipse_swt_internal_gdip_Rect_2IIIIIJJJ",
+#endif
 	"Graphics_1DrawLine",
 	"Graphics_1DrawLines",
 	"Graphics_1DrawPath",
 	"Graphics_1DrawPolygon",
 	"Graphics_1DrawRectangle",
+#ifndef JNI64
 	"Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2I",
+#else
+	"Graphics_1DrawString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2J",
+#endif
+#ifndef JNI64
 	"Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2II",
+#else
+	"Graphics_1DrawString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2JJ",
+#endif
 	"Graphics_1FillEllipse",
 	"Graphics_1FillPath",
 	"Graphics_1FillPie",
@@ -88,8 +132,16 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1FillRectangle",
 	"Graphics_1Flush",
 	"Graphics_1GetClip",
+#ifndef JNI64
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2",
+#else
+	"Graphics_1GetClipBounds__JLorg_eclipse_swt_internal_gdip_RectF_2",
+#endif
+#ifndef JNI64
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2",
+#else
+	"Graphics_1GetClipBounds__JLorg_eclipse_swt_internal_gdip_Rect_2",
+#endif
 	"Graphics_1GetHDC",
 	"Graphics_1GetInterpolationMode",
 	"Graphics_1GetSmoothingMode",
@@ -97,17 +149,41 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1GetTransform",
 	"Graphics_1GetVisibleClipBounds",
 	"Graphics_1MeasureDriverString",
+#ifndef JNI64
 	"Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2",
+#else
+	"Graphics_1MeasureString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2JLorg_eclipse_swt_internal_gdip_RectF_2",
+#endif
+#ifndef JNI64
 	"Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2",
+#else
+	"Graphics_1MeasureString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2",
+#endif
 	"Graphics_1ReleaseHDC",
 	"Graphics_1ResetClip",
 	"Graphics_1Restore",
 	"Graphics_1Save",
 	"Graphics_1ScaleTransform",
+#ifndef JNI64
 	"Graphics_1SetClip__III",
+#else
+	"Graphics_1SetClip__JJI",
+#endif
+#ifndef JNI64
 	"Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I",
+#else
+	"Graphics_1SetClip__JLorg_eclipse_swt_internal_gdip_Rect_2I",
+#endif
+#ifndef JNI64
 	"Graphics_1SetClipPath__II",
+#else
+	"Graphics_1SetClipPath__JJ",
+#endif
+#ifndef JNI64
 	"Graphics_1SetClipPath__III",
+#else
+	"Graphics_1SetClipPath__JJI",
+#endif
 	"Graphics_1SetCompositingQuality",
 	"Graphics_1SetInterpolationMode",
 	"Graphics_1SetPageUnit",
@@ -145,13 +221,29 @@ char * Gdip_nativeFunctionNames[] = {
 	"Matrix_1Scale",
 	"Matrix_1SetElements",
 	"Matrix_1Shear",
+#ifndef JNI64
 	"Matrix_1TransformPoints__ILorg_eclipse_swt_internal_gdip_PointF_2I",
+#else
+	"Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I",
+#endif
+#ifndef JNI64
 	"Matrix_1TransformPoints__I_3FI",
+#else
+	"Matrix_1TransformPoints__J_3FI",
+#endif
 	"Matrix_1Translate",
 	"Matrix_1delete",
 	"Matrix_1new",
+#ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2J",
+#endif
+#ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2JI",
+#endif
 	"PathGradientBrush_1SetCenterColor",
 	"PathGradientBrush_1SetCenterPoint",
 	"PathGradientBrush_1SetGraphicsPath",
@@ -177,7 +269,11 @@ char * Gdip_nativeFunctionNames[] = {
 	"Region_1IsInfinite",
 	"Region_1delete",
 	"Region_1new__",
+#ifndef JNI64
 	"Region_1new__I",
+#else
+	"Region_1new__J",
+#endif
 	"Region_1newGraphicsPath",
 	"SolidBrush_1delete",
 	"SolidBrush_1new",

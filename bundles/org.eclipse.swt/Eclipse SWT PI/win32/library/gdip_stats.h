@@ -32,9 +32,21 @@ typedef enum {
 	Bitmap_1LockBits_FUNC,
 	Bitmap_1UnlockBits_FUNC,
 	Bitmap_1delete_FUNC,
+#ifndef JNI64
 	Bitmap_1new__I_FUNC,
+#else
+	Bitmap_1new__J_FUNC,
+#endif
+#ifndef JNI64
 	Bitmap_1new__II_FUNC,
+#else
+	Bitmap_1new__JJ_FUNC,
+#endif
+#ifndef JNI64
 	Bitmap_1new__IIIII_FUNC,
+#else
+	Bitmap_1new__IIIIJ_FUNC,
+#endif
 	Bitmap_1new___3CZ_FUNC,
 	Brush_1Clone_FUNC,
 	Brush_1GetType_FUNC,
@@ -49,8 +61,16 @@ typedef enum {
 	Font_1GetStyle_FUNC,
 	Font_1IsAvailable_FUNC,
 	Font_1delete_FUNC,
+#ifndef JNI64
 	Font_1new__II_FUNC,
+#else
+	Font_1new__JJ_FUNC,
+#endif
+#ifndef JNI64
 	Font_1new___3CFIII_FUNC,
+#else
+	Font_1new___3CFIIJ_FUNC,
+#endif
 	GdiplusShutdown_FUNC,
 	GdiplusStartup_FUNC,
 	GdiplusStartupInput_1sizeof_FUNC,
@@ -77,18 +97,42 @@ typedef enum {
 	GraphicsPath_1new__I_FUNC,
 	GraphicsPath_1new___3I_3BII_FUNC,
 	Graphics_1DrawArc_FUNC,
+#ifndef JNI64
 	Graphics_1DrawDriverString__IIIIILorg_eclipse_swt_internal_gdip_PointF_2II_FUNC,
+#else
+	Graphics_1DrawDriverString__JJIJJLorg_eclipse_swt_internal_gdip_PointF_2IJ_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1DrawDriverString__IIIII_3FII_FUNC,
+#else
+	Graphics_1DrawDriverString__JJIJJ_3FIJ_FUNC,
+#endif
 	Graphics_1DrawEllipse_FUNC,
+#ifndef JNI64
 	Graphics_1DrawImage__IIII_FUNC,
+#else
+	Graphics_1DrawImage__JJII_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII_FUNC,
+#else
+	Graphics_1DrawImage__JJLorg_eclipse_swt_internal_gdip_Rect_2IIIIIJJJ_FUNC,
+#endif
 	Graphics_1DrawLine_FUNC,
 	Graphics_1DrawLines_FUNC,
 	Graphics_1DrawPath_FUNC,
 	Graphics_1DrawPolygon_FUNC,
 	Graphics_1DrawRectangle_FUNC,
+#ifndef JNI64
 	Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2I_FUNC,
+#else
+	Graphics_1DrawString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2J_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2II_FUNC,
+#else
+	Graphics_1DrawString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2JJ_FUNC,
+#endif
 	Graphics_1FillEllipse_FUNC,
 	Graphics_1FillPath_FUNC,
 	Graphics_1FillPie_FUNC,
@@ -96,8 +140,16 @@ typedef enum {
 	Graphics_1FillRectangle_FUNC,
 	Graphics_1Flush_FUNC,
 	Graphics_1GetClip_FUNC,
+#ifndef JNI64
 	Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+#else
+	Graphics_1GetClipBounds__JLorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2_FUNC,
+#else
+	Graphics_1GetClipBounds__JLorg_eclipse_swt_internal_gdip_Rect_2_FUNC,
+#endif
 	Graphics_1GetHDC_FUNC,
 	Graphics_1GetInterpolationMode_FUNC,
 	Graphics_1GetSmoothingMode_FUNC,
@@ -105,17 +157,41 @@ typedef enum {
 	Graphics_1GetTransform_FUNC,
 	Graphics_1GetVisibleClipBounds_FUNC,
 	Graphics_1MeasureDriverString_FUNC,
+#ifndef JNI64
 	Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+#else
+	Graphics_1MeasureString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2JLorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+#else
+	Graphics_1MeasureString__J_3CIJLorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+#endif
 	Graphics_1ReleaseHDC_FUNC,
 	Graphics_1ResetClip_FUNC,
 	Graphics_1Restore_FUNC,
 	Graphics_1Save_FUNC,
 	Graphics_1ScaleTransform_FUNC,
+#ifndef JNI64
 	Graphics_1SetClip__III_FUNC,
+#else
+	Graphics_1SetClip__JJI_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I_FUNC,
+#else
+	Graphics_1SetClip__JLorg_eclipse_swt_internal_gdip_Rect_2I_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1SetClipPath__II_FUNC,
+#else
+	Graphics_1SetClipPath__JJ_FUNC,
+#endif
+#ifndef JNI64
 	Graphics_1SetClipPath__III_FUNC,
+#else
+	Graphics_1SetClipPath__JJI_FUNC,
+#endif
 	Graphics_1SetCompositingQuality_FUNC,
 	Graphics_1SetInterpolationMode_FUNC,
 	Graphics_1SetPageUnit_FUNC,
@@ -153,13 +229,29 @@ typedef enum {
 	Matrix_1Scale_FUNC,
 	Matrix_1SetElements_FUNC,
 	Matrix_1Shear_FUNC,
+#ifndef JNI64
 	Matrix_1TransformPoints__ILorg_eclipse_swt_internal_gdip_PointF_2I_FUNC,
+#else
+	Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I_FUNC,
+#endif
+#ifndef JNI64
 	Matrix_1TransformPoints__I_3FI_FUNC,
+#else
+	Matrix_1TransformPoints__J_3FI_FUNC,
+#endif
 	Matrix_1Translate_FUNC,
 	Matrix_1delete_FUNC,
 	Matrix_1new_FUNC,
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2J_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2JI_FUNC,
+#endif
 	PathGradientBrush_1SetCenterColor_FUNC,
 	PathGradientBrush_1SetCenterPoint_FUNC,
 	PathGradientBrush_1SetGraphicsPath_FUNC,
@@ -185,7 +277,11 @@ typedef enum {
 	Region_1IsInfinite_FUNC,
 	Region_1delete_FUNC,
 	Region_1new___FUNC,
+#ifndef JNI64
 	Region_1new__I_FUNC,
+#else
+	Region_1new__J_FUNC,
+#endif
 	Region_1newGraphicsPath_FUNC,
 	SolidBrush_1delete_FUNC,
 	SolidBrush_1new_FUNC,

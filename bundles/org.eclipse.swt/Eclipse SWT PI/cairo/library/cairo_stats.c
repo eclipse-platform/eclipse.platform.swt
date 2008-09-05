@@ -169,9 +169,21 @@ char * Cairo_nativeFunctionNames[] = {
 	"cairo_1path_1t_1sizeof",
 	"cairo_1text_1extents_1t_1sizeof",
 	"cairo_1version",
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2JJ",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2II",
+#else
+	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2JJ",
+#endif
+#ifndef JNI64
 	"memmove___3DII",
+#else
+	"memmove___3DJJ",
+#endif
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

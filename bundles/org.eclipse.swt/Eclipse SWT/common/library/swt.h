@@ -28,42 +28,72 @@ extern "C" {
 
 extern int IS_JNI_1_2;
 
-#ifndef SWT_PTR_SIZE_64
+#ifndef JNI64
 #if __x86_64__
-#define SWT_PTR_SIZE_64
+#define JNI64
 #endif
 #endif
 
 /* 64 bit support */
-#ifndef SWT_PTR_SIZE_64
+#ifndef JNI64
 
-#define GetSWT_PTRField GetIntField
-#define SetSWT_PTRField SetIntField
-#define NewSWT_PTRArray NewIntArray
-#define CallStaticSWT_PTRMethodV CallStaticIntMethodV
-#define CallSWT_PTRMethodV CallIntMethodV
-#define CallStaticSWT_PTRMethod CallStaticIntMethod
-#define CallSWT_PTRMethod CallIntMethod
-#define GetSWT_PTRArrayElements GetIntArrayElements
-#define ReleaseSWT_PTRArrayElements ReleaseIntArrayElements
-#define SWT_PTRArray jintArray
-#define SWT_PTR jint
-#define SWT_PTR_SIGNATURE "I"
+/* int/long defines */
+#define GetIntLongField GetIntField
+#define SetIntLongField SetIntField
+#define GetIntLongArrayElements GetIntArrayElements
+#define ReleaseIntLongArrayElements ReleaseIntArrayElements
+#define GetIntLongArrayRegion GetIntArrayRegion
+#define SetIntLongArrayRegion SetIntArrayRegion
+#define NewIntLongArray NewIntArray
+#define CallStaticIntLongMethod CallStaticIntMethod
+#define CallIntLongMethod CallIntMethod
+#define CallStaticIntLongMethodV CallStaticIntMethodV
+#define CallIntLongMethodV CallIntMethodV
+#define jintLongArray jintArray
+#define jintLong jint
+#define I_J "I"
+#define I_JArray "[I"
+
+/* float/double defines */
+#define GetFloatDoubleField GetFloatField
+#define SetFloatDoubleField SetFloatField
+#define GetFloatDoubleArrayElements GetFloatArrayElements
+#define ReleaseFloatDoubleArrayElements ReleaseFloatArrayElements
+#define GetFloatDoubleArrayRegion GetFloatArrayRegion
+#define jfloatDoubleArray jfloatArray
+#define jfloatDouble jfloat
+#define F_D "F"
+#define F_DArray "[F"
 
 #else
 
-#define GetSWT_PTRField GetLongField
-#define SetSWT_PTRField SetLongField
-#define NewSWT_PTRArray NewLongArray
-#define CallStaticSWT_PTRMethodV CallStaticLongMethodV
-#define CallSWT_PTRMethodV CallLongMethodV
-#define CallStaticSWT_PTRMethod CallStaticLongMethod
-#define CallSWT_PTRMethod CallLongMethod
-#define GetSWT_PTRArrayElements GetLongArrayElements
-#define ReleaseSWT_PTRArrayElements ReleaseLongArrayElements
-#define SWT_PTRArray jlongArray
-#define SWT_PTR jlong
-#define SWT_PTR_SIGNATURE "J"
+/* int/long defines */
+#define GetIntLongField GetLongField
+#define SetIntLongField SetLongField
+#define GetIntLongArrayElements GetLongArrayElements
+#define ReleaseIntLongArrayElements ReleaseLongArrayElements
+#define GetIntLongArrayRegion GetLongArrayRegion
+#define SetIntLongArrayRegion SetLongArrayRegion
+#define NewIntLongArray NewLongArray
+#define CallStaticIntLongMethod CallStaticLongMethod
+#define CallIntLongMethod CallLongMethod
+#define CallStaticIntLongMethodV CallStaticLongMethodV
+#define CallIntLongMethodV CallLongMethodV
+#define jintLongArray jlongArray
+#define jintLong jlong
+#define I_J "J"
+#define I_JArray "[J"
+
+/* float/double defines */
+#define GetFloatDoubleField GetDoubleField
+#define SetFloatDoubleField SetDoubleField
+#define GetFloatDoubleArrayElements GetDoubleArrayElements
+#define ReleaseFloatDoubleArrayElements ReleaseDoubleArrayElements
+#define GetFloatDoubleArrayRegion GetDoubleArrayRegion
+#define jfloatDoubleArray jdoubleArray
+#define jfloatDouble jdouble
+#define F_D "D"
+#define F_DArray "[D"
 
 #endif
 
@@ -81,7 +111,7 @@ extern int IS_JNI_1_2;
 #define CALLING_CONVENTION CALLBACK
 #define LOAD_FUNCTION(var, name) \
 		static int initialized = 0; \
-		static void *var = NULL; \
+		static FARPROC var = NULL; \
 		if (!initialized) { \
 			HMODULE hm = LoadLibrary(name##_LIB); \
 			if (hm) var = GetProcAddress(hm, #name); \

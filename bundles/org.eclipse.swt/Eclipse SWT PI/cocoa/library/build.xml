@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build_cocoa_lib_x86_and_ppc" basedir="../../..">
+<project default="build_cocoa_lib_x86_and_ppc_and_x86_64" basedir="../../..">
 
 <target name="init">
 	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
@@ -10,7 +10,7 @@
 	
 <target name="build_cocoa_lib_x86_and_ppc" depends="init">
 	<exec dir="./bin/library" executable="sh">
-		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="${basedir}/bin/library/build32.sh"/>
 		<arg value="install"/>
 	</exec>
 	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
@@ -24,16 +24,12 @@
 	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
 </target>
 	
-<!-- 64 bit tasks -->
-<target name="build.cfiles" depends="init">
-	<java
-		fork="true"
-		dir="../org.eclipse.swt.tools"
-		classname="org.eclipse.swt.tools.internal.JNIGeneratorApp"
-		classpath="./bin:../org.eclipse.swt.tools/bin">
-		<arg value="all"/>
-	</java>
-	<antcall target="init"/>
+<target name="build_cocoa_lib_x86_and_ppc_and_x86_64" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg value="install"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.cocoa.macosx" depth="infinite" />		
 </target>
 	
 <!-- Convert SWT 32 bit java and C source to 64 bit  -->
@@ -43,7 +39,7 @@
 	<replace dir="." includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
 	<replace dir="." includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
 	<replace dir="." includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
-	<antcall target="build.cfiles"/>
+	<antcall target="init"/>
 </target>
 	
 <!-- Convert SWT 64 bit java and C source to 32 bit  -->
@@ -53,7 +49,7 @@
 	<replace dir="." includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
 	<replace dir="." includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
 	<replace dir="." includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
-	<antcall target="build.cfiles"/>
+	<antcall target="init"/>
 </target>
 
 <target name="clean">

@@ -110,112 +110,508 @@ typedef enum {
 	hitTest_1CALLBACK_FUNC,
 	instrumentObjcMessageSends_FUNC,
 	markedRange_1CALLBACK_FUNC,
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CGPoint_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGRect_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CGRect_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_CGSize_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJ_FUNC,
+#endif
 	objc_1allocateClassPair_FUNC,
 	objc_1getClass_FUNC,
 	objc_1getProtocol_FUNC,
 	objc_1lookUpClass_FUNC,
+#ifndef JNI64
 	objc_1msgSend__II_FUNC,
+#else
+	objc_1msgSend__JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IID_FUNC,
+#else
+	objc_1msgSend__JJD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIDIIIZ_FUNC,
+#else
+	objc_1msgSend__JJDJJJZ_FUNC,
+#endif
 	objc_1msgSend__IIF_FUNC,
+#ifndef JNI64
 	objc_1msgSend__IIFF_FUNC,
+#else
+	objc_1msgSend__JJDD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIFFFF_FUNC,
+#else
+	objc_1msgSend__JJDDDD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__III_FUNC,
+#else
+	objc_1msgSend__JJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIF_FUNC,
+#else
+	objc_1msgSend__JJJD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIII_FUNC,
+#else
+	objc_1msgSend__JJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIII_FUNC,
+#else
+	objc_1msgSend__JJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIII_FUNC,
+#else
+	objc_1msgSend__JJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIIII_FUNC,
+#else
+	objc_1msgSend__JJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIIIIII_FUNC,
+#else
+	objc_1msgSend__JJJJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIIIIZZIII_FUNC,
+#else
+	objc_1msgSend__JJJJJJJZZJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIIIIZZIIII_FUNC,
+#else
+	objc_1msgSend__JJJJJJJZZJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIIZ_FUNC,
+#else
+	objc_1msgSend__JJJJJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#else
+	objc_1msgSend__JJJJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIIZ_FUNC,
+#else
+	objc_1msgSend__JJJJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII_FUNC,
+#else
+	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#else
+	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIIZ_FUNC,
+#else
+	objc_1msgSend__JJJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2FFF_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2FFFZ_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_3F_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_3D_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2F_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2D_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2FF_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2DD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZ_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IIZI_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJZJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2IZI_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JZJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2IF_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2Z_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Z_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIZ_FUNC,
+#else
+	objc_1msgSend__JJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__IIZI_FUNC,
+#else
+	objc_1msgSend__JJZJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3B_FUNC,
+#else
+	objc_1msgSend__JJ_3B_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3BI_FUNC,
+#else
+	objc_1msgSend__JJ_3BJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3C_FUNC,
+#else
+	objc_1msgSend__JJ_3C_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3CI_FUNC,
+#else
+	objc_1msgSend__JJ_3CJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3CLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#else
+	objc_1msgSend__JJ_3CLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3F_FUNC,
+#else
+	objc_1msgSend__JJ_3D_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3FIF_FUNC,
+#else
+	objc_1msgSend__JJ_3DJD_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3I_FUNC,
+#else
+	objc_1msgSend__JJ_3I_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend__II_3III_FUNC,
+#else
+	objc_1msgSend__JJ_3JJJ_FUNC,
+#endif
 	objc_1msgSend__JJFD_FUNC,
 	objc_1msgSend__JJI_FUNC,
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2I_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IIIIZ_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#else
+	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1fpret__II_FUNC,
+#else
+	objc_1msgSend_1fpret__JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1fpret__III_FUNC,
+#else
+	objc_1msgSend_1fpret__JJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1fpret__IIII_FUNC,
+#else
+	objc_1msgSend_1fpret__JJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2III_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2III_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2III_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIII_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJJJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIIIZ_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJJJZ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2ZZJ_FUNC,
+#endif
 	objc_1registerClassPair_FUNC,
 	objc_1super_1sizeof_FUNC,
 	object_1getClassName_FUNC,

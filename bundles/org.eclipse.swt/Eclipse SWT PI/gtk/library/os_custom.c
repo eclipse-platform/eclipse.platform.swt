@@ -36,15 +36,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 #endif
 
 #ifndef NO__1gtk_1file_1chooser_1dialog_1new
-JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0, SWT_PTR arg1, jint arg2, SWT_PTR arg3, jint arg4, SWT_PTR arg5, jint arg6, SWT_PTR arg7)
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLong arg5, jint arg6, jintLong arg7)
 {
 	jbyte *lparg0=NULL;
-	SWT_PTR rc = 0;
+	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 /*
-	rc = (SWT_PTR)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	rc = (jintLong)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 */
 	{
 		static int initialized = 0;
@@ -57,8 +57,8 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 		* For some reason, we must also explicitly declare all of the arguments we
 		* are passing in, otherwise it crashes.
 		*/
-/*		typedef SWT_PTR (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, ...); */
-		typedef SWT_PTR (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, jint, SWT_PTR, jint, SWT_PTR, ...);
+/*		typedef jintLong (*FPTR)(jbyte *, jintLong, jint, jintLong, ...); */
+		typedef jintLong (*FPTR)(jbyte *, jintLong, jint, jintLong, jint, jintLong, jint, jintLong, ...);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -67,7 +67,7 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (SWT_PTR)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+			rc = (jintLong)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 		}
 	}
 fail:
@@ -79,7 +79,7 @@ fail:
 
 #ifndef NO__1gtk_1cell_1layout_1set_1attributes
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
-	(JNIEnv *env, jclass that, SWT_PTR arg0, SWT_PTR arg1, jbyteArray arg2, jint arg3, SWT_PTR arg4)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jint arg3, jintLong arg4)
 {
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
@@ -98,8 +98,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
 		* For some reason, we must also explicitly declare all of the arguments we
 		* are passing in, otherwise it crashes.
 		*/
-/*		typedef void (*FPTR)(SWT_PTR, SWT_PTR, ...); */
-		typedef void (*FPTR)(SWT_PTR, SWT_PTR, jbyte *, jint, SWT_PTR, ...);
+/*		typedef void (*FPTR)(jintLong, jintLong, ...); */
+		typedef void (*FPTR)(jintLong, jintLong, jbyte *, jint, jintLong, ...);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_cell_layout_set_attributes_LIB, RTLD_LAZY);
@@ -129,7 +129,7 @@ typedef struct _PangoLayoutLineSWT  PangoLayoutLineSWT;
 
 #ifndef NO__1pango_1layout_1line_1get_1resolved_1dir
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1line_1get_1resolved_1dir)
-	(JNIEnv *env, jclass that, SWT_PTR arg0)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1line_1get_1resolved_1dir_FUNC);

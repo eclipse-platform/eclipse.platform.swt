@@ -25,7 +25,7 @@ void cacheXVisualInfoFields(JNIEnv *env, jobject lpObject)
 {
 	if (XVisualInfoFc.cached) return;
 	XVisualInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XVisualInfoFc.visual = (*env)->GetFieldID(env, XVisualInfoFc.clazz, "visual", "I");
+	XVisualInfoFc.visual = (*env)->GetFieldID(env, XVisualInfoFc.clazz, "visual", I_J);
 	XVisualInfoFc.visualid = (*env)->GetFieldID(env, XVisualInfoFc.clazz, "visualid", "I");
 	XVisualInfoFc.screen = (*env)->GetFieldID(env, XVisualInfoFc.clazz, "screen", "I");
 	XVisualInfoFc.depth = (*env)->GetFieldID(env, XVisualInfoFc.clazz, "depth", "I");
@@ -41,7 +41,7 @@ void cacheXVisualInfoFields(JNIEnv *env, jobject lpObject)
 XVisualInfo *getXVisualInfoFields(JNIEnv *env, jobject lpObject, XVisualInfo *lpStruct)
 {
 	if (!XVisualInfoFc.cached) cacheXVisualInfoFields(env, lpObject);
-	lpStruct->visual = (Visual *)(*env)->GetIntField(env, lpObject, XVisualInfoFc.visual);
+	lpStruct->visual = (Visual *)(*env)->GetIntLongField(env, lpObject, XVisualInfoFc.visual);
 	lpStruct->visualid = (*env)->GetIntField(env, lpObject, XVisualInfoFc.visualid);
 	lpStruct->screen = (*env)->GetIntField(env, lpObject, XVisualInfoFc.screen);
 	lpStruct->depth = (*env)->GetIntField(env, lpObject, XVisualInfoFc.depth);
@@ -57,7 +57,7 @@ XVisualInfo *getXVisualInfoFields(JNIEnv *env, jobject lpObject, XVisualInfo *lp
 void setXVisualInfoFields(JNIEnv *env, jobject lpObject, XVisualInfo *lpStruct)
 {
 	if (!XVisualInfoFc.cached) cacheXVisualInfoFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, XVisualInfoFc.visual, (jint)lpStruct->visual);
+	(*env)->SetIntLongField(env, lpObject, XVisualInfoFc.visual, (jintLong)lpStruct->visual);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.visualid, (jint)lpStruct->visualid);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.screen, (jint)lpStruct->screen);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.depth, (jint)lpStruct->depth);

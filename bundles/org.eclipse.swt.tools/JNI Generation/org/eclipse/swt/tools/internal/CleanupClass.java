@@ -11,7 +11,6 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public abstract class CleanupClass extends JNIGenerator {
@@ -22,8 +21,8 @@ String classSource;
 Hashtable files;
 int usedCount, unusedCount;
 
-String[] getArgNames(Method method) {
-	int n_args = method.getParameterTypes().length;
+String[] getArgNames(JNIMethod method) {
+	int n_args = method.getParameters().length;
 	if (n_args == 0) return new String[0];
 	String name = method.getName();
 	String params = "";
@@ -111,7 +110,7 @@ void loadDirectory(File file) {
 	}
 }
 
-public void generate(Class clazz) {
+public void generate(JNIClass clazz) {
 	loadFiles ();
 	loadClassSource();
 }

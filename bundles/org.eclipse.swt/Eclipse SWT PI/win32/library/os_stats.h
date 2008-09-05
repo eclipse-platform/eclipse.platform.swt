@@ -103,13 +103,29 @@ typedef enum {
 	CreateCursor_FUNC,
 	CreateDCA_FUNC,
 	CreateDCW_FUNC,
+#ifndef JNI64
 	CreateDIBSection__III_3III_FUNC,
+#else
+	CreateDIBSection__JJI_3JJI_FUNC,
+#endif
+#ifndef JNI64
 	CreateDIBSection__I_3BI_3III_FUNC,
+#else
+	CreateDIBSection__J_3BI_3JJI_FUNC,
+#endif
 	CreateEnhMetaFileA_FUNC,
 	CreateEnhMetaFileW_FUNC,
+#ifndef JNI64
 	CreateFontIndirectA__I_FUNC,
+#else
+	CreateFontIndirectA__J_FUNC,
+#endif
 	CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
+#ifndef JNI64
 	CreateFontIndirectW__I_FUNC,
+#else
+	CreateFontIndirectW__J_FUNC,
+#endif
 	CreateFontIndirectW__Lorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC,
 	CreateIconIndirect_FUNC,
 	CreateMenu_FUNC,
@@ -301,20 +317,76 @@ typedef enum {
 	GetMonitorInfoA_FUNC,
 	GetMonitorInfoW_FUNC,
 	GetNearestPaletteIndex_FUNC,
+#ifndef JNI64
 	GetObjectA__III_FUNC,
+#else
+	GetObjectA__JIJ_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC,
+#else
+	GetObjectA__JILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
+#else
+	GetObjectA__JILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
+#else
+	GetObjectA__JILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
+#else
+	GetObjectA__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
+#else
+	GetObjectA__JILorg_eclipse_swt_internal_win32_LOGFONTA_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
+#else
+	GetObjectA__JILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__III_FUNC,
+#else
+	GetObjectW__JIJ_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC,
+#else
+	GetObjectW__JILorg_eclipse_swt_internal_win32_BITMAP_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
+#else
+	GetObjectW__JILorg_eclipse_swt_internal_win32_DIBSECTION_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
+#else
+	GetObjectW__JILorg_eclipse_swt_internal_win32_EXTLOGPEN_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
+#else
+	GetObjectW__JILorg_eclipse_swt_internal_win32_LOGBRUSH_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC,
+#else
+	GetObjectW__JILorg_eclipse_swt_internal_win32_LOGFONTW_2_FUNC,
+#endif
+#ifndef JNI64
 	GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
+#else
+	GetObjectW__JILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC,
+#endif
 	GetOpenFileNameA_FUNC,
 	GetOpenFileNameW_FUNC,
 	GetOutlineTextMetricsA_FUNC,
@@ -439,8 +511,16 @@ typedef enum {
 	ImmGetCompositionFontA_FUNC,
 	ImmGetCompositionFontW_FUNC,
 	ImmGetCompositionStringA_FUNC,
+#ifndef JNI64
 	ImmGetCompositionStringW__II_3CI_FUNC,
+#else
+	ImmGetCompositionStringW__JI_3CI_FUNC,
+#endif
+#ifndef JNI64
 	ImmGetCompositionStringW__II_3II_FUNC,
+#else
+	ImmGetCompositionStringW__JI_3II_FUNC,
+#endif
 	ImmGetContext_FUNC,
 	ImmGetConversionStatus_FUNC,
 	ImmGetDefaultIMEWnd_FUNC,
@@ -495,10 +575,26 @@ typedef enum {
 	LoadCursorW_FUNC,
 	LoadIconA_FUNC,
 	LoadIconW_FUNC,
+#ifndef JNI64
 	LoadImageA__IIIIII_FUNC,
+#else
+	LoadImageA__JJIIII_FUNC,
+#endif
+#ifndef JNI64
 	LoadImageA__I_3BIIII_FUNC,
+#else
+	LoadImageA__J_3BIIII_FUNC,
+#endif
+#ifndef JNI64
 	LoadImageW__IIIIII_FUNC,
+#else
+	LoadImageW__JJIIII_FUNC,
+#endif
+#ifndef JNI64
 	LoadImageW__I_3CIIII_FUNC,
+#else
+	LoadImageW__J_3CIIII_FUNC,
+#endif
 	LoadLibraryA_FUNC,
 	LoadLibraryW_FUNC,
 	LoadStringA_FUNC,
@@ -522,105 +618,461 @@ typedef enum {
 	MSG_1sizeof_FUNC,
 	MapVirtualKeyA_FUNC,
 	MapVirtualKeyW_FUNC,
+#ifndef JNI64
 	MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
+#else
+	MapWindowPoints__JJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC,
+#endif
+#ifndef JNI64
 	MapWindowPoints__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+#else
+	MapWindowPoints__JJLorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+#endif
 	MessageBeep_FUNC,
 	MessageBoxA_FUNC,
 	MessageBoxW_FUNC,
 	MonitorFromWindow_FUNC,
+#ifndef JNI64
 	MoveMemory__III_FUNC,
+#else
+	MoveMemory__JJI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_KEYBDINPUT_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_KEYBDINPUT_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_LOGFONTA_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_LOGFONTW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_MOUSEINPUT_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_MSG_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMLVDISPINFO_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVDISPINFO_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_NMTVDISPINFO_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_OPENFILENAME_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_OPENFILENAME_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_TRIVERTEX_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_UDACCEL_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_UDACCEL_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_WINDOWPOS_2I_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3BI_FUNC,
+#else
+	MoveMemory__J_3BI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3CI_FUNC,
+#else
+	MoveMemory__J_3CI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3DI_FUNC,
+#else
+	MoveMemory__J_3DI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3FI_FUNC,
+#else
+	MoveMemory__J_3FI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3II_FUNC,
+#else
+	MoveMemory__J_3II_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3JI_FUNC,
+#else
+	MoveMemory__J_3JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__I_3SI_FUNC,
+#else
+	MoveMemory__J_3SI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2JI_FUNC,
+#endif
 	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC,
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DOCHOSTUIINFO_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTREEVIEW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTCUSTOMDRAW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVDISPINFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVDISPINFO_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_NMUPDOWN_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_NMUPDOWN_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2JI_FUNC,
+#endif
 	MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2_3JI_FUNC,
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2_3II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2_3JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_UDACCEL_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_UDACCEL_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3BII_FUNC,
+#else
+	MoveMemory___3BJI_FUNC,
+#endif
 	MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I_FUNC,
 	MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I_FUNC,
+#ifndef JNI64
 	MoveMemory___3CII_FUNC,
+#else
+	MoveMemory___3CJI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3DII_FUNC,
+#else
+	MoveMemory___3DJI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3FII_FUNC,
+#else
+	MoveMemory___3FJI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3III_FUNC,
+#else
+	MoveMemory___3IJI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3JII_FUNC,
+#else
+	MoveMemory___3JJI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3SII_FUNC,
+#else
+	MoveMemory___3SJI_FUNC,
+#endif
 	MoveToEx_FUNC,
 	MsgWaitForMultipleObjectsEx_FUNC,
+#ifndef JNI64
 	MultiByteToWideChar__IIII_3CI_FUNC,
+#else
+	MultiByteToWideChar__IIJI_3CI_FUNC,
+#endif
 	MultiByteToWideChar__II_3BI_3CI_FUNC,
 	NMCUSTOMDRAW_1sizeof_FUNC,
 	NMHDR_1sizeof_FUNC,
@@ -698,10 +1150,26 @@ typedef enum {
 	RegOpenKeyExW_FUNC,
 	RegQueryInfoKeyA_FUNC,
 	RegQueryInfoKeyW_FUNC,
+#ifndef JNI64
 	RegQueryValueExA__I_3BI_3I_3B_3I_FUNC,
+#else
+	RegQueryValueExA__J_3BJ_3I_3B_3I_FUNC,
+#endif
+#ifndef JNI64
 	RegQueryValueExA__I_3BI_3I_3I_3I_FUNC,
+#else
+	RegQueryValueExA__J_3BJ_3I_3I_3I_FUNC,
+#endif
+#ifndef JNI64
 	RegQueryValueExW__I_3CI_3I_3C_3I_FUNC,
+#else
+	RegQueryValueExW__J_3CJ_3I_3C_3I_FUNC,
+#endif
+#ifndef JNI64
 	RegQueryValueExW__I_3CI_3I_3I_3I_FUNC,
+#else
+	RegQueryValueExW__J_3CJ_3I_3I_3I_FUNC,
+#endif
 	RegisterClassA_FUNC,
 	RegisterClassW_FUNC,
 	RegisterClipboardFormatA_FUNC,
@@ -778,71 +1246,331 @@ typedef enum {
 	SelectObject_FUNC,
 	SelectPalette_FUNC,
 	SendInput_FUNC,
+#ifndef JNI64
 	SendMessageA__IIII_FUNC,
+#else
+	SendMessageA__JIJJ_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_HDITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_HDLAYOUT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_MARGINS_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_POINT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_SYSTEMTIME_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TCITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_TVSORTCB_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2_FUNC,
+#else
+	SendMessageA__JIJLorg_eclipse_swt_internal_win32_UDACCEL_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__III_3B_FUNC,
+#else
+	SendMessageA__JIJ_3B_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__III_3C_FUNC,
+#else
+	SendMessageA__JIJ_3C_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__III_3I_FUNC,
+#else
+	SendMessageA__JIJ_3I_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__III_3S_FUNC,
+#else
+	SendMessageA__JIJ_3S_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__II_3II_FUNC,
+#else
+	SendMessageA__JI_3JJ_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageA__II_3I_3I_FUNC,
+#else
+	SendMessageA__JI_3I_3I_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIII_FUNC,
+#else
+	SendMessageW__JIJJ_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_HDITEM_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_HDITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_HDLAYOUT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_LITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVCOLUMN_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_LVITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_MARGINS_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_MCHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_POINT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_REBARBANDINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_SIZE_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_SYSTEMTIME_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TBBUTTONINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TBBUTTON_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TCHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TCITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TOOLINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVHITTESTINFO_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_TVSORTCB_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__IIILorg_eclipse_swt_internal_win32_UDACCEL_2_FUNC,
+#else
+	SendMessageW__JIJLorg_eclipse_swt_internal_win32_UDACCEL_2_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__III_3C_FUNC,
+#else
+	SendMessageW__JIJ_3C_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__III_3I_FUNC,
+#else
+	SendMessageW__JIJ_3I_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__III_3S_FUNC,
+#else
+	SendMessageW__JIJ_3S_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__II_3II_FUNC,
+#else
+	SendMessageW__JI_3JJ_FUNC,
+#endif
+#ifndef JNI64
 	SendMessageW__II_3I_3I_FUNC,
+#else
+	SendMessageW__JI_3I_3I_FUNC,
+#endif
 	SetActiveWindow_FUNC,
 	SetBkColor_FUNC,
 	SetBkMode_FUNC,
@@ -959,25 +1687,85 @@ typedef enum {
 	ValidateRect_FUNC,
 	VkKeyScanA_FUNC,
 	VkKeyScanW_FUNC,
+#ifndef JNI64
 	VtblCall__II_FUNC,
+#else
+	VtblCall__IJ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__III_FUNC,
+#else
+	VtblCall__IJI_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIIII_3I_FUNC,
+#else
+	VtblCall__IJIII_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIIJI_3J_FUNC,
+#else
+	VtblCall__IJIJI_3J_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__III_3I_3I_FUNC,
+#else
+	VtblCall__IJI_3J_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJ_FUNC,
+#else
+	VtblCall__IJJ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJII_3J_FUNC,
+#else
+	VtblCall__IJJII_3J_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJJI_3J_FUNC,
+#else
+	VtblCall__IJJJI_3J_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,
+#else
+	VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIS_3B_3B_3B_FUNC,
+#else
+	VtblCall__IJS_3B_3B_3B_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__II_3B_3I_FUNC,
+#else
+	VtblCall__IJ_3B_3J_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__II_3CII_3I_3I_FUNC,
+#else
+	VtblCall__IJ_3CII_3I_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__II_3I_FUNC,
+#else
+	VtblCall__IJ_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__II_3J_FUNC,
+#else
+	VtblCall__IJ_3J_FUNC,
+#endif
 	WINDOWPLACEMENT_1sizeof_FUNC,
 	WINDOWPOS_1sizeof_FUNC,
 	WNDCLASS_1sizeof_FUNC,
 	WaitMessage_FUNC,
+#ifndef JNI64
 	WideCharToMultiByte__II_3CIII_3B_3Z_FUNC,
+#else
+	WideCharToMultiByte__II_3CIJI_3B_3Z_FUNC,
+#endif
 	WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC,
 	WindowFromDC_FUNC,
 	WindowFromPoint_FUNC,

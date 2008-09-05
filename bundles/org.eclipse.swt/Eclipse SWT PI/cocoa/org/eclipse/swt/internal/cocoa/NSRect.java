@@ -23,9 +23,13 @@ package org.eclipse.swt.internal.cocoa;
 
 
 public class NSRect {
+	/** @field accessor=origin.x */
 	public float /*double*/ x;
+	/** @field accessor=origin.y */
 	public float /*double*/ y;
+	/** @field accessor=size.width */
 	public float /*double*/ width;
+	/** @field accessor=size.height */
 	public float /*double*/ height;
 	public static final int sizeof = OS.NSRect_sizeof();
 }

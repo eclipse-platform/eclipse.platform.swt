@@ -24,7 +24,7 @@
 #endif
 
 #ifndef RETURN_TYPE
-#define RETURN_TYPE SWT_PTR
+#define RETURN_TYPE jintLong
 #endif
 
 #ifndef RETURN_CAST
@@ -57,7 +57,7 @@ typedef struct CALLBACK_DATA {
 	jboolean isStatic;
 	jboolean isArrayBased; 
 	jint argCount;
-	SWT_PTR errorResult;
+	jintLong errorResult;
 } CALLBACK_DATA;
 
 #endif /* ifndef INC_callback_H */

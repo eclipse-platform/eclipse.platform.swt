@@ -10,8 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
+/**
+ * @jniclass flags=struct
+ */
 public class objc_super {
+	/** @field cast=(id) */
 	public int /*long*/ receiver;
+	/** @field cast=(Class) */
 	public int /*long*/ super_class;
 	public static final int sizeof = OS.objc_super_sizeof();	
 }

@@ -61,7 +61,7 @@ public static void main (String [] args) {
 	display.dispose ();
 }
 
-void open () {
+public void open () {
 	display = Display.getCurrent ();
 	shell = new Shell (display);
 	shell.setText ("S-Leak");

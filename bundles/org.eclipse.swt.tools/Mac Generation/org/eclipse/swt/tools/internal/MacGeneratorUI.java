@@ -27,16 +27,13 @@ import org.eclipse.swt.widgets.*;
 
 public class MacGeneratorUI {
 	MacGenerator gen;
+	boolean actions = true;
 
-	Display display;
-	Shell shell;
 	Tree nodesTree;
 	Table attribTable;
 
-	public MacGeneratorUI(String[] xmls) {
-		gen = new MacGenerator(xmls);
-		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
-		gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
+	public MacGeneratorUI(MacGenerator gen) {
+		this.gen = gen;
 	}
 
 	TreeItem lastParent;
@@ -89,6 +86,7 @@ public class MacGeneratorUI {
 	    }
 	    item.setChecked(checked);
 	    item.setGrayed(grayed);
+	    updateGenAttribute(item);
 	    checkPath(item.getParentItem(), checked, grayed);
 	}
 	
@@ -139,24 +137,41 @@ public class MacGeneratorUI {
 			}
 		}
 	}
+	
 	void checkItems(TreeItem item, boolean checked) {
 	    item.setGrayed(false);
 	    item.setChecked(checked);
-	    /*
-	     * Note that this creates the whole tree underneath item
-	     * so that the checked/grayed state can be kept in the
-	     * UI only and updated when generate is called. This can
-	     * be very expensive.
-	     */
-	    checkChildren(item);
+	    updateGenAttribute(item);
 	    TreeItem[] items = item.getItems();
-	    for (int i = 0; i < items.length; i++) {
-	        checkItems(items[i], checked);
+	    if (items.length == 1 && items[0].getData() == null) {
+	    	/* Update model only if view is not created */
+			Node node = (Node)item.getData();
+			NodeList childNodes = node.getChildNodes();
+			for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+				checkNodes(childNodes.item(i), checked);
+			}
+	    } else {
+		    for (int i = 0; i < items.length; i++) {
+		        checkItems(items[i], checked);
+		    }
 	    }
 	}
 	
+	void checkNodes(Node node, boolean checked) {
+		if (node instanceof Element) {
+			if (checked) {
+				((Element)node).setAttribute("swt_gen", "true");
+			} else {
+				((Element)node).removeAttribute("swt_gen");
+			}
+		}
+		NodeList childNodes = node.getChildNodes();
+		for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+			checkNodes(childNodes.item(i), checked);
+		}
+	}
+	
 	void cleanup() {
-		display.dispose();
 	}
 
 	Composite createSignaturesPanel(Composite parent) {
@@ -219,6 +234,7 @@ public class MacGeneratorUI {
 		Composite comp = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginWidth = 0;
+		if (!actions) layout.marginRight = 5;
 		comp.setLayout(layout);
 		
 		Label label = new Label(comp, SWT.NONE);
@@ -315,28 +331,32 @@ public class MacGeneratorUI {
 		generate.setText("Generate");
 		generate.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				TreeItem[] items = nodesTree.getItems();
-				for (int i = 0; i < items.length; i++) {
-					updateGenAttribute(items[i]);
-				}
-				gen.generateAll();
+				generate();
 			}
 		});
 		return panel;
 	}
 	
-	public void open() {
-		display = new Display();
-		shell = new Shell(display);
-
-		Composite parent = shell;
+	public void generate() {
+		gen.generateAll();
+	}
+	
+	public boolean getActionsVisible() {
+		return actions;
+	}
+	
+	public void open(Composite parent) {
 		FormLayout layout = new FormLayout();
 		parent.setLayout(layout);
 		
 		Composite signaturePanel = createSignaturesPanel(parent);
 		final Sash sash = new Sash(parent, SWT.SMOOTH | SWT.VERTICAL);
 		Composite propertiesPanel = createPropertiesPanel(parent);
-		Composite actionsPanel = createActionsPanel(parent);
+		
+		Composite actionsPanel = null;
+		if (actions) {
+			actionsPanel = createActionsPanel(parent);
+		}
 
 		FormData data;
 		
@@ -348,7 +368,7 @@ public class MacGeneratorUI {
 		signaturePanel.setLayoutData(data);
 		
 		data = new FormData();
-		data.left = new FormAttachment(null, Math.max(200, shell.getSize().x / 2));
+		data.left = new FormAttachment(null, Math.max(200, parent.getSize().x / 2));
 		data.top = new FormAttachment(0, 0);
 		data.bottom = new FormAttachment(100, 0);
 		sash.setLayoutData(data);
@@ -356,15 +376,17 @@ public class MacGeneratorUI {
 		data = new FormData();
 		data.left = new FormAttachment(sash, sash.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
 		data.top = new FormAttachment(0, 0);
-		data.right = new FormAttachment(actionsPanel, 0);
+		data.right = actionsPanel != null ? new FormAttachment(actionsPanel, 0) : new FormAttachment(100, 0);
 		data.bottom = new FormAttachment(100, 0);
 		propertiesPanel.setLayoutData(data);
 
-		data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.right = new FormAttachment(100, 0);
-		data.bottom = new FormAttachment(100, 0);
-		actionsPanel.setLayoutData(data);
+		if (actionsPanel != null) {
+			data = new FormData();
+			data.top = new FormAttachment(0, 0);
+			data.right = new FormAttachment(100, 0);
+			data.bottom = new FormAttachment(100, 0);
+			actionsPanel.setLayoutData(data);
+		}
 		
 		sash.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -382,12 +404,7 @@ public class MacGeneratorUI {
 		updateNodes();
 	}
 
-	public void run() {
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
+	public void dispose() {
 		cleanup();
 	}
 	
@@ -434,7 +451,7 @@ public class MacGeneratorUI {
 			}
 			index++;
 		}
-		display.beep();
+		nodesTree.getDisplay().beep();
 	}
 	
 	void selectNode(Node node) {
@@ -490,7 +507,7 @@ public class MacGeneratorUI {
 			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
 			attribItem.setText(extraAttribs[i]);
 			attribItem.setData(node);
-			attribItem.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			attribItem.setForeground(item.getDisplay().getSystemColor(SWT.COLOR_BLUE));
 			Node attrib = attributes.getNamedItem(extraAttribs[i]);
 			if (attrib != null) {
 				attribItem.setText(1, attrib.getNodeValue());
@@ -523,10 +540,6 @@ public class MacGeneratorUI {
 				node.removeAttribute("swt_gen");
 			}
 		}
-		TreeItem[] items = item.getItems();
-		for (int i = 0; i < items.length; i++) {
-			updateGenAttribute(items[i]);
-		}
 	}
 	
 	void updateNodes() {
@@ -552,6 +565,14 @@ public class MacGeneratorUI {
 			columns[i].pack();
 		}
 	}
+	
+	public void setActionsVisible(boolean visible) {
+		this.actions = visible;
+	}
+	
+	public void setFocus() {
+		nodesTree.setFocus();
+	}
 
 	public static void main(String[] args) {
 //		args = new String[]{
@@ -560,9 +581,21 @@ public class MacGeneratorUI {
 //			"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
 //		};
 		try {
-			MacGeneratorUI ui = new MacGeneratorUI(args);
-			ui.open();
-			ui.run();
+			Display display = new Display();
+			Shell shell = new Shell(display);
+			MacGenerator gen = new MacGenerator();
+			gen.setXmls(args);
+			gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
+			gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
+			MacGeneratorUI ui = new MacGeneratorUI(gen);
+			ui.open(shell);
+			shell.open();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch())
+					display.sleep();
+			}
+			ui.dispose();
+			display.dispose();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

@@ -177,7 +177,19 @@ typedef enum {
 	cairo_1path_1t_1sizeof_FUNC,
 	cairo_1text_1extents_1t_1sizeof_FUNC,
 	cairo_1version_FUNC,
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2II_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2JJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove___3DII_FUNC,
+#else
+	memmove___3DJJ_FUNC,
+#endif
 } Cairo_FUNCS;

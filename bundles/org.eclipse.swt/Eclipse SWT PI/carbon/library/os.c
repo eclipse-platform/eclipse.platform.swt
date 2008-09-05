@@ -958,18 +958,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementCreateWithDataBrowserAndItemInfo)
 	rc = (jint)AXUIElementCreateWithDataBrowserAndItemInfo(arg0, lparg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, DataBrowserAccessibilityItemInfo *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(AXUIElementCreateWithDataBrowserAndItemInfo_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("AXUIElementCreateWithDataBrowserAndItemInfo"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, lparg1);
+		LOAD_FUNCTION(fp, AXUIElementCreateWithDataBrowserAndItemInfo)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, DataBrowserAccessibilityItemInfo *))fp)(arg0, lparg1);
 		}
 	}
 fail:
@@ -1003,18 +994,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementGetDataBrowserItemInfo)
 	rc = (jint)AXUIElementGetDataBrowserItemInfo(arg0, arg1, arg2, lparg3);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint, DataBrowserAccessibilityItemInfo *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(AXUIElementGetDataBrowserItemInfo_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("AXUIElementGetDataBrowserItemInfo"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, arg2, lparg3);
+		LOAD_FUNCTION(fp, AXUIElementGetDataBrowserItemInfo)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint, DataBrowserAccessibilityItemInfo *))fp)(arg0, arg1, arg2, lparg3);
 		}
 	}
 fail:
@@ -1798,18 +1780,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGBitmapContextCreateImage)
 	rc = (jint)CGBitmapContextCreateImage(arg0);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CGBitmapContextCreateImage_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CGBitmapContextCreateImage"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0);
+		LOAD_FUNCTION(fp, CGBitmapContextCreateImage)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, CGBitmapContextCreateImage_FUNC);
@@ -2186,17 +2159,9 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetBlendMode)
 	CGContextSetBlendMode((CGContextRef)arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef void (*FPTR)(CGContextRef, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CGContextSetBlendMode_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CGContextSetBlendMode"));
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)((CGContextRef)arg0, arg1);
+		LOAD_FUNCTION(fp, CGContextSetBlendMode)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(CGContextRef, jint))fp)((CGContextRef)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, CGContextSetBlendMode_FUNC);
@@ -2769,18 +2734,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithImageInRect)
 	rc = (jint)CGImageCreateWithImageInRect(arg0, *lparg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, CGRect);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CGImageCreateWithImageInRect_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CGImageCreateWithImageInRect"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, *lparg1);
+		LOAD_FUNCTION(fp, CGImageCreateWithImageInRect)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, CGRect))fp)(arg0, *lparg1);
 		}
 	}
 fail:
@@ -4218,18 +4174,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserChangeAttributes)
 	rc = (jint)DataBrowserChangeAttributes(arg0, arg1, arg2);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserChangeAttributes_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserChangeAttributes"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, arg2);
+		LOAD_FUNCTION(fp, DataBrowserChangeAttributes)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint))fp)(arg0, arg1, arg2);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, DataBrowserChangeAttributes_FUNC);
@@ -4249,18 +4196,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserGetAttributes)
 	rc = (jint)DataBrowserGetAttributes(arg0, lparg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserGetAttributes_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserGetAttributes"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, lparg1);
+		LOAD_FUNCTION(fp, DataBrowserGetAttributes)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint *))fp)(arg0, lparg1);
 		}
 	}
 fail:
@@ -4284,18 +4222,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserGetMetric)
 	rc = (jint)DataBrowserGetMetric(arg0, arg1, lparg2, lparg3);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jboolean *, jfloat *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserGetMetric_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserGetMetric"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, lparg2, lparg3);
+		LOAD_FUNCTION(fp, DataBrowserGetMetric)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jboolean *, jfloat *))fp)(arg0, arg1, lparg2, lparg3);
 		}
 	}
 fail:
@@ -4316,18 +4245,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserSetMetric)
 	rc = (jint)DataBrowserSetMetric(arg0, arg1, arg2, arg3);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jboolean, jfloat);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserSetMetric_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserSetMetric"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3);
+		LOAD_FUNCTION(fp, DataBrowserSetMetric)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jboolean, jfloat))fp)(arg0, arg1, arg2, arg3);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, DataBrowserSetMetric_FUNC);
@@ -6464,18 +6384,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromIconFamilyPtr)
 	rc = (jint)GetIconRefFromIconFamilyPtr(arg0, arg1, lparg2);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(GetIconRefFromIconFamilyPtr_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("GetIconRefFromIconFamilyPtr"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, lparg2);
+		LOAD_FUNCTION(fp, GetIconRefFromIconFamilyPtr)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
@@ -7518,18 +7429,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HIComboBoxIsListVisible)
 	rc = (jboolean)HIComboBoxIsListVisible((HIViewRef)arg0);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jboolean (*FPTR)(HIViewRef);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIComboBoxIsListVisible_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIComboBoxIsListVisible"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jboolean)(*fptr)((HIViewRef)arg0);
+		LOAD_FUNCTION(fp, HIComboBoxIsListVisible)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HIViewRef))fp)((HIViewRef)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIComboBoxIsListVisible_FUNC);
@@ -7559,18 +7461,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxSetListVisible)
 	rc = (jint)HIComboBoxSetListVisible((HIViewRef)arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(HIViewRef, jboolean);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIComboBoxSetListVisible_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIComboBoxSetListVisible"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)((HIViewRef)arg0, arg1);
+		LOAD_FUNCTION(fp, HIComboBoxSetListVisible)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(HIViewRef, jboolean))fp)((HIViewRef)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIComboBoxSetListVisible_FUNC);
@@ -7602,18 +7495,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(HICreateTransformedCGImage)
 	rc = (jint)HICreateTransformedCGImage((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(CGImageRef, jint, CGImageRef *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HICreateTransformedCGImage_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HICreateTransformedCGImage"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
+		LOAD_FUNCTION(fp, HICreateTransformedCGImage)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(CGImageRef, jint, CGImageRef *))fp)((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
 		}
 	}
 fail:
@@ -7807,18 +7691,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeCreateWithQDRgn)
 	rc = (jint)HIShapeCreateWithQDRgn(arg0);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIShapeCreateWithQDRgn_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIShapeCreateWithQDRgn"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0);
+		LOAD_FUNCTION(fp, HIShapeCreateWithQDRgn)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIShapeCreateWithQDRgn_FUNC);
@@ -7836,18 +7711,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeReplacePathInCGContext)
 	rc = (jint)HIShapeReplacePathInCGContext(arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIShapeReplacePathInCGContext_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIShapeReplacePathInCGContext"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1);
+		LOAD_FUNCTION(fp, HIShapeReplacePathInCGContext)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIShapeReplacePathInCGContext_FUNC);
@@ -8398,18 +8264,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetFill)
 	rc = (jint)HIThemeSetFill((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(ThemeBrush, void *, CGContextRef, HIThemeOrientation);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIThemeSetFill_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIThemeSetFill"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
+		LOAD_FUNCTION(fp, HIThemeSetFill)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(ThemeBrush, void *, CGContextRef, HIThemeOrientation))fp)((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIThemeSetFill_FUNC);
@@ -8427,18 +8284,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetTextFill)
 	rc = (jint)HIThemeSetTextFill(arg0, arg1, arg2, arg3);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIThemeSetTextFill_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIThemeSetTextFill"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3);
+		LOAD_FUNCTION(fp, HIThemeSetTextFill)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, HIThemeSetTextFill_FUNC);
@@ -9559,18 +9407,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(LSCopyAllRoleHandlersForContentType)
 	rc = (jint)LSCopyAllRoleHandlersForContentType((CFStringRef)arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(CFStringRef, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(LSCopyAllRoleHandlersForContentType_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("LSCopyAllRoleHandlersForContentType"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)((CFStringRef)arg0, arg1);
+		LOAD_FUNCTION(fp, LSCopyAllRoleHandlersForContentType)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(CFStringRef, jint))fp)((CFStringRef)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, LSCopyAllRoleHandlersForContentType_FUNC);
@@ -9930,18 +9769,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(NavDialogSetFilterTypeIdentifiers)
 	rc = (jint)NavDialogSetFilterTypeIdentifiers(arg0, arg1);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(NavDialogSetFilterTypeIdentifiers_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("NavDialogSetFilterTypeIdentifiers"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1);
+		LOAD_FUNCTION(fp, NavDialogSetFilterTypeIdentifiers)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, NavDialogSetFilterTypeIdentifiers_FUNC);
@@ -10427,18 +10257,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMPrinterGetOutputResolution)
 	rc = (jint)PMPrinterGetOutputResolution((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(PMPrinter, PMPrintSettings, PMResolution *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(PMPrinterGetOutputResolution_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("PMPrinterGetOutputResolution"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
+		LOAD_FUNCTION(fp, PMPrinterGetOutputResolution)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(PMPrinter, PMPrintSettings, PMResolution *))fp)((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
 		}
 	}
 fail:
@@ -10830,18 +10651,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMShowPrintDialogWithOptions)
 	rc = (jint)PMShowPrintDialogWithOptions(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint, jint, jboolean *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(PMShowPrintDialogWithOptions_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("PMShowPrintDialogWithOptions"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3, lparg4);
+		LOAD_FUNCTION(fp, PMShowPrintDialogWithOptions)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint, jint, jboolean *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}
 	}
 fail:

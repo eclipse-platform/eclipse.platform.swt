@@ -19,7 +19,7 @@ extern "C" {
 
 #ifndef NO_strlen_1PRUnichar
 JNIEXPORT jint JNICALL XPCOM_NATIVE(strlen_1PRUnichar)
-	(JNIEnv *env, jclass that, SWT_PTR arg0)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	jint rc;
 	XPCOM_NATIVE_ENTER(env, that, strlen_1PRUnichar_FUNC);

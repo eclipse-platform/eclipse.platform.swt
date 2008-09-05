@@ -26,7 +26,7 @@ void cacheDtActionArgFields(JNIEnv *env, jobject lpObject)
 	if (DtActionArgFc.cached) return;
 	DtActionArgFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	DtActionArgFc.argClass = (*env)->GetFieldID(env, DtActionArgFc.clazz, "argClass", "I");
-	DtActionArgFc.name = (*env)->GetFieldID(env, DtActionArgFc.clazz, "name", "I");
+	DtActionArgFc.name = (*env)->GetFieldID(env, DtActionArgFc.clazz, "name", I_J);
 	DtActionArgFc.cached = 1;
 }
 
@@ -34,7 +34,7 @@ DtActionArg *getDtActionArgFields(JNIEnv *env, jobject lpObject, DtActionArg *lp
 {
 	if (!DtActionArgFc.cached) cacheDtActionArgFields(env, lpObject);
 	lpStruct->argClass = (*env)->GetIntField(env, lpObject, DtActionArgFc.argClass);
-	lpStruct->u.file.name = (char *)(*env)->GetIntField(env, lpObject, DtActionArgFc.name);
+	lpStruct->u.file.name = (char *)(*env)->GetIntLongField(env, lpObject, DtActionArgFc.name);
 	return lpStruct;
 }
 
@@ -42,7 +42,7 @@ void setDtActionArgFields(JNIEnv *env, jobject lpObject, DtActionArg *lpStruct)
 {
 	if (!DtActionArgFc.cached) cacheDtActionArgFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, DtActionArgFc.argClass, (jint)lpStruct->argClass);
-	(*env)->SetIntField(env, lpObject, DtActionArgFc.name, (jint)lpStruct->u.file.name);
+	(*env)->SetIntLongField(env, lpObject, DtActionArgFc.name, (jintLong)lpStruct->u.file.name);
 }
 #endif
 

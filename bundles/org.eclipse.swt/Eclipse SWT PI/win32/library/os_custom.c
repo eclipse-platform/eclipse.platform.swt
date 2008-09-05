@@ -35,12 +35,12 @@ BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 }
 
 #ifndef NO_GetLibraryHandle
-JNIEXPORT SWT_PTR JNICALL OS_NATIVE(GetLibraryHandle)
+JNIEXPORT jintLong JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
 {
-	SWT_PTR rc;
+	jintLong rc;
 	OS_NATIVE_ENTER(env, that, GetLibraryHandle_FUNC)
-	rc = (SWT_PTR)g_hInstance;
+	rc = (jintLong)g_hInstance;
 	OS_NATIVE_EXIT(env, that, GetLibraryHandle_FUNC)
 	return rc;
 }
@@ -78,18 +78,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 }
 #endif
 
-#if (!defined(NO_SendMessageW__II_3I_3I) && !defined(SWT_PTR_SIZE_64)) || (!defined(SendMessageW__JI_3I_3I) && defined(SWT_PTR_SIZE_64))
-#ifdef SWT_PTR_SIZE_64
-JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__JI_3I_3I)
+#if (!defined(NO_SendMessageW__II_3I_3I) && !defined(JNI64)) || (!defined(SendMessageW__JI_3I_3I) && defined(JNI64))
+#ifdef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageW__JI_3I_3I)
 #else
-JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
+JNIEXPORT jintLong JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 #endif
-	(JNIEnv *env, jclass that, SWT_PTR arg0, jint arg1, jintArray arg2, jintArray arg3)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintArray arg3)
 {
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
-	SWT_PTR rc = 0;
-#ifdef SWT_PTR_SIZE_64
+	jintLong rc = 0;
+#ifdef JNI64
 	OS_NATIVE_ENTER(env, that, SendMessageW__JI_3I_3I_FUNC)
 #else
 	OS_NATIVE_ENTER(env, that, SendMessageW__II_3I_3I_FUNC)
@@ -107,24 +107,24 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 		case EM_GETSEL:
 		case CB_GETEDITSEL: {
 			jint wParam = 0, lParam = 0;
-			SWT_PTR *lpwParam = NULL, *lplParam = NULL;
+			jintLong *lpwParam = NULL, *lplParam = NULL;
 			if (lparg2 != NULL) lpwParam = &wParam;
 			if (lparg3 != NULL) lplParam = &lParam;
-			rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
+			rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
 			if (lparg2 != NULL) lparg2[0] = wParam;
 			if (lparg3 != NULL) lparg3[0] = lParam;
 			break;
 		}
 		default:
-			rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+			rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 	}
 #else
-	rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+	rc = (jintLong)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 #endif
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-#ifdef SWT_PTR_SIZE_64
+#ifdef JNI64
 	OS_NATIVE_EXIT(env, that, SendMessageW__JI_3I_3I_FUNC)
 #else
 	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)

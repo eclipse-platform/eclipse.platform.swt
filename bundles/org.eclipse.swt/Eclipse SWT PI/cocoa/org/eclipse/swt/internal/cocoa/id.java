@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
+/**
+ * @jniclass flags=no_gen
+ */
 public class id {
 
 public int /*long*/ id;

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<templates>
+	<template id="org.eclipse.swt.tools.templates.jniclass" autoinsert="true" context="java" deleted="false" description="" enabled="true" name="jniclass">/** @jniclass flags=${flags:link(no_gen,cpp)} */</template>
+	<template id="org.eclipse.swt.tools.templates.jnifield" autoinsert="true" context="java" deleted="false" description="" enabled="true" name="jnifield">/** @field accessor=${},flags=${flags:link(no_gen,no_wince)} */</template>
+	<template id="org.eclipse.swt.tools.templates.jnimethod" autoinsert="true" context="java" deleted="false" description="" enabled="true" name="jnimethod">/** @method accessor=${},flags=${flags:link(no_gen, address, const, 'const address', dynamic, jni, cast, cpp, 'no_gen cpp', new, 'no_gen new', delete, gcnew, gcobject, setter, getter, adder)} */</template>
+	<template id="org.eclipse.swt.tools.templates.jniparam" autoinsert="true" context="java" deleted="false" description="" enabled="true" name="jniparam">/** @param ${} cast=(${cursor}),flags=${flags:link(no_int,no_out,critical,init,struct,unicode,sentinel,gcobject,'no_in critical','no_out critical')} */</template>
+</templates>

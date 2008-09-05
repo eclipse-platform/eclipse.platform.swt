@@ -40,38 +40,69 @@ public class OS extends C {
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 
 /** JNI natives */
+
+/** @method flags=jni */
 public static final native int /*long*/ NewGlobalRef(Object object);
+/**
+ * @method flags=jni
+ * @param globalRef cast=(jobject)
+ */
 public static final native void DeleteGlobalRef(int /*long*/ globalRef);
+/** @method flags=no_gen */ 
 public static final native Object JNIGetObject(int /*long*/ globalRef);
 
 /** Carbon calls */
+
 public static final native int Gestalt(int selector, int[] response);
+/** @param psn cast=(ProcessSerialNumber *) */
 public static final native int GetCurrentProcess(int[] psn);
+/** @param psn cast=(ProcessSerialNumber *) */
 public static final native int SetFrontProcess(int[] psn);
+/** @param psn cast=(ProcessSerialNumber *) */
 public static final native int TransformProcessType(int[] psn, int transformState);
 public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
 
 /** C calls */
+
 public static final native int getpid();
 
 /** QuickDraw calls */
+
+/** @method flags=dynamic */
 public static final native int /*long*/ NewRgn();
+/** @method flags=dynamic */
 public static final native void RectRgn(int /*long*/ rgnHandle, short[] rect);
+/** @method flags=dynamic */
 public static final native void OpenRgn();
+/** @method flags=dynamic */
 public static final native void OffsetRgn(int /*long*/ rgnHandle, short dh, short dv);
+/** @method flags=dynamic */
 public static final native void MoveTo(short h, short v);
+/** @method flags=dynamic */
 public static final native void LineTo(short h, short v);
+/** @method flags=dynamic */
 public static final native void UnionRgn(int /*long*/ srcRgnA, int /*long*/ srcRgnB, int /*long*/ dstRgn);
+/** @method flags=dynamic */
 public static final native void CloseRgn(int /*long*/ dstRgn);
+/** @method flags=dynamic */
 public static final native void DisposeRgn(int /*long*/ rgnHandle);
+/** @method flags=dynamic */
 public static final native boolean PtInRgn(short[] pt, int /*long*/ rgnHandle);
+/** @method flags=dynamic */
 public static final native void GetRegionBounds(int /*long*/ rgnHandle, short[] bounds);
+/** @method flags=dynamic */
 public static final native void SectRgn(int /*long*/ srcRgnA, int /*long*/ srcRgnB, int /*long*/ dstRgn);
+/** @method flags=dynamic */
 public static final native boolean EmptyRgn(int /*long*/ rgnHandle);
+/** @method flags=dynamic */
 public static final native void DiffRgn(int /*long*/ srcRgnA, int /*long*/ srcRgnB, int /*long*/ dstRgn);
+/** @method flags=dynamic */
 public static final native boolean RectInRgn(short[] rect, int /*long*/ rgnHandle);
+/** @method flags=dynamic */
 public static final native int QDRegionToRects(int /*long*/ rgn, int dir, int /*long*/ proc, int /*long*/ userData);
+/** @method flags=dynamic */
 public static final native void CopyRgn(int /*long*/ srcRgnHandle, int /*long*/ dstRgnHandle);
+/** @method flags=dynamic */
 public static final native void SetRect(short[] r, short left, short top, short right, short bottom);
 public static final int kQDParseRegionFromTop = (1 << 0);
 public static final int kQDParseRegionFromBottom = (1 << 1);
@@ -81,46 +112,106 @@ public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDP
 public static final int kQDRegionToRectsMsgParse = 2;
 
 /** Custom callbacks */
+
+/** @method flags=no_gen */
 public static final native int /*long*/ drawRect_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ drawInteriorWithFrame_inView_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ setFrame_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ setFrameOrigin_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ setFrameSize_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ hitTest_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ webView_setFrame_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ markedRange_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ selectedRange_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ attributedSubstringFromRange_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ setMarkedText_selectedRange_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ characterIndexForPoint_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ firstRectForCharacterRange_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int /*long*/ func);
 
 /** Custom structure return */
+
+/** @method flags=no_gen */
 public static final native void NSIntersectionRect (NSRect result, NSRect aRect, NSRect bRect);
 
 /** Objective-C runtime */
+
+/** @param cls cast=(Class) */
 public static final native boolean class_addIvar(int /*long*/ cls, String name, int /*long*/ size, byte alignment, String types);
+/**
+ * @param cls cast=(Class)
+ * @param name cast=(SEL)
+ * @param imp cast=(IMP)
+ */
 public static final native boolean class_addMethod(int /*long*/ cls, int /*long*/ name, int /*long*/ imp, String types);
+/**
+ * @param cls cast=(Class)
+ * @param protocol cast=(Protocol *)
+ */
 public static final native boolean class_addProtocol(int /*long*/ cls, int /*long*/ protocol);
+/** @method flags=dynamic */
 public static final native void instrumentObjcMessageSends(boolean val);
+/** @param superclass cast=(Class) */
 public static final native int /*long*/ objc_allocateClassPair(int /*long*/ superclass, String name, int /*long*/ extraBytes);
 public static final native int /*long*/ objc_getClass(String className);
 public static final native int /*long*/ objc_getProtocol(String name);
 public static final native int /*long*/ objc_lookUpClass(String className);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSPoint arg0);
+ /**
+  * @method flags=cast
+  * @param arg0 flags=struct
+  */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/** @param cls cast=(Class) */
 public static final native void objc_registerClassPair(int /*long*/ cls);
+/** @param obj cast=(id) */
 public static final native int /*long*/ object_getClassName(int /*long*/ obj);
+/**
+ * @param obj cast=(id)
+ * @param outValue cast=(void **)
+ */
 public static final native int /*long*/ object_getInstanceVariable(int /*long*/ obj, String name, int /*long*/ [] outValue);
-public static final native int /*long*/ object_setInstanceVariable(int /*long*/ obj, String name, int /*long*/ value);//TODO should value be a int[]
+/**
+ * @param obj cast=(id)
+ * @param value cast=(void *)
+ */
+public static final native int /*long*/ object_setInstanceVariable(int /*long*/ obj, String name, int /*long*/ value);
+/**
+ * @param obj cast=(id)
+ * @param clazz cast=(Class) 
+ */
 public static final native int /*long*/ object_setClass(int /*long*/ obj, int /*long*/ clazz);
 public static final native int /*long*/ sel_registerName(String selectorName);
 public static final native int objc_super_sizeof();
+
 
 /** This section is auto generated */
 
@@ -2851,160 +2942,411 @@ public static final int WebViewInsertActionPasted = 1;
 public static final int WebViewInsertActionTyped = 0;
 
 /** Globals */
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityPositionAttribute();
 public static final NSString NSAccessibilityPositionAttribute = new NSString(NSAccessibilityPositionAttribute());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySizeAttribute();
 public static final NSString NSAccessibilitySizeAttribute = new NSString(NSAccessibilitySizeAttribute());
+/** @method flags=const */
 public static final native int /*long*/ NSBackgroundColorAttributeName();
 public static final NSString NSBackgroundColorAttributeName = new NSString(NSBackgroundColorAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSBaselineOffsetAttributeName();
 public static final NSString NSBaselineOffsetAttributeName = new NSString(NSBaselineOffsetAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSCalibratedRGBColorSpace();
 public static final NSString NSCalibratedRGBColorSpace = new NSString(NSCalibratedRGBColorSpace());
+/** @method flags=const */
 public static final native int /*long*/ NSDeviceRGBColorSpace();
 public static final NSString NSDeviceRGBColorSpace = new NSString(NSDeviceRGBColorSpace());
+/** @method flags=const */
 public static final native int /*long*/ NSDeviceResolution();
 public static final NSString NSDeviceResolution = new NSString(NSDeviceResolution());
+/** @method flags=const */
 public static final native int /*long*/ NSFilenamesPboardType();
 public static final NSString NSFilenamesPboardType = new NSString(NSFilenamesPboardType());
+/** @method flags=const */
 public static final native int /*long*/ NSFontAttributeName();
 public static final NSString NSFontAttributeName = new NSString(NSFontAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSForegroundColorAttributeName();
 public static final NSString NSForegroundColorAttributeName = new NSString(NSForegroundColorAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSLinkAttributeName();
 public static final NSString NSLinkAttributeName = new NSString(NSLinkAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSParagraphStyleAttributeName();
 public static final NSString NSParagraphStyleAttributeName = new NSString(NSParagraphStyleAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintAllPages();
 public static final NSString NSPrintAllPages = new NSString(NSPrintAllPages());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintCopies();
 public static final NSString NSPrintCopies = new NSString(NSPrintCopies());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintFirstPage();
 public static final NSString NSPrintFirstPage = new NSString(NSPrintFirstPage());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintJobDisposition();
 public static final NSString NSPrintJobDisposition = new NSString(NSPrintJobDisposition());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintLastPage();
 public static final NSString NSPrintLastPage = new NSString(NSPrintLastPage());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintMustCollate();
 public static final NSString NSPrintMustCollate = new NSString(NSPrintMustCollate());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintPreviewJob();
 public static final NSString NSPrintPreviewJob = new NSString(NSPrintPreviewJob());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintSaveJob();
 public static final NSString NSPrintSaveJob = new NSString(NSPrintSaveJob());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintSavePath();
 public static final NSString NSPrintSavePath = new NSString(NSPrintSavePath());
+/** @method flags=const */
 public static final native int /*long*/ NSPrintSpoolJob();
 public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());
+/** @method flags=const */
 public static final native int /*long*/ NSRTFPboardType();
 public static final NSString NSRTFPboardType = new NSString(NSRTFPboardType());
+/** @method flags=const */
 public static final native int /*long*/ NSStrikethroughColorAttributeName();
 public static final NSString NSStrikethroughColorAttributeName = new NSString(NSStrikethroughColorAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSStrikethroughStyleAttributeName();
 public static final NSString NSStrikethroughStyleAttributeName = new NSString(NSStrikethroughStyleAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSStringPboardType();
 public static final NSString NSStringPboardType = new NSString(NSStringPboardType());
+/** @method flags=const */
 public static final native int /*long*/ NSTIFFPboardType();
 public static final NSString NSTIFFPboardType = new NSString(NSTIFFPboardType());
+/** @method flags=const */
 public static final native int /*long*/ NSURLPboardType();
 public static final NSString NSURLPboardType = new NSString(NSURLPboardType());
+/** @method flags=const */
 public static final native int /*long*/ NSUnderlineColorAttributeName();
 public static final NSString NSUnderlineColorAttributeName = new NSString(NSUnderlineColorAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSUnderlineStyleAttributeName();
 public static final NSString NSUnderlineStyleAttributeName = new NSString(NSUnderlineStyleAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSDefaultRunLoopMode();
 public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoopMode());
+/** @method flags=const */
 public static final native int /*long*/ NSErrorFailingURLStringKey();
 public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFailingURLStringKey());
 
 /** Functions */
+
+/**
+ * @param depth cast=(NSWindowDepth)
+ */
 public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
+/**
+ * @param newCursorPosition flags=struct */
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
+/**
+ * @param hfsFileTypeCode cast=(OSType)
+ */
 public static final native int /*long*/ NSFileTypeForHFSTypeCode(int hfsFileTypeCode);
+/**
+ * @param typePtr cast=(char*)
+ * @param sizep cast=(NSUInteger*)
+ * @param alignp cast=(NSUInteger*)
+ */
 public static final native int /*long*/ NSGetSizeAndAlignment(int /*long*/ typePtr, int[] /*long[]*/ sizep, int[] /*long[]*/ alignp);
+/**
+ * @param directory cast=(NSSearchPathDirectory)
+ * @param domainMask cast=(NSSearchPathDomainMask)
+ * @param expandTilde cast=(BOOL)
+ */
 public static final native int /*long*/ NSSearchPathForDirectoriesInDomains(int /*long*/ directory, int /*long*/ domainMask, boolean expandTilde);
 public static final native int /*long*/ NSTemporaryDirectory();
 
 /** Sends */
 
+/** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel);
+/** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSAffineTransformStruct arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ * @param arg2 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, NSPoint arg1, NSPoint arg2);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, NSPoint arg1, int /*long*/ arg2);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, NSRect arg1, int /*long*/ arg2, float /*double*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, float /*double*/ arg1, float /*double*/ arg2, float /*double*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, float /*double*/ arg1, float /*double*/ arg2, float /*double*/ arg3, boolean arg4);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, int /*long*/ arg1, float[] /*double[]*/ arg2);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, NSPoint arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, NSPoint arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ * @param arg2 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, NSRange arg1, NSRect arg2);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, NSRect arg1, int /*long*/ arg2, float /*double*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, boolean arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, float /*double*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, float /*double*/ arg1, float /*double*/ arg2);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1, boolean arg2, int /*long*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1, int /*long*/ arg2);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3, int /*long*/ arg4);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSSize arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, boolean arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, boolean arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, byte[] arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, byte[] arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, char[] arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, char[] arg0, NSRange arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, char[] arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, double arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, double arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, boolean arg4);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, float /*double*/ arg0, float /*double*/ arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, float /*double*/ arg0, float /*double*/ arg1, float /*double*/ arg2, float /*double*/ arg3);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, float[] /*double[]*/ arg0);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, float[] /*double[]*/ arg0, int /*long*/ arg1, float /*double*/ arg2);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, int /*long*/ arg2, double arg3, int /*long*/ arg4, int /*long*/ arg5, short arg6, int /*long*/ arg7, int /*long*/ arg8);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRange arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, boolean arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, float /*double*/ arg1);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg2 flags=struct
+ */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, NSRange arg2);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, boolean arg2);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, boolean arg5, boolean arg6, int /*long*/ arg7, int /*long*/ arg8, int /*long*/ arg9);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, boolean arg5, boolean arg6, int /*long*/ arg7, int /*long*/ arg8, int /*long*/ arg9, int /*long*/ arg10);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] arg0);
+/** @method flags=cast */
 public static final native int objc_msgSend(int id, int sel, float arg0);
+/** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, float arg0, double arg1);
+/** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, int arg0);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSAffineTransformStruct result, int /*long*/ id, int /*long*/ sel);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel, NSPoint arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, NSRect arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, boolean arg2);
+/** @method flags=cast */
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0, boolean arg1, boolean arg2, int /*long*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0, int /*long*/ arg1);
 
 /** Sizeof natives */
@@ -3018,21 +3360,86 @@ public static final native int NSRect_sizeof();
 public static final native int NSSize_sizeof();
 
 /** Memmove natives */
+
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, CGPoint src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(CGPoint dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, CGRect src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(CGRect dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, CGSize src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(CGSize dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, NSAffineTransformStruct src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(NSAffineTransformStruct dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, NSPoint src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(NSPoint dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, NSRange src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(NSRange dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, NSRect src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(NSRect dest, int /*long*/ src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(int /*long*/ dest, NSSize src, int /*long*/ size);
+/**
+ * @param dest cast=(void *),flags=no_in critical
+ * @param src cast=(void *),flags=critical
+ */
 public static final native void memmove(NSSize dest, int /*long*/ src, int /*long*/ size);
 
 /** This section is auto generated */

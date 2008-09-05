@@ -78,6 +78,10 @@
 	<antcall target="build_win32_dll"/>
 	<antcall target="clean"/>
 	<antcall target="build_wince_dll"/>
+	<antcall target="clean"/>
+	<antcall target="build_win32_x86_64_dll"/>
+	<antcall target="clean"/>
+	<antcall target="build_win32_ia64_dll"/>
 </target>
 
 <target name="clean">

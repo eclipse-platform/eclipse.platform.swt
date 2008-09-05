@@ -42,27 +42,111 @@ char * ATK_nativeFunctionNames[] = {
 	"_1atk_1relation_1set_1remove",
 	"_1atk_1state_1set_1add_1state",
 	"_1atk_1state_1set_1new",
+#ifndef JNI64
 	"_1call__II",
+#else
+	"_1call__JJ",
+#endif
+#ifndef JNI64
 	"_1call__III",
+#else
+	"_1call__JJJ",
+#endif
+#ifndef JNI64
 	"_1call__IIII",
+#else
+	"_1call__JJJJ",
+#endif
+#ifndef JNI64
 	"_1call__IIIII",
+#else
+	"_1call__JJJJJ",
+#endif
+#ifndef JNI64
 	"_1call__IIIIII",
+#else
+	"_1call__JJJJJJ",
+#endif
+#ifndef JNI64
 	"_1call__IIIIIII",
+#else
+	"_1call__JJJJJJJ",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2",
+#endif
+#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2",
+#else
+	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2J",
+#endif
+#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I",
+#else
+	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J",
+#endif
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

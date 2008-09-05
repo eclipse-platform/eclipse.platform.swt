@@ -102,8 +102,8 @@ void cachePROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject)
 {
 	if (PROCESS_INFORMATIONFc.cached) return;
 	PROCESS_INFORMATIONFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	PROCESS_INFORMATIONFc.hProcess = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "hProcess", "I");
-	PROCESS_INFORMATIONFc.hThread = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "hThread", "I");
+	PROCESS_INFORMATIONFc.hProcess = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "hProcess", I_J);
+	PROCESS_INFORMATIONFc.hThread = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "hThread", I_J);
 	PROCESS_INFORMATIONFc.dwProcessId = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "dwProcessId", "I");
 	PROCESS_INFORMATIONFc.dwThreadId = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "dwThreadId", "I");
 	PROCESS_INFORMATIONFc.cached = 1;
@@ -112,8 +112,8 @@ void cachePROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject)
 PROCESS_INFORMATION *getPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct)
 {
 	if (!PROCESS_INFORMATIONFc.cached) cachePROCESS_INFORMATIONFields(env, lpObject);
-	lpStruct->hProcess = (HANDLE)(*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.hProcess);
-	lpStruct->hThread = (HANDLE)(*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.hThread);
+	lpStruct->hProcess = (HANDLE)(*env)->GetIntLongField(env, lpObject, PROCESS_INFORMATIONFc.hProcess);
+	lpStruct->hThread = (HANDLE)(*env)->GetIntLongField(env, lpObject, PROCESS_INFORMATIONFc.hThread);
 	lpStruct->dwProcessId = (*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwProcessId);
 	lpStruct->dwThreadId = (*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwThreadId);
 	return lpStruct;
@@ -122,8 +122,8 @@ PROCESS_INFORMATION *getPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject,
 void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct)
 {
 	if (!PROCESS_INFORMATIONFc.cached) cachePROCESS_INFORMATIONFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.hProcess, (jint)lpStruct->hProcess);
-	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.hThread, (jint)lpStruct->hThread);
+	(*env)->SetIntLongField(env, lpObject, PROCESS_INFORMATIONFc.hProcess, (jintLong)lpStruct->hProcess);
+	(*env)->SetIntLongField(env, lpObject, PROCESS_INFORMATIONFc.hThread, (jintLong)lpStruct->hThread);
 	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwProcessId, (jint)lpStruct->dwProcessId);
 	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwThreadId, (jint)lpStruct->dwThreadId);
 }
@@ -144,19 +144,19 @@ void cacheSHELLEXECUTEINFOWFields(JNIEnv *env, jobject lpObject)
 	SHELLEXECUTEINFOWFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	SHELLEXECUTEINFOWFc.cbSize = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "cbSize", "I");
 	SHELLEXECUTEINFOWFc.fMask = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "fMask", "I");
-	SHELLEXECUTEINFOWFc.hwnd = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hwnd", "I");
-	SHELLEXECUTEINFOWFc.lpVerb = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpVerb", "I");
+	SHELLEXECUTEINFOWFc.hwnd = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hwnd", I_J);
+	SHELLEXECUTEINFOWFc.lpVerb = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpVerb", I_J);
 	SHELLEXECUTEINFOWFc.lpFile = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpFile", "I");
-	SHELLEXECUTEINFOWFc.lpParameters = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpParameters", "I");
-	SHELLEXECUTEINFOWFc.lpDirectory = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpDirectory", "I");
+	SHELLEXECUTEINFOWFc.lpParameters = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpParameters", I_J);
+	SHELLEXECUTEINFOWFc.lpDirectory = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpDirectory", I_J);
 	SHELLEXECUTEINFOWFc.nShow = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "nShow", "I");
-	SHELLEXECUTEINFOWFc.hInstApp = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hInstApp", "I");
-	SHELLEXECUTEINFOWFc.lpIDList = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpIDList", "I");
-	SHELLEXECUTEINFOWFc.lpClass = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpClass", "I");
-	SHELLEXECUTEINFOWFc.hkeyClass = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hkeyClass", "I");
+	SHELLEXECUTEINFOWFc.hInstApp = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hInstApp", I_J);
+	SHELLEXECUTEINFOWFc.lpIDList = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpIDList", I_J);
+	SHELLEXECUTEINFOWFc.lpClass = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "lpClass", I_J);
+	SHELLEXECUTEINFOWFc.hkeyClass = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hkeyClass", I_J);
 	SHELLEXECUTEINFOWFc.dwHotKey = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "dwHotKey", "I");
-	SHELLEXECUTEINFOWFc.hIcon = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hIcon", "I");
-	SHELLEXECUTEINFOWFc.hProcess = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hProcess", "I");
+	SHELLEXECUTEINFOWFc.hIcon = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hIcon", I_J);
+	SHELLEXECUTEINFOWFc.hProcess = (*env)->GetFieldID(env, SHELLEXECUTEINFOWFc.clazz, "hProcess", I_J);
 	SHELLEXECUTEINFOWFc.cached = 1;
 }
 
@@ -165,19 +165,19 @@ SHELLEXECUTEINFOW *getSHELLEXECUTEINFOWFields(JNIEnv *env, jobject lpObject, SHE
 	if (!SHELLEXECUTEINFOWFc.cached) cacheSHELLEXECUTEINFOWFields(env, lpObject);
 	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.cbSize);
 	lpStruct->fMask = (*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.fMask);
-	lpStruct->hwnd = (HWND)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hwnd);
-	lpStruct->lpVerb = (LPWSTR)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpVerb);
+	lpStruct->hwnd = (HWND)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hwnd);
+	lpStruct->lpVerb = (LPWSTR)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpVerb);
 	lpStruct->lpFile = (LPWSTR)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpFile);
-	lpStruct->lpParameters = (LPWSTR)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpParameters);
-	lpStruct->lpDirectory = (LPWSTR)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpDirectory);
+	lpStruct->lpParameters = (LPWSTR)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpParameters);
+	lpStruct->lpDirectory = (LPWSTR)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpDirectory);
 	lpStruct->nShow = (*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.nShow);
-	lpStruct->hInstApp = (HINSTANCE)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hInstApp);
-	lpStruct->lpIDList = (LPVOID)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpIDList);
-	lpStruct->lpClass = (LPWSTR)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpClass);
-	lpStruct->hkeyClass = (HKEY)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hkeyClass);
+	lpStruct->hInstApp = (HINSTANCE)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hInstApp);
+	lpStruct->lpIDList = (LPVOID)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpIDList);
+	lpStruct->lpClass = (LPWSTR)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpClass);
+	lpStruct->hkeyClass = (HKEY)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hkeyClass);
 	lpStruct->dwHotKey = (*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.dwHotKey);
-	lpStruct->hIcon = (HANDLE)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hIcon);
-	lpStruct->hProcess = (HANDLE)(*env)->GetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hProcess);
+	lpStruct->hIcon = (HANDLE)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hIcon);
+	lpStruct->hProcess = (HANDLE)(*env)->GetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hProcess);
 	return lpStruct;
 }
 
@@ -186,19 +186,19 @@ void setSHELLEXECUTEINFOWFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFOW
 	if (!SHELLEXECUTEINFOWFc.cached) cacheSHELLEXECUTEINFOWFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.cbSize, (jint)lpStruct->cbSize);
 	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.fMask, (jint)lpStruct->fMask);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hwnd, (jint)lpStruct->hwnd);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpVerb, (jint)lpStruct->lpVerb);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hwnd, (jintLong)lpStruct->hwnd);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpVerb, (jintLong)lpStruct->lpVerb);
 	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpFile, (jint)lpStruct->lpFile);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpParameters, (jint)lpStruct->lpParameters);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpDirectory, (jint)lpStruct->lpDirectory);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpParameters, (jintLong)lpStruct->lpParameters);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpDirectory, (jintLong)lpStruct->lpDirectory);
 	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.nShow, (jint)lpStruct->nShow);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hInstApp, (jint)lpStruct->hInstApp);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpIDList, (jint)lpStruct->lpIDList);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.lpClass, (jint)lpStruct->lpClass);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hkeyClass, (jint)lpStruct->hkeyClass);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hInstApp, (jintLong)lpStruct->hInstApp);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpIDList, (jintLong)lpStruct->lpIDList);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.lpClass, (jintLong)lpStruct->lpClass);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hkeyClass, (jintLong)lpStruct->hkeyClass);
 	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.dwHotKey, (jint)lpStruct->dwHotKey);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hIcon, (jint)lpStruct->hIcon);
-	(*env)->SetIntField(env, lpObject, SHELLEXECUTEINFOWFc.hProcess, (jint)lpStruct->hProcess);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hIcon, (jintLong)lpStruct->hIcon);
+	(*env)->SetIntLongField(env, lpObject, SHELLEXECUTEINFOWFc.hProcess, (jintLong)lpStruct->hProcess);
 }
 #endif
 
@@ -216,9 +216,9 @@ void cacheSTARTUPINFOWFields(JNIEnv *env, jobject lpObject)
 	if (STARTUPINFOWFc.cached) return;
 	STARTUPINFOWFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	STARTUPINFOWFc.cb = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "cb", "I");
-	STARTUPINFOWFc.lpReserved = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpReserved", "I");
-	STARTUPINFOWFc.lpDesktop = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpDesktop", "I");
-	STARTUPINFOWFc.lpTitle = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpTitle", "I");
+	STARTUPINFOWFc.lpReserved = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpReserved", I_J);
+	STARTUPINFOWFc.lpDesktop = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpDesktop", I_J);
+	STARTUPINFOWFc.lpTitle = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpTitle", I_J);
 	STARTUPINFOWFc.dwX = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "dwX", "I");
 	STARTUPINFOWFc.dwY = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "dwY", "I");
 	STARTUPINFOWFc.dwXSize = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "dwXSize", "I");
@@ -229,10 +229,10 @@ void cacheSTARTUPINFOWFields(JNIEnv *env, jobject lpObject)
 	STARTUPINFOWFc.dwFlags = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "dwFlags", "I");
 	STARTUPINFOWFc.wShowWindow = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "wShowWindow", "S");
 	STARTUPINFOWFc.cbReserved2 = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "cbReserved2", "S");
-	STARTUPINFOWFc.lpReserved2 = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpReserved2", "I");
-	STARTUPINFOWFc.hStdInput = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "hStdInput", "I");
-	STARTUPINFOWFc.hStdOutput = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "hStdOutput", "I");
-	STARTUPINFOWFc.hStdError = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "hStdError", "I");
+	STARTUPINFOWFc.lpReserved2 = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "lpReserved2", I_J);
+	STARTUPINFOWFc.hStdInput = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "hStdInput", I_J);
+	STARTUPINFOWFc.hStdOutput = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "hStdOutput", I_J);
+	STARTUPINFOWFc.hStdError = (*env)->GetFieldID(env, STARTUPINFOWFc.clazz, "hStdError", I_J);
 	STARTUPINFOWFc.cached = 1;
 }
 
@@ -240,9 +240,9 @@ STARTUPINFOW *getSTARTUPINFOWFields(JNIEnv *env, jobject lpObject, STARTUPINFOW 
 {
 	if (!STARTUPINFOWFc.cached) cacheSTARTUPINFOWFields(env, lpObject);
 	lpStruct->cb = (*env)->GetIntField(env, lpObject, STARTUPINFOWFc.cb);
-	lpStruct->lpReserved = (LPWSTR)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.lpReserved);
-	lpStruct->lpDesktop = (LPWSTR)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.lpDesktop);
-	lpStruct->lpTitle = (LPWSTR)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.lpTitle);
+	lpStruct->lpReserved = (LPWSTR)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.lpReserved);
+	lpStruct->lpDesktop = (LPWSTR)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.lpDesktop);
+	lpStruct->lpTitle = (LPWSTR)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.lpTitle);
 	lpStruct->dwX = (*env)->GetIntField(env, lpObject, STARTUPINFOWFc.dwX);
 	lpStruct->dwY = (*env)->GetIntField(env, lpObject, STARTUPINFOWFc.dwY);
 	lpStruct->dwXSize = (*env)->GetIntField(env, lpObject, STARTUPINFOWFc.dwXSize);
@@ -253,10 +253,10 @@ STARTUPINFOW *getSTARTUPINFOWFields(JNIEnv *env, jobject lpObject, STARTUPINFOW 
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, STARTUPINFOWFc.dwFlags);
 	lpStruct->wShowWindow = (*env)->GetShortField(env, lpObject, STARTUPINFOWFc.wShowWindow);
 	lpStruct->cbReserved2 = (*env)->GetShortField(env, lpObject, STARTUPINFOWFc.cbReserved2);
-	lpStruct->lpReserved2 = (LPBYTE)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.lpReserved2);
-	lpStruct->hStdInput = (HANDLE)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.hStdInput);
-	lpStruct->hStdOutput = (HANDLE)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.hStdOutput);
-	lpStruct->hStdError = (HANDLE)(*env)->GetIntField(env, lpObject, STARTUPINFOWFc.hStdError);
+	lpStruct->lpReserved2 = (LPBYTE)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.lpReserved2);
+	lpStruct->hStdInput = (HANDLE)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.hStdInput);
+	lpStruct->hStdOutput = (HANDLE)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.hStdOutput);
+	lpStruct->hStdError = (HANDLE)(*env)->GetIntLongField(env, lpObject, STARTUPINFOWFc.hStdError);
 	return lpStruct;
 }
 
@@ -264,9 +264,9 @@ void setSTARTUPINFOWFields(JNIEnv *env, jobject lpObject, STARTUPINFOW *lpStruct
 {
 	if (!STARTUPINFOWFc.cached) cacheSTARTUPINFOWFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.cb, (jint)lpStruct->cb);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.lpReserved, (jint)lpStruct->lpReserved);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.lpDesktop, (jint)lpStruct->lpDesktop);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.lpTitle, (jint)lpStruct->lpTitle);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.lpReserved, (jintLong)lpStruct->lpReserved);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.lpDesktop, (jintLong)lpStruct->lpDesktop);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.lpTitle, (jintLong)lpStruct->lpTitle);
 	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.dwX, (jint)lpStruct->dwX);
 	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.dwY, (jint)lpStruct->dwY);
 	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.dwXSize, (jint)lpStruct->dwXSize);
@@ -277,10 +277,10 @@ void setSTARTUPINFOWFields(JNIEnv *env, jobject lpObject, STARTUPINFOW *lpStruct
 	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.dwFlags, (jint)lpStruct->dwFlags);
 	(*env)->SetShortField(env, lpObject, STARTUPINFOWFc.wShowWindow, (jshort)lpStruct->wShowWindow);
 	(*env)->SetShortField(env, lpObject, STARTUPINFOWFc.cbReserved2, (jshort)lpStruct->cbReserved2);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.lpReserved2, (jint)lpStruct->lpReserved2);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.hStdInput, (jint)lpStruct->hStdInput);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.hStdOutput, (jint)lpStruct->hStdOutput);
-	(*env)->SetIntField(env, lpObject, STARTUPINFOWFc.hStdError, (jint)lpStruct->hStdError);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.lpReserved2, (jintLong)lpStruct->lpReserved2);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.hStdInput, (jintLong)lpStruct->hStdInput);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.hStdOutput, (jintLong)lpStruct->hStdOutput);
+	(*env)->SetIntLongField(env, lpObject, STARTUPINFOWFc.hStdError, (jintLong)lpStruct->hStdError);
 }
 #endif
 

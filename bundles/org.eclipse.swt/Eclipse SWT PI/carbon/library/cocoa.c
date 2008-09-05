@@ -27,18 +27,9 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(HICocoaViewCreate)
 	rc = (jint)HICocoaViewCreate(arg0, arg1, lparg2);
 */
 	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(jint, jint, jint *);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HICocoaViewCreate_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HICocoaViewCreate"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0, arg1, lparg2);
+		LOAD_FUNCTION(fp, HICocoaViewCreate)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint *))fp)(arg0, arg1, lparg2);
 		}
 	}
 fail:
@@ -399,7 +390,11 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	NSRect _arg0, *lparg0=NULL;
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2);
+	} else {
+		*lparg0 = (*(NSRect (*)(void *, SEL))objc_msgSend)((void *)arg1, (SEL)arg2);
+	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
@@ -415,7 +410,11 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2, *lparg3, arg4);
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2, *lparg3, arg4);
+	} else {
+		*lparg0 = (*(NSRect (*)(void *, SEL, NSRect, jint))objc_msgSend)((void *)arg1, (SEL)arg2, *lparg3, arg4);
+	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);

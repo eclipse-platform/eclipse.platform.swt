@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,8 +19,8 @@ public class LockGenerator extends CleanupClass {
 public LockGenerator() {
 }
 
-String getParams(Method method) {
-	int n_args = method.getParameterTypes().length;
+String getParams(JNIMethod method) {
+	int n_args = method.getParameters().length;
 	if (n_args == 0) return "";
 	String name = method.getName();
 	String params = "";
@@ -39,9 +39,9 @@ String getParams(Method method) {
 	return params;
 }
 
-String getReturn(Method method) {
-	Class returnType = method.getReturnType();
-	if (returnType != Integer.TYPE) return getTypeSignature3(returnType);
+String getReturn(JNIMethod method) {
+	JNIType returnType = method.getReturnType();
+	if (!returnType.isType("int")) return returnType.getTypeSignature3(false);
 	String modifierStr = Modifier.toString(method.getModifiers());
 	String name = method.getName();
 	Pattern p = Pattern.compile(modifierStr + ".*" + name + ".*(.*)");
@@ -50,28 +50,28 @@ String getReturn(Method method) {
 		String methodStr = classSource.substring(m.start(), m.end());
 		int index = methodStr.indexOf("/*long*/");
 		if (index != -1 && index < methodStr.indexOf(name)) {
-			return getTypeSignature3(Integer.TYPE) + " /*long*/";
+			return new ReflectType(Integer.TYPE).getTypeSignature3(false) + " /*long*/";
 		}		
 	}
-	return getTypeSignature3(Integer.TYPE);
+	return new ReflectType(Integer.TYPE).getTypeSignature3(false);
 }
 
-public void generate(Class clazz) {
+public void generate(JNIClass clazz) {
 	super.generate(clazz);
-	Method[] methods = clazz.getDeclaredMethods();
+	JNIMethod[] methods = clazz.getDeclaredMethods();
 	generate(methods);
 }
 
-public void generate(Method[] methods) {
+public void generate(JNIMethod[] methods) {
 	sort(methods);	
 	for (int i = 0; i < methods.length; i++) {
-		Method method = methods[i];
+		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
 	}
 }
 
-public void generate(Method method) {
+public void generate(JNIMethod method) {
 	int modifiers = method.getModifiers();
 	boolean lock = (modifiers & Modifier.SYNCHRONIZED) != 0;
 	String returnStr = getReturn(method);
@@ -101,7 +101,7 @@ public void generate(Method method) {
 		outputln("\tlock.lock();");
 		outputln("\ttry {");
 		output("\t\t");
-		if (method.getReturnType() != Void.TYPE) {
+		if (!method.getReturnType().isType("void")) {
 			output("return ");
 		}
 		output("_");
@@ -133,7 +133,7 @@ public static void main(String[] args) {
 		String classSource = args[1]; 
 		Class clazz = Class.forName(clazzName);
 		gen.setClassSourcePath(classSource);
-		gen.generate(clazz);
+		gen.generate(new ReflectClass(clazz));
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);

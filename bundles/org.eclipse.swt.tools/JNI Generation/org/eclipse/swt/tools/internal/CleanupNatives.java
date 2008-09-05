@@ -18,24 +18,24 @@ public class CleanupNatives extends CleanupClass {
 public CleanupNatives() {
 }
 
-public void generate(Class clazz) {
+public void generate(JNIClass clazz) {
 	unusedCount = usedCount = 0;
 	super.generate(clazz);
-	Method[] methods = clazz.getDeclaredMethods();
+	JNIMethod[] methods = clazz.getDeclaredMethods();
 	generate(methods);
 	output("used=" + usedCount + " unused=" + unusedCount + " total=" + (unusedCount + usedCount));
 }
 
-public void generate(Method[] methods) {
+public void generate(JNIMethod[] methods) {
 	sort(methods);	
 	for (int i = 0; i < methods.length; i++) {
-		Method method = methods[i];
+		JNIMethod method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
 	}
 }
 
-public void generate(Method method) {
+public void generate(JNIMethod method) {
 	String name = method.getName();
 	Enumeration keys = files.keys();
 	while (keys.hasMoreElements()) {
@@ -85,7 +85,7 @@ public static void main(String[] args) {
 		Class clazz = Class.forName(clazzName);
 		gen.setSourcePath(sourcePath);
 		gen.setClassSourcePath(classSource);
-		gen.generate(clazz);
+		gen.generate(new ReflectClass(clazz));
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);

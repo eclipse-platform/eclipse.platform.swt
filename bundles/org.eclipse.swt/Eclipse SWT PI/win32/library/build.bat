@@ -37,7 +37,7 @@ IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft Platform SDK for Win
 call %MSSDK%\setenv /X64 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk50-x86_64
-set CFLAGS=-DSWT_PTR_SIZE_64
+set CFLAGS=-DJNI64
 shift
 GOTO MAKE
 
@@ -47,7 +47,7 @@ IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft Platform SDK for Win
 call %MSSDK%\setenv /SRV64 /RETAIL
 IF x.%OUTPUT_DIR%==x. set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.ia64
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk142-ia64
-set CFLAGS=-DSWT_PTR_SIZE_64
+set CFLAGS=-DJNI64
 shift
 GOTO MAKE
 

@@ -10,12 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class CleanupConstants extends CleanupClass {
 
-String getFieldValue(Field field) {
+String getFieldValue(JNIField field) {
 	String name = field.getName();
 	int index = 0;
 	while (true) {
@@ -29,24 +29,24 @@ String getFieldValue(Field field) {
 	}
 }
 
-public void generate(Class clazz) {
+public void generate(JNIClass clazz) {
 	unusedCount = usedCount = 0;
 	super.generate(clazz);
-	Field[] fields = clazz.getDeclaredFields();
+	JNIField[] fields = clazz.getDeclaredFields();
 	generate(fields);
 	output("used=" + usedCount + " unused=" + unusedCount + " total=" + (unusedCount + usedCount));
 }
 
-public void generate(Field[] fields) {
+public void generate(JNIField[] fields) {
 	sort(fields);
 	for (int i = 0; i < fields.length; i++) {
-		Field field = fields[i];
+		JNIField field = fields[i];
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}
 }
 
-public void generate(Field field) {
+public void generate(JNIField field) {
 	String name = field.getName();
 	Enumeration keys = files.keys();
 	while (keys.hasMoreElements()) {
@@ -58,7 +58,7 @@ public void generate(Field field) {
 			output("\t");
 			output(modifiersStr);
 			if (modifiersStr.length() > 0) output(" ");
-			output(getTypeSignature3(field.getType()));
+			output(field.getType().getTypeSignature3(false));
 			output(" " );
 			output(field.getName());
 			output(" = ");
@@ -86,7 +86,7 @@ public static void main(String[] args) {
 		Class clazz = Class.forName(clazzName);
 		gen.setSourcePath(sourcePath);
 		gen.setClassSourcePath(classSource);
-		gen.generate(clazz);
+		gen.generate(new ReflectClass(clazz));
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);

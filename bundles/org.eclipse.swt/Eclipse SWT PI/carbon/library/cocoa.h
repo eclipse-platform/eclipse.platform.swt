@@ -19,4 +19,12 @@
 
 #include "cocoa_custom.h"
 
+#ifdef __i386__
+#define STRUCT_SIZE_LIMIT 8
+#elif __ppc__
+#define STRUCT_SIZE_LIMIT 4
+#elif __x86_64__
+#define STRUCT_SIZE_LIMIT 16
+#endif
+
 #endif /* INC_cocoa_H */

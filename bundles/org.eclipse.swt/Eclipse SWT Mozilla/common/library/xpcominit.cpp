@@ -29,9 +29,9 @@ JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GREVersionRange_1sizeof)
 #endif
 
 #ifndef NO_GRE_1GetGREPathWithProperties
-extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GRE_1GetGREPathWithProperties)(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
+extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GRE_1GetGREPathWithProperties)(JNIEnv *env, jclass that, jobject arg0, jint arg1, jintLong arg2, jint arg3, jintLong arg4, jint arg5);
 JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GRE_1GetGREPathWithProperties)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jintLong arg2, jint arg3, jintLong arg4, jint arg5)
 {
 	GREVersionRange _arg0, *lparg0=NULL;
 	jint rc = 0;

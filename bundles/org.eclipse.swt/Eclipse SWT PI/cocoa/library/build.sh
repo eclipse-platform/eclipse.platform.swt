@@ -18,6 +18,6 @@ export OUTPUT_DIR
 
 export MACOSX_DEPLOYMENT_TARGET=10.5
 
-export ARCHS="-arch i386 -arch ppc"
+export ARCHS="-arch i386 -arch ppc -arch x86_64"
 
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9

@@ -113,7 +113,7 @@ void cachecairo_path_tFields(JNIEnv *env, jobject lpObject)
 	if (cairo_path_tFc.cached) return;
 	cairo_path_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	cairo_path_tFc.status = (*env)->GetFieldID(env, cairo_path_tFc.clazz, "status", "I");
-	cairo_path_tFc.data = (*env)->GetFieldID(env, cairo_path_tFc.clazz, "data", "I");
+	cairo_path_tFc.data = (*env)->GetFieldID(env, cairo_path_tFc.clazz, "data", I_J);
 	cairo_path_tFc.num_data = (*env)->GetFieldID(env, cairo_path_tFc.clazz, "num_data", "I");
 	cairo_path_tFc.cached = 1;
 }
@@ -122,7 +122,7 @@ cairo_path_t *getcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t 
 {
 	if (!cairo_path_tFc.cached) cachecairo_path_tFields(env, lpObject);
 	lpStruct->status = (*env)->GetIntField(env, lpObject, cairo_path_tFc.status);
-	lpStruct->data = (cairo_path_data_t *)(*env)->GetIntField(env, lpObject, cairo_path_tFc.data);
+	lpStruct->data = (cairo_path_data_t *)(*env)->GetIntLongField(env, lpObject, cairo_path_tFc.data);
 	lpStruct->num_data = (*env)->GetIntField(env, lpObject, cairo_path_tFc.num_data);
 	return lpStruct;
 }
@@ -131,7 +131,7 @@ void setcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct
 {
 	if (!cairo_path_tFc.cached) cachecairo_path_tFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, cairo_path_tFc.status, (jint)lpStruct->status);
-	(*env)->SetIntField(env, lpObject, cairo_path_tFc.data, (jint)lpStruct->data);
+	(*env)->SetIntLongField(env, lpObject, cairo_path_tFc.data, (jintLong)lpStruct->data);
 	(*env)->SetIntField(env, lpObject, cairo_path_tFc.num_data, (jint)lpStruct->num_data);
 }
 #endif

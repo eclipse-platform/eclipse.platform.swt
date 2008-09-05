@@ -50,25 +50,109 @@ typedef enum {
 	_1atk_1relation_1set_1remove_FUNC,
 	_1atk_1state_1set_1add_1state_FUNC,
 	_1atk_1state_1set_1new_FUNC,
+#ifndef JNI64
 	_1call__II_FUNC,
+#else
+	_1call__JJ_FUNC,
+#endif
+#ifndef JNI64
 	_1call__III_FUNC,
+#else
+	_1call__JJJ_FUNC,
+#endif
+#ifndef JNI64
 	_1call__IIII_FUNC,
+#else
+	_1call__JJJJ_FUNC,
+#endif
+#ifndef JNI64
 	_1call__IIIII_FUNC,
+#else
+	_1call__JJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	_1call__IIIIII_FUNC,
+#else
+	_1call__JJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	_1call__IIIIIII_FUNC,
+#else
+	_1call__JJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J_FUNC,
+#endif
 } ATK_FUNCS;

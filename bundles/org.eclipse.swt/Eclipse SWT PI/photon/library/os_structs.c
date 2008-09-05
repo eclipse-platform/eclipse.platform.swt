@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -218,7 +218,7 @@ PgDisplaySettings_t *getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject,
 	lpStruct->flags = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.flags);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (jint *)lpStruct->reserved);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / sizeof(jint), (jint *)lpStruct->reserved);
 	}
 	return lpStruct;
 }
@@ -233,7 +233,7 @@ void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettin
 	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.flags, (jint)lpStruct->flags);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (jint *)lpStruct->reserved);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / sizeof(jint), (jint *)lpStruct->reserved);
 	}
 }
 #endif
@@ -1349,7 +1349,7 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	lpStruct->minfo = (PtFileSelectorInfo_t *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (jint *)lpStruct->spare);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / sizeof(jint), (jint *)lpStruct->spare);
 	}
 	return lpStruct;
 }
@@ -1389,7 +1389,7 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo, (jint)lpStruct->minfo);
 	{
 	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (jint *)lpStruct->spare);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / sizeof(jint), (jint *)lpStruct->spare);
 	}
 }
 #endif
