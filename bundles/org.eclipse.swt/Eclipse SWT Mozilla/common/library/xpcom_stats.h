@@ -776,7 +776,11 @@ typedef enum {
 	nsEmbedCString_1delete_FUNC,
 	nsEmbedCString_1get_FUNC,
 	nsEmbedCString_1new___FUNC,
+#ifndef JNI64
 	nsEmbedCString_1new__II_FUNC,
+#else
+	nsEmbedCString_1new__JI_FUNC,
+#endif
 	nsEmbedCString_1new___3BI_FUNC,
 	nsEmbedString_1Length_FUNC,
 	nsEmbedString_1delete_FUNC,

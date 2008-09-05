@@ -768,7 +768,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"nsEmbedCString_1delete",
 	"nsEmbedCString_1get",
 	"nsEmbedCString_1new__",
+#ifndef JNI64
 	"nsEmbedCString_1new__II",
+#else
+	"nsEmbedCString_1new__JI",
+#endif
 	"nsEmbedCString_1new___3BI",
 	"nsEmbedString_1Length",
 	"nsEmbedString_1delete",

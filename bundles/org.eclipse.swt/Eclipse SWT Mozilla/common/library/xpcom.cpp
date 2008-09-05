@@ -4912,15 +4912,27 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__)
 }
 #endif
 
-#ifndef NO_nsEmbedCString_1new__II
-extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__II)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+#if (!defined(NO_nsEmbedCString_1new__II) && !defined(JNI64)) || (!defined(NO_nsEmbedCString_1new__JI) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__II)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__II)(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+#else
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__JI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(nsEmbedCString_1new__JI)(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+#endif
 {
 	jintLong rc = 0;
+#ifndef JNI64
 	XPCOM_NATIVE_ENTER(env, that, nsEmbedCString_1new__II_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, nsEmbedCString_1new__JI_FUNC);
+#endif
 	rc = (jintLong)new nsEmbedCString((const char *)arg0, arg1);
+#ifndef JNI64
 	XPCOM_NATIVE_EXIT(env, that, nsEmbedCString_1new__II_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, nsEmbedCString_1new__JI_FUNC);
+#endif
 	return rc;
 }
 #endif
