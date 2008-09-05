@@ -75,6 +75,7 @@
 <!-- Build Windows and Pocket PC swt dlls -->
 <!-- Output .dlls for these platforms into the fragment directory -->
 <target name="build_dll">
+	<antcall target="clean"/>
 	<antcall target="build_win32_dll"/>
 	<antcall target="clean"/>
 	<antcall target="build_wince_dll"/>
