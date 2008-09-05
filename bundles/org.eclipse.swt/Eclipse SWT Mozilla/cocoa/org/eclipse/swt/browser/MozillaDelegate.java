@@ -46,6 +46,7 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 //		OS.CFRelease (cfstring);
 //	}
 //	return chars;
+	// TODO implement mbcsToWcs
 	return new String(buffer).toCharArray();
 }
 
@@ -67,6 +68,7 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 //		OS.CFRelease (cfstring);
 //	}
 //	return buffer;
+	// TODO implement wcsToMbcs
 	if (terminate) string += "\0";
 	return string.getBytes();
 }
