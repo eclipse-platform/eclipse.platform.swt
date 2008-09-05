@@ -9,7 +9,7 @@
             id="org.eclipse.swt.swt.tools">
       </category>
       <view
-            name="Mac Generator View"
+            name="Mac Generator"
             icon="icons/mac.gif"
             category="org.eclipse.swt.swt.tools"
             class="org.eclipse.swt.tools.views.MacGeneratorView"
