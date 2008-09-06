@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="SWT Tools"
+            name="%pluginName"
             id="org.eclipse.swt.swt.tools">
       </category>
       <view
-            name="Mac Generator"
-            icon="icons/mac.gif"
+            allowMultiple="false"
             category="org.eclipse.swt.swt.tools"
             class="org.eclipse.swt.tools.views.MacGeneratorView"
-            id="org.eclipse.swt.tools.views.MacGeneratorView">
+            icon="icons/mac.gif"
+            id="org.eclipse.swt.tools.views.MacGeneratorView"
+            name="%macViewName">
       </view>
    </extension>
 
