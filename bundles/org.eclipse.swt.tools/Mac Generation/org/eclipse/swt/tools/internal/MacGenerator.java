@@ -100,11 +100,31 @@ void merge(Document document, Document extraDocument) {
 	}
 }
 
-public void generateAll() {
+public void generate(ProgressMonitor progress) {
+	if (progress != null) {
+		progress.setTotal(4);
+		progress.setMessage("extra attributes...");
+	}
 	generateExtraAttributes();
+	if (progress != null) {
+		progress.step();
+		progress.setMessage(mainClassName);
+	}
 	generateMainClass();
+	if (progress != null) {
+		progress.step();
+		progress.setMessage("classes...");
+	}
 	generateClasses();
+	if (progress != null) {
+		progress.step();
+		progress.setMessage("C source...");
+	}
 	generateCSource();
+	if (progress != null) {
+		progress.setMessage("Done.");
+		progress.step();
+	}
 }
 
 void generateCSource() {
@@ -1493,7 +1513,7 @@ public static void main(String[] args) {
 		gen.setXmls(args);
 		gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
 		gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
-		gen.generateAll();
+		gen.generate(null);
 	} catch (Throwable e) {
 		e.printStackTrace();
 	}

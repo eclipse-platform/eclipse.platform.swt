@@ -331,14 +331,14 @@ public class MacGeneratorUI {
 		generate.setText("Generate");
 		generate.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				generate();
+				generate(null);
 			}
 		});
 		return panel;
 	}
 	
-	public void generate() {
-		gen.generateAll();
+	public void generate(ProgressMonitor progress) {
+		gen.generate(progress);
 	}
 	
 	public boolean getActionsVisible() {

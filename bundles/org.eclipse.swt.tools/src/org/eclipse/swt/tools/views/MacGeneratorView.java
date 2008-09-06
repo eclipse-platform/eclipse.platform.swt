@@ -2,6 +2,7 @@ package org.eclipse.swt.tools.views;
 
 import org.eclipse.swt.tools.internal.MacGenerator;
 import org.eclipse.swt.tools.internal.MacGeneratorUI;
+import org.eclipse.swt.tools.internal.ProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.core.resources.IResource;
@@ -46,13 +47,20 @@ public class MacGeneratorView extends ViewPart {
 		public GenJob() {
 			super("Mac Generator");
 		}
-		protected IStatus run(IProgressMonitor monitor) {
-			monitor.beginTask("Generate", 2);
+		protected IStatus run(final IProgressMonitor monitor) {
 			try {
-				ui.generate();
-				monitor.worked(1);
+				ui.generate(new ProgressMonitor() {
+					public void setMessage(String message) {
+						monitor.subTask(message);
+					}
+					public void setTotal(int total) {
+						monitor.beginTask("Generating", total);
+					}
+					public void step() {
+						monitor.worked(1);
+					}
+				});
 				refresh();
-				monitor.worked(1);
 			} finally {
 				monitor.done();
 				MacGeneratorView.this.job = null;
