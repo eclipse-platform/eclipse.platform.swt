@@ -108,6 +108,7 @@ public class MacGeneratorView extends ViewPart {
 	}
 	
 	void generate() {
+		if (job != null) return;
 		job = new GenJob();
 		job.schedule();
 	}
