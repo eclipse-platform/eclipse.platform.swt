@@ -222,7 +222,7 @@ void dumpResourceDirectory(RandomAccessFile raf, int imageResourceDirectoryOffse
 		}
 		System.out.println("Resource Directory ["+sType+"]"+" (Named "+imageResourceDirectory.NumberOfNamedEntries+", ID "+imageResourceDirectory.NumberOfIdEntries+")");
 	}
-	int IRDE_StartOffset = imageResourceDirectoryOffset + IMAGE_RESOURCE_DIRECTORY.SIZEOF;	
+//	int IRDE_StartOffset = imageResourceDirectoryOffset + IMAGE_RESOURCE_DIRECTORY.SIZEOF;	
 	IMAGE_RESOURCE_DIRECTORY_ENTRY[] imageResourceDirectoryEntries = new IMAGE_RESOURCE_DIRECTORY_ENTRY[imageResourceDirectory.NumberOfIdEntries];
 	for (int i = 0; i < imageResourceDirectoryEntries.length; i++) {
 		imageResourceDirectoryEntries[i] = new IMAGE_RESOURCE_DIRECTORY_ENTRY();
@@ -2458,20 +2458,20 @@ static final int MSB_FIRST = 1;
 /**
  * Data types (internal)
  */
-private static final int
-	// direct / true color formats with arbitrary masks & shifts
-	TYPE_GENERIC_8 = 0,
-	TYPE_GENERIC_16_MSB = 1,
-	TYPE_GENERIC_16_LSB = 2,
-	TYPE_GENERIC_24 = 3,
-	TYPE_GENERIC_32_MSB = 4,
-	TYPE_GENERIC_32_LSB = 5,
-	// palette indexed color formats
-	TYPE_INDEX_8 = 6,
-	TYPE_INDEX_4 = 7,
-	TYPE_INDEX_2 = 8,
-	TYPE_INDEX_1_MSB = 9,
-	TYPE_INDEX_1_LSB = 10;
+//private static final int
+//	// direct / true color formats with arbitrary masks & shifts
+//	TYPE_GENERIC_8 = 0,
+//	TYPE_GENERIC_16_MSB = 1,
+//	TYPE_GENERIC_16_LSB = 2,
+//	TYPE_GENERIC_24 = 3,
+//	TYPE_GENERIC_32_MSB = 4,
+//	TYPE_GENERIC_32_LSB = 5,
+//	// palette indexed color formats
+//	TYPE_INDEX_8 = 6,
+//	TYPE_INDEX_4 = 7,
+//	TYPE_INDEX_2 = 8,
+//	TYPE_INDEX_1_MSB = 9,
+//	TYPE_INDEX_1_LSB = 10;
 
 /**
  * Computes the required channel shift from a mask.
@@ -2982,8 +2982,8 @@ ImageData[] loadFromByteStream() {
 	byte[] data = loadData(infoHeader);
 	this.compression = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
 	this.importantColors = (infoHeader[36] & 0xFF) | ((infoHeader[37] & 0xFF) << 8) | ((infoHeader[38] & 0xFF) << 16) | ((infoHeader[39] & 0xFF) << 24);
-	int xPelsPerMeter = (infoHeader[24] & 0xFF) | ((infoHeader[25] & 0xFF) << 8) | ((infoHeader[26] & 0xFF) << 16) | ((infoHeader[27] & 0xFF) << 24);
-	int yPelsPerMeter = (infoHeader[28] & 0xFF) | ((infoHeader[29] & 0xFF) << 8) | ((infoHeader[30] & 0xFF) << 16) | ((infoHeader[31] & 0xFF) << 24);
+//	int xPelsPerMeter = (infoHeader[24] & 0xFF) | ((infoHeader[25] & 0xFF) << 8) | ((infoHeader[26] & 0xFF) << 16) | ((infoHeader[27] & 0xFF) << 24);
+//	int yPelsPerMeter = (infoHeader[28] & 0xFF) | ((infoHeader[29] & 0xFF) << 8) | ((infoHeader[30] & 0xFF) << 16) | ((infoHeader[31] & 0xFF) << 24);
 	int type = (this.compression == 1 /*BMP_RLE8_COMPRESSION*/) || (this.compression == 2 
 
 /*BMP_RLE4_COMPRESSION*/) ? SWT.IMAGE_BMP_RLE : SWT.IMAGE_BMP;
