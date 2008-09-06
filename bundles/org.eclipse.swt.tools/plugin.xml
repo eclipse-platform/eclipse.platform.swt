@@ -23,4 +23,14 @@
             translations="$nl$/templates/jnitemplates.properties">
       </include>
    </extension>
+
+   <extension
+         id="jnibuilder"
+         name="%jniBuilderName"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="false">
+		<run class="org.eclipse.swt.tools.jni.builder.JNIBuilder"/>
+      </builder>
+   </extension>
+
 </plugin>
