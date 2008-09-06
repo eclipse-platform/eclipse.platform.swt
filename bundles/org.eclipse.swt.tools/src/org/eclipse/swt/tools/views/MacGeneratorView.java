@@ -47,10 +47,14 @@ public class MacGeneratorView extends ViewPart {
 			super("Mac Generator");
 		}
 		protected IStatus run(IProgressMonitor monitor) {
+			monitor.beginTask("Generate", 2);
 			try {
 				ui.generate();
+				monitor.worked(1);
 				refresh();
+				monitor.worked(1);
 			} finally {
+				monitor.done();
 				MacGeneratorView.this.job = null;
 			}
 			return Status.OK_STATUS;
