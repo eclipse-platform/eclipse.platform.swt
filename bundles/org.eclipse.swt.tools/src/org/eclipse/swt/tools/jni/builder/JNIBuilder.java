@@ -62,7 +62,6 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 			MainClass mainClass = classes[i];
 			if (mainClass.build) {
 				mainClass.build = false;
-				System.out.println(mainClass.mainClassName);
 				IResource library = root.findMember(mainClass.outputDir);
 				JNIGeneratorApp gen = new JNIGeneratorApp();
 				gen.setMainClassName(mainClass.mainClassName, library.getLocation().toPortableString());
