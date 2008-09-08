@@ -509,9 +509,9 @@ public void setAlignment (int alignment) {
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
-	rect = ((NSTableView)parent.view).rectOfColumn (index + 1);
+	rect = ((NSTableView)parent.view).rectOfColumn (index);
 	parent.view.setNeedsDisplayInRect (rect);
 }
 
@@ -524,7 +524,7 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
 
@@ -591,7 +591,7 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
 

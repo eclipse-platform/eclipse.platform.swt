@@ -1790,6 +1790,12 @@ void initClasses () {
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
+	className = "SWTTableHeaderView";
+	cls = OS.objc_allocateClassPair(OS.class_NSTableHeaderView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_mouseDown_, proc3, "@:@");
+	OS.objc_registerClassPair(cls);
+
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);

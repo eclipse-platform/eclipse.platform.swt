@@ -382,11 +382,11 @@ void createHandle () {
 	widget.setDelegate(widget);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
-	
-	headerView = widget.headerView();
-	headerView.retain();
-	widget.setHeaderView(null);
-	
+
+	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
+	display.addWidget (headerView, this);
+	widget.setHeaderView (null);
+
 	NSString str = NSString.stringWith("");
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
@@ -524,6 +524,11 @@ Color defaultBackground () {
 
 Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
+void deregister () {
+	super.deregister ();
+	display.removeWidget (headerView);
 }
 
 /**
@@ -1319,6 +1324,11 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
+boolean isTrim (NSView view) {
+	if (super.isTrim (view)) return true;
+	return view.id == headerView.id;
+}
+
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.keyDown (id, sel, theEvent);
 	NSEvent event = new NSEvent (theEvent);
@@ -1328,6 +1338,20 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		case 36: { /* Return */
 			postEvent (SWT.DefaultSelection);
 			break;
+		}
+	}
+}
+
+void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	super.mouseDown (id, sel, theEvent);
+	if (id == headerView.id) {
+		NSEvent nsEvent = new NSEvent (theEvent);
+		NSPoint location = nsEvent.locationInWindow ();
+		location = headerView.convertPoint_fromView_ (location, null);
+		int index = headerView.columnAtPoint (location);
+		if (index != -1) {
+			TableColumn column = columns [index]; // TODO wrong column when columns have been rearranged
+			column.postEvent (SWT.Selection);
 		}
 	}
 }
@@ -2096,12 +2120,12 @@ public void setSortColumn (TableColumn column) {
 	if (headerView == null) return;
 	if (oldSortColumn != null) {
 		int index = indexOf (oldSortColumn);
-		NSRect rect = headerView.headerRectOfColumn (index + 1);
+		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
 	if (sortColumn != null) {
 		int index = indexOf (sortColumn);
-		NSRect rect = headerView.headerRectOfColumn (index + 1);
+		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
 }
@@ -2128,7 +2152,7 @@ public void setSortDirection  (int direction) {
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
 	int index = indexOf (sortColumn);
-	NSRect rect = headerView.headerRectOfColumn (index + 1);
+	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
 
