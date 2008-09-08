@@ -554,7 +554,11 @@ public class MacGeneratorUI {
 				continue;
 			}
 			TreeItem item = new TreeItem(nodesTree, SWT.NONE);
-			item.setText(gen.getFileName(xmlPath));
+			String fileName = gen.getFileName(xmlPath);
+			if (fileName.endsWith("Full.bridgesupport")) {
+				fileName =  fileName.substring(0, fileName.length() - "Full.bridgesupport".length());
+			}
+			item.setText(fileName);
 			Node node = document.getDocumentElement();
 			item.setData(node);
 			checkItem(node, item);
