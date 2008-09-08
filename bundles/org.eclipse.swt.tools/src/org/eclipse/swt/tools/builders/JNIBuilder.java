@@ -1,4 +1,4 @@
-package org.eclipse.swt.tools.jni.builder;
+package org.eclipse.swt.tools.builders;
 
 import java.util.Map;
 

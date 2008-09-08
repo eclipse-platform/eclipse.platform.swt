@@ -580,7 +580,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		}
 		output("arg0)");
 		paramStart = 1;
-	} else if (name.startsWith("VtblCall")) {
+	} else if (name.startsWith("VtblCall") || name.startsWith("_VtblCall")) {
 		output("((");
 		output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
 		output(" (STDMETHODCALLTYPE *)(");

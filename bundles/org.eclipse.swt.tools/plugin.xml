@@ -29,7 +29,7 @@
          name="%jniBuilderName"
          point="org.eclipse.core.resources.builders">
       <builder hasNature="false">
-		<run class="org.eclipse.swt.tools.jni.builder.JNIBuilder"/>
+		<run class="org.eclipse.swt.tools.builders.JNIBuilder"/>
       </builder>
    </extension>
 
