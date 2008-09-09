@@ -40,8 +40,8 @@ class Safari extends WebBrowser {
 	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String AGENT_STRING = "Safari/unknown"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
-	static final String PROTOCOL_FILE = "file:"; //$NON-NLS-1$
-	static final String PROTOCOL_HTTP = "http:"; //$NON-NLS-1$
+	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
+	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
@@ -385,23 +385,19 @@ void _setText(String html) {
 public boolean setUrl(String url) {
 	html = null;
 
-	NSURL inURL;
-	if (url.startsWith(PROTOCOL_FILE)) {
-		url = url.substring(PROTOCOL_FILE.length());
+	if (url.indexOf('/') == 0) {
+		url = PROTOCOL_FILE + url;
+	} else if (url.indexOf(':') == -1) {
+		url = PROTOCOL_HTTP + url;
 	}
-	boolean isHttpURL = url.indexOf('/') != 0;
-	if (isHttpURL) {
-		if (url.indexOf(':') == -1) {
-			url = PROTOCOL_HTTP + "//" + url; //$NON-NLS-1$
-		}
-		inURL = NSURL.URLWithString(NSString.stringWith(url.toString()));
-	} else {
-		inURL = NSURL.fileURLWithPath(NSString.stringWith(url.toString()));
-	}
-	if (inURL == null) return false;
 
+	NSString str = NSString.stringWith(url);
+	NSString unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+	int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, str.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+	NSString escapedString = new NSString(ptr);
+	NSURL inURL = NSURL.URLWithString(escapedString);
 	NSURLRequest request = NSURLRequest.requestWithURL(inURL);
-	WebFrame mainFrame= webView.mainFrame();
+	WebFrame mainFrame = webView.mainFrame();
 	mainFrame.loadRequest(request);
 	return true;
 }

@@ -15,6 +15,18 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#ifndef NO_CFURLCreateStringByAddingPercentEscapes
+JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateStringByAddingPercentEscapes_FUNC);
+	rc = (jintLong)CFURLCreateStringByAddingPercentEscapes((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (CFStringRef)arg3, (CFStringEncoding)arg4);
+	OS_NATIVE_EXIT(env, that, CFURLCreateStringByAddingPercentEscapes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGPoint_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CGPoint_1sizeof)
 	(JNIEnv *env, jclass that)

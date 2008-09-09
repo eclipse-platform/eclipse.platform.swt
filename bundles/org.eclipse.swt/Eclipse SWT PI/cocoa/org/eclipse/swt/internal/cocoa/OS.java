@@ -104,6 +104,7 @@ public static final native int QDRegionToRects(int /*long*/ rgn, int dir, int /*
 public static final native void CopyRgn(int /*long*/ srcRgnHandle, int /*long*/ dstRgnHandle);
 /** @method flags=dynamic */
 public static final native void SetRect(short[] r, short left, short top, short right, short bottom);
+public static final int kCFStringEncodingUTF8 = 0x08000100;
 public static final int kQDParseRegionFromTop = (1 << 0);
 public static final int kQDParseRegionFromBottom = (1 << 1);
 public static final int kQDParseRegionFromLeft = (1 << 2);
@@ -3049,6 +3050,14 @@ public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
 /**
  * @param newCursorPosition flags=struct */
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
+/**
+ * @param allocator cast=(CFAllocatorRef)
+ * @param originalString cast=(CFStringRef)
+ * @param charactersToLeaveUnescaped cast=(CFStringRef)
+ * @param legalURLCharactersToBeEscaped cast=(CFStringRef)
+ * @param encoding cast=(CFStringEncoding)
+ */
+public static final native int /*long*/ CFURLCreateStringByAddingPercentEscapes(int /*long*/ allocator, int /*long*/ originalString, int /*long*/ charactersToLeaveUnescaped, int /*long*/ legalURLCharactersToBeEscaped, int encoding);
 /**
  * @param hfsFileTypeCode cast=(OSType)
  */

@@ -14,9 +14,10 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 205;
-int OS_nativeFunctionCallCount[205];
+int OS_nativeFunctionCount = 206;
+int OS_nativeFunctionCallCount[206];
 char * OS_nativeFunctionNames[] = {
+	"CFURLCreateStringByAddingPercentEscapes",
 	"CGPoint_1sizeof",
 	"CGRect_1sizeof",
 	"CGSize_1sizeof",
