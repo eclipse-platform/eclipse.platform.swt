@@ -1587,6 +1587,18 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1msgSend_1bool
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool)
+(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = JNI_FALSE;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool_FUNC);
+	rc = (BOOL)((BOOL (*)(id, SEL))objc_msgSend)((id)arg0, (SEL)arg1);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend__II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

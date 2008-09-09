@@ -118,6 +118,8 @@ public class Display extends Device {
 
 	NSApplication application;
 	int /*long*/ applicationClass;
+	boolean isEmbedded;
+	
 	NSWindow screenWindow;
 	NSAutoreleasePool pool;
 	boolean idle;
@@ -483,7 +485,7 @@ void cascadeWindow (NSWindow window, NSScreen screen) {
 
 protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (thread != Thread.currentThread () && !isEmbedded) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
@@ -622,58 +624,63 @@ void createDisplay (DeviceData data) {
 		error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
 
-	/*
-	* Feature in the Macintosh.  On OS 10.2, it is necessary
-	* to explicitly check in with the Process Manager and set
-	* the current process to be the front process in order for
-	* windows to come to the front by default.  The fix is call
-	* both GetCurrentProcess() and SetFrontProcess().
-	* 
-	* NOTE: It is not actually necessary to use the process
-	* serial number returned by GetCurrentProcess() in the
-	* call to SetFrontProcess() (ie. kCurrentProcess can be
-	* used) but both functions must be called in order for
-	* windows to come to the front.
-	*/
-	int [] psn = new int [2];
-	if (OS.GetCurrentProcess (psn) == OS.noErr) {
-		int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + OS.getpid ()));
-		if (ptr  == 0 && APP_NAME != null) {
-			ptr = NSString.stringWith(APP_NAME).UTF8String();	
-		}
-		if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
-		OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
-		OS.SetFrontProcess (psn);
-//		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
-//		if (ptr != 0) {
-//			int image = readImageRef (ptr);
-//			if (image != 0) {
-//				dockImage = image;
-//				OS.SetApplicationDockTileImage (dockImage);
-//			}
-//		}
-	}
-	
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	
-	applicationCallback2 = new Callback(this, "applicationProc", 2);
-	int /*long*/ proc2 = applicationCallback2.getAddress();
-	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	applicationCallback3 = new Callback(this, "applicationProc", 3);
-	int /*long*/ proc3 = applicationCallback3.getAddress();
-	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	applicationCallback6 = new Callback(this, "applicationProc", 6);
-	int /*long*/ proc6 = applicationCallback6.getAddress();
-	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	String className = "SWTApplication";
-	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
-	OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
-	OS.objc_registerClassPair(cls);
 	application = NSApplication.sharedApplication();
-	applicationClass = OS.object_setClass(application.id, cls);
-//	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
+
+	if (!application.isRunning()) {
+		/*
+		 * Feature in the Macintosh.  On OS 10.2, it is necessary
+		 * to explicitly check in with the Process Manager and set
+		 * the current process to be the front process in order for
+		 * windows to come to the front by default.  The fix is call
+		 * both GetCurrentProcess() and SetFrontProcess().
+		 * 
+		 * NOTE: It is not actually necessary to use the process
+		 * serial number returned by GetCurrentProcess() in the
+		 * call to SetFrontProcess() (ie. kCurrentProcess can be
+		 * used) but both functions must be called in order for
+		 * windows to come to the front.
+		 */
+		int [] psn = new int [2];
+		if (OS.GetCurrentProcess (psn) == OS.noErr) {
+			int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + OS.getpid ()));
+			if (ptr  == 0 && APP_NAME != null) {
+				ptr = NSString.stringWith(APP_NAME).UTF8String();	
+			}
+			if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
+			OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
+			OS.SetFrontProcess (psn);
+			//		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
+			//		if (ptr != 0) {
+			//			int image = readImageRef (ptr);
+			//			if (image != 0) {
+			//				dockImage = image;
+			//				OS.SetApplicationDockTileImage (dockImage);
+			//			}
+			//		}
+		}
+
+		applicationCallback2 = new Callback(this, "applicationProc", 2);
+		int /*long*/ proc2 = applicationCallback2.getAddress();
+		if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		applicationCallback3 = new Callback(this, "applicationProc", 3);
+		int /*long*/ proc3 = applicationCallback3.getAddress();
+		if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		applicationCallback6 = new Callback(this, "applicationProc", 6);
+		int /*long*/ proc6 = applicationCallback6.getAddress();
+		if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		String className = "SWTApplication";
+		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
+		OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
+		OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
+		OS.objc_registerClassPair(cls);
+		applicationClass = OS.object_setClass(application.id, cls);
+	} else {
+		isEmbedded = true;
+	}
+
+	//	application = new NSApplication(OS.objc_msgSend(cls, OS.sel_sharedApplication));
 }
 
 static void deregister (Display display) {
@@ -1600,8 +1607,12 @@ Widget getWidget (NSView view) {
 protected void init () {
 	super.init ();
 	initClasses ();
-	initApplicationDelegate();	
-	application.finishLaunching();
+	
+	if (!isEmbedded) {
+		initApplicationDelegate();	
+		application.finishLaunching();
+	}
+		
 	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	
 	NSTextView textView = (NSTextView)new NSTextView().alloc();

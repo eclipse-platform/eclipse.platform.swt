@@ -22,6 +22,11 @@ SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 SWTPI_LIB=lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 XULRUNNER_LIB=lib$(SWTXULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
+AWT_PREFIX = swt-awt
+AWT_LIB    = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
+AWT_LIBS   = /System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Libraries/libjawt.dylib"
+AWT_OBJECTS   = swt_awt.o
+
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
@@ -42,10 +47,13 @@ XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS)
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include 
 XULRUNNERLFLAGS = $(LFLAGS)
 
-all: $(SWT_LIB) $(SWTPI_LIB) $(XULRUNNER_LIB)
+all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB) $(XULRUNNER_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c
+
+$(AWT_LIB): $(AWT_OBJECTS)
+	cc -o $(AWT_LIB) $(LFLAGS) $(AWT_OBJECTS)
 
 $(SWT_LIB): $(SWT_OBJECTS)
 	cc -o $(SWT_LIB) $(LFLAGS) $(SWT_OBJECTS)

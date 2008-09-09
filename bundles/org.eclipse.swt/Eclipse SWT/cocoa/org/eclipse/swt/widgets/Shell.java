@@ -372,6 +372,28 @@ public static Shell internal_new (Display display, int handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new shell
+ * that is 'embedded'.  In this case, the handle represents an NSView
+ * that acts as an embedded SWT Shell in an AWT Canvas.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Shell</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param display the display for the shell
+ * @param handle the handle for the shell
+ * @return a new shell object containing the specified display and handle
+ * 
+ * @since 3.5
+ */
+public static Shell cocoa_new (Display display, int handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
 	style &= ~SWT.TRANSPARENT;
@@ -460,17 +482,16 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.y = trim.y;
 	rect.width = trim.width;
 	rect.height = trim.height;
-	rect = window.frameRectForContentRect(rect);
+	NSWindow myWindow = (window != null ? window : view.window());
+	rect = myWindow.frameRectForContentRect(rect);
 	return new Rectangle ((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 void createHandle () {
-	state |= CANVAS;
-	if (window != null) {
-		//TODO - get the content of the foreign window instead of creating it
-		super.createHandle ();
-	} else {
-		state |= HIDDEN;
+	boolean embedded = window != null && (state & FOREIGN_HANDLE) == 0;
+	state |= HIDDEN;
+	
+	if (view == null && !embedded) {
 		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {
@@ -502,14 +523,20 @@ void createHandle () {
 		}
 		super.createHandle ();
 		topView ().setHidden (true);
-	}
-	window.setAcceptsMouseMovedEvents(true);
-	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
-	window.setDelegate(windowDelegate);
-	
-	id id = window.fieldEditor (true, null);
-	if (id != null) {
-		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+
+		window.setAcceptsMouseMovedEvents(true);
+		windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+		window.setDelegate(windowDelegate);
+		
+		id id = window.fieldEditor (true, null);
+		if (id != null) {
+			OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+		}
+	} else {
+		state |= CANVAS;
+		//state &= ~HIDDEN;
+		//TODO - get the content of the foreign window instead of creating it
+		//super.createHandle ();
 	}
 }
 
@@ -613,9 +640,11 @@ void fixShell (Shell newShell, Control control) {
 public void forceActive () {
 	checkWidget ();
 	if (!isVisible()) return;
-	window.makeKeyAndOrderFront (null);
-	NSApplication application = NSApplication.sharedApplication ();
-	application.activateIgnoringOtherApps (true);
+	if (window != null) {
+		window.makeKeyAndOrderFront (null);
+		NSApplication application = NSApplication.sharedApplication ();
+		application.activateIgnoringOtherApps (true);
+	}
 }
 
 /**
@@ -633,12 +662,13 @@ public void forceActive () {
  */
 public int getAlpha () {
 	checkWidget ();
-	return (int)(window.alphaValue() * 255);
+	NSWindow myWindow = (window != null ? window : view.window());
+	return (int)(myWindow.alphaValue() * 255);
 }
 
 public Rectangle getBounds () {
 	checkWidget();
-	NSRect frame = window.frame();
+	NSRect frame = (window != null ? window.frame() : view.frame());
 	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 }
@@ -646,7 +676,8 @@ public Rectangle getBounds () {
 public Rectangle getClientArea () {
 	checkWidget();
 	//TODO why super implementation fails
-	NSRect rect = window.contentRectForFrameRect(window.frame());
+	NSWindow myWindow = (window != null ? window : view.window());
+	NSRect rect = window.contentRectForFrameRect(myWindow.frame());
 	int width = (int)rect.width, height = (int)rect.height;
 	if (scrollView != null) {
 		NSSize size = new NSSize();
@@ -706,7 +737,7 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget();
-	NSRect frame = window.frame();
+	NSRect frame = (window != null ? window.frame() : view.window().frame());
 	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Point ((int)frame.x, (int)y);
 }
@@ -818,7 +849,7 @@ public Shell [] getShells () {
 
 public Point getSize () {
 	checkWidget();
-	NSRect frame = window.frame ();
+	NSRect frame = (window != null ? window.frame() : view.frame());
 	return new Point ((int) frame.width, (int) frame.height);
 }
 
@@ -923,7 +954,7 @@ void releaseChildren (boolean destroy) {
 }
 
 void releaseHandle () {
-	window.setDelegate(null);
+	if (window != null) window.setDelegate(null);
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
 	super.releaseHandle ();
@@ -992,9 +1023,11 @@ public void removeShellListener(ShellListener listener) {
  * @see Shell#setActive
  */
 public void setActive () {
-	checkWidget ();
-	if (!isVisible()) return;
-	window.makeKeyAndOrderFront (null);
+	if (window != null) {
+		checkWidget ();
+		if (!isVisible()) return;
+		window.makeKeyAndOrderFront (null);
+	}
 }
 
 void setActiveControl (Control control) {
@@ -1052,28 +1085,34 @@ void setActiveControl (Control control) {
  * @since 3.4
  */
 public void setAlpha (int alpha) {
-	checkWidget ();
-	alpha &= 0xFF;
-	window.setAlphaValue (alpha / 255f);
+	if (window != null) {
+		checkWidget ();
+		alpha &= 0xFF;
+		window.setAlphaValue (alpha / 255f);
+	}
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (fullScreen) setFullScreen (false);
-	int screenHeight = (int) display.getPrimaryFrame().height;
-	NSRect frame = window.frame();
-	if (!move) {
-		x = (int)frame.x;
-		y = screenHeight - (int)(frame.y + frame.height);
+	if (window != null) {
+		if (fullScreen) setFullScreen (false);
+		int screenHeight = (int) display.getPrimaryFrame().height;
+		NSRect frame = window.frame();
+		if (!move) {
+			x = (int)frame.x;
+			y = screenHeight - (int)(frame.y + frame.height);
+		}
+		if (!resize) {
+			width = (int)frame.width;
+			height = (int)frame.height;
+		}
+		frame.x = x;
+		frame.y = screenHeight - (int)(y + height);
+		frame.width = width;
+		frame.height = height;
+		window.setFrame(frame, false);
+	} else {
+		super.setBounds(x, y, width, height, move, resize);
 	}
-	if (!resize) {
-		width = (int)frame.width;
-		height = (int)frame.height;
-	}
-	frame.x = x;
-	frame.y = screenHeight - (int)(y + height);
-	frame.width = width;
-	frame.height = height;
-	window.setFrame(frame, false);
 }
 
 public void setEnabled (boolean enabled) {
@@ -1289,6 +1328,7 @@ public void setMinimumSize (Point size) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (window == null) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.region = region;
 	if (regionPath != null) regionPath.release();
@@ -1338,6 +1378,7 @@ int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ 
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (window == null) return;
 	super.setText (string);
 	NSString str = NSString.stringWith(string);
 	window.setTitle(str);
@@ -1345,7 +1386,11 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
-	setWindowVisible (visible, false);
+	if (window == null) {
+		super.setVisible(visible);
+	} else {
+		setWindowVisible (visible, false);
+	}
 }
 
 void setWindowVisible (boolean visible, boolean key) {
@@ -1356,15 +1401,18 @@ void setWindowVisible (boolean visible, boolean key) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	if (window.isVisible() == visible) return;
+	if (window != null && (window.isVisible() == visible)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		topView ().setHidden (false);
-		if (key) {
-			window.makeKeyAndOrderFront (null);
-		} else {
-			window.orderFront (null);
+		
+		if (window != null) {
+			if (key) {
+				window.makeKeyAndOrderFront (null);
+			} else {
+				window.orderFront (null);
+			}
 		}
 		opened = true;
 		if (!moved) {
@@ -1382,7 +1430,7 @@ void setWindowVisible (boolean visible, boolean key) {
 			}
 		}
 	} else {
-		window.orderOut (null);
+		if (window != null) window.orderOut (null);
 		topView ().setHidden (true);
 		sendEvent (SWT.Hide);
 	}
@@ -1390,7 +1438,7 @@ void setWindowVisible (boolean visible, boolean key) {
 
 void setZOrder () {
 	if (scrollView != null) scrollView.setDocumentView (view);
-	window.setContentView (scrollView != null ? scrollView : view);
+	if (window != null) window.setContentView (scrollView != null ? scrollView : view);
 }
 
 void setZOrder (Control control, boolean above) {

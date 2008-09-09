@@ -3079,6 +3079,8 @@ public static final native int /*long*/ NSTemporaryDirectory();
 /** Sends */
 
 /** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel);
+/** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel);
 /** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
