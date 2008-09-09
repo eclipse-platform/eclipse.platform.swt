@@ -130,7 +130,7 @@ public void buildFinished(IJavaProject project) {
 		ArrayList args = new ArrayList();
 		args.addAll(Arrays.asList(new String[]{
 			"-nowarn",
-			"-d", "none",
+//			"-d", "none",
 			"-cp", cp.toString(),
 			"-log", log = (root + "/log.xml"),
 			"-sourcepath", sourcePath.toString(),
@@ -163,7 +163,7 @@ public void buildFinished(IJavaProject project) {
 								for (int l = 0; l < problem.getLength(); l++) {
 									Element node = (Element)problem.item(l);
 									String path = source.getAttribute("path");
-									path = path.replaceAll("/build64/", "/");
+									path = path.replaceAll(buildDir, "/");
 									if (path.startsWith(projPath)) {
 										path = path.substring(projPath.length());
 									}
