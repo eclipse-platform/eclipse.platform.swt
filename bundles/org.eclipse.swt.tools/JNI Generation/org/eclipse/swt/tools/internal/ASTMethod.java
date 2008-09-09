@@ -25,7 +25,7 @@ public class ASTMethod extends ASTItem implements JNIMethod {
 	ASTClass declaringClass;
 	ASTType[] paramTypes, paramTypes64;
 	ASTType returnType, returnType64;
-	ASTParameter[] params;
+	ASTParameter[] parameters;
 	Boolean unique;
 	String data;
 	
@@ -65,13 +65,13 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 	List parameters = method.parameters();
 	paramTypes = new ASTType[parameters.size()];
 	paramTypes64 = new ASTType[parameters.size()];
-	params = new ASTParameter[paramTypes.length];
+	this.parameters = new ASTParameter[paramTypes.length];
 	int i = 0;
 	for (Iterator iterator = parameters.iterator(); iterator.hasNext(); i++) {
 		SingleVariableDeclaration param = (SingleVariableDeclaration) iterator.next();
 		paramTypes[i] = new ASTType(declaringClass.resolver, param.getType(), param.getExtraDimensions());
 		paramTypes64[i] = paramTypes[i];
-		params[i] = new ASTParameter(this, i);
+		this.parameters[i] = new ASTParameter(this, i);
 		if (GEN64) {
 			String s = source.substring(param.getStartPosition(), param.getStartPosition() + param.getLength());
 			if (paramTypes[i].isType("int") && s.indexOf("int /*long*/") != -1) paramTypes64[i] = new ASTType("J");
@@ -91,7 +91,7 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 					List fragments = tag.fragments();
 					if (name.equals(fragments.get(0).toString())) {
 						String data = fragments.get(1).toString();
-						params[i].setMetaData(data);
+						this.parameters[i].setMetaData(data);
 					}
 				}
 			}
@@ -139,7 +139,7 @@ public JNIType[] getParameterTypes64() {
 }
 
 public JNIParameter[] getParameters() {
-	return params;
+	return this.parameters;
 }
 
 public JNIType getReturnType() {

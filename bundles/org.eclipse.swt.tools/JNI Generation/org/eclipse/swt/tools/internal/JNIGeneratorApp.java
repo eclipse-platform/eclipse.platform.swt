@@ -346,7 +346,7 @@ public JNIClass[] getASTClasses() {
 	if (classes != null) return classes;
 	if (mainClassName == null) return new JNIClass[0];
 	String root = new File(outputDir).getParent();
-	String mainPath = root + "/" + mainClassName.replace('.', '/') + ".java";
+	String mainPath = new File(root + "/" + mainClassName.replace('.', '/') + ".java").getAbsolutePath();
 	ArrayList classes = new ArrayList();
 	String packageName = getPackageName(mainClassName);
 	File dir = new File(root + "/" + packageName.replace('.', '/'));
