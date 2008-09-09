@@ -17,743 +17,761 @@
 int XPCOM_nativeFunctionCount = 170;
 int XPCOM_nativeFunctionCallCount[170];
 char * XPCOM_nativeFunctionNames[] = {
-	"Call",
-	"NS_1GetComponentManager",
-	"NS_1GetServiceManager",
-	"NS_1InitXPCOM2",
-	"NS_1NewLocalFile",
+	"_1Call",
+	"_1NS_1GetComponentManager",
+	"_1NS_1GetServiceManager",
+	"_1NS_1InitXPCOM2",
+	"_1NS_1NewLocalFile",
 #ifndef JNI64
-	"VtblCall__II",
+	"_1VtblCall__II",
 #else
-	"VtblCall__IJ",
+	"_1VtblCall__IJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIF",
+	"_1VtblCall__IIF",
 #else
-	"VtblCall__IJF",
+	"_1VtblCall__IJF",
 #endif
 #ifndef JNI64
-	"VtblCall__III",
+	"_1VtblCall__III",
 #else
-	"VtblCall__IJI",
+	"_1VtblCall__IJI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII",
+	"_1VtblCall__IIII",
 #else
-	"VtblCall__IJII",
+	"_1VtblCall__IJII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIII",
+	"_1VtblCall__IIIII",
 #else
-	"VtblCall__IJIII",
+	"_1VtblCall__IJIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIII",
+	"_1VtblCall__IIIIII",
 #else
-	"VtblCall__IJIIII",
+	"_1VtblCall__IJIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIIII",
+	"_1VtblCall__IIIIIII",
 #else
-	"VtblCall__IJIIIII",
+	"_1VtblCall__IJIIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIIIII",
+	"_1VtblCall__IIIIIIII",
 #else
-	"VtblCall__IJIIIIII",
+	"_1VtblCall__IJIIIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIIIIIIIII",
+	"_1VtblCall__IIIIIIIIIIII",
 #else
-	"VtblCall__IJIIIIIIIIII",
+	"_1VtblCall__IJIIIIIIIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIIIIIIIIIIIISI",
+	"_1VtblCall__IIIIIIIIIIIIIIISI",
 #else
-	"VtblCall__IJIIIIIIIIIIIIISI",
+	"_1VtblCall__IJIIIIIIIIIIIIISI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIIIII_3C_3I_3I",
+	"_1VtblCall__IIIIIIII_3C_3I_3I",
 #else
-	"VtblCall__IJIIIIII_3C_3I_3I",
+	"_1VtblCall__IJIIIIII_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIIIJII",
+	"_1VtblCall__IIIIIIJII",
 #else
-	"VtblCall__IJIIIIJII",
+	"_1VtblCall__IJIIIIJII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIII_3CIIIII_3I_3I",
+	"_1VtblCall__IIIIII_3CIIIII_3I_3I",
 #else
-	"VtblCall__IJIIII_3CIIIII_3I_3I",
+	"_1VtblCall__IJIIII_3CIIIII_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIII_3C_3BIIIII_3I_3I",
+	"_1VtblCall__IIIIII_3C_3BIIIII_3I_3I",
 #else
-	"VtblCall__IJIIII_3C_3BIIIII_3I_3I",
+	"_1VtblCall__IJIIII_3C_3BIIIII_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIII_3C_3I_3I",
+	"_1VtblCall__IIIIII_3C_3I_3I",
 #else
-	"VtblCall__IJIIII_3C_3I_3I",
+	"_1VtblCall__IJIIII_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIII_3I_3I",
+	"_1VtblCall__IIIIII_3I_3I",
 #else
-	"VtblCall__IJIIII_3I_3I",
+	"_1VtblCall__IJIIII_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIII_3C",
+	"_1VtblCall__IIIII_3C",
 #else
-	"VtblCall__IJIII_3C",
+	"_1VtblCall__IJIII_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIII_3I",
+	"_1VtblCall__IIIII_3I",
 #else
-	"VtblCall__IJIII_3I",
+	"_1VtblCall__IJIII_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIIJJJJ",
+	"_1VtblCall__IIIIJJJJ",
 #else
-	"VtblCall__IJIIJJJJ",
+	"_1VtblCall__IJIIJJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3B",
+	"_1VtblCall__IIII_3B",
 #else
-	"VtblCall__IJII_3B",
+	"_1VtblCall__IJII_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3C",
+	"_1VtblCall__IIII_3C",
 #else
-	"VtblCall__IJII_3C",
+	"_1VtblCall__IJII_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3CIJI",
+	"_1VtblCall__IIII_3CIJI",
 #else
-	"VtblCall__IJII_3CIJI",
+	"_1VtblCall__IJII_3CIJI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3CJJJ",
+	"_1VtblCall__IIII_3CJJJ",
 #else
-	"VtblCall__IJII_3CJJJ",
+	"_1VtblCall__IJII_3CJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3C_3CI_3I",
+	"_1VtblCall__IIII_3C_3CI_3I",
 #else
-	"VtblCall__IJII_3C_3CI_3I",
+	"_1VtblCall__IJII_3C_3CI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3I",
+	"_1VtblCall__IIII_3I",
 #else
-	"VtblCall__IJII_3I",
+	"_1VtblCall__IJII_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIII_3J",
+	"_1VtblCall__IIII_3J",
 #else
-	"VtblCall__IJII_3J",
+	"_1VtblCall__IJII_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIIJJ",
+	"_1VtblCall__IIIJJ",
 #else
-	"VtblCall__IJIJJ",
+	"_1VtblCall__IJIJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2",
+	"_1VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2",
 #else
-	"VtblCall__IJILorg_eclipse_swt_internal_mozilla_nsID_2",
+	"_1VtblCall__IJILorg_eclipse_swt_internal_mozilla_nsID_2",
 #endif
 #ifndef JNI64
-	"VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IIILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #else
-	"VtblCall__IJILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IJILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3B",
+	"_1VtblCall__III_3B",
 #else
-	"VtblCall__IJI_3B",
+	"_1VtblCall__IJI_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3BI",
+	"_1VtblCall__III_3BI",
 #else
-	"VtblCall__IJI_3BI",
+	"_1VtblCall__IJI_3BI",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3BI_3I",
+	"_1VtblCall__III_3BI_3I",
 #else
-	"VtblCall__IJI_3BI_3I",
+	"_1VtblCall__IJI_3BI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3B_3B_3BI_3I",
+	"_1VtblCall__III_3B_3B_3BI_3I",
 #else
-	"VtblCall__IJI_3B_3B_3BI_3I",
+	"_1VtblCall__IJI_3B_3B_3BI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3B_3C",
+	"_1VtblCall__III_3B_3C",
 #else
-	"VtblCall__IJI_3B_3C",
+	"_1VtblCall__IJI_3B_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3B_3I",
+	"_1VtblCall__III_3B_3I",
 #else
-	"VtblCall__IJI_3B_3I",
+	"_1VtblCall__IJI_3B_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C",
+	"_1VtblCall__III_3C",
 #else
-	"VtblCall__IJI_3C",
+	"_1VtblCall__IJI_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3CI",
+	"_1VtblCall__III_3CI",
 #else
-	"VtblCall__IJI_3CI",
+	"_1VtblCall__IJI_3CI",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3C",
+	"_1VtblCall__III_3C_3C",
 #else
-	"VtblCall__IJI_3C_3C",
+	"_1VtblCall__IJI_3C_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I",
+	"_1VtblCall__III_3C_3CI_3C_3C_3C_3C_3I_3I",
 #else
-	"VtblCall__IJI_3C_3CI_3C_3C_3C_3C_3I_3I",
+	"_1VtblCall__IJI_3C_3CI_3C_3C_3C_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3CI_3I_3I_3I",
+	"_1VtblCall__III_3C_3CI_3I_3I_3I",
 #else
-	"VtblCall__IJI_3C_3CI_3I_3I_3I",
+	"_1VtblCall__IJI_3C_3CI_3I_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3C_3C_3I",
+	"_1VtblCall__III_3C_3C_3C_3I",
 #else
-	"VtblCall__IJI_3C_3C_3C_3I",
+	"_1VtblCall__IJI_3C_3C_3C_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3C_3C_3I_3I",
+	"_1VtblCall__III_3C_3C_3C_3I_3I",
 #else
-	"VtblCall__IJI_3C_3C_3C_3I_3I",
+	"_1VtblCall__IJI_3C_3C_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3C_3I",
+	"_1VtblCall__III_3C_3C_3I",
 #else
-	"VtblCall__IJI_3C_3C_3I",
+	"_1VtblCall__IJI_3C_3C_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3C_3I_3C_3I_3I",
+	"_1VtblCall__III_3C_3C_3I_3C_3I_3I",
 #else
-	"VtblCall__IJI_3C_3C_3I_3C_3I_3I",
+	"_1VtblCall__IJI_3C_3C_3I_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3C_3C_3I_3I_3C_3I_3I",
+	"_1VtblCall__III_3C_3C_3I_3I_3C_3I_3I",
 #else
-	"VtblCall__IJI_3C_3C_3I_3I_3C_3I_3I",
+	"_1VtblCall__IJI_3C_3C_3I_3I_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3I",
+	"_1VtblCall__III_3I",
 #else
-	"VtblCall__IJI_3I",
+	"_1VtblCall__IJI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3I_3I_3I_3I",
+	"_1VtblCall__III_3I_3I_3I_3I",
 #else
-	"VtblCall__IJI_3I_3I_3I_3I",
+	"_1VtblCall__IJI_3I_3I_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ",
+	"_1VtblCall__IIJ",
 #else
-	"VtblCall__IJJ",
+	"_1VtblCall__IJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJI",
+	"_1VtblCall__IIJI",
 #else
-	"VtblCall__IJJI",
+	"_1VtblCall__IJJI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJIIJIIIIII",
+	"_1VtblCall__IIJIIJIIIIII",
 #else
-	"VtblCall__IJJIIJIIIIII",
+	"_1VtblCall__IJJIIJIIIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJIIJIIIIIIIIISJ",
+	"_1VtblCall__IIJIIJIIIIIIIIISJ",
 #else
-	"VtblCall__IJJIIJIIIIIIIIISJ",
+	"_1VtblCall__IJJIIJIIIIIIIIISJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJIIJ_3I_3J",
+	"_1VtblCall__IIJIIJ_3I_3J",
 #else
-	"VtblCall__IJJIIJ_3I_3J",
+	"_1VtblCall__IJJIIJ_3I_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJI_3J",
+	"_1VtblCall__IIJI_3J",
 #else
-	"VtblCall__IJJI_3J",
+	"_1VtblCall__IJJI_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ",
+	"_1VtblCall__IIJJ",
 #else
-	"VtblCall__IJJJ",
+	"_1VtblCall__IJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJI",
+	"_1VtblCall__IIJJI",
 #else
-	"VtblCall__IJJJI",
+	"_1VtblCall__IJJJI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJII",
+	"_1VtblCall__IIJJII",
 #else
-	"VtblCall__IJJJII",
+	"_1VtblCall__IJJJII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJIIII",
+	"_1VtblCall__IIJJIIII",
 #else
-	"VtblCall__IJJJIIII",
+	"_1VtblCall__IJJJIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJIJ_3C_3I_3I",
+	"_1VtblCall__IIJJIJ_3C_3I_3I",
 #else
-	"VtblCall__IJJJIJ_3C_3I_3I",
+	"_1VtblCall__IJJJIJ_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJI_3C",
+	"_1VtblCall__IIJJI_3C",
 #else
-	"VtblCall__IJJJI_3C",
+	"_1VtblCall__IJJJI_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJI_3I",
+	"_1VtblCall__IIJJI_3I",
 #else
-	"VtblCall__IJJJI_3I",
+	"_1VtblCall__IJJJI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJ",
+	"_1VtblCall__IIJJJ",
 #else
-	"VtblCall__IJJJJ",
+	"_1VtblCall__IJJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJI",
+	"_1VtblCall__IIJJJI",
 #else
-	"VtblCall__IJJJJI",
+	"_1VtblCall__IJJJJI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJI_3CJJIJI_3J_3J",
+	"_1VtblCall__IIJJJI_3CJJIJI_3J_3J",
 #else
-	"VtblCall__IJJJJI_3CJJIJI_3J_3J",
+	"_1VtblCall__IJJJJI_3CJJIJI_3J_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJI_3C_3BJJIJI_3J_3J",
+	"_1VtblCall__IIJJJI_3C_3BJJIJI_3J_3J",
 #else
-	"VtblCall__IJJJJI_3C_3BJJIJI_3J_3J",
+	"_1VtblCall__IJJJJI_3C_3BJJIJI_3J_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJJIJ_3C_3I_3J",
+	"_1VtblCall__IIJJJJIJ_3C_3I_3J",
 #else
-	"VtblCall__IJJJJJIJ_3C_3I_3J",
+	"_1VtblCall__IJJJJJIJ_3C_3I_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJJJ",
+	"_1VtblCall__IIJJJJJ",
 #else
-	"VtblCall__IJJJJJJ",
+	"_1VtblCall__IJJJJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJJJJ",
+	"_1VtblCall__IIJJJJJJ",
 #else
-	"VtblCall__IJJJJJJJ",
+	"_1VtblCall__IJJJJJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJJJJJJ",
+	"_1VtblCall__IIJJJJJJJ",
 #else
-	"VtblCall__IJJJJJJJJ",
+	"_1VtblCall__IJJJJJJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ_3B",
+	"_1VtblCall__IIJJ_3B",
 #else
-	"VtblCall__IJJJ_3B",
+	"_1VtblCall__IJJJ_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ_3CIJI",
+	"_1VtblCall__IIJJ_3CIJI",
 #else
-	"VtblCall__IJJJ_3CIJI",
+	"_1VtblCall__IJJJ_3CIJI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ_3CJJJ",
+	"_1VtblCall__IIJJ_3CJJJ",
 #else
-	"VtblCall__IJJJ_3CJJJ",
+	"_1VtblCall__IJJJ_3CJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ_3C_3CI_3J",
+	"_1VtblCall__IIJJ_3C_3CI_3J",
 #else
-	"VtblCall__IJJJ_3C_3CI_3J",
+	"_1VtblCall__IJJJ_3C_3CI_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ_3I",
+	"_1VtblCall__IIJJ_3I",
 #else
-	"VtblCall__IJJJ_3I",
+	"_1VtblCall__IJJJ_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2",
+	"_1VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2",
 #else
-	"VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2",
+	"_1VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IIJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #else
-	"VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IJJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3B",
+	"_1VtblCall__IIJ_3B",
 #else
-	"VtblCall__IJJ_3B",
+	"_1VtblCall__IJJ_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3BI",
+	"_1VtblCall__IIJ_3BI",
 #else
-	"VtblCall__IJJ_3BI",
+	"_1VtblCall__IJJ_3BI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3BJ_3J",
+	"_1VtblCall__IIJ_3BJ_3J",
 #else
-	"VtblCall__IJJ_3BJ_3J",
+	"_1VtblCall__IJJ_3BJ_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3B_3B_3BJ_3J",
+	"_1VtblCall__IIJ_3B_3B_3BJ_3J",
 #else
-	"VtblCall__IJJ_3B_3B_3BJ_3J",
+	"_1VtblCall__IJJ_3B_3B_3BJ_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3B_3C",
+	"_1VtblCall__IIJ_3B_3C",
 #else
-	"VtblCall__IJJ_3B_3C",
+	"_1VtblCall__IJJ_3B_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3CI",
+	"_1VtblCall__IIJ_3CI",
 #else
-	"VtblCall__IJJ_3CI",
+	"_1VtblCall__IJJ_3CI",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C",
+	"_1VtblCall__IIJ_3C_3C",
 #else
-	"VtblCall__IJJ_3C_3C",
+	"_1VtblCall__IJJ_3C_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I",
+	"_1VtblCall__IIJ_3C_3CI_3C_3C_3C_3C_3I_3I",
 #else
-	"VtblCall__IJJ_3C_3CI_3C_3C_3C_3C_3I_3I",
+	"_1VtblCall__IJJ_3C_3CI_3C_3C_3C_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3CI_3J_3I_3I",
+	"_1VtblCall__IIJ_3C_3CI_3J_3I_3I",
 #else
-	"VtblCall__IJJ_3C_3CI_3J_3I_3I",
+	"_1VtblCall__IJJ_3C_3CI_3J_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C_3C_3I",
+	"_1VtblCall__IIJ_3C_3C_3C_3I",
 #else
-	"VtblCall__IJJ_3C_3C_3C_3I",
+	"_1VtblCall__IJJ_3C_3C_3C_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C_3C_3I_3I",
+	"_1VtblCall__IIJ_3C_3C_3C_3I_3I",
 #else
-	"VtblCall__IJJ_3C_3C_3C_3I_3I",
+	"_1VtblCall__IJJ_3C_3C_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C_3I",
+	"_1VtblCall__IIJ_3C_3C_3I",
 #else
-	"VtblCall__IJJ_3C_3C_3I",
+	"_1VtblCall__IJJ_3C_3C_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C_3J",
+	"_1VtblCall__IIJ_3C_3C_3J",
 #else
-	"VtblCall__IJJ_3C_3C_3J",
+	"_1VtblCall__IJJ_3C_3C_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C_3J_3C_3I_3I",
+	"_1VtblCall__IIJ_3C_3C_3J_3C_3I_3I",
 #else
-	"VtblCall__IJJ_3C_3C_3J_3C_3I_3I",
+	"_1VtblCall__IJJ_3C_3C_3J_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I",
+	"_1VtblCall__IIJ_3C_3C_3J_3J_3C_3I_3I",
 #else
-	"VtblCall__IJJ_3C_3C_3J_3J_3C_3I_3I",
+	"_1VtblCall__IJJ_3C_3C_3J_3J_3C_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3I",
+	"_1VtblCall__IIJ_3I",
 #else
-	"VtblCall__IJJ_3I",
+	"_1VtblCall__IJJ_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJ_3J",
+	"_1VtblCall__IIJ_3J",
 #else
-	"VtblCall__IJJ_3J",
+	"_1VtblCall__IJJ_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2I",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2I",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2ILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2ILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2ILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2ILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2J",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2J",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2J",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2JLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI_3B_3B",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI_3B_3B",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI_3B_3B",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BI_3B_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3B_3BJ_3B_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #else
-	"VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B",
+	"_1VtblCall__II_3B",
 #else
-	"VtblCall__IJ_3B",
+	"_1VtblCall__IJ_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BI",
+	"_1VtblCall__II_3BI",
 #else
-	"VtblCall__IJ_3BI",
+	"_1VtblCall__IJ_3BI",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BII_3I_3I",
+	"_1VtblCall__II_3BII_3I_3I",
 #else
-	"VtblCall__IJ_3BII_3I_3I",
+	"_1VtblCall__IJ_3BII_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BIJ_3J_3I",
+	"_1VtblCall__II_3BIJ_3J_3I",
 #else
-	"VtblCall__IJ_3BIJ_3J_3I",
+	"_1VtblCall__IJ_3BIJ_3J_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__II_3BILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #else
-	"VtblCall__IJ_3BILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IJ_3BILorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BI_3I",
+	"_1VtblCall__II_3BI_3I",
 #else
-	"VtblCall__IJ_3BI_3I",
+	"_1VtblCall__IJ_3BI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BI_3I_3I",
+	"_1VtblCall__II_3BI_3I_3I",
 #else
-	"VtblCall__IJ_3BI_3I_3I",
+	"_1VtblCall__IJ_3BI_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BI_3J_3I",
+	"_1VtblCall__II_3BI_3J_3I",
 #else
-	"VtblCall__IJ_3BI_3J_3I",
+	"_1VtblCall__IJ_3BI_3J_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BJ",
+	"_1VtblCall__II_3BJ",
 #else
-	"VtblCall__IJ_3BJ",
+	"_1VtblCall__IJ_3BJ",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__II_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #else
-	"VtblCall__IJ_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IJ_3BJLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2I",
+	"_1VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2I",
 #else
-	"VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2I",
+	"_1VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J",
+	"_1VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2J",
 #else
-	"VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2J",
+	"_1VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #else
-	"VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
+	"_1VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #else
-	"VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
+	"_1VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3B",
+	"_1VtblCall__II_3B_3B",
 #else
-	"VtblCall__IJ_3B_3B",
+	"_1VtblCall__IJ_3B_3B",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3BI",
+	"_1VtblCall__II_3B_3BI",
 #else
-	"VtblCall__IJ_3B_3BI",
+	"_1VtblCall__IJ_3B_3BI",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3B_3BII_3I",
+	"_1VtblCall__II_3B_3B_3BII_3I",
 #else
-	"VtblCall__IJ_3B_3B_3BII_3I",
+	"_1VtblCall__IJ_3B_3B_3BII_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3B_3BII_3J",
+	"_1VtblCall__II_3B_3B_3BII_3J",
 #else
-	"VtblCall__IJ_3B_3B_3BII_3J",
+	"_1VtblCall__IJ_3B_3B_3BII_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3B_3I",
+	"_1VtblCall__II_3B_3B_3I",
 #else
-	"VtblCall__IJ_3B_3B_3I",
+	"_1VtblCall__IJ_3B_3B_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3B_3J",
+	"_1VtblCall__II_3B_3B_3J",
 #else
-	"VtblCall__IJ_3B_3B_3J",
+	"_1VtblCall__IJ_3B_3B_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3I",
+	"_1VtblCall__II_3B_3I",
 #else
-	"VtblCall__IJ_3B_3I",
+	"_1VtblCall__IJ_3B_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3I_3I",
+	"_1VtblCall__II_3B_3I_3I",
 #else
-	"VtblCall__IJ_3B_3I_3I",
+	"_1VtblCall__IJ_3B_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3I_3J",
+	"_1VtblCall__II_3B_3I_3J",
 #else
-	"VtblCall__IJ_3B_3I_3J",
+	"_1VtblCall__IJ_3B_3I_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3J",
+	"_1VtblCall__II_3B_3J",
 #else
-	"VtblCall__IJ_3B_3J",
+	"_1VtblCall__IJ_3B_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3B_3J_3I",
+	"_1VtblCall__II_3B_3J_3I",
 #else
-	"VtblCall__IJ_3B_3J_3I",
+	"_1VtblCall__IJ_3B_3J_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3C",
+	"_1VtblCall__II_3C",
 #else
-	"VtblCall__IJ_3C",
+	"_1VtblCall__IJ_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3CIIII",
+	"_1VtblCall__II_3CIIII",
 #else
-	"VtblCall__IJ_3CIIII",
+	"_1VtblCall__IJ_3CIIII",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3CIJJJ",
+	"_1VtblCall__II_3CIJJJ",
 #else
-	"VtblCall__IJ_3CIJJJ",
+	"_1VtblCall__IJ_3CIJJJ",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3CI_3I",
+	"_1VtblCall__II_3CI_3I",
 #else
-	"VtblCall__IJ_3CI_3I",
+	"_1VtblCall__IJ_3CI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3CJ_3J",
+	"_1VtblCall__II_3CJ_3J",
 #else
-	"VtblCall__IJ_3CJ_3J",
+	"_1VtblCall__IJ_3CJ_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3C_3C",
+	"_1VtblCall__II_3C_3C",
 #else
-	"VtblCall__IJ_3C_3C",
+	"_1VtblCall__IJ_3C_3C",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3F",
+	"_1VtblCall__II_3F",
 #else
-	"VtblCall__IJ_3F",
+	"_1VtblCall__IJ_3F",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I",
+	"_1VtblCall__II_3I",
 #else
-	"VtblCall__IJ_3I",
+	"_1VtblCall__IJ_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I_3I",
+	"_1VtblCall__II_3I_3I",
 #else
-	"VtblCall__IJ_3I_3I",
+	"_1VtblCall__IJ_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I_3I_3I",
+	"_1VtblCall__II_3I_3I_3I",
 #else
-	"VtblCall__IJ_3I_3I_3I",
+	"_1VtblCall__IJ_3I_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I_3I_3I_3I",
+	"_1VtblCall__II_3I_3I_3I_3I",
 #else
-	"VtblCall__IJ_3I_3I_3I_3I",
+	"_1VtblCall__IJ_3I_3I_3I_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I_3J",
+	"_1VtblCall__II_3I_3J",
 #else
-	"VtblCall__IJ_3I_3J",
+	"_1VtblCall__IJ_3I_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I_3J_3I",
+	"_1VtblCall__II_3I_3J_3I",
 #else
-	"VtblCall__IJ_3I_3J_3I",
+	"_1VtblCall__IJ_3I_3J_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3I_3J_3J",
+	"_1VtblCall__II_3I_3J_3J",
 #else
-	"VtblCall__IJ_3I_3J_3J",
+	"_1VtblCall__IJ_3I_3J_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3J",
+	"_1VtblCall__II_3J",
 #else
-	"VtblCall__IJ_3J",
+	"_1VtblCall__IJ_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3J_3J_3J",
+	"_1VtblCall__II_3J_3J_3J",
 #else
-	"VtblCall__IJ_3J_3J_3J",
+	"_1VtblCall__IJ_3J_3J_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__II_3S",
+	"_1VtblCall__II_3S",
 #else
-	"VtblCall__IJ_3S",
+	"_1VtblCall__IJ_3S",
 #endif
-	"XPCOMGlueShutdown",
-	"XPCOMGlueStartup",
+	"_1XPCOMGlueShutdown",
+	"_1XPCOMGlueStartup",
+	"_1nsEmbedCString_1Length",
+	"_1nsEmbedCString_1delete",
+	"_1nsEmbedCString_1get",
+	"_1nsEmbedCString_1new__",
+#ifndef JNI64
+	"_1nsEmbedCString_1new__II",
+#else
+	"_1nsEmbedCString_1new__JI",
+#endif
+	"_1nsEmbedCString_1new___3BI",
+	"_1nsEmbedString_1Length",
+	"_1nsEmbedString_1delete",
+	"_1nsEmbedString_1get",
+	"_1nsEmbedString_1new__",
+	"_1nsEmbedString_1new___3C",
+	"_1nsID_1Equals",
+	"_1nsID_1delete",
+	"_1nsID_1new",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I",
 #else
@@ -764,24 +782,6 @@ char * XPCOM_nativeFunctionNames[] = {
 #else
 	"memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2JI",
 #endif
-	"nsEmbedCString_1Length",
-	"nsEmbedCString_1delete",
-	"nsEmbedCString_1get",
-	"nsEmbedCString_1new__",
-#ifndef JNI64
-	"nsEmbedCString_1new__II",
-#else
-	"nsEmbedCString_1new__JI",
-#endif
-	"nsEmbedCString_1new___3BI",
-	"nsEmbedString_1Length",
-	"nsEmbedString_1delete",
-	"nsEmbedString_1get",
-	"nsEmbedString_1new__",
-	"nsEmbedString_1new___3C",
-	"nsID_1Equals",
-	"nsID_1delete",
-	"nsID_1new",
 	"strlen_1PRUnichar",
 };
 

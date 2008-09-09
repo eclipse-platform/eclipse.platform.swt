@@ -33,7 +33,32 @@ public class XPCOMInit extends Platform {
 	public static final int PATH_MAX = 4096;
 	
 public static final native int GREVersionRange_sizeof ();
-public static final native int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
-public static final native int XPCOMGlueStartup (byte[] place);
-public static final native int XPCOMGlueShutdown ();
+
+public static final native int _GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
+public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen) {
+	lock.lock();
+	try {
+		return _GRE_GetGREPathWithProperties(versions, versionsLength, properties, propertiesLength, buffer, buflen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XPCOMGlueStartup (byte[] place);
+public static final int XPCOMGlueStartup (byte[] place) {
+	lock.lock();
+	try {
+		return _XPCOMGlueStartup(place);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XPCOMGlueShutdown ();
+public static final int XPCOMGlueShutdown () {
+	lock.lock();
+	try {
+		return _XPCOMGlueShutdown();
+	} finally {
+		lock.unlock();
+	}
+}
 }
