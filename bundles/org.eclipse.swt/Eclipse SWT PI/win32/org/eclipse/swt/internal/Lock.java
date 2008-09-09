@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,11 +11,10 @@
 package org.eclipse.swt.internal;
 
 /**
- * Instance of this represent a recursive monitor.
+ * Instances of this represent a recursive monitor.  Note that this
+ * is an empty implementation which does not actually perform locking.
  */
 public class Lock {
-	int count, waitCount;
-	Thread owner;
 
 /**
  * Locks the monitor and returns the lock count. If
@@ -25,22 +24,7 @@ public class Lock {
  * @return the lock count
  */
 public int lock() {
-	synchronized (this) {
-		Thread current = Thread.currentThread();
-		if (owner != current) {
-			waitCount++;
-			while (count > 0) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					/* Wait forever, just like synchronized blocks */
-				}
-			}
-			--waitCount;
-			owner = current;
-		}
-		return ++count;
-	}
+	return 0;
 }
 
 /**
@@ -48,14 +32,5 @@ public int lock() {
  * the monitor owner, do nothing.
  */
 public void unlock() {
-	synchronized (this) {
-		Thread current = Thread.currentThread();
-		if (owner == current) {
-			if (--count == 0) {
-				owner = null;
-				if (waitCount > 0) notifyAll();
-			}
-		}
-	}
 }
 }
