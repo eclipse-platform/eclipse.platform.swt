@@ -97,6 +97,8 @@ public void generate(JNIField[] fields) {
 }
 
 public void generate(JNIField field) {
+	//wrap cast with parentheses
+	field.setCast(field.getCast());
 	String data = ((AbstractItem)field).flatten();
 	if (data != null && data.length() != 0) {
 		String doc = "/** @field " + data + " */" + delimiter + "\t";
@@ -121,6 +123,8 @@ public void generate(JNIMethod method) {
 	JNIParameter[] params = method.getParameters();
 	for (int i = 0; i < params.length; i++) {
 		ASTParameter param = (ASTParameter)params[i];
+		//wrap cast with parentheses
+		param.setCast(param.getCast());
 		data = ((AbstractItem)param).flatten();
 		if (data != null && data.length() != 0) {
 			tags.add("@param " + param.getName() + " " + data);
