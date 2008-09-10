@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.ole.win32;
 public final class OLEINPLACEFRAMEINFO {
 	public int cb;
 	public int fMDIApp;
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndFrame;
+	/** @field cast=(HACCEL) */
 	public int /*long*/ haccel;
 	public int cAccelEntries;
 	public static final int sizeof = COM.OLEINPLACEFRAMEINFO_sizeof ();

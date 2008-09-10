@@ -11,7 +11,9 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public final class FORMATETC {
+	/** @field cast=(CLIPFORMAT) */
 	public int cfFormat;
+	/** @field cast=(DVTARGETDEVICE *) */
 	public int /*long*/ ptd;
 	public int dwAspect;
 	public int lindex;

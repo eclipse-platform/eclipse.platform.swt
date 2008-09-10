@@ -15,6 +15,7 @@ public class MENUINFO {
 	public int fMask;
 	public int dwStyle;
 	public int cyMax;
+	/** @field cast=(HBRUSH) */
 	public int /*long*/ hbrBack;
 	public int dwContextHelpID;
 	public int /*long*/ dwMenuData;

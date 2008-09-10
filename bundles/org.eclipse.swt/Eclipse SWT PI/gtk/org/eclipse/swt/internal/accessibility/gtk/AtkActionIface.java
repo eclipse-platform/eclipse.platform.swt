@@ -17,11 +17,17 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkActionIface {
 //	GTypeInterface parent;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ do_action;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_n_actions;
+	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
 	public int /*long*/ get_description;
+	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
 	public int /*long*/ get_name;
+	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
 	public int /*long*/ get_keybinding;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_description;	
 //   AtkFunction             pad1;
 //   AtkFunction             pad2;

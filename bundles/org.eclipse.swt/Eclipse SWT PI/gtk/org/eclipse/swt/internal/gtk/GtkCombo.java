@@ -16,6 +16,8 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkCombo {
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ entry;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ list;
 }

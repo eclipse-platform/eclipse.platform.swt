@@ -12,7 +12,9 @@ package org.eclipse.swt.internal.win32;
 
 public class NMRGINFO extends NMHDR {
 //	POINT ptAction;
+	/** @field accessor=ptAction.x */
 	public int x;
+	/** @field accessor=ptAction.y */
 	public int y;
 	public int dwItemSpec;
 	public static int sizeof = OS.NMRGINFO_sizeof ();

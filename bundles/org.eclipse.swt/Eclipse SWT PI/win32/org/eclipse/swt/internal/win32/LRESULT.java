@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
+/** @jniclass flags=no_gen */
 public class LRESULT {
 	public int /*long*/ value;
 	public static final LRESULT ONE = new LRESULT (1);

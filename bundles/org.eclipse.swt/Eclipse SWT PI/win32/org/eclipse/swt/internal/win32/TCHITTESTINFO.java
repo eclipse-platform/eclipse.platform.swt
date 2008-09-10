@@ -12,7 +12,9 @@ package org.eclipse.swt.internal.win32;
 
 public class TCHITTESTINFO {
 //	POINT pt;
+	/** @field accessor=pt.x */
 	public int x;
+	/** @field accessor=pt.y */
 	public int y;
 	public int flags;
 	public static int sizeof = OS.TCHITTESTINFO_sizeof ();

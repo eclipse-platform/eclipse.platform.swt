@@ -16,8 +16,11 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventVisibility extends GdkEvent {
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ window;
+	/** @field cast=(gint8) */
 	public byte send_event; 
+	/** @field cast=(GdkVisibilityState) */
 	public int state;
 	public static final int sizeof = OS.GdkEventVisibility_sizeof();
 }

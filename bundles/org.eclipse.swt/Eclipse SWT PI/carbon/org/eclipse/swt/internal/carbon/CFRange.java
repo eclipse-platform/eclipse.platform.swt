@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class CFRange {
+	/** @field cast=(CFIndex) */
 	public int location;
+	/** @field cast=(CFIndex) */
 	public int length;
 	public static final int sizeof = 8;
 }

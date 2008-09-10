@@ -11,11 +11,16 @@
 package org.eclipse.swt.internal.win32;
 
 public class BROWSEINFO {
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndOwner;
+	/** @field cast=(LPCITEMIDLIST) */
 	public int /*long*/ pidlRoot;
+	/** @field cast=(LPTSTR) */
 	public int /*long*/ pszDisplayName;
+	/** @field cast=(LPCTSTR) */
 	public int /*long*/ lpszTitle;
 	public int ulFlags;
+	/** @field cast=(BFFCALLBACK) */
 	public int /*long*/ lpfn;
 	public int /*long*/ lParam;
 	public int iImage;

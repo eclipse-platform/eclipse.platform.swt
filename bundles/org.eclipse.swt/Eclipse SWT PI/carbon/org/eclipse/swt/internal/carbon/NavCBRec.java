@@ -15,11 +15,14 @@ package org.eclipse.swt.internal.carbon;
  
 public class NavCBRec {
 	public short version;
+	/** @field cast=(NavDialogRef) */
 	public int context;
+	/** @field cast=(WindowRef) */
 	public int window;
 	public Rect customRect = new Rect ();
 	public Rect previewRect = new Rect ();
 	public NavEventData eventData = new NavEventData ();
+	/** @field cast=(NavUserAction) */
 	public int userAction;
 	public byte[] reserved = new byte[218];
 	public static final int sizeof = 254;

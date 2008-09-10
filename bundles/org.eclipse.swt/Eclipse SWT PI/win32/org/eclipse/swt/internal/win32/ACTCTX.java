@@ -13,12 +13,17 @@ package org.eclipse.swt.internal.win32;
 public class ACTCTX {
 	public int cbSize;
 	public int dwFlags;
+	/** @field cast=(LPCTSTR) */
 	public int /*long*/ lpSource;
 	public short wProcessorArchitecture;
 	public short wLangId;
+	/** @field cast=(LPCTSTR) */
 	public int /*long*/ lpAssemblyDirectory;
+	/** @field cast=(LPCTSTR) */
 	public int /*long*/ lpResourceName;
+	/** @field cast=(LPCTSTR) */
 	public int /*long*/ lpApplicationName;
+	/** @field cast=(HMODULE) */
 	public int /*long*/ hModule;
 	public static final int sizeof = OS.ACTCTX_sizeof ();
 }

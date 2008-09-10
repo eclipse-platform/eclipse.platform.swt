@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.photon;
 public class PtCallbackInfo_t {
 	public int reason;
 	public int reason_subtype;
+	/** @field cast=(PhEvent_t *) */
 	public int event;
+	/** @field cast=(void *) */
 	public int cbdata;
 	public static final int sizeof = 16;
 }

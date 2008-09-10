@@ -16,16 +16,28 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkImage {
+	/** @field cast=(GdkImageType) */
 	public int type;
+	/** @field cast=(GdkVisual *) */
 	public int /*long*/ visual;
+	/** @field cast=(GdkByteOrder) */
 	public int byte_order;
+	/** @field cast=(gint) */
 	public int width;
+	/** @field cast=(gint) */
 	public int height;
+	/** @field cast=(guint16) */
 	public short depth;
+	/** @field cast=(guint16) */
 	public short bpp;
+	/** @field cast=(guint16) */
 	public short bpl;
+	/** @field cast=(guint16) */
 	public short bits_per_pixel;
+	/** @field cast=(gpointer) */
 	public int /*long*/ mem;
+	/** @field cast=(GdkColormap *) */
 	public int /*long*/ colormap;
+	/** @field cast=(gpointer) */
 	public int /*long*/ windowing_data;
 }

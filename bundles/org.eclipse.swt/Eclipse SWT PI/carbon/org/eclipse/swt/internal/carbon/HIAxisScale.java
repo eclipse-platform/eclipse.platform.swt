@@ -14,6 +14,7 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class HIAxisScale {
+	/** @field cast=(HIViewRef) */
 	public int toView;
 	public short kind;
 	public float ratio;

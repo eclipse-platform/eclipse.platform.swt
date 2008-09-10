@@ -18,7 +18,9 @@ public class HIThemeTabPaneDrawInfo {
 	public int state;
 	public short direction;
 	public int size;	
+	/** @field exclude=#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4 */
 	public int kind;
+	/** @field exclude=#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4 */
 	public int adornment;
 	public static final int sizeof = OS.VERSION >= 0x1040 ? 22 : 14;
 }

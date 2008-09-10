@@ -11,6 +11,8 @@
 package org.eclipse.swt.internal.gdip;
 
 public class PointF {
+	/** @field cast=(REAL) */
 	public float X;
+	/** @field cast=(REAL) */
 	public float Y;
 }

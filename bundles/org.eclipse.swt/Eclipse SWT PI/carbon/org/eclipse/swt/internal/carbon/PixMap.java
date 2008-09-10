@@ -24,7 +24,9 @@ public class PixMap extends BitMap {
 	public short cmpCount;
 	public short cmpSize;
 	public int pixelFormat;
+	/** @field cast=(CTabHandle) */
 	public int pmTable;
+	/** @field cast=(void *) */
 	public int pmExt;
 	public static final int sizeof = 50;
 }

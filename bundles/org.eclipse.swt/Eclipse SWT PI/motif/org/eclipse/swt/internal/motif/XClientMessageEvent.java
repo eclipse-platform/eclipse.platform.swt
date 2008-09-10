@@ -12,8 +12,10 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XClientMessageEvent extends XAnyEvent {
+	/** @field cast=(Atom) */
 	public int message_type;
 	public int format;
+	/** @field accessor=data.l,cast=(long *) */
 	public int[] data = new int[5];
 	public static final int sizeof = 48;
 }

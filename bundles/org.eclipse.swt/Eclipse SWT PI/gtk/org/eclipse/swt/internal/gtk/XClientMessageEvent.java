@@ -15,10 +15,14 @@ public class XClientMessageEvent {
 	public int type;
 	public int /*long*/ serial;
 	public boolean send_event;
+	/** @field cast=(Display *) */
 	public int /*long*/ display;
+	/** @field cast=(Window) */
 	public int /*long*/ window;
+	/** @field cast=(Atom) */
 	public int /*long*/ message_type;
 	public int format;
+	/** @field accessor=data.l,cast=(long *) */
 	public int /*long*/[] data = new int /*long*/[5];
 	public static final int sizeof = OS.XClientMessageEvent_sizeof();
 }

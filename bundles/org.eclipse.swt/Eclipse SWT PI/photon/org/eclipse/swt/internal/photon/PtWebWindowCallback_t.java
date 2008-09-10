@@ -11,7 +11,9 @@
 package org.eclipse.swt.internal.photon;
 
 public class PtWebWindowCallback_t {
+	/** @field accessor=size.w */
 	public short size_w;
+	/** @field accessor=size.h */
 	public short size_h;
 	public long flags;
 	public static final int sizeof = 8;

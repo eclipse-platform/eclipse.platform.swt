@@ -15,8 +15,11 @@ package org.eclipse.swt.internal.carbon;
  
 public class TXNBackground {
 	public int bgType;
+	/** @field accessor=bg.color.red */
 	public short bg_red;
+	/** @field accessor=bg.color.green */
 	public short bg_green;
+	/** @field accessor=bg.color.blue */
 	public short bg_blue;
 	public static final int sizof = 10;
 }

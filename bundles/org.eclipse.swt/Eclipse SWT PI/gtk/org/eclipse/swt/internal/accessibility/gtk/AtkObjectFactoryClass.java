@@ -16,7 +16,10 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkObjectFactoryClass {
+	/** @field cast=(AtkObject *(*)()) */
 	public int /*long*/ create_accessible;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ invalidate;
+	/** @field cast=(GType (*)()) */
 	public int /*long*/ get_accessible_type;
 }

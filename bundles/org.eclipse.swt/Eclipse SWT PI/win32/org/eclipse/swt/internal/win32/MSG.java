@@ -11,13 +11,16 @@
 package org.eclipse.swt.internal.win32;
 
 public class MSG {
+	/** @field cast=(HWND) */
 	public int /*long*/ hwnd;
 	public int message; 
 	public int /*long*/ wParam; 
 	public int /*long*/ lParam; 
 	public int time; 
 //	POINT pt;
+	/** @field accessor=pt.x */
 	public int x; 
+	/** @field accessor=pt.y */
 	public int y;
 	public static final int sizeof = OS.MSG_sizeof ();
 }

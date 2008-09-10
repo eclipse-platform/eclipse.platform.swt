@@ -16,8 +16,11 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class PangoAttrColor extends PangoAttribute {
+	/** @field accessor=color.red */
 	public short color_red;
+	/** @field accessor=color.green */
 	public short color_green;
+	/** @field accessor=color.blue */
 	public short color_blue;
 	public static final int sizeof = OS.PangoAttrColor_sizeof();
 }

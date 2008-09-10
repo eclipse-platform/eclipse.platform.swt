@@ -15,9 +15,13 @@ package org.eclipse.swt.internal.carbon;
  
 public class ATSUUnhighlightData {
 	public int dataType; 
+	/** @field accessor=unhighlightData.backgroundColor.red */
 	public float red;
+	/** @field accessor=unhighlightData.backgroundColor.green */
 	public float green;
+	/** @field accessor=unhighlightData.backgroundColor.blue */
 	public float blue;
+	/** @field accessor=unhighlightData.backgroundColor.alpha */
 	public float alpha;
 	public static final int sizeof = 20;	
 }

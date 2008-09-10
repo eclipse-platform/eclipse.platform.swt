@@ -12,8 +12,10 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XmTextBlockRec {
+	/** @field cast=(char *) */
 	public int ptr;
 	public int length;
+	/** @field cast=(XmTextFormat) */
 	public int format;
 	public static final int sizeof = 12;
 }

@@ -29,11 +29,17 @@ package org.eclipse.swt.internal.mozilla.init;
 
 import org.eclipse.swt.internal.Platform;
 
+/** @jniclass flags=cpp */
 public class XPCOMInit extends Platform {
 	public static final int PATH_MAX = 4096;
 	
 public static final native int GREVersionRange_sizeof ();
 
+/**
+ * @param versions cast=(const GREVersionRange *)
+ * @param properties cast=(const GREProperty *)
+ * @param buffer cast=(char *)
+ */
 public static final native int _GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
 public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen) {
 	lock.lock();
@@ -43,6 +49,7 @@ public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, 
 		lock.unlock();
 	}
 }
+/** @param place cast=(const char *) */
 public static final native int _XPCOMGlueStartup (byte[] place);
 public static final int XPCOMGlueStartup (byte[] place) {
 	lock.lock();

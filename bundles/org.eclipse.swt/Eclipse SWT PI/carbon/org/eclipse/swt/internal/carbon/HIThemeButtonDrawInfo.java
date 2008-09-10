@@ -19,7 +19,9 @@ public class HIThemeButtonDrawInfo {
 	public int kind;
 	public int value;
 	public int adornment;
+	/** @field accessor=animation.time */
 	public HIThemeAnimationTimeInfo time;
+	/** @field accessor=animation.frame */
 	public HIThemeAnimationFrameInfo frame;
 	public static final int sizeof = 30;
 }

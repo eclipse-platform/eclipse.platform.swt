@@ -16,10 +16,16 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkAdjustment {
+	/** @field cast=(gdouble) */
 	public double lower;
+	/** @field cast=(gdouble) */
 	public double upper;
+	/** @field cast=(gdouble) */
 	public double value;
+	/** @field cast=(gdouble) */
 	public double step_increment;
+	/** @field cast=(gdouble) */
 	public double page_increment;
+	/** @field cast=(gdouble) */
 	public double page_size;
 }

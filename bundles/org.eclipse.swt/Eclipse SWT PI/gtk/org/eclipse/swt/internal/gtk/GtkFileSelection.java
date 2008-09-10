@@ -16,24 +16,44 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkFileSelection {
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ dir_list;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ file_list;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ selection_entry;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ selection_text;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ main_vbox;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ ok_button;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ cancel_button;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ help_button;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ history_pulldown;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ history_menu;
+	/** @field cast=(GList *) */
 	public int /*long*/ history_list;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ fileop_dialog;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ fileop_entry;
+	/** @field cast=(gchar *) */
 	public int /*long*/ fileop_file;
+	/** @field cast=(gpointer) */
 	public int /*long*/ cmpl_state;			// gpointer
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ fileop_c_dir;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ fileop_del_file;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ fileop_ren_file;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ button_area;
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ action_area;
 }

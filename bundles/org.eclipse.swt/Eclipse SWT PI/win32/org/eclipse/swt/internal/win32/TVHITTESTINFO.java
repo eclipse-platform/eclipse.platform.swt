@@ -12,9 +12,12 @@ package org.eclipse.swt.internal.win32;
 
 public class TVHITTESTINFO {
 //	POINT pt;
+	/** @field accessor=pt.x */
 	public int x;
+	/** @field accessor=pt.y */
 	public int y;
 	public int flags;
+	/** @field cast=(HTREEITEM) */
 	public int /*long*/ hItem;
 	public static int sizeof = OS.TVHITTESTINFO_sizeof ();
 }

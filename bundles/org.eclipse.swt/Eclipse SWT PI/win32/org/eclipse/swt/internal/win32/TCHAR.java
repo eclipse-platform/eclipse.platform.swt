@@ -18,8 +18,9 @@ package org.eclipse.swt.internal.win32;
  * Note that unicode characters which can not be found in the platform
  * encoding will be converted to an arbitrary platform specific character.
  * </p>
+ *
+ * @jniclass flags=no_gen
  */
-
 public class TCHAR {
 	int codePage;
 	public char [] chars;

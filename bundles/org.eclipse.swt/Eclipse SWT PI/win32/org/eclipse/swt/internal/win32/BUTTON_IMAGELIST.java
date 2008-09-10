@@ -11,11 +11,17 @@
 package org.eclipse.swt.internal.win32;
 
 public class BUTTON_IMAGELIST {
+	/** @field cast=(HIMAGELIST) */
 	public int /*long*/ himl; 
+	/** @field accessor=margin.left,cast=(LONG) */
 	public int margin_left;
+	/** @field accessor=margin.top,cast=(LONG) */
 	public int margin_top; 
+	/** @field accessor=margin.right,cast=(LONG) */
 	public int margin_right;
+	/** @field accessor=margin.bottom,cast=(LONG) */
 	public int margin_bottom; 
+	/** @field cast=(UINT) */
 	public int uAlign;
 	public static final int sizeof = OS.BUTTON_IMAGELIST_sizeof ();
 }

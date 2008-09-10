@@ -16,12 +16,18 @@ public class DRAWITEMSTRUCT {
 	public int itemID;
 	public int itemAction;
 	public int itemState;
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndItem;
+	/** @field cast=(HDC) */
 	public int /*long*/ hDC;
 // 	RECT rcItem;
+	/** @field accessor=rcItem.left */
 	public int left;
+	/** @field accessor=rcItem.top */
 	public int top;
+	/** @field accessor=rcItem.bottom */
 	public int bottom;
+	/** @field accessor=rcItem.right */
 	public int right;
 	public int /*long*/ itemData;
 	public static final int sizeof = OS.DRAWITEMSTRUCT_sizeof ();

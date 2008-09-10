@@ -18,6 +18,7 @@ public class PtTextCallback_t {
 	public int new_insert;
 	public int length;
 	public short reserved;
+	/** @field cast=(char *) */
 	public int text;
 	public int doit;
 	public static final int sizeof = 32;

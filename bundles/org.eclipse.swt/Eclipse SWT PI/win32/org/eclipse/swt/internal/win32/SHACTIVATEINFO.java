@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class SHACTIVATEINFO {
 	public int cbSize;
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndLastFocus;
 	public int fSipUp; // :1
 	public int fSipOnDeactivation; // :1

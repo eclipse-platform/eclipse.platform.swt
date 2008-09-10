@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class AEDesc {
+	/** @field cast=(DescType) */
 	public int descriptorType;
+	/** @field cast=(AEDataStorage) */
 	public int dataHandle;
 	public static final int sizeof = 8;
 }

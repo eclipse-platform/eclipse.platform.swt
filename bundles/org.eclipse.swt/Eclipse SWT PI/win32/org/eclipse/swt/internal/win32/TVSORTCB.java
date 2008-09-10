@@ -11,8 +11,11 @@
 package org.eclipse.swt.internal.win32;
 
 public class TVSORTCB {
+	/** @field cast=(HTREEITEM) */
 	public int /*long*/ hParent;
+	/** @field cast=(PFNTVCOMPARE) */
 	public int /*long*/ lpfnCompare;
+	/** @field cast=(LPARAM) */
 	public int /*long*/ lParam;
 	public static final int sizeof = OS.TVSORTCB_sizeof ();
 }

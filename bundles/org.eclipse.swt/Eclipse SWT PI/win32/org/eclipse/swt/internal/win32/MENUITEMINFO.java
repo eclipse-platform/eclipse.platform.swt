@@ -16,12 +16,17 @@ public class MENUITEMINFO {
 	public int fType;
 	public int fState;
 	public int wID;
+	/** @field cast=(HMENU) */
 	public int /*long*/ hSubMenu;
+	/** @field cast=(HBITMAP) */
 	public int /*long*/ hbmpChecked;
+	/** @field cast=(HBITMAP) */
 	public int /*long*/ hbmpUnchecked;
 	public int /*long*/ dwItemData;
+	/** @field cast=(LPTSTR) */
 	public int /*long*/ dwTypeData;
 	public int cch;
+	/** @field cast=(HBITMAP),flags=no_wince */
 	public int /*long*/ hbmpItem;
 	/*
 	* Feature in Windows.  The hbmpItem field requires Windows 4.10

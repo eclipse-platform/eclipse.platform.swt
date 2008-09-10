@@ -14,13 +14,18 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class MenuTrackingData {
+	/** @field cast=(MenuRef) */
 	public int menu; 
 	public short itemSelected; 
 	public short itemUnderMouse; 
 //	  Rect itemRect; 
+	/** @field accessor=itemRect.top */
 	public short top;
+	/** @field accessor=itemRect.left */
 	public short left;
+	/** @field accessor=itemRect.bottom */
 	public short bottom;
+	/** @field accessor=itemRect.right */
 	public short right;
 	public int virtualMenuTop; 
 	public int virtualMenuBottom;

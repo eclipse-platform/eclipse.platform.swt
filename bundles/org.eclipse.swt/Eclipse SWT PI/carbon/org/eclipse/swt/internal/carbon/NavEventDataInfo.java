@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class NavEventDataInfo {
+	/** @field cast=(EventRecord *) */
 	public int event;
+	/** @field cast=(void *) */
 	public int param;
 	public static final int sizeof = 4;
 }

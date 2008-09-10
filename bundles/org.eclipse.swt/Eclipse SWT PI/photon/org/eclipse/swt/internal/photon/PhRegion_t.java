@@ -20,7 +20,9 @@ public class PhRegion_t {
 //	public short zero1;
 	public int events_sense;
 	public int events_opaque;
+	/** @field accessor=origin.x */
 	public short origin_x;
+	/** @field accessor=origin.y */
 	public short origin_y;
 	public int parent;
 	public int child;

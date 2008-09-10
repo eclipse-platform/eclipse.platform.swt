@@ -18,6 +18,7 @@ public class XtWidgetGeometry {
 	public int width;
 	public int height;
 	public int border_width;
+	/** @field cast=(Widget) */
 	public int sibling;
 	public int stack_mode; 
 	public static final int sizeof = 24;

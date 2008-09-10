@@ -16,7 +16,10 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkHypertextIface {
+	/** @field cast=(AtkHyperlink *(*)()) */
 	public int /*long*/ get_link;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_n_links;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_link_index;
 }

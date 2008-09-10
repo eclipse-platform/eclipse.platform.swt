@@ -14,9 +14,13 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class CGRect {
+	/** @field accessor=origin.x,cast=(float) */
 	public float x;
+	/** @field accessor=origin.y,cast=(float) */
 	public float y;
+	/** @field accessor=size.width,cast=(float) */
 	public float width;
+	/** @field accessor=size.height,cast=(float) */
 	public float height;
 	public static final int sizeof = 16;
 }

@@ -12,9 +12,11 @@ package org.eclipse.swt.internal.photon;
 
 
 public class PhClipHeader {
+	/** @field cast=(PhClipHeader) */
 	public byte[] type = new byte[8];
 	public short length;
 	public short zero;
+	/** @field cast=(void *) */
 	public int data;
 	public static final int sizeof = 16;
 }

@@ -16,9 +16,13 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkColor {
+	/** @field cast=(guint32) */
 	public int pixel;
+	/** @field cast=(guint16) */
 	public short red; 
+	/** @field cast=(guint16) */
 	public short green;
+	/** @field cast=(guint16) */
 	public short blue;
 	public static final int sizeof = OS.GdkColor_sizeof();
 }

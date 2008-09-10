@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.motif;
  
 public class XmDropProcCallbackStruct extends XmAnyCallbackStruct {
 	public int timeStamp;
+	/** @field cast=(Widget) */
 	public int dragContext;
 	public short x;
 	public short y;

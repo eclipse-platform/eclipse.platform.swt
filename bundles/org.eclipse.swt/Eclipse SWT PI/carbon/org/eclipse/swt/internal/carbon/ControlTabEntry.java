@@ -14,8 +14,11 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class ControlTabEntry {
+	/** @field cast=(ControlButtonContentInfo *) */
 	public int icon;
+	/** @field cast=(CFStringRef) */
 	public int name;
+	/** @field cast=(Boolean) */
 	public boolean enabled;
 	public static final int sizeof = 10;
 }

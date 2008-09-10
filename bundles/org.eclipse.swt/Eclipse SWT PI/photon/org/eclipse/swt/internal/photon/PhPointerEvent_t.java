@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.photon;
 
 public class PhPointerEvent_t {
 //	public PhPoint_t pos;
+	/** @field accessor=pos.x */
 	public short pos_x;
+	/** @field accessor=pos.y */
 	public short pos_y;
 	public short buttons;
 	public short button_state;	

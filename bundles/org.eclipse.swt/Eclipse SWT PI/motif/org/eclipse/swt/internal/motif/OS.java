@@ -633,7 +633,8 @@ public class OS extends C {
 		NextResourceStart += strLen + 2;
 		return result;
 	}
-	static final native int setResourceMem (int start, int end);
+	/** @method flags=no_gen */
+static final native int setResourceMem (int start, int end);
 
 /** X render natives and constants */
 public static final int PictStandardARGB32 = 0;
@@ -645,6 +646,7 @@ public static final int PictOpSrc = 1;
 public static final int PictOpOver = 3;
 
 public static final native int XRenderPictureAttributes_sizeof();
+/** @method flags=dynamic */
 public static final native boolean _XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep);
 public static final boolean XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep) {
 	lock.lock();
@@ -654,6 +656,7 @@ public static final boolean XRenderQueryExtension(int /*long*/ display, int[] ev
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int _XRenderQueryVersion(int /*long*/ display, int[] major_versionp, int[] minor_versionp);
 public static final int XRenderQueryVersion(int /*long*/ display, int[] major_versionp, int[] minor_versionp) {
 	lock.lock();
@@ -663,6 +666,7 @@ public static final int XRenderQueryVersion(int /*long*/ display, int[] major_ve
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes);
 public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes) {
 	lock.lock();
@@ -672,6 +676,7 @@ public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int 
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native void _XRenderSetPictureClipRegion(int /*long*/ display, int /*long*/ picture, int /*long*/ region);
 public static final void XRenderSetPictureClipRegion(int /*long*/ display, int /*long*/ picture, int /*long*/ region) {
 	lock.lock();
@@ -682,6 +687,7 @@ public static final void XRenderSetPictureClipRegion(int /*long*/ display, int /
 	}
 }
 
+/** @method flags=dynamic */
 public static final native void _XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count);
 public static final void XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count) {
 	lock.lock();
@@ -691,6 +697,7 @@ public static final void XRenderSetPictureClipRectangles(int /*long*/ display, i
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native void _XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform);
 public static final void XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform) {
 	lock.lock();
@@ -700,6 +707,7 @@ public static final void XRenderSetPictureTransform(int /*long*/ display, int /*
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native void _XRenderFreePicture(int /*long*/ display, int /*long*/ picture);
 public static final void XRenderFreePicture(int /*long*/ display, int /*long*/ picture) {
 	lock.lock();
@@ -709,6 +717,7 @@ public static final void XRenderFreePicture(int /*long*/ display, int /*long*/ p
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native void _XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height);
 public static final void XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height) {
 	lock.lock();
@@ -718,6 +727,7 @@ public static final void XRenderComposite(int /*long*/ display, int op, int /*lo
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _XRenderFindStandardFormat(int /*long*/ display, int format);
 public static final int /*long*/ XRenderFindStandardFormat(int /*long*/ display, int format) {
 	lock.lock();
@@ -727,6 +737,7 @@ public static final int /*long*/ XRenderFindStandardFormat(int /*long*/ display,
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual);
 public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual) {
 	lock.lock();
@@ -737,6 +748,7 @@ public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, i
 	}
 }
 
+/** @param handle cast=(void *) */
 public static final native int _dlclose(int /*long*/ handle);
 public static final int dlclose(int /*long*/ handle) {
 	lock.lock();
@@ -746,6 +758,7 @@ public static final int dlclose(int /*long*/ handle) {
 		lock.unlock();
 	}
 }
+/** @param filename cast=(const char *) */
 public static final native int /*long*/ _dlopen(byte[] filename, int flag);
 public static final int /*long*/ dlopen(byte[] filename, int flag) {
 	lock.lock();
@@ -755,6 +768,10 @@ public static final int /*long*/ dlopen(byte[] filename, int flag) {
 		lock.unlock();
 	}
 }
+/**
+ * @param handle cast=(void *)
+ * @param symbol cast=(const char *)
+ */
 public static final native int /*long*/ _dlsym(int /*long*/ handle, byte[] symbol);
 public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
 	lock.lock();
@@ -766,7 +783,10 @@ public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
 }
 
 /** JNI native methods */
+
+/** @method flags=no_gen */
 public static final native int MonitorEnter(Object object);
+/** @method flags=no_gen */
 public static final native int MonitorExit(Object object);
 
 /** Natives */
@@ -788,12 +808,19 @@ public static final int ConnectionNumber(int display) {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
 public static final native int CODESET();
+/** @param fd_set cast=(fd_set *) */
 public static final native boolean FD_ISSET(int fd, byte[] fd_set);
+/** @param fd_set cast=(fd_set *) */
 public static final native void FD_SET(int fd, byte[] fd_set);
+/** @param fd_set cast=(fd_set *) */
 public static final native void FD_ZERO(byte[] fd_set);
+/** @method flags=const */
 public static final native int LC_CTYPE();
+/** @method flags=const */
 public static final native int MB_CUR_MAX();
+/** @method flags=const */
 public static final native int _applicationShellWidgetClass();
 public static final int applicationShellWidgetClass() {
 	lock.lock();
@@ -803,6 +830,7 @@ public static final int applicationShellWidgetClass() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
 public static final native int _overrideShellWidgetClass();
 public static final int overrideShellWidgetClass() {
 	lock.lock();
@@ -812,6 +840,7 @@ public static final int overrideShellWidgetClass() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
 public static final native int _shellWidgetClass();
 public static final int shellWidgetClass() {
 	lock.lock();
@@ -821,6 +850,7 @@ public static final int shellWidgetClass() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
 public static final native int _topLevelShellWidgetClass();
 public static final int topLevelShellWidgetClass() {
 	lock.lock();
@@ -830,6 +860,7 @@ public static final int topLevelShellWidgetClass() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
 public static final native int _transientShellWidgetClass();
 public static final int transientShellWidgetClass() {
 	lock.lock();
@@ -839,6 +870,7 @@ public static final int transientShellWidgetClass() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
 public static final native int _xmMenuShellWidgetClass();
 public static final int xmMenuShellWidgetClass() {
 	lock.lock();
@@ -848,6 +880,7 @@ public static final int xmMenuShellWidgetClass() {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XAllocColor(int display, int colormap, XColor color);
 public static final int XAllocColor(int display, int colormap, XColor color) {
 	lock.lock();
@@ -857,6 +890,7 @@ public static final int XAllocColor(int display, int colormap, XColor color) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XBell(int display, int ms);
 public static final void XBell(int display, int ms) {
 	lock.lock();
@@ -866,6 +900,7 @@ public static final void XBell(int display, int ms) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XBlackPixel(int display, int screenNum);
 public static final int XBlackPixel(int display, int screenNum) {
 	lock.lock();
@@ -875,6 +910,11 @@ public static final int XBlackPixel(int display, int screenNum) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param cursor cast=(Cursor)
+ * @param time cast=(Time)
+ */
 public static final native int _XChangeActivePointerGrab(int display, int eventMask, int cursor, int time);
 public static final int XChangeActivePointerGrab(int display, int eventMask, int cursor, int time) {
 	lock.lock();
@@ -884,6 +924,13 @@ public static final int XChangeActivePointerGrab(int display, int eventMask, int
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ * @param property cast=(Atom)
+ * @param type cast=(Atom)
+ * @param data cast=(unsigned char *)
+ */
 public static final native void _XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements);
 public static final void XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements) {
 	lock.lock();
@@ -893,6 +940,7 @@ public static final void XChangeProperty(int display, int w, int property, int t
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes);
 public static final void XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes) {
 	lock.lock();
@@ -902,6 +950,12 @@ public static final void XChangeWindowAttributes(int display, int window, int ma
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param event_return cast=(XEvent *)
+ * @param predicate cast=(Bool (*)())
+ * @param arg cast=(XPointer)
+ */
 public static final native int _XCheckIfEvent(int display, int event_return, int predicate, int arg);
 public static final int XCheckIfEvent(int display, int event_return, int predicate, int arg) {
 	lock.lock();
@@ -911,6 +965,10 @@ public static final int XCheckIfEvent(int display, int event_return, int predica
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param event cast=(XEvent *)
+ */
 public static final native boolean _XCheckMaskEvent(int display, int mask, int event);
 public static final boolean XCheckMaskEvent(int display, int mask, int event) {
 	lock.lock();
@@ -920,6 +978,11 @@ public static final boolean XCheckMaskEvent(int display, int mask, int event) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param event cast=(XEvent *)
+ */
 public static final native boolean _XCheckWindowEvent(int display, int window, int mask, int event);
 public static final boolean XCheckWindowEvent(int display, int window, int mask, int event) {
 	lock.lock();
@@ -929,6 +992,7 @@ public static final boolean XCheckWindowEvent(int display, int window, int mask,
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XClearArea(int display, int window, int x, int y, int width, int height, boolean exposures);
 public static final void XClearArea(int display, int window, int x, int y, int width, int height, boolean exposures) {
 	lock.lock();
@@ -938,6 +1002,10 @@ public static final void XClearArea(int display, int window, int x, int y, int w
 		lock.unlock();
 	}
 }
+/**
+ * @param region cast=(Region)
+ * @param rectangle cast=(XRectangle *)
+ */
 public static final native void _XClipBox(int region, XRectangle rectangle);
 public static final void XClipBox(int region, XRectangle rectangle) {
 	lock.lock();
@@ -947,6 +1015,7 @@ public static final void XClipBox(int region, XRectangle rectangle) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XCloseDisplay(int display);
 public static final void XCloseDisplay(int display) {
 	lock.lock();
@@ -956,6 +1025,10 @@ public static final void XCloseDisplay(int display) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XCopyArea(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y);
 public static final void XCopyArea(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y) {
 	lock.lock();
@@ -965,6 +1038,10 @@ public static final void XCopyArea(int display, int src, int dest, int gc, int s
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XCopyPlane(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y, int plane);
 public static final void XCopyPlane(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y, int plane) {
 	lock.lock();
@@ -974,6 +1051,10 @@ public static final void XCopyPlane(int display, int src, int dest, int gc, int 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param data cast=(char *)
+ */
 public static final native int _XCreateBitmapFromData(int display, int drawable, byte[] data, int width, int height);
 public static final int XCreateBitmapFromData(int display, int drawable, byte[] data, int width, int height) {
 	lock.lock();
@@ -983,6 +1064,11 @@ public static final int XCreateBitmapFromData(int display, int drawable, byte[] 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param visual cast=(Visual *)
+ */
 public static final native int _XCreateColormap(int display, int window, int visual, int alloc);
 public static final int XCreateColormap(int display, int window, int visual, int alloc) {
 	lock.lock();
@@ -992,6 +1078,7 @@ public static final int XCreateColormap(int display, int window, int visual, int
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XCreateFontCursor(int display, int shape);
 public static final int XCreateFontCursor(int display, int shape) {
 	lock.lock();
@@ -1001,6 +1088,7 @@ public static final int XCreateFontCursor(int display, int shape) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XCreateGC(int display, int window, int mask, XGCValues values);
 public static final int XCreateGC(int display, int window, int mask, XGCValues values) {
 	lock.lock();
@@ -1010,6 +1098,11 @@ public static final int XCreateGC(int display, int window, int mask, XGCValues v
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param visual cast=(Visual *)
+ * @param data cast=(char *)
+ */
 public static final native int _XCreateImage(int display, int visual, int depth, int format, int offset, int data, int width, int height, int bitmap_pad, int bytes_per_line);
 public static final int XCreateImage(int display, int visual, int depth, int format, int offset, int data, int width, int height, int bitmap_pad, int bytes_per_line) {
 	lock.lock();
@@ -1019,6 +1112,7 @@ public static final int XCreateImage(int display, int visual, int depth, int for
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XCreatePixmap(int display, int drawable, int width, int height, int depth);
 public static final int XCreatePixmap(int display, int drawable, int width, int height, int depth) {
 	lock.lock();
@@ -1028,6 +1122,11 @@ public static final int XCreatePixmap(int display, int drawable, int width, int 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param source cast=(Pixmap)
+ * @param mask cast=(Pixmap)
+ */
 public static final native int _XCreatePixmapCursor(int display, int source, int mask, XColor foreground_color, XColor background_color, int x, int y);
 public static final int XCreatePixmapCursor(int display, int source, int mask, XColor foreground_color, XColor background_color, int x, int y) {
 	lock.lock();
@@ -1046,6 +1145,12 @@ public static final int XCreateRegion() {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param parent cast=(Window)
+ * @param visual cast=(Visual *)
+ * @param attributes cast=(XSetWindowAttributes *)
+ */
 public static final native int _XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, XSetWindowAttributes attributes);
 public static final int XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, XSetWindowAttributes attributes) {
 	lock.lock();
@@ -1055,6 +1160,7 @@ public static final int XCreateWindow(int display, int parent, int x, int y, int
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDefaultColormap(int display, int screen_number);
 public static final int XDefaultColormap(int display, int screen_number) {
 	lock.lock();
@@ -1064,6 +1170,7 @@ public static final int XDefaultColormap(int display, int screen_number) {
 		lock.unlock();
 	}
 }
+/** @param screen cast=(Screen *) */
 public static final native int _XDefaultColormapOfScreen(int screen);
 public static final int XDefaultColormapOfScreen(int screen) {
 	lock.lock();
@@ -1073,6 +1180,7 @@ public static final int XDefaultColormapOfScreen(int screen) {
 		lock.unlock();
 	}
 }
+/** @param screen cast=(Screen *) */
 public static final native int _XDefaultDepthOfScreen(int screen);
 public static final int XDefaultDepthOfScreen(int screen) {
 	lock.lock();
@@ -1082,6 +1190,7 @@ public static final int XDefaultDepthOfScreen(int screen) {
 		lock.unlock();
 	}
 }
+/** @param screen cast=(Screen *) */
 public static final native int _XDefaultGCOfScreen(int screen);
 public static final int XDefaultGCOfScreen(int screen) {
 	lock.lock();
@@ -1091,6 +1200,7 @@ public static final int XDefaultGCOfScreen(int screen) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDefaultRootWindow(int display);
 public static final int XDefaultRootWindow(int display) {
 	lock.lock();
@@ -1100,6 +1210,7 @@ public static final int XDefaultRootWindow(int display) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDefaultScreen(int display);
 public static final int XDefaultScreen(int display) {
 	lock.lock();
@@ -1109,6 +1220,7 @@ public static final int XDefaultScreen(int display) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDefaultScreenOfDisplay(int display);
 public static final int XDefaultScreenOfDisplay(int display) {
 	lock.lock();
@@ -1118,6 +1230,7 @@ public static final int XDefaultScreenOfDisplay(int display) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDefaultVisual(int display, int screen_number);
 public static final int XDefaultVisual(int display, int screen_number) {
 	lock.lock();
@@ -1127,6 +1240,7 @@ public static final int XDefaultVisual(int display, int screen_number) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XDefineCursor(int display, int window, int cursor);
 public static final void XDefineCursor(int display, int window, int cursor) {
 	lock.lock();
@@ -1136,6 +1250,7 @@ public static final void XDefineCursor(int display, int window, int cursor) {
 		lock.unlock();
 	}
 }
+/** @param ximage cast=(XImage *) */
 public static final native int _XDestroyImage(int ximage);
 public static final int XDestroyImage(int ximage) {
 	lock.lock();
@@ -1145,6 +1260,7 @@ public static final int XDestroyImage(int ximage) {
 		lock.unlock();
 	}
 }
+/** @param region cast=(Region) */
 public static final native void _XDestroyRegion(int region);
 public static final void XDestroyRegion(int region) {
 	lock.lock();
@@ -1154,6 +1270,10 @@ public static final void XDestroyRegion(int region) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ */
 public static final native void _XDestroyWindow(int display, int w);
 public static final void XDestroyWindow(int display, int w) {
 	lock.lock();
@@ -1163,6 +1283,7 @@ public static final void XDestroyWindow(int display, int w) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDisplayHeight(int display, int screen);
 public static final int XDisplayHeight(int display, int screen) {
 	lock.lock();
@@ -1172,6 +1293,7 @@ public static final int XDisplayHeight(int display, int screen) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDisplayHeightMM(int display, int screen);
 public static final int XDisplayHeightMM(int display, int screen) {
 	lock.lock();
@@ -1181,6 +1303,7 @@ public static final int XDisplayHeightMM(int display, int screen) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDisplayWidth(int display, int screen);
 public static final int XDisplayWidth(int display, int screen) {
 	lock.lock();
@@ -1190,6 +1313,7 @@ public static final int XDisplayWidth(int display, int screen) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XDisplayWidthMM(int display, int screen);
 public static final int XDisplayWidthMM(int display, int screen) {
 	lock.lock();
@@ -1199,6 +1323,11 @@ public static final int XDisplayWidthMM(int display, int screen) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ */
 public static final native void _XDrawArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
 public static final void XDrawArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2) {
 	lock.lock();
@@ -1208,6 +1337,11 @@ public static final void XDrawArc(int display, int drawable, int gc, int x1, int
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ */
 public static final native void _XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final void XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2) {
 	lock.lock();
@@ -1217,6 +1351,12 @@ public static final void XDrawLine(int display, int drawable, int gc, int x1, in
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ * @param xPoints cast=(XPoint *)
+ */
 public static final native void _XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode);
 public static final void XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode) {
 	lock.lock();
@@ -1226,6 +1366,11 @@ public static final void XDrawLines(int display, int drawable, int gc, short[] x
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ */
 public static final native void _XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
 public static final void XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height) {
 	lock.lock();
@@ -1235,6 +1380,11 @@ public static final void XDrawRectangle(int display, int drawable, int gc, int x
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ */
 public static final native void _XDrawPoint(int display, int drawable, int gc, int x, int y);
 public static final void XDrawPoint(int display, int drawable, int gc, int x, int y) {
 	lock.lock();
@@ -1244,6 +1394,7 @@ public static final void XDrawPoint(int display, int drawable, int gc, int x, in
 		lock.unlock();
 	}
 }
+/** @param region cast=(Region) */
 public static final native boolean _XEmptyRegion(int region);
 public static final boolean XEmptyRegion(int region) {
 	lock.lock();
@@ -1253,6 +1404,7 @@ public static final boolean XEmptyRegion(int region) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XEventsQueued(int display, int mode);
 public static final int XEventsQueued(int display, int mode) {
 	lock.lock();
@@ -1262,6 +1414,11 @@ public static final int XEventsQueued(int display, int mode) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ */
 public static final native void _XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
 public static final void XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2) {
 	lock.lock();
@@ -1271,6 +1428,12 @@ public static final void XFillArc(int display, int drawable, int gc, int x1, int
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ * @param xPoints cast=(XPoint *)
+ */
 public static final native int _XFillPolygon(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode, int style);
 public static final int XFillPolygon(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode, int style) {
 	lock.lock();
@@ -1280,6 +1443,11 @@ public static final int XFillPolygon(int display, int drawable, int gc, short[] 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ */
 public static final native void _XFillRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
 public static final void XFillRectangle(int display, int drawable, int gc, int x, int y, int width, int height) {
 	lock.lock();
@@ -1289,6 +1457,10 @@ public static final void XFillRectangle(int display, int drawable, int gc, int x
 		lock.unlock();
 	}
 }
+/**
+ * @param event cast=(XEvent *)
+ * @param window cast=(Window)
+ */
 public static final native boolean _XFilterEvent(int event, int window);
 public static final boolean XFilterEvent(int event, int window) {
 	lock.lock();
@@ -1298,6 +1470,7 @@ public static final boolean XFilterEvent(int event, int window) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XFlush(int display);
 public static final void XFlush(int display) {
 	lock.lock();
@@ -1307,6 +1480,11 @@ public static final void XFlush(int display) {
 		lock.unlock();
 	}
 }
+/**
+ * @param fontSet cast=(XFontSet)
+ * @param fontStructs cast=(XFontStruct ***)
+ * @param fontNames cast=(char ***)
+ */
 public static final native int _XFontsOfFontSet(int fontSet, int[] fontStructs, int[] fontNames);
 public static final int XFontsOfFontSet(int fontSet, int[] fontStructs, int[] fontNames) {
 	lock.lock();
@@ -1316,6 +1494,7 @@ public static final int XFontsOfFontSet(int fontSet, int[] fontStructs, int[] fo
 		lock.unlock();
 	}
 }
+/** @param address cast=(char *) */
 public static final native int _XFree(int address);
 public static final int XFree(int address) {
 	lock.lock();
@@ -1325,6 +1504,10 @@ public static final int XFree(int address) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param colormap cast=(Colormap)
+ */
 public static final native int _XFreeColormap(int display, int colormap);
 public static final int XFreeColormap(int display, int colormap) {
 	lock.lock();
@@ -1334,6 +1517,10 @@ public static final int XFreeColormap(int display, int colormap) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param pixels cast=(unsigned long *)
+ */
 public static final native int _XFreeColors(int display, int colormap, int[] pixels, int npixels, int planes);
 public static final int XFreeColors(int display, int colormap, int[] pixels, int npixels, int planes) {
 	lock.lock();
@@ -1343,6 +1530,10 @@ public static final int XFreeColors(int display, int colormap, int[] pixels, int
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param pixmap cast=(Cursor)
+ */
 public static final native void _XFreeCursor(int display, int pixmap);
 public static final void XFreeCursor(int display, int pixmap) {
 	lock.lock();
@@ -1352,6 +1543,10 @@ public static final void XFreeCursor(int display, int pixmap) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param font_struct cast=(XFontStruct *)
+ */
 public static final native void _XFreeFont(int display, int font_struct);
 public static final void XFreeFont(int display, int font_struct) {
 	lock.lock();
@@ -1361,6 +1556,7 @@ public static final void XFreeFont(int display, int font_struct) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(char **) */
 public static final native void _XFreeFontNames(int list);
 public static final void XFreeFontNames(int list) {
 	lock.lock();
@@ -1370,6 +1566,10 @@ public static final void XFreeFontNames(int list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XFreeGC(int display, int gc);
 public static final void XFreeGC(int display, int gc) {
 	lock.lock();
@@ -1379,6 +1579,7 @@ public static final void XFreeGC(int display, int gc) {
 		lock.unlock();
 	}
 }
+/** @param modmap cast=(XModifierKeymap *) */
 public static final native void _XFreeModifiermap(int modmap);
 public static final void XFreeModifiermap(int modmap) {
 	lock.lock();
@@ -1388,6 +1589,10 @@ public static final void XFreeModifiermap(int modmap) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param pixmap cast=(Pixmap)
+ */
 public static final native void _XFreePixmap(int display, int pixmap);
 public static final void XFreePixmap(int display, int pixmap) {
 	lock.lock();
@@ -1397,6 +1602,7 @@ public static final void XFreePixmap(int display, int pixmap) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(char **) */
 public static final native void _XFreeStringList(int list);
 public static final void XFreeStringList(int list) {
 	lock.lock();
@@ -1406,6 +1612,10 @@ public static final void XFreeStringList(int list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native int _XGetGCValues(int display, int gc, int valuemask, XGCValues values);
 public static final int XGetGCValues(int display, int gc, int valuemask, XGCValues values) {
 	lock.lock();
@@ -1415,6 +1625,17 @@ public static final int XGetGCValues(int display, int gc, int valuemask, XGCValu
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param root_return cast=(Window *)
+ * @param x_return cast=(int *)
+ * @param y_return cast=(int *)
+ * @param width_return cast=(unsigned int *)
+ * @param height_return cast=(unsigned int *)
+ * @param border_width_return cast=(unsigned int *)
+ * @param depth_return cast=(unsigned int *)
+ */
 public static final native int _XGetGeometry(int display, int drawable, int[] root_return, int[] x_return, int[] y_return, int[] width_return, int[] height_return, int[] border_width_return, int[] depth_return);
 public static final int XGetGeometry(int display, int drawable, int[] root_return, int[] x_return, int[] y_return, int[] width_return, int[] height_return, int[] border_width_return, int[] depth_return) {
 	lock.lock();
@@ -1424,6 +1645,10 @@ public static final int XGetGeometry(int display, int drawable, int[] root_retur
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ */
 public static final native int _XGetImage(int display, int drawable, int x, int y, int width, int height, int plane_mask, int format);
 public static final int XGetImage(int display, int drawable, int x, int y, int width, int height, int plane_mask, int format) {
 	lock.lock();
@@ -1433,6 +1658,11 @@ public static final int XGetImage(int display, int drawable, int x, int y, int w
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window *)
+ * @param revert cast=(int *)
+ */
 public static final native int _XGetInputFocus(int display, int[] window, int[] revert);
 public static final int XGetInputFocus(int display, int[] window, int[] revert) {
 	lock.lock();
@@ -1442,6 +1672,7 @@ public static final int XGetInputFocus(int display, int[] window, int[] revert) 
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native boolean _XGetWindowAttributes(int display, int window, XWindowAttributes attributes);
 public static final boolean XGetWindowAttributes(int display, int window, XWindowAttributes attributes) {
 	lock.lock();
@@ -1451,6 +1682,18 @@ public static final boolean XGetWindowAttributes(int display, int window, XWindo
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param property cast=(Atom)
+ * @param delete cast=(Bool)
+ * @param req_type cast=(Atom)
+ * @param actual_type_return cast=(Atom *)
+ * @param actual_format_return cast=(int *)
+ * @param nitems_return cast=(unsigned long *)
+ * @param bytes_after_return cast=(unsigned long *)
+ * @param prop_return cast=(unsigned char **)
+ */
 public static final native int _XGetWindowProperty(int display, int window, int property, int offset, int length, boolean delete, int req_type, int[] actual_type_return, int[] actual_format_return, int[] nitems_return, int[] bytes_after_return, int[] prop_return);
 public static final int XGetWindowProperty(int display, int window, int property, int offset, int length, boolean delete, int req_type, int[] actual_type_return, int[] actual_format_return, int[] nitems_return, int[] bytes_after_return, int[] prop_return) {
 	lock.lock();
@@ -1460,6 +1703,7 @@ public static final int XGetWindowProperty(int display, int window, int property
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XGrabKeyboard(int display, int grabWindow, int ownerEvents, int pointerMode, int keyboardMode, int time);
 public static final int XGrabKeyboard(int display, int grabWindow, int ownerEvents, int pointerMode, int keyboardMode, int time) {
 	lock.lock();
@@ -1469,6 +1713,7 @@ public static final int XGrabKeyboard(int display, int grabWindow, int ownerEven
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XGrabPointer(int display, int grabWindow, int ownerEvents, int eventMask, int pointerMode, int keyboardMode, int confineToWindow, int cursor, int time);
 public static final int XGrabPointer(int display, int grabWindow, int ownerEvents, int eventMask, int pointerMode, int keyboardMode, int confineToWindow, int cursor, int time) {
 	lock.lock();
@@ -1487,6 +1732,10 @@ public static final int XInitThreads() {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param name cast=(char *)
+ */
 public static final native int _XInternAtom(int display, byte[] name, boolean ifExists);
 public static final int XInternAtom(int display, byte[] name, boolean ifExists) {
 	lock.lock();
@@ -1496,6 +1745,11 @@ public static final int XInternAtom(int display, byte[] name, boolean ifExists) 
 		lock.unlock();
 	}
 }
+/**
+ * @param sra cast=(Region)
+ * @param srb cast=(Region)
+ * @param dr_return cast=(Region)
+ */
 public static final native void _XIntersectRegion(int sra, int srb, int dr_return);
 public static final void XIntersectRegion(int sra, int srb, int dr_return) {
 	lock.lock();
@@ -1505,6 +1759,10 @@ public static final void XIntersectRegion(int sra, int srb, int dr_return) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param keysym cast=(KeySym)
+ */
 public static final native int _XKeysymToKeycode(int display, int keysym);
 public static final int XKeysymToKeycode(int display, int keysym) {
 	lock.lock();
@@ -1523,6 +1781,11 @@ public static final int XKeysymToString(int keysym) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param pattern cast=(char *)
+ * @param actual_count_return cast=(int *)
+ */
 public static final native int _XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return);
 public static final int XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return) {
 	lock.lock();
@@ -1532,6 +1795,11 @@ public static final int XListFonts(int display, byte[] pattern, int maxnames, in
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param num_prop_return cast=(int *)
+ */
 public static final native int _XListProperties(int display, int window, int[] num_prop_return);
 public static final int XListProperties(int display, int window, int[] num_prop_return) {
 	lock.lock();
@@ -1541,6 +1809,7 @@ public static final int XListProperties(int display, int window, int[] num_prop_
 		lock.unlock();
 	}
 }
+/** @param fontSet cast=(XFontSet) */
 public static final native int _XLocaleOfFontSet(int fontSet);
 public static final int XLocaleOfFontSet(int fontSet) {
 	lock.lock();
@@ -1550,6 +1819,12 @@ public static final int XLocaleOfFontSet(int fontSet) {
 		lock.unlock();
 	}
 }
+/**
+ * @param event cast=(XKeyEvent *)
+ * @param string cast=(char *)
+ * @param keysym cast=(KeySym *)
+ * @param status cast=(XComposeStatus *)
+ */
 public static final native int _XLookupString(XKeyEvent event, byte[] string, int size, int[] keysym, int[] status);
 public static final int XLookupString(XKeyEvent event, byte[] string, int size, int[] keysym, int[] status) {
 	lock.lock();
@@ -1559,6 +1834,10 @@ public static final int XLookupString(XKeyEvent event, byte[] string, int size, 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XLowerWindow(int display, int window);
 public static final int XLowerWindow(int display, int window) {
 	lock.lock();
@@ -1568,6 +1847,10 @@ public static final int XLowerWindow(int display, int window) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ */
 public static final native void _XMapWindow(int display, int w);
 public static final void XMapWindow(int display, int w) {
 	lock.lock();
@@ -1577,6 +1860,7 @@ public static final void XMapWindow(int display, int w) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XGetModifierMapping(int display);
 public static final int XGetModifierMapping(int display) {
 	lock.lock();
@@ -1586,6 +1870,12 @@ public static final int XGetModifierMapping(int display) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ * @param size_list_return cast=(XIconSize **)
+ * @param count_return cast=(int *)
+ */
 public static final native int _XGetIconSizes(int display, int w, int[] size_list_return, int[] count_return);
 public static final int XGetIconSizes(int display, int w, int[] size_list_return, int[] count_return) {
 	lock.lock();
@@ -1595,6 +1885,10 @@ public static final int XGetIconSizes(int display, int w, int[] size_list_return
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ */
 public static final native void _XMoveResizeWindow(int display, int w, int x, int y, int width, int height);
 public static final void XMoveResizeWindow(int display, int w, int x, int y, int width, int height) {
 	lock.lock();
@@ -1604,6 +1898,7 @@ public static final void XMoveResizeWindow(int display, int w, int x, int y, int
 		lock.unlock();
 	}
 }
+/** @param r cast=(Region) */
 public static final native int _XOffsetRegion(int r, int dx, int dy);
 public static final int XOffsetRegion(int r, int dx, int dy) {
 	lock.lock();
@@ -1613,6 +1908,7 @@ public static final int XOffsetRegion(int r, int dx, int dy) {
 		lock.unlock();
 	}
 }
+/** @param display_name cast=(char *) */
 public static final native int _XOpenDisplay(byte[] display_name);
 public static final int XOpenDisplay(byte[] display_name) {
 	lock.lock();
@@ -1622,6 +1918,7 @@ public static final int XOpenDisplay(byte[] display_name) {
 		lock.unlock();
 	}
 }
+/** @param region cast=(Region) */
 public static final native boolean _XPointInRegion(int region, int x, int y);
 public static final boolean XPointInRegion(int region, int x, int y) {
 	lock.lock();
@@ -1631,6 +1928,7 @@ public static final boolean XPointInRegion(int region, int x, int y) {
 		lock.unlock();
 	}
 }
+/** @param points cast=(XPoint *) */
 public static final native int _XPolygonRegion(short[] points, int n, int fill_rule);
 public static final int XPolygonRegion(short[] points, int n, int fill_rule) {
 	lock.lock();
@@ -1640,6 +1938,12 @@ public static final int XPolygonRegion(short[] points, int n, int fill_rule) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param gc cast=(GC)
+ * @param image cast=(XImage *)
+ */
 public static final native int _XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height);
 public static final int XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height) {
 	lock.lock();
@@ -1649,6 +1953,7 @@ public static final int XPutImage(int display, int drawable, int gc, int image, 
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XQueryColor(int display, int colormap, XColor color);
 public static final int XQueryColor(int display, int colormap, XColor color) {
 	lock.lock();
@@ -1658,6 +1963,11 @@ public static final int XQueryColor(int display, int colormap, XColor color) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param width_return cast=(unsigned int *)
+ * @param height_return cast=(unsigned int *)
+ */
 public static final native int _XQueryBestCursor(int display, int d, int width, int height, int[] width_return, int[] height_return);
 public static final int XQueryBestCursor(int display, int d, int width, int height, int[] width_return, int[] height_return) {
 	lock.lock();
@@ -1667,6 +1977,17 @@ public static final int XQueryBestCursor(int display, int d, int width, int heig
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param root cast=(Window *)
+ * @param child cast=(Window *)
+ * @param rootX cast=(int *)
+ * @param rootY cast=(int *)
+ * @param windowX cast=(int *)
+ * @param windowY cast=(int *)
+ * @param mask cast=(unsigned int *)
+ */
 public static final native int _XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask);
 public static final int XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask) {
 	lock.lock();
@@ -1676,6 +1997,14 @@ public static final int XQueryPointer(int display, int window, int[] root, int[]
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param root_return cast=(Window *)
+ * @param parent_return cast=(Window *)
+ * @param children_return cast=(Window **)
+ * @param nChildren_return cast=(unsigned int *)
+ */
 public static final native int _XQueryTree(int display, int window, int[] root_return, int[] parent_return, int[] children_return, int[] nChildren_return);
 public static final int XQueryTree(int display, int window, int[] root_return, int[] parent_return, int[] children_return, int[] nChildren_return) {
 	lock.lock();
@@ -1685,6 +2014,10 @@ public static final int XQueryTree(int display, int window, int[] root_return, i
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XRaiseWindow(int display, int window);
 public static final int XRaiseWindow(int display, int window) {
 	lock.lock();
@@ -1694,6 +2027,10 @@ public static final int XRaiseWindow(int display, int window) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values);
 public static final int XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values) {
 	lock.lock();
@@ -1703,6 +2040,7 @@ public static final int XReconfigureWMWindow(int display, int window, int screen
 		lock.unlock();
 	}
 }
+/** @param region cast=(Region) */
 public static final native int _XRectInRegion(int region, int x, int y, int width, int height);
 public static final int XRectInRegion(int region, int x, int y, int width, int height) {
 	lock.lock();
@@ -1712,6 +2050,11 @@ public static final int XRectInRegion(int region, int x, int y, int width, int h
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param win cast=(Window)
+ * @param parent cast=(Window)
+ */
 public static final native int _XReparentWindow(int display, int win, int parent, int x, int y);
 public static final int XReparentWindow(int display, int win, int parent, int x, int y) {
 	lock.lock();
@@ -1721,6 +2064,10 @@ public static final int XReparentWindow(int display, int win, int parent, int x,
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ */
 public static final native void _XResizeWindow(int display, int w, int width, int height);
 public static final void XResizeWindow(int display, int w, int width, int height) {
 	lock.lock();
@@ -1730,6 +2077,7 @@ public static final void XResizeWindow(int display, int w, int width, int height
 		lock.unlock();
 	}
 }
+/** @param screen cast=(Screen *) */
 public static final native int _XRootWindowOfScreen(int screen);
 public static final int XRootWindowOfScreen(int screen) {
 	lock.lock();
@@ -1739,6 +2087,10 @@ public static final int XRootWindowOfScreen(int screen) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native void _XSelectInput(int display, int window, int mask);
 public static final void XSelectInput(int display, int window, int mask) {
 	lock.lock();
@@ -1748,6 +2100,13 @@ public static final void XSelectInput(int display, int window, int mask) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param propagate cast=(Bool)
+ * @param event_mask cast=(long)
+ * @param event cast=(XEvent *)
+ */
 public static final native int _XSendEvent(int display, int window, boolean propagate, int event_mask, int event);
 public static final int XSendEvent(int display, int window, boolean propagate, int event_mask, int event) {
 	lock.lock();
@@ -1757,6 +2116,10 @@ public static final int XSendEvent(int display, int window, boolean propagate, i
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetBackground(int display, int gc, int background);
 public static final void XSetBackground(int display, int gc, int background) {
 	lock.lock();
@@ -1766,6 +2129,11 @@ public static final void XSetBackground(int display, int gc, int background) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param pixmap cast=(Pixmap)
+ */
 public static final native void _XSetClipMask(int display, int gc, int pixmap);
 public static final void XSetClipMask(int display, int gc, int pixmap) {
 	lock.lock();
@@ -1775,6 +2143,11 @@ public static final void XSetClipMask(int display, int gc, int pixmap) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param rectangles cast=(XRectangle *)
+ */
 public static final native void _XSetClipRectangles(int display, int gc, int clip_x_origin, int clip_y_origin, XRectangle rectangles, int n, int ordering);
 public static final void XSetClipRectangles(int display, int gc, int clip_x_origin, int clip_y_origin, XRectangle rectangles, int n, int ordering) {
 	lock.lock();
@@ -1784,6 +2157,11 @@ public static final void XSetClipRectangles(int display, int gc, int clip_x_orig
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param dash_list cast=(char *)
+ */
 public static final native int _XSetDashes(int display, int gc, int dash_offset, byte[] dash_list, int n);
 public static final int XSetDashes(int display, int gc, int dash_offset, byte[] dash_list, int n) {
 	lock.lock();
@@ -1793,6 +2171,7 @@ public static final int XSetDashes(int display, int gc, int dash_offset, byte[] 
 		lock.unlock();
 	}
 }
+/** @param handler cast=(XErrorHandler) */
 public static final native int _XSetErrorHandler(int handler);
 public static final int XSetErrorHandler(int handler) {
 	lock.lock();
@@ -1802,6 +2181,10 @@ public static final int XSetErrorHandler(int handler) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetFillRule(int display, int gc, int fill_rule);
 public static final void XSetFillRule(int display, int gc, int fill_rule) {
 	lock.lock();
@@ -1811,6 +2194,10 @@ public static final void XSetFillRule(int display, int gc, int fill_rule) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetFillStyle(int display, int gc, int fill_style);
 public static final void XSetFillStyle(int display, int gc, int fill_style) {
 	lock.lock();
@@ -1820,6 +2207,10 @@ public static final void XSetFillStyle(int display, int gc, int fill_style) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param directories cast=(char **)
+ */
 public static final native int _XSetFontPath(int display, int directories, int ndirs);
 public static final int XSetFontPath(int display, int directories, int ndirs) {
 	lock.lock();
@@ -1829,6 +2220,7 @@ public static final int XSetFontPath(int display, int directories, int ndirs) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XGetFontPath(int display, int[] ndirs);
 public static final int XGetFontPath(int display, int[] ndirs) {
 	lock.lock();
@@ -1838,6 +2230,7 @@ public static final int XGetFontPath(int display, int[] ndirs) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(char **) */
 public static final native int _XFreeFontPath(int list);
 public static final int XFreeFontPath(int list) {
 	lock.lock();
@@ -1847,6 +2240,10 @@ public static final int XFreeFontPath(int list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetForeground(int display, int gc, int foreground);
 public static final void XSetForeground(int display, int gc, int foreground) {
 	lock.lock();
@@ -1856,6 +2253,10 @@ public static final void XSetForeground(int display, int gc, int foreground) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetFunction(int display, int gc, int function);
 public static final void XSetFunction(int display, int gc, int function) {
 	lock.lock();
@@ -1865,6 +2266,11 @@ public static final void XSetFunction(int display, int gc, int function) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param graphics_exposures cast=(Bool)
+ */
 public static final native void _XSetGraphicsExposures(int display, int gc, boolean graphics_exposures);
 public static final void XSetGraphicsExposures(int display, int gc, boolean graphics_exposures) {
 	lock.lock();
@@ -1874,6 +2280,7 @@ public static final void XSetGraphicsExposures(int display, int gc, boolean grap
 		lock.unlock();
 	}
 }
+/** @param handler cast=(XIOErrorHandler) */
 public static final native int _XSetIOErrorHandler(int handler);
 public static final int XSetIOErrorHandler(int handler) {
 	lock.lock();
@@ -1883,6 +2290,10 @@ public static final int XSetIOErrorHandler(int handler) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XSetInputFocus(int display, int window, int revert, int time);
 public static final int XSetInputFocus(int display, int window, int revert, int time) {
 	lock.lock();
@@ -1892,6 +2303,10 @@ public static final int XSetInputFocus(int display, int window, int revert, int 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native int _XSetLineAttributes(int display, int gc, int lineWidth, int lineStyle, int capStyle, int joinStyle);
 public static final int XSetLineAttributes(int display, int gc, int lineWidth, int lineStyle, int capStyle, int joinStyle) {
 	lock.lock();
@@ -1901,6 +2316,11 @@ public static final int XSetLineAttributes(int display, int gc, int lineWidth, i
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param region cast=(Region)
+ */
 public static final native void _XSetRegion(int display, int gc, int region);
 public static final void XSetRegion(int display, int gc, int region) {
 	lock.lock();
@@ -1910,6 +2330,11 @@ public static final void XSetRegion(int display, int gc, int region) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param pixmap cast=(Pixmap)
+ */
 public static final native void _XSetStipple(int display, int gc, int pixmap);
 public static final void XSetStipple(int display, int gc, int pixmap) {
 	lock.lock();
@@ -1919,6 +2344,10 @@ public static final void XSetStipple(int display, int gc, int pixmap) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetSubwindowMode(int display, int gc, int subwindow_mode);
 public static final void XSetSubwindowMode(int display, int gc, int subwindow_mode) {
 	lock.lock();
@@ -1928,6 +2357,11 @@ public static final void XSetSubwindowMode(int display, int gc, int subwindow_mo
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ * @param pixmap cast=(Pixmap)
+ */
 public static final native void _XSetTile(int display, int gc, int pixmap);
 public static final void XSetTile(int display, int gc, int pixmap) {
 	lock.lock();
@@ -1937,6 +2371,11 @@ public static final void XSetTile(int display, int gc, int pixmap) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ * @param prop_window cast=(Window)
+ */
 public static final native int _XSetTransientForHint(int display, int w, int prop_window);
 public static final int XSetTransientForHint(int display, int w, int prop_window) {
 	lock.lock();
@@ -1946,6 +2385,10 @@ public static final int XSetTransientForHint(int display, int w, int prop_window
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param gc cast=(GC)
+ */
 public static final native void _XSetTSOrigin(int display, int gc, int ts_x_origin, int ts_y_origin);
 public static final void XSetTSOrigin(int display, int gc, int ts_x_origin, int ts_y_origin) {
 	lock.lock();
@@ -1955,6 +2398,11 @@ public static final void XSetTSOrigin(int display, int gc, int ts_x_origin, int 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ * @param pixmap cast=(Pixmap)
+ */
 public static final native void _XSetWindowBackgroundPixmap(int display, int w, int pixmap);
 public static final void XSetWindowBackgroundPixmap(int display, int w, int pixmap) {
 	lock.lock();
@@ -1964,6 +2412,10 @@ public static final void XSetWindowBackgroundPixmap(int display, int w, int pixm
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param w cast=(Window)
+ */
 public static final native void _XSetWMNormalHints(int display, int w, XSizeHints hints);
 public static final void XSetWMNormalHints(int display, int w, XSizeHints hints) {
 	lock.lock();
@@ -1973,6 +2425,11 @@ public static final void XSetWMNormalHints(int display, int w, XSizeHints hints)
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param dest cast=(Window)
+ * @param src cast=(Pixmap)
+ */
 public static final native void _XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op);
 public static final void XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op) {
 	lock.lock();
@@ -1982,6 +2439,11 @@ public static final void XShapeCombineMask(int display, int dest, int dest_kind,
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param dest cast=(Window)
+ * @param region cast=(Region)
+ */
 public static final native void _XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op);
 public static final void XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op) {
 	lock.lock();
@@ -1991,6 +2453,11 @@ public static final void XShapeCombineRegion(int display, int dest, int dest_kin
 		lock.unlock();
 	}
 }
+/**
+ * @param sra cast=(Region)
+ * @param srb cast=(Region)
+ * @param dr_return cast=(Region)
+ */
 public static final native void _XSubtractRegion(int sra, int srb, int dr_return);
 public static final void XSubtractRegion(int sra, int srb, int dr_return) {
 	lock.lock();
@@ -2000,6 +2467,10 @@ public static final void XSubtractRegion(int sra, int srb, int dr_return) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param discard cast=(Bool)
+ */
 public static final native void _XSync(int display, boolean discard);
 public static final void XSync(int display, boolean discard) {
 	lock.lock();
@@ -2009,6 +2480,10 @@ public static final void XSync(int display, boolean discard) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param onoff cast=(Bool)
+ */
 public static final native int _XSynchronize(int display, boolean onoff);
 public static final int XSynchronize(int display, boolean onoff) {
 	lock.lock();
@@ -2018,6 +2493,11 @@ public static final int XSynchronize(int display, boolean onoff) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param is_press cast=(Bool)
+ * @param delay cast=(unsigned long)
+ */
 public static final native void _XTestFakeButtonEvent(int display, int button, boolean is_press, int delay);
 public static final void XTestFakeButtonEvent(int display, int button, boolean is_press, int delay) {
 	lock.lock();
@@ -2027,6 +2507,11 @@ public static final void XTestFakeButtonEvent(int display, int button, boolean i
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param is_press cast=(Bool)
+ * @param delay cast=(unsigned long)
+ */
 public static final native void _XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay);
 public static final void XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay) {
 	lock.lock();
@@ -2036,6 +2521,10 @@ public static final void XTestFakeKeyEvent(int display, int keycode, boolean is_
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param delay cast=(unsigned long)
+ */
 public static final native void _XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay);
 public static final void XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay) {
 	lock.lock();
@@ -2045,6 +2534,12 @@ public static final void XTestFakeMotionEvent(int display, int screen_number, in
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param src_w cast=(Window)
+ * @param dest_w cast=(Window)
+ * @param child_return cast=(Window *)
+ */
 public static final native boolean _XTranslateCoordinates(int display, int src_w, int dest_w, int src_x, int src_y, int[] dest_x_return, int[] dest_y_return, int[] child_return);
 public static final boolean XTranslateCoordinates(int display, int src_w, int dest_w, int src_x, int src_y, int[] dest_x_return, int[] dest_y_return, int[] child_return) {
 	lock.lock();
@@ -2054,6 +2549,10 @@ public static final boolean XTranslateCoordinates(int display, int src_w, int de
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native void _XUndefineCursor(int display, int window);
 public static final void XUndefineCursor(int display, int window) {
 	lock.lock();
@@ -2063,6 +2562,7 @@ public static final void XUndefineCursor(int display, int window) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XUngrabKeyboard(int display, int time);
 public static final int XUngrabKeyboard(int display, int time) {
 	lock.lock();
@@ -2072,6 +2572,7 @@ public static final int XUngrabKeyboard(int display, int time) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XUngrabPointer(int display, int time);
 public static final int XUngrabPointer(int display, int time) {
 	lock.lock();
@@ -2081,6 +2582,11 @@ public static final int XUngrabPointer(int display, int time) {
 		lock.unlock();
 	}
 }
+/**
+ * @param rectangle cast=(XRectangle *)
+ * @param src_region cast=(Region)
+ * @param dest_region_return cast=(Region)
+ */
 public static final native void _XUnionRectWithRegion(XRectangle rectangle, int src_region, int dest_region_return);
 public static final void XUnionRectWithRegion(XRectangle rectangle, int src_region, int dest_region_return) {
 	lock.lock();
@@ -2090,6 +2596,11 @@ public static final void XUnionRectWithRegion(XRectangle rectangle, int src_regi
 		lock.unlock();
 	}
 }
+/**
+ * @param sra cast=(Region)
+ * @param srb cast=(Region)
+ * @param dr_return cast=(Region)
+ */
 public static final native void _XUnionRegion(int sra, int srb, int dr_return);
 public static final void XUnionRegion(int sra, int srb, int dr_return) {
 	lock.lock();
@@ -2099,6 +2610,10 @@ public static final void XUnionRegion(int sra, int srb, int dr_return) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native void _XUnmapWindow(int display, int window);
 public static final void XUnmapWindow(int display, int window) {
 	lock.lock();
@@ -2108,6 +2623,7 @@ public static final void XUnmapWindow(int display, int window) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XWarpPointer(int display, int sourceWindow, int destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY);
 public static final int XWarpPointer(int display, int sourceWindow, int destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY) {
 	lock.lock();
@@ -2117,6 +2633,7 @@ public static final int XWarpPointer(int display, int sourceWindow, int destWind
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XWhitePixel(int display, int screenNum);
 public static final int XWhitePixel(int display, int screenNum) {
 	lock.lock();
@@ -2126,6 +2643,10 @@ public static final int XWhitePixel(int display, int screenNum) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native void _XWithdrawWindow(int display, int window, int screen);
 public static final void XWithdrawWindow(int display, int window, int screen) {
 	lock.lock();
@@ -2135,6 +2656,7 @@ public static final void XWithdrawWindow(int display, int window, int screen) {
 		lock.unlock();
 	}
 }
+/** @param dpy cast=(Display *) */
 public static final native boolean _XineramaIsActive(int dpy);
 public static final boolean XineramaIsActive(int dpy) {
 	lock.lock();
@@ -2144,6 +2666,7 @@ public static final boolean XineramaIsActive(int dpy) {
 		lock.unlock();
 	}
 }
+/** @param dpy cast=(Display *) */
 public static final native int _XineramaQueryScreens(int dpy, int[] number);
 public static final int XineramaQueryScreens(int dpy, int[] number) {
 	lock.lock();
@@ -2153,6 +2676,12 @@ public static final int XineramaQueryScreens(int dpy, int[] number) {
 		lock.unlock();
 	}
 }
+/**
+ * @param shell cast=(Widget)
+ * @param protocol cast=(Atom)
+ * @param callback cast=(XtCallbackProc)
+ * @param closure cast=(XtPointer)
+ */
 public static final native void _XmAddWMProtocolCallback(int shell, int protocol, int callback, int closure);
 public static final void XmAddWMProtocolCallback(int shell, int protocol, int callback, int closure) {
 	lock.lock();
@@ -2162,6 +2691,7 @@ public static final void XmAddWMProtocolCallback(int shell, int protocol, int ca
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmChangeColor(int widget, int pixel);
 public static final void XmChangeColor(int widget, int pixel) {
 	lock.lock();
@@ -2171,6 +2701,13 @@ public static final void XmChangeColor(int widget, int pixel) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param format_name cast=(char *)
+ * @param buffer cast=(char *)
+ * @param data_id cast=(void *)
+ */
 public static final native int _XmClipboardCopy(int display, int window, int item_id, byte[] format_name, byte[] buffer, int length, int private_id, int[] data_id);
 public static final int XmClipboardCopy(int display, int window, int item_id, byte[] format_name, byte[] buffer, int length, int private_id, int[] data_id) {
 	lock.lock();
@@ -2180,6 +2717,10 @@ public static final int XmClipboardCopy(int display, int window, int item_id, by
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XmClipboardEndCopy(int display, int window, int item_id);
 public static final int XmClipboardEndCopy(int display, int window, int item_id) {
 	lock.lock();
@@ -2189,6 +2730,10 @@ public static final int XmClipboardEndCopy(int display, int window, int item_id)
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XmClipboardEndRetrieve(int display, int window);
 public static final int XmClipboardEndRetrieve(int display, int window) {
 	lock.lock();
@@ -2198,6 +2743,12 @@ public static final int XmClipboardEndRetrieve(int display, int window) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param count cast=(int *)
+ * @param max_format_name_length cast=(unsigned long *)
+ */
 public static final native int _XmClipboardInquireCount(int display, int window, int[] count, int[] max_format_name_length);
 public static final int XmClipboardInquireCount(int display, int window, int[] count, int[] max_format_name_length) {
 	lock.lock();
@@ -2207,6 +2758,12 @@ public static final int XmClipboardInquireCount(int display, int window, int[] c
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param format_name_buf cast=(char *)
+ * @param copied_len cast=(unsigned long *)
+ */
 public static final native int _XmClipboardInquireFormat(int display, int window, int index, byte[] format_name_buf, int buffer_len, int[] copied_len);
 public static final int XmClipboardInquireFormat(int display, int window, int index, byte[] format_name_buf, int buffer_len, int[] copied_len) {
 	lock.lock();
@@ -2216,6 +2773,12 @@ public static final int XmClipboardInquireFormat(int display, int window, int in
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param widget cast=(Window)
+ * @param format_name cast=(char *)
+ * @param length cast=(unsigned long *)
+ */
 public static final native int _XmClipboardInquireLength(int display, int widget, byte[] format_name, int[] length);
 public static final int XmClipboardInquireLength(int display, int widget, byte[] format_name, int[] length) {
 	lock.lock();
@@ -2225,6 +2788,14 @@ public static final int XmClipboardInquireLength(int display, int widget, byte[]
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param format_name cast=(char *)
+ * @param buffer cast=(char *)
+ * @param num_bytes cast=(unsigned long *)
+ * @param private_id cast=(long *)
+ */
 public static final native int _XmClipboardRetrieve(int display, int window, byte[] format_name, byte[] buffer, int length, int[] num_bytes, int[] private_id);
 public static final int XmClipboardRetrieve(int display, int window, byte[] format_name, byte[] buffer, int length, int[] num_bytes, int[] private_id) {
 	lock.lock();
@@ -2234,6 +2805,14 @@ public static final int XmClipboardRetrieve(int display, int window, byte[] form
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param clip_label cast=(XmString)
+ * @param widget cast=(Widget)
+ * @param callback cast=(XmCutPasteProc)
+ * @param item_id cast=(long *)
+ */
 public static final native int _XmClipboardStartCopy(int display, int window, int clip_label, int timestamp, int widget, int callback, int[] item_id);
 public static final int XmClipboardStartCopy(int display, int window, int clip_label, int timestamp, int widget, int callback, int[] item_id) {
 	lock.lock();
@@ -2243,6 +2822,10 @@ public static final int XmClipboardStartCopy(int display, int window, int clip_l
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native int _XmClipboardStartRetrieve(int display, int window, int timestamp);
 public static final int XmClipboardStartRetrieve(int display, int window, int timestamp) {
 	lock.lock();
@@ -2252,6 +2835,10 @@ public static final int XmClipboardStartRetrieve(int display, int window, int ti
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param xmString cast=(XmString)
+ */
 public static final native void _XmComboBoxAddItem(int widget, int xmString, int position, boolean unique);
 public static final void XmComboBoxAddItem(int widget, int xmString, int position, boolean unique) {
 	lock.lock();
@@ -2261,6 +2848,7 @@ public static final void XmComboBoxAddItem(int widget, int xmString, int positio
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmComboBoxDeletePos(int widget, int position);
 public static final void XmComboBoxDeletePos(int widget, int position) {
 	lock.lock();
@@ -2270,6 +2858,10 @@ public static final void XmComboBoxDeletePos(int widget, int position) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param xmString cast=(XmString)
+ */
 public static final native void _XmComboBoxSelectItem(int widget, int xmString);
 public static final void XmComboBoxSelectItem(int widget, int xmString) {
 	lock.lock();
@@ -2279,6 +2871,11 @@ public static final void XmComboBoxSelectItem(int widget, int xmString) {
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateArrowButton(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateArrowButton(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2288,6 +2885,11 @@ public static final int XmCreateArrowButton(int parent, byte[] name, int[] argli
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateCascadeButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateCascadeButtonGadget(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2297,6 +2899,11 @@ public static final int XmCreateCascadeButtonGadget(int parent, byte[] name, int
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateComboBox(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateComboBox(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2306,6 +2913,11 @@ public static final int XmCreateComboBox(int parent, byte[] name, int[] arglist,
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateDialogShell(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateDialogShell(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2315,6 +2927,11 @@ public static final int XmCreateDialogShell(int parent, byte[] name, int[] argli
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateDrawingArea(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateDrawingArea(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2324,6 +2941,11 @@ public static final int XmCreateDrawingArea(int parent, byte[] name, int[] argli
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateDrawnButton(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateDrawnButton(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2333,6 +2955,11 @@ public static final int XmCreateDrawnButton(int parent, byte[] name, int[] argli
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateErrorDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateErrorDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2342,6 +2969,11 @@ public static final int XmCreateErrorDialog(int parent, byte[] name, int[] argli
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateFileSelectionDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateFileSelectionDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2351,6 +2983,11 @@ public static final int XmCreateFileSelectionDialog(int parent, byte[] name, int
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateForm(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateForm(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2360,6 +2997,11 @@ public static final int XmCreateForm(int parent, byte[] name, int[] arglist, int
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateFrame(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateFrame(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2369,6 +3011,11 @@ public static final int XmCreateFrame(int parent, byte[] name, int[] arglist, in
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateInformationDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateInformationDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2378,6 +3025,11 @@ public static final int XmCreateInformationDialog(int parent, byte[] name, int[]
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateLabel(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateLabel(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2387,6 +3039,11 @@ public static final int XmCreateLabel(int parent, byte[] name, int[] arglist, in
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateList(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateList(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2396,6 +3053,11 @@ public static final int XmCreateList(int parent, byte[] name, int[] arglist, int
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateMainWindow(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateMainWindow(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2405,6 +3067,11 @@ public static final int XmCreateMainWindow(int parent, byte[] name, int[] arglis
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateMenuBar(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateMenuBar(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2414,6 +3081,11 @@ public static final int XmCreateMenuBar(int parent, byte[] name, int[] arglist, 
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateMessageDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateMessageDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2423,6 +3095,11 @@ public static final int XmCreateMessageDialog(int parent, byte[] name, int[] arg
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreatePopupMenu(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreatePopupMenu(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2432,6 +3109,11 @@ public static final int XmCreatePopupMenu(int parent, byte[] name, int[] arglist
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreatePulldownMenu(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreatePulldownMenu(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2441,6 +3123,11 @@ public static final int XmCreatePulldownMenu(int parent, byte[] name, int[] argl
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreatePushButton(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreatePushButton(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2450,6 +3137,11 @@ public static final int XmCreatePushButton(int parent, byte[] name, int[] arglis
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreatePushButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreatePushButtonGadget(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2459,6 +3151,11 @@ public static final int XmCreatePushButtonGadget(int parent, byte[] name, int[] 
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateQuestionDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateQuestionDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2468,6 +3165,11 @@ public static final int XmCreateQuestionDialog(int parent, byte[] name, int[] ar
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateScale(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateScale(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2477,6 +3179,11 @@ public static final int XmCreateScale(int parent, byte[] name, int[] arglist, in
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateScrollBar(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateScrollBar(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2486,6 +3193,11 @@ public static final int XmCreateScrollBar(int parent, byte[] name, int[] arglist
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateScrolledList(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateScrolledList(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2495,6 +3207,11 @@ public static final int XmCreateScrolledList(int parent, byte[] name, int[] argl
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateScrolledText(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateScrolledText(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2504,6 +3221,11 @@ public static final int XmCreateScrolledText(int parent, byte[] name, int[] argl
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateSeparator(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateSeparator(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2513,6 +3235,11 @@ public static final int XmCreateSeparator(int parent, byte[] name, int[] arglist
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateSeparatorGadget(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateSeparatorGadget(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2522,6 +3249,11 @@ public static final int XmCreateSeparatorGadget(int parent, byte[] name, int[] a
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateSimpleSpinBox(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateSimpleSpinBox(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2531,6 +3263,11 @@ public static final int XmCreateSimpleSpinBox(int parent, byte[] name, int[] arg
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateTextField(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateTextField(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2540,6 +3277,11 @@ public static final int XmCreateTextField(int parent, byte[] name, int[] arglist
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2549,6 +3291,11 @@ public static final int XmCreateToggleButton(int parent, byte[] name, int[] argl
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2558,6 +3305,11 @@ public static final int XmCreateToggleButtonGadget(int parent, byte[] name, int[
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateWarningDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateWarningDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2567,6 +3319,11 @@ public static final int XmCreateWarningDialog(int parent, byte[] name, int[] arg
 		lock.unlock();
 	}
 }
+/**
+ * @param parent cast=(Widget)
+ * @param name cast=(String)
+ * @param arglist cast=(ArgList)
+ */
 public static final native int _XmCreateWorkingDialog(int parent, byte[] name, int[] arglist, int argcount);
 public static final int XmCreateWorkingDialog(int parent, byte[] name, int[] arglist, int argcount) {
 	lock.lock();
@@ -2576,6 +3333,10 @@ public static final int XmCreateWorkingDialog(int parent, byte[] name, int[] arg
 		lock.unlock();
 	}
 }
+/**
+ * @param screen cast=(Screen *)
+ * @param pixmap cast=(Pixmap)
+ */
 public static final native boolean _XmDestroyPixmap(int screen, int pixmap);
 public static final boolean XmDestroyPixmap(int screen, int pixmap) {
 	lock.lock();
@@ -2585,6 +3346,7 @@ public static final boolean XmDestroyPixmap(int screen, int pixmap) {
 		lock.unlock();
 	}
 }
+/** @param dragcontext cast=(Widget) */
 public static final native void _XmDragCancel(int dragcontext);
 public static final void XmDragCancel(int dragcontext) {
 	lock.lock();
@@ -2594,6 +3356,12 @@ public static final void XmDragCancel(int dragcontext) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param event cast=(XEvent *)
+ * @param arglist cast=(ArgList)
+ * @param argcount cast=(Cardinal)
+ */
 public static final native int _XmDragStart(int widget, int event, int[] arglist, int argcount);
 public static final int XmDragStart(int widget, int event, int[] arglist, int argcount) {
 	lock.lock();
@@ -2603,6 +3371,11 @@ public static final int XmDragStart(int widget, int event, int[] arglist, int ar
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param arglist cast=(ArgList)
+ * @param argcount cast=(Cardinal)
+ */
 public static final native void _XmDropSiteRegister(int widget, int[] arglist, int argcount);
 public static final void XmDropSiteRegister(int widget, int[] arglist, int argcount) {
 	lock.lock();
@@ -2612,6 +3385,7 @@ public static final void XmDropSiteRegister(int widget, int[] arglist, int argco
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmDropSiteUnregister(int widget);
 public static final void XmDropSiteUnregister(int widget) {
 	lock.lock();
@@ -2621,6 +3395,11 @@ public static final void XmDropSiteUnregister(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param arglist cast=(ArgList)
+ * @param argcount cast=(Cardinal)
+ */
 public static final native void _XmDropSiteUpdate(int widget, int[] arglist, int argcount);
 public static final void XmDropSiteUpdate(int widget, int[] arglist, int argcount) {
 	lock.lock();
@@ -2630,6 +3409,11 @@ public static final void XmDropSiteUpdate(int widget, int[] arglist, int argcoun
 		lock.unlock();
 	}
 }
+/**
+ * @param drop_transfer cast=(Widget)
+ * @param transfers cast=(XmDropTransferEntryRec *)
+ * @param num_transfers cast=(Cardinal)
+ */
 public static final native void _XmDropTransferAdd(int drop_transfer, int[] transfers, int num_transfers);
 public static final void XmDropTransferAdd(int drop_transfer, int[] transfers, int num_transfers) {
 	lock.lock();
@@ -2639,6 +3423,11 @@ public static final void XmDropTransferAdd(int drop_transfer, int[] transfers, i
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param arglist cast=(ArgList)
+ * @param argcount cast=(Cardinal)
+ */
 public static final native int _XmDropTransferStart(int widget, int[] arglist, int argcount);
 public static final int XmDropTransferStart(int widget, int[] arglist, int argcount) {
 	lock.lock();
@@ -2648,6 +3437,7 @@ public static final int XmDropTransferStart(int widget, int[] arglist, int argco
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmFileSelectionBoxGetChild(int widget, int child);
 public static final int XmFileSelectionBoxGetChild(int widget, int child) {
 	lock.lock();
@@ -2657,6 +3447,10 @@ public static final int XmFileSelectionBoxGetChild(int widget, int child) {
 		lock.unlock();
 	}
 }
+/**
+ * @param oldList cast=(XmFontList)
+ * @param entry cast=(XmFontListEntry)
+ */
 public static final native int _XmFontListAppendEntry(int oldList, int entry);
 public static final int XmFontListAppendEntry(int oldList, int entry) {
 	lock.lock();
@@ -2666,6 +3460,7 @@ public static final int XmFontListAppendEntry(int oldList, int entry) {
 		lock.unlock();
 	}
 }
+/** @param fontlist cast=(XmFontList) */
 public static final native int _XmFontListCopy(int fontlist);
 public static final int XmFontListCopy(int fontlist) {
 	lock.lock();
@@ -2675,6 +3470,7 @@ public static final int XmFontListCopy(int fontlist) {
 		lock.unlock();
 	}
 }
+/** @param entry cast=(XmFontListEntry *) */
 public static final native void _XmFontListEntryFree(int[] entry);
 public static final void XmFontListEntryFree(int[] entry) {
 	lock.lock();
@@ -2684,6 +3480,10 @@ public static final void XmFontListEntryFree(int[] entry) {
 		lock.unlock();
 	}
 }
+/**
+ * @param entry cast=(XmFontListEntry)
+ * @param type_return cast=(XmFontType *)
+ */
 public static final native int _XmFontListEntryGetFont(int entry, int[] type_return);
 public static final int XmFontListEntryGetFont(int entry, int[] type_return) {
 	lock.lock();
@@ -2693,6 +3493,11 @@ public static final int XmFontListEntryGetFont(int entry, int[] type_return) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param fontName cast=(char *)
+ * @param tag cast=(char *)
+ */
 public static final native int _XmFontListEntryLoad(int display, byte[] fontName, int type, byte[] tag);
 public static final int XmFontListEntryLoad(int display, byte[] fontName, int type, byte[] tag) {
 	lock.lock();
@@ -2702,6 +3507,7 @@ public static final int XmFontListEntryLoad(int display, byte[] fontName, int ty
 		lock.unlock();
 	}
 }
+/** @param list cast=(XmFontList) */
 public static final native void _XmFontListFree(int list);
 public static final void XmFontListFree(int list) {
 	lock.lock();
@@ -2711,6 +3517,7 @@ public static final void XmFontListFree(int list) {
 		lock.unlock();
 	}
 }
+/** @param context cast=(XmFontContext) */
 public static final native void _XmFontListFreeFontContext(int context);
 public static final void XmFontListFreeFontContext(int context) {
 	lock.lock();
@@ -2720,6 +3527,10 @@ public static final void XmFontListFreeFontContext(int context) {
 		lock.unlock();
 	}
 }
+/**
+ * @param context cast=(XmFontContext *)
+ * @param fontList cast=(XmFontList)
+ */
 public static final native boolean _XmFontListInitFontContext(int[] context, int fontList);
 public static final boolean XmFontListInitFontContext(int[] context, int fontList) {
 	lock.lock();
@@ -2729,6 +3540,7 @@ public static final boolean XmFontListInitFontContext(int[] context, int fontLis
 		lock.unlock();
 	}
 }
+/** @param context cast=(XmFontContext) */
 public static final native int _XmFontListNextEntry(int context);
 public static final int XmFontListNextEntry(int context) {
 	lock.lock();
@@ -2738,6 +3550,10 @@ public static final int XmFontListNextEntry(int context) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param atom cast=(Atom)
+ */
 public static final native int _XmGetAtomName(int display, int atom);
 public static final int XmGetAtomName(int display, int atom) {
 	lock.lock();
@@ -2747,6 +3563,10 @@ public static final int XmGetAtomName(int display, int atom) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param timestamp cast=(Time)
+ */
 public static final native int _XmGetDragContext(int widget, int timestamp);
 public static final int XmGetDragContext(int widget, int timestamp) {
 	lock.lock();
@@ -2756,6 +3576,7 @@ public static final int XmGetDragContext(int widget, int timestamp) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmGetFocusWidget(int widget);
 public static final int XmGetFocusWidget(int widget) {
 	lock.lock();
@@ -2765,6 +3586,12 @@ public static final int XmGetFocusWidget(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param screen cast=(Screen *)
+ * @param name cast=(char *)
+ * @param fgPixel cast=(Pixel)
+ * @param bgPixel cast=(Pixel)
+ */
 public static final native int _XmGetPixmap(int screen, byte[] name, int fgPixel, int bgPixel);
 public static final int XmGetPixmap(int screen, byte[] name, int fgPixel, int bgPixel) {
 	lock.lock();
@@ -2774,6 +3601,10 @@ public static final int XmGetPixmap(int screen, byte[] name, int fgPixel, int bg
 		lock.unlock();
 	}
 }
+/**
+ * @param screen cast=(Screen *)
+ * @param image_name cast=(char *)
+ */
 public static final native int _XmGetPixmapByDepth(int screen, byte[] image_name, int foreground, int background, int depth);
 public static final int XmGetPixmapByDepth(int screen, byte[] image_name, int foreground, int background, int depth) {
 	lock.lock();
@@ -2783,6 +3614,7 @@ public static final int XmGetPixmapByDepth(int screen, byte[] image_name, int fo
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XmGetXmDisplay(int display);
 public static final int XmGetXmDisplay(int display) {
 	lock.lock();
@@ -2792,6 +3624,13 @@ public static final int XmGetXmDisplay(int display) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param event cast=(XKeyPressedEvent *)
+ * @param string cast=(char *)
+ * @param keysym cast=(KeySym *)
+ * @param status cast=(int *)
+ */
 public static final native int _XmImMbLookupString(int widget, XKeyEvent event, byte[] string, int size, int[] keysym, int[] status);
 public static final int XmImMbLookupString(int widget, XKeyEvent event, byte[] string, int size, int[] keysym, int[] status) {
 	lock.lock();
@@ -2801,6 +3640,7 @@ public static final int XmImMbLookupString(int widget, XKeyEvent event, byte[] s
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmImRegister(int widget, int reserved);
 public static final void XmImRegister(int widget, int reserved) {
 	lock.lock();
@@ -2810,6 +3650,10 @@ public static final void XmImRegister(int widget, int reserved) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param args cast=(ArgList)
+ */
 public static final native void _XmImSetFocusValues(int widget, int[] args, int num_args);
 public static final void XmImSetFocusValues(int widget, int[] args, int num_args) {
 	lock.lock();
@@ -2819,6 +3663,10 @@ public static final void XmImSetFocusValues(int widget, int[] args, int num_args
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param args cast=(ArgList)
+ */
 public static final native void _XmImSetValues(int widget, int[] args, int num_args);
 public static final void XmImSetValues(int widget, int[] args, int num_args) {
 	lock.lock();
@@ -2828,6 +3676,7 @@ public static final void XmImSetValues(int widget, int[] args, int num_args) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmImUnregister(int widget);
 public static final void XmImUnregister(int widget) {
 	lock.lock();
@@ -2837,6 +3686,7 @@ public static final void XmImUnregister(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmImUnsetFocus(int widget);
 public static final void XmImUnsetFocus(int widget) {
 	lock.lock();
@@ -2846,6 +3696,10 @@ public static final void XmImUnsetFocus(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param name cast=(String)
+ */
 public static final native int _XmInternAtom(int display, byte[] name, boolean only_if_exists);
 public static final int XmInternAtom(int display, byte[] name, boolean only_if_exists) {
 	lock.lock();
@@ -2855,6 +3709,10 @@ public static final int XmInternAtom(int display, byte[] name, boolean only_if_e
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(Widget)
+ * @param xmString cast=(XmString)
+ */
 public static final native void _XmListAddItemUnselected(int list, int xmString, int position);
 public static final void XmListAddItemUnselected(int list, int xmString, int position) {
 	lock.lock();
@@ -2864,6 +3722,7 @@ public static final void XmListAddItemUnselected(int list, int xmString, int pos
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListDeleteAllItems(int list);
 public static final void XmListDeleteAllItems(int list) {
 	lock.lock();
@@ -2873,6 +3732,7 @@ public static final void XmListDeleteAllItems(int list) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListDeleteItemsPos(int list, int item_count, int position);
 public static final void XmListDeleteItemsPos(int list, int item_count, int position) {
 	lock.lock();
@@ -2882,6 +3742,7 @@ public static final void XmListDeleteItemsPos(int list, int item_count, int posi
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListDeletePos(int list, int position);
 public static final void XmListDeletePos(int list, int position) {
 	lock.lock();
@@ -2891,6 +3752,10 @@ public static final void XmListDeletePos(int list, int position) {
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(Widget)
+ * @param position_list cast=(int *)
+ */
 public static final native void _XmListDeletePositions(int list, int[] position_list, int position_count);
 public static final void XmListDeletePositions(int list, int[] position_list, int position_count) {
 	lock.lock();
@@ -2900,6 +3765,7 @@ public static final void XmListDeletePositions(int list, int[] position_list, in
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListDeselectAllItems(int list);
 public static final void XmListDeselectAllItems(int list) {
 	lock.lock();
@@ -2909,6 +3775,7 @@ public static final void XmListDeselectAllItems(int list) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListDeselectPos(int list, int position);
 public static final void XmListDeselectPos(int list, int position) {
 	lock.lock();
@@ -2918,6 +3785,7 @@ public static final void XmListDeselectPos(int list, int position) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native int _XmListGetKbdItemPos(int list);
 public static final int XmListGetKbdItemPos(int list) {
 	lock.lock();
@@ -2927,6 +3795,11 @@ public static final int XmListGetKbdItemPos(int list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(Widget)
+ * @param positions cast=(int **)
+ * @param count cast=(int *)
+ */
 public static final native boolean _XmListGetSelectedPos(int list, int[] positions, int[] count);
 public static final boolean XmListGetSelectedPos(int list, int[] positions, int[] count) {
 	lock.lock();
@@ -2936,6 +3809,10 @@ public static final boolean XmListGetSelectedPos(int list, int[] positions, int[
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(Widget)
+ * @param xmString cast=(XmString)
+ */
 public static final native int _XmListItemPos(int list, int xmString);
 public static final int XmListItemPos(int list, int xmString) {
 	lock.lock();
@@ -2945,6 +3822,7 @@ public static final int XmListItemPos(int list, int xmString) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native boolean _XmListPosSelected(int list, int position);
 public static final boolean XmListPosSelected(int list, int position) {
 	lock.lock();
@@ -2954,6 +3832,10 @@ public static final boolean XmListPosSelected(int list, int position) {
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(Widget)
+ * @param new_items cast=(XmString *)
+ */
 public static final native void _XmListReplaceItemsPosUnselected(int list, int[] new_items, int item_count, int position);
 public static final void XmListReplaceItemsPosUnselected(int list, int[] new_items, int item_count, int position) {
 	lock.lock();
@@ -2963,6 +3845,7 @@ public static final void XmListReplaceItemsPosUnselected(int list, int[] new_ite
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListSelectPos(int list, int position, boolean notify);
 public static final void XmListSelectPos(int list, int position, boolean notify) {
 	lock.lock();
@@ -2972,6 +3855,7 @@ public static final void XmListSelectPos(int list, int position, boolean notify)
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native boolean _XmListSetKbdItemPos(int list, int position);
 public static final boolean XmListSetKbdItemPos(int list, int position) {
 	lock.lock();
@@ -2981,6 +3865,7 @@ public static final boolean XmListSetKbdItemPos(int list, int position) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListSetPos(int list, int position);
 public static final void XmListSetPos(int list, int position) {
 	lock.lock();
@@ -2990,6 +3875,7 @@ public static final void XmListSetPos(int list, int position) {
 		lock.unlock();
 	}
 }
+/** @param list cast=(Widget) */
 public static final native void _XmListUpdateSelectedList(int list);
 public static final void XmListUpdateSelectedList(int list) {
 	lock.lock();
@@ -2999,6 +3885,14 @@ public static final void XmListUpdateSelectedList(int list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param menu cast=(Widget)
+ * @param command cast=(Widget)
+ * @param hscroll cast=(Widget)
+ * @param vscroll cast=(Widget)
+ * @param wregion cast=(Widget)
+ */
 public static final native void _XmMainWindowSetAreas(int widget, int menu, int command, int hscroll, int vscroll, int wregion);
 public static final void XmMainWindowSetAreas(int widget, int menu, int command, int hscroll, int vscroll, int wregion) {
 	lock.lock();
@@ -3008,6 +3902,7 @@ public static final void XmMainWindowSetAreas(int widget, int menu, int command,
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmMessageBoxGetChild(int widget, int child);
 public static final int XmMessageBoxGetChild(int widget, int child) {
 	lock.lock();
@@ -3017,6 +3912,7 @@ public static final int XmMessageBoxGetChild(int widget, int child) {
 		lock.unlock();
 	}
 }
+/** @param argList cast=(ArgList) */
 public static final native int _XmParseMappingCreate(int[] argList, int argCount);
 public static final int XmParseMappingCreate(int[] argList, int argCount) {
 	lock.lock();
@@ -3026,6 +3922,7 @@ public static final int XmParseMappingCreate(int[] argList, int argCount) {
 		lock.unlock();
 	}
 }
+/** @param parseMapping cast=(XmParseMapping) */
 public static final native void _XmParseMappingFree(int parseMapping);
 public static final void XmParseMappingFree(int parseMapping) {
 	lock.lock();
@@ -3035,6 +3932,7 @@ public static final void XmParseMappingFree(int parseMapping) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XmProcessTraversal(int widget, int dir);
 public static final boolean XmProcessTraversal(int widget, int dir) {
 	lock.lock();
@@ -3044,6 +3942,10 @@ public static final boolean XmProcessTraversal(int widget, int dir) {
 		lock.unlock();
 	}
 }
+/**
+ * @param oldTable cast=(XmRenderTable)
+ * @param renditions cast=(XmRendition *)
+ */
 public static final native int _XmRenderTableAddRenditions(int oldTable, int[] renditions, int renditionCount, int mergeMode);
 public static final int XmRenderTableAddRenditions(int oldTable, int[] renditions, int renditionCount, int mergeMode) {
 	lock.lock();
@@ -3053,6 +3955,7 @@ public static final int XmRenderTableAddRenditions(int oldTable, int[] rendition
 		lock.unlock();
 	}
 }
+/** @param renderTable cast=(XmRenderTable) */
 public static final native void _XmRenderTableFree(int renderTable);
 public static final void XmRenderTableFree(int renderTable) {
 	lock.lock();
@@ -3062,6 +3965,11 @@ public static final void XmRenderTableFree(int renderTable) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param tag cast=(XmStringTag)
+ * @param argList cast=(ArgList)
+ */
 public static final native int _XmRenditionCreate(int widget, byte[] tag, int[] argList, int argCount);
 public static final int XmRenditionCreate(int widget, byte[] tag, int[] argList, int argCount) {
 	lock.lock();
@@ -3071,6 +3979,7 @@ public static final int XmRenditionCreate(int widget, byte[] tag, int[] argList,
 		lock.unlock();
 	}
 }
+/** @param rendition cast=(XmRendition) */
 public static final native void _XmRenditionFree(int rendition);
 public static final void XmRenditionFree(int rendition) {
 	lock.lock();
@@ -3080,6 +3989,10 @@ public static final void XmRenditionFree(int rendition) {
 		lock.unlock();
 	}
 }
+/**
+ * @param fontList cast=(XmRenderTable)
+ * @param xmString cast=(XmString)
+ */
 public static final native int _XmStringBaseline(int fontList, int xmString);
 public static final int XmStringBaseline(int fontList, int xmString) {
 	lock.lock();
@@ -3089,6 +4002,10 @@ public static final int XmStringBaseline(int fontList, int xmString) {
 		lock.unlock();
 	}
 }
+/**
+ * @param xmString1 cast=(XmString)
+ * @param xmString2 cast=(XmString)
+ */
 public static final native boolean _XmStringCompare(int xmString1, int xmString2);
 public static final boolean XmStringCompare(int xmString1, int xmString2) {
 	lock.lock();
@@ -3098,6 +4015,7 @@ public static final boolean XmStringCompare(int xmString1, int xmString2) {
 		lock.unlock();
 	}
 }
+/** @param value cast=(XtPointer) */
 public static final native int _XmStringComponentCreate(int type, int length, byte[] value);
 public static final int XmStringComponentCreate(int type, int length, byte[] value) {
 	lock.lock();
@@ -3107,6 +4025,10 @@ public static final int XmStringComponentCreate(int type, int length, byte[] val
 		lock.unlock();
 	}
 }
+/**
+ * @param xmString1 cast=(XmString)
+ * @param xmString2 cast=(XmString)
+ */
 public static final native int _XmStringConcat(int xmString1, int xmString2);
 public static final int XmStringConcat(int xmString1, int xmString2) {
 	lock.lock();
@@ -3116,6 +4038,10 @@ public static final int XmStringConcat(int xmString1, int xmString2) {
 		lock.unlock();
 	}
 }
+/**
+ * @param string cast=(char *)
+ * @param charset cast=(char *)
+ */
 public static final native int _XmStringCreate(byte[] string, byte[] charset);
 public static final int XmStringCreate(byte[] string, byte[] charset) {
 	lock.lock();
@@ -3125,6 +4051,7 @@ public static final int XmStringCreate(byte[] string, byte[] charset) {
 		lock.unlock();
 	}
 }
+/** @param string cast=(char *) */
 public static final native int _XmStringCreateLocalized(byte[] string);
 public static final int XmStringCreateLocalized(byte[] string) {
 	lock.lock();
@@ -3134,6 +4061,13 @@ public static final int XmStringCreateLocalized(byte[] string) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param renderTable cast=(XmFontList)
+ * @param xmString cast=(XmString)
+ * @param gc cast=(GC)
+ */
 public static final native void _XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
 public static final void XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip) {
 	lock.lock();
@@ -3143,6 +4077,13 @@ public static final void XmStringDraw(int display, int window, int renderTable, 
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param renderTable cast=(XmFontList)
+ * @param xmString cast=(XmString)
+ * @param gc cast=(GC)
+ */
 public static final native void _XmStringDrawImage(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
 public static final void XmStringDrawImage(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip) {
 	lock.lock();
@@ -3152,6 +4093,14 @@ public static final void XmStringDrawImage(int display, int window, int renderTa
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ * @param fontlist cast=(XmFontList)
+ * @param xmString cast=(XmString)
+ * @param gc cast=(GC)
+ * @param xmStringUnderline cast=(XmString)
+ */
 public static final native void _XmStringDrawUnderline(int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
 public static final void XmStringDrawUnderline(int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline) {
 	lock.lock();
@@ -3161,6 +4110,7 @@ public static final void XmStringDrawUnderline(int display, int window, int font
 		lock.unlock();
 	}
 }
+/** @param s1 cast=(XmString) */
 public static final native boolean _XmStringEmpty(int s1);
 public static final boolean XmStringEmpty(int s1) {
 	lock.lock();
@@ -3170,6 +4120,12 @@ public static final boolean XmStringEmpty(int s1) {
 		lock.unlock();
 	}
 }
+/**
+ * @param fontList cast=(XmRenderTable)
+ * @param xmString cast=(XmString)
+ * @param width cast=(Dimension *)
+ * @param height cast=(Dimension *)
+ */
 public static final native void _XmStringExtent(int fontList, int xmString, short[] width, short[] height);
 public static final void XmStringExtent(int fontList, int xmString, short[] width, short[] height) {
 	lock.lock();
@@ -3179,6 +4135,7 @@ public static final void XmStringExtent(int fontList, int xmString, short[] widt
 		lock.unlock();
 	}
 }
+/** @param xmString cast=(XmString) */
 public static final native void _XmStringFree(int xmString);
 public static final void XmStringFree(int xmString) {
 	lock.lock();
@@ -3188,6 +4145,11 @@ public static final void XmStringFree(int xmString) {
 		lock.unlock();
 	}
 }
+/**
+ * @param text cast=(XtPointer)
+ * @param tag cast=(XmStringTag)
+ * @param rendition cast=(XmStringTag)
+ */
 public static final native int _XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition);
 public static final int XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition) {
 	lock.lock();
@@ -3197,6 +4159,10 @@ public static final int XmStringGenerate(byte[] text, byte[] tag, int type, byte
 		lock.unlock();
 	}
 }
+/**
+ * @param fontList cast=(XmFontList)
+ * @param xmString cast=(XmString)
+ */
 public static final native int _XmStringHeight(int fontList, int xmString);
 public static final int XmStringHeight(int fontList, int xmString) {
 	lock.lock();
@@ -3206,6 +4172,13 @@ public static final int XmStringHeight(int fontList, int xmString) {
 		lock.unlock();
 	}
 }
+/**
+ * @param text cast=(XtPointer)
+ * @param textEnd cast=(XtPointer *)
+ * @param tag cast=(XmStringTag)
+ * @param parseTable cast=(XmParseTable)
+ * @param callData cast=(XtPointer)
+ */
 public static final native int _XmStringParseText(byte[] text, int textEnd, byte[] tag, int tagType, int[] parseTable, int parseCount, int callData);
 public static final int XmStringParseText(byte[] text, int textEnd, byte[] tag, int tagType, int[] parseTable, int parseCount, int callData) {
 	lock.lock();
@@ -3215,6 +4188,11 @@ public static final int XmStringParseText(byte[] text, int textEnd, byte[] tag, 
 		lock.unlock();
 	}
 }
+/**
+ * @param xmString cast=(XmString)
+ * @param tag cast=(XmStringTag)
+ * @param parseTable cast=(XmParseTable)
+ */
 public static final native int _XmStringUnparse(int xmString, byte[] tag, int tagType, int outputType, int[] parseTable, int parseCount, int parseModel);
 public static final int XmStringUnparse(int xmString, byte[] tag, int tagType, int outputType, int[] parseTable, int parseCount, int parseModel) {
 	lock.lock();
@@ -3224,6 +4202,10 @@ public static final int XmStringUnparse(int xmString, byte[] tag, int tagType, i
 		lock.unlock();
 	}
 }
+/**
+ * @param fontList cast=(XmFontList)
+ * @param xmString cast=(XmString)
+ */
 public static final native int _XmStringWidth(int fontList, int xmString);
 public static final int XmStringWidth(int fontList, int xmString) {
 	lock.lock();
@@ -3233,6 +4215,7 @@ public static final int XmStringWidth(int fontList, int xmString) {
 		lock.unlock();
 	}
 }
+/** @param decimal cast=(char *) */
 public static final native int _XmTabCreate(int value, byte units, byte offsetModel, byte alignment, byte[] decimal);
 public static final int XmTabCreate(int value, byte units, byte offsetModel, byte alignment, byte[] decimal) {
 	lock.lock();
@@ -3242,6 +4225,7 @@ public static final int XmTabCreate(int value, byte units, byte offsetModel, byt
 		lock.unlock();
 	}
 }
+/** @param tab cast=(XmTab) */
 public static final native void _XmTabFree(int tab);
 public static final void XmTabFree(int tab) {
 	lock.lock();
@@ -3251,6 +4235,7 @@ public static final void XmTabFree(int tab) {
 		lock.unlock();
 	}
 }
+/** @param tabList cast=(XmTabList) */
 public static final native void _XmTabListFree(int tabList);
 public static final void XmTabListFree(int tabList) {
 	lock.lock();
@@ -3260,6 +4245,10 @@ public static final void XmTabListFree(int tabList) {
 		lock.unlock();
 	}
 }
+/**
+ * @param oldList cast=(XmTabList)
+ * @param tabs cast=(XmTab *)
+ */
 public static final native int _XmTabListInsertTabs(int oldList, int[] tabs, int tab_count, int position);
 public static final int XmTabListInsertTabs(int oldList, int[] tabs, int tab_count, int position) {
 	lock.lock();
@@ -3269,6 +4258,7 @@ public static final int XmTabListInsertTabs(int oldList, int[] tabs, int tab_cou
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextClearSelection(int widget, int time);
 public static final void XmTextClearSelection(int widget, int time) {
 	lock.lock();
@@ -3278,6 +4268,7 @@ public static final void XmTextClearSelection(int widget, int time) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XmTextCopy(int widget, int time);
 public static final boolean XmTextCopy(int widget, int time) {
 	lock.lock();
@@ -3287,6 +4278,7 @@ public static final boolean XmTextCopy(int widget, int time) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XmTextCut(int widget, int time);
 public static final boolean XmTextCut(int widget, int time) {
 	lock.lock();
@@ -3296,6 +4288,7 @@ public static final boolean XmTextCut(int widget, int time) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextDisableRedisplay(int widget);
 public static final void XmTextDisableRedisplay(int widget) {
 	lock.lock();
@@ -3305,6 +4298,7 @@ public static final void XmTextDisableRedisplay(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextEnableRedisplay(int widget);
 public static final void XmTextEnableRedisplay(int widget) {
 	lock.lock();
@@ -3314,6 +4308,7 @@ public static final void XmTextEnableRedisplay(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XmTextFieldPaste(int widget);
 public static final boolean XmTextFieldPaste(int widget) {
 	lock.lock();
@@ -3323,6 +4318,7 @@ public static final boolean XmTextFieldPaste(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmTextGetInsertionPosition(int widget);
 public static final int XmTextGetInsertionPosition(int widget) {
 	lock.lock();
@@ -3332,6 +4328,7 @@ public static final int XmTextGetInsertionPosition(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmTextGetLastPosition(int widget);
 public static final int XmTextGetLastPosition(int widget) {
 	lock.lock();
@@ -3341,6 +4338,7 @@ public static final int XmTextGetLastPosition(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmTextGetMaxLength(int widget);
 public static final int XmTextGetMaxLength(int widget) {
 	lock.lock();
@@ -3350,6 +4348,7 @@ public static final int XmTextGetMaxLength(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmTextGetSelection(int widget);
 public static final int XmTextGetSelection(int widget) {
 	lock.lock();
@@ -3359,6 +4358,11 @@ public static final int XmTextGetSelection(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param left cast=(XmTextPosition *)
+ * @param right cast=(XmTextPosition *)
+ */
 public static final native boolean _XmTextGetSelectionPosition(int widget, int[] left, int[] right);
 public static final boolean XmTextGetSelectionPosition(int widget, int[] left, int[] right) {
 	lock.lock();
@@ -3368,6 +4372,7 @@ public static final boolean XmTextGetSelectionPosition(int widget, int[] left, i
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XmTextGetString(int widget);
 public static final int XmTextGetString(int widget) {
 	lock.lock();
@@ -3377,6 +4382,10 @@ public static final int XmTextGetString(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param buffer cast=(char *)
+ */
 public static final native int _XmTextGetSubstring(int widget, int start, int num_chars, int buffer_size, byte[] buffer);
 public static final int XmTextGetSubstring(int widget, int start, int num_chars, int buffer_size, byte[] buffer) {
 	lock.lock();
@@ -3386,6 +4395,11 @@ public static final int XmTextGetSubstring(int widget, int start, int num_chars,
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param start cast=(XmTextPosition)
+ * @param buffer cast=(wchar_t *)
+ */
 public static final native int _XmTextGetSubstringWcs(int widget, int start, int num_chars, int buffer_size, char[] buffer);
 public static final int XmTextGetSubstringWcs(int widget, int start, int num_chars, int buffer_size, char[] buffer) {
 	lock.lock();
@@ -3395,6 +4409,10 @@ public static final int XmTextGetSubstringWcs(int widget, int start, int num_cha
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param value cast=(char *)
+ */
 public static final native void _XmTextInsert(int widget, int position, byte[] value);
 public static final void XmTextInsert(int widget, int position, byte[] value) {
 	lock.lock();
@@ -3404,6 +4422,7 @@ public static final void XmTextInsert(int widget, int position, byte[] value) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XmTextPaste(int widget);
 public static final boolean XmTextPaste(int widget) {
 	lock.lock();
@@ -3413,6 +4432,12 @@ public static final boolean XmTextPaste(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param position cast=(XmTextPosition)
+ * @param x cast=(Position *)
+ * @param y cast=(Position *)
+ */
 public static final native boolean _XmTextPosToXY(int widget, int position, short[] x, short[] y);
 public static final boolean XmTextPosToXY(int widget, int position, short[] x, short[] y) {
 	lock.lock();
@@ -3422,6 +4447,10 @@ public static final boolean XmTextPosToXY(int widget, int position, short[] x, s
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param value cast=(char *)
+ */
 public static final native void _XmTextReplace(int widget, int from_pos, int to_pos, byte[] value);
 public static final void XmTextReplace(int widget, int from_pos, int to_pos, byte[] value) {
 	lock.lock();
@@ -3431,6 +4460,7 @@ public static final void XmTextReplace(int widget, int from_pos, int to_pos, byt
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextScroll(int widget, int lines);
 public static final void XmTextScroll(int widget, int lines) {
 	lock.lock();
@@ -3440,6 +4470,7 @@ public static final void XmTextScroll(int widget, int lines) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextSetEditable(int widget, boolean editable);
 public static final void XmTextSetEditable(int widget, boolean editable) {
 	lock.lock();
@@ -3449,6 +4480,7 @@ public static final void XmTextSetEditable(int widget, boolean editable) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextSetHighlight(int widget, int left, int right, int mode);
 public static final void XmTextSetHighlight(int widget, int left, int right, int mode) {
 	lock.lock();
@@ -3458,6 +4490,7 @@ public static final void XmTextSetHighlight(int widget, int left, int right, int
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextSetInsertionPosition(int widget, int position);
 public static final void XmTextSetInsertionPosition(int widget, int position) {
 	lock.lock();
@@ -3467,6 +4500,7 @@ public static final void XmTextSetInsertionPosition(int widget, int position) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextSetMaxLength(int widget, int max_length);
 public static final void XmTextSetMaxLength(int widget, int max_length) {
 	lock.lock();
@@ -3476,6 +4510,7 @@ public static final void XmTextSetMaxLength(int widget, int max_length) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextSetSelection(int widget, int first, int last, int time);
 public static final void XmTextSetSelection(int widget, int first, int last, int time) {
 	lock.lock();
@@ -3485,6 +4520,10 @@ public static final void XmTextSetSelection(int widget, int first, int last, int
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param value cast=(char *)
+ */
 public static final native void _XmTextSetString(int widget, byte[] value);
 public static final void XmTextSetString(int widget, byte[] value) {
 	lock.lock();
@@ -3494,6 +4533,7 @@ public static final void XmTextSetString(int widget, byte[] value) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmTextShowPosition(int widget, int position);
 public static final void XmTextShowPosition(int widget, int position) {
 	lock.lock();
@@ -3503,6 +4543,11 @@ public static final void XmTextShowPosition(int widget, int position) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param x cast=(Position)
+ * @param y cast=(Position)
+ */
 public static final native int _XmTextXYToPos(int widget, short x, short y);
 public static final int XmTextXYToPos(int widget, short x, short y) {
 	lock.lock();
@@ -3512,6 +4557,7 @@ public static final int XmTextXYToPos(int widget, short x, short y) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XmUpdateDisplay(int widget);
 public static final void XmUpdateDisplay(int widget) {
 	lock.lock();
@@ -3521,6 +4567,10 @@ public static final void XmUpdateDisplay(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param region cast=(Widget)
+ * @param rectangle cast=(XRectangle *)
+ */
 public static final native boolean _XmWidgetGetDisplayRect(int region, XRectangle rectangle);
 public static final boolean XmWidgetGetDisplayRect(int region, XRectangle rectangle) {
 	lock.lock();
@@ -3530,6 +4580,11 @@ public static final boolean XmWidgetGetDisplayRect(int region, XRectangle rectan
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param list cast=(char **)
+ * @param style cast=(XICCEncodingStyle)
+ */
 public static final native int _XmbTextListToTextProperty(int display, int list, int count, int style, XTextProperty text_prop_return);
 public static final int XmbTextListToTextProperty(int display, int list, int count, int style, XTextProperty text_prop_return) {
 	lock.lock();
@@ -3539,6 +4594,11 @@ public static final int XmbTextListToTextProperty(int display, int list, int cou
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param list_return cast=(char ***)
+ * @param count_return cast=(int *)
+ */
 public static final native int _XmbTextPropertyToTextList(int display, XTextProperty text_prop, int[] list_return, int[] count_return);
 public static final int XmbTextPropertyToTextList(int display, XTextProperty text_prop, int[] list_return, int[] count_return) {
 	lock.lock();
@@ -3548,6 +4608,7 @@ public static final int XmbTextPropertyToTextList(int display, XTextProperty tex
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XpCancelJob(int display, boolean discard);
 public static final void XpCancelJob(int display, boolean discard) {
 	lock.lock();
@@ -3557,6 +4618,10 @@ public static final void XpCancelJob(int display, boolean discard) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param printer_name cast=(char *)
+ */
 public static final native int _XpCreateContext(int display, byte[] printer_name);
 public static final int XpCreateContext(int display, byte[] printer_name) {
 	lock.lock();
@@ -3566,6 +4631,10 @@ public static final int XpCreateContext(int display, byte[] printer_name) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param print_context cast=(XPContext)
+ */
 public static final native void _XpDestroyContext(int display, int print_context);
 public static final void XpDestroyContext(int display, int print_context) {
 	lock.lock();
@@ -3575,6 +4644,7 @@ public static final void XpDestroyContext(int display, int print_context) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XpEndJob(int display);
 public static final void XpEndJob(int display) {
 	lock.lock();
@@ -3584,6 +4654,7 @@ public static final void XpEndJob(int display) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native void _XpEndPage(int display);
 public static final void XpEndPage(int display) {
 	lock.lock();
@@ -3593,6 +4664,7 @@ public static final void XpEndPage(int display) {
 		lock.unlock();
 	}
 }
+/** @param printer_list cast=(XPPrinterList) */
 public static final native void _XpFreePrinterList(int printer_list);
 public static final void XpFreePrinterList(int printer_list) {
 	lock.lock();
@@ -3602,6 +4674,12 @@ public static final void XpFreePrinterList(int printer_list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param print_context cast=(XPContext)
+ * @param type cast=(XPAttributes)
+ * @param attribute_name cast=(char *)
+ */
 public static final native int _XpGetOneAttribute(int display, int print_context, byte type, byte[] attribute_name);
 public static final int XpGetOneAttribute(int display, int print_context, byte type, byte[] attribute_name) {
 	lock.lock();
@@ -3611,6 +4689,13 @@ public static final int XpGetOneAttribute(int display, int print_context, byte t
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param print_context cast=(XPContext)
+ * @param width cast=(unsigned short *)
+ * @param height cast=(unsigned short *)
+ * @param reproducible_area cast=(XRectangle *)
+ */
 public static final native int _XpGetPageDimensions(int display, int print_context, short[] width, short[] height, XRectangle reproducible_area);
 public static final int XpGetPageDimensions(int display, int print_context, short[] width, short[] height, XRectangle reproducible_area) {
 	lock.lock();
@@ -3620,6 +4705,11 @@ public static final int XpGetPageDimensions(int display, int print_context, shor
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param printer_name cast=(char *)
+ * @param list_count cast=(int *)
+ */
 public static final native int _XpGetPrinterList(int display, byte[] printer_name, int[] list_count);
 public static final int XpGetPrinterList(int display, byte[] printer_name, int[] list_count) {
 	lock.lock();
@@ -3629,6 +4719,10 @@ public static final int XpGetPrinterList(int display, byte[] printer_name, int[]
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param print_context cast=(XPContext)
+ */
 public static final native int _XpGetScreenOfContext(int display, int print_context);
 public static final int XpGetScreenOfContext(int display, int print_context) {
 	lock.lock();
@@ -3638,6 +4732,13 @@ public static final int XpGetScreenOfContext(int display, int print_context) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param print_context cast=(XPContext)
+ * @param type cast=(XPAttributes)
+ * @param pool cast=(char *)
+ * @param replacement_rule cast=(XPAttrReplacement)
+ */
 public static final native void _XpSetAttributes(int display, int print_context, byte type, byte[] pool, byte replacement_rule);
 public static final void XpSetAttributes(int display, int print_context, byte type, byte[] pool, byte replacement_rule) {
 	lock.lock();
@@ -3647,6 +4748,10 @@ public static final void XpSetAttributes(int display, int print_context, byte ty
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param print_context cast=(XPContext)
+ */
 public static final native void _XpSetContext(int display, int print_context);
 public static final void XpSetContext(int display, int print_context) {
 	lock.lock();
@@ -3656,6 +4761,10 @@ public static final void XpSetContext(int display, int print_context) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param save_data cast=(XPSaveData)
+ */
 public static final native void _XpStartJob(int display, byte save_data);
 public static final void XpStartJob(int display, byte save_data) {
 	lock.lock();
@@ -3665,6 +4774,10 @@ public static final void XpStartJob(int display, byte save_data) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param window cast=(Window)
+ */
 public static final native void _XpStartPage(int display, int window);
 public static final void XpStartPage(int display, int window) {
 	lock.lock();
@@ -3674,6 +4787,12 @@ public static final void XpStartPage(int display, int window) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param callback_name cast=(String)
+ * @param callback cast=(XtCallbackProc)
+ * @param client_data cast=(XtPointer)
+ */
 public static final native void _XtAddCallback(int widget, int callback_name, int callback, int client_data);
 public static final void XtAddCallback(int widget, int callback_name, int callback, int client_data) {
 	lock.lock();
@@ -3683,6 +4802,11 @@ public static final void XtAddCallback(int widget, int callback_name, int callba
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param proc cast=(XtEventHandler)
+ * @param client_data cast=(XtPointer)
+ */
 public static final native void _XtAddEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
 public static final void XtAddEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data) {
 	lock.lock();
@@ -3692,6 +4816,10 @@ public static final void XtAddEventHandler(int widget, int event_mask, boolean n
 		lock.unlock();
 	}
 }
+/**
+ * @param event cast=(XEvent *)
+ * @param region cast=(Region)
+ */
 public static final native void _XtAddExposureToRegion(int event, int region);
 public static final void XtAddExposureToRegion(int event, int region) {
 	lock.lock();
@@ -3701,6 +4829,12 @@ public static final void XtAddExposureToRegion(int event, int region) {
 		lock.unlock();
 	}
 }
+/**
+ * @param app_context cast=(XtAppContext)
+ * @param condition cast=(XtPointer)
+ * @param proc cast=(XtInputCallbackProc)
+ * @param client_data cast=(XtPointer)
+ */
 public static final native int _XtAppAddInput(int app_context, int source, int condition, int proc, int client_data);
 public static final int XtAppAddInput(int app_context, int source, int condition, int proc, int client_data) {
 	lock.lock();
@@ -3710,6 +4844,11 @@ public static final int XtAppAddInput(int app_context, int source, int condition
 		lock.unlock();
 	}
 }
+/**
+ * @param app_context cast=(XtAppContext)
+ * @param proc cast=(XtTimerCallbackProc)
+ * @param client_data cast=(XtPointer)
+ */
 public static final native int _XtAppAddTimeOut(int app_context, int interval, int proc, int client_data);
 public static final int XtAppAddTimeOut(int app_context, int interval, int proc, int client_data) {
 	lock.lock();
@@ -3719,6 +4858,13 @@ public static final int XtAppAddTimeOut(int app_context, int interval, int proc,
 		lock.unlock();
 	}
 }
+/**
+ * @param appName cast=(String)
+ * @param appClass cast=(String)
+ * @param widgetClass cast=(WidgetClass)
+ * @param display cast=(Display *)
+ * @param argList cast=(ArgList)
+ */
 public static final native int _XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount);
 public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount) {
 	lock.lock();
@@ -3728,6 +4874,7 @@ public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int wi
 		lock.unlock();
 	}
 }
+/** @param appContext cast=(XtAppContext) */
 public static final native int _XtAppGetSelectionTimeout(int appContext);
 public static final int XtAppGetSelectionTimeout(int appContext) {
 	lock.lock();
@@ -3737,6 +4884,10 @@ public static final int XtAppGetSelectionTimeout(int appContext) {
 		lock.unlock();
 	}
 }
+/**
+ * @param appContext cast=(XtAppContext)
+ * @param event cast=(XEvent *)
+ */
 public static final native void _XtAppNextEvent(int appContext, int event);
 public static final void XtAppNextEvent(int appContext, int event) {
 	lock.lock();
@@ -3746,6 +4897,10 @@ public static final void XtAppNextEvent(int appContext, int event) {
 		lock.unlock();
 	}
 }
+/**
+ * @param appContext cast=(XtAppContext)
+ * @param event cast=(XEvent *)
+ */
 public static final native boolean _XtAppPeekEvent(int appContext, int event);
 public static final boolean XtAppPeekEvent(int appContext, int event) {
 	lock.lock();
@@ -3755,6 +4910,7 @@ public static final boolean XtAppPeekEvent(int appContext, int event) {
 		lock.unlock();
 	}
 }
+/** @param appContext cast=(XtAppContext) */
 public static final native int _XtAppPending(int appContext);
 public static final int XtAppPending(int appContext) {
 	lock.lock();
@@ -3764,6 +4920,7 @@ public static final int XtAppPending(int appContext) {
 		lock.unlock();
 	}
 }
+/** @param appContext cast=(XtAppContext) */
 public static final native void _XtAppProcessEvent(int appContext, int inputMask);
 public static final void XtAppProcessEvent(int appContext, int inputMask) {
 	lock.lock();
@@ -3773,6 +4930,10 @@ public static final void XtAppProcessEvent(int appContext, int inputMask) {
 		lock.unlock();
 	}
 }
+/**
+ * @param app_context cast=(XtAppContext)
+ * @param handler cast=(XtErrorHandler)
+ */
 public static final native int _XtAppSetErrorHandler(int app_context, int handler);
 public static final int XtAppSetErrorHandler(int app_context, int handler) {
 	lock.lock();
@@ -3782,6 +4943,10 @@ public static final int XtAppSetErrorHandler(int app_context, int handler) {
 		lock.unlock();
 	}
 }
+/**
+ * @param app_context cast=(XtAppContext)
+ * @param specification_list cast=(String *)
+ */
 public static final native void _XtAppSetFallbackResources(int app_context, int specification_list);
 public static final void XtAppSetFallbackResources(int app_context, int specification_list) {
 	lock.lock();
@@ -3791,6 +4956,7 @@ public static final void XtAppSetFallbackResources(int app_context, int specific
 		lock.unlock();
 	}
 }
+/** @param appContext cast=(XtAppContext) */
 public static final native void _XtAppSetSelectionTimeout(int appContext, int timeout);
 public static final void XtAppSetSelectionTimeout(int appContext, int timeout) {
 	lock.lock();
@@ -3800,6 +4966,10 @@ public static final void XtAppSetSelectionTimeout(int appContext, int timeout) {
 		lock.unlock();
 	}
 }
+/**
+ * @param app_context cast=(XtAppContext)
+ * @param handler cast=(XtErrorHandler)
+ */
 public static final native int _XtAppSetWarningHandler(int app_context, int handler);
 public static final int XtAppSetWarningHandler(int app_context, int handler) {
 	lock.lock();
@@ -3809,6 +4979,7 @@ public static final int XtAppSetWarningHandler(int app_context, int handler) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XtBuildEventMask(int widget);
 public static final int XtBuildEventMask(int widget) {
 	lock.lock();
@@ -3818,6 +4989,12 @@ public static final int XtBuildEventMask(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param action cast=(String)
+ * @param event cast=(XEvent *)
+ * @param params cast=(String *)
+ */
 public static final native void _XtCallActionProc(int widget, byte[] action, int event, int[] params, int num_params);
 public static final void XtCallActionProc(int widget, byte[] action, int event, int[] params, int num_params) {
 	lock.lock();
@@ -3827,6 +5004,7 @@ public static final void XtCallActionProc(int widget, byte[] action, int event, 
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XtClass(int widget);
 public static final int XtClass(int widget) {
 	lock.lock();
@@ -3836,6 +5014,7 @@ public static final int XtClass(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtConfigureWidget(int widget, int x, int y, int width, int height, int borderWidth);
 public static final void XtConfigureWidget(int widget, int x, int y, int width, int height, int borderWidth) {
 	lock.lock();
@@ -3854,6 +5033,12 @@ public static final int XtCreateApplicationContext() {
 		lock.unlock();
 	}
 }
+/**
+ * @param name cast=(String)
+ * @param widgetClass cast=(WidgetClass)
+ * @param parent cast=(Widget)
+ * @param argList cast=(ArgList)
+ */
 public static final native int _XtCreatePopupShell(byte[] name, int widgetClass, int parent, int[] argList, int argCount);
 public static final int XtCreatePopupShell(byte[] name, int widgetClass, int parent, int[] argList, int argCount) {
 	lock.lock();
@@ -3872,6 +5057,7 @@ public static final int _XtDefaultAppContext() {
 		lock.unlock();
 	}
 }
+/** @param appContext cast=(XtAppContext) */
 public static final native void _XtDestroyApplicationContext(int appContext);
 public static final void XtDestroyApplicationContext(int appContext) {
 	lock.lock();
@@ -3881,6 +5067,7 @@ public static final void XtDestroyApplicationContext(int appContext) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtDestroyWidget(int widget);
 public static final void XtDestroyWidget(int widget) {
 	lock.lock();
@@ -3890,6 +5077,11 @@ public static final void XtDestroyWidget(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param w cast=(Widget)
+ * @param selection cast=(Atom)
+ * @param time cast=(Time)
+ */
 public static final native void _XtDisownSelection(int w, int selection, int time);
 public static final void XtDisownSelection(int w, int selection, int time) {
 	lock.lock();
@@ -3899,6 +5091,7 @@ public static final void XtDisownSelection(int w, int selection, int time) {
 		lock.unlock();
 	}
 }
+/** @param event cast=(XEvent *) */
 public static final native boolean _XtDispatchEvent(int event);
 public static final boolean XtDispatchEvent(int event) {
 	lock.lock();
@@ -3908,6 +5101,7 @@ public static final boolean XtDispatchEvent(int event) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XtDisplay(int widget);
 public static final int XtDisplay(int widget) {
 	lock.lock();
@@ -3917,6 +5111,7 @@ public static final int XtDisplay(int widget) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XtDisplayToApplicationContext(int display);
 public static final int XtDisplayToApplicationContext(int display) {
 	lock.lock();
@@ -3926,6 +5121,7 @@ public static final int XtDisplayToApplicationContext(int display) {
 		lock.unlock();
 	}
 }
+/** @param ptr cast=(char *) */
 public static final native void _XtFree(int ptr);
 public static final void XtFree(int ptr) {
 	lock.lock();
@@ -3935,6 +5131,11 @@ public static final void XtFree(int ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @param app_context cast=(XtAppContext)
+ * @param dpy_return cast=(Display ***)
+ * @param num_dpy_return cast=(Cardinal *)
+ */
 public static final native void _XtGetDisplays(int app_context, int[] dpy_return, int[] num_dpy_return);
 public static final void XtGetDisplays(int app_context, int[] dpy_return, int[] num_dpy_return) {
 	lock.lock();
@@ -3944,6 +5145,7 @@ public static final void XtGetDisplays(int app_context, int[] dpy_return, int[] 
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XtGetMultiClickTime(int display);
 public static final int XtGetMultiClickTime(int display) {
 	lock.lock();
@@ -3953,6 +5155,14 @@ public static final int XtGetMultiClickTime(int display) {
 		lock.unlock();
 	}
 }
+/**
+ * @param w cast=(Widget)
+ * @param selection cast=(Atom)
+ * @param target cast=(Atom)
+ * @param callback cast=(XtSelectionCallbackProc)
+ * @param client_data cast=(XtPointer)
+ * @param time cast=(Time)
+ */
 public static final native void _XtGetSelectionValue(int w, int selection, int target, int callback, int client_data, int time);
 public static final void XtGetSelectionValue(int w, int selection, int target, int callback, int client_data, int time) {
 	lock.lock();
@@ -3962,6 +5172,11 @@ public static final void XtGetSelectionValue(int w, int selection, int target, i
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=no_gen
+ * @param widget cast=(Widget)
+ * @param argList cast=(ArgList)
+ */
 public static final native void _XtGetValues(int widget, int[] argList, int numArgs);
 public static final void XtGetValues(int widget, int[] argList, int numArgs) {
 	lock.lock();
@@ -3971,6 +5186,14 @@ public static final void XtGetValues(int widget, int[] argList, int numArgs) {
 		lock.unlock();
 	}
 }
+/**
+ * @param w cast=(Widget)
+ * @param event_mask cast=(EventMask)
+ * @param nonmaskable cast=(Boolean)
+ * @param proc cast=(XtEventHandler)
+ * @param client_data cast=(XtPointer)
+ * @param position cast=(XtListPosition)
+ */
 public static final native void _XtInsertEventHandler(int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position);
 public static final void XtInsertEventHandler(int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position) {
 	lock.lock();
@@ -3980,6 +5203,7 @@ public static final void XtInsertEventHandler(int w, int event_mask, boolean non
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XtIsManaged(int widget);
 public static final boolean XtIsManaged(int widget) {
 	lock.lock();
@@ -3989,6 +5213,7 @@ public static final boolean XtIsManaged(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XtIsRealized(int widget);
 public static final boolean XtIsRealized(int widget) {
 	lock.lock();
@@ -3998,6 +5223,10 @@ public static final boolean XtIsRealized(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param widgetClass cast=(WidgetClass)
+ */
 public static final native boolean _XtIsSubclass(int widget, int widgetClass);
 public static final boolean XtIsSubclass(int widget, int widgetClass) {
 	lock.lock();
@@ -4007,6 +5236,7 @@ public static final boolean XtIsSubclass(int widget, int widgetClass) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native boolean _XtIsTopLevelShell(int widget);
 public static final boolean XtIsTopLevelShell(int widget) {
 	lock.lock();
@@ -4016,6 +5246,7 @@ public static final boolean XtIsTopLevelShell(int widget) {
 		lock.unlock();
 	}
 }
+/** @param display cast=(Display *) */
 public static final native int _XtLastTimestampProcessed(int display);
 public static final int XtLastTimestampProcessed(int display) {
 	lock.lock();
@@ -4034,6 +5265,7 @@ public static final int XtMalloc(int size) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtManageChild(int widget);
 public static final void XtManageChild(int widget) {
 	lock.lock();
@@ -4043,6 +5275,7 @@ public static final void XtManageChild(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtMapWidget(int widget);
 public static final void XtMapWidget(int widget) {
 	lock.lock();
@@ -4052,6 +5285,7 @@ public static final void XtMapWidget(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtMoveWidget(int widget, int x, int y);
 public static final void XtMoveWidget(int widget, int x, int y) {
 	lock.lock();
@@ -4061,6 +5295,10 @@ public static final void XtMoveWidget(int widget, int x, int y) {
 		lock.unlock();
 	}
 }
+/**
+ * @param reference cast=(Widget)
+ * @param names cast=(String)
+ */
 public static final native int _XtNameToWidget(int reference, byte[] names);
 public static final int XtNameToWidget(int reference, byte[] names) {
 	lock.lock();
@@ -4070,6 +5308,15 @@ public static final int XtNameToWidget(int reference, byte[] names) {
 		lock.unlock();
 	}
 }
+/**
+ * @param xtAppContext cast=(XtAppContext)
+ * @param displayName cast=(String)
+ * @param applicationName cast=(String)
+ * @param applicationClass cast=(String)
+ * @param options cast=(XrmOptionDescRec *)
+ * @param argc cast=(int *)
+ * @param argv cast=(char **)
+ */
 public static final native int _XtOpenDisplay(int xtAppContext, byte[] displayName, byte[] applicationName, byte[] applicationClass, int options, int numOptions, int[] argc, int argv);
 public static final int XtOpenDisplay(int xtAppContext, byte[] displayName, byte[] applicationName, byte[] applicationClass, int options, int numOptions, int[] argc, int argv) {
 	lock.lock();
@@ -4079,6 +5326,10 @@ public static final int XtOpenDisplay(int xtAppContext, byte[] displayName, byte
 		lock.unlock();
 	}
 }
+/**
+ * @param w cast=(Widget)
+ * @param translations cast=(XtTranslations)
+ */
 public static final native void _XtOverrideTranslations(int w, int translations);
 public static final void XtOverrideTranslations(int w, int translations) {
 	lock.lock();
@@ -4088,6 +5339,14 @@ public static final void XtOverrideTranslations(int w, int translations) {
 		lock.unlock();
 	}
 }
+/**
+ * @param w cast=(Widget)
+ * @param selection cast=(Atom)
+ * @param time cast=(Time)
+ * @param convert_proc cast=(XtConvertSelectionProc)
+ * @param lose_selection cast=(XtLoseSelectionProc)
+ * @param done_proc cast=(XtSelectionDoneProc)
+ */
 public static final native boolean _XtOwnSelection(int w, int selection, int time, int convert_proc, int lose_selection, int done_proc);
 public static final boolean XtOwnSelection(int w, int selection, int time, int convert_proc, int lose_selection, int done_proc) {
 	lock.lock();
@@ -4097,6 +5356,7 @@ public static final boolean XtOwnSelection(int w, int selection, int time, int c
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XtParent(int widget);
 public static final int XtParent(int widget) {
 	lock.lock();
@@ -4106,6 +5366,7 @@ public static final int XtParent(int widget) {
 		lock.unlock();
 	}
 }
+/** @param string cast=(String) */
 public static final native int _XtParseTranslationTable(byte[] string);
 public static final int XtParseTranslationTable(byte[] string) {
 	lock.lock();
@@ -4115,6 +5376,7 @@ public static final int XtParseTranslationTable(byte[] string) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtPopdown(int widget);
 public static final void XtPopdown(int widget) {
 	lock.lock();
@@ -4124,6 +5386,7 @@ public static final void XtPopdown(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtPopup(int widget, int flags);
 public static final void XtPopup(int widget, int flags) {
 	lock.lock();
@@ -4133,6 +5396,11 @@ public static final void XtPopup(int widget, int flags) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param intended cast=(XtWidgetGeometry *)
+ * @param preferred_return cast=(XtWidgetGeometry *)
+ */
 public static final native int _XtQueryGeometry(int widget, XtWidgetGeometry intended, XtWidgetGeometry preferred_return);
 public static final int XtQueryGeometry(int widget, XtWidgetGeometry intended, XtWidgetGeometry preferred_return) {
 	lock.lock();
@@ -4142,6 +5410,7 @@ public static final int XtQueryGeometry(int widget, XtWidgetGeometry intended, X
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtRealizeWidget(int widget);
 public static final void XtRealizeWidget(int widget) {
 	lock.lock();
@@ -4151,6 +5420,11 @@ public static final void XtRealizeWidget(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ * @param widget cast=(Widget)
+ */
 public static final native void _XtRegisterDrawable(int display, int drawable, int widget);
 public static final void XtRegisterDrawable(int display, int drawable, int widget) {
 	lock.lock();
@@ -4160,6 +5434,11 @@ public static final void XtRegisterDrawable(int display, int drawable, int widge
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param proc cast=(XtEventHandler)
+ * @param client_data cast=(XtPointer)
+ */
 public static final native void _XtRemoveEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
 public static final void XtRemoveEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data) {
 	lock.lock();
@@ -4169,6 +5448,7 @@ public static final void XtRemoveEventHandler(int widget, int event_mask, boolea
 		lock.unlock();
 	}
 }
+/** @param id cast=(XtInputId) */
 public static final native void _XtRemoveInput(int id);
 public static final void XtRemoveInput(int id) {
 	lock.lock();
@@ -4187,6 +5467,7 @@ public static final void XtRemoveTimeOut(int id) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtResizeWidget(int widget, int width, int height, int borderWidth);
 public static final void XtResizeWidget(int widget, int width, int height, int borderWidth) {
 	lock.lock();
@@ -4196,6 +5477,7 @@ public static final void XtResizeWidget(int widget, int width, int height, int b
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtResizeWindow(int widget);
 public static final void XtResizeWindow(int widget) {
 	lock.lock();
@@ -4205,6 +5487,11 @@ public static final void XtResizeWindow(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param appContext cast=(XtAppContext)
+ * @param languageProc cast=(XtLanguageProc)
+ * @param pointer cast=(XtPointer)
+ */
 public static final native int _XtSetLanguageProc(int appContext, int languageProc, int pointer);
 public static final int XtSetLanguageProc(int appContext, int languageProc, int pointer) {
 	lock.lock();
@@ -4214,6 +5501,7 @@ public static final int XtSetLanguageProc(int appContext, int languageProc, int 
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtSetMappedWhenManaged(int widget, boolean flag);
 public static final void XtSetMappedWhenManaged(int widget, boolean flag) {
 	lock.lock();
@@ -4223,6 +5511,10 @@ public static final void XtSetMappedWhenManaged(int widget, boolean flag) {
 		lock.unlock();
 	}
 }
+/**
+ * @param widget cast=(Widget)
+ * @param argList cast=(ArgList)
+ */
 public static final native void _XtSetValues(int widget, int[] argList, int numArgs);
 public static final void XtSetValues(int widget, int[] argList, int numArgs) {
 	lock.lock();
@@ -4250,6 +5542,7 @@ public static final boolean XtToolkitThreadInitialize() {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtTranslateCoords(int widget, short x, short y, short[] root_x, short[] root_y);
 public static final void XtTranslateCoords(int widget, short x, short y, short[] root_x, short[] root_y) {
 	lock.lock();
@@ -4259,6 +5552,7 @@ public static final void XtTranslateCoords(int widget, short x, short y, short[]
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtUnmanageChild(int widget);
 public static final void XtUnmanageChild(int widget) {
 	lock.lock();
@@ -4268,6 +5562,7 @@ public static final void XtUnmanageChild(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native void _XtUnmapWidget(int widget);
 public static final void XtUnmapWidget(int widget) {
 	lock.lock();
@@ -4277,6 +5572,10 @@ public static final void XtUnmapWidget(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param drawable cast=(Drawable)
+ */
 public static final native void _XtUnregisterDrawable(int display, int drawable);
 public static final void XtUnregisterDrawable(int display, int drawable) {
 	lock.lock();
@@ -4286,6 +5585,7 @@ public static final void XtUnregisterDrawable(int display, int drawable) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(Widget) */
 public static final native int _XtWindow(int widget);
 public static final int XtWindow(int widget) {
 	lock.lock();
@@ -4295,6 +5595,10 @@ public static final int XtWindow(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param display cast=(Display *)
+ * @param widget cast=(Window)
+ */
 public static final native int _XtWindowToWidget(int display, int widget);
 public static final int XtWindowToWidget(int display, int widget) {
 	lock.lock();
@@ -4304,6 +5608,7 @@ public static final int XtWindowToWidget(int display, int widget) {
 		lock.unlock();
 	}
 }
+/** @param menu cast=(Widget) */
 public static final native void __XmSetMenuTraversal(int menu, boolean traversal);
 public static final void _XmSetMenuTraversal(int menu, boolean traversal) {
 	lock.lock();
@@ -4315,53 +5620,265 @@ public static final void _XmSetMenuTraversal(int menu, boolean traversal) {
 }
 public static final native int close(int filedes);
 public static final native int fd_set_sizeof();
+/**
+ * @param cd cast=(iconv_t)
+ * @param inBuf cast=(void *)
+ * @param inBytesLeft cast=(size_t *)
+ * @param outBuf cast=(char **)
+ * @param outBytesLeft cast=(size_t *)
+ */
 public static final native int iconv(int cd, int[] inBuf, int[] inBytesLeft, int[] outBuf, int[] outBytesLeft);
+/** @param cd cast=(iconv_t) */
 public static final native int iconv_close(int cd);
+/**
+ * @param tocode cast=(const char *)
+ * @param fromcode cast=(const char *)
+ */
 public static final native int iconv_open(byte[] tocode, byte[] fromcode);
 public static final native int localeconv_decimal_point();
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XImage src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XmDragProcCallbackStruct src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XmSpinBoxCallbackStruct src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XmTextBlockRec src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XmTextVerifyCallbackStruct src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(Visual dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XAnyEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XButtonEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XButtonEvent src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XCharStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XClientMessageEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XConfigureEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XCreateWindowEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XCrossingEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XDestroyWindowEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XExposeEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XFocusChangeEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XFontStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XImage dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XineramaScreenInfo dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XKeyEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XModifierKeymap dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XMotionEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XPropertyEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XReparentEvent dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmAnyCallbackStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmDragProcCallbackStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmDropFinishCallbackStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmDropProcCallbackStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmSpinBoxCallbackStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmTextBlockRec dest, int src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XmTextVerifyCallbackStruct dest, int src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XExposeEvent src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XClientMessageEvent src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XConfigureEvent src, int count);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(int dest, XKeyEvent src, int count);
+/**
+ * @param dest cast=(void *),flags=no_in
+ * @param src cast=(const void *)
+ * @param count cast=(size_t)
+ */
 public static final native void memmove(XIconSize dest, int src, int count);
 public static final native int nl_langinfo(int item);
+/** @param filedes cast=(int *) */
 public static final native int pipe(int[] filedes);
+/** @param buf cast=(char *) */
 public static final native int read(int filedes, byte[] buf, int nbyte);
+/**
+ * @param readfds cast=(fd_set *)
+ * @param writefds cast=(fd_set *)
+ * @param exceptfds cast=(fd_set *)
+ * @param timeout cast=(struct timeval *)
+ */
 public static final native int select(int n, byte[] readfds, byte[] writefds, byte[] exceptfds, int[] timeout);
+/** @param locale cast=(char *) */
 public static final native int setlocale(int category, byte[] locale);
+/** @param buf cast=(char *) */
 public static final native int write(int filedes, byte[] buf, int nbyte);
 
 }

@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.motif;
  
 public class XModifierKeymap {
 	public int max_keypermod;
+	/** @field cast=(KeyCode *) */
 	public int modifiermap;
 	public static final int sizeof = 8;
 }

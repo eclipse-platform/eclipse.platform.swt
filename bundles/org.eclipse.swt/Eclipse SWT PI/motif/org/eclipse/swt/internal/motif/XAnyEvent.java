@@ -14,6 +14,7 @@ package org.eclipse.swt.internal.motif;
 public class XAnyEvent extends XEvent {
 	public int serial;
 	public int send_event;
+	/** @field cast=(Display *) */
 	public int display;
 	public int window;
 	public static final int sizeof = 20;

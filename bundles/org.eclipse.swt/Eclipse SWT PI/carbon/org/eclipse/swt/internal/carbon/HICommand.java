@@ -16,7 +16,9 @@ package org.eclipse.swt.internal.carbon;
 public class HICommand {
 	public int attributes;
 	public int commandID;
+	/** @field accessor=menu.menuRef,cast=(MenuRef) */
 	public int menu_menuRef;
+	/** @field accessor=menu.menuItemIndex,cast=(MenuItemIndex) */
 	public short menu_menuItemIndex;
 	
 	public static final int sizeof = 14;

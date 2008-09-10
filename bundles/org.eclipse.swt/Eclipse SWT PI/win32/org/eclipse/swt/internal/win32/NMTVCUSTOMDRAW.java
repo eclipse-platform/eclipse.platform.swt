@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.win32;
 public class NMTVCUSTOMDRAW extends NMCUSTOMDRAW {
 	public int clrText;
 	public int clrTextBk;
+	/** @field flags=no_wince */
 	public int iLevel; // the iLevel field does not appear on WinCE
 	public static final int sizeof = OS.NMTVCUSTOMDRAW_sizeof ();
 }

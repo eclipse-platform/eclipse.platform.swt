@@ -21,12 +21,18 @@ public class ControlFontStyleRec {
 	public short mode;
 	public short just;
 //	RGBColor foreColor;
+	/** @field accessor=foreColor.red */
 	public short foreColor_red;
+	/** @field accessor=foreColor.green */
 	public short foreColor_green;
+	/** @field accessor=foreColor.blue */
 	public short foreColor_blue;
 //	RGBColor backColor;
+	/** @field accessor=backColor.red */
 	public short backColor_red;
+	/** @field accessor=backColor.green */
 	public short backColor_green;
+	/** @field accessor=backColor.blue */
 	public short backColor_blue;
 	public static final int sizeof = 24;
 }

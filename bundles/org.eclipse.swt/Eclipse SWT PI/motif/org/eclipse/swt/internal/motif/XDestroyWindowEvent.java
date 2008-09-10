@@ -14,8 +14,11 @@ package org.eclipse.swt.internal.motif;
 public class XDestroyWindowEvent extends XEvent {
 	public int serial;
 	public int send_event;
+	/** @field cast=(Display *) */
 	public int display;
+	/** @field cast=(Window) */
 	public int event;
+	/** @field cast=(Window) */
 	public int window;
 	public static final int sizeof = 24;
 }

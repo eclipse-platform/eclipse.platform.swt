@@ -10,10 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gdip;
 
+/** @jniclass flags=cpp */
 public class GdiplusStartupInput {
 	public int GdiplusVersion;
+	/** @field cast=(DebugEventProc) */
 	public int /*long*/ DebugEventCallback;
+	/** @field cast=(BOOL) */
 	public boolean SuppressBackgroundThread;
+	/** @field cast=(BOOL) */
 	public boolean SuppressExternalCodecs;
 	public static final int sizeof = Gdip.GdiplusStartupInput_sizeof ();
 }

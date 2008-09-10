@@ -15,7 +15,9 @@ package org.eclipse.swt.internal.carbon;
 
 public class CGPatternCallbacks {
 	public int version;
+	/** @field cast=(CGPatternDrawPatternCallback) */
 	public int drawPattern;
+	/** @field cast=(CGPatternReleaseInfoCallback) */
 	public int releaseInfo;
 	public static final int sizeof = 12;
 }

@@ -15,7 +15,9 @@ package org.eclipse.swt.internal.carbon;
 
 public class CGFunctionCallbacks {
 	public int version;
+	/** @field cast=(CGFunctionEvaluateCallback) */
 	public int evaluate;
+	/** @field cast=(CGFunctionReleaseInfoCallback) */
 	public int releaseInfo;
 	public static final int sizeof = 12;
 }

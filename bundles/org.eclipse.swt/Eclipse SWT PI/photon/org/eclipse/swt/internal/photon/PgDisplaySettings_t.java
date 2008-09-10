@@ -17,6 +17,7 @@ public class PgDisplaySettings_t {
 	public int yres;
 	public int refresh;
 	public int flags;
+	/** @field cast=(long *) */
 	public int [] reserved = new int [22];
 	public static final int sizeof = 108;
 }

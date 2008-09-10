@@ -17,6 +17,7 @@ public class BITMAP {
 	public int bmWidthBytes;
 	public short bmPlanes;
 	public short bmBitsPixel;
+	/** @field cast=(LPVOID) */
 	public int /*long*/ bmBits;
 	public static final int sizeof = OS.BITMAP_sizeof ();
 }

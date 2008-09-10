@@ -13,12 +13,18 @@ package org.eclipse.swt.internal.win32;
 public class COMPOSITIONFORM {
 	public int dwStyle;
 //	POINT ptCurrentPos;
+	/** @field accessor=ptCurrentPos.x */
 	public int x;
+	/** @field accessor=ptCurrentPos.y */
 	public int y;
 //	RECT rcArea;  
+	/** @field accessor=rcArea.left */
 	public int left;
+	/** @field accessor=rcArea.top */
 	public int top;
+	/** @field accessor=rcArea.right */
 	public int right;
+	/** @field accessor=rcArea.bottom */
 	public int bottom;
 	public static final int sizeof = OS.COMPOSITIONFORM_sizeof ();
 }

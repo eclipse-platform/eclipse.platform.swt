@@ -12,7 +12,9 @@ package org.eclipse.swt.internal.photon;
 
  
 public class FontDetails {
+	/** @field cast=(FontDescription) */
 	public byte[] desc = new byte[OS.MAX_DESC_LENGTH];
+	/** @field cast=(FontName) */
 	public byte[] stem = new byte[OS.MAX_FONT_TAG];
 	public short losize;
 	public short hisize;

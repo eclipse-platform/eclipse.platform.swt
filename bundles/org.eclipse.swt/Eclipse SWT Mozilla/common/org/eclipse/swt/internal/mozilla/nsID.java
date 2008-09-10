@@ -27,6 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
+/** @jniclass flags=cpp */
 public class nsID {
 	
 	public int m0;

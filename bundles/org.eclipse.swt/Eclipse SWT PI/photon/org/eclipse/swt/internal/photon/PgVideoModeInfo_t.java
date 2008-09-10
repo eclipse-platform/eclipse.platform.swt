@@ -23,6 +23,7 @@ public class PgVideoModeInfo_t {
 	public int mode_capabilities4;
 	public int mode_capabilities5;
 	public int mode_capabilities6;
+	/** @field cast=(char *) */
 	public byte [] refresh_rates = new byte [20];
 	public static final int sizeof = 56;
 }

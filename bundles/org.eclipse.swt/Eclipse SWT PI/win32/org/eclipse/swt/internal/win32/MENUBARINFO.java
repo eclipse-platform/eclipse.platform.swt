@@ -13,11 +13,17 @@ package org.eclipse.swt.internal.win32;
 public class MENUBARINFO {
 	public int cbSize;
 //	RECT  rcBar; 
+	/** @field accessor=rcBar.left */
 	public int left;
+	/** @field accessor=rcBar.top */
 	public int top;
+	/** @field accessor=rcBar.right */
 	public int right;
+	/** @field accessor=rcBar.bottom */
 	public int bottom;
+	/** @field cast=(HMENU) */
 	public int /*long*/ hMenu;
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndMenu;
 	public boolean fBarFocused;
 	public boolean fFocused;

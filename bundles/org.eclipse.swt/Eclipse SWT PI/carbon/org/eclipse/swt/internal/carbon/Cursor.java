@@ -16,7 +16,9 @@ package org.eclipse.swt.internal.carbon;
 public class Cursor {
 	public byte[] data = new byte[16 * 2];
 	public byte[] mask = new byte[16 * 2];
+	/** @field accessor=hotSpot.v */
 	public short hotSpot_v;
+	/** @field accessor=hotSpot.h */
 	public short hotSpot_h;
 	public static final int sizeof = 68;
 }

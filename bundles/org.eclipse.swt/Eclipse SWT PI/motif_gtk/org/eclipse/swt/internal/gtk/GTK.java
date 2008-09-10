@@ -15,6 +15,8 @@ import org.eclipse.swt.internal.*;
 public class GTK extends Platform {
 
 /** Natives */
+
+/** @param widget cast=(GtkWidget *) */
 public static final native int _GTK_WIDGET_HEIGHT(int widget);
 public static final int GTK_WIDGET_HEIGHT(int widget) {
 	lock.lock();
@@ -24,6 +26,7 @@ public static final int GTK_WIDGET_HEIGHT(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(GtkWidget *) */
 public static final native int _GTK_WIDGET_WIDTH(int widget);
 public static final int GTK_WIDGET_WIDTH(int widget) {
 	lock.lock();
@@ -33,6 +36,12 @@ public static final int GTK_WIDGET_WIDTH(int widget) {
 		lock.unlock();
 	}
 }
+/**
+ * @param instance cast=(gpointer)
+ * @param detailed_signal cast=(const gchar *),flags=no_out
+ * @param proc cast=(GCallback)
+ * @param data cast=(gpointer)
+ */
 public static final native int _g_signal_connect(int instance, byte[] detailed_signal, int proc, int data);
 public static final int g_signal_connect(int instance, byte[] detailed_signal, int proc, int data) {
 	lock.lock();
@@ -51,6 +60,10 @@ public static final int gtk_events_pending() {
 		lock.unlock();
 	}
 }
+/**
+ * @param argc cast=(int *)
+ * @param argv cast=(char ***)
+ */
 public static final native boolean _gtk_init_check(int[] argc, int[] argv);
 public static final boolean gtk_init_check(int[] argc, int[] argv) {
 	lock.lock();
@@ -87,6 +100,7 @@ public static final int gtk_plug_new(int socket_id) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_destroy(int widget);
 public static final void gtk_widget_destroy(int widget) {
 	lock.lock();
@@ -96,6 +110,7 @@ public static final void gtk_widget_destroy(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_show(int widget);
 public static final void gtk_widget_show(int widget) {
 	lock.lock();
@@ -105,6 +120,7 @@ public static final void gtk_widget_show(int widget) {
 		lock.unlock();
 	}
 }
+/** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_show_now(int widget);
 public static final void gtk_widget_show_now(int widget) {
 	lock.lock();
@@ -114,6 +130,7 @@ public static final void gtk_widget_show_now(int widget) {
 		lock.unlock();
 	}
 }
+/** @param type cast=(GtkWindowType) */
 public static final native int _gtk_window_new(int type);
 public static final int gtk_window_new(int type) {
 	lock.lock();

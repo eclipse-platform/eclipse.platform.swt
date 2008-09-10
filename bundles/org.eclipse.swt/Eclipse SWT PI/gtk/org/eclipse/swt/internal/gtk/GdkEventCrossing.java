@@ -16,16 +16,22 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventCrossing extends GdkEvent {
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ window;
+	/** @field cast=(gint8) */
 	public byte send_event;
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ subwindow;
 	public int time;
 	public double x;
 	public double y;
 	public double x_root;
 	public double y_root;
+	/** @field cast=(GdkCrossingMode) */
 	public int mode;
+	/** @field cast=(GdkNotifyType) */
 	public int detail;
+	/** @field cast=(gboolean) */
 	public boolean focus;
 	public int state;
 	public static final int sizeof = OS.GdkEventCrossing_sizeof();

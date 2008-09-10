@@ -12,10 +12,13 @@ package org.eclipse.swt.internal.photon;
 
 
 public class PgMap_t {
+	/** @field accessor=dim.w */
 	public short dim_w;
+	/** @field accessor=dim.h */
 	public short dim_h;
 	public short bpl;
 	public short bpp;
+	/** @field cast=(char *) */
 	public int map;
 	public static final int sizeof = 12;
 }

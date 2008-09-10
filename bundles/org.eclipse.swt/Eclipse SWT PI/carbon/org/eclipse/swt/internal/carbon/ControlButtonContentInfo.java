@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class ControlButtonContentInfo {
+	/** @field cast=(ControlContentType) */
 	public short contentType;
+	/** @field accessor=u.iconRef,cast=(void *) */
 	public int iconRef;
 	public static final int sizeof = 6;
 }

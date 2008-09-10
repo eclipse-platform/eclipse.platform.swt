@@ -16,7 +16,9 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventAny extends GdkEvent {
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ window;
+	/** @field cast=(gint8) */
 	public byte send_event;
 	public static final int sizeof = OS.GdkEventAny_sizeof();
 }

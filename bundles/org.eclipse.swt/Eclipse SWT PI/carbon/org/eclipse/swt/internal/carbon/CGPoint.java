@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class CGPoint {
+	/** @field cast=(float) */
 	public float x;
+	/** @field cast=(float) */
 	public float y;
 	public static final int sizeof = 8;
 }

@@ -13,23 +13,34 @@ package org.eclipse.swt.internal.win32;
 public class SHELLEXECUTEINFOW {
 	public int cbSize;
 	public int fMask; 
+	/** @field cast=(HWND) */
 	public int /*long*/ hwnd;
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpVerb;
+	/** @field cast=(LPWSTR) */
 	public int lpFile;
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpParameters;
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpDirectory;
 	public int nShow; 
+	/** @field cast=(HINSTANCE) */
 	public int /*long*/ hInstApp;
 	// Optional members
+	/** @field cast=(LPVOID) */
 	public int /*long*/ lpIDList; 
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpClass;
+	/** @field cast=(HKEY) */
 	public int /*long*/ hkeyClass;
 	public int dwHotKey;
 //	union {
 //		HANDLE hIcon;		
 //		HANDLE hMonitor;
 //	};
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hIcon;
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hProcess; 
 	public static final int sizeof = Win32.SHELLEXECUTEINFOW_sizeof ();
 }

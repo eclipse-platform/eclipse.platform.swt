@@ -16,8 +16,11 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkTargetEntry {
+	/** @field cast=(gchar *) */
 	public int /*long*/ target;
+	/** @field cast=(guint) */
 	public int flags;
+	/** @field cast=(guint) */
 	public int info;
 	public static final int sizeof = OS.GtkTargetEntry_sizeof();
 }

@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.win32;
 public class HIGHCONTRAST {
 	public int cbSize;
 	public int dwFlags;
+	/** @field cast=(LPTSTR) */
 	public int /*long*/ lpszDefaultScheme;
 	public static final int sizeof = OS.HIGHCONTRAST_sizeof ();
 }

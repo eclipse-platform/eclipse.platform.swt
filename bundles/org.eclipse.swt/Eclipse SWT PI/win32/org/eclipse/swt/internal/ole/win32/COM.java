@@ -411,62 +411,231 @@ private static GUID IIDFromString(String lpsz) {
 }
 
 /** Natives */
+
+/** @param lpszProgID cast=(LPCOLESTR) */
 public static final native int CLSIDFromProgID(char[] lpszProgID, GUID pclsid);
+/** @param lpsz cast=(LPOLESTR) */
 public static final native int CLSIDFromString(char[] lpsz, GUID pclsid);
+/**
+ * @param pUnkOuter cast=(LPUNKNOWN)
+ * @param ppv cast=(LPVOID *)
+ */
 public static final native int CoCreateInstance(GUID rclsid, int /*long*/ pUnkOuter, int dwClsContext, GUID riid, int /*long*/[] ppv); 
 public static final native void CoFreeUnusedLibraries();
+/**
+ * @param pServerInfo cast=(COSERVERINFO *)
+ * @param ppv cast=(LPVOID *)
+ */
 public static final native int CoGetClassObject(GUID rclsid, int dwClsContext, int /*long*/ pServerInfo, GUID riid, int /*long*/[] ppv);
+/**
+ * @param pUnk cast=(IUnknown *)
+ * @param fLock cast=(BOOL)
+ * @param fLastUnlockReleases cast=(BOOL)
+ */
 public static final native int CoLockObjectExternal(int /*long*/ pUnk, boolean fLock, boolean fLastUnlockReleases);
+/** @param cb cast=(ULONG) */
 public static final native int /*long*/ CoTaskMemAlloc(int cb);
+/** @param pv cast=(LPVOID) */
 public static final native void CoTaskMemFree(int /*long*/ pv);
+/**
+ * @param pDataObject cast=(IDataObject *)
+ * @param pDropSource cast=(IDropSource *)
+ * @param pdwEffect cast=(LPDWORD)
+ */
 public static final native int DoDragDrop(int /*long*/ pDataObject, int /*long*/ pDropSource, int dwOKEffect, int[] pdwEffect);
+/** @param szFileName cast=(LPCWSTR) */
 public static final native int GetClassFile(char[] szFileName, GUID clsid);
+/** @param lpsz cast=(LPOLESTR) */
 public static final native int IIDFromString(char[] lpsz, GUID lpiid);
 public static final native boolean IsEqualGUID(GUID rguid1, GUID rguid2);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory(int /*long*/ Destination, FORMATETC Source, int Length);
+/**
+ * @param DestinationPtr cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory(int /*long*/ DestinationPtr, GUID Source, int Length);
+/**
+ * @param DestinationPtr cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory(int /*long*/ DestinationPtr, OLEINPLACEFRAMEINFO Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory(int /*long*/ Destination, STATSTG Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory(int /*long*/ Destination, STGMEDIUM Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param SourcePtr cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(STGMEDIUM Destination, int /*long*/ SourcePtr, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param SourcePtr cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(DISPPARAMS Destination, int /*long*/ SourcePtr, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(FORMATETC Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param SourcePtr cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(GUID Destination, int /*long*/ SourcePtr, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(STATSTG Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param SourcePtr cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(TYPEATTR Destination, int /*long*/ SourcePtr, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(RECT Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(FUNCDESC Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(VARDESC Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory(VARIANT Destination, int /*long*/ Source, int Length);
+/**
+ * @param pClientSite cast=(IOleClientSite *)
+ * @param pStg cast=(IStorage *)
+ * @param ppvObject cast=(void **)
+ */
 public static final native int OleCreate(GUID rclsid, GUID riid, int renderopt, FORMATETC pFormatEtc, int /*long*/ pClientSite, int /*long*/ pStg, int /*long*/[] ppvObject);
+/**
+ * @param lpszFileName cast=(LPCOLESTR)
+ * @param pClientSite cast=(LPOLECLIENTSITE)
+ * @param pStg cast=(LPSTORAGE)
+ * @param ppvObj cast=(LPVOID *)
+ */
 public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileName, GUID riid, int renderopt, FORMATETC pFormatEtc, int /*long*/ pClientSite, int /*long*/ pStg, int /*long*/[] ppvObj); 
+/**
+ * @param hwndOwner cast=(HWND)
+ * @param lpszCaption cast=(LPCOLESTR)
+ * @param lplpUnk cast=(LPUNKNOWN FAR*)
+ * @param lpPageClsID cast=(LPCLSID)
+ * @param lcid cast=(LCID)
+ * @param lpvReserved cast=(LPVOID)
+ */
 public static final native int OleCreatePropertyFrame(int /*long*/ hwndOwner,int x, int y, char[] lpszCaption, int cObjects, int /*long*/[] lplpUnk, int cPages, int /*long*/ lpPageClsID, int lcid, int dwReserved, int /*long*/ lpvReserved);
+/**
+ * @param pUnk cast=(LPUNKNOWN)
+ * @param dwAspect cast=(DWORD)
+ * @param hdcDraw cast=(HDC)
+ * @param lprcBounds cast=(LPRECT)
+ */
 public static final native int OleDraw(int /*long*/ pUnk, int dwAspect, int /*long*/ hdcDraw, int /*long*/ lprcBounds);
 public static final native int OleFlushClipboard();
+/** @param ppDataObject cast=(IDataObject **) */
 public static final native int OleGetClipboard(int /*long*/[] ppDataObject);
+/** @param pDataObject cast=(IDataObject *) */
 public static final native int OleIsCurrentClipboard(int /*long*/ pDataObject);
+/** @param pObject cast=(LPOLEOBJECT) */
 public static final native boolean OleIsRunning(int /*long*/ pObject);
+/**
+ * @param pStg cast=(IStorage *)
+ * @param pClientSite cast=(IOleClientSite *)
+ * @param ppvObj cast=(LPVOID *)
+ */
 public static final native int OleLoad(int /*long*/ pStg, GUID riid, int /*long*/ pClientSite, int /*long*/[] ppvObj);
+/** @param pUnknown cast=(LPUNKNOWN) */
 public static final native int OleRun(int /*long*/ pUnknown);
+/**
+ * @param pPS cast=(IPersistStorage *)
+ * @param pStg cast=(IStorage *)
+ */
 public static final native int OleSave(int /*long*/ pPS, int /*long*/ pStg, boolean fSameAsLoad);
+/** @param pDataObject cast=(IDataObject *) */
 public static final native int OleSetClipboard(int /*long*/ pDataObject);
+/** @param pUnk cast=(LPUNKNOWN) */
 public static final native int OleSetContainedObject(int /*long*/ pUnk, boolean fContained);
+/**
+ * @param holemenu cast=(HOLEMENU)
+ * @param hwndFrame cast=(HWND)
+ * @param hwndActiveObject cast=(HWND)
+ * @param lpFrame cast=(LPOLEINPLACEFRAME)
+ * @param lpActiveObj cast=(LPOLEINPLACEACTIVEOBJECT)
+ */
 public static final native int OleSetMenuDescriptor(int /*long*/ holemenu, int /*long*/ hwndFrame, int /*long*/ hwndActiveObject, int /*long*/ lpFrame, int /*long*/ lpActiveObj);
+/**
+ * @param clr cast=(OLE_COLOR)
+ * @param hpal cast=(HPALETTE)
+ * @param pcolorref cast=(COLORREF *)
+ */
 public static final native int OleTranslateColor(int clr, int /*long*/ hpal, int[] pcolorref);
+/** @param lplpszProgID cast=(LPOLESTR *) */
 public static final native int ProgIDFromCLSID(GUID clsid, int /*long*/[] lplpszProgID);
+/**
+ * @param hwnd cast=(HWND)
+ * @param pDropTarget cast=(IDropTarget *)
+ */
 public static final native int RegisterDragDrop(int /*long*/ hwnd, int /*long*/ pDropTarget);
+/** @param pmedium cast=(STGMEDIUM *) */
 public static final native void ReleaseStgMedium(int /*long*/ pmedium); 
+/** @param hwnd cast=(HWND) */
 public static final native int RevokeDragDrop(int /*long*/ hwnd);
+/**
+ * @param hwnd cast=(HWND)
+ * @param pDataObject cast=(IDataObject *)
+ * @param pDropSource cast=(IDropSource *)
+ * @param pdwEffect cast=(DWORD *)
+ */
 public static final native int SHDoDragDrop(int /*long*/ hwnd, int /*long*/ pDataObject, int /*long*/ pDropSource, int dwOKEffect, int[] pdwEffect);
+/** @param ppstgOpen cast=(IStorage **) */
 public static final native int StgCreateDocfile(char[] pwcsName, int grfMode, int reserved, int /*long*/[] ppstgOpen);
+/** @param pwcsName cast=(const WCHAR *) */
 public static final native int StgIsStorageFile(char[] pwcsName);
+/**
+ * @param pwcsName cast=(const WCHAR *)
+ * @param pstgPriority cast=(IStorage *)
+ * @param snbExclude cast=(SNB)
+ * @param ppstgOpen cast=(IStorage **)
+ */
 public static final native int StgOpenStorage(char[] pwcsName, int /*long*/ pstgPriority, int grfMode, int /*long*/ snbExclude, int reserved, int /*long*/[] ppstgOpen);
+/** @param ppsz cast=(LPOLESTR *) */
 public static final native int StringFromCLSID(GUID rclsid, int /*long*/[] ppsz); 
+/** @param sz cast=(OLECHAR *) */
 public static final native int /*long*/ SysAllocString(char [] sz);
+/** @param bstr cast=(BSTR) */
 public static final native void SysFreeString(int /*long*/ bstr);
+/** @param bstr cast=(BSTR) */
 public static final native int SysStringByteLen(int /*long*/ bstr);
+/**
+ * @param pvargDest cast=(VARIANTARG FAR* )
+ * @param pvarSrc cast=(VARIANTARG FAR* )
+ * @param vt cast=(VARTYPE)
+ */
 public static final native int VariantChangeType(int /*long*/ pvargDest, int /*long*/ pvarSrc, short wFlags, short vt);
+/** @param pvarg cast=(VARIANTARG FAR* ) */
 public static final native int VariantClear(int /*long*/ pvarg);
+/** @param pvarg cast=(VARIANTARG FAR* ) */
 public static final native void VariantInit(int /*long*/ pvarg);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0);
@@ -549,6 +718,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/[] arg1, int arg2, int[] arg3);
 
+/** @param pStg cast=(IStorage *) */
 public static final native int WriteClassStg(int /*long*/ pStg, GUID rclsid);
 
 /** Accessibility constants */
@@ -650,8 +820,24 @@ public static final int STATE_SYSTEM_MULTISELECTABLE = 0x1000000;
 //public static final int STATE_SYSTEM_VALID = 0x3fffffff;
 
 /** Accessibility natives */
+
+/**
+ * @method flags=dynamic
+ * @param hwnd cast=(HWND)
+ * @param dwObjectID cast=(DWORD)
+ * @param ppvObject cast=(LPVOID *)
+ */
 public static final native int AccessibleObjectFromWindow (int /*long*/ hwnd, int dwObjectID, GUID riid, int /*long*/[] ppvObject);
+/**
+ * @method flags=dynamic
+ * @param hwnd cast=(HWND)
+ * @param ppvObject cast=(LPVOID *)
+ */
 public static final native int CreateStdAccessibleObject (int /*long*/ hwnd, int idObject, GUID riidInterface, int /*long*/[] ppvObject);
+/**
+ * @method flags=dynamic
+ * @param pAcc cast=(LPUNKNOWN)
+ */
 public static final native int /*long*/ LresultFromObject (GUID riid, int /*long*/ wParam, int /*long*/ pAcc);
 /*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3);
 /*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
@@ -661,27 +847,50 @@ public static final native int /*long*/ LresultFromObject (GUID riid, int /*long
 /*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int arg4, int arg5, int arg6, int arg7);
 
 /** Custom accessibility natives */
+
+/** @method flags=no_gen */
 public static final native int VtblCall_VARIANT(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0);
+/** @method flags=no_gen */
 public static final native int VtblCall_VARIANTP(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1);
+/** @method flags=no_gen */
 public static final native int VtblCall_IVARIANT(int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/ arg1);
+/** @method flags=no_gen */
 public static final native int VtblCall_IVARIANTP(int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/ arg1, int /*long*/ arg2);
+/** @method flags=no_gen */
 public static final native int VtblCall_PVARIANTP(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+/** @method flags=no_gen */
 public static final native int VtblCall_PPPPVARIANT(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accChild_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accName_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accValue_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accDescription_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accRole_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accState_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accHelp_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accHelpTopic_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accKeyboardShortcut_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ get_accDefaultAction_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ accSelect_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ accLocation_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ accNavigate_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ accDoDefaultAction_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ put_accName_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ put_accValue_CALLBACK(int /*long*/ func);
 
 /* sizeof's */

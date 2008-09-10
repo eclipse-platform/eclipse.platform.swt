@@ -14,8 +14,11 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class ThemeButtonDrawInfo {
+	/** @field cast=(ThemeDrawState) */
 	public int state;
+	/** @field cast=(ThemeButtonValue) */
 	public short value;
+	/** @field cast=(ThemeButtonAdornment) */
 	public short adornment;
 	public static final int sizof = 8;
 }

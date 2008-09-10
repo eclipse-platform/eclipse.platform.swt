@@ -13,10 +13,15 @@ package org.eclipse.swt.internal.photon;
 
 public class PhTile_t {
 	//	PhRect_t rect;
+	/** @field accessor=rect.ul.x */
 	public short rect_ul_x;
+	/** @field accessor=rect.ul.y */
 	public short rect_ul_y;
+	/** @field accessor=rect.lr.x */
 	public short rect_lr_x;
+	/** @field accessor=rect.lr.y */
 	public short rect_lr_y;
+	/** @field cast=(PhTile_t *) */
 	public int next;
 	public static final int sizeof = 12;
 }

@@ -14,9 +14,13 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class PMRect {
+	/** @field cast=(double) */
 	public double top;
+	/** @field cast=(double) */
 	public double left;
+	/** @field cast=(double) */
 	public double bottom;
+	/** @field cast=(double) */
 	public double right;
 	public static final int sizeof = 32;
 }

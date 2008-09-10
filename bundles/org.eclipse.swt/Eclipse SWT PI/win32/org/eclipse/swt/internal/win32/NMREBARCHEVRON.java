@@ -15,9 +15,13 @@ public class NMREBARCHEVRON extends NMHDR {
 	public int wID;
 	public int /*long*/ lParam;
 //	RECT rc;
+	/** @field accessor=rc.left */
 	public int left; 
+	/** @field accessor=rc.top */
 	public int top; 
+	/** @field accessor=rc.right */
 	public int right; 
+	/** @field accessor=rc.bottom */
 	public int bottom;
 	public int /*long*/ lParamNM;
 	public static int sizeof = OS.NMREBARCHEVRON_sizeof ();

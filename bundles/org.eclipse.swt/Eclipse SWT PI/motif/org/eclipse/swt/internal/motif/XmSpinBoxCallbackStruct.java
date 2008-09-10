@@ -12,10 +12,14 @@ package org.eclipse.swt.internal.motif;
 
 
 public class XmSpinBoxCallbackStruct extends XmAnyCallbackStruct {
+	/** @field cast=(Widget) */
 	public int widget;
+	/** @field cast=(Boolean) */
 	public byte doit;
 	public int position;
+	/** @field cast=(XmString) */
 	public int value;
+	/** @field cast=(Boolean) */
 	public byte crossed_boundary;
 	public static final int sizeof = 28;
 }

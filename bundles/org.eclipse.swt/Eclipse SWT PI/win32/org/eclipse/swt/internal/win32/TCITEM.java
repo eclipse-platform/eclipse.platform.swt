@@ -14,6 +14,7 @@ public class TCITEM {
 	public int mask;
 	public int dwState;
 	public int dwStateMask;
+	/** @field cast=(LPTSTR) */
 	public int /*long*/ pszText;
 	public int cchTextMax;
 	public int iImage;

@@ -14,9 +14,13 @@ package org.eclipse.swt.internal.motif;
 public class XReparentEvent extends XEvent {
 	public int serial;
 	public int send_event;
+	/** @field cast=(Display *) */
 	public int display;
+	/** @field cast=(Window) */
 	public int event;
+	/** @field cast=(Window) */
 	public int window;
+	/** @field cast=(Window) */
 	public int parent;
 	public int x;
 	public int y;

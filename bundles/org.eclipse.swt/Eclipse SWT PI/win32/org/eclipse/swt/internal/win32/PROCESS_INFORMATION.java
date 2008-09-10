@@ -11,7 +11,9 @@
 package org.eclipse.swt.internal.win32;
 
 public class PROCESS_INFORMATION {
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hProcess;
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hThread;
 	public int dwProcessId;
 	public int dwThreadId;

@@ -17,6 +17,7 @@ public class XmTextVerifyCallbackStruct extends XmAnyCallbackStruct {
 	public int newInsert;
 	public int startPos;
 	public int endPos;
+	/** @field cast=(XmTextBlock) */
 	public int text;
 	public static final int sizeof = 32;
 }

@@ -14,8 +14,11 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class ControlTabInfoRecV1 {
+	/** @field cast=(SInt16) */
 	public short version;
+	/** @field cast=(SInt16) */
 	public short iconSuiteID;
+	/** @field cast=(CFStringRef) */
 	public int name;
 	public static final int sizeof = 8;                   
 }

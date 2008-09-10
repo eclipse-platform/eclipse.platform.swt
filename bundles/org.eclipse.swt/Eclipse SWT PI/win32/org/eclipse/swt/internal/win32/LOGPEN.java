@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.win32;
 public class LOGPEN {
 	public int lopnStyle;
 //	POINT lopnWidth; 
+	/** @field accessor=lopnWidth.x */
 	public int x;
+	/** @field accessor=lopnWidth.y */
 	public int y;
 	public int lopnColor;
 	public static final int sizeof = OS.LOGPEN_sizeof ();

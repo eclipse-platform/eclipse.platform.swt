@@ -16,14 +16,23 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkDragContext {     
-   public int protocol;
-   public boolean is_source;
-   public int /*long*/ source_window;
-   public int /*long*/ dest_window;
-   public int /*long*/ targets;
-   public int actions;
-   public int suggested_action;
-   public int action; 
-   public int start_time;
+   /** @field cast=(GdkDragProtocol) */
+	public int protocol;
+   /** @field cast=(gboolean) */
+	public boolean is_source;
+   /** @field cast=(GdkWindow *) */
+	public int /*long*/ source_window;
+   /** @field cast=(GdkWindow *) */
+	public int /*long*/ dest_window;
+   /** @field cast=(GList *) */
+	public int /*long*/ targets;
+   /** @field cast=(GdkDragAction) */
+	public int actions;
+   /** @field cast=(GdkDragAction) */
+	public int suggested_action;
+   /** @field cast=(GdkDragAction) */
+	public int action; 
+   /** @field cast=(guint32) */
+	public int start_time;
    public static final int sizeof = OS.GdkDragContext_sizeof();
 }

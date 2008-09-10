@@ -12,8 +12,11 @@ package org.eclipse.swt.internal.win32;
 
 public class STARTUPINFOW {
 	public int cb;
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpReserved;
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpDesktop;
+	/** @field cast=(LPWSTR) */
 	public int /*long*/ lpTitle;
 	public int dwX;
 	public int dwY;
@@ -25,9 +28,13 @@ public class STARTUPINFOW {
 	public int dwFlags;
 	public short wShowWindow;
 	public short cbReserved2;
+	/** @field cast=(LPBYTE) */
 	public int /*long*/ lpReserved2;
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hStdInput;
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hStdOutput;
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hStdError;
 	public static int sizeof = Win32.STARTUPINFOW_sizeof ();
 }

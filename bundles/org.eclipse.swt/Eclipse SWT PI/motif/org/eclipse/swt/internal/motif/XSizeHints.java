@@ -18,7 +18,9 @@ public class XSizeHints {
 	public int min_width, min_height;
 	public int max_width, max_height;
 	public int width_inc, height_inc;
+	/** @field accessor=min_aspect.x */
 	public int aspect_x;
+	/** @field accessor=min_aspect.y */
 	public int aspect_y;
     public int base_width, base_height;
     public int win_gravity;

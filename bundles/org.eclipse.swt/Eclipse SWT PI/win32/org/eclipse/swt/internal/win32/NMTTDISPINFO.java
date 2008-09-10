@@ -11,7 +11,9 @@
 package org.eclipse.swt.internal.win32;
 
 public abstract class NMTTDISPINFO extends NMHDR {
+	/** @field cast=(void *) */
 	public int /*long*/ lpszText;
+	/** @field cast=(HINSTANCE) */
 	public int /*long*/ hinst;   
 	public int uFlags;
 	public int /*long*/ lParam;

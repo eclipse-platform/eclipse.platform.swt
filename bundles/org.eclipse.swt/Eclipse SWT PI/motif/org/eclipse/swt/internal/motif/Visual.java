@@ -12,8 +12,10 @@ package org.eclipse.swt.internal.motif;
 
  
 public class Visual {
+	/** @field cast=(XExtData *) */
 	public int ext_data;
 	public int visualid;
+	/** @field accessor=class */
 	public int c_class;
 	public int red_mask;
 	public int green_mask;

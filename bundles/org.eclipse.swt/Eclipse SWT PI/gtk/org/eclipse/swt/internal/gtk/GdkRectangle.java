@@ -16,9 +16,13 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkRectangle {
+	/** @field cast=(gint) */
 	public int x;
+	/** @field cast=(gint) */
 	public int y;
+	/** @field cast=(gint) */
 	public int width;
+	/** @field cast=(gint) */
 	public int height;
 	public static final int sizeof = OS.GdkRectangle_sizeof();
 }

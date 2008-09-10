@@ -16,17 +16,30 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkComponentIface {
+	/** @field cast=(guint (*)()) */
 	public int /*long*/ add_focus_handler;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ contains;
+	/** @field cast=(AtkObject *(*)()) */
 	public int /*long*/ ref_accessible_at_point;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ get_extents;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ get_position;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ get_size;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ grab_focus;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ remove_focus_handler;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_extents;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_position;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_size;
+	/** @field cast=(AtkLayer (*)()) */
 	public int /*long*/ get_layer;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_mdi_zorder;
 }

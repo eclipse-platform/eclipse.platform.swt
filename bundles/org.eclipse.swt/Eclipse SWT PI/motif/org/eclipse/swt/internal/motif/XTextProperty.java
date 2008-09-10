@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XTextProperty {
+	/** @field cast=(unsigned char *) */
 	public int value;
 	public int encoding;
 	public int format;

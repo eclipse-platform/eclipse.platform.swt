@@ -14,15 +14,25 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class CFRunLoopSourceContext {
+	/** @field cast=(CFIndex) */
 	public int version;
+	/** @field cast=(void *) */
 	public int info;
+	/** @field cast=(void *) */
 	public int retain;
+	/** @field cast=(void *) */
 	public int release;
+	/** @field cast=(void *) */
 	public int copyDescription;
+	/** @field cast=(void *) */
 	public int equal;
+	/** @field cast=(void *) */
 	public int hash;
+	/** @field cast=(void *) */
 	public int schedule;
+	/** @field cast=(void *) */
 	public int cancel;
+	/** @field cast=(void *) */
 	public int perform;
 	public static final int sizeof = 40;
 }

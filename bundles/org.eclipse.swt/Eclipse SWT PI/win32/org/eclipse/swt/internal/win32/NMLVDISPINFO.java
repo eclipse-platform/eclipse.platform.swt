@@ -12,18 +12,31 @@ package org.eclipse.swt.internal.win32;
 
 public class NMLVDISPINFO extends NMHDR {
 //	LVITEM item;
+	/** @field accessor=item.mask */
 	public int mask;
+	/** @field accessor=item.iItem */
 	public int iItem;
+	/** @field accessor=item.iSubItem */
 	public int iSubItem;
+	/** @field accessor=item.state */
 	public int state;
+	/** @field accessor=item.stateMask */
 	public int stateMask;
+	/** @field accessor=item.pszText,cast=(LPTSTR) */
 	public int /*long*/ pszText;
+	/** @field accessor=item.cchTextMax */
 	public int cchTextMax;
+	/** @field accessor=item.iImage */
 	public int iImage;
+	/** @field accessor=item.lParam */
 	public int /*long*/ lParam;
+	/** @field accessor=item.iIndent */
 	public int iIndent;
+	/** @field accessor=item.iGroupId,flags=no_wince */
 	public int iGroupId;
+	/** @field accessor=item.cColumns,flags=no_wince */
 	public int cColumns;
+	/** @field accessor=item.puColumns,cast=(PUINT),flags=no_wince */
 	public int /*long*/ puColumns;
 	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVDISPINFO_sizeof () : 52;
 }

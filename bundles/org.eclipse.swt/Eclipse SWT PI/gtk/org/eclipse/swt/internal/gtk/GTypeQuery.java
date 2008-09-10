@@ -16,9 +16,13 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GTypeQuery {
+	/** @field cast=(GType) */
 	public int type;
+	/** @field cast=(const gchar *) */
 	public int /*long*/ type_name;
+	/** @field cast=(guint) */
 	public int class_size;
+	/** @field cast=(guint) */
 	public int instance_size;
 	public static final int sizeof = OS.GTypeQuery_sizeof();
 }

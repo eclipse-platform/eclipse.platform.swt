@@ -11,10 +11,12 @@
 package org.eclipse.swt.internal.opengl.glx;
 
 public class XVisualInfo {
+	/** @field cast=(Visual *) */
 	public int /*long*/ visual;
 	public int visualid;
 	public int screen;
 	public int depth;
+	/** @field accessor=class */
 	public int cclass;
 	public int red_mask, green_mask, blue_mask;
 	public int colormap_size;

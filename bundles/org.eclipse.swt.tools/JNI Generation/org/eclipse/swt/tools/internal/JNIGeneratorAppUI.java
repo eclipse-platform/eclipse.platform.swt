@@ -962,6 +962,13 @@ void createActionButtons(Composite parent) {
 
 public void run() {
 	shell.open();
+	MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO);
+	box.setText("Warning");
+	box.setMessage("This tool is obsolete as of Eclipse 3.5 M2.\nThe meta data has been embedded in java source files.\nThere is a new plugin tool that replaces this tool.\nSee http://www.eclipse.org/swt/jnigen.php.\n\n Continue?");
+	int result = box.open();
+	if (result == SWT.NO) {
+		shell.dispose();
+	}
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep ();
 	}

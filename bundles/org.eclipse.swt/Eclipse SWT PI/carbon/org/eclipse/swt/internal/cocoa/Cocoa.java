@@ -176,40 +176,141 @@ public static final int NSCurveToBezierPathElement = 2;
 public static final int NSClosePathBezierPathElement = 3;
 
 /* WebKit */
+/** @param outView cast=(HIViewRef *) */
 public static final native int HIWebViewCreate(int[] outView);
+/** @param inView cast=(HIViewRef) */
 public static final native int HIWebViewGetWebView(int inView);
 public static final native void WebInitForCarbon();
 
 /* Embed NSView in HIView */
+/** @method flags=no_gen */
 public static final native int HIJavaViewCreateWithCocoaView(int[] hiview, int nsview);
+/** @method flags=dynamic */
 public static final native int HICocoaViewCreate(int nsview, int options, int[] hiview);
 
 /* OBJ-C runtime primitives */
+/** @param className cast=(const char *) */
 public static final native int objc_getClass(byte[] className);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, int arg0);
+/**
+ * @method flags=cast
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, float arg0);
+/**
+ * @method flags=cast
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, float arg0, float arg1);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSSize arg0);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSRect arg0);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1, int arg2);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg1 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, int arg0, NSRect arg1, int arg2);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, int arg1);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg1 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, int arg0, NSPoint arg1);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ * @param arg2 flags=struct
+ */
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, NSPoint arg1, NSPoint arg2);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
 public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
+/**
+ * @param result cast=(void *)
+ * @param object cast=(void *)
+ * @param selector cast=(SEL)
+ */
 public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
+/**
+ * @param result cast=(void *)
+ * @param object cast=(void *)
+ * @param selector cast=(SEL)
+ * @param arg0 flags=struct
+ */
 public static final native void objc_msgSend_stret(NSRect result, int object, int selector, NSRect arg0, int arg1);
+/** @param selectorName cast=(const char *) */
 public static final native int sel_registerName(byte[] selectorName);
 
+/** @method flags=const */
 public static final native int NSDeviceRGBColorSpace();
 
+/** @param src cast=(void *) */
 public static final native void memcpy(NSRect dest, int src, int size);
+/** @param src cast=(void *) */
 public static final native void memmove(NSPoint dest, int src, int size);
 
 static byte [] ascii (String name) {

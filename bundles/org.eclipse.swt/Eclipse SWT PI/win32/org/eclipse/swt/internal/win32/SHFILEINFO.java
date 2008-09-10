@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class SHFILEINFO {
+	/** @field cast=(HICON) */
 	public int /*long*/ hIcon;
 	public int iIcon;
 	public int dwAttributes;

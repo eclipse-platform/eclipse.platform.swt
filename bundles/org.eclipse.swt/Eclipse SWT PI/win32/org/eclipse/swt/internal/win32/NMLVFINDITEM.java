@@ -13,12 +13,18 @@ package org.eclipse.swt.internal.win32;
 public class NMLVFINDITEM extends NMHDR {
 	public int iStart;
 //	LVFINDINFO lvfi;
+	/** @field accessor=lvfi.flags */
 	public int flags;
+	/** @field accessor=lvfi.psz,cast=(LPCTSTR) */
 	public int /*long*/ psz;
+	/** @field accessor=lvfi.lParam */
 	public int /*long*/ lParam;
 //	POINT pt;
+	/** @field accessor=lvfi.pt.x */
 	public int x;
+	/** @field accessor=lvfi.pt.y */
 	public int y;
+	/** @field accessor=lvfi.vkDirection */
 	public int vkDirection;
 	public static final int sizeof = OS.NMLVFINDITEM_sizeof ();
 }

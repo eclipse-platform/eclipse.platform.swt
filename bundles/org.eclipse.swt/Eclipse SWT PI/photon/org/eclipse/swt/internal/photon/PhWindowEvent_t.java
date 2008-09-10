@@ -16,16 +16,24 @@ public class PhWindowEvent_t {
 	public int state_f;
 	public int rid;
 //	PhPoint_t pos;
+	/** @field accessor=pos.x */
 	public short pos_x;
+	/** @field accessor=pos.y */
 	public short pos_y;
 //	PhDim_t size;
+	/** @field accessor=size.w */
 	public short size_w;
+	/** @field accessor=size.h */
 	public short size_h;
 	public short event_state;
 	public short input_group;
+	/** @field accessor=rsvd[0] */
 	public int rsvd0;
+	/** @field accessor=rsvd[1] */
 	public int rsvd1;
+	/** @field accessor=rsvd[2] */
 	public int rsvd2;
+	/** @field accessor=rsvd[3] */
 	public int rsvd3;
 	public static final int sizeof = 40;
 }

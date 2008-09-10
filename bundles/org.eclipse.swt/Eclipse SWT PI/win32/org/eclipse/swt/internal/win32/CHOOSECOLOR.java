@@ -12,13 +12,18 @@ package org.eclipse.swt.internal.win32;
 
 public class CHOOSECOLOR {
 	public int lStructSize; 
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndOwner;
+	/** @field cast=(HANDLE) */
 	public int /*long*/ hInstance; 
 	public int rgbResult;
+	/** @field cast=(COLORREF *) */
 	public int /*long*/ lpCustColors; 
 	public int Flags;
 	public int /*long*/ lCustData;
+	/** @field cast=(LPCCHOOKPROC) */
 	public int /*long*/ lpfnHook; 
+	/** @field cast=(LPCTSTR) */
 	public int /*long*/ lpTemplateName;
 	public static final int sizeof = OS.CHOOSECOLOR_sizeof ();
 }

@@ -12,7 +12,9 @@ package org.eclipse.swt.internal.photon;
 
  
 public class FontQueryInfo {
+	/** @field cast=(FontName) */
 	public byte[] font = new byte[OS.MAX_FONT_TAG];
+	/** @field cast=(FontDescription) */
 	public byte[] desc = new byte[OS.MAX_DESC_LENGTH];
 	public short size;
 	public short style;

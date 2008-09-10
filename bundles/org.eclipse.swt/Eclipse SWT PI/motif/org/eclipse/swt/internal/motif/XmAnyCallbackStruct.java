@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.motif;
  
 public class XmAnyCallbackStruct {
 	public int reason;
+	/** @field cast=(XEvent *) */
 	public int event;
 	public static final int sizeof = 8;
 }

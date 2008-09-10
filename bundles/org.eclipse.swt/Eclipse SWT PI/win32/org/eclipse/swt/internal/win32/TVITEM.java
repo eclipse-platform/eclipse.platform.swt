@@ -12,9 +12,11 @@ package org.eclipse.swt.internal.win32;
 
 public class TVITEM {
 	public int mask;
+	/** @field cast=(HTREEITEM) */
 	public int /*long*/ hItem;
 	public int state;
 	public int stateMask;
+	/** @field cast=(LPTSTR) */
 	public int /*long*/ pszText;
   	public int cchTextMax;
   	public int iImage;

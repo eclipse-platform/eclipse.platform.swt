@@ -13,12 +13,16 @@
 package org.eclipse.swt.internal.carbon;
 
 public class EventRecord {
+	/** @field cast=(EventKind) */
 	public short what;
 	public int message;
 	public int when;
 	//Point where;
+	/** @field accessor=where.v */
 	public short where_v;
+	/** @field accessor=where.h */
 	public short where_h;
+	/** @field cast=(EventModifiers) */
 	public short modifiers;
 	public static final int sizeof = 16;
 }

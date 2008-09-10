@@ -13,11 +13,16 @@ package org.eclipse.swt.internal.ole.win32;
 public final class EXCEPINFO {
 	public short wCode;   
 	public short wReserved;
+	/** @field cast=(BSTR) */
 	public int /*long*/ bstrSource; 
+	/** @field cast=(BSTR) */
 	public int /*long*/ bstrDescription; 
+	/** @field cast=(BSTR) */
 	public int /*long*/ bstrHelpFile;
 	public int dwHelpContext; 
+	/** @field cast=(void FAR *) */
 	public int /*long*/ pvReserved;
+	/** @field cast=(HRESULT (STDAPICALLTYPE FAR* )(struct tagEXCEPINFO FAR*)) */
 	public int /*long*/ pfnDeferredFillIn;
 	public int scode;
 	public static final int sizeof = COM.EXCEPINFO_sizeof ();

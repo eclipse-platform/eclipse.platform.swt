@@ -11,12 +11,17 @@
 package org.eclipse.swt.internal.win32;
 
 public class PAINTSTRUCT {
+	/** @field cast=(HDC) */
 	public int /*long*/  hdc; 
 	public boolean fErase;
 //	public RECT rcPaint;
+	/** @field accessor=rcPaint.left */
 	public int left; 
+	/** @field accessor=rcPaint.top */
 	public int top; 
+	/** @field accessor=rcPaint.right */
 	public int right; 
+	/** @field accessor=rcPaint.bottom */
 	public int bottom;
 	public boolean fRestore; 
 	public boolean fIncUpdate; 

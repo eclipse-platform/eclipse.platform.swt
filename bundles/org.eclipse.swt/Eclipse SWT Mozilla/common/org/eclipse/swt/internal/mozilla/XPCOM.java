@@ -29,6 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 import org.eclipse.swt.internal.*;
 
+/** @jniclass flags=cpp */
 public class XPCOM extends C {
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
 	public static final String MOZILLA_PLUGIN_PATH = "MOZ_PLUGIN_PATH"; //$NON-NLS-1$
@@ -124,10 +125,22 @@ public class XPCOM extends C {
 	public static final int NS_ERROR_FILE_NOT_FOUND = 0x80520012;
 	public static final int NS_ERROR_FILE_UNRECOGNIZED_PATH = 0x80520001;
 
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ * @param nbytes cast=(size_t)
+ */
 public static final native void memmove(nsID dest, int /*long*/ src, int nbytes);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *)
+ * @param nbytes cast=(size_t)
+ */
 public static final native void memmove(int /*long*/ dest, nsID src, int nbytes);
+/** @method flags=no_gen */
 public static final native int strlen_PRUnichar(int /*long*/ s);
 
+/** @param result cast=(nsIComponentManager**) */
 public static final native int _NS_GetComponentManager(int /*long*/[] result);
 public static final int NS_GetComponentManager(int /*long*/[] result) {
 	lock.lock();
@@ -137,6 +150,7 @@ public static final int NS_GetComponentManager(int /*long*/[] result) {
 		lock.unlock();
 	}
 }
+/** @param result cast=(nsIServiceManager**) */
 public static final native int _NS_GetServiceManager(int /*long*/[] result);
 public static final int NS_GetServiceManager(int /*long*/[] result) {
 	lock.lock();
@@ -146,6 +160,11 @@ public static final int NS_GetServiceManager(int /*long*/[] result) {
 		lock.unlock();
 	}
 }
+/**
+ * @param result cast=(nsIServiceManager **)
+ * @param binDirectory cast=(nsIFile *)
+ * @param appFileLocationProvider cast=(nsIDirectoryServiceProvider *)
+ */
 public static final native int _NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirectory, int /*long*/ appFileLocationProvider);
 public static final int NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirectory, int /*long*/ appFileLocationProvider) {
 	lock.lock();
@@ -155,6 +174,10 @@ public static final int NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirec
 		lock.unlock();
 	}
 }
+/**
+ * @param path cast=(nsAString *),flags=struct
+ * @param result cast=(nsILocalFile**)
+ */
 public static final native int _NS_NewLocalFile(int /*long*/ path, int followLinks, int /*long*/[] result);
 public static final int NS_NewLocalFile(int /*long*/ path, int followLinks, int /*long*/[] result) {
 	lock.lock();
@@ -164,6 +187,7 @@ public static final int NS_NewLocalFile(int /*long*/ path, int followLinks, int 
 		lock.unlock();
 	}
 }
+/** @method flags=new */
 public static final native int /*long*/ _nsEmbedCString_new();
 public static final int /*long*/ nsEmbedCString_new() {
 	lock.lock();
@@ -173,6 +197,10 @@ public static final int /*long*/ nsEmbedCString_new() {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=new
+ * @param aString cast=(const char *)
+ */
 public static final native int /*long*/ _nsEmbedCString_new(byte[] aString, int length);
 public static final int /*long*/ nsEmbedCString_new(byte[] aString, int length) {
 	lock.lock();
@@ -182,6 +210,10 @@ public static final int /*long*/ nsEmbedCString_new(byte[] aString, int length) 
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=new
+ * @param aString cast=(const char *)
+ */
 public static final native int /*long*/ _nsEmbedCString_new(int /*long*/ aString, int length);
 public static final int /*long*/ nsEmbedCString_new(int /*long*/ aString, int length) {
 	lock.lock();
@@ -191,6 +223,10 @@ public static final int /*long*/ nsEmbedCString_new(int /*long*/ aString, int le
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=delete
+ * @param ptr cast=(nsEmbedCString *)
+ */
 public static final native void _nsEmbedCString_delete(int /*long*/ ptr);
 public static final void nsEmbedCString_delete(int /*long*/ ptr) {
 	lock.lock();
@@ -200,6 +236,10 @@ public static final void nsEmbedCString_delete(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsEmbedCString *)
+ */
 public static final native int _nsEmbedCString_Length(int /*long*/ ptr);
 public static final int nsEmbedCString_Length(int /*long*/ ptr) {
 	lock.lock();
@@ -209,6 +249,10 @@ public static final int nsEmbedCString_Length(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsEmbedCString *)
+ */
 public static final native int /*long*/ _nsEmbedCString_get(int /*long*/ ptr);
 public static final int /*long*/ nsEmbedCString_get(int /*long*/ ptr) {
 	lock.lock();
@@ -218,6 +262,10 @@ public static final int /*long*/ nsEmbedCString_get(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=delete
+ * @param ptr cast=(nsID *)
+ */
 public static final native void _nsID_delete(int /*long*/ ptr);
 public static final void nsID_delete(int /*long*/ ptr) {
 	lock.lock();
@@ -227,6 +275,7 @@ public static final void nsID_delete(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/** @method flags=new */
 public static final native int /*long*/ _nsID_new();
 public static final int /*long*/ nsID_new() {
 	lock.lock();
@@ -236,6 +285,11 @@ public static final int /*long*/ nsID_new() {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsID *)
+ * @param other cast=(nsID *),flags=struct
+ */
 public static final native int _nsID_Equals(int /*long*/ ptr, int /*long*/ other);
 public static final int nsID_Equals(int /*long*/ ptr, int /*long*/ other) {
 	lock.lock();
@@ -245,6 +299,7 @@ public static final int nsID_Equals(int /*long*/ ptr, int /*long*/ other) {
 		lock.unlock();
 	}
 }
+/** @method flags=new */
 public static final native int /*long*/ _nsEmbedString_new();
 public static final int /*long*/ nsEmbedString_new() {
 	lock.lock();
@@ -254,6 +309,10 @@ public static final int /*long*/ nsEmbedString_new() {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=new
+ * @param aString cast=(PRUnichar *)
+ */
 public static final native int /*long*/ _nsEmbedString_new(char[] aString);
 public static final int /*long*/ nsEmbedString_new(char[] aString) {
 	lock.lock();
@@ -263,6 +322,10 @@ public static final int /*long*/ nsEmbedString_new(char[] aString) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=delete
+ * @param ptr cast=(nsEmbedString *)
+ */
 public static final native void _nsEmbedString_delete(int /*long*/ ptr);
 public static final void nsEmbedString_delete(int /*long*/ ptr) {
 	lock.lock();
@@ -272,6 +335,10 @@ public static final void nsEmbedString_delete(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsEmbedString *)
+ */
 public static final native int _nsEmbedString_Length(int /*long*/ ptr);
 public static final int nsEmbedString_Length(int /*long*/ ptr) {
 	lock.lock();
@@ -281,6 +348,10 @@ public static final int nsEmbedString_Length(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsEmbedString *)
+ */
 public static final native int /*long*/ _nsEmbedString_get(int /*long*/ ptr);
 public static final int /*long*/ nsEmbedString_get(int /*long*/ ptr) {
 	lock.lock();
@@ -290,6 +361,7 @@ public static final int /*long*/ nsEmbedString_get(int /*long*/ ptr) {
 		lock.unlock();
 	}
 }
+/** @param place cast=(const char *) */
 public static final native int _XPCOMGlueStartup(byte[] place);
 public static final int XPCOMGlueStartup(byte[] place) {
 	lock.lock();
@@ -309,6 +381,13 @@ public static final int XPCOMGlueShutdown() {
 	}
 }
 
+/**
+ * @param ptr cast=(nsWriteSegmentFun)
+ * @param aInStream cast=(nsIInputStream *)
+ * @param aClosure cast=(void *)
+ * @param aFromSegment cast=(const char *)
+ * @param aWriteCount cast=(PRUint32 *)
+ */
 public static final native int /*long*/ _Call(int /*long*/ ptr, int /*long*/ aInStream, int /*long*/ aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
 public static final int /*long*/ Call(int /*long*/ ptr, int /*long*/ aInStream, int /*long*/ aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount) {
 	lock.lock();

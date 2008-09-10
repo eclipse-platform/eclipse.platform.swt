@@ -16,5 +16,6 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class GtkAccessible {
+	/** @field cast=(GtkWidget *) */
 	public int /*long*/ widget;
 }

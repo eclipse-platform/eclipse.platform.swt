@@ -16,15 +16,25 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventScroll extends GdkEvent {
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ window;
+	/** @field cast=(gint8) */
 	public byte send_event;
+	/** @field cast=(guint32) */
 	public int time;
+	/** @field cast=(gdouble) */
 	public double x;
+	/** @field cast=(gdouble) */
 	public double y;
+	/** @field cast=(guint) */
 	public int state;
+	/** @field cast=(GdkScrollDirection) */
 	public int direction;
+	/** @field cast=(GdkDevice *) */
 	public int /*long*/ device;
+	/** @field cast=(gdouble) */
 	public double x_root;
+	/** @field cast=(gdouble) */
 	public double y_root;
 	public static final int sizeof = OS.GdkEventScroll_sizeof();
 }

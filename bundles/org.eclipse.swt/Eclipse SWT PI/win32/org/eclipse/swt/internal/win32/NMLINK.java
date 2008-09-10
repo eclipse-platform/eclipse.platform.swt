@@ -12,11 +12,17 @@ package org.eclipse.swt.internal.win32;
 
 public class NMLINK extends NMHDR {
 //	LITEM item;
+	/** @field accessor=item.mask */
 	public int mask;
+	/** @field accessor=item.iLink */
 	public int iLink;
+	/** @field accessor=item.state */
 	public int state;
+	/** @field accessor=item.stateMask */
 	public int stateMask;
+	/** @field accessor=item.szID */
 	public char[] szID = new char[OS.MAX_LINKID_TEXT];
+	/** @field accessor=item.szUrl */
 	public char[] szUrl = new char[OS.L_MAX_URL_LENGTH];
 	public static final int sizeof = OS.NMLINK_sizeof ();
 }

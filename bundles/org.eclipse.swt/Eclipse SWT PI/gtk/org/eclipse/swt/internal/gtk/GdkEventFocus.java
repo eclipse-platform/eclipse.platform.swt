@@ -16,8 +16,11 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventFocus extends GdkEvent {
+	/** @field cast=(GdkWindow *) */
 	public int /*long*/ window;
+	/** @field cast=(gint8) */
 	public byte send_event;
+	/** @field cast=(gint16) */
 	public short in;
 	public static final int sizeof = OS.GdkEventFocus_sizeof();
 }

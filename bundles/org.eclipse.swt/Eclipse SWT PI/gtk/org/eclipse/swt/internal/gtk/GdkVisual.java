@@ -16,18 +16,32 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkVisual {
+	/** @field cast=(GdkVisualType) */
 	public int type;
+	/** @field cast=(gint) */
 	public int depth;
+	/** @field cast=(GdkByteOrder) */
 	public int byte_order;
+	/** @field cast=(gint) */
 	public int colormap_size;
+	/** @field cast=(gint) */
 	public int bits_per_rgb;
+	/** @field cast=(guint32) */
 	public int red_mask;
+	/** @field cast=(gint) */
 	public int red_shift;
+	/** @field cast=(gint) */
 	public int red_prec;
+	/** @field cast=(guint32) */
 	public int green_mask;
+	/** @field cast=(gint) */
 	public int green_shift;
+	/** @field cast=(gint) */
 	public int green_prec;
+	/** @field cast=(guint32) */
 	public int blue_mask;
+	/** @field cast=(gint) */
 	public int blue_shift;
+	/** @field cast=(gint) */
 	public int blue_prec;
 }

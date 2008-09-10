@@ -14,7 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
 
 public class CGPathElement {
+	/** @field cast=(CGPathElementType) */
 	public int type;
+	/** @field cast=(CGPoint *) */
 	public int points;
 	public static final int sizeof = 8;
 }

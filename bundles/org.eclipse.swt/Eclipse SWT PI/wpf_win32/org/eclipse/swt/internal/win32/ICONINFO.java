@@ -14,7 +14,9 @@ public class ICONINFO {
 	public boolean fIcon;
 	public int xHotspot; 
 	public int yHotspot;
+	/** @field cast=(HBITMAP) */
 	public int hbmMask;
+	/** @field cast=(HBITMAP) */
 	public int hbmColor;
 	public static final int sizeof = 20;
 }

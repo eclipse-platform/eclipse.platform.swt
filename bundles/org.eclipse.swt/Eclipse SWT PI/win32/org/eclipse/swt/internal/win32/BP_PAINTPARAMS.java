@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.win32;
 public class BP_PAINTPARAMS {
 	public int cbSize;
 	public int dwFlags;
+	/** @field cast=(RECT*) */
 	public int /*long*/ prcExclude;
+	/** @field cast=(BLENDFUNCTION*) */
 	public int /*long*/ pBlendFunction;
 	public static final int sizeof = OS.BP_PAINTPARAMS_sizeof ();
 }

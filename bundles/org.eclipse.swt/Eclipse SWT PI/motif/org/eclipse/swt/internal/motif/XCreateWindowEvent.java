@@ -14,8 +14,11 @@ package org.eclipse.swt.internal.motif;
 public class XCreateWindowEvent extends XEvent {
 	public int serial;
 	public int send_event;
+	/** @field cast=(Display *) */
 	public int display;
+	/** @field cast=(Window) */
 	public int parent;
+	/** @field cast=(Window) */
 	public int window;
 	public int x;
 	public int y;

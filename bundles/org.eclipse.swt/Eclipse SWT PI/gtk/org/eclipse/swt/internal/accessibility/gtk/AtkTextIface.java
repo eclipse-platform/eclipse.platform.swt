@@ -16,24 +16,44 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkTextIface {
+	/** @field cast=(gchar *(*)()) */
 	public int /*long*/ get_text;
+	/** @field cast=(gchar *(*)()) */
 	public int /*long*/ get_text_after_offset;
+	/** @field cast=(gchar *(*)()) */
 	public int /*long*/ get_text_at_offset;
+	/** @field cast=(gunichar (*)()) */
 	public int /*long*/ get_character_at_offset;
+	/** @field cast=(gchar *(*)()) */
 	public int /*long*/ get_text_before_offset;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_caret_offset;
+	/** @field cast=(AtkAttributeSet *(*)()) */
 	public int /*long*/ get_run_attributes;
+	/** @field cast=(AtkAttributeSet *(*)()) */
 	public int /*long*/ get_default_attributes;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ get_character_extents;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_character_count;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_offset_at_point;
+	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_n_selections;
+	/** @field cast=(gchar *(*)()) */
 	public int /*long*/ get_selection;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ add_selection;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ remove_selection;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_selection;
+	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_caret_offset;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ text_changed;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ text_caret_moved;
+	/** @field cast=(void (*)()) */
 	public int /*long*/ text_selection_changed;
 }

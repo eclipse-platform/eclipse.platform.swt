@@ -19,7 +19,9 @@ public class PhKeyEvent_t {
 	public short key_scan;
 	public short key_zero;
 //	PhPoint_t pos;
+	/** @field accessor=pos.x */
 	public short pos_x;
+	/** @field accessor=pos.y */
 	public short pos_y;
 	public short button_state;
 	public static final int sizeof = OS.QNX_MAJOR * 100 + OS.QNX_MINOR * 10 + OS.QNX_MICRO >= 610 ? 28 : 26;

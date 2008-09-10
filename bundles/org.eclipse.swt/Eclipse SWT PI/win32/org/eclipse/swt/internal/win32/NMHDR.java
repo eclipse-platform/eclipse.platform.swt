@@ -11,6 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class NMHDR {
+	/** @field cast=(HWND) */
 	public int /*long*/ hwndFrom; 
 	public int /*long*/ idFrom; 
 	public int code;
