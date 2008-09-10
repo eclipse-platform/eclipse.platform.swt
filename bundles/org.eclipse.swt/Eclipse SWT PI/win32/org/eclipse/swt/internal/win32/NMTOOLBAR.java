@@ -22,7 +22,10 @@ public class NMTOOLBAR extends NMHDR {
 	public int cchText;
 	public int /*long*/ pszText;
 //	RECT rcButton;
-	public int left, top, right, bottom;
+	public int left; 
+	public int top; 
+	public int right; 
+	public int bottom;
 	/* Note in WinCE.  The field rcButton is not defined. */
 	public static final int sizeof = OS.NMTOOLBAR_sizeof ();
 }

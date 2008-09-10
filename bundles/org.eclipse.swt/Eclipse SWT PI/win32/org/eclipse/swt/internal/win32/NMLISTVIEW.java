@@ -17,7 +17,8 @@ public class NMLISTVIEW extends NMHDR {
 	public int uOldState;
 	public int uChanged;
 //	POINT ptAction;
-	public int x, y;
+	public int x; 
+	public int y;
 	public int /*long*/ lParam;
 	public static int sizeof = OS.NMLISTVIEW_sizeof ();
 }

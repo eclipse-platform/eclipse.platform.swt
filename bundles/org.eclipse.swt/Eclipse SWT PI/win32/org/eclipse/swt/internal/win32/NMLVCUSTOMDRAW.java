@@ -21,7 +21,10 @@ public class NMLVCUSTOMDRAW extends NMCUSTOMDRAW {
 	public int iPartId;
 	public int iStateId;
 //	RECT rcText;
-	public int rcText_left, rcText_top, rcText_right, rcText_bottom;
+	public int rcText_left; 
+	public int rcText_top; 
+	public int rcText_right; 
+	public int rcText_bottom;
 	public int uAlign; 
 	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVCUSTOMDRAW_sizeof () : 60;
 }

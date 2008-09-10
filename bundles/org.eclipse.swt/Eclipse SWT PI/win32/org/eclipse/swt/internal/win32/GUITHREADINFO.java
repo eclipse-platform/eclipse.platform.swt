@@ -20,6 +20,9 @@ public class GUITHREADINFO {
 	public int /*long*/ hwndMoveSize; 
 	public int /*long*/ hwndCaret;
 //	RECT rcCaret;
-	public int left, top, right, bottom;
+	public int left; 
+	public int top; 
+	public int right; 
+	public int bottom;
 	public static int sizeof = OS.GUITHREADINFO_sizeof ();
 }

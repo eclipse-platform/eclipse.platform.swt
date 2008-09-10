@@ -17,6 +17,7 @@ public class MSG {
 	public int /*long*/ lParam; 
 	public int time; 
 //	POINT pt;
-	public int x, y;
+	public int x; 
+	public int y;
 	public static final int sizeof = OS.MSG_sizeof ();
 }

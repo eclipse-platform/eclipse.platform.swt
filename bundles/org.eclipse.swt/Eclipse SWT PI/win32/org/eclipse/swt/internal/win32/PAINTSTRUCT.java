@@ -14,7 +14,10 @@ public class PAINTSTRUCT {
 	public int /*long*/  hdc; 
 	public boolean fErase;
 //	public RECT rcPaint;
-	public int left, top, right, bottom;
+	public int left; 
+	public int top; 
+	public int right; 
+	public int bottom;
 	public boolean fRestore; 
 	public boolean fIncUpdate; 
 	public byte[] rgbReserved = new byte[32];

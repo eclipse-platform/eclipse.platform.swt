@@ -16,7 +16,10 @@ public class TOOLINFO {
 	public int /*long*/ hwnd; 
 	public int /*long*/ uId; 
 //	public RECT rect;
-	public int left, top, right, bottom;
+	public int left; 
+	public int top; 
+	public int right; 
+	public int bottom;
 	public int /*long*/ hinst; 
 	public int /*long*/ lpszText;
 	public int /*long*/ lParam;
