@@ -1704,7 +1704,7 @@ void initClasses () {
 	int /*long*/ textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
 
 	String types = "*";
-	int size = C.PTR_SIZEOF, align = (int)(Math.log10 (C.PTR_SIZEOF) / Math.log10 (2));
+	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
 	String className = "SWTWindowDelegate";
 	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
