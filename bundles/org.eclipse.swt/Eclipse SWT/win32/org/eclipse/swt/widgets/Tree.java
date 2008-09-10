@@ -4253,6 +4253,18 @@ public void select (TreeItem item) {
 			int /*long*/ hThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, hInfo.nPos);
 			OS.SendMessage (handle, OS.WM_HSCROLL, hThumb, 0);
 		}
+		/*
+		* Feature in Windows.  It seems that Vista does not
+		* use wParam to get the new position when WM_VSCROLL
+		* is sent with SB_THUMBPOSITION.  The fix is to use
+		* SetScrollInfo() to move the scroll bar thumb before
+		* calling WM_VSCROLL.
+		* 
+		* NOTE: This code is only necessary on Windows Vista.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			OS.SetScrollInfo (handle, OS.SB_VERT, vInfo, true);
+		}
 		int /*long*/ vThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, vInfo.nPos);
 		OS.SendMessage (handle, OS.WM_VSCROLL, vThumb, 0);
 		if (redraw) {
