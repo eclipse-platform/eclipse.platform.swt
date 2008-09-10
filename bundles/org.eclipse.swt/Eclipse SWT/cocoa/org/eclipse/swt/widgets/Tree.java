@@ -426,7 +426,6 @@ void createHandle () {
 	if (!hasBorder ()) widget.setFocusRingType (OS.NSFocusRingTypeNone);
 	
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
-	display.addWidget (headerView, this);
 	widget.setHeaderView (null);
 	
 	NSString str = NSString.stringWith ("");
@@ -1456,6 +1455,11 @@ void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*lo
 		event.item = item;
 		postEvent (SWT.Selection, event);
 	}
+}
+
+void register () {
+	super.register ();
+	display.addWidget (headerView, this);
 }
 
 void releaseChildren (boolean destroy) {

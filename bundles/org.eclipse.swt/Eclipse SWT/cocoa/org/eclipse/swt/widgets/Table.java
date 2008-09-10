@@ -384,7 +384,6 @@ void createHandle () {
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
-	display.addWidget (headerView, this);
 	widget.setHeaderView (null);
 
 	NSString str = NSString.stringWith("");
@@ -1358,6 +1357,11 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
+}
+
+void register () {
+	super.register ();
+	display.addWidget (headerView, this);
 }
 
 void releaseChildren (boolean destroy) {
