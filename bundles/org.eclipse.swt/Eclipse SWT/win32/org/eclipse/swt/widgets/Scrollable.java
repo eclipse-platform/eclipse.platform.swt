@@ -292,7 +292,7 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
 		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 			ScrollBar bar = vertical ? verticalBar : horizontalBar;
 			SCROLLINFO info = new SCROLLINFO ();
 			info.cbSize = SCROLLINFO.sizeof;
