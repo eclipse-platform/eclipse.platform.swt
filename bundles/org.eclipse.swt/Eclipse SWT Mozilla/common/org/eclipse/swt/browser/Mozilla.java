@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
+import org.eclipse.swt.internal.mozilla.init.*;
 import org.eclipse.swt.layout.*;
 
 class Mozilla extends WebBrowser {

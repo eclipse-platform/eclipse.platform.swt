@@ -13,7 +13,7 @@
 #include "xpcominit_structs.h"
 #include "xpcominit_stats.h"
 
-#define XPCOMInit_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_XPCOMInit_##func
+#define XPCOMInit_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_init_XPCOMInit_##func
 
 #ifndef NO_GREVersionRange_1sizeof
 extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GREVersionRange_1sizeof)(JNIEnv *env, jclass that);

@@ -25,7 +25,7 @@
  * -  Copyright (C) 2003, 2006 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
-package org.eclipse.swt.internal.mozilla;
+package org.eclipse.swt.internal.mozilla.init;
 
 import org.eclipse.swt.internal.Platform;
 

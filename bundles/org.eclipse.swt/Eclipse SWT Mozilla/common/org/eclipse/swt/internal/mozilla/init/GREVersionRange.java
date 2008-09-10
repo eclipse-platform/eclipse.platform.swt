@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.mozilla;
+package org.eclipse.swt.internal.mozilla.init;
 
 public class GREVersionRange {
     public int /*long*/ lower;
