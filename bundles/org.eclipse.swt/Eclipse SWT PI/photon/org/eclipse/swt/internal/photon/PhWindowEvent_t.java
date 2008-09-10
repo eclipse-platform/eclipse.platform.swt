@@ -23,6 +23,9 @@ public class PhWindowEvent_t {
 	public short size_h;
 	public short event_state;
 	public short input_group;
-	public int rsvd0, rsvd1, rsvd2, rsvd3;
+	public int rsvd0;
+	public int rsvd1;
+	public int rsvd2;
+	public int rsvd3;
 	public static final int sizeof = 40;
 }
