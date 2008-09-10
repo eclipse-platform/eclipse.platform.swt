@@ -187,6 +187,19 @@ void generateMetaData(JNIClass[] classes) {
 	}
 }
 
+void generateEmbededMetaData(JNIClass[] classes) {
+	try {
+		EmbedMetaData gen = new EmbedMetaData();
+		gen.setMainClass(mainClass);
+		gen.setClasses(classes);
+		gen.setMetaData(metaData);
+		gen.generate();
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
+}
+
 public void generate() {
 	generate(null);
 }
@@ -227,6 +240,8 @@ public void generate(ProgressMonitor progress) {
 	generateSTATS_C(natives);
 	if (progress != null) progress.setMessage("Generating meta data ...");
 	generateMetaData(classes);
+//	if (progress != null) progress.setMessage("Generating embeded meta data ...");
+//	generateEmbededMetaData(classes);
 	if (progress != null) progress.setMessage("Done.");
 	this.progress = null;
 }
