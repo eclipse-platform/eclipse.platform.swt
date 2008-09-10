@@ -15,6 +15,16 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 
+#ifndef NO_CFRelease
+JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRelease_FUNC);
+	CFRelease((CFTypeRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRelease_FUNC);
+}
+#endif
+
 #ifndef NO_CFURLCreateStringByAddingPercentEscapes
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4)

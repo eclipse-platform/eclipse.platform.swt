@@ -3067,8 +3067,8 @@
     <arg name="runLoop"></arg>
     <arg name="runLoopMode"></arg>
   </function>
-  <function name="CFRelease">
-    <arg name="cf"></arg>
+  <function name="CFRelease" swt_gen="true">
+    <arg name="cf" swt_gen="true"></arg>
   </function>
   <function name="CFRetain">
     <arg name="cf"></arg>

@@ -396,6 +396,7 @@ public boolean setUrl(String url) {
 	int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, str.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
 	NSString escapedString = new NSString(ptr);
 	NSURL inURL = NSURL.URLWithString(escapedString);
+	OS.CFRelease(ptr);
 	NSURLRequest request = NSURLRequest.requestWithURL(inURL);
 	WebFrame mainFrame = webView.mainFrame();
 	mainFrame.loadRequest(request);

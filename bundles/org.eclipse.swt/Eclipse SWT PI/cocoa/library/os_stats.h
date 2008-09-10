@@ -25,6 +25,7 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	CFRelease_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,
 	CGPoint_1sizeof_FUNC,
 	CGRect_1sizeof_FUNC,

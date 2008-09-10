@@ -29,6 +29,10 @@ import java.util.Vector;
 public final class Program {
 	String name, fullPath, identifier;
 
+	static final String PREFIX_FILE = "file://"; //$NON-NLS-1$
+	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
+	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -200,11 +204,24 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
+
+	NSString unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
+	if (fileName.indexOf(':') == -1) {
+		fileName = PREFIX_FILE + fileName;
+	} else {
+		String lowercaseName = fileName.toLowerCase ();
+		if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+			unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+		}
+	}
+
+	NSString fullPath = NSString.stringWith(fileName);
+	int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+	NSString escapedString = new NSString(ptr);
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-	//TODO use CFURLCreateStringByAddingPercentEscapes instead
-	NSString str = NSString.stringWith(fileName).stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
-	return workspace.openURL(NSURL.URLWithString(str));
+	boolean result = workspace.openURL(NSURL.URLWithString(escapedString));
+	OS.CFRelease(ptr);
+	return result;
 }
 
 /**
@@ -222,14 +239,22 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
 	NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 	NSString fullPath = NSString.stringWith(fileName);
 	if (fileName.indexOf(':') == -1) {
 		return workspace.openFile(fullPath, NSString.stringWith(name));
 	}
-	//TODO use CFURLCreateStringByAddingPercentEscapes instead
-	NSString str = fullPath.stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
-	NSArray urls = NSArray.arrayWithObject(NSURL.URLWithString(str));
+
+	NSString unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
+	String lowercaseName = fileName.toLowerCase ();
+	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+		unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
+	}
+	int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+	NSString escapedString = new NSString(ptr);
+	NSArray urls = NSArray.arrayWithObject(NSURL.URLWithString(escapedString));
+	OS.CFRelease(ptr);
 	return workspace.openURLs(urls, NSString.stringWith(identifier), 0, null, 0);
 }
 

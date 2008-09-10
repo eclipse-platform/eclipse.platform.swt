@@ -3051,6 +3051,10 @@ public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
  * @param newCursorPosition flags=struct */
 public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
 /**
+ * @param cf cast=(CFTypeRef)
+ */
+public static final native void CFRelease(int /*long*/ cf);
+/**
  * @param allocator cast=(CFAllocatorRef)
  * @param originalString cast=(CFStringRef)
  * @param charactersToLeaveUnescaped cast=(CFStringRef)
