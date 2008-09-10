@@ -18,7 +18,8 @@ public class XSizeHints {
 	public int min_width, min_height;
 	public int max_width, max_height;
 	public int width_inc, height_inc;
-	public int aspect_x, aspect_y;
+	public int aspect_x;
+	public int aspect_y;
     public int base_width, base_height;
     public int win_gravity;
 	public static final int sizeof = 72;
