@@ -365,19 +365,18 @@ NSAttributedString createString(int index) {
 		dict.setObject (color, OS.NSBackgroundColorAttributeName);
 	}
 	if (parent.getColumnCount () > 0) {
-		NSMutableParagraphStyle paragraphStyle = null;
 		TreeColumn column = parent.getColumn (index);
 		int style = column.getStyle ();
 		if ((style & SWT.CENTER) != 0) {
-			paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
-		} else if ((style & SWT.RIGHT) != 0) {
-			paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
-		}
-		if (paragraphStyle != null) {
-			dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+			NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 			paragraphStyle.autorelease ();
+			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
+			dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
+		} else if ((style & SWT.RIGHT) != 0) {
+			NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+			paragraphStyle.autorelease ();
+			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
+			dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 		}
 	}
 
