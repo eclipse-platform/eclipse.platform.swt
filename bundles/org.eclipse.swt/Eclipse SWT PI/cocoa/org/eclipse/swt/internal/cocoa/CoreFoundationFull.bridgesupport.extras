@@ -837,7 +837,7 @@
   <enum name="kCFStringEncodingUTF32"></enum>
   <enum name="kCFStringEncodingUTF32BE"></enum>
   <enum name="kCFStringEncodingUTF32LE"></enum>
-  <enum name="kCFStringEncodingUTF8"></enum>
+  <enum name="kCFStringEncodingUTF8" swt_gen="true"></enum>
   <enum name="kCFStringEncodingUnicode"></enum>
   <enum name="kCFStringEncodingVISCII"></enum>
   <enum name="kCFStringEncodingWindowsArabic"></enum>

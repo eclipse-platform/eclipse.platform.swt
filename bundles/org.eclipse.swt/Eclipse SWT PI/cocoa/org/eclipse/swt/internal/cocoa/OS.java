@@ -104,7 +104,6 @@ public static final native int QDRegionToRects(int /*long*/ rgn, int dir, int /*
 public static final native void CopyRgn(int /*long*/ srcRgnHandle, int /*long*/ dstRgnHandle);
 /** @method flags=dynamic */
 public static final native void SetRect(short[] r, short left, short top, short right, short bottom);
-public static final int kCFStringEncodingUTF8 = 0x08000100;
 public static final int kQDParseRegionFromTop = (1 << 0);
 public static final int kQDParseRegionFromBottom = (1 << 1);
 public static final int kQDParseRegionFromLeft = (1 << 2);
@@ -2149,6 +2148,7 @@ public static final int NSWritingDirectionNatural = -1;
 public static final int NSWritingDirectionRightToLeft = 1;
 public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
+public static final int kCFStringEncodingUTF8 = 134217984;
 public static final int NSASCIIStringEncoding = 1;
 public static final int NSAdminApplicationDirectory = 4;
 public static final int NSAggregateExpressionType = 14;
