@@ -37,6 +37,7 @@ public class ASTClass extends ASTItem implements JNIClass {
 	String name, simpleName, superclassName, packageName;
 	String[] imports;
 	String data;
+	int start;
 	
 	TypeResolver resolver = new TypeResolver() {
 		public String findPath(String simpleName) {
@@ -91,6 +92,7 @@ public ASTClass(String sourcePath, MetaData metaData) {
 		ImportDeclaration imp = (ImportDeclaration) iterator.next();
 		this.imports[count++] = imp.getName().getFullyQualifiedName();
 	}
+	start = type.getStartPosition();
 	
 	Javadoc doc = type.getJavadoc();
 	List tags = null;

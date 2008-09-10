@@ -13,11 +13,13 @@ package org.eclipse.swt.tools.internal;
 public class ASTParameter extends ASTItem implements JNIParameter {
 	ASTMethod method;
 	int parameter;
+	String name;
 	String data;
 
-public ASTParameter(ASTMethod method, int parameter) {
+public ASTParameter(ASTMethod method, int parameter, String name) {
 	this.method = method;
 	this.parameter = parameter;
+	this.name = name;
 }
 
 public String getCast() {
@@ -56,6 +58,10 @@ public String getMetaData() {
 
 public JNIMethod getMethod() {
 	return method;
+}
+
+public String getName() {
+	return name;
 }
 
 public JNIClass getTypeClass() {

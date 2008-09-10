@@ -24,11 +24,13 @@ public class ASTField extends ASTItem implements JNIField {
 	int modifiers;
 	ASTType type, type64;
 	String data;
+	int start;
 	
 public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, VariableDeclarationFragment fragment) {
 	this.declaringClass = declaringClass;	
 	name = fragment.getName().getIdentifier();
 	modifiers = field.getModifiers();
+	start = field.getStartPosition();
 	
 	Javadoc doc = field.getJavadoc();
 	List tags = null;
