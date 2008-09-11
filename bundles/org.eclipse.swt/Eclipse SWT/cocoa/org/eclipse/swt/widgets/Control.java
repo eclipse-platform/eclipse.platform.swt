@@ -750,20 +750,9 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
-//	Rect rect = new Rect ();
-//	int window = OS.GetControlOwner (handle);
-//	CGPoint pt = new CGPoint ();
-//	OS.HIViewConvertPoint (pt, handle, 0);
-//	x += (int) pt.x;
-//	y += (int) pt.y;
-//	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-//	x += rect.left;
-//	y += rect.top;
-//	org.eclipse.swt.internal.carbon.Point pt1 = new org.eclipse.swt.internal.carbon.Point ();
-//	pt1.h = (short) x;
-//	pt1.v = (short) y;
-//	return OS.WaitMouseMoved (pt1);
-	return false;
+	NSApplication application = NSApplication.sharedApplication();
+	NSEvent event = application.nextEventMatchingMask(OS.NSLeftMouseDraggedMask, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
+	return (event != null);
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
