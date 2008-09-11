@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
-public class NSSecureTextField extends NSObject {
+public class NSSecureTextField extends NSTextField {
 
 public NSSecureTextField() {
 	super();

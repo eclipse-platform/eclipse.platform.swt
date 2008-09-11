@@ -25390,7 +25390,7 @@
       <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <class name="NSSecureTextField" swt_gen="true"></class>
+  <class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
   <informal_protocol name="NSTextInput" swt_gen="true">
     <method selector="validAttributesForMarkedText" swt_gen="true"></method>
     <method selector="markedRange" swt_gen="true"></method>
