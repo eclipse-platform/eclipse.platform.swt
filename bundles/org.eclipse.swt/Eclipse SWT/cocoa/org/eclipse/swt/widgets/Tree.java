@@ -698,7 +698,10 @@ void destroyItem (TreeColumn column) {
 		firstColumn = column.nsColumn;
 		firstColumn.setWidth (0);
 	} else {
-		((NSTableView)view).removeTableColumn(column.nsColumn);
+		if (index == 0) {
+			((NSOutlineView)view).setOutlineTableColumn(columns[1].nsColumn);
+		}
+		((NSOutlineView)view).removeTableColumn(column.nsColumn);
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
