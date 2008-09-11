@@ -48,7 +48,7 @@ public NSFont font() {
 }
 
 public boolean sendAction(int /*long*/ theAction, id theTarget) {
-	return OS.objc_msgSend(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0);
 }
 
 public void setAction(int /*long*/ aSelector) {

@@ -60,7 +60,7 @@ public NSString title() {
 }
 
 public boolean wraps() {
-	return OS.objc_msgSend(this.id, OS.sel_wraps) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_wraps);
 }
 
 }

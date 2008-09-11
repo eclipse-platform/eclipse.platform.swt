@@ -40,7 +40,7 @@ public NSString className() {
 }
 
 public boolean conformsToProtocol(Protocol aProtocol) {
-	return OS.objc_msgSend(this.id, OS.sel_conformsToProtocol_, aProtocol != null ? aProtocol.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_conformsToProtocol_, aProtocol != null ? aProtocol.id : 0);
 }
 
 public id copy() {
@@ -54,15 +54,15 @@ public NSObject init() {
 }
 
 public boolean isEqual(id object) {
-	return OS.objc_msgSend(this.id, OS.sel_isEqual_, object != null ? object.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isEqual_, object != null ? object.id : 0);
 }
 
 public boolean isEqualTo(id object) {
-	return OS.objc_msgSend(this.id, OS.sel_isEqualTo_, object != null ? object.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isEqualTo_, object != null ? object.id : 0);
 }
 
 public boolean isKindOfClass(int /*long*/ aClass) {
-	return OS.objc_msgSend(this.id, OS.sel_isKindOfClass_, aClass) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isKindOfClass_, aClass);
 }
 
 public void performSelectorOnMainThread(int /*long*/ aSelector, id arg, boolean wait) {
@@ -74,7 +74,7 @@ public void release() {
 }
 
 public boolean respondsToSelector(int /*long*/ aSelector) {
-	return OS.objc_msgSend(this.id, OS.sel_respondsToSelector_, aSelector) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_respondsToSelector_, aSelector);
 }
 
 public id retain() {

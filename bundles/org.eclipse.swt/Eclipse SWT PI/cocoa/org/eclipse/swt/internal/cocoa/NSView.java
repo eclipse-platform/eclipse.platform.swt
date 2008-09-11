@@ -151,11 +151,11 @@ public NSView initWithFrame(NSRect frameRect) {
 }
 
 public boolean isFlipped() {
-	return OS.objc_msgSend(this.id, OS.sel_isFlipped) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isFlipped);
 }
 
 public boolean isOpaque() {
-	return OS.objc_msgSend(this.id, OS.sel_isOpaque) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isOpaque);
 }
 
 public NSMenu menuForEvent(NSEvent event) {
@@ -168,7 +168,7 @@ public void removeFromSuperview() {
 }
 
 public boolean scrollRectToVisible(NSRect aRect) {
-	return OS.objc_msgSend(this.id, OS.sel_scrollRectToVisible_, aRect) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
 
 public void setAutoresizesSubviews(boolean flag) {

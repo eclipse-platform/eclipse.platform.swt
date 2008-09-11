@@ -3084,6 +3084,24 @@ public static final native int /*long*/ NSTemporaryDirectory();
 
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSRect arg0);
+/** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
+/** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+/** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 /** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel);
 /** @method flags=cast */

@@ -25,7 +25,7 @@ public DOMKeyboardEvent(id id) {
 }
 
 public boolean altKey() {
-	return OS.objc_msgSend(this.id, OS.sel_altKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_altKey);
 }
 
 public int charCode() {
@@ -33,7 +33,7 @@ public int charCode() {
 }
 
 public boolean ctrlKey() {
-	return OS.objc_msgSend(this.id, OS.sel_ctrlKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_ctrlKey);
 }
 
 public int keyCode() {
@@ -41,11 +41,11 @@ public int keyCode() {
 }
 
 public boolean metaKey() {
-	return OS.objc_msgSend(this.id, OS.sel_metaKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_metaKey);
 }
 
 public boolean shiftKey() {
-	return OS.objc_msgSend(this.id, OS.sel_shiftKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_shiftKey);
 }
 
 }

@@ -29,7 +29,7 @@ public void setWorksWhenModal(boolean flag) {
 }
 
 public boolean worksWhenModal() {
-	return OS.objc_msgSend(this.id, OS.sel_worksWhenModal) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_worksWhenModal);
 }
 
 }

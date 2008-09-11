@@ -30,7 +30,7 @@ public NSString fullPathForApplication(NSString appName) {
 }
 
 public boolean getInfoForFile(NSString fullPath, int /*long*/ appName, int /*long*/ type) {
-	return OS.objc_msgSend(this.id, OS.sel_getInfoForFile_application_type_, fullPath != null ? fullPath.id : 0, appName, type) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_getInfoForFile_application_type_, fullPath != null ? fullPath.id : 0, appName, type);
 }
 
 public NSImage iconForFile(NSString fullPath) {
@@ -44,19 +44,19 @@ public NSImage iconForFileType(NSString fileType) {
 }
 
 public boolean isFilePackageAtPath(NSString fullPath) {
-	return OS.objc_msgSend(this.id, OS.sel_isFilePackageAtPath_, fullPath != null ? fullPath.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isFilePackageAtPath_, fullPath != null ? fullPath.id : 0);
 }
 
 public boolean openFile(NSString fullPath, NSString appName) {
-	return OS.objc_msgSend(this.id, OS.sel_openFile_withApplication_, fullPath != null ? fullPath.id : 0, appName != null ? appName.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_openFile_withApplication_, fullPath != null ? fullPath.id : 0, appName != null ? appName.id : 0);
 }
 
 public boolean openURL(NSURL url) {
-	return OS.objc_msgSend(this.id, OS.sel_openURL_, url != null ? url.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_openURL_, url != null ? url.id : 0);
 }
 
 public boolean openURLs(NSArray urls, NSString bundleIdentifier, int /*long*/ options, NSAppleEventDescriptor descriptor, int /*long*/ identifiers) {
-	return OS.objc_msgSend(this.id, OS.sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, urls != null ? urls.id : 0, bundleIdentifier != null ? bundleIdentifier.id : 0, options, descriptor != null ? descriptor.id : 0, identifiers) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_, urls != null ? urls.id : 0, bundleIdentifier != null ? bundleIdentifier.id : 0, options, descriptor != null ? descriptor.id : 0, identifiers);
 }
 
 public static NSWorkspace sharedWorkspace() {

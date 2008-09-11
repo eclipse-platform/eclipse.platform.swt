@@ -99,15 +99,15 @@ public NSWindow initWithContentRect(NSRect contentRect, int /*long*/ aStyle, int
 }
 
 public boolean isKeyWindow() {
-	return OS.objc_msgSend(this.id, OS.sel_isKeyWindow) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isKeyWindow);
 }
 
 public boolean isVisible() {
-	return OS.objc_msgSend(this.id, OS.sel_isVisible) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isVisible);
 }
 
 public boolean makeFirstResponder(NSResponder aResponder) {
-	return OS.objc_msgSend(this.id, OS.sel_makeFirstResponder_, aResponder != null ? aResponder.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_makeFirstResponder_, aResponder != null ? aResponder.id : 0);
 }
 
 public void makeKeyAndOrderFront(id sender) {

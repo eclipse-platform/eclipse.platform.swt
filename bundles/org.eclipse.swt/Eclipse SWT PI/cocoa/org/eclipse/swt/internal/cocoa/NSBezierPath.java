@@ -82,7 +82,7 @@ public void closePath() {
 }
 
 public boolean containsPoint(NSPoint point) {
-	return OS.objc_msgSend(this.id, OS.sel_containsPoint_, point) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_containsPoint_, point);
 }
 
 public NSRect controlPointBounds() {
@@ -122,7 +122,7 @@ public static void fillRect(NSRect rect) {
 }
 
 public boolean isEmpty() {
-	return OS.objc_msgSend(this.id, OS.sel_isEmpty) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isEmpty);
 }
 
 public void lineToPoint(NSPoint point) {

@@ -25,7 +25,7 @@ public NSBundle(id id) {
 }
 
 public static boolean loadNibFile(NSString fileName, NSDictionary context, int /*long*/ zone) {
-	return OS.objc_msgSend(OS.class_NSBundle, OS.sel_loadNibFile_externalNameTable_withZone_, fileName != null ? fileName.id : 0, context != null ? context.id : 0, zone) != 0;
+	return OS.objc_msgSend_bool(OS.class_NSBundle, OS.sel_loadNibFile_externalNameTable_withZone_, fileName != null ? fileName.id : 0, context != null ? context.id : 0, zone);
 }
 
 public NSString bundleIdentifier() {

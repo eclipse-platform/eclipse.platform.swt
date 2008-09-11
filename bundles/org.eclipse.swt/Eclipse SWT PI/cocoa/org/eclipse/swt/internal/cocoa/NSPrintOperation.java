@@ -39,7 +39,7 @@ public NSGraphicsContext createContext() {
 }
 
 public boolean deliverResult() {
-	return OS.objc_msgSend(this.id, OS.sel_deliverResult) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_deliverResult);
 }
 
 public void destroyContext() {
@@ -52,7 +52,7 @@ public static NSPrintOperation printOperationWithView(NSView view, NSPrintInfo p
 }
 
 public boolean runOperation() {
-	return OS.objc_msgSend(this.id, OS.sel_runOperation) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_runOperation);
 }
 
 public static void setCurrentOperation(NSPrintOperation operation) {

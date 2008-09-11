@@ -671,7 +671,11 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		}
 		if (method.getFlag(Flags.FLAG_CAST)) {
 			output("((");
-			output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+			String returnCast = returnType.getTypeSignature2(!returnType.equals(returnType64));
+			if (name.equals("objc_msgSend_bool") && returnCast.equals("jboolean")) {
+				returnCast = "BOOL";
+			}
+			output(returnCast);
 			output(" (*)(");
 			for (int i = 0; i < params.length; i++) {
 				if (i != 0) output(", ");

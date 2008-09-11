@@ -29,7 +29,7 @@ public int /*long*/ bitsPerSample() {
 }
 
 public boolean hasAlpha() {
-	return OS.objc_msgSend(this.id, OS.sel_hasAlpha) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_hasAlpha);
 }
 
 public int /*long*/ pixelsHigh() {

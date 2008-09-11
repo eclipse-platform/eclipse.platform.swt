@@ -25,7 +25,7 @@ public WebFrameView(id id) {
 }
 
 public boolean documentViewShouldHandlePrint() {
-	return OS.objc_msgSend(this.id, OS.sel_documentViewShouldHandlePrint) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_documentViewShouldHandlePrint);
 }
 
 public void printDocumentView() {

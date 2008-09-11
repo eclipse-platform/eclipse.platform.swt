@@ -25,23 +25,23 @@ public WebView(id id) {
 }
 
 public boolean canGoBack() {
-	return OS.objc_msgSend(this.id, OS.sel_canGoBack) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_canGoBack);
 }
 
 public boolean canGoForward() {
-	return OS.objc_msgSend(this.id, OS.sel_canGoForward) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_canGoForward);
 }
 
 public static boolean canShowMIMEType(NSString MIMEType) {
-	return OS.objc_msgSend(OS.class_WebView, OS.sel_canShowMIMEType_, MIMEType != null ? MIMEType.id : 0) != 0;
+	return OS.objc_msgSend_bool(OS.class_WebView, OS.sel_canShowMIMEType_, MIMEType != null ? MIMEType.id : 0);
 }
 
 public boolean goBack() {
-	return OS.objc_msgSend(this.id, OS.sel_goBack) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_goBack);
 }
 
 public boolean goForward() {
-	return OS.objc_msgSend(this.id, OS.sel_goForward) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_goForward);
 }
 
 public WebView initWithFrame(NSRect frame, NSString frameName, NSString groupName) {

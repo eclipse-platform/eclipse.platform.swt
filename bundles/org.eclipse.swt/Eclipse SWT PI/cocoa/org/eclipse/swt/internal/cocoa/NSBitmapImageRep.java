@@ -51,7 +51,7 @@ public NSBitmapImageRep initWithBitmapDataPlanes(int /*long*/ planes, int /*long
 }
 
 public boolean isPlanar() {
-	return OS.objc_msgSend(this.id, OS.sel_isPlanar) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isPlanar);
 }
 
 public int /*long*/ samplesPerPixel() {

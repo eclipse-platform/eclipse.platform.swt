@@ -1597,18 +1597,6 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSend_1bool
-JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool)
-(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jboolean rc = JNI_FALSE;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool_FUNC);
-	rc = (BOOL)((BOOL (*)(id, SEL))objc_msgSend)((id)arg0, (SEL)arg1);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool_FUNC);
-	return rc;
-}
-#endif
-
 #if (!defined(NO_objc_1msgSend__II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -3280,6 +3268,175 @@ fail:
 	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJ_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong))objc_msgSend_bool)(arg0, arg1);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__III) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__III)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__III_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJ_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong))objc_msgSend_bool)(arg0, arg1, arg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__III_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJJ_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong, jintLong))objc_msgSend_bool)(arg0, arg1, arg2, arg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJJJ_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend_bool)(arg0, arg1, arg2, arg3, arg4);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IIIIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJJJJJ_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend_bool)(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
+#endif
+{
+	NSPoint _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+#endif
+	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, NSPoint))objc_msgSend_bool)(arg0, arg1, *lparg2);
+fail:
+	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
+#endif
+{
+	NSRect _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#endif
+	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, NSRect))objc_msgSend_bool)(arg0, arg1, *lparg2);
+fail:
+	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 #endif
 	return rc;
 }

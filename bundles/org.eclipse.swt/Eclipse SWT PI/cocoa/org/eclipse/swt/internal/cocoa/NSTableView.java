@@ -48,7 +48,7 @@ public NSTableHeaderView headerView() {
 }
 
 public boolean isRowSelected(int /*long*/ row) {
-	return OS.objc_msgSend(this.id, OS.sel_isRowSelected_, row) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_isRowSelected_, row);
 }
 
 public void moveColumn(int /*long*/ column, int /*long*/ newIndex) {
@@ -161,7 +161,7 @@ public void tile() {
 }
 
 public boolean usesAlternatingRowBackgroundColors() {
-	return OS.objc_msgSend(this.id, OS.sel_usesAlternatingRowBackgroundColors) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_usesAlternatingRowBackgroundColors);
 }
 
 }

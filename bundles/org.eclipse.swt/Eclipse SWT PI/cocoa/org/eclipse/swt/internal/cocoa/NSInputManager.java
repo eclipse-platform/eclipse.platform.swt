@@ -30,11 +30,11 @@ public static NSInputManager currentInputManager() {
 }
 
 public boolean handleMouseEvent(NSEvent theMouseEvent) {
-	return OS.objc_msgSend(this.id, OS.sel_handleMouseEvent_, theMouseEvent != null ? theMouseEvent.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_handleMouseEvent_, theMouseEvent != null ? theMouseEvent.id : 0);
 }
 
 public boolean wantsToHandleMouseEvents() {
-	return OS.objc_msgSend(this.id, OS.sel_wantsToHandleMouseEvents) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_wantsToHandleMouseEvents);
 }
 
 }

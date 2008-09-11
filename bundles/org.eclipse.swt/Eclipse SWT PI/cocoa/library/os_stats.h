@@ -510,6 +510,41 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC,
 #endif
 #ifndef JNI64
+	objc_1msgSend_1bool__II_FUNC,
+#else
+	objc_1msgSend_1bool__JJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__III_FUNC,
+#else
+	objc_1msgSend_1bool__JJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IIII_FUNC,
+#else
+	objc_1msgSend_1bool__JJJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IIIII_FUNC,
+#else
+	objc_1msgSend_1bool__JJJJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IIIIIII_FUNC,
+#else
+	objc_1msgSend_1bool__JJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
 	objc_1msgSend_1fpret__II_FUNC,
 #else
 	objc_1msgSend_1fpret__JJ_FUNC,

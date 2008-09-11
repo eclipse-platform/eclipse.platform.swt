@@ -25,7 +25,7 @@ public NSFileManager(id id) {
 }
 
 public boolean createFileAtPath(NSString path, NSData data, NSDictionary attr) {
-	return OS.objc_msgSend(this.id, OS.sel_createFileAtPath_contents_attributes_, path != null ? path.id : 0, data != null ? data.id : 0, attr != null ? attr.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_createFileAtPath_contents_attributes_, path != null ? path.id : 0, data != null ? data.id : 0, attr != null ? attr.id : 0);
 }
 
 public static NSFileManager defaultManager() {
@@ -39,7 +39,7 @@ public NSDirectoryEnumerator enumeratorAtPath(NSString path) {
 }
 
 public boolean removeItemAtPath(NSString path, int /*long*/ error) {
-	return OS.objc_msgSend(this.id, OS.sel_removeItemAtPath_error_, path != null ? path.id : 0, error) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_removeItemAtPath_error_, path != null ? path.id : 0, error);
 }
 
 }

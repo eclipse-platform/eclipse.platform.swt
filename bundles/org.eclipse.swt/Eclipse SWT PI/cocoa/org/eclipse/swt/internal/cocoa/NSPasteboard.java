@@ -58,15 +58,15 @@ public id propertyListForType(NSString dataType) {
 }
 
 public boolean setData(NSData data, NSString dataType) {
-	return OS.objc_msgSend(this.id, OS.sel_setData_forType_, data != null ? data.id : 0, dataType != null ? dataType.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_setData_forType_, data != null ? data.id : 0, dataType != null ? dataType.id : 0);
 }
 
 public boolean setPropertyList(id plist, NSString dataType) {
-	return OS.objc_msgSend(this.id, OS.sel_setPropertyList_forType_, plist != null ? plist.id : 0, dataType != null ? dataType.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_setPropertyList_forType_, plist != null ? plist.id : 0, dataType != null ? dataType.id : 0);
 }
 
 public boolean setString(NSString string, NSString dataType) {
-	return OS.objc_msgSend(this.id, OS.sel_setString_forType_, string != null ? string.id : 0, dataType != null ? dataType.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_setString_forType_, string != null ? string.id : 0, dataType != null ? dataType.id : 0);
 }
 
 public NSString stringForType(NSString dataType) {

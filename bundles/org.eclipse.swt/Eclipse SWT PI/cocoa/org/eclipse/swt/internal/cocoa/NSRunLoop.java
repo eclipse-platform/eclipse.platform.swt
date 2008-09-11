@@ -35,7 +35,7 @@ public static NSRunLoop mainRunLoop() {
 }
 
 public boolean runMode(NSString mode, NSDate limitDate) {
-	return OS.objc_msgSend(this.id, OS.sel_runMode_beforeDate_, mode != null ? mode.id : 0, limitDate != null ? limitDate.id : 0) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_runMode_beforeDate_, mode != null ? mode.id : 0, limitDate != null ? limitDate.id : 0);
 }
 
 }

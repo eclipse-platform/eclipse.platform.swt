@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 207;
-int OS_nativeFunctionCallCount[207];
+int OS_nativeFunctionCount = 214;
+int OS_nativeFunctionCallCount[214];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -500,6 +500,41 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSSize_2",
 #else
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSSize_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__II",
+#else
+	"objc_1msgSend_1bool__JJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__III",
+#else
+	"objc_1msgSend_1bool__JJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IIII",
+#else
+	"objc_1msgSend_1bool__JJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IIIII",
+#else
+	"objc_1msgSend_1bool__JJJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IIIIIII",
+#else
+	"objc_1msgSend_1bool__JJJJJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#else
+	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
+#else
+	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1fpret__II",

@@ -25,11 +25,11 @@ public NSResponder(id id) {
 }
 
 public boolean acceptsFirstResponder() {
-	return OS.objc_msgSend(this.id, OS.sel_acceptsFirstResponder) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_acceptsFirstResponder);
 }
 
 public boolean becomeFirstResponder() {
-	return OS.objc_msgSend(this.id, OS.sel_becomeFirstResponder) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_becomeFirstResponder);
 }
 
 public void doCommandBySelector(int /*long*/ aSelector) {
@@ -109,7 +109,7 @@ public void pageUp(id sender) {
 }
 
 public boolean resignFirstResponder() {
-	return OS.objc_msgSend(this.id, OS.sel_resignFirstResponder) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_resignFirstResponder);
 }
 
 public void rightMouseDown(NSEvent theEvent) {

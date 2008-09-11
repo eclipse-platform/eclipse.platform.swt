@@ -217,6 +217,9 @@ void generateMethods(String className, ArrayList methods) {
 			out("();");
 			outln();
 			out("\tOS.objc_msgSend_stret(result, ");
+		} else if (returnNode != null && isBoolean(returnNode)) {
+			out("\treturn ");
+			out("OS.objc_msgSend_bool(");
 		} else if (returnNode != null && isFloatingPoint(returnNode)) {
 			out("\treturn ");
 			if (returnType.equals("float")) out("(float)");
@@ -226,15 +229,13 @@ void generateMethods(String className, ArrayList methods) {
 		} else {
 			if (returnNode != null) {
 				out("\treturn ");
-				if (!returnType.equals("boolean")) {
-					if ((returnType.equals("int") && returnType64.equals("int")) || !returnType.equals("int")) {
-						out("(");
-						out(returnType);
-						out(")");
-					}
-					if (returnType.equals("int") && returnType64.equals("int")) {
-						out("/*64*/");
-					}
+				if ((returnType.equals("int") && returnType64.equals("int")) || !returnType.equals("int")) {
+					out("(");
+					out(returnType);
+					out(")");
+				}
+				if (returnType.equals("int") && returnType64.equals("int")) {
+					out("/*64*/");
 				}
 			} else {
 				out("\t");
@@ -270,9 +271,6 @@ void generateMethods(String className, ArrayList methods) {
 			}
 		}
 		out(")");
-		if (returnNode != null && isBoolean(returnNode)) {
-			out(" != 0");
-		}
 		out(";");
 		outln();
 		if (returnNode != null && isObject(returnNode)) {
@@ -1030,6 +1028,8 @@ String buildSend(Node method, boolean tags, boolean only64) {
 		buffer.append(" result, ");
 	} else if (returnNode != null && isFloatingPoint(returnNode)) {
 		buffer.append("double objc_msgSend_fpret(");
+	} else if (returnNode != null && isBoolean(returnNode)) {
+		buffer.append("boolean objc_msgSend_bool(");
 	} else {
 		if (only64) {
 			buffer.append("long");

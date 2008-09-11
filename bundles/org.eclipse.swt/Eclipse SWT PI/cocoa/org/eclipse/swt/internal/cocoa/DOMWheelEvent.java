@@ -25,7 +25,7 @@ public DOMWheelEvent(id id) {
 }
 
 public boolean altKey() {
-	return OS.objc_msgSend(this.id, OS.sel_altKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_altKey);
 }
 
 public int clientX() {
@@ -37,15 +37,15 @@ public int clientY() {
 }
 
 public boolean ctrlKey() {
-	return OS.objc_msgSend(this.id, OS.sel_ctrlKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_ctrlKey);
 }
 
 public boolean metaKey() {
-	return OS.objc_msgSend(this.id, OS.sel_metaKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_metaKey);
 }
 
 public boolean shiftKey() {
-	return OS.objc_msgSend(this.id, OS.sel_shiftKey) != 0;
+	return OS.objc_msgSend_bool(this.id, OS.sel_shiftKey);
 }
 
 public int wheelDelta() {
