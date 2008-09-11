@@ -131,7 +131,8 @@ public void buildFinished(IJavaProject project) {
 			if (SOURCE_ID.equals(marker.getAttribute(IMarker.SOURCE_ID))) {
 				marker.delete();
 			} else {
-				hasProblems = true;
+				Object severity = marker.getAttribute(IMarker.SEVERITY);
+				hasProblems |= severity != null && ((Integer)severity).intValue() == IMarker.SEVERITY_ERROR;
 			}
 		}
 		if (hasProblems) return;
