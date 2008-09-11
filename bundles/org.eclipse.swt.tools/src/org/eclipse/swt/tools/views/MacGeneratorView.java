@@ -73,6 +73,7 @@ public class MacGeneratorView extends ViewPart {
 	 * The constructor.
 	 */
 	public MacGeneratorView() {
+		MacGenerator.BUILD_C_SOURCE = false;
 		IWorkspaceRoot workspace = ResourcesPlugin.getWorkspace().getRoot();
 		root = workspace.findMember(new Path("org.eclipse.swt/Eclipse SWT PI/cocoa"));
 	}

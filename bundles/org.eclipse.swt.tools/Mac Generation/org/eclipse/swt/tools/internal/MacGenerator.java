@@ -25,6 +25,8 @@ public class MacGenerator {
 
 	PrintStream out;
 	
+	public static boolean BUILD_C_SOURCE = true;
+
 public MacGenerator() {
 }
 
@@ -102,7 +104,7 @@ void merge(Document document, Document extraDocument) {
 
 public void generate(ProgressMonitor progress) {
 	if (progress != null) {
-		progress.setTotal(4);
+		progress.setTotal(BUILD_C_SOURCE ? 4 : 3);
 		progress.setMessage("extra attributes...");
 	}
 	generateExtraAttributes();
@@ -116,14 +118,16 @@ public void generate(ProgressMonitor progress) {
 		progress.setMessage("classes...");
 	}
 	generateClasses();
-	if (progress != null) {
-		progress.step();
-		progress.setMessage("C source...");
+	if (BUILD_C_SOURCE) {
+		if (progress != null) {
+			progress.step();
+			progress.setMessage("C source...");
+		}
+		generateCSource();
 	}
-	generateCSource();
 	if (progress != null) {
-		progress.setMessage("Done.");
 		progress.step();
+		progress.setMessage("Done.");
 	}
 }
 
