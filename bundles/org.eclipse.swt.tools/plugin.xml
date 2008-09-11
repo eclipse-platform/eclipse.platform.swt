@@ -33,12 +33,12 @@
       </builder>
    </extension>
 
-   <extension
+   <!--<extension
          point="org.eclipse.jdt.core.compilationParticipant">
       <compilationParticipant
             class="org.eclipse.swt.tools.builders.Check64CompilationParticipant"
             id="org.eclipse.swt.tools.Check64CompilationParticipant">
       </compilationParticipant>
-   </extension>
+   </extension>-->
 
 </plugin>
