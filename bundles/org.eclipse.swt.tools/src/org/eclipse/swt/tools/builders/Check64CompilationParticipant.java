@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -33,7 +34,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class Check64CompilationParticipant extends CompilationParticipant {
-	ArrayList sources;
+	HashSet sources;
 
 	static final char[] INT_LONG = "int /*long*/".toCharArray();
 	static final char[] INT_LONG_ARRAY = "int[] /*long[]*/".toCharArray();
@@ -45,6 +46,7 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final char[] DOUBLE_FLOAT_ARRAY = "double[] /*float[]*/".toCharArray();
 	static final String buildDir = "/.build64/";
 	static final String pluginDir = "/org.eclipse.swt/";
+	static final String SOURCE_ID = "JNI";/*JavaBuilder.SOURCE_ID*/
 	
 void create(IContainer file) throws CoreException {
 	if (file.exists()) return;
@@ -52,6 +54,18 @@ void create(IContainer file) throws CoreException {
 		case IResource.FOLDER:
 			create(file.getParent());
 			((IFolder)file).create(true, true, null);
+	}
+}
+
+void createProblemFor(IResource resource, int start, int end, String message) {
+	try {
+		IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
+		int severity = IMarker.SEVERITY_ERROR;
+		marker.setAttributes(
+			new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
+			new Object[] {message, new Integer(severity), new Integer(start), new Integer(end), SOURCE_ID});
+	} catch (CoreException e) {
+		e.printStackTrace();
 	}
 }
 
@@ -81,7 +95,7 @@ void replace64(char[] source) {
 }
 	
 public void buildStarting(BuildContext[] files, boolean isBatch) {
-	sources = new ArrayList();
+	if (sources == null) sources = new HashSet();
 	for (int i = 0; i < files.length; i++) {
 		BuildContext context = files[i];
 		IFile file = context.getFile();
@@ -97,7 +111,7 @@ public void buildStarting(BuildContext[] files, boolean isBatch) {
 			char[] source = context.getContents();
 			replace64(source);
 			//TODO encoding
-//			System.out.println(file);
+//			System.out.println(i + "-" + file);
 			newFile.create(new ByteArrayInputStream(new String(source).getBytes()), true, null);
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -108,7 +122,19 @@ public void buildStarting(BuildContext[] files, boolean isBatch) {
 public void buildFinished(IJavaProject project) {
 	try {
 		if (sources == null) return;
+//		long time = System.currentTimeMillis();
 		IProject proj = project.getProject();
+		boolean hasProblems = false;
+		IMarker[] markers = proj.findMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
+		for (int i = 0; i < markers.length; i++) {
+			IMarker marker = markers[i];
+			if (SOURCE_ID.equals(marker.getAttribute(IMarker.SOURCE_ID))) {
+				marker.delete();
+			} else {
+				hasProblems = true;
+			}
+		}
+		if (hasProblems) return;
 		String root = proj.getLocation().toPortableString() + buildDir;
 		StringBuffer sourcePath = new StringBuffer(), cp = new StringBuffer();
 		IClasspathEntry[] entries = project.getResolvedClasspath(true);
@@ -136,15 +162,14 @@ public void buildFinished(IJavaProject project) {
 			"-sourcepath", sourcePath.toString(),
 		}));
 		args.addAll(sources);
-		sources = null;
-//		System.out.println("start");
-//		long time = System.currentTimeMillis();
+//		System.out.println("start=" + sources.size());
 		PrintWriter writer = new PrintWriter(new ByteArrayOutputStream());
 		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
 //		System.out.println("time0=" +( System.currentTimeMillis() - time));
 		InputStream is = new BufferedInputStream(new FileInputStream(log));
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
 		is.close();
+		proj.findMember(new Path(buildDir)).refreshLocal(IResource.DEPTH_INFINITE, null);		
 		String projPath = proj.getLocation().toPortableString();
 		NodeList stats = doc.getDocumentElement().getElementsByTagName("stats");
 		if (stats.getLength() > 0) {
@@ -181,21 +206,23 @@ public void buildFinished(IJavaProject project) {
 				}
 			}
 		}
-//		System.out.println("time=" +( System.currentTimeMillis() - time));
+//		System.out.println("copiling time=" +( System.currentTimeMillis() - time));
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
 }
 
-void createProblemFor(IResource resource, int start, int end, String message) {
-	try {
-		IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
-		int severity = IMarker.SEVERITY_ERROR;
-		marker.setAttributes(
-			new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
-			new Object[] {message, new Integer(severity), new Integer(start), new Integer(end), "JDT"/*JavaBuilder.SOURCE_ID*/});
-	} catch (CoreException e) {
-		e.printStackTrace();
+public void cleanStarting(IJavaProject project) {
+	if (!isActive(project)) return;
+//	System.out.println("clean");
+	sources = null;
+	IResource resource = project.getProject().findMember(new Path(buildDir));
+	if (resource != null) {
+		try {
+			resource.delete(true, null);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 }
 
