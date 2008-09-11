@@ -249,7 +249,7 @@ public Shell (Display display, int style) {
 	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
+Shell (Display display, Shell parent, int style, int /*long*/handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -390,7 +390,7 @@ public static Shell internal_new (Display display, int handle) {
  * 
  * @since 3.5
  */
-public static Shell cocoa_new (Display display, int handle) {
+public static Shell cocoa_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
