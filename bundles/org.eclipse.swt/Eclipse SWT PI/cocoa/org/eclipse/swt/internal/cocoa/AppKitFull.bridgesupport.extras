@@ -18952,9 +18952,9 @@
       <arg name="hidden"></arg>
       <retval></retval>
     </method>
-    <method selector="setIdentifier:">
-      <arg name="identifier"></arg>
-      <retval></retval>
+    <method selector="setIdentifier:" swt_gen="true">
+      <arg name="identifier" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setMaxWidth:">
       <arg name="maxWidth"></arg>
@@ -19093,9 +19093,9 @@
       <arg name="rect"></arg>
       <retval></retval>
     </method>
-    <method selector="columnWithIdentifier:">
-      <arg name="identifier"></arg>
-      <retval></retval>
+    <method selector="columnWithIdentifier:" swt_gen="true">
+      <arg name="identifier" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="columnsInRect:">
       <arg name="rect"></arg>

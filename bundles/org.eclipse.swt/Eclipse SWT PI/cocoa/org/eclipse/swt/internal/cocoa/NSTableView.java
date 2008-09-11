@@ -28,6 +28,10 @@ public void addTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
 }
 
+public int /*long*/ columnWithIdentifier(id identifier) {
+	return OS.objc_msgSend(this.id, OS.sel_columnWithIdentifier_, identifier != null ? identifier.id : 0);
+}
+
 public void deselectAll(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_deselectAll_, sender != null ? sender.id : 0);
 }

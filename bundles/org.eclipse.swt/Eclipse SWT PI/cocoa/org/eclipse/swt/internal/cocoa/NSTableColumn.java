@@ -50,6 +50,10 @@ public void setHeaderCell(NSCell cell) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderCell_, cell != null ? cell.id : 0);
 }
 
+public void setIdentifier(id identifier) {
+	OS.objc_msgSend(this.id, OS.sel_setIdentifier_, identifier != null ? identifier.id : 0);
+}
+
 public void setMinWidth(float /*double*/ minWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setMinWidth_, minWidth);
 }

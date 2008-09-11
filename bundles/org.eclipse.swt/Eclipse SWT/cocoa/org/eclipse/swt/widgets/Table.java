@@ -389,7 +389,7 @@ void createHandle () {
 	NSString str = NSString.stringWith("");
 	if ((style & SWT.CHECK) != 0) {
 		checkColumn = (NSTableColumn)new NSTableColumn().alloc();
-		checkColumn.initWithIdentifier(str);
+		checkColumn.initWithIdentifier(checkColumn);
 		checkColumn.headerCell().setTitle(str);
 		widget.addTableColumn (checkColumn);
 		NSButtonCell cell = (NSButtonCell)new NSButtonCell().alloc().init();
@@ -404,7 +404,7 @@ void createHandle () {
 	}
 
 	firstColumn = (NSTableColumn)new NSTableColumn().alloc();
-	firstColumn.initWithIdentifier(str);
+	firstColumn.initWithIdentifier(firstColumn);
 	firstColumn.setMinWidth(0);
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
 	NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
@@ -432,7 +432,7 @@ void createItem (TableColumn column, int index) {
 	} else {
 		//TODO - set attributes, alignment etc.
 		nsColumn = (NSTableColumn)new NSTableColumn().alloc();
-		nsColumn.initWithIdentifier(NSString.stringWith(""));
+		nsColumn.initWithIdentifier(nsColumn);
 		nsColumn.setMinWidth(0);
 		((NSTableView)view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
@@ -2123,14 +2123,12 @@ public void setSortColumn (TableColumn column) {
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
 	if (oldSortColumn != null) {
-		int index = indexOf (oldSortColumn);
-		if ((style & SWT.CHECK) != 0) index++;
+		int index = ((NSTableView)view).columnWithIdentifier (oldSortColumn.nsColumn);
 		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
 	if (sortColumn != null) {
-		int index = indexOf (sortColumn);
-		if ((style & SWT.CHECK) != 0) index++;
+		int index = ((NSTableView)view).columnWithIdentifier (sortColumn.nsColumn);
 		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
@@ -2157,8 +2155,7 @@ public void setSortDirection  (int direction) {
 	if (sortColumn == null) return;
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
-	int index = indexOf (sortColumn);
-	if ((style & SWT.CHECK) != 0) index++;
+	int index = ((NSTableView)view).columnWithIdentifier (sortColumn.nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
