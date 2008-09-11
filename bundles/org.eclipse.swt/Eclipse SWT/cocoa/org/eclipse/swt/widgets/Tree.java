@@ -2008,11 +2008,13 @@ public void setSortColumn (TreeColumn column) {
 	if (headerView == null) return;
 	if (oldSortColumn != null) {
 		int index = indexOf (oldSortColumn);
+		if ((style & SWT.CHECK) != 0) index++;
 		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
 	if (sortColumn != null) {
 		int index = indexOf (sortColumn);
+		if ((style & SWT.CHECK) != 0) index++;
 		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
@@ -2040,6 +2042,7 @@ public void setSortDirection  (int direction) {
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
 	int index = indexOf (sortColumn);
+	if ((style & SWT.CHECK) != 0) index++;
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
