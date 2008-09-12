@@ -57,7 +57,7 @@ public class Menu extends Widget {
 	short id;
 	int x, y, itemCount;
 //	int width, height;
-	boolean hasLocation, modified, closed, ignoreMatch = false;
+	boolean hasLocation, modified, closed, ignoreMatch;
 	MenuItem [] items;
 	MenuItem cascade, defaultItem, lastTarget;
 	Decorations parent;
