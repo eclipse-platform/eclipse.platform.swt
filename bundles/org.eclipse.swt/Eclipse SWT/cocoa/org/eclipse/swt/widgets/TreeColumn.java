@@ -526,7 +526,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	int index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
+	int /*long*/ index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
@@ -591,7 +591,7 @@ public void setText (String string) {
 	displayText = new String (buffer, 0, length);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
-	int index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
+	int /*long*/ index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }

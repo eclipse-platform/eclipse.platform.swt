@@ -2010,12 +2010,12 @@ public void setSortColumn (TreeColumn column) {
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
 	if (oldSortColumn != null) {
-		int index = ((NSOutlineView)view).columnWithIdentifier (oldSortColumn.nsColumn);
+		int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (oldSortColumn.nsColumn);
 		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
 	if (sortColumn != null) {
-		int index = ((NSOutlineView)view).columnWithIdentifier (sortColumn.nsColumn);
+		int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (sortColumn.nsColumn);
 		NSRect rect = headerView.headerRectOfColumn (index);
 		headerView.setNeedsDisplayInRect (rect);
 	}
@@ -2042,7 +2042,7 @@ public void setSortDirection  (int direction) {
 	if (sortColumn == null) return;
 	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
 	if (headerView == null) return;
-	int index = ((NSOutlineView)view).columnWithIdentifier (sortColumn.nsColumn);
+	int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (sortColumn.nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
 }
