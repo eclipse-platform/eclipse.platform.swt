@@ -57,12 +57,12 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 		for (int i = 0; i < methods.length && decl == null; i++) {
 			MethodDeclaration node = methods[i];
 			if (node.getName().getIdentifier().equals(name)) {
-				if (!returnType.getSimpleName().equals(node.getReturnType2().toString())) continue;
+				if (!declaringClass.getSimpleName(returnType).equals(node.getReturnType2().toString())) continue;
 				List parameters = node.parameters();
 				if (parameters.size() != paramTypes.length) continue;
 				decl = node;
 				for (int j = 0; j < paramTypes.length; j++) {
-					if (!paramTypes[j].getSimpleName().equals(((SingleVariableDeclaration)parameters.get(j)).getType().toString())) {
+					if (!declaringClass.getSimpleName(paramTypes[j]).equals(((SingleVariableDeclaration)parameters.get(j)).getType().toString())) {
 						decl = null;
 						break;
 					}

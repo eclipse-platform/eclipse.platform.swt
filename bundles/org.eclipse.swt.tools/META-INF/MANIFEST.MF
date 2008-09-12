@@ -9,7 +9,7 @@ Export-Package: org.eclipse.swt.tools,
  org.eclipse.swt.tools.internal; x-internal:=true
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
 Require-Bundle: org.eclipse.swt;bundle-version="3.4.0",
  org.eclipse.core.runtime;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.4.0",

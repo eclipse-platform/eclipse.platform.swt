@@ -86,14 +86,18 @@ public String getName() {
 
 public JNIClass getSuperclass() {
 	Class superclazz = clazz.getSuperclass();
-	String path = new File(sourcePath).getParent() + "/" + superclazz.getSimpleName() + ".java";
+	String path = new File(sourcePath).getParent() + "/" + getSimpleName(superclazz) + ".java";
 	return new ReflectClass(superclazz, metaData, path);
 }
 
-public String getSimpleName() {
-	String name = clazz.getName();
+String getSimpleName(Class type) {
+	String name = type.getName();
 	int index = name.lastIndexOf('.') + 1;
 	return name.substring(index, name.length());
+}
+
+public String getSimpleName() {
+	return getSimpleName(clazz);
 }
 
 public String getExclude() {
