@@ -524,8 +524,12 @@ void setBackground (float [] color) {
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
-//	int window = OS.GetControlOwner (handle);
-//	OS.SetWindowDefaultButton (window, value ? handle : 0);
+//	NSWindow window = view.window();
+//	NSButtonCell cell = null;
+//	if (value) {
+//		cell = new NSButtonCell(((NSButton)view).cell());
+//	}
+//	window.setDefaultButtonCell(cell);
 }
 
 void setFont (NSFont font) {
