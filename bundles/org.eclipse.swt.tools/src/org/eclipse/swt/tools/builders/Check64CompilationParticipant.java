@@ -95,6 +95,10 @@ void replace64(char[] source) {
 		replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
 	}
 }
+
+public static void setEnabled(boolean enabled) {
+	Enabled = enabled;
+}
 	
 public void buildStarting(BuildContext[] files, boolean isBatch) {
 	if (sources == null) sources = new HashSet();
@@ -156,13 +160,13 @@ public void buildFinished(IJavaProject project) {
 				cp.append(path);
 			}
 		}
-		String log; 
+		String log = root + "/log.xml"; 
 		ArrayList args = new ArrayList();
 		args.addAll(Arrays.asList(new String[]{
 			"-nowarn",
 //			"-d", "none",
 			"-cp", cp.toString(),
-			"-log", log = (root + "/log.xml"),
+			"-log", log,
 			"-sourcepath", sourcePath.toString(),
 		}));
 		args.addAll(sources);
