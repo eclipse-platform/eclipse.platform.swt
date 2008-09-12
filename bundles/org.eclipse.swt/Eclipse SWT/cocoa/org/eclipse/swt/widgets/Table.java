@@ -1349,6 +1349,7 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		location = headerView.convertPoint_fromView_ (location, null);
 		int index = (int)/*64*/headerView.columnAtPoint (location);
 		if (index != -1) {
+			if ((style & SWT.CHECK) != 0) index--;
 			TableColumn column = columns [index]; // TODO wrong column when columns have been rearranged
 			column.postEvent (SWT.Selection);
 		}
