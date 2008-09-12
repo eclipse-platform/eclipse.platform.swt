@@ -698,7 +698,7 @@ boolean doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ sel
 public boolean dragDetect (Event event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+	return dragDetect ();
 }
 
 /**
@@ -740,19 +740,17 @@ public boolean dragDetect (Event event) {
 public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+	return dragDetect();
 }
 
-boolean dragDetect (int button, int count, int stateMask, int x, int y) {
-	if (button != 1 || count != 1) return false;
-	if (!dragDetect (x, y, false, null)) return false;
-	return sendDragEvent (button, stateMask, x, y);
+boolean dragDetect () {
+	NSApplication application = NSApplication.sharedApplication();
+	NSEvent event = application.nextEventMatchingMask(OS.NSLeftMouseDraggedMask, NSDate.dateWithTimeIntervalSinceNow(0.2), OS.NSDefaultRunLoopMode, false);
+	return (event != null);
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
-	NSApplication application = NSApplication.sharedApplication();
-	NSEvent event = application.nextEventMatchingMask(OS.NSLeftMouseDraggedMask, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
-	return (event != null);
+	return dragDetect();
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
