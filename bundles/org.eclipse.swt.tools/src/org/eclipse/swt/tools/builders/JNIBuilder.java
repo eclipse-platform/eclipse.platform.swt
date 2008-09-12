@@ -44,6 +44,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 	
 	protected IProject[] build(int kind, Map args, final IProgressMonitor monitor) throws CoreException {
 		IResourceDelta delta = getDelta(getProject());
+		if (delta == null) return null;
 		delta.accept(new IResourceDeltaVisitor() {
 			public boolean visit(IResourceDelta delta) throws CoreException {
 				String path = delta.getFullPath().toPortableString();
