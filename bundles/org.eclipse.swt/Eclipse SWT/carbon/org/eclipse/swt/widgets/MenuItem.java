@@ -604,6 +604,7 @@ public void setAccelerator (int accelerator) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	if (this.accelerator == accelerator) return;
+	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
 	this.accelerator = accelerator;
 	boolean inSetVirtualKey = false;
 	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
@@ -628,7 +629,7 @@ public void setAccelerator (int accelerator) {
 	OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
 	OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
 	OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
-	updateText (menuIndex);
+	if (update) updateText (menuIndex);
 }
 
 /**
