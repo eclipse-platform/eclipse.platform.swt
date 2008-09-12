@@ -74,7 +74,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
 MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
-MOZILLAEXCLUDES = -DNO_XPCOMGlueShutdown -DNO_XPCOMGlueStartup
+MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown -DNO__1XPCOMGlueStartup
 
 XULRUNNER_PREFIX = swt-xulrunner
 XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so

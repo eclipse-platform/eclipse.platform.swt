@@ -78,7 +78,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
 MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
-MOZILLAEXCLUDES = -DNO_XPCOMGlueShutdown -DNO_XPCOMGlueStartup
+MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown -DNO__1XPCOMGlueStartup
 	
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
