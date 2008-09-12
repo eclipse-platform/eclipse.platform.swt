@@ -283,7 +283,7 @@ public class Display extends Device {
 		{81, SWT.KEYPAD_EQUAL},
 
 		/* Other keys */
-//		{??,	SWT.CAPS_LOCK},
+//		{57,	SWT.CAPS_LOCK},
 		{71,	SWT.NUM_LOCK},
 //		{??,	SWT.SCROLL_LOCK},
 //		{??,	SWT.PAUSE},
