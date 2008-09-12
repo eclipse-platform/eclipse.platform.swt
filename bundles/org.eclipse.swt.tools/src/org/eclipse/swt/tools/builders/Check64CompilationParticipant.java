@@ -46,7 +46,9 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final char[] DOUBLE_FLOAT_ARRAY = "double[] /*float[]*/".toCharArray();
 	static final String buildDir = "/.build64/";
 	static final String pluginDir = "/org.eclipse.swt/";
-	static final String SOURCE_ID = "JNI";/*JavaBuilder.SOURCE_ID*/
+	static final String SOURCE_ID = "JNI";
+	
+	public static boolean Enabled;
 	
 void create(IContainer file) throws CoreException {
 	if (file.exists()) return;
@@ -96,6 +98,7 @@ void replace64(char[] source) {
 	
 public void buildStarting(BuildContext[] files, boolean isBatch) {
 	if (sources == null) sources = new HashSet();
+//	long time = System.currentTimeMillis();
 	for (int i = 0; i < files.length; i++) {
 		BuildContext context = files[i];
 		IFile file = context.getFile();
@@ -110,13 +113,12 @@ public void buildStarting(BuildContext[] files, boolean isBatch) {
 			create(newFile.getParent());
 			char[] source = context.getContents();
 			replace64(source);
-			//TODO encoding
-//			System.out.println(i + "-" + file);
 			newFile.create(new ByteArrayInputStream(new String(source).getBytes()), true, null);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
 	}
+//	System.out.println("copying time=" + (System.currentTimeMillis() - time));	
 }
 
 public void buildFinished(IJavaProject project) {
@@ -136,6 +138,7 @@ public void buildFinished(IJavaProject project) {
 			}
 		}
 		if (hasProblems) return;
+		if (!Enabled) return;
 		String root = proj.getLocation().toPortableString() + buildDir;
 		StringBuffer sourcePath = new StringBuffer(), cp = new StringBuffer();
 		IClasspathEntry[] entries = project.getResolvedClasspath(true);
@@ -163,10 +166,8 @@ public void buildFinished(IJavaProject project) {
 			"-sourcepath", sourcePath.toString(),
 		}));
 		args.addAll(sources);
-//		System.out.println("start=" + sources.size());
 		PrintWriter writer = new PrintWriter(new ByteArrayOutputStream());
 		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
-//		System.out.println("time0=" +( System.currentTimeMillis() - time));
 		InputStream is = new BufferedInputStream(new FileInputStream(log));
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
 		is.close();
@@ -188,7 +189,7 @@ public void buildFinished(IJavaProject project) {
 								NodeList problem = ((Element)problems.item(k)).getElementsByTagName("problem");
 								for (int l = 0; l < problem.getLength(); l++) {
 									Element node = (Element)problem.item(l);
-									String path = source.getAttribute("path");
+									String path = source.getAttribute("path").replace('\\', '/');
 									path = path.replaceAll(buildDir, "/");
 									if (path.startsWith(projPath)) {
 										path = path.substring(projPath.length());
@@ -207,7 +208,7 @@ public void buildFinished(IJavaProject project) {
 				}
 			}
 		}
-//		System.out.println("copiling time=" +( System.currentTimeMillis() - time));
+//		System.out.println("compiling time=" + (System.currentTimeMillis() - time));
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
@@ -215,7 +216,6 @@ public void buildFinished(IJavaProject project) {
 
 public void cleanStarting(IJavaProject project) {
 	if (!isActive(project)) return;
-//	System.out.println("clean");
 	sources = null;
 	IResource resource = project.getProject().findMember(new Path(buildDir));
 	if (resource != null) {
