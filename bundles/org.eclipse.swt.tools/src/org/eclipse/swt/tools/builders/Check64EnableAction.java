@@ -12,6 +12,7 @@ public class Check64EnableAction implements IObjectActionDelegate {
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		action.setChecked(Check64CompilationParticipant.getEnabled());
 	}
 
 	public void run(IAction action) {

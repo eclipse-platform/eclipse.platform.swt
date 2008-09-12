@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
 import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
+import org.eclipse.swt.tools.Activator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -47,8 +48,7 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final String buildDir = "/.build64/";
 	static final String pluginDir = "/org.eclipse.swt/";
 	static final String SOURCE_ID = "JNI";
-	
-	public static boolean Enabled;
+	static final String CHECK_64_ENABLED = "CHECK_64_ENABLED";
 	
 void create(IContainer file) throws CoreException {
 	if (file.exists()) return;
@@ -96,8 +96,12 @@ void replace64(char[] source) {
 	}
 }
 
+public static boolean getEnabled() {
+	return Activator.getDefault().getPluginPreferences().getBoolean("CHECK_64_ENABLED");
+}
+
 public static void setEnabled(boolean enabled) {
-	Enabled = enabled;
+	Activator.getDefault().getPluginPreferences().setValue("CHECK_64_ENABLED", enabled);
 }
 	
 public void buildStarting(BuildContext[] files, boolean isBatch) {
@@ -142,7 +146,7 @@ public void buildFinished(IJavaProject project) {
 			}
 		}
 		if (hasProblems) return;
-		if (!Enabled) return;
+		if (!getEnabled()) return;
 		String root = proj.getLocation().toPortableString() + buildDir;
 		StringBuffer sourcePath = new StringBuffer(), cp = new StringBuffer();
 		IClasspathEntry[] entries = project.getResolvedClasspath(true);
