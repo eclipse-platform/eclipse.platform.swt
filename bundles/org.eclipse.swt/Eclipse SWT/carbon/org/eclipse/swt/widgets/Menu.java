@@ -57,7 +57,7 @@ public class Menu extends Widget {
 	short id;
 	int x, y, itemCount;
 //	int width, height;
-	boolean hasLocation, modified, closed;
+	boolean hasLocation, modified, closed, ignoreMatch = false;
 	MenuItem [] items;
 	MenuItem cascade, defaultItem, lastTarget;
 	Decorations parent;
@@ -610,6 +610,7 @@ void hookEvents () {
 		OS.kEventClassMenu, OS.kEventMenuMeasureItemWidth,
 		OS.kEventClassMenu, OS.kEventMenuOpening,
 		OS.kEventClassMenu, OS.kEventMenuTargetItem,
+		OS.kEventClassMenu, OS.kEventMenuMatchKey,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
 	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
@@ -691,7 +692,7 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 	if (!(0 < index [0] && index [0] <= itemCount)) return result;
 	MenuItem item = items [index [0] - 1];
-	if (item.accelerator == 0) {
+	if (item.accelerator == 0 && !item.acceleratorSet) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);
@@ -767,6 +768,28 @@ int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventMenuMatchKey (int nextHandler, int theEvent, int userData) {
+	if (ignoreMatch) return OS.eventNotHandledErr;
+	int [] menuIndex = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, menuIndex);
+	int [] eventRef = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamEventRef, OS.typeEventRef, null, 4, null, eventRef);
+	int options = OS.kMenuEventDontCheckSubmenus | OS.kMenuEventIncludeDisabledItems | OS.kMenuEventQueryOnly;
+	short [] index = new short [1];
+	ignoreMatch = true;
+	boolean isMenuKeyEvent = OS.IsMenuKeyEvent(menuIndex[0], eventRef[0], options, null, index);
+	ignoreMatch = false;
+	if (isMenuKeyEvent && 0 <= index [0] && index [0] < items.length) {
+		MenuItem item = items [index [0] - 1];
+		if (item.accelerator == 0) {
+			/* Tell Menu Manager we don't want command key matching */
+			return OS.menuItemNotFoundError;
+		}
+	}
+	/* Tell Menu Manager to use default command key matching algorithm */
+	return OS.eventNotHandledErr; 
+}
+
 int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -774,7 +797,7 @@ int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 	if (!(0 < index [0] && index [0] <= itemCount)) return result;
 	MenuItem item = items [index [0] - 1];
-	if (item.accelerator == 0) {
+	if (item.accelerator == 0 && !item.acceleratorSet) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);

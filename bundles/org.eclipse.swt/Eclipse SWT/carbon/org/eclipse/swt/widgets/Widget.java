@@ -1132,6 +1132,10 @@ int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuMatchKey (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -1313,6 +1317,7 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventMenuDrawItem: 			return kEventMenuDrawItem (nextHandler, theEvent, userData);
 		case OS.kEventMenuDrawItemContent: 	return kEventMenuDrawItemContent (nextHandler, theEvent, userData);
 		case OS.kEventMenuGetFrameBounds: 	return kEventMenuGetFrameBounds (nextHandler, theEvent, userData);
+		case OS.kEventMenuMatchKey:			return kEventMenuMatchKey (nextHandler, theEvent, userData);
 		case OS.kEventMenuMeasureItemWidth: 	return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
 		case OS.kEventMenuOpening:			return kEventMenuOpening (nextHandler, theEvent, userData);
 		case OS.kEventMenuTargetItem:			return kEventMenuTargetItem (nextHandler, theEvent, userData);

@@ -422,6 +422,7 @@ public class OS extends C {
 	public static final int kEventMenuDrawItem = 102;
 	public static final int kEventMenuDrawItemContent = 103;
 	public static final int kEventMenuGetFrameBounds = 1006;
+	public static final int kEventMenuMatchKey = 7;
 	public static final int kEventMenuMeasureItemWidth = 100;
 	public static final int kEventMenuOpening = 4;
 	public static final int kEventMenuPopulate = 9;
@@ -678,9 +679,15 @@ public class OS extends C {
 	public static final int kMenuDownwardArrowDashedGlyph = 16;
 	public static final int kMenuEnterGlyph = 4;
 	public static final int kMenuEscapeGlyph = 27;
+	public static final int kMenuEventIncludeDisabledItems = 0x0001;
+	public static final int kMenuEventQueryOnly = 0x0002;
+	public static final int kMenuEventDontCheckSubmenus = 0x0004;
 	public static final int kMenuF10Glyph = 120;
 	public static final int kMenuF11Glyph = 121;
 	public static final int kMenuF12Glyph = 122;
+	public static final int kMenuF13Glyph = 135;
+	public static final int kMenuF14Glyph = 136;
+	public static final int kMenuF15Glyph = 137;
 	public static final int kMenuF1Glyph = 111;
 	public static final int kMenuF2Glyph = 112;
 	public static final int kMenuF3Glyph = 113;
@@ -961,6 +968,7 @@ public class OS extends C {
 	public static final int kBlockFillText = 6;
 	public static final int kOutlineText = 7;
 	public static final int kSelectedText = 8;
+	public static final int menuItemNotFoundError = -5622;
 	public static final int mouseDown = 1;
 	public static final int noErr = 0;
 	public static final int normal = 0;
@@ -3812,6 +3820,14 @@ public static final native boolean IsMenuCommandEnabled(int mHandle, int command
  * @param index cast=(MenuItemIndex)
  */
 public static final native boolean IsMenuItemEnabled(int mHandle, short index);
+/**
+ * @param inStartMenu cast=(MenuRef)
+ * @param inEvent cast=(EventRef)
+ * @param inOptions cast=(MenuEventOptions)
+ * @param outMenu cast=(MenuRef *)
+ * @param outMenuItem cast=(MenuItemIndex *)
+ */
+public static final native boolean IsMenuKeyEvent(int inStartMenu, int inEvent, int inOptions, int[] outMenu, short[] outMenuItem);
 /** @param cHandle cast=(ControlRef) */
 public static final native boolean IsValidControlHandle(int cHandle);
 /** @param mHandle cast=(MenuRef) */

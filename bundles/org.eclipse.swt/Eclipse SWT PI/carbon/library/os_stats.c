@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 975;
-int OS_nativeFunctionCallCount[975];
+int OS_nativeFunctionCount = 976;
+int OS_nativeFunctionCallCount[976];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -659,6 +659,7 @@ char * OS_nativeFunctionNames[] = {
 	"IsEventInQueue",
 	"IsMenuCommandEnabled",
 	"IsMenuItemEnabled",
+	"IsMenuKeyEvent",
 	"IsValidControlHandle",
 	"IsValidMenu",
 	"IsValidWindowPtr",

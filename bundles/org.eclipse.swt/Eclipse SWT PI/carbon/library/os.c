@@ -9299,6 +9299,25 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsMenuItemEnabled)
 }
 #endif
 
+#ifndef NO_IsMenuKeyEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsMenuKeyEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jshortArray arg4)
+{
+	jint *lparg3=NULL;
+	jshort *lparg4=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsMenuKeyEvent_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jboolean)IsMenuKeyEvent((MenuRef)arg0, (EventRef)arg1, (MenuEventOptions)arg2, (MenuRef *)lparg3, (MenuItemIndex *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, IsMenuKeyEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IsValidControlHandle
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsValidControlHandle)
 	(JNIEnv *env, jclass that, jint arg0)

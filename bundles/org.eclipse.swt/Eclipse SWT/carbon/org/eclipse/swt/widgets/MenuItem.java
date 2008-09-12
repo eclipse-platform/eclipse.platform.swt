@@ -37,6 +37,7 @@ import org.eclipse.swt.internal.carbon.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int accelerator;
+	boolean acceleratorSet;
 //	int x, y, width, height;
 
 /**
@@ -424,6 +425,9 @@ int keyGlyph (int key) {
 		case SWT.ARROW_RIGHT: return OS.kMenuRightArrowGlyph;
 		case SWT.PAGE_UP: return OS.kMenuPageUpGlyph;
 		case SWT.PAGE_DOWN: return OS.kMenuPageDownGlyph;
+		case SWT.KEYPAD_CR: return OS.kMenuEnterGlyph;
+		case SWT.HELP: return OS.kMenuHelpGlyph;
+//		case SWT.CAPS_LOCK: return OS.kMenuCapsLockGlyph;
 		case SWT.F1: return OS.kMenuF1Glyph;
 		case SWT.F2: return OS.kMenuF2Glyph;
 		case SWT.F3: return OS.kMenuF3Glyph;
@@ -436,6 +440,19 @@ int keyGlyph (int key) {
 		case SWT.F10: return OS.kMenuF10Glyph;
 		case SWT.F11: return OS.kMenuF11Glyph;
 		case SWT.F12: return OS.kMenuF12Glyph;
+		case SWT.F13: return OS.kMenuF13Glyph;
+		case SWT.F14: return OS.kMenuF14Glyph;
+		case SWT.F15: return OS.kMenuF15Glyph;
+		
+		/*
+		* The following three lines are intentionally commented.
+		* The Mac does not (currently) have glyphs for Home, End, and Insert.
+		* An application desiring these keys as accelerators must use setAccelerator
+		* for these instead of relying on glyphs following \t in setText.
+		*/
+//		case SWT.HOME: return OS.kMenuNullGlyph;
+//		case SWT.END: return OS.kMenuNullGlyph;
+//		case SWT.INSERT: return OS.kMenuNullGlyph;
 	}
 	return OS.kMenuNullGlyph;
 }
@@ -586,7 +603,7 @@ public void setAccelerator (int accelerator) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
+	boolean update = (this.accelerator == 0 && accelerator != 0) || accelerator == 0;
 	this.accelerator = accelerator;
 	boolean inSetVirtualKey = false;
 	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
@@ -850,6 +867,92 @@ void updateText (short menuIndex) {
 		OS.ChangeMenuItemAttributes (parent.handle, menuIndex, 0, OS.kMenuItemAttrSeparator);
 	}
 	OS.CFRelease (str);
+	
+	acceleratorSet = accelerator != 0;
+	if (!acceleratorSet) {
+		/* Parse accelerator text following \t in the item text. */
+		if (i + 1 < buffer.length && buffer [i] == '\t') {
+			boolean inSetVirtualKey = false;
+			int inModifiers = OS.kMenuNoCommandModifier, inGlyph = OS.kMenuNullGlyph, inKey = 0, swtKey = 0;
+			for (j = i + 1; j < buffer.length; j++) {
+				char c = buffer [j];
+				switch (c) {
+					case '\u2303': inModifiers |= OS.kMenuControlModifier; i++; break;
+					case '\u2325': inModifiers |= OS.kMenuOptionModifier; i++; break;
+					case '\u21E7': inModifiers |= OS.kMenuShiftModifier; i++; break;
+					case '\u2318': inModifiers &= ~OS.kMenuNoCommandModifier; i++; break;
+				}
+			}
+			int length = buffer.length - i - 1;
+			if (length > 0) {
+				if (length > 1) {
+					if (buffer [i + 1] == 'F') {
+						switch (buffer [i + 2]) {
+							case '1':
+								if (length == 2) {
+									swtKey = SWT.F1;
+								} else {
+									switch (buffer [i + 2]) {
+										case '0': swtKey = SWT.F10; break;
+										case '1': swtKey = SWT.F11; break;
+										case '2': swtKey = SWT.F12; break;
+										case '3': swtKey = SWT.F13; break;
+										case '4': swtKey = SWT.F14; break;
+										case '5': swtKey = SWT.F15; break;
+									}
+								}
+								break;
+							case '2': swtKey = SWT.F2; break;
+							case '3': swtKey = SWT.F3; break;
+							case '4': swtKey = SWT.F4; break;
+							case '5': swtKey = SWT.F5; break;
+							case '6': swtKey = SWT.F6; break;
+							case '7': swtKey = SWT.F7; break;
+							case '8': swtKey = SWT.F8; break;
+							case '9': swtKey = SWT.F9; break;
+						}
+					}
+				} else {
+					inKey = buffer [i + 1];
+					switch (inKey) {
+						case '\u232B': swtKey = SWT.BS; break;
+						case '\u21A9': swtKey = SWT.CR; break;
+						case '\u2326': swtKey = SWT.DEL; break;
+						case '\u238B': swtKey = SWT.ESC; break;
+						case '\u21E5': swtKey = SWT.TAB; break;
+						case ' ': swtKey = ' '; break;
+	//					case '\u2423': swtKey = ' '; break;
+						case '\u2191': swtKey = SWT.ARROW_UP; break;
+						case '\u2193': swtKey = SWT.ARROW_DOWN; break;
+						case '\u2190': swtKey = SWT.ARROW_LEFT; break;
+						case '\u2192': swtKey = SWT.ARROW_RIGHT; break;
+						case '\u21DE': swtKey = SWT.PAGE_UP; break;
+						case '\u21DF': swtKey = SWT.PAGE_DOWN; break;
+						case '\u2305': swtKey = SWT.KEYPAD_CR; break;
+						case '\u211C': swtKey = SWT.HELP; break;
+	//					case '\u21EA': swtKey = SWT.CAPS_LOCK; break;
+	//					case '??': swtKey = SWT.HOME; break;
+	//					case '??': swtKey = SWT.END; break;
+					}
+				}
+				inGlyph = keyGlyph (swtKey);
+				int virtualKey = Display.untranslateKey (swtKey);
+				if (inKey == ' ') virtualKey = 49;
+				if (virtualKey != 0) {
+					inSetVirtualKey = true;
+					inKey = virtualKey;
+				} else {
+					inKey = Character.toUpperCase ((char)inKey);
+				}
+				if (inKey != 0 || inGlyph != OS.kMenuNullGlyph) {
+					OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
+					OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
+					OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
+					acceleratorSet = true;
+				}
+			}
+		}
+	}
 }
 }
 

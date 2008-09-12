@@ -667,6 +667,7 @@ typedef enum {
 	IsEventInQueue_FUNC,
 	IsMenuCommandEnabled_FUNC,
 	IsMenuItemEnabled_FUNC,
+	IsMenuKeyEvent_FUNC,
 	IsValidControlHandle_FUNC,
 	IsValidMenu_FUNC,
 	IsValidWindowPtr_FUNC,
