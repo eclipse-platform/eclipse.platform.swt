@@ -87,7 +87,7 @@ void build(IJavaProject project, String root) throws CoreException {
 			"-sourcepath", sourcePath.toString(),
 		}));
 		args.addAll(sources);
-//		sources = null;
+		sources = null;
 		out = new BufferedOutputStream(new FileOutputStream(root + "/out.txt"));
 		PrintWriter writer = new PrintWriter(out);
 		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
@@ -132,26 +132,39 @@ void createProblems(IJavaProject project, String root) throws CoreException {
 						NodeList src = ((Element)sources.item(i)).getElementsByTagName("source");
 						for (int j = 0; j < src.getLength(); j++) {
 							Element source = (Element)src.item(j);
-							NodeList problems = source.getElementsByTagName("problems");
-							for (int k = 0; k < problems.getLength(); k++) {
-								NodeList problem = ((Element)problems.item(k)).getElementsByTagName("problem");
-								for (int l = 0; l < problem.getLength(); l++) {
-									Element node = (Element)problem.item(l);
-									String path = source.getAttribute("path").replace('\\', '/');
-									path = path.replaceAll(buildDir, "/");
-									if (path.startsWith(projPath)) {
-										path = path.substring(projPath.length());
-									}
-									IResource resource = proj.findMember(new Path(path));
-									if (resource != null) {
-										int start = Integer.parseInt(node.getAttribute("charStart"));
-										int end = Integer.parseInt(node.getAttribute("charEnd"));
-										String message = "[64] " + ((Element)node.getElementsByTagName("message").item(0)).getAttribute("value");
-										IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
-										int severity = IMarker.SEVERITY_ERROR;
-										marker.setAttributes(
-											new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
-											new Object[] {message, new Integer(severity), new Integer(start), new Integer(end), SOURCE_ID});
+							String path = source.getAttribute("path").replace('\\', '/');
+							path = path.replaceAll(buildDir, "/");
+							if (path.startsWith(projPath)) {
+								path = path.substring(projPath.length());
+							}
+							IResource resource = proj.findMember(new Path(path));
+							boolean hasProblems = false;
+							IMarker[] markers = resource.findMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
+							for (int m = 0; m < markers.length; m++) {
+								IMarker marker = markers[m];
+								if (SOURCE_ID.equals(marker.getAttribute(IMarker.SOURCE_ID))) {
+									marker.delete();
+								} else {
+									Object severity = marker.getAttribute(IMarker.SEVERITY);
+									hasProblems |= severity != null && ((Integer)severity).intValue() == IMarker.SEVERITY_ERROR;
+								}
+							}
+							if (!hasProblems) {
+								NodeList problems = source.getElementsByTagName("problems");
+								for (int k = 0; k < problems.getLength(); k++) {
+									NodeList problem = ((Element)problems.item(k)).getElementsByTagName("problem");
+									for (int l = 0; l < problem.getLength(); l++) {
+										Element node = (Element)problem.item(l);
+										if (resource != null) {
+											int start = Integer.parseInt(node.getAttribute("charStart"));
+											int end = Integer.parseInt(node.getAttribute("charEnd"));
+											String message = "[64] " + ((Element)node.getElementsByTagName("message").item(0)).getAttribute("value");
+											IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
+											int severity = IMarker.SEVERITY_ERROR;
+											marker.setAttributes(
+												new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
+												new Object[] {message, new Integer(severity), new Integer(start), new Integer(end), SOURCE_ID});
+										}
 									}
 								}
 							}
@@ -201,20 +214,8 @@ public static void setEnabled(boolean enabled) {
 public void buildFinished(IJavaProject project) {
 	try {
 		if (sources == null) return;
-//		long time = System.currentTimeMillis();
-		boolean hasProblems = false;
-		IMarker[] markers = project.getProject().findMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
-		for (int i = 0; i < markers.length; i++) {
-			IMarker marker = markers[i];
-			if (SOURCE_ID.equals(marker.getAttribute(IMarker.SOURCE_ID))) {
-				marker.delete();
-			} else {
-				Object severity = marker.getAttribute(IMarker.SEVERITY);
-				hasProblems |= severity != null && ((Integer)severity).intValue() == IMarker.SEVERITY_ERROR;
-			}
-		}
-		if (hasProblems) return;
 		if (!getEnabled()) return;
+//		long time = System.currentTimeMillis();
 		String root = project.getProject().getLocation().toPortableString() + buildDir;
 		build(project, root);		
 		createProblems(project, root);
