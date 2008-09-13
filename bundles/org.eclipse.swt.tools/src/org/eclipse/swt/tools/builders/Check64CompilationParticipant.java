@@ -87,7 +87,7 @@ void build(IJavaProject project, String root) throws CoreException {
 			"-sourcepath", sourcePath.toString(),
 		}));
 		args.addAll(sources);
-		sources = null;
+//		sources = null;
 		out = new BufferedOutputStream(new FileOutputStream(root + "/out.txt"));
 		PrintWriter writer = new PrintWriter(out);
 		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
