@@ -6,9 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +54,7 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final String CHECK_64_ENABLED = "CHECK_64_ENABLED";
 	
 void build(IJavaProject project, String root) throws CoreException {
-	OutputStream out = null;
+	PrintWriter writer = null;
 	try {
 		StringBuffer sourcePath = new StringBuffer(), cp = new StringBuffer();
 		IClasspathEntry[] entries = project.getResolvedClasspath(true);
@@ -88,20 +86,15 @@ void build(IJavaProject project, String root) throws CoreException {
 		}));
 		args.addAll(sources);
 		sources = null;
-		out = new BufferedOutputStream(new FileOutputStream(root + "/out.txt"));
-		PrintWriter writer = new PrintWriter(out);
+		writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(root + "/out.txt")));
 		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
-		out.close();
-		out = null;
+		writer.close();
+		writer = null;
 		project.getProject().findMember(new Path(buildDir)).refreshLocal(IResource.DEPTH_INFINITE, null);
 	} catch (Exception e) {
 		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Problem building 64-bit code", e));
 	} finally {
-		if (out != null) {
-			try {
-				out.close();
-			} catch (IOException e) {}
-		}
+		if (writer != null) writer.close();
 	}
 }
 
