@@ -128,11 +128,11 @@ public class Display extends Device {
 	int[] screenID = new int[32];
 	NSPoint[] screenCascade = new NSPoint[32];
 
-	Callback applicationDelegateCallback3;
-	Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
-	Callback windowDelegateCallback6;
-	Callback dialogCallback3;
-	Callback applicationCallback2, applicationCallback3, applicationCallback6;
+	static Callback applicationDelegateCallback3;
+	static Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
+	static Callback windowDelegateCallback6;
+	static Callback dialogCallback3;
+	static Callback applicationCallback2, applicationCallback3, applicationCallback6;
 	
 	/* Menus */
 //	Menu menuBar;
@@ -650,31 +650,35 @@ void createDisplay (DeviceData data) {
 			if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 			OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
 			OS.SetFrontProcess (psn);
-			//		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
-			//		if (ptr != 0) {
-			//			int image = readImageRef (ptr);
-			//			if (image != 0) {
-			//				dockImage = image;
-			//				OS.SetApplicationDockTileImage (dockImage);
-			//			}
-			//		}
+//			ptr = OS.getenv (ascii ("APP_ICON_" + pid));
+//			if (ptr != 0) {
+//				int image = readImageRef (ptr);
+//				if (image != 0) {
+//					dockImage = image;
+//					OS.SetApplicationDockTileImage (dockImage);
+//				}
+//			}
 		}
 
-		applicationCallback2 = new Callback(this, "applicationProc", 2);
-		int /*long*/ proc2 = applicationCallback2.getAddress();
-		if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		applicationCallback3 = new Callback(this, "applicationProc", 3);
-		int /*long*/ proc3 = applicationCallback3.getAddress();
-		if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		applicationCallback6 = new Callback(this, "applicationProc", 6);
-		int /*long*/ proc6 = applicationCallback6.getAddress();
-		if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		String className = "SWTApplication";
-		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
-		OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
-		OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
-		OS.objc_registerClassPair(cls);
+		int /*long*/ cls;
+		if ((cls = OS.objc_lookUpClass (className)) == 0) {
+			Class clazz = getClass();
+			applicationCallback2 = new Callback(clazz, "applicationProc", 2);
+			int /*long*/ proc2 = applicationCallback2.getAddress();
+			if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			applicationCallback3 = new Callback(clazz, "applicationProc", 3);
+			int /*long*/ proc3 = applicationCallback3.getAddress();
+			if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			applicationCallback6 = new Callback(clazz, "applicationProc", 6);
+			int /*long*/ proc6 = applicationCallback6.getAddress();
+			if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			cls = OS.objc_allocateClassPair(OS.class_NSApplication, className, 0);
+			OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+			OS.class_addMethod(cls, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, proc6, "@:i@@B");
+			OS.class_addMethod(cls, OS.sel_isRunning, proc2, "@:");
+			OS.objc_registerClassPair(cls);
+		}
 		applicationClass = OS.object_setClass(application.id, cls);
 	} else {
 		isEmbedded = true;
@@ -1139,10 +1143,10 @@ public int getDoubleClickTime () {
 public Control getFocusControl () {
 	checkDevice ();
 	NSWindow window = application.keyWindow();
-	return getFocusControl(window);
+	return GetFocusControl(window);
 }
 
-Control getFocusControl(NSWindow window) {
+static Control GetFocusControl(NSWindow window) {
 	if (window != null) {
 		NSResponder responder = window.firstResponder();
 		if (responder != null && !responder.respondsToSelector(OS.sel_superview)) {
@@ -1151,7 +1155,7 @@ Control getFocusControl(NSWindow window) {
 		NSView view = new NSView(responder.id);
 		if (view != null) {
 			do {
-				Widget widget = getWidget (view);
+				Widget widget = GetWidget (view.id);
 				if (widget instanceof Control) {
 					return (Control)widget;
 				}
@@ -1583,6 +1587,10 @@ int getToolTipTime () {
 }
 
 Widget getWidget (int /*long*/ id) {
+	return GetWidget (id);
+}
+
+static Widget GetWidget (int /*long*/ id) {
 	if (id == 0) return null;
 	int /*long*/ [] jniRef = new int /*long*/ [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
@@ -1623,22 +1631,23 @@ protected void init () {
 }
 
 void initApplicationDelegate() {
-	applicationDelegateCallback3 = new Callback(this, "applicationDelegateProc", 3);
-	int /*long*/ appProc3 = applicationDelegateCallback3.getAddress();
-	if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 	String className = "SWTApplicationDelegate";
-	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
-	OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_applicationWillTerminate_, appProc3, "@:@");
-	OS.objc_registerClassPair(cls);
-	
+	if (OS.objc_lookUpClass (className) == 0) {
+		Class clazz = getClass ();
+		applicationDelegateCallback3 = new Callback(clazz, "applicationDelegateProc", 3);
+		int /*long*/ appProc3 = applicationDelegateCallback3.getAddress();
+		if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_orderFrontStandardAboutPanel_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_hideOtherApplications_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationWillTerminate_, appProc3, "@:@");
+		OS.objc_registerClassPair(cls);
+	}	
 	applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
 	application.setDelegate(applicationDelegate);
 }
@@ -1670,23 +1679,25 @@ void addFrameMethods(int /*long*/ cls, int /*long*/ setFrameOriginProc, int /*lo
 }
 
 void initClasses () {
-	dialogCallback3 = new Callback(this, "dialogProc", 3);
-	int /*long*/ dialogProc3 = dialogCallback3.getAddress();
-	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (OS.objc_lookUpClass ("SWTView") != 0) return;
 	
-	windowDelegateCallback3 = new Callback(this, "windowDelegateProc", 3);
+	Class clazz = getClass ();
+	dialogCallback3 = new Callback(clazz, "dialogProc", 3);
+	int /*long*/ dialogProc3 = dialogCallback3.getAddress();
+	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	windowDelegateCallback3 = new Callback(clazz, "windowDelegateProc", 3);
 	int /*long*/ proc3 = windowDelegateCallback3.getAddress();
 	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback2 = new Callback(this, "windowDelegateProc", 2);
+	windowDelegateCallback2 = new Callback(clazz, "windowDelegateProc", 2);
 	int /*long*/ proc2 = windowDelegateCallback2.getAddress();
 	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback4 = new Callback(this, "windowDelegateProc", 4);
+	windowDelegateCallback4 = new Callback(clazz, "windowDelegateProc", 4);
 	int /*long*/ proc4 = windowDelegateCallback4.getAddress();
 	if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback5 = new Callback(this, "windowDelegateProc", 5);
+	windowDelegateCallback5 = new Callback(clazz, "windowDelegateProc", 5);
 	int /*long*/ proc5 = windowDelegateCallback5.getAddress();
 	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	windowDelegateCallback6 = new Callback(this, "windowDelegateProc", 6);
+	windowDelegateCallback6 = new Callback(clazz, "windowDelegateProc", 6);
 	int /*long*/ proc6 = windowDelegateCallback6.getAddress();
 	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
@@ -2625,21 +2636,6 @@ void releaseDisplay () {
 	}
 	application = null;
 	applicationClass = 0;
-
-	if (applicationCallback2 != null) applicationCallback2.dispose ();
-	if (applicationCallback3 != null) applicationCallback3.dispose ();
-	if (applicationCallback6 != null) applicationCallback6.dispose ();
-	if (applicationDelegateCallback3 != null) applicationDelegateCallback3.dispose();
-	if (windowDelegateCallback2 != null) windowDelegateCallback2.dispose ();
-	if (windowDelegateCallback3 != null) windowDelegateCallback3.dispose ();
-	if (windowDelegateCallback4 != null) windowDelegateCallback4.dispose ();
-	if (windowDelegateCallback5 != null) windowDelegateCallback5.dispose ();
-	if (windowDelegateCallback6 != null) windowDelegateCallback6.dispose ();
-	if (dialogCallback3 != null) dialogCallback3.dispose ();
-	windowDelegateCallback2 = windowDelegateCallback3 = windowDelegateCallback4 = null;
-	windowDelegateCallback6 = windowDelegateCallback5 = null;
-	applicationCallback2 = applicationCallback3 = dialogCallback3 = applicationDelegateCallback3 = null;
-	applicationCallback6 = null;
 }
 
 void removeContext (NSGraphicsContext context) {
@@ -3428,29 +3424,43 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 }
 
 // #245724: [NSApplication isRunning] must return true to allow the AWT to load correctly.
-int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
+static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
+	//TODO optimize getting the display
+	Display display = getCurrent ();
+	if (display == null) return 0;
 	if (sel == OS.sel_isRunning) {
-		return (isDisposed() ? 0 : 1);
+		return display.isDisposed() ? 0 : 1;
 	}
 	return 0;
 }
 
-int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	//TODO optimize getting the display
+	Display display = getCurrent ();
+	if (display == null) return 0;
 	if (sel == OS.sel_sendEvent_) {
-		applicationSendEvent (id, sel, event);
+		display.applicationSendEvent (id, sel, event);
 		return 0;
 	}
 	return 0;
 }
 
-int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+static int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	//TODO optimize getting the display
+	Display display = getCurrent ();
+	if (display == null) return 0;
 	if (sel == OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_) {
-		return applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
+		return display.applicationNextEventMatchingMask(id, sel, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
 
-int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	//TODO optimize getting the display
+	Display display = getCurrent ();
+	if (display == null) return 0;
+	id applicationDelegate = display.applicationDelegate;
+	NSApplication application = display.application;
 	if (sel == OS.sel_applicationWillFinishLaunching_) {
 		NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
 		NSString nibFile = NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/Resources/English.lproj/DefaultApp.nib");
@@ -3482,21 +3492,21 @@ int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, int /*lo
 	} else if (sel == OS.sel_unhideAllApplications_) {
 		application.unhideAllApplications(application);
 	} else if (sel == OS.sel_applicationShouldTerminate_) {
-		if (!disposing) {
+		if (!display.disposing) {
 			Event event = new Event ();
-			sendEvent (SWT.Close, event);
+			display.sendEvent (SWT.Close, event);
 			if (event.doit) {
 				return OS.NSTerminateNow;
 			}
 		}
 		return OS.NSTerminateCancel;
 	} else if (sel == OS.sel_applicationWillTerminate_) {
-		dispose();
+		display.dispose();
 	} 
 	return 0;
 }
 
-int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	int /*long*/ [] jniRef = new int /*long*/ [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
@@ -3519,8 +3529,8 @@ int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return 0;
 }
 
-int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
-	Widget widget = getWidget(id);
+static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
+	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
@@ -3564,13 +3574,16 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	return 0;
 }
 
-int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	if (sel == OS.sel_timerProc_) {
-		return timerProc (id, sel, arg0);
+		//TODO optimize getting the display
+		Display display = getCurrent ();
+		if (display == null) return 0;
+		return display.timerProc (id, sel, arg0);
 	}
-	Widget widget = getWidget(id);
+	Widget widget = GetWidget(id);
 	if (widget == null && (sel == OS.sel_keyDown_ ||sel == OS.sel_keyUp_ ||sel == OS.sel_insertText_ ||sel == OS.sel_doCommandBySelector_))  {
-		widget = getFocusControl (new NSView (id).window ());
+		widget = GetFocusControl (new NSView (id).window ());
 	}
 	if (widget == null) return 0;
 	if (sel == OS.sel_windowWillClose_) {
@@ -3675,8 +3688,8 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	return 0;
 }
 
-int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	Widget widget = getWidget(id);
+static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
 		widget.tabView_willSelectTabViewItem(id, sel, arg0, arg1);
@@ -3698,8 +3711,8 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	return 0;
 }
 
-int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
-	Widget widget = getWidget(id);
+static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
 		return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
@@ -3721,8 +3734,8 @@ int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	return 0;
 }
 
-int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
-	Widget widget = getWidget(id);
+static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+	Widget widget = GetWidget(id);
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_willDisplayCell_forTableColumn_row_) {
 		widget.tableView_willDisplayCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
