@@ -640,11 +640,10 @@ void fixShell (Shell newShell, Control control) {
 public void forceActive () {
 	checkWidget ();
 	if (!isVisible()) return;
-	if (window != null) {
-		window.makeKeyAndOrderFront (null);
-		NSApplication application = NSApplication.sharedApplication ();
-		application.activateIgnoringOtherApps (true);
-	}
+	if (window == null) return;
+	window.makeKeyAndOrderFront (null);
+	NSApplication application = NSApplication.sharedApplication ();
+	application.activateIgnoringOtherApps (true);
 }
 
 /**
@@ -662,13 +661,14 @@ public void forceActive () {
  */
 public int getAlpha () {
 	checkWidget ();
-	NSWindow myWindow = (window != null ? window : view.window());
-	return (int)(myWindow.alphaValue() * 255);
+	// TODO: Should we support embedded frame alpha?
+	if (window == null) return 255;
+	return (int)(window.alphaValue() * 255);
 }
 
 public Rectangle getBounds () {
 	checkWidget();
-	NSRect frame = (window != null ? window.frame() : view.frame());
+	NSRect frame = (window == null ? view.frame() : window.frame());
 	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 }
@@ -676,8 +676,14 @@ public Rectangle getBounds () {
 public Rectangle getClientArea () {
 	checkWidget();
 	//TODO why super implementation fails
-	NSWindow myWindow = (window != null ? window : view.window());
-	NSRect rect = window.contentRectForFrameRect(myWindow.frame());
+	if (window == null) {
+		// In embedded frames, the whole view is the client area.
+		NSRect rect = view.frame();
+		int width = (int)rect.width, height = (int)rect.height;
+		return new Rectangle (0, 0, width, height);
+	}
+
+	NSRect rect = window.contentRectForFrameRect(window.frame());
 	int width = (int)rect.width, height = (int)rect.height;
 	if (scrollView != null) {
 		NSSize size = new NSSize();
@@ -737,7 +743,8 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget();
-	NSRect frame = (window != null ? window.frame() : view.window().frame());
+	// TODO: frame is relative to superview. What does getLocation mean in the embedded case?
+	NSRect frame = (window != null ? window.frame() : view.frame());
 	float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 	return new Point ((int)frame.x, (int)y);
 }
@@ -1023,11 +1030,10 @@ public void removeShellListener(ShellListener listener) {
  * @see Shell#setActive
  */
 public void setActive () {
-	if (window != null) {
-		checkWidget ();
-		if (!isVisible()) return;
-		window.makeKeyAndOrderFront (null);
-	}
+	if (window == null) return;	
+	checkWidget ();
+	if (!isVisible()) return;
+	window.makeKeyAndOrderFront (null);
 }
 
 void setActiveControl (Control control) {
@@ -1085,34 +1091,31 @@ void setActiveControl (Control control) {
  * @since 3.4
  */
 public void setAlpha (int alpha) {
-	if (window != null) {
-		checkWidget ();
-		alpha &= 0xFF;
-		window.setAlphaValue (alpha / 255f);
-	}
+	if (window == null) return;	
+	checkWidget ();
+	alpha &= 0xFF;
+	window.setAlphaValue (alpha / 255f);
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (window != null) {
-		if (fullScreen) setFullScreen (false);
-		int screenHeight = (int) display.getPrimaryFrame().height;
-		NSRect frame = window.frame();
-		if (!move) {
-			x = (int)frame.x;
-			y = screenHeight - (int)(frame.y + frame.height);
-		}
-		if (!resize) {
-			width = (int)frame.width;
-			height = (int)frame.height;
-		}
-		frame.x = x;
-		frame.y = screenHeight - (int)(y + height);
-		frame.width = width;
-		frame.height = height;
-		window.setFrame(frame, false);
-	} else {
-		super.setBounds(x, y, width, height, move, resize);
+	// Embedded Shells are not resizable.
+	if (window == null) return;
+	if (fullScreen) setFullScreen (false);
+	int screenHeight = (int) display.getPrimaryFrame().height;
+	NSRect frame = window.frame();
+	if (!move) {
+		x = (int)frame.x;
+		y = screenHeight - (int)(frame.y + frame.height);
 	}
+	if (!resize) {
+		width = (int)frame.width;
+		height = (int)frame.height;
+	}
+	frame.x = x;
+	frame.y = screenHeight - (int)(y + height);
+	frame.width = width;
+	frame.height = height;
+	window.setFrame(frame, false);
 }
 
 public void setEnabled (boolean enabled) {
@@ -1406,13 +1409,10 @@ void setWindowVisible (boolean visible, boolean key) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		topView ().setHidden (false);
-		
-		if (window != null) {
-			if (key) {
-				window.makeKeyAndOrderFront (null);
-			} else {
-				window.orderFront (null);
-			}
+		if (key) {
+			window.makeKeyAndOrderFront (null);
+		} else {
+			window.orderFront (null);
 		}
 		opened = true;
 		if (!moved) {
@@ -1430,7 +1430,7 @@ void setWindowVisible (boolean visible, boolean key) {
 			}
 		}
 	} else {
-		if (window != null) window.orderOut (null);
+		window.orderOut (null);
 		topView ().setHidden (true);
 		sendEvent (SWT.Hide);
 	}
@@ -1438,7 +1438,8 @@ void setWindowVisible (boolean visible, boolean key) {
 
 void setZOrder () {
 	if (scrollView != null) scrollView.setDocumentView (view);
-	if (window != null) window.setContentView (scrollView != null ? scrollView : view);
+	if (window == null) return;
+	window.setContentView (scrollView != null ? scrollView : view);
 }
 
 void setZOrder (Control control, boolean above) {

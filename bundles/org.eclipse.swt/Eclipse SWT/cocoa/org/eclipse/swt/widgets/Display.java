@@ -486,7 +486,7 @@ void cascadeWindow (NSWindow window, NSScreen screen) {
 
 protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (thread != Thread.currentThread () && !isEmbedded) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
@@ -628,6 +628,11 @@ void createDisplay (DeviceData data) {
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	application = NSApplication.sharedApplication();
 
+	/*
+	 * TODO: If an NSApplication is already running we don't want to create another NSApplication.
+	 * But if we don't we won't get mouse events, since we currently need to subclass NSApplication and intercept sendEvent to
+	 * deliver mouse events correctly to widgets.   
+	 */
 	if (!application.isRunning()) {
 		/*
 		 * Feature in the Macintosh.  On OS 10.2, it is necessary

@@ -204,28 +204,32 @@ public class SWT_AWT {
 	public static Shell new_Shell(final Display display, final Canvas parent) {
 		if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		int /*long*/ handle = 0;
+		SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+		return null;
 
-		try {
-			loadLibrary ();
-			handle = getAWTHandle (parent);
-		} catch (Throwable e) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
-		}
-		if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
-
-		final Shell shell = Shell.cocoa_new (display, handle);
-		parent.addComponentListener(new ComponentAdapter () {
-			public void componentResized (ComponentEvent e) {
-				display.asyncExec (new Runnable () {
-					public void run () {
-						Dimension dim = parent.getSize ();
-						shell.setSize (dim.width, dim.height);
-					}
-				});
-			}
-		});
-		shell.setVisible (true);
-		return shell;
+// TODO: Uncomment this code once Display/Shell related issues are ironed out.
+//		int /*long*/ handle = 0;
+//
+//		try {
+//			loadLibrary ();
+//			handle = getAWTHandle (parent);
+//		} catch (Throwable e) {
+//			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+//		}
+//		if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
+//
+//		final Shell shell = Shell.cocoa_new (display, handle);
+//		parent.addComponentListener(new ComponentAdapter () {
+//			public void componentResized (ComponentEvent e) {
+//				display.asyncExec (new Runnable () {
+//					public void run () {
+//						Dimension dim = parent.getSize ();
+//						shell.setSize (dim.width, dim.height);
+//					}
+//				});
+//			}
+//		});
+//		shell.setVisible (true);
+//		return shell;
 	}
 }
