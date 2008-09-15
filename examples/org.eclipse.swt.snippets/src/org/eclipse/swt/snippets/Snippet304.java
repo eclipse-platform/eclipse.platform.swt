@@ -11,7 +11,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * UI Automation (for testing tools) snippet: post key events to simulate CTRL+END
+ * UI Automation (for testing tools) snippet: post key events to simulate
+ * moving the I-beam to the end of a text control
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -44,12 +45,23 @@ public class Snippet304 {
         shell.pack();
         shell.open();
 
+        /*
+        * Simulate the (platform specific) key sequence
+        * to move the I-beam to the end of a text control.
+        */
     	new Thread(){
     		public void run(){
-    	        postEvent(SWT.CONTROL, SWT.KeyDown);
-    	        postEvent(SWT.END, SWT.KeyDown);
-    	        postEvent(SWT.END, SWT.KeyUp);
-    	        postEvent(SWT.CONTROL, SWT.KeyUp);
+    			int key1 = SWT.CONTROL;
+    			int key2 = SWT.END;
+    			String platform = SWT.getPlatform();
+    			if (platform.equals("carbon") || platform.equals("cocoa") ) {
+    	   			key1 = SWT.COMMAND;
+        			key2 = SWT.ARROW_DOWN;
+    			}
+    	        postEvent(key1, SWT.KeyDown);
+    	        postEvent(key2, SWT.KeyDown);
+    	        postEvent(key2, SWT.KeyUp);
+    	        postEvent(key1, SWT.KeyUp);
     		}
     	}.start();
         
