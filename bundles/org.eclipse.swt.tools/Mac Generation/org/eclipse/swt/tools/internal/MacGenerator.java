@@ -607,8 +607,13 @@ public String[] getXmls() {
 	if (xmls == null || xmls.length == 0) {
 		ArrayList array = new ArrayList();
 		list(new File("/System/Library/Frameworks"), array);
-		list(new File("/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks"), array);
-		Collections.sort(array);
+		list(new File("/System/Library/Frameworks/CoreServices.framework/Frameworks"), array);
+		list(new File("/System/Library/Frameworks/ApplicationServices.framework/Frameworks"), array);
+		Collections.sort(array, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				return new File((String)o1).getName().compareTo(new File((String)o2).getName());
+			}
+		});
 		xmls = (String[])array.toArray(new String[array.size()]);
 	}
 	return xmls;
