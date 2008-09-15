@@ -162,29 +162,32 @@ void createProblems(IJavaProject project, String root) throws CoreException {
 	}
 }
 
-void replace(char[] source, char[] src, char[] dest) {
+boolean replace(char[] source, char[] src, char[] dest) {
+	boolean changed = false;
 	int start = 0;
 	while (start < source.length) {
 		int index = CharOperation.indexOf(src, source, true, start);
 		if (index == -1) break;
+		changed |= true;
 		System.arraycopy(dest, 0, source, index, dest.length);
 		start = index + 1;
 	}
+	return changed;
 }
 
-void replace(char[] source) {
-	if (CharOperation.indexOf(INT_LONG, source, true, 0) != -1 || CharOperation.indexOf(INT_LONG_ARRAY, source, true, 0) != -1 ||
-		CharOperation.indexOf(FLOAT_DOUBLE, source, true, 0) != -1 || CharOperation.indexOf(FLOAT_DOUBLE_ARRAY, source, true, 0) != -1) {
-		replace(source, INT_LONG, LONG_INT);
-		replace(source, INT_LONG_ARRAY, LONG_INT_ARRAY);
-		replace(source, FLOAT_DOUBLE, DOUBLE_FLOAT);
-		replace(source, FLOAT_DOUBLE_ARRAY, DOUBLE_FLOAT_ARRAY);
-	} else {
-		replace(source, LONG_INT, INT_LONG);
-		replace(source, LONG_INT_ARRAY, INT_LONG_ARRAY);
-		replace(source, DOUBLE_FLOAT, FLOAT_DOUBLE);
-		replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
+boolean replace(char[] source) {
+	boolean changed = false;
+	changed |= replace(source, INT_LONG, LONG_INT);
+	changed |= replace(source, INT_LONG_ARRAY, LONG_INT_ARRAY);
+	changed |= replace(source, FLOAT_DOUBLE, DOUBLE_FLOAT);
+	changed |= replace(source, FLOAT_DOUBLE_ARRAY, DOUBLE_FLOAT_ARRAY);
+	if (!changed) {
+		changed |= replace(source, LONG_INT, INT_LONG);
+		changed |= replace(source, LONG_INT_ARRAY, INT_LONG_ARRAY);
+		changed |= replace(source, DOUBLE_FLOAT, FLOAT_DOUBLE);
+		changed |= replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
 	}
+	return changed;
 }
 
 public static boolean getEnabled() {
