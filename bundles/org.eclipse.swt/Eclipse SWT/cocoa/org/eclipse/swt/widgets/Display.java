@@ -128,6 +128,7 @@ public class Display extends Device {
 	int[] screenID = new int[32];
 	NSPoint[] screenCascade = new NSPoint[32];
 
+	// the following Callbacks are never freed
 	static Callback applicationDelegateCallback3;
 	static Callback windowDelegateCallback2, windowDelegateCallback3, windowDelegateCallback4, windowDelegateCallback5;
 	static Callback windowDelegateCallback6;

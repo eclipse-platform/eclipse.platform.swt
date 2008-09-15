@@ -33,6 +33,7 @@ class Safari extends WebBrowser {
 //	boolean doit;
 
 	static boolean Initialized;
+	// the following Callbacks are never freed
 	static Callback Callback3, Callback4, Callback5, Callback6, Callback7;
 
 	static final int MIN_SIZE = 16;
