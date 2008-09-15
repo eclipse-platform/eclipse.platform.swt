@@ -233,7 +233,7 @@ int calculateWidth (int index, GC gc, boolean recurse) {
 	if (index == 0 && this.width != -1) {
 		width = this.width;
 	} else {
-		Image image = getImage (index);
+//		Image image = getImage (index);
 		String text = getText (index);
 		gc.setFont (getFont (index));
 	//	if (image != null) width += image.getBounds ().width + parent.getGap ();

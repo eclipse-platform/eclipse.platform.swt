@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.cocoa.*;
-
  
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 

@@ -13,7 +13,6 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {

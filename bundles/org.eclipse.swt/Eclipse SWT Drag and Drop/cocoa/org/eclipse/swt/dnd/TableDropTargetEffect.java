@@ -10,10 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
 /**

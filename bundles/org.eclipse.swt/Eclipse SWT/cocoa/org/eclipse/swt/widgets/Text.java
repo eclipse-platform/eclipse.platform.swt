@@ -545,7 +545,7 @@ public Point getCaretLocation () {
 		return new Point (0, 0);
 	}
 //	NSText
-	NSRange range = ((NSTextView)view).selectedRange();
+//	NSRange range = ((NSTextView)view).selectedRange();
 	return null;
 }
 

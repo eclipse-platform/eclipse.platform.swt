@@ -831,7 +831,7 @@ public int [] getColumnOrder () {
 	int [] order = new int [columnCount];
 	int [] position = new int [1];
 	for (int i=0; i<columnCount; i++) {
-		TableColumn column = columns [i];
+//		TableColumn column = columns [i];
 //		OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
 //		if ((style & SWT.CHECK) != 0) position [0] -= 1;
 		order [position [0]] = i;
@@ -1743,7 +1743,7 @@ public void setColumnOrder (int [] order) {
 		int [] oldX = new int [oldOrder.length];
 		for (int i=0; i<oldOrder.length; i++) {
 			int index = oldOrder [i];
-			TableColumn column = columns [index];
+//			TableColumn column = columns [index];
 			oldX [index] =  x;
 //			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
 			x += width [0];
@@ -1752,8 +1752,8 @@ public void setColumnOrder (int [] order) {
 		int [] newX = new int [order.length];
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
-			TableColumn column = columns [index];
-			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
+//			TableColumn column = columns [index];
+//			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
 //			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
 //			column.lastPosition = position;
 			newX [index] =  x;

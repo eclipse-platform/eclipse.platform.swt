@@ -127,7 +127,7 @@ static Table checkNull (Table control) {
 int calculateWidth (int index, GC gc) {
 	if (index == 0 && width != -1) return width;
 	int width = 0;
-	Image image = getImage (index);
+//	Image image = getImage (index);
 	String text = getText (index);
 	gc.setFont (getFont (index));
 //	if (image != null) width += image.getBounds ().width + parent.getGap ();

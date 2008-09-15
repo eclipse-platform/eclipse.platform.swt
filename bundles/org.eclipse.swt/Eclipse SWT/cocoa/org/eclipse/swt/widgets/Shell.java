@@ -1510,7 +1510,7 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 
 void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	super.windowDidResignKey(id, sel, notification);
-	Display display = this.display;
+//	Display display = this.display;
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
 //	saveFocus ();
