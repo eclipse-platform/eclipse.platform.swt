@@ -643,25 +643,28 @@ void layoutItems () {
 	*  into account extra padding.
 	*/
 	if ((style & SWT.VERTICAL) != 0) {
-		TBBUTTONINFO info = new TBBUTTONINFO ();
-		info.cbSize = TBBUTTONINFO.sizeof;
-		info.dwMask = OS.TBIF_SIZE;
-		int /*long*/ size = OS.SendMessage (handle, OS.TB_GETBUTTONSIZE, 0, 0);
-		info.cx = (short) OS.LOWORD (size);
-		int index = 0;
-		while (index < items.length) {
-			ToolItem item = items [index];
-			if (item != null && (item.style & SWT.DROP_DOWN) != 0) break;
-			index++;
-		}
-		if (index < items.length) {
-			int /*long*/ padding = OS.SendMessage (handle, OS.TB_GETPADDING, 0, 0);
-			info.cx += OS.LOWORD (padding) * 2;
-		}
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items [i];
-			if (item != null && (item.style & SWT.SEPARATOR) == 0) {
-				OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+		if (itemCount > 1) {
+			TBBUTTONINFO info = new TBBUTTONINFO ();
+			info.cbSize = TBBUTTONINFO.sizeof;
+			info.dwMask = OS.TBIF_SIZE;
+			int /*long*/ size = OS.SendMessage (handle, OS.TB_GETBUTTONSIZE, 0, 0);
+			info.cx = (short) OS.LOWORD (size);
+			int index = 0;
+			while (index < items.length) {
+				ToolItem item = items [index];
+				if (item != null && (item.style & SWT.DROP_DOWN) != 0) break;
+				index++;
+			}
+			if (index < items.length) {
+				int /*long*/ padding = OS.SendMessage (handle, OS.TB_GETPADDING, 0, 0);
+				info.cx += OS.LOWORD (padding) * 2;
+			}
+			for (int i=0; i<items.length; i++) {
+				ToolItem item = items [i];
+				if (item != null && (item.style & SWT.SEPARATOR) == 0) {
+					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+				}
 			}
 		}
 	}
