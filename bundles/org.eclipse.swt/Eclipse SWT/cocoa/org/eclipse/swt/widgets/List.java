@@ -966,6 +966,21 @@ void sendDoubleSelection() {
 	postEvent (SWT.DefaultSelection);	
 }
 
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	boolean result = super.sendKeyEvent (nsEvent, type);
+	if (!result) return result;
+	if (type != SWT.KeyDown) return result;
+	short keyCode = nsEvent.keyCode ();
+	switch (keyCode) {
+		case 76: /* KP Enter */
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+	}
+	return result;
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument.

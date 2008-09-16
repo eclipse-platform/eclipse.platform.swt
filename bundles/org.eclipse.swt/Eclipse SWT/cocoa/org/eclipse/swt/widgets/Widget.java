@@ -403,9 +403,8 @@ public void dispose () {
 	release (true);
 }
 
-boolean doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ aSelector) {
+void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ aSelector) {
 	callSuper (id, sel, aSelector);
-	return true;
 }
 
 void drawBackground (int control, int context) {

@@ -644,19 +644,19 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-boolean doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
+void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
 			boolean [] consume = new boolean [1];
-			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return false;
-			if (isDisposed ()) return false;
-			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return false;
-			if (consume [0]) return false;
+			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
+			if (isDisposed ()) return;
+			if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
+			if (consume [0]) return;
 		}
-		if ((state & CANVAS) != 0) return true;
+		if ((state & CANVAS) != 0) return;
 	}
-	return super.doCommandBySelector (id, sel, selector);
+	super.doCommandBySelector (id, sel, selector);
 }
 
 /**

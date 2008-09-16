@@ -1328,19 +1328,6 @@ boolean isTrim (NSView view) {
 	return view.id == headerView.id;
 }
 
-void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	super.keyDown (id, sel, theEvent);
-	NSEvent event = new NSEvent (theEvent);
-	short keyCode = event.keyCode ();
-	switch (keyCode) {
-		case 76: /* KP Enter */
-		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
-			break;
-		}
-	}
-}
-
 void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.mouseDown (id, sel, theEvent);
 	if (id == headerView.id) {
@@ -2264,6 +2251,21 @@ public void showSelection () {
 
 void sendDoubleSelection() {
 	postEvent (SWT.DefaultSelection);
+}
+
+boolean sendKeyEvent (NSEvent nsEvent, int type) {
+	boolean result = super.sendKeyEvent (nsEvent, type);
+	if (!result) return result;
+	if (type != SWT.KeyDown) return result;
+	short keyCode = nsEvent.keyCode ();
+	switch (keyCode) {
+		case 76: /* KP Enter */
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+	}
+	return result;
 }
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
