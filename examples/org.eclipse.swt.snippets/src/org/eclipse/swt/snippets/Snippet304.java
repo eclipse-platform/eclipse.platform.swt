@@ -51,17 +51,15 @@ public class Snippet304 {
         */
     	new Thread(){
     		public void run(){
-    			int key1 = SWT.CONTROL;
-    			int key2 = SWT.END;
+    			int key = SWT.END;
     			String platform = SWT.getPlatform();
     			if (platform.equals("carbon") || platform.equals("cocoa") ) {
-    	   			key1 = SWT.COMMAND;
-        			key2 = SWT.ARROW_DOWN;
+        			key = SWT.ARROW_DOWN;
     			}
-    	        postEvent(key1, SWT.KeyDown);
-    	        postEvent(key2, SWT.KeyDown);
-    	        postEvent(key2, SWT.KeyUp);
-    	        postEvent(key1, SWT.KeyUp);
+    	        postEvent(SWT.MOD1, SWT.KeyDown);
+    	        postEvent(key, SWT.KeyDown);
+    	        postEvent(key, SWT.KeyUp);
+    	        postEvent(SWT.MOD1, SWT.KeyUp);
     		}
     	}.start();
         
