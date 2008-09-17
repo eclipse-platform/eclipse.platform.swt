@@ -12,12 +12,9 @@
 package org.eclipse.swt.awt;
 
 import java.awt.Canvas;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
