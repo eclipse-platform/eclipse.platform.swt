@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
@@ -97,6 +98,29 @@ public TextLayout (Device device) {
 
 void checkLayout() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
+float[] computePolyline(int left, int top, int right, int bottom) {
+	int height = bottom - top; // can be any number
+	int width = 2 * height; // must be even
+	int peaks = Compatibility.ceil(right - left, width);
+	if (peaks == 0 && right - left > 2) {
+		peaks = 1;
+	}
+	int length = ((2 * peaks) + 1) * 2;
+	if (length < 0) return new float[0];
+	
+	float[] coordinates = new float[length];
+	for (int i = 0; i < peaks; i++) {
+		int index = 4 * i;
+		coordinates[index] = left + (width * i);
+		coordinates[index+1] = bottom;
+		coordinates[index+2] = coordinates[index] + width / 2;
+		coordinates[index+3] = top;
+	}
+	coordinates[length-2] = left + (width * peaks);
+	coordinates[length-1] = bottom;
+	return coordinates;
 }
 
 void computeRuns() {
@@ -317,7 +341,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int length = translateOffset(text.length());
+	if (length == 0 && flags == 0) return;
 	gc.checkGC(GC.CLIPPING | GC.TRANSFORM | GC.FOREGROUND);
+	gc.handle.saveGraphicsState();
 //	float[] foreground = gc.data.foreground;
 //	NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], foreground[3]);
 //	textStorage.setForegroundColor(color);
@@ -343,6 +370,120 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (range.length > 0) {
 		layoutManager.drawBackgroundForGlyphRange(range, pt);
 		layoutManager.drawGlyphsForGlyphRange(range, pt);
+		NSPoint point = new NSPoint();
+		for (int j = 0; j < styles.length; j++) {
+			StyleItem run = styles[j];
+			TextStyle style = run.style;
+			if (style == null) continue;
+			boolean drawUnderline = style.underline && style.underlineStyle != SWT.UNDERLINE_SINGLE && style.underlineStyle != SWT.UNDERLINE_DOUBLE;
+			drawUnderline = drawUnderline && (j + 1 == styles.length || !style.isAdherentUnderline(styles[j + 1].style)); 
+			boolean drawBorder = style.borderStyle != SWT.NONE;
+			drawBorder = drawBorder && (j + 1 == styles.length || !style.isAdherentBorder(styles[j + 1].style)); 
+			if (!drawUnderline && !drawBorder) continue;
+			int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
+			for (int i = 0; i < lineOffsets.length - 1; i++) {
+				int lineStart = untranslateOffset(lineOffsets[i]);
+				int lineEnd = untranslateOffset(lineOffsets[i + 1] - 1);
+				if (drawUnderline) {
+					int start = run.start;
+					for (int k = j; k > 0 && style.isAdherentUnderline(styles[k - 1].style); k--) {
+						start = styles[k - 1].start;
+					}
+					start = translateOffset(start);
+					if (!(start > lineEnd || end < lineStart)) {
+						range.location = layoutManager.glyphIndexForCharacterAtIndex(Math.max(lineStart, start));
+						range.length = layoutManager.glyphIndexForCharacterAtIndex(Math.min(lineEnd, end) + 1) - range.location;
+						if (range.length > 0) {
+							gc.handle.saveGraphicsState();
+							NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
+							float baseline = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineStart);
+							float underlineX = pt.x + rect.x;
+							float underlineY = pt.y + rect.y + rect.height - baseline;
+							float[] color = null;
+							if (style.underlineColor != null) color = style.underlineColor.handle;
+							if (color == null && style.foreground != null) color = style.foreground.handle;
+							if (color != null) {
+								NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setStroke();
+							}
+							NSBezierPath path = NSBezierPath.bezierPath();
+							switch (style.underlineStyle) {
+								case SWT.UNDERLINE_ERROR: {
+									path.setLineWidth(2f);
+									path.setLineCapStyle(OS.NSRoundLineCapStyle);
+									path.setLineJoinStyle(OS.NSRoundLineJoinStyle);
+									path.setLineDash(new float[]{1, 3f}, 2, 0);
+									point.x = underlineX;
+									point.y = underlineY + 0.5f;
+									path.moveToPoint(point);
+									point.x = underlineX + rect.width;
+									point.y = underlineY + 0.5f;
+									path.lineToPoint(point);
+									break;
+								}
+								case SWT.UNDERLINE_SQUIGGLE: {
+									gc.handle.setShouldAntialias(false);
+									path.setLineWidth(1.0f);
+									path.setLineCapStyle(OS.NSButtLineCapStyle);
+									path.setLineJoinStyle(OS.NSMiterLineJoinStyle);
+									float lineBottom = pt.y + rect.y + rect.height;
+									float squigglyThickness = 1;
+									float squigglyHeight = 2 * squigglyThickness;
+									float squigglyY = Math.min(underlineY - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
+									float[] points = computePolyline((int)underlineX, (int)squigglyY, (int)(underlineX + rect.width), (int)(squigglyY + squigglyHeight));
+									point.x = points[0] + 0.5f;
+									point.y = points[1] + 0.5f;
+									path.moveToPoint(point);
+									for (int p = 2; p < points.length; p+=2) {
+										point.x = points[p] + 0.5f;
+										point.y = points[p+1] + 0.5f;
+										path.lineToPoint(point);
+									}
+									break;
+								}
+							}
+							path.stroke();
+							gc.handle.restoreGraphicsState();
+						}
+					}
+				}
+				if (drawBorder) {
+					int start = run.start;
+					for (int k = j; k > 0 && style.isAdherentBorder(styles[k - 1].style); k--) {
+						start = styles[k - 1].start;
+					}
+					start = translateOffset(start);
+					if (!(start > lineEnd || end < lineStart)) {
+						range.location = layoutManager.glyphIndexForCharacterAtIndex(Math.max(lineStart, start));
+						range.length = layoutManager.glyphIndexForCharacterAtIndex(Math.min(lineEnd, end) + 1) - range.location;
+						if (range.length > 0) {
+							gc.handle.saveGraphicsState();
+							NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
+							rect.x += pt.x + 0.5f;
+							rect.y += pt.y + 0.5f;
+							float[] color = null;
+							if (style.borderColor != null) color = style.borderColor.handle;
+							if (color == null && style.foreground != null) color = style.foreground.handle;
+							if (color != null) {
+								NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setStroke();
+							}
+							int width = 1;
+							float[] dashes = null;
+							switch (style.borderStyle) {
+								case SWT.BORDER_SOLID:	break;
+								case SWT.BORDER_DASH: dashes = width != 0 ? GC.LINE_DASH : GC.LINE_DASH_ZERO; break;
+								case SWT.BORDER_DOT: dashes = width != 0 ? GC.LINE_DOT : GC.LINE_DOT_ZERO; break;
+							}
+							NSBezierPath path = NSBezierPath.bezierPath();
+							path.setLineDash(dashes, dashes != null ? dashes.length : 0, 0);
+							path.appendBezierPathWithRect(rect);
+							path.stroke();
+							gc.handle.restoreGraphicsState();
+						}
+					}
+				}
+			}
+			
+		}
 	}
 	if ((flags & SWT.LAST_LINE_SELECTION) != 0) {
 		NSRect bounds = lineBounds[lineBounds.length - 1];
@@ -359,6 +500,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionRange != null) {
 		layoutManager.removeTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionRange);
 	}
+	gc.handle.restoreGraphicsState();
 }
 
 void freeRuns() {
