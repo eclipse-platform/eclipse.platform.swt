@@ -623,8 +623,9 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 	for (int i = 0; i < itemCount; i++) {
 		TabItem item = items [i];
 		/*
-		* For some reason the control on a tab being deselected has its parent
-		* removed natively.  The fix is to re-set the control's parent.
+		* Feature in Cocoa.  For some reason the control on a tab being
+		* deselected has its parent removed natively.  The fix is to
+		* re-set the control's parent.
 		*/
 		Control control = item.control;
 		if (control != null) {
