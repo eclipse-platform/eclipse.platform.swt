@@ -614,6 +614,7 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 				control.setVisible (true);
 			}
 		}
+		break;
 	}
 }
 
@@ -621,13 +622,25 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 	if (tabViewItem == 0) return;
 	for (int i = 0; i < itemCount; i++) {
 		TabItem item = items [i];
+		/*
+		* For some reason the control on a tab being deselected has its parent
+		* removed natively.  The fix is to re-set the control's parent.
+		*/
+		Control control = item.control;
+		if (control != null) {
+			NSView topView = control.topView ();
+			if (topView.superview () == null) {
+				contentView ().addSubview (topView, OS.NSWindowBelow, null);
+			}
+		}
 		if (item.nsItem.id == tabViewItem) {
 			if (!ignoreSelect) {
 				Event event = new Event ();
 				event.item = item;
-				sendEvent (SWT.Selection, event);
+				postEvent (SWT.Selection, event);
 			}
 		}
+		break;
 	}
 }
 
