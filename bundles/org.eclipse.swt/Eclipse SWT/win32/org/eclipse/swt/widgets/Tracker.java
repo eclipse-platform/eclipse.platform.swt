@@ -48,7 +48,7 @@ public class Tracker extends Widget {
 	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	int /*long*/ hwndTransparent, hwndOpaque, oldProc;
+	int /*long*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
 	int oldX, oldY;
 
 	/*
@@ -360,7 +360,7 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
 			rect1.top = rect.y - bandWidth;
 			rect1.right = rect.x + rect.width + bandWidth * 2;
 			rect1.bottom = rect.y + rect.height + bandWidth * 2;
-			OS.RedrawWindow (hwndOpaque != 0 ? hwndOpaque : hwndTransparent, rect1, 0, OS.RDW_INVALIDATE);
+			OS.RedrawWindow (hwndOpaque, rect1, 0, OS.RDW_INVALIDATE);
 		}
 		return;
 	}
@@ -495,32 +495,34 @@ public boolean open () {
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		
 		if (isVista) {
 			OS.SetLayeredWindowAttributes (hwndTransparent, 0xFFFFFF, (byte)0x01, OS.LWA_ALPHA);
 		}
 		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
-		if (isVista) {
-			hwndOpaque = OS.CreateWindowEx (
-					OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
-					display.windowClass,
-					null,
-					OS.WS_POPUP,
-					0, 0,
-					width, height,
-					hwndTransparent,
-					0,
-					OS.GetModuleHandle (null),
-					null);
-		}
-		int /*long*/ hwnd = isVista ? hwndOpaque : hwndTransparent;
-		oldProc = OS.GetWindowLongPtr (hwnd, OS.GWLP_WNDPROC);
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		int /*long*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.SetWindowLongPtr (hwnd, OS.GWLP_WNDPROC, newProcAddress);
-		OS.SetLayeredWindowAttributes (hwnd, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
-		OS.ShowWindow (hwnd, OS.SW_SHOWNOACTIVATE);
+		if (isVista) {
+			hwndOpaque = OS.CreateWindowEx (
+				OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+				display.windowClass,
+				null,
+				OS.WS_POPUP,
+				0, 0,
+				width, height,
+				hwndTransparent,
+				0,
+				OS.GetModuleHandle (null),
+				null);
+			oldOpaqueProc = OS.GetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC);
+			OS.SetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC, newProcAddress);
+		} else {
+			hwndOpaque = hwndTransparent;
+		}
+		oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
+		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
+		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+		OS.ShowWindow (hwndOpaque, OS.SW_SHOWNOACTIVATE);
 	}
 
 	update ();
@@ -594,7 +596,7 @@ public boolean open () {
 		hwndOpaque = 0;
 		if (newProc != null) {
 			newProc.dispose ();
-			oldProc = 0;
+			oldTransparentProc = oldOpaqueProc = 0;
 		}
 		/*
 		* Cleanup: If this tracker was resizing then the last cursor that it created
@@ -853,17 +855,20 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 			if (inEvent) return OS.HTTRANSPARENT;
 			break;
 		case OS.WM_SETCURSOR:
-			if (clientCursor != null) {
-				OS.SetCursor (clientCursor.handle);
-				return 1;
-			}
-			if (resizeCursor != 0) {
-				OS.SetCursor (resizeCursor);
-				return 1;
+			if (hwndOpaque == hwnd) {
+				if (clientCursor != null) {
+					OS.SetCursor (clientCursor.handle);
+					return 1;
+				}
+				if (resizeCursor != 0) {
+					OS.SetCursor (resizeCursor);
+					return 1;
+				}
 			}
 			break;
 		case OS.WM_PAINT:
-			if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			boolean isVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
+			if (parent == null && isVista && hwndOpaque == hwnd) {
 				PAINTSTRUCT ps = new PAINTSTRUCT();
 				int /*long*/ hDC = OS.BeginPaint (hwnd, ps);
 				int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;			
@@ -900,7 +905,7 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 				return 0;
 			}
 	}
-	return OS.CallWindowProc (oldProc, hwnd, (int)/*64*/msg, wParam, lParam);
+	return OS.CallWindowProc (hwnd == hwndTransparent ? oldTransparentProc : oldOpaqueProc, hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
 void update () {
