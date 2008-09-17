@@ -269,7 +269,7 @@ static DropTarget FindDropTarget(int theWindow, int theDrag) {
 	OS.GetRootControl(theWindow, theRoot);
 	int[] theControl = new int[1];
 	Rect rect = new Rect();
-	OS.GetWindowBounds (theWindow, (short) OS.kWindowContentRgn, rect);
+	OS.GetWindowBounds (theWindow, (short) OS.kWindowStructureRgn, rect);
 	CGPoint inPoint = new CGPoint();
 	inPoint.x = mouse.h - rect.left;
 	inPoint.y = mouse.v - rect.top;
