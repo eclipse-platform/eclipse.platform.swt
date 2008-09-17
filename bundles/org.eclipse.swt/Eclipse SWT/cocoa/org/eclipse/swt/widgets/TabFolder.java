@@ -49,6 +49,7 @@ import org.eclipse.swt.graphics.*;
 public class TabFolder extends Composite {
 	TabItem [] items;
 	int itemCount;
+	boolean ignoreSelect;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -559,7 +560,9 @@ void setSelection (int index, boolean notify, boolean force) {
 			}
 		}
 	}
+	ignoreSelect = true;
 	((NSTabView)view).selectTabViewItemAtIndex(index);
+	ignoreSelect = false;
 	index = getSelectionIndex();
 	if (index != -1) {
 		TabItem item = items [index];
@@ -610,9 +613,11 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 			if (control != null && !control.isDisposed ()) {
 				control.setVisible (true);
 			}
-			Event event = new Event ();
-			event.item = item;
-			sendEvent (SWT.Selection, event);
+			if (!ignoreSelect) {
+				Event event = new Event ();
+				event.item = item;
+				sendEvent (SWT.Selection, event);
+			}
 		}
 	}
 }
