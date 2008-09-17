@@ -1110,6 +1110,7 @@ public static final int /*long*/ sel_systemFontOfSize_ = sel_registerName("syste
 public static final int /*long*/ sel_systemFontSize = sel_registerName("systemFontSize");
 public static final int /*long*/ sel_systemStatusBar = sel_registerName("systemStatusBar");
 public static final int /*long*/ sel_systemVersion = sel_registerName("systemVersion");
+public static final int /*long*/ sel_tabView_didSelectTabViewItem_ = sel_registerName("tabView:didSelectTabViewItem:");
 public static final int /*long*/ sel_tabView_willSelectTabViewItem_ = sel_registerName("tabView:willSelectTabViewItem:");
 public static final int /*long*/ sel_tabViewItemAtPoint_ = sel_registerName("tabViewItemAtPoint:");
 public static final int /*long*/ sel_tableView_objectValueForTableColumn_row_ = sel_registerName("tableView:objectValueForTableColumn:row:");

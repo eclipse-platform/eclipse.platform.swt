@@ -613,6 +613,15 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 			if (control != null && !control.isDisposed ()) {
 				control.setVisible (true);
 			}
+		}
+	}
+}
+
+void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+	if (tabViewItem == 0) return;
+	for (int i = 0; i < itemCount; i++) {
+		TabItem item = items [i];
+		if (item.nsItem.id == tabViewItem) {
 			if (!ignoreSelect) {
 				Event event = new Event ();
 				event.item = item;

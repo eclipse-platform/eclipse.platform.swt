@@ -1850,6 +1850,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSTabView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_tabView_willSelectTabViewItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_tabView_didSelectTabViewItem_, proc4, "@:@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3699,6 +3700,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	if (widget == null) return 0;
 	if (sel == OS.sel_tabView_willSelectTabViewItem_) {
 		widget.tabView_willSelectTabViewItem(id, sel, arg0, arg1);
+	} else if (sel == OS.sel_tabView_didSelectTabViewItem_) {
+		widget.tabView_didSelectTabViewItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_isItemExpandable_) {
 		return widget.outlineView_isItemExpandable(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_numberOfChildrenOfItem_) {

@@ -1302,6 +1302,9 @@ int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
 	return 0;
 }
 
+void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+}
+
 void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
 }
 
