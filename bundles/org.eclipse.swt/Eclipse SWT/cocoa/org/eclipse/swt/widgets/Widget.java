@@ -972,9 +972,6 @@ NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
 	return new NSRange ();
 }
 
-void sendArrowSelection () {
-}
-
 void sendDoubleSelection() {
 }
 

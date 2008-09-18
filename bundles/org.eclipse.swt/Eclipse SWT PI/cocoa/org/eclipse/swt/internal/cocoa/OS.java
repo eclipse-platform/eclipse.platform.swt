@@ -33,7 +33,6 @@ public class OS extends C {
 
 	public static final int /*long*/ sel_sendSelection = sel_registerName("sendSelection");
 	public static final int /*long*/ sel_sendDoubleSelection = sel_registerName("sendDoubleSelection");
-	public static final int /*long*/ sel_sendArrowSelection = sel_registerName("sendArrowSelection");
 	public static final int /*long*/ sel_sendVerticalSelection = sel_registerName("sendVerticalSelection");
 	public static final int /*long*/ sel_sendHorizontalSelection = sel_registerName("sendHorizontalSelection");
 	public static final int /*long*/ sel_timerProc_ = sel_registerName("timerProc:");

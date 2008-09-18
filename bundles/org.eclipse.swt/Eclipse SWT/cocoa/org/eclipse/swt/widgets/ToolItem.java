@@ -235,7 +235,6 @@ void createHandle () {
 			arrow = (NSButton)new SWTButton().alloc();
 			arrow.initWithFrame(new NSRect());
 			arrow.setBordered(false);
-			arrow.setAction(OS.sel_sendArrowSelection);
 			arrow.setTarget(arrow);
 			arrow.setTitle(emptyStr);
 			arrow.setEnabled(parent.getEnabled());
@@ -523,6 +522,14 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	display.trackingControl = parent;
 	super.mouseDown(id, sel, theEvent);
 	display.trackingControl = null;
+	if (arrow != null && id == arrow.id) {
+		NSRect frame = view.frame();
+		Event event = new Event ();
+		event.detail = SWT.ARROW;
+		event.x = (int)frame.x;
+		event.y = (int)(frame.y + arrow.frame().height);
+		postEvent (SWT.Selection, event);
+	}
 }
 
 void register () {
@@ -587,15 +594,6 @@ void selectRadio () {
 	int j = index + 1;
 	while (j < items.length && items [j].setRadioSelection (false)) j++;
 	setSelection (true);
-}
-
-void sendArrowSelection () {
-	NSRect frame = view.frame();
-	Event event = new Event ();
-	event.detail = SWT.ARROW;
-	event.x = (int)frame.x;
-	event.y = (int)(frame.y + arrow.frame().height);
-	postEvent (SWT.Selection, event);
 }
 
 void sendSelection () {

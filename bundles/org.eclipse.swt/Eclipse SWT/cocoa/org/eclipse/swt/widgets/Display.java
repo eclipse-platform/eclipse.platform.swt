@@ -1793,7 +1793,6 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_sendArrowSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3541,8 +3540,6 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
-	} else if (sel == OS.sel_sendArrowSelection) {
-		widget.sendArrowSelection();
 	} else if (sel == OS.sel_sendDoubleSelection) {
 		widget.sendDoubleSelection();
 	} else if (sel == OS.sel_sendVerticalSelection) {
