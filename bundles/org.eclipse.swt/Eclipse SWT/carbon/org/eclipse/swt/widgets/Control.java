@@ -3294,7 +3294,7 @@ public void setCursor (Cursor cursor) {
 		if (theWindow [0] == 0) return;
 	}
 	Rect rect = new Rect ();
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 	int [] theControl = new int [1];
 	if (display.grabControl == this) {
 		theControl [0] = handle;
@@ -3338,7 +3338,6 @@ public void setCursor (Cursor cursor) {
 	OS.HIViewConvertPoint (pt, theControl [0], 0);
 	where.h -= (int) pt.x;
 	where.v -= (int) pt.y;
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 	where.h -= rect.left;
 	where.v -= rect.top;
 	int modifiers = OS.GetCurrentEventKeyModifiers ();

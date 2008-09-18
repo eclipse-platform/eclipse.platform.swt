@@ -1365,7 +1365,7 @@ public Control getCursorControl () {
 	if (OS.FindWindow (where, theWindow) != OS.inContent) return null;
 	if (theWindow [0] == 0) return null;
 	Rect rect = new Rect ();
-	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 	CGPoint inPoint = new CGPoint ();
 	inPoint.x = where.h - rect.left;
 	inPoint.y = where.v - rect.top;
@@ -3353,7 +3353,7 @@ boolean runEnterExit () {
 	if (OS.FindWindow (where, theWindow) == OS.inContent) {
 		if (theWindow [0] != 0) {
 			Rect rect = new Rect ();
-			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 			CGPoint inPoint = new CGPoint ();
 			inPoint.x = where.h - rect.left;
 			inPoint.y = where.v - rect.top;
