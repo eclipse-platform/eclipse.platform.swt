@@ -24861,9 +24861,9 @@
     </method>
   </informal_protocol>
   <informal_protocol name="NSTabViewDelegate" swt_gen="mixed">
-    <method selector="tabView:didSelectTabViewItem:">
-      <arg name="tabView"></arg>
-      <arg name="tabViewItem"></arg>
+    <method selector="tabView:didSelectTabViewItem:" swt_gen="true">
+      <arg name="tabView" swt_gen="true"></arg>
+      <arg name="tabViewItem" swt_gen="true"></arg>
     </method>
     <method selector="tabView:shouldSelectTabViewItem:">
       <arg name="tabView"></arg>
