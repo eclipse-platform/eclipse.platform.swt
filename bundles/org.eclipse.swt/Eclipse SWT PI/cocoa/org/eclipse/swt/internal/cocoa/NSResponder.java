@@ -84,6 +84,14 @@ public void mouseUp(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_mouseUp_, theEvent != null ? theEvent.id : 0);
 }
 
+public void moveToBeginningOfParagraph(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_moveToBeginningOfParagraph_, sender != null ? sender.id : 0);
+}
+
+public void moveToEndOfParagraph(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_moveToEndOfParagraph_, sender != null ? sender.id : 0);
+}
+
 public void moveUp(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_moveUp_, sender != null ? sender.id : 0);
 }

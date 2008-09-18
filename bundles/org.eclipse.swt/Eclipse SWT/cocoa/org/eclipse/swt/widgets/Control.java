@@ -648,6 +648,16 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 	if (view.window ().firstResponder ().id == id) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null && nsEvent.type () == OS.NSKeyDown) {
+			// TODO is this workaround ok?
+			/*
+			 * Feature in Cocoa.  Pressing Alt+UpArrow invokes doCommandBySelector 
+			 * twice, with selectors moveBackward and moveToBeginningOfParagraph
+			 * (Alt+DownArrow behaves similarly).  In order to avoid sending
+			 * multiple events for these keys, do not send a KeyDown if the
+			 * selector is moveToBeginningOfParagraph or moveToEndOfParagraph.
+			 */
+			if (selector == OS.sel_moveToBeginningOfParagraph_|| selector == OS.sel_moveToEndOfParagraph_) return;
+
 			boolean [] consume = new boolean [1];
 			if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
 			if (isDisposed ()) return;

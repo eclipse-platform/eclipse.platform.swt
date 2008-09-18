@@ -16412,9 +16412,9 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="moveToBeginningOfParagraph:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="moveToBeginningOfParagraph:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="moveToEndOfDocument:">
       <arg name="sender"></arg>
@@ -16424,9 +16424,9 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="moveToEndOfParagraph:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="moveToEndOfParagraph:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="moveUp:" swt_gen="true">
       <arg name="sender" swt_gen="true"></arg>
