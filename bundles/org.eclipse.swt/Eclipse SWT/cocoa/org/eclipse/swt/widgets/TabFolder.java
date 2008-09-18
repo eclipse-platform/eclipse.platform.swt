@@ -613,8 +613,8 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 			if (control != null && !control.isDisposed ()) {
 				control.setVisible (true);
 			}
+			break;
 		}
-		break;
 	}
 }
 
@@ -640,8 +640,8 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 				event.item = item;
 				postEvent (SWT.Selection, event);
 			}
+			break;
 		}
-		break;
 	}
 }
 
