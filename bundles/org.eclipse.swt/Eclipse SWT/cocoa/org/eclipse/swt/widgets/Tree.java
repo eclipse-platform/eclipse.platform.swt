@@ -856,12 +856,11 @@ public int getColumnCount () {
 public int [] getColumnOrder () {
 	checkWidget ();
 	int [] order = new int [columnCount];
-	int [] position = new int [1];
-	for (int i=0; i<columnCount; i++) {
-//		TreeColumn column = columns [i];
-//		OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
-//		if ((style & SWT.CHECK) != 0) position [0] -= 1;
-		order [position [0]] = i;
+	for (int i = 0; i < columnCount; i++) {
+		TreeColumn column = columns [i];
+		int index = ((NSOutlineView)view).columnWithIdentifier (column.nsColumn);
+		if ((style & SWT.CHECK) != 0) index -= 1;
+		order [index] = i;
 	}
 	return order;
 }
