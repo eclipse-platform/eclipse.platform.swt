@@ -640,7 +640,6 @@ void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*
 				event.item = item;
 				postEvent (SWT.Selection, event);
 			}
-			break;
 		}
 	}
 }
