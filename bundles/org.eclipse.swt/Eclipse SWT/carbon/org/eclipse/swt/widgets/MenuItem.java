@@ -946,10 +946,14 @@ void updateText (short menuIndex) {
 					inKey = Character.toUpperCase ((char)inKey);
 				}
 				if (inKey != 0 || inGlyph != OS.kMenuNullGlyph) {
+					acceleratorSet = true;
 					OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
 					OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
 					OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
-					acceleratorSet = true;
+				} else {
+					OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)OS.kMenuNoCommandModifier);
+					OS.SetMenuItemCommandKey (parent.handle, menuIndex, false, (char)0);
+					OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)OS.kMenuNullGlyph);
 				}
 			}
 		}
