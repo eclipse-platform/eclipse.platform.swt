@@ -443,15 +443,12 @@ int keyGlyph (int key) {
 		case SWT.F13: return OS.kMenuF13Glyph;
 		case SWT.F14: return OS.kMenuF14Glyph;
 		case SWT.F15: return OS.kMenuF15Glyph;
-		
+		case SWT.HOME: return OS.kMenuNorthwestArrowGlyph;
+		case SWT.END: return OS.kMenuSoutheastArrowGlyph;	
 		/*
-		* The following three lines are intentionally commented.
-		* The Mac does not (currently) have glyphs for Home, End, and Insert.
-		* An application desiring these keys as accelerators must use setAccelerator
-		* for these instead of relying on glyphs following \t in setText.
+		* The following lines are intentionally commented.
+		* The Mac does not (currently) have glyphs for these keys.
 		*/
-//		case SWT.HOME: return OS.kMenuNullGlyph;
-//		case SWT.END: return OS.kMenuNullGlyph;
 //		case SWT.INSERT: return OS.kMenuNullGlyph;
 	}
 	return OS.kMenuNullGlyph;
@@ -922,7 +919,7 @@ void updateText (short menuIndex) {
 						case '\u238B': swtKey = SWT.ESC; break;
 						case '\u21E5': swtKey = SWT.TAB; break;
 						case ' ': swtKey = ' '; break;
-	//					case '\u2423': swtKey = ' '; break;
+//						case '\u2423': swtKey = ' '; break;
 						case '\u2191': swtKey = SWT.ARROW_UP; break;
 						case '\u2193': swtKey = SWT.ARROW_DOWN; break;
 						case '\u2190': swtKey = SWT.ARROW_LEFT; break;
@@ -931,9 +928,9 @@ void updateText (short menuIndex) {
 						case '\u21DF': swtKey = SWT.PAGE_DOWN; break;
 						case '\u2305': swtKey = SWT.KEYPAD_CR; break;
 						case '\u211C': swtKey = SWT.HELP; break;
-	//					case '\u21EA': swtKey = SWT.CAPS_LOCK; break;
-	//					case '??': swtKey = SWT.HOME; break;
-	//					case '??': swtKey = SWT.END; break;
+						case '\uF729': swtKey = SWT.HOME; break;
+						case '\uF72B': swtKey = SWT.END; break;
+//						case '\u21EA': swtKey = SWT.CAPS_LOCK; break;
 					}
 				}
 				inGlyph = keyGlyph (swtKey);

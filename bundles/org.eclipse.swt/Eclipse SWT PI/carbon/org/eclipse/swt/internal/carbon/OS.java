@@ -707,6 +707,7 @@ public class OS extends C {
 	public static final int kMenuNoIcon = 0;
 	public static final int kMenuNoModifiers = 0;
 	public static final int kMenuNonmarkingReturnGlyph = 13;
+	public static final int kMenuNorthwestArrowGlyph = 0x66;
 	public static final int kMenuNullGlyph = 0;
 	public static final int kMenuOptionGlyph = 7;
 	public static final int kMenuOptionModifier = (1 << 1);
@@ -720,6 +721,7 @@ public class OS extends C {
 	public static final int kMenuRightArrowGlyph = 101;
 	public static final int kMenuShiftGlyph = 5;
 	public static final int kMenuShiftModifier = (1 << 0);
+	public static final int kMenuSoutheastArrowGlyph = 0x69;
 	public static final int kMenuTabRightGlyph = 2;
 	public static final int kMenuUpArrowDashedGlyph = 25;
 	public static final int kMenuUpArrowGlyph = 104;
