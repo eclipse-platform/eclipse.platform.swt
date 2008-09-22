@@ -24,6 +24,11 @@ public NSArray(id id) {
 	super(id);
 }
 
+public static NSArray array() {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSArray, OS.sel_array);
+	return result != 0 ? new NSArray(result) : null;
+}
+
 public static NSArray arrayWithObject(id anObject) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSArray(result) : null;

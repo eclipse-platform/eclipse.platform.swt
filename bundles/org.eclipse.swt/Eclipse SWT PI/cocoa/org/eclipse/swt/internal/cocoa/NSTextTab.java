@@ -10,27 +10,31 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
-public class NSParagraphStyle extends NSObject {
+public class NSTextTab extends NSObject {
 
-public NSParagraphStyle() {
+public NSTextTab() {
 	super();
 }
 
-public NSParagraphStyle(int /*long*/ id) {
+public NSTextTab(int /*long*/ id) {
 	super(id);
 }
 
-public NSParagraphStyle(id id) {
+public NSTextTab(id id) {
 	super(id);
 }
 
-public int /*long*/ alignment() {
-	return OS.objc_msgSend(this.id, OS.sel_alignment);
+public NSTextTab initWithType(int /*long*/ type, float /*double*/ loc) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithType_location_, type, loc);
+	return result == this.id ? this : (result != 0 ? new NSTextTab(result) : null);
 }
 
-public NSArray tabStops() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_tabStops);
-	return result != 0 ? new NSArray(result) : null;
+public float /*double*/ location() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_location);
+}
+
+public int /*long*/ tabStopType() {
+	return OS.objc_msgSend(this.id, OS.sel_tabStopType);
 }
 
 }

@@ -2106,8 +2106,8 @@
       <arg name="context"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="array">
-      <retval></retval>
+    <method class_method="true" selector="array" swt_gen="true">
+      <retval swt_gen="true" swt_java_type="NSArray"></retval>
     </method>
     <method selector="arrayByAddingObject:">
       <arg name="anObject"></arg>

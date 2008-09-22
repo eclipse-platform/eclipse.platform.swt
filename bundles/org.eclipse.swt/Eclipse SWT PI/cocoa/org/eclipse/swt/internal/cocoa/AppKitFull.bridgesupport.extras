@@ -11895,9 +11895,9 @@
     </method>
   </class>
   <class name="NSMutableParagraphStyle" swt_gen="mixed" swt_superclass="NSParagraphStyle">
-    <method selector="addTabStop:">
-      <arg name="anObject"></arg>
-      <retval></retval>
+    <method selector="addTabStop:" swt_gen="true">
+      <arg name="anObject" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="removeTabStop:">
       <arg name="anObject"></arg>
@@ -11911,9 +11911,9 @@
       <arg name="writingDirection"></arg>
       <retval></retval>
     </method>
-    <method selector="setDefaultTabInterval:">
-      <arg name="aFloat"></arg>
-      <retval></retval>
+    <method selector="setDefaultTabInterval:" swt_gen="true">
+      <arg name="aFloat" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setFirstLineHeadIndent:" swt_gen="true">
       <arg name="aFloat" swt_gen="true"></arg>
@@ -11931,9 +11931,9 @@
       <arg name="aFactor"></arg>
       <retval></retval>
     </method>
-    <method selector="setLineBreakMode:">
-      <arg name="mode"></arg>
-      <retval></retval>
+    <method selector="setLineBreakMode:" swt_gen="true">
+      <arg name="mode" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setLineHeightMultiple:">
       <arg name="aFloat"></arg>
@@ -11963,9 +11963,9 @@
       <arg name="obj"></arg>
       <retval></retval>
     </method>
-    <method selector="setTabStops:">
-      <arg name="array"></arg>
-      <retval></retval>
+    <method selector="setTabStops:" swt_gen="true">
+      <arg name="array" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setTailIndent:">
       <arg name="aFloat"></arg>
@@ -14872,8 +14872,8 @@
     <method selector="paragraphSpacingBefore">
       <retval></retval>
     </method>
-    <method selector="tabStops">
-      <retval></retval>
+    <method selector="tabStops" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="tailIndent">
       <retval></retval>
@@ -20207,7 +20207,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSTextTab">
+  <class name="NSTextTab" swt_gen="mixed">
     <method selector="alignment">
       <retval></retval>
     </method>
@@ -20217,19 +20217,19 @@
       <arg name="options"></arg>
       <retval></retval>
     </method>
-    <method selector="initWithType:location:">
-      <arg name="type"></arg>
-      <arg name="loc"></arg>
-      <retval></retval>
+    <method selector="initWithType:location:" swt_gen="true">
+      <arg name="type" swt_gen="true"></arg>
+      <arg name="loc" swt_gen="true"></arg>
+      <retval swt_gen="true" swt_java_type="NSTextTab"></retval>
     </method>
-    <method selector="location">
-      <retval></retval>
+    <method selector="location" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="options">
       <retval></retval>
     </method>
-    <method selector="tabStopType">
-      <retval></retval>
+    <method selector="tabStopType" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="NSTextTable" swt_superclass="NSTextBlock">

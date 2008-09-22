@@ -160,8 +160,21 @@ void computeRuns() {
 	paragraph.setLineSpacing(spacing);
 	paragraph.setFirstLineHeadIndent(indent);
 	paragraph.setLineBreakMode(wrapWidth != -1 ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
+	paragraph.setTabStops(NSArray.array());
+	if (tabs != null) {
+		int count = tabs.length;
+		for (int i = 0, pos = 0; i < count; i++) {
+			pos += tabs[i];
+			NSTextTab tab = (NSTextTab)new NSTextTab().alloc();
+			tab = tab.initWithType(OS.NSLeftTabStopType, pos);
+			paragraph.addTabStop(tab);
+			tab.release();
+		}
+		int width = count - 2 >= 0 ? tabs[count - 1] - tabs[count - 2] : tabs[count - 1];
+		paragraph.setDefaultTabInterval(width);
+	}
 	
-	//TODO tabs ascend descent wrap
+	//TODO ascend descent wrap
 	
 	textStorage.addAttribute(OS.NSParagraphStyleAttributeName, paragraph, range);
 	paragraph.release();
