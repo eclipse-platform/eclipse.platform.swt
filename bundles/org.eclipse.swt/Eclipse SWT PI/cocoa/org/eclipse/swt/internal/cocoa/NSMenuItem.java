@@ -29,6 +29,19 @@ public NSMenuItem initWithTitle(NSString aString, int /*long*/ aSelector, NSStri
 	return result == this.id ? this : (result != 0 ? new NSMenuItem(result) : null);
 }
 
+public boolean isHidden() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isHidden);
+}
+
+public NSString keyEquivalent() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_keyEquivalent);
+	return result != 0 ? new NSString(result) : null;
+}
+
+public int /*long*/ keyEquivalentModifierMask() {
+	return OS.objc_msgSend(this.id, OS.sel_keyEquivalentModifierMask);
+}
+
 public static NSMenuItem separatorItem() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_separatorItem);
 	return result != 0 ? new NSMenuItem(result) : null;
@@ -40,6 +53,10 @@ public void setAction(int /*long*/ aSelector) {
 
 public void setEnabled(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setEnabled_, flag);
+}
+
+public void setHidden(boolean hidden) {
+	OS.objc_msgSend(this.id, OS.sel_setHidden_, hidden);
 }
 
 public void setImage(NSImage menuImage) {

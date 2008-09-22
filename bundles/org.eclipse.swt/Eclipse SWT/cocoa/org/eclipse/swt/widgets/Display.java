@@ -1747,7 +1747,8 @@ void initClasses () {
 	className = "SWTMenu";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenu, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");	
+	OS.class_addMethod(cls, OS.sel_menuWillOpen_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_menu_willHighlightItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_, proc3, "@:@");
 	OS.objc_registerClassPair(cls);
@@ -3026,13 +3027,6 @@ public void setData (String key, Object value) {
 }
 
 void setMenuBar (Menu menu) {
-	/*
-	* Feature in the Macintosh.  SetRootMenu() does not
-	* accept NULL to indicate that their should be no
-	* menu bar. The fix is to create a temporary empty
-	* menu, set that to be the menu bar, clear the menu
-	* bar and then delete the temporary menu.
-	*/
 	if (menu == menuBar) return;
 	menuBar = menu;
 	//remove all existing menu items except the application menu

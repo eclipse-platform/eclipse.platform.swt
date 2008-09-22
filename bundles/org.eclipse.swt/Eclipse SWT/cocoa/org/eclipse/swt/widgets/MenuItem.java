@@ -39,7 +39,6 @@ public class MenuItem extends Item {
 	NSMenuItem nsItem;
 	Menu parent, menu;
 	int accelerator;
-//	int x, y, width, height;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -328,31 +327,8 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-    return ((NSMenuItem)nsItem).state() == OS.NSOnState;
+    return nsItem.state() == OS.NSOnState;
 }
-
-//int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
-//	//TEMPORARY CODE
-//	if (!isEnabled ()) return OS.noErr;
-//
-//	if ((style & SWT.CHECK) != 0) {
-//		setSelection (!getSelection ());
-//	} else {
-//		if ((style & SWT.RADIO) != 0) {
-//			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
-//				setSelection (!getSelection ());
-//			} else {
-//				selectRadio ();
-//			}
-//		}
-//	}
-//	int [] modifiers = new int [1];
-//	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//	Event event = new Event ();
-//	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
-//	postEvent (SWT.Selection, event);
-//	return OS.noErr;
-//}
 
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -373,41 +349,54 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-//int keyGlyph (int key) {
-//	switch (key) {
-//		case SWT.BS: return OS.kMenuDeleteLeftGlyph;
-//		case SWT.CR: return OS.kMenuReturnGlyph;
-//		case SWT.DEL: return OS.kMenuDeleteRightGlyph;
-//		case SWT.ESC: return OS.kMenuEscapeGlyph;
-//		case SWT.LF: return OS.kMenuReturnGlyph;
-//		case SWT.TAB: return OS.kMenuTabRightGlyph;
+int keyChar (int key) {
+	switch (key) {
+		case SWT.BS: return OS.NSBackspaceCharacter;
+		case SWT.CR: return OS.NSCarriageReturnCharacter;
+		case SWT.DEL: return OS.NSDeleteCharacter;
+		case SWT.ESC: return SWT.ESC;
+		case SWT.LF: return OS.NSNewlineCharacter;
+		case SWT.TAB: return OS.NSTabCharacter;
 //		case ' ': return OS.kMenuBlankGlyph;
-////		case ' ': return OS.kMenuSpaceGlyph;
-//		case SWT.ALT: return OS.kMenuOptionGlyph;
-//		case SWT.SHIFT: return OS.kMenuShiftGlyph;
-//		case SWT.CONTROL: return OS.kMenuControlISOGlyph;
-//		case SWT.COMMAND: return OS.kMenuCommandGlyph;
-//		case SWT.ARROW_UP: return OS.kMenuUpArrowGlyph;
-//		case SWT.ARROW_DOWN: return OS.kMenuDownArrowGlyph;
-//		case SWT.ARROW_LEFT: return OS.kMenuLeftArrowGlyph;
-//		case SWT.ARROW_RIGHT: return OS.kMenuRightArrowGlyph;
-//		case SWT.PAGE_UP: return OS.kMenuPageUpGlyph;
-//		case SWT.PAGE_DOWN: return OS.kMenuPageDownGlyph;
-//		case SWT.F1: return OS.kMenuF1Glyph;
-//		case SWT.F2: return OS.kMenuF2Glyph;
-//		case SWT.F3: return OS.kMenuF3Glyph;
-//		case SWT.F4: return OS.kMenuF4Glyph;
-//		case SWT.F5: return OS.kMenuF5Glyph;
-//		case SWT.F6: return OS.kMenuF6Glyph;
-//		case SWT.F7: return OS.kMenuF7Glyph;
-//		case SWT.F8: return OS.kMenuF8Glyph;
-//		case SWT.F9: return OS.kMenuF9Glyph;
-//		case SWT.F10: return OS.kMenuF10Glyph;
-//		case SWT.F11: return OS.kMenuF11Glyph;
-//		case SWT.F12: return OS.kMenuF12Glyph;
-//	}
-//	return OS.kMenuNullGlyph;
-//}
+//		case ' ': return OS.kMenuSpaceGlyph;		
+		case SWT.ALT: return 0x2325;
+		case SWT.SHIFT: return 0x21E7;
+		case SWT.CONTROL: return 0xF2303;
+		case SWT.COMMAND: return 0x2318;
+		case SWT.ARROW_UP: return 0x2191;
+		case SWT.ARROW_DOWN: return 0x2193;
+		case SWT.ARROW_LEFT: return 0x2190;
+		case SWT.ARROW_RIGHT: return 0x2192;
+		case SWT.PAGE_UP: return 0x21DE;
+		case SWT.PAGE_DOWN: return 0x21DF;
+		case SWT.KEYPAD_CR: return 0x22305;
+		case SWT.HELP: return 0x211C;
+		case SWT.HOME: return 0xF729;
+		case SWT.END: return 0xF72B;
+//		case SWT.CAPS_LOCK: return ??;
+		case SWT.F1: return 0xF704;
+		case SWT.F2: return 0xF705;
+		case SWT.F3: return 0xF706;
+		case SWT.F4: return 0xF707;
+		case SWT.F5: return 0xF708;
+		case SWT.F6: return 0xF709;
+		case SWT.F7: return 0xF70A;
+		case SWT.F8: return 0xF70B;
+		case SWT.F9: return 0xF70C;
+		case SWT.F10: return 0xF70D;
+		case SWT.F11: return 0xF70E;
+		case SWT.F12: return 0xF70F;
+		case SWT.F13: return 0xF710;
+		case SWT.F14: return 0xF711;
+		case SWT.F15: return 0xF712;
+		/*
+		* The following lines are intentionally commented.
+		*/
+//		case SWT.INSERT: return ??;
+	}
+	return 0;
+}
+
 
 void register () {
 	super.register ();
@@ -532,8 +521,8 @@ void sendSelection () {
 		}
 	}
 	Event event = new Event ();
-	//TODO state mask
-//	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
+	NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+	if (nsEvent != null) setInputState (event, nsEvent, 0);
 	postEvent (SWT.Selection, event);
 }
 
@@ -555,23 +544,24 @@ void sendSelection () {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget ();
+	if (this.accelerator == accelerator) return;
 	this.accelerator = accelerator;
 	int key = accelerator & SWT.KEY_MASK;
-	int virtualKey = Display.untranslateKey (key);
-	NSString string =  null;
+	int virtualKey = keyChar (key);
+	NSString string = null;
 	if (virtualKey != 0) {
 		string = NSString.stringWith ((char)virtualKey + "");
 	} else {
-		string = NSString.stringWith ((char)key + "").lowercaseString();
+		string = NSString.stringWith ((char)key + "");
 	}
-	nsItem.setKeyEquivalent (string);
+	nsItem.setKeyEquivalent (string.lowercaseString());
 	int mask = 0;
 	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.NSShiftKeyMask;
 	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.NSControlKeyMask;
-//	if ((accelerator & SWT.COMMAND) != 0) mask &= ~OS.kMenuNoCommandModifier;
 	if ((accelerator & SWT.COMMAND) != 0) mask |= OS.NSCommandKeyMask;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.NSAlternateKeyMask;
 	nsItem.setKeyEquivalentModifierMask (mask);
+	nsItem.setHidden (false);
 	if ((this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0)) {
 		updateText ();
 	}
@@ -597,7 +587,7 @@ public void setEnabled (boolean enabled) {
 	} else {
 		state |= DISABLED;
 	}
-	((NSMenuItem)nsItem).setEnabled(enabled);
+	nsItem.setEnabled(enabled);
 }
 
 /**
@@ -618,7 +608,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	((NSMenuItem)nsItem).setImage(image != null? image.handle : null);
+	nsItem.setImage(image != null? image.handle : null);
 }
 
 /**
@@ -707,7 +697,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	((NSMenuItem)nsItem).setState(selected ? OS.NSOnState : OS.NSOffState);
+	nsItem.setState(selected ? OS.NSOnState : OS.NSOffState);
 }
 
 /**
@@ -775,6 +765,59 @@ void updateText() {
 		submenu.setTitle (label);
 	} else {
 		nsItem.setTitle (label);
+	}
+	if (accelerator == 0) {
+		int mask = 0, key = 0;
+		if (i < buffer.length && buffer [i] == '\t') {
+			for (j = i + 1; j < buffer.length; j++) {
+				switch (buffer [j]) {
+					case '\u2303': mask |= OS.NSControlKeyMask; i++; break;
+					case '\u2325': mask |= OS.NSAlternateKeyMask; i++; break;
+					case '\u21E7': mask |= OS.NSShiftKeyMask; i++; break;
+					case '\u2318': mask |= OS.NSCommandKeyMask; i++; break;
+					default:
+						j = buffer.length;
+						break;
+				}
+			}
+			switch (buffer.length - i - 1) {
+				case 1:
+					key = buffer [i + 1];
+					break;
+				case 2:
+					if (buffer [i + 1] == 'F') {
+						switch (buffer [i + 2]) {
+							case '1': key = 0xF704; break;
+							case '2': key = 0xF705; break;
+							case '3': key = 0xF706; break;
+							case '4': key = 0xF707; break;
+							case '5': key = 0xF708; break;
+							case '6': key = 0xF709; break;
+							case '7': key = 0xF70A; break;
+							case '8': key = 0xF70B; break;
+							case '9': key = 0xF70C; break;
+						}
+					}
+					break;
+				case 3:
+					if (buffer [i + 1] == 'F' && buffer [i + 2] == '1') {
+						switch (buffer [i + 3]) {
+							case '0': key = 0xF70D; break;
+							case '1': key = 0xF70E; break;
+							case '2': key = 0xF70F; break;
+							case '3': key = 0xF710; break;
+							case '4': key = 0xF711; break;
+							case '5': key = 0xF712; break;
+						}
+					}
+					break;
+			}
+		}
+		NSString string = NSString.stringWith (key == 0 ? "" : (char)key + "");
+		nsItem.setKeyEquivalentModifierMask (mask);
+		nsItem.setKeyEquivalent (string.lowercaseString ());
+		//TODO - only hide when key != 0 (fix all places)
+		nsItem.setHidden (key != 0 || mask != 0);
 	}
 }
 

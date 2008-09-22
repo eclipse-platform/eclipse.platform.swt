@@ -699,6 +699,7 @@ public static final int /*long*/ sel_isEqual_ = sel_registerName("isEqual:");
 public static final int /*long*/ sel_isEqualTo_ = sel_registerName("isEqualTo:");
 public static final int /*long*/ sel_isFilePackageAtPath_ = sel_registerName("isFilePackageAtPath:");
 public static final int /*long*/ sel_isFlipped = sel_registerName("isFlipped");
+public static final int /*long*/ sel_isHidden = sel_registerName("isHidden");
 public static final int /*long*/ sel_isKeyWindow = sel_registerName("isKeyWindow");
 public static final int /*long*/ sel_isKindOfClass_ = sel_registerName("isKindOfClass:");
 public static final int /*long*/ sel_isOpaque = sel_registerName("isOpaque");
@@ -715,6 +716,8 @@ public static final int /*long*/ sel_itemTitleAtIndex_ = sel_registerName("itemT
 public static final int /*long*/ sel_jobDisposition = sel_registerName("jobDisposition");
 public static final int /*long*/ sel_keyCode = sel_registerName("keyCode");
 public static final int /*long*/ sel_keyDown_ = sel_registerName("keyDown:");
+public static final int /*long*/ sel_keyEquivalent = sel_registerName("keyEquivalent");
+public static final int /*long*/ sel_keyEquivalentModifierMask = sel_registerName("keyEquivalentModifierMask");
 public static final int /*long*/ sel_keyUp_ = sel_registerName("keyUp:");
 public static final int /*long*/ sel_keyWindow = sel_registerName("keyWindow");
 public static final int /*long*/ sel_lastPathComponent = sel_registerName("lastPathComponent");
@@ -3052,9 +3055,6 @@ public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFa
  */
 public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
 /**
- * @param newCursorPosition flags=struct */
-public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
-/**
  * @param cf cast=(CFTypeRef)
  */
 public static final native void CFRelease(int /*long*/ cf);
@@ -3066,6 +3066,9 @@ public static final native void CFRelease(int /*long*/ cf);
  * @param encoding cast=(CFStringEncoding)
  */
 public static final native int /*long*/ CFURLCreateStringByAddingPercentEscapes(int /*long*/ allocator, int /*long*/ originalString, int /*long*/ charactersToLeaveUnescaped, int /*long*/ legalURLCharactersToBeEscaped, int encoding);
+/**
+ * @param newCursorPosition flags=struct */
+public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
 /**
  * @param hfsFileTypeCode cast=(OSType)
  */

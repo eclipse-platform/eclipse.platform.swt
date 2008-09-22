@@ -11188,8 +11188,8 @@
     <method selector="isEnabled">
       <retval></retval>
     </method>
-    <method selector="isHidden">
-      <retval></retval>
+    <method selector="isHidden" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="isHiddenOrHasHiddenAncestor">
       <retval></retval>
@@ -11200,11 +11200,11 @@
     <method selector="isSeparatorItem">
       <retval></retval>
     </method>
-    <method selector="keyEquivalent">
-      <retval></retval>
+    <method selector="keyEquivalent" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="keyEquivalentModifierMask">
-      <retval></retval>
+    <method selector="keyEquivalentModifierMask" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="menu">
       <retval></retval>
@@ -11246,9 +11246,9 @@
       <arg name="flag" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setHidden:">
-      <arg name="hidden"></arg>
-      <retval></retval>
+    <method selector="setHidden:" swt_gen="true">
+      <arg name="hidden" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setImage:" swt_gen="true">
       <arg name="menuImage" swt_gen="true"></arg>

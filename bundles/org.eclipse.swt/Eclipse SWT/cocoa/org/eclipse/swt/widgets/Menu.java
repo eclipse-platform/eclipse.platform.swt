@@ -50,12 +50,10 @@ public class Menu extends Widget {
 	 * </p>
 	 */
 	NSMenu nsMenu;
-	short id;
 	int x, y, itemCount;
-//	int width, height;
-	boolean hasLocation, modified, closed;
+	boolean hasLocation, visible;
 	MenuItem [] items;
-	MenuItem cascade, defaultItem, lastTarget;
+	MenuItem cascade, defaultItem;
 	Decorations parent;
 
 /**
@@ -308,11 +306,12 @@ void createItem (MenuItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	
 	NSMenu emptyMenu = item.createEmptyMenu ();
 	if (emptyMenu != null) {
-		item.nsItem.setSubmenu (emptyMenu);
+		nsItem.setSubmenu (emptyMenu);
 	}
+	//TODO - find a way to disable the menu instead of each item
+	if (!getEnabled ()) nsItem.setEnabled (false);
 }
 
 void createWidget () {
@@ -566,17 +565,14 @@ public boolean getVisible () {
 		return this == parent.menuShell ().menuBar;
 	}
 	if ((style & SWT.POP_UP) != 0) {
-//		Menu [] popups = display.popups;
-//		if (popups == null) return false;
-//		for (int i=0; i<popups.length; i++) {
-//			if (popups [i] == this) return true;
-//		}
+		Menu [] popups = display.popups;
+		if (popups == null) return false;
+		for (int i=0; i<popups.length; i++) {
+			if (popups [i] == this) return true;
+		}
 	}
-//	MenuTrackingData outData = new MenuTrackingData ();
-//	return OS.GetMenuTrackingData (handle, outData) == OS.noErr;
-	return false;
+	return visible;
 }
-
 
 /**
  * Searches the receiver's list starting at the first item
@@ -656,36 +652,38 @@ void menu_willHighlightItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menu
 }
 
 void menuNeedsUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+	//This code is intentionally commented
+	//sendEvent (SWT.Show);
+}
+
+void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+	visible = true;
 	sendEvent (SWT.Show);
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null) {
+			if (item.accelerator == 0) {
+				if (item.nsItem.keyEquivalent ().length () != 0 || item.nsItem.keyEquivalentModifierMask () != 0) {
+					item.nsItem.setHidden (false);
+				}
+			}
+		}
+	}
 }
 
 void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	sendEvent (SWT.Hide);
-}
-
-int modifierIndex (String accelText) {
-	int start = accelText.length () - 1;
-	int index = start;
-	while (index >= 0) {
-		char c = accelText.charAt (index);
-		switch (c) {
-			case ' ':
-				if (index != start) return index;
-				break;
-			case '\u2303':
-			case '\u2325':
-			case '\u21E7':
-			case '\u2318':
-				return index;
+	visible = false;
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null) {
+			if (item.accelerator == 0) {
+				if (item.nsItem.keyEquivalent().length () != 0 || item.nsItem.keyEquivalentModifierMask () != 0) {
+					item.nsItem.setHidden (true);
+				}
+			}
 		}
-		index--;
 	}
-	return -1;
-}
-
-int numberOfItemsInMenu(int menu) {
-	System.out.println("numver");
-	return 4;
 }
 
 void register () {
@@ -723,7 +721,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	display.removeMenu (this);
 	parent = null;
-	cascade = defaultItem = lastTarget = null;
+	cascade = defaultItem = null;
 }
 
 /**
@@ -812,10 +810,22 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (enabled) {
 		state &= ~DISABLED;
-		//OS.EnableMenuItem (handle, (short)0);
 	} else {
 		state |= DISABLED;
-		//OS.DisableMenuItem (handle, (short)0);
+	}
+	//TODO - find a way to disable the menu instead of each item
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null) {
+			/*
+			* Feature in the Macintosh.  When a cascade menu
+			* item is disabled, rather than disabling the item,
+			* the submenu is disabled.
+			* 
+			* There is no fix for this at this time.
+			*/
+			item.nsItem.setEnabled (enabled && item.getEnabled ());
+		}
 	}
 }
 
