@@ -159,6 +159,7 @@ void computeRuns() {
 	paragraph.setAlignment(align);
 	paragraph.setLineSpacing(spacing);
 	paragraph.setFirstLineHeadIndent(indent);
+	paragraph.setLineBreakMode(wrapWidth != -1 ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
 	
 	//TODO tabs ascend descent wrap
 	
