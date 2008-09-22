@@ -5068,7 +5068,7 @@ void insertBlockSelectionText(String text, int action) {
 	event.end = end;
 	sendKeyEvent(event);
 
-	int x = getPointAtOffset(event.start + event.text.length()).x;
+	int x = getPointAtOffset(caretOffset).x;
 	setBlockSelectionLocation(x, blockYLocation - getVerticalScrollOffset());
 	blockXAnchor = blockXLocation;
 }
