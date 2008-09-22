@@ -73,6 +73,15 @@ public class ST {
 	public static final int TOGGLE_OVERWRITE = 16777225; // binding = SWT.INSERT;
 	
 	/**
+	 * TEMPORARY CODE - API SUBJECT TO CHANGE
+	 * 
+	 * Toggle block selection mode
+	 * 
+	 * @since 3.5
+	 */
+	public static final int TOGGLE_BLOCKSELECTION = 16777226;
+	
+	/**
 	 *  Bullet style dot.
 	 * 
 	 *  @see Bullet
