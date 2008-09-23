@@ -190,7 +190,7 @@ NSAttributedString createString (int index) {
 		NSColor color = NSColor.colorWithDeviceRed(background.handle [0], background.handle [1], background.handle [2], 1);
 		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
-	if (parent.getColumnCount () > 0) {
+	if (parent.columnCount > 0) {
 		TableColumn column = parent.getColumn (index);
 		int style = column.getStyle ();
 		if ((style & SWT.CENTER) != 0) {
@@ -297,10 +297,13 @@ public Rectangle getBounds () {
 public Rectangle getBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
+
 	NSTableView tableView = (NSTableView) parent.view;
-	if ((parent.style & SWT.CHECK) != 0) index ++;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
-	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
+	return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
 
 /**
@@ -468,9 +471,12 @@ public Image getImage (int index) {
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
+
 	NSTableView tableView = (NSTableView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
-	if ((parent.style & SWT.CHECK) != 0) index ++;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	//TODO is this right?
 	rect.width = image != null ? image.getBounds().width : 0; 
@@ -565,9 +571,12 @@ public String getText (int index) {
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
+
 	NSTableView tableView = (NSTableView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
-	if ((parent.style & SWT.CHECK) != 0) index ++;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	//TODO is this right?
 	if (image != null) {
@@ -670,9 +679,12 @@ public void setBackground (int index, Color color) {
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.frameOfCellAtColumn (index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+
+	NSTableView tableView = (NSTableView) parent.view;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	tableView.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -764,9 +776,12 @@ public void setFont (int index, Font font) {
 	cellFont [index] = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.frameOfCellAtColumn (index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+
+	NSTableView tableView = (NSTableView) parent.view;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	tableView.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -819,7 +834,7 @@ public void setForeground (Color color) {
  * 
  * @since 3.0
  */
-public void setForeground (int index, Color color){
+public void setForeground (int index, Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -835,9 +850,12 @@ public void setForeground (int index, Color color){
 	cellForeground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true;
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.frameOfCellAtColumn (index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+
+	NSTableView tableView = (NSTableView) parent.view;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	tableView.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -925,9 +943,12 @@ public void setImage (int index, Image image) {
 	}
 //	cached = true;
 //	if (index == 0) parent.setScrollWidth (this);
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.frameOfCellAtColumn (index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	
+	NSTableView tableView = (NSTableView) parent.view;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	tableView.setNeedsDisplayInRect (rect);
 }
 
 public void setImage (Image image) {
@@ -1007,9 +1028,12 @@ public void setText (int index, String string) {
 	}
 	cached = true;
 	if (index == 0) parent.setScrollWidth (this);
-	NSTableView view = (NSTableView) parent.view;
-	NSRect rect = view.frameOfCellAtColumn (index + ((parent.style & SWT.CHECK) != 0 ? 1 : 0), parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+
+	NSTableView tableView = (NSTableView) parent.view;
+	TableColumn column = parent.getColumn (index);
+	index = (int)/*64*/tableView.columnWithIdentifier (column.nsColumn);
+	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
+	tableView.setNeedsDisplayInRect (rect);
 }
 
 public void setText (String string) {

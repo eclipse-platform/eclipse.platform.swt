@@ -160,6 +160,11 @@ public void setUsesAlternatingRowBackgroundColors(boolean useAlternatingRowColor
 	OS.objc_msgSend(this.id, OS.sel_setUsesAlternatingRowBackgroundColors_, useAlternatingRowColors);
 }
 
+public NSArray tableColumns() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_tableColumns);
+	return result != 0 ? new NSArray(result) : null;
+}
+
 public void tile() {
 	OS.objc_msgSend(this.id, OS.sel_tile);
 }

@@ -691,6 +691,9 @@ void destroyItem (TableColumn column) {
 			}
 		}
 	}
+
+	int oldIndex = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
+
 	if (columnCount == 1) {
 		//TODO - reset attributes
 		firstColumn = column.nsColumn;
@@ -700,8 +703,17 @@ void destroyItem (TableColumn column) {
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
-	for (int i=index; i<columnCount; i++) {
-		columns [i].sendEvent (SWT.Move);
+
+	NSArray array = ((NSTableView)view).tableColumns ();
+	int arraySize = (int)/*64*/array.count ();
+	for (int i = oldIndex; i < arraySize; i++) {
+		int /*long*/ columnId = array.objectAtIndex (i).id;
+		for (int j = 0; j < columnCount; j++) {
+			if (columns[j].nsColumn.id == columnId) {
+				columns [j].sendEvent (SWT.Move);
+				break;
+			}
+		}
 	}
 }
 
@@ -1334,10 +1346,16 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		NSPoint location = nsEvent.locationInWindow ();
 		location = headerView.convertPoint_fromView_ (location, null);
 		int index = (int)/*64*/headerView.columnAtPoint (location);
-		if (index != -1) {
-			if ((style & SWT.CHECK) != 0) index--;
-			TableColumn column = columns [index]; // TODO wrong column when columns have been rearranged
-			column.postEvent (SWT.Selection);
+		if (index == -1) return;
+		if (index == 0 && (style & SWT.CHECK) != 0) return;
+		NSArray array = ((NSTableView)view).tableColumns ();
+		int /*long*/ columnId = array.objectAtIndex (index).id;
+		for (int i = 0; i < columnCount; i++) {
+			TableColumn column = columns [i];
+			if (column.nsColumn.id == columnId) {
+				column.postEvent (SWT.Selection);
+				break;
+			}
 		}
 	}
 }
@@ -2193,9 +2211,10 @@ public void showColumn (TableColumn column) {
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.parent != this) return;
-	int index = indexOf (column);
-	if (columnCount <= 1 || !(0 <= index && index < columnCount)) return;
-	((NSTableView)view).scrollColumnToVisible(index + ((style & SWT.CHECK) != 0 ? 1 : 0));
+	if (columnCount <= 1) return;
+	int index = (int)/*64*/((NSTableView)view).columnWithIdentifier (column.nsColumn);
+	if (!(0 <= index && index < columnCount + ((style & SWT.CHECK) != 0 ? 1 : 0))) return;
+	((NSTableView)view).scrollColumnToVisible (index);
 }
 
 void showIndex (int index) {

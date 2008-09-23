@@ -76,7 +76,7 @@ public class TableColumn extends Item {
 public TableColumn (Table parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, parent.getColumnCount ());
+	parent.createItem (this, parent.columnCount);
 }
 
 /**
@@ -507,12 +507,13 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
+	NSTableView tableView = ((NSTableView) parent.view);
+	NSTableHeaderView headerView = tableView.headerView ();
 	if (headerView == null) return;
-	if ((parent.style & SWT.CHECK) != 0) index++;
+	index = (int)/*64*/tableView.columnWithIdentifier (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
 	headerView.setNeedsDisplayInRect (rect);
-	rect = ((NSTableView)parent.view).rectOfColumn (index);
+	rect = tableView.rectOfColumn (index);
 	parent.view.setNeedsDisplayInRect (rect);
 }
 

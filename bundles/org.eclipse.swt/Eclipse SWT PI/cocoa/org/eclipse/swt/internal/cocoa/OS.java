@@ -1127,6 +1127,7 @@ public static final int /*long*/ sel_tabStops = sel_registerName("tabStops");
 public static final int /*long*/ sel_tabView_didSelectTabViewItem_ = sel_registerName("tabView:didSelectTabViewItem:");
 public static final int /*long*/ sel_tabView_willSelectTabViewItem_ = sel_registerName("tabView:willSelectTabViewItem:");
 public static final int /*long*/ sel_tabViewItemAtPoint_ = sel_registerName("tabViewItemAtPoint:");
+public static final int /*long*/ sel_tableColumns = sel_registerName("tableColumns");
 public static final int /*long*/ sel_tableView_objectValueForTableColumn_row_ = sel_registerName("tableView:objectValueForTableColumn:row:");
 public static final int /*long*/ sel_tableView_setObjectValue_forTableColumn_row_ = sel_registerName("tableView:setObjectValue:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_shouldEditTableColumn_row_ = sel_registerName("tableView:shouldEditTableColumn:row:");
