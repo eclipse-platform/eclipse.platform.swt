@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.tools.internal.JNIGeneratorApp;
 import org.eclipse.swt.tools.internal.MetaData;
@@ -21,6 +22,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 	static class MainClass {
 		public String mainClassName;
 		public String outputDir;
+		public String sourceDir;
 		public boolean build;
 		
 		public String toString() {
@@ -38,6 +40,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 				MainClass clazz = classes[i/2] = new MainClass();
 				clazz.mainClassName = list[i];
 				clazz.outputDir = list[i+1].substring(2, list[i+1].length());
+				clazz.sourceDir = clazz.outputDir.substring(0, clazz.outputDir.length() - "library/".length());
 			}
 		}
 	}
@@ -47,11 +50,12 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 		if (delta == null) return null;
 		delta.accept(new IResourceDeltaVisitor() {
 			public boolean visit(IResourceDelta delta) throws CoreException {
-				String path = delta.getFullPath().toPortableString();
+				IPath ipath = delta.getFullPath();
+				if (!"java".equals(ipath.getFileExtension())) return true;
+				String path = ipath.toPortableString();
 				for (int i = 0; i < classes.length; i++) {
 					if (classes[i].build) continue;
-					String outputDir = classes[i].outputDir;
-					if (path.startsWith(outputDir.substring(0, outputDir.length() - "library/".length()))) {
+					if (path.startsWith(classes[i].sourceDir)) {
 						classes[i].build = true;
 					}
 				}
