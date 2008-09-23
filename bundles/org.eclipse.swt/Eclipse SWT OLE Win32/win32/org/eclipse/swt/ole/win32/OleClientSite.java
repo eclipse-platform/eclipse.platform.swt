@@ -846,18 +846,21 @@ private int OnDataChange(int /*long*/ pFormatetc, int /*long*/ pStgmed) {
 }
 private void onDispose(Event e) {
 	inDispose = true;
+
+	// remove listeners
+	removeListener(SWT.Dispose, listener);
+	removeListener(SWT.FocusIn, listener);
+	removeListener(SWT.FocusOut, listener);
+	removeListener(SWT.Paint, listener);
+	removeListener(SWT.Traverse, listener);
+	removeListener(SWT.KeyDown, listener);
+	
 	if (state != STATE_NONE)
 		doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
 	deactivateInPlaceClient();
 	releaseObjectInterfaces(); // Note, must release object interfaces before releasing frame
 	deleteTempStorage();
 	
-	// remove listeners
-	removeListener(SWT.Dispose, listener);
-	removeListener(SWT.FocusIn, listener);
-	removeListener(SWT.Paint, listener);
-	removeListener(SWT.Traverse, listener);
-	removeListener(SWT.KeyDown, listener);
 	frame.removeListener(SWT.Resize, listener);
 	frame.removeListener(SWT.Move, listener);
 	
