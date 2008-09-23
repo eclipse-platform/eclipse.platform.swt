@@ -341,8 +341,6 @@ void releaseWidget () {
  * above the IME, then the IME must be informed that the composition
  * offset has changed.
  *
- * @return the offset of the composition
- *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
