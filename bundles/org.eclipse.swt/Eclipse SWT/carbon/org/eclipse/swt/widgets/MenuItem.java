@@ -868,49 +868,22 @@ void updateText (short menuIndex) {
 	
 	acceleratorSet = accelerator != 0;
 	if (!acceleratorSet) {
-		/* Parse accelerator text following \t in the item text. */
+		int inModifiers = OS.kMenuNoCommandModifier, inGlyph = OS.kMenuNullGlyph, inKey = 0, swtKey = 0;
+		boolean inSetVirtualKey = false;
 		if (i + 1 < buffer.length && buffer [i] == '\t') {
-			boolean inSetVirtualKey = false;
-			int inModifiers = OS.kMenuNoCommandModifier, inGlyph = OS.kMenuNullGlyph, inKey = 0, swtKey = 0;
 			for (j = i + 1; j < buffer.length; j++) {
-				char c = buffer [j];
-				switch (c) {
+				switch (buffer [j]) {
 					case '\u2303': inModifiers |= OS.kMenuControlModifier; i++; break;
 					case '\u2325': inModifiers |= OS.kMenuOptionModifier; i++; break;
 					case '\u21E7': inModifiers |= OS.kMenuShiftModifier; i++; break;
 					case '\u2318': inModifiers &= ~OS.kMenuNoCommandModifier; i++; break;
+					default:
+						j = buffer.length;
+						break;
 				}
 			}
-			int length = buffer.length - i - 1;
-			if (length > 0) {
-				if (length > 1) {
-					if (buffer [i + 1] == 'F') {
-						switch (buffer [i + 2]) {
-							case '1':
-								if (length == 2) {
-									swtKey = SWT.F1;
-								} else {
-									switch (buffer [i + 2]) {
-										case '0': swtKey = SWT.F10; break;
-										case '1': swtKey = SWT.F11; break;
-										case '2': swtKey = SWT.F12; break;
-										case '3': swtKey = SWT.F13; break;
-										case '4': swtKey = SWT.F14; break;
-										case '5': swtKey = SWT.F15; break;
-									}
-								}
-								break;
-							case '2': swtKey = SWT.F2; break;
-							case '3': swtKey = SWT.F3; break;
-							case '4': swtKey = SWT.F4; break;
-							case '5': swtKey = SWT.F5; break;
-							case '6': swtKey = SWT.F6; break;
-							case '7': swtKey = SWT.F7; break;
-							case '8': swtKey = SWT.F8; break;
-							case '9': swtKey = SWT.F9; break;
-						}
-					}
-				} else {
+			switch (buffer.length - i - 1) {
+				case 1:
 					inKey = buffer [i + 1];
 					switch (inKey) {
 						case '\u232B': swtKey = SWT.BS; break;
@@ -931,30 +904,66 @@ void updateText (short menuIndex) {
 						case '\uF729': swtKey = SWT.HOME; break;
 						case '\uF72B': swtKey = SWT.END; break;
 //						case '\u21EA': swtKey = SWT.CAPS_LOCK; break;
+						case '\uF704': swtKey = SWT.F1; break;
+						case '\uF705': swtKey = SWT.F2; break;
+						case '\uF706': swtKey = SWT.F3; break;
+						case '\uF707': swtKey = SWT.F4; break;
+						case '\uF708': swtKey = SWT.F5; break;
+						case '\uF709': swtKey = SWT.F6; break;
+						case '\uF70A': swtKey = SWT.F7; break;
+						case '\uF70B': swtKey = SWT.F8; break;
+						case '\uF70C': swtKey = SWT.F9; break;
+						case '\uF70D': swtKey = SWT.F10; break;
+						case '\uF70E': swtKey = SWT.F11; break;
+						case '\uF70F': swtKey = SWT.F12; break;
+						case '\uF710': swtKey = SWT.F13; break;
+						case '\uF711': swtKey = SWT.F14; break;
+						case '\uF712': swtKey = SWT.F15; break;
 					}
-				}
-				inGlyph = keyGlyph (swtKey);
-				int virtualKey = Display.untranslateKey (swtKey);
-				if (inKey == ' ') virtualKey = 49;
-				if (virtualKey != 0) {
-					inSetVirtualKey = true;
-					inKey = virtualKey;
-				} else {
-					inKey = Character.toUpperCase ((char)inKey);
-				}
-				if (inKey != 0 || inGlyph != OS.kMenuNullGlyph) {
-					acceleratorSet = true;
-					OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
-					OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
-					OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
-				} else {
-					OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)OS.kMenuNoCommandModifier);
-					OS.SetMenuItemCommandKey (parent.handle, menuIndex, false, (char)0);
-					OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)OS.kMenuNullGlyph);
-				}
+					break;
+				case 2:
+					if (buffer [i + 1] == 'F') {
+						switch (buffer [i + 2]) {
+							case '1': swtKey = SWT.F1; break;
+							case '2': swtKey = SWT.F2; break;
+							case '3': swtKey = SWT.F3; break;
+							case '4': swtKey = SWT.F4; break;
+							case '5': swtKey = SWT.F5; break;
+							case '6': swtKey = SWT.F6; break;
+							case '7': swtKey = SWT.F7; break;
+							case '8': swtKey = SWT.F8; break;
+							case '9': swtKey = SWT.F9; break;
+						}
+					}
+					break;
+				case 3:
+					if (buffer [i + 1] == 'F' && buffer [i + 2] == '1') {
+						switch (buffer [i + 3]) {
+							case '0': swtKey = SWT.F10; break;
+							case '1': swtKey = SWT.F11; break;
+							case '2': swtKey = SWT.F12; break;
+							case '3': swtKey = SWT.F13; break;
+							case '4': swtKey = SWT.F14; break;
+							case '5': swtKey = SWT.F15; break;
+						}
+					}
+					break;
+			}
+
+			inGlyph = keyGlyph (swtKey);
+			int virtualKey = Display.untranslateKey (swtKey);
+			if (inKey == ' ') virtualKey = 49;
+			if (virtualKey != 0) {
+				inSetVirtualKey = true;
+				inKey = virtualKey;
+			} else {
+				inKey = Character.toUpperCase ((char)inKey);
 			}
 		}
+		acceleratorSet = inKey != 0 || inGlyph != OS.kMenuNullGlyph;
+		OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
+		OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
+		OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
 	}
 }
 }
-
