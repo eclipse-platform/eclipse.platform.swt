@@ -1716,35 +1716,23 @@ public void setColumnOrder (int [] order) {
 		if (order [i] != oldOrder [i]) reorder = true;
 	}
 	if (reorder) {
-//		int [] disclosure = new int [1];
-//		boolean [] expandableRows = new boolean [1];
-//		OS.GetDataBrowserListViewDisclosureColumn (handle, disclosure, expandableRows);
-//		TreeColumn firstColumn = columns [order [0]];
-//		if (disclosure [0] != firstColumn.id) {
-//			OS.SetDataBrowserListViewDisclosureColumn (handle, firstColumn.id, expandableRows [0]);
-//		}
-		int x = 0;
-		short [] width = new short [1];
+		NSOutlineView outlineView = (NSOutlineView)view;
 		int [] oldX = new int [oldOrder.length];
+		int check = (style & SWT.CHECK) != 0 ? 1 : 0;
 		for (int i=0; i<oldOrder.length; i++) {
-			int index = oldOrder [i];
-//			TreeColumn column = columns [index];
-			oldX [index] =  x;
-//			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
-			x += width [0];
+			int index = oldOrder[i];
+			oldX [index] = (int)outlineView.rectOfColumn (i + check).x;
 		}
-		x = 0;
 		int [] newX = new int [order.length];
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
-//			TreeColumn column = columns [index];
-//			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
-//			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
-//			column.lastPosition = position;
-			newX [index] =  x;
-//			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
-			x += width [0];
+			TreeColumn column = columns[index];
+			int oldIndex = outlineView.columnWithIdentifier (column.nsColumn);
+			int newIndex = i + check;
+			outlineView.moveColumn (oldIndex, newIndex);
+			newX [index] = (int)outlineView.rectOfColumn (newIndex).x;
 		}
+
 		TreeColumn[] newColumns = new TreeColumn [columnCount];
 		System.arraycopy (columns, 0, newColumns, 0, columnCount);
 		for (int i=0; i<columnCount; i++) {

@@ -1742,27 +1742,21 @@ public void setColumnOrder (int [] order) {
 		if (order [i] != oldOrder [i]) reorder = true;
 	}
 	if (reorder) {
-		int x = 0;
-		short [] width = new short [1];
+		NSTableView tableView = (NSTableView)view;
 		int [] oldX = new int [oldOrder.length];
+		int check = (style & SWT.CHECK) != 0 ? 1 : 0;
 		for (int i=0; i<oldOrder.length; i++) {
-			int index = oldOrder [i];
-//			TableColumn column = columns [index];
-			oldX [index] =  x;
-//			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
-			x += width [0];
+			int index = oldOrder[i];
+			oldX [index] = (int)tableView.rectOfColumn (i + check).x;
 		}
-		x = 0;
 		int [] newX = new int [order.length];
 		for (int i=0; i<order.length; i++) {
 			int index = order [i];
-//			TableColumn column = columns [index];
-//			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
-//			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
-//			column.lastPosition = position;
-			newX [index] =  x;
-//			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
-			x += width [0];
+			TableColumn column = columns[index];
+			int oldIndex = tableView.columnWithIdentifier (column.nsColumn);
+			int newIndex = i + check;
+			tableView.moveColumn (oldIndex, newIndex);
+			newX [index] = (int)tableView.rectOfColumn (newIndex).x;
 		}
 		TableColumn[] newColumns = new TableColumn [columnCount];
 		System.arraycopy (columns, 0, newColumns, 0, columnCount);
