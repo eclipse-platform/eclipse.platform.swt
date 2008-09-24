@@ -350,6 +350,7 @@ public boolean isEnabled () {
 }
 
 int keyChar (int key) {
+	//TODO - use the NS key constants
 	switch (key) {
 		case SWT.BS: return OS.NSBackspaceCharacter;
 		case SWT.CR: return OS.NSCarriageReturnCharacter;
