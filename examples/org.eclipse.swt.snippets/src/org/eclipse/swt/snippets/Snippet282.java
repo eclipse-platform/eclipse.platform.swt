@@ -37,6 +37,10 @@ public class Snippet282 {
 	    gd.minimumHeight = 400;
 	    gd.minimumWidth = 600;
 	    imageButton.setLayoutData(gd);
+	    
+	    final Text imageText = new Text(shell, SWT.NONE);
+	    imageText.setText("");
+	    imageText.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
 		Composite buttons = new Composite(shell, SWT.NONE);
 		buttons.setLayout(new GridLayout(4, true));
@@ -52,6 +56,7 @@ public class Snippet282 {
 					if (image != null) image.dispose();
 					image = new Image(display, string);
 					imageButton.setImage(image);
+					imageText.setText(string);
 				}
 			}
 		});
@@ -62,8 +67,10 @@ public class Snippet282 {
 			public void handleEvent(Event event) {
 				Image image = imageButton.getImage();
 				if (image != null) {
-					ImageTransfer transfer = ImageTransfer.getInstance();
-					clipboard.setContents(new Object[]{image.getImageData()}, new Transfer[]{transfer});
+					ImageTransfer imageTransfer = ImageTransfer.getInstance();
+					TextTransfer textTransfer = TextTransfer.getInstance();
+					clipboard.setContents(new Object[]{image.getImageData(), imageText.getText()}, 
+							new Transfer[]{imageTransfer, textTransfer});
 				}
 			}
 		});
@@ -72,8 +79,7 @@ public class Snippet282 {
 		button.setText("Paste");
 		button.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				ImageTransfer transfer = ImageTransfer.getInstance();
-				ImageData imageData = (ImageData)clipboard.getContents(transfer);
+				ImageData imageData = (ImageData)clipboard.getContents(ImageTransfer.getInstance());
 				if (imageData != null) {
 					imageButton.setText("");
 					Image image = imageButton.getImage();
@@ -82,6 +88,12 @@ public class Snippet282 {
 					imageButton.setImage(image);
 				} else {
 					imageButton.setText("No image");
+				}
+				String text = (String)clipboard.getContents(TextTransfer.getInstance());
+				if (text != null) {
+					imageText.setText(text);
+				} else {
+					imageText.setText("");
 				}
 			}
 		});
@@ -94,6 +106,7 @@ public class Snippet282 {
 				Image image = imageButton.getImage();
 				if (image != null) image.dispose();
 				imageButton.setImage(null);
+				imageText.setText("");
 			}
 		});
 		
