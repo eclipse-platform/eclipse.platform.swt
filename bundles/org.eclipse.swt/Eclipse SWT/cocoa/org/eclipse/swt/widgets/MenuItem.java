@@ -369,8 +369,8 @@ int keyChar (int key) {
 		case SWT.ARROW_RIGHT: return 0x2192;
 		case SWT.PAGE_UP: return 0x21DE;
 		case SWT.PAGE_DOWN: return 0x21DF;
-		case SWT.KEYPAD_CR: return 0x22305;
-		case SWT.HELP: return 0x211C;
+		case SWT.KEYPAD_CR: return OS.NSEnterCharacter;
+		case SWT.HELP: return OS.NSHelpFunctionKey;
 		case SWT.HOME: return 0xF729;
 		case SWT.END: return 0xF72B;
 //		case SWT.CAPS_LOCK: return ??;
