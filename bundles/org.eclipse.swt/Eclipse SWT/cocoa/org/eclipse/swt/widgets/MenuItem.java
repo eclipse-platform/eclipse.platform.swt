@@ -784,6 +784,7 @@ void updateText() {
 			switch (buffer.length - i - 1) {
 				case 1:
 					key = buffer [i + 1];
+					if (key == 0x2423) key = ' ';
 					break;
 				case 2:
 					if (buffer [i + 1] == 'F') {
