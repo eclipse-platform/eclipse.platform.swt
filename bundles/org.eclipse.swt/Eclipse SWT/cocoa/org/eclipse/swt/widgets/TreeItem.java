@@ -477,8 +477,12 @@ public Rectangle getBounds (int index) {
 	if (!(0 <= index && index < Math.max (1, parent.columnCount))) return new Rectangle (0, 0, 0, 0);
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
@@ -675,8 +679,12 @@ public Rectangle getImageBounds (int index) {
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	//TODO is this right?
 	rect.width = image != null ? image.getBounds().width : 0; 
@@ -845,8 +853,12 @@ public Rectangle getTextBounds (int index) {
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	//TODO is this right?
 	if (image != null) {
@@ -1009,7 +1021,16 @@ public void setBackground (int index, Color color) {
 	cellBackground [index] = color;
 	if (oldColor != null && oldColor.equals (color)) return;
 	cached = true; 
-	((NSOutlineView) parent.view).reloadItem (handle);
+
+	NSOutlineView outlineView = (NSOutlineView) parent.view;
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
+	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
+	outlineView.setNeedsDisplayInRect (rect);
 }
 
 /**
@@ -1132,8 +1153,12 @@ public void setFont (int index, Font font) {
 	cached = true;
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
 	outlineView.setNeedsDisplayInRect (rect);
 }
@@ -1208,8 +1233,12 @@ public void setForeground (int index, Color color){
 	cached = true;
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
 	outlineView.setNeedsDisplayInRect (rect);
 }
@@ -1301,8 +1330,12 @@ public void setImage (int index, Image image) {
 //	if (index == 0) parent.setScrollWidth (this);
 	
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
 	outlineView.setNeedsDisplayInRect (rect);
 }
@@ -1388,8 +1421,12 @@ public void setText (int index, String string) {
 	if (index == 0) parent.setScrollWidth (this);
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
-	TreeColumn column = parent.getColumn (index);
-	index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	if (parent.columnCount == 0) {
+		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
+	} else {
+		TreeColumn column = parent.getColumn (index);
+		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
+	}
 	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
 	outlineView.setNeedsDisplayInRect (rect);
 }
