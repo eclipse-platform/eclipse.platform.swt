@@ -892,15 +892,15 @@ void updateText (short menuIndex) {
 						case '\u238B': swtKey = SWT.ESC; break;
 						case '\u21E5': swtKey = SWT.TAB; break;
 						case ' ': swtKey = ' '; break;
-//						case '\u2423': swtKey = ' '; break;
+						case '\u2423': swtKey = ' '; break;
 						case '\u2191': swtKey = SWT.ARROW_UP; break;
 						case '\u2193': swtKey = SWT.ARROW_DOWN; break;
 						case '\u2190': swtKey = SWT.ARROW_LEFT; break;
 						case '\u2192': swtKey = SWT.ARROW_RIGHT; break;
 						case '\u21DE': swtKey = SWT.PAGE_UP; break;
 						case '\u21DF': swtKey = SWT.PAGE_DOWN; break;
-						case '\u2305': swtKey = SWT.KEYPAD_CR; break;
-						case '\u211C': swtKey = SWT.HELP; break;
+						case '\u0003': swtKey = SWT.KEYPAD_CR; break;
+						case '\uF746': swtKey = SWT.HELP; break;
 						case '\uF729': swtKey = SWT.HOME; break;
 						case '\uF72B': swtKey = SWT.END; break;
 //						case '\u21EA': swtKey = SWT.CAPS_LOCK; break;
@@ -952,7 +952,10 @@ void updateText (short menuIndex) {
 
 			inGlyph = keyGlyph (swtKey);
 			int virtualKey = Display.untranslateKey (swtKey);
-			if (inKey == ' ') virtualKey = 49;
+			if (swtKey == ' ') {
+				virtualKey = 49;
+				inGlyph = OS.kMenuSpaceGlyph;
+			}
 			if (virtualKey != 0) {
 				inSetVirtualKey = true;
 				inKey = virtualKey;
