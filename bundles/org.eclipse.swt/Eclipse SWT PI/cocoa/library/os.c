@@ -417,6 +417,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSDeviceResolution)
 }
 #endif
 
+#ifndef NO_NSDragPboard
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSDragPboard)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSDragPboard_FUNC);
+	rc = (jintLong)NSDragPboard;
+	OS_NATIVE_EXIT(env, that, NSDragPboard_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSErrorFailingURLStringKey
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSErrorFailingURLStringKey)
 	(JNIEnv *env, jclass that)
@@ -492,6 +504,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, NSGetSizeAndAlignment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSHTMLPboardType
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSHTMLPboardType)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSHTMLPboardType_FUNC);
+	rc = (jintLong)NSHTMLPboardType;
+	OS_NATIVE_EXIT(env, that, NSHTMLPboardType_FUNC);
 	return rc;
 }
 #endif
@@ -814,7 +838,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NewGlobalRef)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, NewGlobalRef_FUNC);
-	rc = (jintLong)(*env)->NewGlobalRef(env, arg0);
+	rc = (jintLong)(*env)->NewGlobalRef(env, (jobject)arg0);
 	OS_NATIVE_EXIT(env, that, NewGlobalRef_FUNC);
 	return rc;
 }
@@ -1066,7 +1090,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addIvar)
 	OS_NATIVE_ENTER(env, that, class_1addIvar_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetStringUTFChars(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jboolean)class_addIvar((Class)arg0, lparg1, arg2, arg3, lparg4);
+	rc = (jboolean)class_addIvar((Class)arg0, (const char *)lparg1, (size_t)arg2, arg3, (const char *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseStringUTFChars(env, arg4, lparg4);
 	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
@@ -1083,7 +1107,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addMethod)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, class_1addMethod_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetStringUTFChars(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jboolean)class_addMethod((Class)arg0, (SEL)arg1, (IMP)arg2, lparg3);
+	rc = (jboolean)class_addMethod((Class)arg0, (SEL)arg1, (IMP)arg2, (const char *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseStringUTFChars(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, class_1addMethod_FUNC);
@@ -1099,6 +1123,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(class_1addProtocol)
 	OS_NATIVE_ENTER(env, that, class_1addProtocol_FUNC);
 	rc = (jboolean)class_addProtocol((Class)arg0, (Protocol *)arg1);
 	OS_NATIVE_EXIT(env, that, class_1addProtocol_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_class_1getMethodImplementation
+JNIEXPORT jintLong JNICALL OS_NATIVE(class_1getMethodImplementation)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, class_1getMethodImplementation_FUNC);
+	rc = (jintLong)class_getMethodImplementation((Class)arg0, (SEL)arg1);
+	OS_NATIVE_EXIT(env, that, class_1getMethodImplementation_FUNC);
 	return rc;
 }
 #endif
@@ -1541,7 +1577,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1allocateClassPair)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1allocateClassPair_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)objc_allocateClassPair((Class)arg0, lparg1, arg2);
+	rc = (jintLong)objc_allocateClassPair((Class)arg0, (const char *)lparg1, (size_t)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, objc_1allocateClassPair_FUNC);
@@ -1557,7 +1593,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1getClass)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1getClass_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)objc_getClass(lparg0);
+	rc = (jintLong)objc_getClass((const char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1getClass_FUNC);
@@ -1589,7 +1625,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1lookUpClass)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1lookUpClass_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)objc_lookUpClass(lparg0);
+	rc = (jintLong)objc_lookUpClass((const char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1lookUpClass_FUNC);
@@ -1610,7 +1646,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ)(JNIEnv *env, jclass that
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong))objc_msgSend)(arg0, arg1);
+	rc = (jintLong)((jintLong (*)(id, SEL))objc_msgSend)((id)arg0, (SEL)arg1);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_FUNC);
 #else
@@ -1633,7 +1669,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJD)(JNIEnv *env, jclass tha
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJD_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jdouble))objc_msgSend)(arg0, arg1, arg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jdouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IID_FUNC);
 #else
@@ -1656,7 +1692,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJDJJJZ)(JNIEnv *env, jclass
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJDJJJZ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jdouble, jintLong, jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+	rc = (jintLong)((jintLong (*)(id, SEL, jdouble, jintLong, jintLong, jintLong, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5, arg6);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIDIIIZ_FUNC);
 #else
@@ -1672,7 +1708,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1msgSend__IIF)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIF_FUNC);
-	rc = (jint)((jint (*)(jint, jint, jfloat))objc_msgSend)(arg0, arg1, arg2);
+	rc = (jint)((jint (*)(id, SEL, jfloat))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIF_FUNC);
 	return rc;
 }
@@ -1691,7 +1727,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJDD)(JNIEnv *env, jclass th
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJDD_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jfloatDouble, jfloatDouble))objc_msgSend)(arg0, arg1, arg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jfloatDouble, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIFF_FUNC);
 #else
@@ -1714,7 +1750,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJDDDD)(JNIEnv *env, jclass 
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJDDDD_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jfloatDouble, jfloatDouble, jfloatDouble, jfloatDouble))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, jfloatDouble, jfloatDouble, jfloatDouble, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIFFFF_FUNC);
 #else
@@ -1737,7 +1773,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJ)(JNIEnv *env, jclass tha
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__III_FUNC);
 #else
@@ -1760,7 +1796,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJD)(JNIEnv *env, jclass th
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJD_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jfloatDouble))objc_msgSend)(arg0, arg1, arg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIF_FUNC);
 #else
@@ -1783,7 +1819,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJ)(JNIEnv *env, jclass th
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIII_FUNC);
 #else
@@ -1806,7 +1842,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJ)(JNIEnv *env, jclass t
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIII_FUNC);
 #else
@@ -1829,7 +1865,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJ)(JNIEnv *env, jclass 
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIII_FUNC);
 #else
@@ -1852,7 +1888,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJ)(JNIEnv *env, jclass
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5, arg6);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIII_FUNC);
 #else
@@ -1875,7 +1911,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJJJ)(JNIEnv *env, jcla
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIIIII_FUNC);
 #else
@@ -1898,7 +1934,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJZZJJJ)(JNIEnv *env, j
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJZZJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jboolean, jboolean, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jintLong, jintLong, jboolean, jboolean, jintLong, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIIIZZIII_FUNC);
 #else
@@ -1921,7 +1957,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJZZJJJJ)(JNIEnv *env, 
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJZZJJJJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jboolean, jboolean, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jintLong, jintLong, jboolean, jboolean, jintLong, jintLong, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIIIZZIIII_FUNC);
 #else
@@ -1944,7 +1980,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJZ)(JNIEnv *env, jclass 
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJZ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIZ_FUNC);
 #else
@@ -1969,7 +2005,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJLorg_eclipse_swt_interna
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 #endif
 	if (arg4) if ((lparg4 = getNSRangeFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, NSRange))objc_msgSend)(arg0, arg1, arg2, arg3, *lparg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, NSRange))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, *lparg4);
 fail:
 	if (arg4 && lparg4) setNSRangeFields(env, arg4, lparg4);
 #ifndef JNI64
@@ -1994,7 +2030,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJZ)(JNIEnv *env, jclass t
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJZ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, arg2, arg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIZ_FUNC);
 #else
@@ -2019,7 +2055,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJLorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
 #endif
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, NSPoint))objc_msgSend)(arg0, arg1, arg2, *lparg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, NSPoint))objc_msgSend)((id)arg0, (SEL)arg1, arg2, *lparg3);
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 #ifndef JNI64
@@ -2046,13 +2082,43 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJLorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ_FUNC);
 #endif
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, NSPoint, jintLong, jdouble, jintLong, jintLong, jshort, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, *lparg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, NSPoint, jintLong, jdouble, jintLong, jintLong, jshort, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, *lparg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2IIIZ) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2JJJZ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2IIIZ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jobject arg4, jintLong arg5, jintLong arg6, jintLong arg7, jboolean arg8)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2JJJZ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jobject arg4, jintLong arg5, jintLong arg6, jintLong arg7, jboolean arg8)
+#endif
+{
+	NSPoint _arg3, *lparg3=NULL;
+	NSSize _arg4, *lparg4=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2IIIZ_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2JJJZ_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getNSSizeFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, NSPoint, NSSize, jintLong, jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, arg2, *lparg3, *lparg4, arg5, arg6, arg7, arg8);
+fail:
+	if (arg4 && lparg4) setNSSizeFields(env, arg4, lparg4);
+	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2IIIZ_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2JJJZ_FUNC);
 #endif
 	return rc;
 }
@@ -2073,7 +2139,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJLorg_eclipse_swt_internal
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 #endif
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, NSRange))objc_msgSend)(arg0, arg1, arg2, *lparg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, NSRange))objc_msgSend)((id)arg0, (SEL)arg1, arg2, *lparg3);
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 #ifndef JNI64
@@ -2098,7 +2164,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJZ)(JNIEnv *env, jclass th
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJZ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, arg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIZ_FUNC);
 #else
@@ -2123,7 +2189,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSAffineTransformStructFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSAffineTransformStruct))objc_msgSend)(arg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSAffineTransformStruct))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSAffineTransformStructFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2150,7 +2216,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint))objc_msgSend)(arg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2177,7 +2243,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDD_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, jfloatDouble, jfloatDouble, jfloatDouble))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint, jfloatDouble, jfloatDouble, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4, arg5);
 fail:
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2204,7 +2270,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, jfloatDouble, jfloatDouble, jfloatDouble, jboolean))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5, arg6);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint, jfloatDouble, jfloatDouble, jfloatDouble, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4, arg5, arg6);
 fail:
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2233,7 +2299,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 #endif
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetFloatDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, jintLong, jfloatDouble *))objc_msgSend)(arg0, arg1, *lparg2, arg3, lparg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint, jintLong, jfloatDouble *))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseFloatDoubleArrayElements(env, arg4, lparg4, 0);
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
@@ -2263,7 +2329,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 #endif
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, NSPoint, jintLong))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint, NSPoint, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3, arg4);
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
@@ -2295,7 +2361,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSPointFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, NSPoint, NSPoint))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, *lparg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint, NSPoint, NSPoint))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3, *lparg4);
 fail:
 	if (arg4 && lparg4) setNSPointFields(env, arg4, lparg4);
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
@@ -2326,7 +2392,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 #endif
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, NSRect, jintLong, jfloatDouble))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint, NSRect, jintLong, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3, arg4, arg5);
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
@@ -2354,7 +2420,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRangeFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRange))objc_msgSend)(arg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRange))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSRangeFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2381,7 +2447,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRangeFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRange, jintLong))objc_msgSend)(arg0, arg1, *lparg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRange, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3);
 fail:
 	if (arg2 && lparg2) setNSRangeFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2410,7 +2476,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 #endif
 	if (arg2) if ((lparg2 = getNSRangeFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRange, NSPoint))objc_msgSend)(arg0, arg1, *lparg2, *lparg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRange, NSPoint))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3);
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSRangeFields(env, arg2, lparg2);
@@ -2438,7 +2504,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect))objc_msgSend)(arg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2465,7 +2531,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2D_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jfloatDouble))objc_msgSend)(arg0, arg1, *lparg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2492,7 +2558,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2DD_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jfloatDouble, jfloatDouble))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jfloatDouble, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2519,7 +2585,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2J_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jintLong))objc_msgSend)(arg0, arg1, *lparg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2546,7 +2612,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jintLong, jintLong))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2573,7 +2639,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJZ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jintLong, jintLong, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4, arg5);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2600,7 +2666,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJZJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jintLong, jintLong, jboolean, jintLong))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5, arg6);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jintLong, jintLong, jboolean, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4, arg5, arg6);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2627,7 +2693,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JZJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jintLong, jboolean, jintLong))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jintLong, jboolean, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3, arg4, arg5);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2656,7 +2722,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, NSPoint))objc_msgSend)(arg0, arg1, *lparg2, *lparg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, NSPoint))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3);
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
@@ -2688,7 +2754,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, NSRange, NSRect))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, *lparg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, NSRange, NSRect))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3, *lparg4);
 fail:
 	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
@@ -2719,7 +2785,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, NSRect, jintLong, jfloatDouble))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, NSRect, jintLong, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, *lparg3, arg4, arg5);
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
@@ -2747,7 +2813,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Z_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRect, jboolean))objc_msgSend)(arg0, arg1, *lparg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2, arg3);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2774,7 +2840,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getNSSizeFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSSize))objc_msgSend)(arg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSSize))objc_msgSend)((id)arg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSSizeFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -2799,7 +2865,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJZ)(JNIEnv *env, jclass tha
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJZ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jboolean))objc_msgSend)(arg0, arg1, arg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jboolean))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIZ_FUNC);
 #else
@@ -2822,7 +2888,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJZJ)(JNIEnv *env, jclass th
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJZJ_FUNC);
 #endif
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jboolean, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jboolean, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIZI_FUNC);
 #else
@@ -2847,7 +2913,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3B)(JNIEnv *env, jclass t
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3B_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jbyte *))objc_msgSend)(arg0, arg1, lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jbyte *))objc_msgSend)((id)arg0, (SEL)arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -2874,7 +2940,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3BJ)(JNIEnv *env, jclass 
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3BJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jbyte *, jintLong))objc_msgSend)(arg0, arg1, lparg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jbyte *, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -2901,7 +2967,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3C)(JNIEnv *env, jclass t
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3C_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jchar *))objc_msgSend)(arg0, arg1, lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jchar *))objc_msgSend)((id)arg0, (SEL)arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -2928,7 +2994,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3CJ)(JNIEnv *env, jclass 
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3CJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jchar *, jintLong))objc_msgSend)(arg0, arg1, lparg2, arg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jchar *, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -2957,7 +3023,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3CLorg_eclipse_swt_intern
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jchar *, NSRange))objc_msgSend)(arg0, arg1, lparg2, *lparg3);
+	rc = (jintLong)((jintLong (*)(id, SEL, jchar *, NSRange))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, *lparg3);
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -2985,7 +3051,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3D)(JNIEnv *env, jclass t
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3D_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetFloatDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jfloatDouble *))objc_msgSend)(arg0, arg1, lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jfloatDouble *))objc_msgSend)((id)arg0, (SEL)arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseFloatDoubleArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -3012,7 +3078,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3DJD)(JNIEnv *env, jclass
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3DJD_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetFloatDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jfloatDouble *, jintLong, jfloatDouble))objc_msgSend)(arg0, arg1, lparg2, arg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, jfloatDouble *, jintLong, jfloatDouble))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseFloatDoubleArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -3039,7 +3105,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3I)(JNIEnv *env, jclass t
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3I_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jint *))objc_msgSend)(arg0, arg1, lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jint *))objc_msgSend)((id)arg0, (SEL)arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -3066,7 +3132,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3JJJ)(JNIEnv *env, jclass
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3JJJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong *, jintLong, jintLong))objc_msgSend)(arg0, arg1, lparg2, arg3, arg4);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong *, jintLong, jintLong))objc_msgSend)((id)arg0, (SEL)arg1, lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 #ifndef JNI64
@@ -3084,7 +3150,7 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJFD)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJFD_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jfloat, jdouble))objc_msgSend)(arg0, arg1, arg2, arg3);
+	rc = (jlong)((jlong (*)(id, SEL, jfloat, jdouble))objc_msgSend)((id)arg0, (SEL)arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJFD_FUNC);
 	return rc;
 }
@@ -3096,7 +3162,7 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJI)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJI_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jint))objc_msgSend)(arg0, arg1, arg2);
+	rc = (jlong)((jlong (*)(id, SEL, jint))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJI_FUNC);
 	return rc;
 }
@@ -3117,7 +3183,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_intern
 	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2J_FUNC);
 #endif
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(struct objc_super *, jintLong))objc_msgSendSuper)(lparg0, arg1);
+	rc = (jintLong)((jintLong (*)(id, SEL))objc_msgSendSuper)((id)lparg0, (SEL)arg1);
 fail:
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
 #ifndef JNI64
@@ -3144,7 +3210,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_intern
 	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ_FUNC);
 #endif
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(struct objc_super *, jintLong, jintLong))objc_msgSendSuper)(lparg0, arg1, arg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong))objc_msgSendSuper)((id)lparg0, (SEL)arg1, arg2);
 fail:
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
 #ifndef JNI64
@@ -3171,7 +3237,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_intern
 	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJJJZ_FUNC);
 #endif
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(struct objc_super *, jintLong, jintLong, jintLong, jintLong, jboolean))objc_msgSendSuper)(lparg0, arg1, arg2, arg3, arg4, arg5);
+	rc = (jintLong)((jintLong (*)(id, SEL, jintLong, jintLong, jintLong, jboolean))objc_msgSendSuper)((id)lparg0, (SEL)arg1, arg2, arg3, arg4, arg5);
 fail:
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
 #ifndef JNI64
@@ -3200,7 +3266,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_intern
 #endif
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(struct objc_super *, jintLong, NSPoint))objc_msgSendSuper)(lparg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSPoint))objc_msgSendSuper)((id)lparg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
@@ -3230,7 +3296,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_intern
 #endif
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(struct objc_super *, jintLong, NSRect))objc_msgSendSuper)(lparg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSRect))objc_msgSendSuper)((id)lparg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
@@ -3260,7 +3326,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSendSuper__Lorg_eclipse_swt_intern
 #endif
 	if (arg0) if ((lparg0 = getobjc_superFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = getNSSizeFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(struct objc_super *, jintLong, NSSize))objc_msgSendSuper)(lparg0, arg1, *lparg2);
+	rc = (jintLong)((jintLong (*)(id, SEL, NSSize))objc_msgSendSuper)((id)lparg0, (SEL)arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setNSSizeFields(env, arg2, lparg2);
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
@@ -3455,7 +3521,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret__JJ)(JNIEnv *env, jclas
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1fpret__JJ_FUNC);
 #endif
-	rc = (jdouble)((jdouble (*)(jintLong, jintLong))objc_msgSend_fpret)(arg0, arg1);
+	rc = (jdouble)((jdouble (*)(id, SEL))objc_msgSend_fpret)((id)arg0, (SEL)arg1);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1fpret__II_FUNC);
 #else
@@ -3478,7 +3544,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret__JJJ)(JNIEnv *env, jcla
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1fpret__JJJ_FUNC);
 #endif
-	rc = (jdouble)((jdouble (*)(jintLong, jintLong, jintLong))objc_msgSend_fpret)(arg0, arg1, arg2);
+	rc = (jdouble)((jdouble (*)(id, SEL, jintLong))objc_msgSend_fpret)((id)arg0, (SEL)arg1, arg2);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1fpret__III_FUNC);
 #else
@@ -3501,7 +3567,7 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret__JJJJ)(JNIEnv *env, jcl
 #else
 	OS_NATIVE_ENTER(env, that, objc_1msgSend_1fpret__JJJJ_FUNC);
 #endif
-	rc = (jdouble)((jdouble (*)(jintLong, jintLong, jintLong, jintLong))objc_msgSend_fpret)(arg0, arg1, arg2, arg3);
+	rc = (jdouble)((jdouble (*)(id, SEL, jintLong, jintLong))objc_msgSend_fpret)((id)arg0, (SEL)arg1, arg2, arg3);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1fpret__IIII_FUNC);
 #else
@@ -3526,9 +3592,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSAffineTransformStructFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSAffineTransformStruct *, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2);
+		((void (*)(NSAffineTransformStruct *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
 	} else {
-		*lparg0 = (*(NSAffineTransformStruct (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
+		*lparg0 = (*(NSAffineTransformStruct (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
 	}
 fail:
 	if (arg0 && lparg0) setNSAffineTransformStructFields(env, arg0, lparg0);
@@ -3555,9 +3621,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSPoint *, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2);
+		((void (*)(NSPoint *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
 	} else {
-		*lparg0 = (*(NSPoint (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
+		*lparg0 = (*(NSPoint (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
 	}
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -3584,9 +3650,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSPoint *, jintLong, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, arg3);
+		((void (*)(NSPoint *, id, SEL, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
 	} else {
-		*lparg0 = (*(NSPoint (*)(jintLong, jintLong, jintLong))objc_msgSend)(arg1, arg2, arg3);
+		*lparg0 = (*(NSPoint (*)(id, SEL, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
 	}
 fail:
 	if (arg0 && lparg0) setNSPointFields(env, arg0, lparg0);
@@ -3615,9 +3681,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSPoint *, jintLong, jintLong, NSPoint))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3);
+		((void (*)(NSPoint *, id, SEL, NSPoint))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
 	} else {
-		*lparg0 = (*(NSPoint (*)(jintLong, jintLong, NSPoint))objc_msgSend)(arg1, arg2, *lparg3);
+		*lparg0 = (*(NSPoint (*)(id, SEL, NSPoint))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
 	}
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
@@ -3647,9 +3713,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSPoint *, jintLong, jintLong, NSPoint, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3, arg4);
+		((void (*)(NSPoint *, id, SEL, NSPoint, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
 	} else {
-		*lparg0 = (*(NSPoint (*)(jintLong, jintLong, NSPoint, jintLong))objc_msgSend)(arg1, arg2, *lparg3, arg4);
+		*lparg0 = (*(NSPoint (*)(id, SEL, NSPoint, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
 	}
 fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
@@ -3677,9 +3743,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRange *, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2);
+		((void (*)(NSRange *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
 	} else {
-		*lparg0 = (*(NSRange (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
+		*lparg0 = (*(NSRange (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
 	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -3706,9 +3772,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRange *, jintLong, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, arg3);
+		((void (*)(NSRange *, id, SEL, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
 	} else {
-		*lparg0 = (*(NSRange (*)(jintLong, jintLong, jintLong))objc_msgSend)(arg1, arg2, arg3);
+		*lparg0 = (*(NSRange (*)(id, SEL, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
 	}
 fail:
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
@@ -3735,9 +3801,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2);
+		((void (*)(NSRect *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
+		*lparg0 = (*(NSRect (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
 	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -3764,9 +3830,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, arg3);
+		((void (*)(NSRect *, id, SEL, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong, jintLong))objc_msgSend)(arg1, arg2, arg3);
+		*lparg0 = (*(NSRect (*)(id, SEL, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, arg3);
 	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -3793,9 +3859,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, arg3, arg4);
+		((void (*)(NSRect *, id, SEL, jintLong, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg1, arg2, arg3, arg4);
+		*lparg0 = (*(NSRect (*)(id, SEL, jintLong, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4);
 	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -3822,9 +3888,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong, jintLong, jintLong, jboolean))objc_msgSend_stret)(lparg0, arg1, arg2, arg3, arg4, arg5);
+		((void (*)(NSRect *, id, SEL, jintLong, jintLong, jboolean))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, arg3, arg4, arg5);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong, jintLong, jintLong, jboolean))objc_msgSend)(arg1, arg2, arg3, arg4, arg5);
+		*lparg0 = (*(NSRect (*)(id, SEL, jintLong, jintLong, jboolean))objc_msgSend)((id)arg1, (SEL)arg2, arg3, arg4, arg5);
 	}
 fail:
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
@@ -3853,9 +3919,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong, NSRange, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3, arg4);
+		((void (*)(NSRect *, id, SEL, NSRange, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong, NSRange, jintLong))objc_msgSend)(arg1, arg2, *lparg3, arg4);
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRange, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
 	}
 fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
@@ -3885,9 +3951,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong, NSRect))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3);
+		((void (*)(NSRect *, id, SEL, NSRect))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong, NSRect))objc_msgSend)(arg1, arg2, *lparg3);
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRect))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
 	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
@@ -3917,9 +3983,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSRect *, jintLong, jintLong, NSRect, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3, arg4);
+		((void (*)(NSRect *, id, SEL, NSRect, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
 	} else {
-		*lparg0 = (*(NSRect (*)(jintLong, jintLong, NSRect, jintLong))objc_msgSend)(arg1, arg2, *lparg3, arg4);
+		*lparg0 = (*(NSRect (*)(id, SEL, NSRect, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
 	}
 fail:
 	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
@@ -3947,9 +4013,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 #endif
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSSize *, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2);
+		((void (*)(NSSize *, id, SEL))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2);
 	} else {
-		*lparg0 = (*(NSSize (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
+		*lparg0 = (*(NSSize (*)(id, SEL))objc_msgSend)((id)arg1, (SEL)arg2);
 	}
 fail:
 	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
@@ -3978,9 +4044,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSSize *, jintLong, jintLong, NSSize))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3);
+		((void (*)(NSSize *, id, SEL, NSSize))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3);
 	} else {
-		*lparg0 = (*(NSSize (*)(jintLong, jintLong, NSSize))objc_msgSend)(arg1, arg2, *lparg3);
+		*lparg0 = (*(NSSize (*)(id, SEL, NSSize))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3);
 	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
@@ -4010,9 +4076,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSSize *, jintLong, jintLong, NSSize, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3, arg4);
+		((void (*)(NSSize *, id, SEL, NSSize, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4);
 	} else {
-		*lparg0 = (*(NSSize (*)(jintLong, jintLong, NSSize, jintLong))objc_msgSend)(arg1, arg2, *lparg3, arg4);
+		*lparg0 = (*(NSSize (*)(id, SEL, NSSize, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4);
 	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
@@ -4042,9 +4108,9 @@ JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal
 	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		((void (*)(NSSize *, jintLong, jintLong, NSSize, jboolean, jboolean, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3, arg4, arg5, arg6);
+		((void (*)(NSSize *, id, SEL, NSSize, jboolean, jboolean, jintLong))objc_msgSend_stret)(lparg0, (id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
 	} else {
-		*lparg0 = (*(NSSize (*)(jintLong, jintLong, NSSize, jboolean, jboolean, jintLong))objc_msgSend)(arg1, arg2, *lparg3, arg4, arg5, arg6);
+		*lparg0 = (*(NSSize (*)(id, SEL, NSSize, jboolean, jboolean, jintLong))objc_msgSend)((id)arg1, (SEL)arg2, *lparg3, arg4, arg5, arg6);
 	}
 fail:
 	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
@@ -4101,7 +4167,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(object_1getInstanceVariable)
 	OS_NATIVE_ENTER(env, that, object_1getInstanceVariable_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)object_getInstanceVariable((id)arg0, lparg1, (void **)lparg2);
+	rc = (jintLong)object_getInstanceVariable((id)arg0, (const char *)lparg1, (void **)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
@@ -4130,7 +4196,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(object_1setInstanceVariable)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, object_1setInstanceVariable_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)object_setInstanceVariable((id)arg0, lparg1, (void *)arg2);
+	rc = (jintLong)object_setInstanceVariable((id)arg0, (const char *)lparg1, (void *)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, object_1setInstanceVariable_FUNC);
@@ -4146,7 +4212,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(sel_1registerName)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, sel_1registerName_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)sel_registerName(lparg0);
+	rc = (jintLong)sel_registerName((const char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, sel_1registerName_FUNC);

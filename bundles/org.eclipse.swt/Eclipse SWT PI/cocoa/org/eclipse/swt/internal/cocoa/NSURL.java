@@ -24,6 +24,15 @@ public NSURL(id id) {
 	super(id);
 }
 
+public static NSURL URLFromPasteboard(NSPasteboard pasteBoard) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLFromPasteboard_, pasteBoard != null ? pasteBoard.id : 0);
+	return result != 0 ? new NSURL(result) : null;
+}
+
+public void writeToPasteboard(NSPasteboard pasteBoard) {
+	OS.objc_msgSend(this.id, OS.sel_writeToPasteboard_, pasteBoard != null ? pasteBoard.id : 0);
+}
+
 public static NSURL URLWithString(NSString URLString) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLWithString_, URLString != null ? URLString.id : 0);
 	return result != 0 ? new NSURL(result) : null;

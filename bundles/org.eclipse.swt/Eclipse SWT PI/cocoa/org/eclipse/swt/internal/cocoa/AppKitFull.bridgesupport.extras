@@ -388,7 +388,7 @@
   <constant name="NSDocumentTypeDocumentOption"></constant>
   <constant name="NSDoubleClickArgumentBinding"></constant>
   <constant name="NSDoubleClickTargetBinding"></constant>
-  <constant name="NSDragPboard"></constant>
+  <constant name="NSDragPboard" swt_gen="true"></constant>
   <constant name="NSDraggingException"></constant>
   <constant name="NSDrawerDidCloseNotification"></constant>
   <constant name="NSDrawerDidOpenNotification"></constant>
@@ -455,7 +455,7 @@
   <constant name="NSGraphicsContextPDFFormat"></constant>
   <constant name="NSGraphicsContextPSFormat"></constant>
   <constant name="NSGraphicsContextRepresentationFormatAttributeName"></constant>
-  <constant name="NSHTMLPboardType"></constant>
+  <constant name="NSHTMLPboardType" swt_gen="true"></constant>
   <constant name="NSHTMLTextDocumentType"></constant>
   <constant name="NSHandlesContentAsCompoundValueBindingOption"></constant>
   <constant name="NSHeaderTitleBinding"></constant>
@@ -12045,7 +12045,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSObject">
+  <class name="NSObject" swt_gen="mixed">
     <method selector="accessibilityActionDescription:">
       <arg name="action"></arg>
       <retval></retval>
@@ -12640,8 +12640,8 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="draggedImage">
-      <retval></retval>
+    <method selector="draggedImage" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="draggedImage:beganAt:">
       <arg name="image"></arg>
@@ -12665,38 +12665,38 @@
       <arg name="screenPoint"></arg>
       <retval></retval>
     </method>
-    <method selector="draggedImageLocation">
-      <retval></retval>
+    <method selector="draggedImageLocation" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingDestinationWindow">
-      <retval></retval>
+    <method selector="draggingDestinationWindow" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingEnded:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="draggingEnded:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingEntered:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="draggingEntered:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingExited:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="draggingExited:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingLocation">
-      <retval></retval>
+    <method selector="draggingLocation" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingPasteboard">
-      <retval></retval>
+    <method selector="draggingPasteboard" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingSequenceNumber">
-      <retval></retval>
+    <method selector="draggingSequenceNumber" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingSource">
-      <retval></retval>
+    <method selector="draggingSource" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="draggingSourceOperationMask">
-      <retval></retval>
+    <method selector="draggingSourceOperationMask" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="draggingSourceOperationMaskForLocal:">
       <arg name="flag"></arg>
@@ -12981,9 +12981,9 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="namesOfPromisedFilesDroppedAtDestination:">
-      <arg name="dropDestination"></arg>
-      <retval></retval>
+    <method selector="namesOfPromisedFilesDroppedAtDestination:" swt_gen="true">
+      <arg name="dropDestination" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="namesOfPromisedFilesDroppedAtDestination:">
       <arg name="dropDestination"></arg>
@@ -19443,8 +19443,8 @@
       <arg name="identifier"></arg>
       <retval></retval>
     </method>
-    <method selector="tableColumns">
-      <retval></retval>
+    <method selector="tableColumns" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="textDidBeginEditing:">
       <arg name="notification"></arg>
@@ -21756,14 +21756,14 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSURL">
-    <method class_method="true" selector="URLFromPasteboard:">
-      <arg name="pasteBoard"></arg>
-      <retval></retval>
+  <class name="NSURL" swt_gen="true">
+    <method class_method="true" selector="URLFromPasteboard:" swt_gen="true">
+      <arg name="pasteBoard" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="writeToPasteboard:">
-      <arg name="pasteBoard"></arg>
-      <retval></retval>
+    <method selector="writeToPasteboard:" swt_gen="true">
+      <arg name="pasteBoard" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="NSUserDefaultsController" swt_superclass="NSController">
@@ -22040,15 +22040,15 @@
       <arg name="event"></arg>
       <retval></retval>
     </method>
-    <method selector="dragImage:at:offset:event:pasteboard:source:slideBack:">
-      <arg name="anImage"></arg>
-      <arg name="viewLocation"></arg>
-      <arg name="initialOffset"></arg>
-      <arg name="event"></arg>
-      <arg name="pboard"></arg>
-      <arg name="sourceObj"></arg>
-      <arg name="slideFlag"></arg>
-      <retval></retval>
+    <method selector="dragImage:at:offset:event:pasteboard:source:slideBack:" swt_gen="true">
+      <arg name="anImage" swt_gen="true"></arg>
+      <arg name="viewLocation" swt_gen="true"></arg>
+      <arg name="initialOffset" swt_gen="true"></arg>
+      <arg name="event" swt_gen="true"></arg>
+      <arg name="pboard" swt_gen="true"></arg>
+      <arg name="sourceObj" swt_gen="true"></arg>
+      <arg name="slideFlag" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="dragPromisedFilesOfTypes:fromRect:source:slideBack:event:">
       <arg name="typeArray"></arg>
@@ -22257,9 +22257,9 @@
       <arg name="aClipView"></arg>
       <retval></retval>
     </method>
-    <method selector="registerForDraggedTypes:">
-      <arg name="newTypes"></arg>
-      <retval></retval>
+    <method selector="registerForDraggedTypes:" swt_gen="true">
+      <arg name="newTypes" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="registeredDraggedTypes">
       <retval></retval>
@@ -22552,8 +22552,8 @@
     <method selector="unlockFocus">
       <retval></retval>
     </method>
-    <method selector="unregisterDraggedTypes">
-      <retval></retval>
+    <method selector="unregisterDraggedTypes" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="updateTrackingAreas">
       <retval></retval>
@@ -24284,53 +24284,53 @@
     </method>
     <method selector="value"></method>
   </informal_protocol>
-  <informal_protocol name="NSDraggingDestination">
+  <informal_protocol name="NSDraggingDestination" swt_gen="mixed">
     <method selector="concludeDragOperation:">
       <arg name="sender"></arg>
     </method>
-    <method selector="draggingEnded:">
-      <arg name="sender"></arg>
+    <method selector="draggingEnded:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="draggingEntered:">
-      <arg name="sender"></arg>
+    <method selector="draggingEntered:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="draggingExited:">
-      <arg name="sender"></arg>
+    <method selector="draggingExited:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="draggingUpdated:">
-      <arg name="sender"></arg>
+    <method selector="draggingUpdated:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
     </method>
-    <method selector="performDragOperation:">
-      <arg name="sender"></arg>
+    <method selector="performDragOperation:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
     </method>
     <method selector="prepareForDragOperation:">
       <arg name="sender"></arg>
     </method>
-    <method selector="wantsPeriodicDraggingUpdates"></method>
+    <method selector="wantsPeriodicDraggingUpdates" swt_gen="true"></method>
   </informal_protocol>
-  <informal_protocol name="NSDraggingSource">
-    <method selector="draggedImage:beganAt:">
-      <arg name="image"></arg>
-      <arg name="screenPoint"></arg>
+  <informal_protocol name="NSDraggingSource" swt_gen="mixed">
+    <method selector="draggedImage:beganAt:" swt_gen="true">
+      <arg name="image" swt_gen="true"></arg>
+      <arg name="screenPoint" swt_gen="true"></arg>
     </method>
     <method selector="draggedImage:endedAt:deposited:">
       <arg name="image"></arg>
       <arg name="screenPoint"></arg>
       <arg name="flag"></arg>
     </method>
-    <method selector="draggedImage:endedAt:operation:">
-      <arg name="image"></arg>
-      <arg name="screenPoint"></arg>
-      <arg name="operation"></arg>
+    <method selector="draggedImage:endedAt:operation:" swt_gen="true">
+      <arg name="image" swt_gen="true"></arg>
+      <arg name="screenPoint" swt_gen="true"></arg>
+      <arg name="operation" swt_gen="true"></arg>
     </method>
     <method selector="draggedImage:movedTo:">
       <arg name="image"></arg>
       <arg name="screenPoint"></arg>
     </method>
-    <method selector="draggingSourceOperationMaskForLocal:">
-      <arg name="flag"></arg>
+    <method selector="draggingSourceOperationMaskForLocal:" swt_gen="true">
+      <arg name="flag" swt_gen="true"></arg>
     </method>
-    <method selector="ignoreModifierKeysWhileDragging"></method>
+    <method selector="ignoreModifierKeysWhileDragging" swt_gen="true"></method>
     <method selector="namesOfPromisedFilesDroppedAtDestination:">
       <arg name="dropDestination"></arg>
     </method>
@@ -24685,10 +24685,10 @@
       <arg name="notification"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSPasteboardOwner">
-    <method selector="pasteboard:provideDataForType:">
-      <arg name="sender"></arg>
-      <arg name="type"></arg>
+  <informal_protocol name="NSPasteboardOwner" swt_gen="mixed">
+    <method selector="pasteboard:provideDataForType:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <arg name="type" swt_gen="true"></arg>
     </method>
     <method selector="pasteboardChangedOwner:">
       <arg name="sender"></arg>

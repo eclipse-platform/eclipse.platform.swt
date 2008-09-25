@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 214;
-int OS_nativeFunctionCallCount[214];
+int OS_nativeFunctionCount = 222;
+int OS_nativeFunctionCallCount[222];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -46,12 +46,14 @@ char * OS_nativeFunctionNames[] = {
 	"NSDefaultRunLoopMode",
 	"NSDeviceRGBColorSpace",
 	"NSDeviceResolution",
+	"NSDragPboard",
 	"NSErrorFailingURLStringKey",
 	"NSFileTypeForHFSTypeCode",
 	"NSFilenamesPboardType",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
 	"NSGetSizeAndAlignment",
+	"NSHTMLPboardType",
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
 	"NSParagraphStyleAttributeName",
@@ -90,6 +92,7 @@ char * OS_nativeFunctionNames[] = {
 	"SectRgn",
 	"SetFrontProcess",
 	"SetRect",
+	"SetThemeCursor",
 	"TransformProcessType",
 	"UnionRgn",
 	"attributedSubstringFromRange_1CALLBACK",
@@ -97,6 +100,10 @@ char * OS_nativeFunctionNames[] = {
 	"class_1addIvar",
 	"class_1addMethod",
 	"class_1addProtocol",
+	"class_1getMethodImplementation",
+	"draggedImage_1beganAt_1CALLBACK",
+	"draggedImage_1endedAt_1operation_1CALLBACK",
+	"draggedImage_1movedTo_1CALLBACK",
 	"drawInteriorWithFrame_1inView_1CALLBACK",
 	"drawRect_1CALLBACK",
 	"firstRectForCharacterRange_1CALLBACK",
@@ -283,6 +290,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII",
 #else
 	"objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2IIIZ",
+#else
+	"objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2JJJZ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRange_2",

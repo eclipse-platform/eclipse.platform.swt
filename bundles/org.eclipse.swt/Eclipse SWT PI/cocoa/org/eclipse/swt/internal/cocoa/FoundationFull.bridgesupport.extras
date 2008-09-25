@@ -10851,8 +10851,8 @@
       <arg name="aString"></arg>
       <retval></retval>
     </method>
-    <method selector="stringByDeletingLastPathComponent">
-      <retval></retval>
+    <method selector="stringByDeletingLastPathComponent" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="stringByDeletingPathExtension" swt_gen="true">
       <retval swt_gen="true"></retval>

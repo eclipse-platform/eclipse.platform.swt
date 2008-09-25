@@ -122,6 +122,10 @@ public void displayIfNeeded() {
 	OS.objc_msgSend(this.id, OS.sel_displayIfNeeded);
 }
 
+public void dragImage(NSImage anImage, NSPoint viewLocation, NSSize initialOffset, NSEvent event, NSPasteboard pboard, id sourceObj, boolean slideFlag) {
+	OS.objc_msgSend(this.id, OS.sel_dragImage_at_offset_event_pasteboard_source_slideBack_, anImage != null ? anImage.id : 0, viewLocation, initialOffset, event != null ? event.id : 0, pboard != null ? pboard.id : 0, sourceObj != null ? sourceObj.id : 0, slideFlag);
+}
+
 public void drawRect(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_drawRect_, rect);
 }
@@ -161,6 +165,10 @@ public boolean isOpaque() {
 public NSMenu menuForEvent(NSEvent event) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_menuForEvent_, event != null ? event.id : 0);
 	return result != 0 ? new NSMenu(result) : null;
+}
+
+public void registerForDraggedTypes(NSArray newTypes) {
+	OS.objc_msgSend(this.id, OS.sel_registerForDraggedTypes_, newTypes != null ? newTypes.id : 0);
 }
 
 public void removeFromSuperview() {
@@ -219,6 +227,10 @@ public NSArray subviews() {
 public NSView superview() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_superview);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
+}
+
+public void unregisterDraggedTypes() {
+	OS.objc_msgSend(this.id, OS.sel_unregisterDraggedTypes);
 }
 
 public NSRect visibleRect() {

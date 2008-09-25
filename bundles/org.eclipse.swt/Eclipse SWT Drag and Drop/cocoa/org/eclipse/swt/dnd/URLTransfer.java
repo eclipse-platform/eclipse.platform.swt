@@ -11,7 +11,7 @@
  * </code></pre>
  *
  * @see Transfer
- */public class URLTransfer extends ByteArrayTransfer {	static URLTransfer _instance = new URLTransfer();	static final String URL = "url "; //$NON-NLS-1$	static final int URL_ID = registerType(URL);private URLTransfer() {}/**
+ */public class URLTransfer extends ByteArrayTransfer {	static URLTransfer _instance = new URLTransfer();	static final String URL = OS.NSURLPboardType.getString();	static final int URL_ID = registerType(URL);private URLTransfer() {}/**
  * Returns the singleton instance of the URLTransfer class.
  *
  * @return the singleton instance of the URLTransfer class
@@ -24,7 +24,7 @@
  *  	be filled in on return with the platform specific format of the data
  * 
  * @see Transfer#nativeToJava
- */public void javaToNative (Object object, TransferData transferData){	if (!checkURL(object) || !isSupportedType(transferData)) {		DND.error(DND.ERROR_INVALID_DATA);	}	String url = (String)object;	NSString nsString = NSString.stringWith(url);	transferData.data = NSURL.URLWithString(nsString);}/**
+ */public void javaToNative (Object object, TransferData transferData){	if (!checkURL(object) || !isSupportedType(transferData)) {		DND.error(DND.ERROR_INVALID_DATA);	}	String url = (String)object;	NSString nsString = NSString.stringWith(url);	NSString escapedString = nsString.stringByAddingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);	transferData.data = NSURL.URLWithString(escapedString);}/**
  * This implementation of <code>nativeToJava</code> converts a platform 
  * specific representation of a URL to a java <code>String</code>.
  * 

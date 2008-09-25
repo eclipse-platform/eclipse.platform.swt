@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class HTMLTransfer extends ByteArrayTransfer {
 
 	static HTMLTransfer _instance = new HTMLTransfer();
-	static final String HTML = OS.NSStringPboardType.getString();
+	static final String HTML = OS.NSHTMLPboardType.getString();
 	static final int HTMLID = registerType(HTML);
 
 HTMLTransfer() {}

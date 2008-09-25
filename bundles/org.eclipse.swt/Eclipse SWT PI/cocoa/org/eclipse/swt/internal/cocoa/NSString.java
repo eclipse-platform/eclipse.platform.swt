@@ -76,6 +76,11 @@ public NSString stringByAppendingPathComponent(NSString str) {
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
+public NSString stringByDeletingLastPathComponent() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByDeletingLastPathComponent);
+	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
+}
+
 public NSString stringByDeletingPathExtension() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByDeletingPathExtension);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);

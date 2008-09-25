@@ -54,12 +54,14 @@ typedef enum {
 	NSDefaultRunLoopMode_FUNC,
 	NSDeviceRGBColorSpace_FUNC,
 	NSDeviceResolution_FUNC,
+	NSDragPboard_FUNC,
 	NSErrorFailingURLStringKey_FUNC,
 	NSFileTypeForHFSTypeCode_FUNC,
 	NSFilenamesPboardType_FUNC,
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
 	NSGetSizeAndAlignment_FUNC,
+	NSHTMLPboardType_FUNC,
 	NSIntersectionRect_FUNC,
 	NSLinkAttributeName_FUNC,
 	NSParagraphStyleAttributeName_FUNC,
@@ -98,6 +100,7 @@ typedef enum {
 	SectRgn_FUNC,
 	SetFrontProcess_FUNC,
 	SetRect_FUNC,
+	SetThemeCursor_FUNC,
 	TransformProcessType_FUNC,
 	UnionRgn_FUNC,
 	attributedSubstringFromRange_1CALLBACK_FUNC,
@@ -105,6 +108,10 @@ typedef enum {
 	class_1addIvar_FUNC,
 	class_1addMethod_FUNC,
 	class_1addProtocol_FUNC,
+	class_1getMethodImplementation_FUNC,
+	draggedImage_1beganAt_1CALLBACK_FUNC,
+	draggedImage_1endedAt_1operation_1CALLBACK_FUNC,
+	draggedImage_1movedTo_1CALLBACK_FUNC,
 	drawInteriorWithFrame_1inView_1CALLBACK_FUNC,
 	drawRect_1CALLBACK_FUNC,
 	firstRectForCharacterRange_1CALLBACK_FUNC,
@@ -291,6 +298,11 @@ typedef enum {
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2IDIISII_FUNC,
 #else
 	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2JDJJSJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2IIIZ_FUNC,
+#else
+	objc_1msgSend__JJJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSSize_2JJJZ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRange_2_FUNC,

@@ -29,6 +29,63 @@ public NSObject alloc() {
 	return this;
 }
 
+public NSImage draggedImage() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggedImage);
+	return result != 0 ? new NSImage(result) : null;
+}
+
+public NSPoint draggedImageLocation() {
+	NSPoint result = new NSPoint();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_draggedImageLocation);
+	return result;
+}
+
+public NSWindow draggingDestinationWindow() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggingDestinationWindow);
+	return result != 0 ? new NSWindow(result) : null;
+}
+
+public void draggingEnded(id  sender) {
+	OS.objc_msgSend(this.id, OS.sel_draggingEnded_, sender != null ? sender.id : 0);
+}
+
+public int /*long*/ draggingEntered(id  sender) {
+	return OS.objc_msgSend(this.id, OS.sel_draggingEntered_, sender != null ? sender.id : 0);
+}
+
+public void draggingExited(id  sender) {
+	OS.objc_msgSend(this.id, OS.sel_draggingExited_, sender != null ? sender.id : 0);
+}
+
+public NSPoint draggingLocation() {
+	NSPoint result = new NSPoint();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_draggingLocation);
+	return result;
+}
+
+public NSPasteboard draggingPasteboard() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggingPasteboard);
+	return result != 0 ? new NSPasteboard(result) : null;
+}
+
+public int /*long*/ draggingSequenceNumber() {
+	return OS.objc_msgSend(this.id, OS.sel_draggingSequenceNumber);
+}
+
+public id draggingSource() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggingSource);
+	return result != 0 ? new id(result) : null;
+}
+
+public int /*long*/ draggingSourceOperationMask() {
+	return OS.objc_msgSend(this.id, OS.sel_draggingSourceOperationMask);
+}
+
+public NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_namesOfPromisedFilesDroppedAtDestination_, dropDestination != null ? dropDestination.id : 0);
+	return result != 0 ? new NSArray(result) : null;
+}
+
 public id autorelease() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_autorelease);
 	return result != 0 ? new id(result) : null;

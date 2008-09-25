@@ -60,6 +60,12 @@ public static final native int SetFrontProcess(int[] psn);
 /** @param psn cast=(ProcessSerialNumber *) */
 public static final native int TransformProcessType(int[] psn, int transformState);
 public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
+/** @method flags=no_gen */
+public static final native int SetThemeCursor(int themeCursor);
+
+public static final int kThemeCopyArrowCursor = 1;
+public static final int kThemeNotAllowedCursor = 18;
+public static final int kThemeAliasArrowCursor = 2;
 
 /** C calls */
 
@@ -140,6 +146,12 @@ public static final native int /*long*/ characterIndexForPoint_CALLBACK(int /*lo
 public static final native int /*long*/ firstRectForCharacterRange_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ draggedImage_movedTo_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ draggedImage_beganAt_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
+public static final native int /*long*/ draggedImage_endedAt_operation_CALLBACK(int /*long*/ func);
 
 /** Custom structure return */
 
@@ -161,6 +173,11 @@ public static final native boolean class_addMethod(int /*long*/ cls, int /*long*
  * @param protocol cast=(Protocol *)
  */
 public static final native boolean class_addProtocol(int /*long*/ cls, int /*long*/ protocol);
+/**
+ * @param cls cast=(Class)
+ * @param name cast=(SEL)
+ */
+public static final native int /*long*/ class_getMethodImplementation(int /*long*/ cls, int /*long*/ name);
 /** @method flags=dynamic */
 public static final native void instrumentObjcMessageSends(boolean val);
 /** @param superclass cast=(Class) */
@@ -347,11 +364,14 @@ public static final int /*long*/ protocol_NSApplicationDelegate = objc_getProtoc
 public static final int /*long*/ protocol_NSApplicationNotifications = objc_getProtocol("NSApplicationNotifications");
 public static final int /*long*/ protocol_NSColorPanelResponderMethod = objc_getProtocol("NSColorPanelResponderMethod");
 public static final int /*long*/ protocol_NSComboBoxNotifications = objc_getProtocol("NSComboBoxNotifications");
+public static final int /*long*/ protocol_NSDraggingDestination = objc_getProtocol("NSDraggingDestination");
+public static final int /*long*/ protocol_NSDraggingSource = objc_getProtocol("NSDraggingSource");
 public static final int /*long*/ protocol_NSFontManagerResponderMethod = objc_getProtocol("NSFontManagerResponderMethod");
 public static final int /*long*/ protocol_NSMenuDelegate = objc_getProtocol("NSMenuDelegate");
 public static final int /*long*/ protocol_NSOutlineViewDataSource = objc_getProtocol("NSOutlineViewDataSource");
 public static final int /*long*/ protocol_NSOutlineViewDelegate = objc_getProtocol("NSOutlineViewDelegate");
 public static final int /*long*/ protocol_NSOutlineViewNotifications = objc_getProtocol("NSOutlineViewNotifications");
+public static final int /*long*/ protocol_NSPasteboardOwner = objc_getProtocol("NSPasteboardOwner");
 public static final int /*long*/ protocol_NSTabViewDelegate = objc_getProtocol("NSTabViewDelegate");
 public static final int /*long*/ protocol_NSTableDataSource = objc_getProtocol("NSTableDataSource");
 public static final int /*long*/ protocol_NSTableViewDelegate = objc_getProtocol("NSTableViewDelegate");
@@ -375,6 +395,7 @@ public static final int /*long*/ sel_DOMDocument = sel_registerName("DOMDocument
 public static final int /*long*/ sel_IBeamCursor = sel_registerName("IBeamCursor");
 public static final int /*long*/ sel_TIFFRepresentation = sel_registerName("TIFFRepresentation");
 public static final int /*long*/ sel_URL = sel_registerName("URL");
+public static final int /*long*/ sel_URLFromPasteboard_ = sel_registerName("URLFromPasteboard:");
 public static final int /*long*/ sel_URLWithString_ = sel_registerName("URLWithString:");
 public static final int /*long*/ sel_UTF8String = sel_registerName("UTF8String");
 public static final int /*long*/ sel_absoluteString = sel_registerName("absoluteString");
@@ -581,6 +602,22 @@ public static final int /*long*/ sel_doubleClickAtIndex_ = sel_registerName("dou
 public static final int /*long*/ sel_doubleValue = sel_registerName("doubleValue");
 public static final int /*long*/ sel_download = sel_registerName("download");
 public static final int /*long*/ sel_download_decideDestinationWithSuggestedFilename_ = sel_registerName("download:decideDestinationWithSuggestedFilename:");
+public static final int /*long*/ sel_dragImage_at_offset_event_pasteboard_source_slideBack_ = sel_registerName("dragImage:at:offset:event:pasteboard:source:slideBack:");
+public static final int /*long*/ sel_draggedImage = sel_registerName("draggedImage");
+public static final int /*long*/ sel_draggedImage_beganAt_ = sel_registerName("draggedImage:beganAt:");
+public static final int /*long*/ sel_draggedImage_endedAt_operation_ = sel_registerName("draggedImage:endedAt:operation:");
+public static final int /*long*/ sel_draggedImageLocation = sel_registerName("draggedImageLocation");
+public static final int /*long*/ sel_draggingDestinationWindow = sel_registerName("draggingDestinationWindow");
+public static final int /*long*/ sel_draggingEnded_ = sel_registerName("draggingEnded:");
+public static final int /*long*/ sel_draggingEntered_ = sel_registerName("draggingEntered:");
+public static final int /*long*/ sel_draggingExited_ = sel_registerName("draggingExited:");
+public static final int /*long*/ sel_draggingLocation = sel_registerName("draggingLocation");
+public static final int /*long*/ sel_draggingPasteboard = sel_registerName("draggingPasteboard");
+public static final int /*long*/ sel_draggingSequenceNumber = sel_registerName("draggingSequenceNumber");
+public static final int /*long*/ sel_draggingSource = sel_registerName("draggingSource");
+public static final int /*long*/ sel_draggingSourceOperationMask = sel_registerName("draggingSourceOperationMask");
+public static final int /*long*/ sel_draggingSourceOperationMaskForLocal_ = sel_registerName("draggingSourceOperationMaskForLocal:");
+public static final int /*long*/ sel_draggingUpdated_ = sel_registerName("draggingUpdated:");
 public static final int /*long*/ sel_drawAtPoint_ = sel_registerName("drawAtPoint:");
 public static final int /*long*/ sel_drawAtPoint_fromRect_operation_fraction_ = sel_registerName("drawAtPoint:fromRect:operation:fraction:");
 public static final int /*long*/ sel_drawBackgroundForGlyphRange_atPoint_ = sel_registerName("drawBackgroundForGlyphRange:atPoint:");
@@ -657,6 +694,7 @@ public static final int /*long*/ sel_hourOfDay = sel_registerName("hourOfDay");
 public static final int /*long*/ sel_iconForFile_ = sel_registerName("iconForFile:");
 public static final int /*long*/ sel_iconForFileType_ = sel_registerName("iconForFileType:");
 public static final int /*long*/ sel_ignore = sel_registerName("ignore");
+public static final int /*long*/ sel_ignoreModifierKeysWhileDragging = sel_registerName("ignoreModifierKeysWhileDragging");
 public static final int /*long*/ sel_imageInterpolation = sel_registerName("imageInterpolation");
 public static final int /*long*/ sel_imageablePageBounds = sel_registerName("imageablePageBounds");
 public static final int /*long*/ sel_increment = sel_registerName("increment");
@@ -776,6 +814,7 @@ public static final int /*long*/ sel_moveToPoint_ = sel_registerName("moveToPoin
 public static final int /*long*/ sel_moveUp_ = sel_registerName("moveUp:");
 public static final int /*long*/ sel_mutableString = sel_registerName("mutableString");
 public static final int /*long*/ sel_name = sel_registerName("name");
+public static final int /*long*/ sel_namesOfPromisedFilesDroppedAtDestination_ = sel_registerName("namesOfPromisedFilesDroppedAtDestination:");
 public static final int /*long*/ sel_nextEventMatchingMask_untilDate_inMode_dequeue_ = sel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:");
 public static final int /*long*/ sel_nextObject = sel_registerName("nextObject");
 public static final int /*long*/ sel_nextWordFromIndex_forward_ = sel_registerName("nextWordFromIndex:forward:");
@@ -826,7 +865,9 @@ public static final int /*long*/ sel_panelConvertFont_ = sel_registerName("panel
 public static final int /*long*/ sel_paperSize = sel_registerName("paperSize");
 public static final int /*long*/ sel_paragraphs = sel_registerName("paragraphs");
 public static final int /*long*/ sel_paste_ = sel_registerName("paste:");
+public static final int /*long*/ sel_pasteboard_provideDataForType_ = sel_registerName("pasteboard:provideDataForType:");
 public static final int /*long*/ sel_pasteboardWithName_ = sel_registerName("pasteboardWithName:");
+public static final int /*long*/ sel_performDragOperation_ = sel_registerName("performDragOperation:");
 public static final int /*long*/ sel_performSelectorOnMainThread_withObject_waitUntilDone_ = sel_registerName("performSelectorOnMainThread:withObject:waitUntilDone:");
 public static final int /*long*/ sel_pixelsHigh = sel_registerName("pixelsHigh");
 public static final int /*long*/ sel_pixelsWide = sel_registerName("pixelsWide");
@@ -848,6 +889,7 @@ public static final int /*long*/ sel_recentSearches = sel_registerName("recentSe
 public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
 public static final int /*long*/ sel_rectOfRow_ = sel_registerName("rectOfRow:");
 public static final int /*long*/ sel_redComponent = sel_registerName("redComponent");
+public static final int /*long*/ sel_registerForDraggedTypes_ = sel_registerName("registerForDraggedTypes:");
 public static final int /*long*/ sel_release = sel_registerName("release");
 public static final int /*long*/ sel_reload_ = sel_registerName("reload:");
 public static final int /*long*/ sel_reloadData = sel_registerName("reloadData");
@@ -1106,6 +1148,7 @@ public static final int /*long*/ sel_stopLoading_ = sel_registerName("stopLoadin
 public static final int /*long*/ sel_string = sel_registerName("string");
 public static final int /*long*/ sel_stringByAddingPercentEscapesUsingEncoding_ = sel_registerName("stringByAddingPercentEscapesUsingEncoding:");
 public static final int /*long*/ sel_stringByAppendingPathComponent_ = sel_registerName("stringByAppendingPathComponent:");
+public static final int /*long*/ sel_stringByDeletingLastPathComponent = sel_registerName("stringByDeletingLastPathComponent");
 public static final int /*long*/ sel_stringByDeletingPathExtension = sel_registerName("stringByDeletingPathExtension");
 public static final int /*long*/ sel_stringByEvaluatingJavaScriptFromString_ = sel_registerName("stringByEvaluatingJavaScriptFromString:");
 public static final int /*long*/ sel_stringByReplacingOccurrencesOfString_withString_ = sel_registerName("stringByReplacingOccurrencesOfString:withString:");
@@ -1159,6 +1202,7 @@ public static final int /*long*/ sel_typesetter = sel_registerName("typesetter")
 public static final int /*long*/ sel_unarchiveObjectWithData_ = sel_registerName("unarchiveObjectWithData:");
 public static final int /*long*/ sel_unhideAllApplications_ = sel_registerName("unhideAllApplications:");
 public static final int /*long*/ sel_unmarkText = sel_registerName("unmarkText");
+public static final int /*long*/ sel_unregisterDraggedTypes = sel_registerName("unregisterDraggedTypes");
 public static final int /*long*/ sel_use = sel_registerName("use");
 public static final int /*long*/ sel_usedRectForTextContainer_ = sel_registerName("usedRectForTextContainer:");
 public static final int /*long*/ sel_userInfo = sel_registerName("userInfo");
@@ -1171,6 +1215,7 @@ public static final int /*long*/ sel_valueWithRect_ = sel_registerName("valueWit
 public static final int /*long*/ sel_valueWithSize_ = sel_registerName("valueWithSize:");
 public static final int /*long*/ sel_visibleFrame = sel_registerName("visibleFrame");
 public static final int /*long*/ sel_visibleRect = sel_registerName("visibleRect");
+public static final int /*long*/ sel_wantsPeriodicDraggingUpdates = sel_registerName("wantsPeriodicDraggingUpdates");
 public static final int /*long*/ sel_wantsToHandleMouseEvents = sel_registerName("wantsToHandleMouseEvents");
 public static final int /*long*/ sel_webFrame = sel_registerName("webFrame");
 public static final int /*long*/ sel_webView_contextMenuItemsForElement_defaultMenuItems_ = sel_registerName("webView:contextMenuItemsForElement:defaultMenuItems:");
@@ -1219,6 +1264,7 @@ public static final int /*long*/ sel_windowWillClose_ = sel_registerName("window
 public static final int /*long*/ sel_windows = sel_registerName("windows");
 public static final int /*long*/ sel_worksWhenModal = sel_registerName("worksWhenModal");
 public static final int /*long*/ sel_wraps = sel_registerName("wraps");
+public static final int /*long*/ sel_writeToPasteboard_ = sel_registerName("writeToPasteboard:");
 public static final int /*long*/ sel_yearOfCommonEra = sel_registerName("yearOfCommonEra");
 
 /** Constants */
@@ -2984,6 +3030,9 @@ public static final NSString NSDeviceRGBColorSpace = new NSString(NSDeviceRGBCol
 public static final native int /*long*/ NSDeviceResolution();
 public static final NSString NSDeviceResolution = new NSString(NSDeviceResolution());
 /** @method flags=const */
+public static final native int /*long*/ NSDragPboard();
+public static final NSString NSDragPboard = new NSString(NSDragPboard());
+/** @method flags=const */
 public static final native int /*long*/ NSFilenamesPboardType();
 public static final NSString NSFilenamesPboardType = new NSString(NSFilenamesPboardType());
 /** @method flags=const */
@@ -2992,6 +3041,9 @@ public static final NSString NSFontAttributeName = new NSString(NSFontAttributeN
 /** @method flags=const */
 public static final native int /*long*/ NSForegroundColorAttributeName();
 public static final NSString NSForegroundColorAttributeName = new NSString(NSForegroundColorAttributeName());
+/** @method flags=const */
+public static final native int /*long*/ NSHTMLPboardType();
+public static final NSString NSHTMLPboardType = new NSString(NSHTMLPboardType());
 /** @method flags=const */
 public static final native int /*long*/ NSLinkAttributeName();
 public static final NSString NSLinkAttributeName = new NSString(NSLinkAttributeName());
@@ -3293,6 +3345,12 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg1 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ * @param arg2 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1, NSSize arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, boolean arg6);
 /**
  * @method flags=cast
  * @param arg1 flags=struct

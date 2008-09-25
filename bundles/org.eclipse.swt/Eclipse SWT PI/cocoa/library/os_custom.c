@@ -61,6 +61,19 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(drawRect_1CALLBACK)
 }
 #endif
 
+#ifndef NO_draggedImage_1endedAt_1operation_1CALLBACK
+static jintLong draggedImage_1endedAt_1operation_1CALLBACK;
+static void draggedImage_1endedAt_1operation(id obj, SEL sel, NSImage *image, NSPoint point, NSDragOperation op)
+{
+	return ((void (*)(id, SEL, NSImage *, NSPoint *, NSDragOperation))draggedImage_1endedAt_1operation_1CALLBACK)(obj, sel, image, &point, op);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(draggedImage_1endedAt_1operation_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	draggedImage_1endedAt_1operation_1CALLBACK = func;
+	return (jintLong)draggedImage_1endedAt_1operation;
+}
+#endif
 
 #ifndef NO_drawInteriorWithFrame_1inView_1CALLBACK
 static jintLong drawInteriorWithFrame_1inView_1CALLBACK;
@@ -267,3 +280,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSZeroRect)
 	return rc;
 }
 #endif
+
+#if !__LP64__
+#ifndef NO_SetThemeCursor
+JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
+(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetThemeCursor_FUNC);
+	rc = (jint)SetThemeCursor((ThemeCursor)arg0);
+	OS_NATIVE_EXIT(env, that, SetThemeCursor_FUNC);
+	return rc;
+}
+#endif
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
+(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	// No-op on 64-bit
+	return rc;
+}
+#endif
+
