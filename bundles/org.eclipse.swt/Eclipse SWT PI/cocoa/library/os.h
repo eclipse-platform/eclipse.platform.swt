@@ -18,7 +18,6 @@
 #define __OBJC2__ 1
 
 #include <Cocoa/Cocoa.h>
-#include <Carbon/Carbon.h>
 #include <WebKit/WebView.h>
 #import <objc/objc-runtime.h>
 

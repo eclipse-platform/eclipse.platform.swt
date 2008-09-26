@@ -280,26 +280,3 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSZeroRect)
 	return rc;
 }
 #endif
-
-#if !__LP64__
-#ifndef NO_SetThemeCursor
-JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
-(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SetThemeCursor_FUNC);
-	rc = (jint)SetThemeCursor((ThemeCursor)arg0);
-	OS_NATIVE_EXIT(env, that, SetThemeCursor_FUNC);
-	return rc;
-}
-#endif
-#else
-JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
-(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	// No-op on 64-bit
-	return rc;
-}
-#endif
-

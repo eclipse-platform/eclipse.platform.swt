@@ -1046,6 +1046,26 @@ fail:
 }
 #endif
 
+#ifndef NO_SetThemeCursor
+JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetThemeCursor_FUNC);
+/*
+	rc = (jint)SetThemeCursor(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, SetThemeCursor)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, SetThemeCursor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TransformProcessType
 JNIEXPORT jint JNICALL OS_NATIVE(TransformProcessType)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)

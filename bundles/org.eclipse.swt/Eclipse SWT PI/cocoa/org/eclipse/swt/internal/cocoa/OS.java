@@ -60,7 +60,7 @@ public static final native int SetFrontProcess(int[] psn);
 /** @param psn cast=(ProcessSerialNumber *) */
 public static final native int TransformProcessType(int[] psn, int transformState);
 public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
-/** @method flags=no_gen */
+/** @method flags=dynamic */
 public static final native int SetThemeCursor(int themeCursor);
 
 public static final int kThemeCopyArrowCursor = 1;
