@@ -663,6 +663,7 @@ typedef enum {
 #endif
 	objc_1registerClassPair_FUNC,
 	objc_1super_1sizeof_FUNC,
+	object_1getClass_FUNC,
 	object_1getClassName_FUNC,
 	object_1getInstanceVariable_FUNC,
 	object_1setClass_FUNC,

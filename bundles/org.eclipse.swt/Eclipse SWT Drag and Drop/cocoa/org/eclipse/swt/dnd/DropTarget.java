@@ -10,25 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cocoa.NSApplication;
-import org.eclipse.swt.internal.cocoa.NSArray;
-import org.eclipse.swt.internal.cocoa.NSCursor;
-import org.eclipse.swt.internal.cocoa.NSEvent;
-import org.eclipse.swt.internal.cocoa.NSMutableArray;
-import org.eclipse.swt.internal.cocoa.NSObject;
-import org.eclipse.swt.internal.cocoa.NSPasteboard;
-import org.eclipse.swt.internal.cocoa.NSPoint;
-import org.eclipse.swt.internal.cocoa.NSRect;
-import org.eclipse.swt.internal.cocoa.NSScreen;
-import org.eclipse.swt.internal.cocoa.NSString;
-import org.eclipse.swt.internal.cocoa.NSURL;
-import org.eclipse.swt.internal.cocoa.OS;
-import org.eclipse.swt.internal.cocoa.id;
+import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -123,10 +110,7 @@ void addDragHandlers() {
 	// the types with the Control's NSView and AppKit will call the methods in the protocol
 	// when a drag goes over the view. 
 
-	String controlClassName = control.view.getClass().getName();
-	int index = controlClassName.lastIndexOf('.');
-	if (index != -1) controlClassName = controlClassName.substring(index + 1);
-	int /*long*/ cls = OS.objc_getClass(controlClassName);
+	int /*long*/ cls = OS.object_getClass(control.view.id);
 
 	if (cls == 0) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);

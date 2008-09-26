@@ -210,6 +210,9 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native void objc_registerClassPair(int /*long*/ cls);
 /** @param obj cast=(id) */
 public static final native int /*long*/ object_getClassName(int /*long*/ obj);
+/** @param obj cast=(id) */
+public static final native int /*long*/ object_getClass(int /*long*/ obj);
+
 /**
  * @param obj cast=(id)
  * @param outValue cast=(void **)

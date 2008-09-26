@@ -4165,6 +4165,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(objc_1super_1sizeof)
 }
 #endif
 
+#ifndef NO_object_1getClass
+JNIEXPORT jintLong JNICALL OS_NATIVE(object_1getClass)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, object_1getClass_FUNC);
+	rc = (jintLong)object_getClass((id)arg0);
+	OS_NATIVE_EXIT(env, that, object_1getClass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_object_1getClassName
 JNIEXPORT jintLong JNICALL OS_NATIVE(object_1getClassName)
 	(JNIEnv *env, jclass that, jintLong arg0)

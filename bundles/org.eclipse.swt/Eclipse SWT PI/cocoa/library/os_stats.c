@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 222;
-int OS_nativeFunctionCallCount[222];
+int OS_nativeFunctionCount = 223;
+int OS_nativeFunctionCallCount[223];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -655,6 +655,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"objc_1registerClassPair",
 	"objc_1super_1sizeof",
+	"object_1getClass",
 	"object_1getClassName",
 	"object_1getInstanceVariable",
 	"object_1setClass",
