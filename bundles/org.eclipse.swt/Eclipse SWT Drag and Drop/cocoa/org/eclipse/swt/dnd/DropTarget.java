@@ -123,8 +123,10 @@ void addDragHandlers() {
 	// the types with the Control's NSView and AppKit will call the methods in the protocol
 	// when a drag goes over the view. 
 
-	String controlClass = control.view.getClass().getSimpleName();
-	int /*long*/ cls = OS.objc_getClass(controlClass);
+	String controlClassName = control.view.getClass().getName();
+	int index = controlClassName.lastIndexOf('.');
+	if (index != -1) controlClassName = controlClassName.substring(index + 1);
+	int /*long*/ cls = OS.objc_getClass(controlClassName);
 
 	if (cls == 0) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
