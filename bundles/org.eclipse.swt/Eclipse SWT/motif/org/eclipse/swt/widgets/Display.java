@@ -2699,49 +2699,61 @@ int mouseHoverProc (int handle, int id) {
  * 
  */
 public boolean post (Event event) {
-	synchronized (Device.class) {
-		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-		int type = event.type;
-		switch (type) {
-			case SWT.KeyDown :
-			case SWT.KeyUp : {
-				int keyCode = 0;
-				int keysym = untranslateKey (event.keyCode);
-				if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-				if (keyCode == 0) {
-					char key = event.character;
-					switch (key) {
-						case SWT.BS: keysym = OS.XK_BackSpace; break;
-						case SWT.CR: keysym = OS.XK_Return; break;
-						case SWT.DEL: keysym = OS.XK_Delete; break;
-						case SWT.ESC: keysym = OS.XK_Escape; break;
-						case SWT.TAB: keysym = OS.XK_Tab; break;
-						case SWT.LF: keysym = OS.XK_Linefeed; break;
-						default:
-							keysym = key;
+	/*
+	* Get the operating system lock before synchronizing on the device
+	* lock so that the device lock will not be held should another
+	* thread already be in the operating system.  This avoids deadlock
+	* should the other thread need the device lock.
+	*/
+	Lock lock = OS.lock;
+	lock.lock();
+	try {
+		synchronized (Device.class) {
+			if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+			if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+			int type = event.type;
+			switch (type) {
+				case SWT.KeyDown :
+				case SWT.KeyUp : {
+					int keyCode = 0;
+					int keysym = untranslateKey (event.keyCode);
+					if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+					if (keyCode == 0) {
+						char key = event.character;
+						switch (key) {
+							case SWT.BS: keysym = OS.XK_BackSpace; break;
+							case SWT.CR: keysym = OS.XK_Return; break;
+							case SWT.DEL: keysym = OS.XK_Delete; break;
+							case SWT.ESC: keysym = OS.XK_Escape; break;
+							case SWT.TAB: keysym = OS.XK_Tab; break;
+							case SWT.LF: keysym = OS.XK_Linefeed; break;
+							default:
+								keysym = key;
+						}
+						keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
+						if (keyCode == 0) return false;
 					}
-					keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
-					if (keyCode == 0) return false;
-				}
-				OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
-				return true;
-			}
-			case SWT.MouseDown :
-			case SWT.MouseMove : 
-			case SWT.MouseUp : {
-				if (type == SWT.MouseMove) {
-					OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+					OS.XTestFakeKeyEvent (xDisplay, keyCode, type == SWT.KeyDown, 0);
 					return true;
-				} else {
-					int button = event.button;
-					if (button < 1 || button > 3) return false;
-					OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
-				    return true;
+				}
+				case SWT.MouseDown :
+				case SWT.MouseMove : 
+				case SWT.MouseUp : {
+					if (type == SWT.MouseMove) {
+						OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
+						return true;
+					} else {
+						int button = event.button;
+						if (button < 1 || button > 3) return false;
+						OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
+					    return true;
+					}
 				}
 			}
+			return false;
 		}
-		return false;
+	} finally {
+		lock.unlock();
 	}
 }
 void postEvent (Event event) {
