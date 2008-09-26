@@ -10,34 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.cocoa.NSApplication;
-import org.eclipse.swt.internal.cocoa.NSArray;
-import org.eclipse.swt.internal.cocoa.NSData;
-import org.eclipse.swt.internal.cocoa.NSEvent;
-import org.eclipse.swt.internal.cocoa.NSImage;
-import org.eclipse.swt.internal.cocoa.NSMutableArray;
-import org.eclipse.swt.internal.cocoa.NSObject;
-import org.eclipse.swt.internal.cocoa.NSPasteboard;
-import org.eclipse.swt.internal.cocoa.NSPoint;
-import org.eclipse.swt.internal.cocoa.NSSize;
-import org.eclipse.swt.internal.cocoa.NSString;
-import org.eclipse.swt.internal.cocoa.NSURL;
-import org.eclipse.swt.internal.cocoa.OS;
-import org.eclipse.swt.internal.cocoa.SWTDragSourceDelegate;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.Widget;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.swt.widgets.*;
 /**
  *
  * <code>DragSource</code> defines the source object for a drag and drop transfer.
@@ -372,7 +350,6 @@ void drag(Event dragEvent) {
 		// If we actually dragged, dragStarted will be set to true in dragImage:beganAt:
 		// If not, send a DragEnd indicating nothing happened.
 		if (!dragStarted) {
-			System.out.println("Drag failed");
 			event = new DNDEvent();
 			event.widget = this;
 			event.time = (int)System.currentTimeMillis();
