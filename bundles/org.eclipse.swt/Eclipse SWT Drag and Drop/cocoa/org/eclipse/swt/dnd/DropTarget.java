@@ -474,7 +474,7 @@ int getOperationFromKeyState() {
 	// correct Cocoa behavior.  Control + Option or Command is NSDragOperationGeneric,
 	// or DND.DROP_DEFAULT in the SWT.
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
-	int modifiers = currEvent.modifierFlags();
+	int /*long*/ modifiers = currEvent.modifierFlags();
 	boolean option = (modifiers & OS.NSAlternateKeyMask) == OS.NSAlternateKeyMask;
 	boolean control = (modifiers & OS.NSControlKeyMask) == OS.NSControlKeyMask;
 	if (control && option) return DND.DROP_DEFAULT;
@@ -523,7 +523,7 @@ int opToOsOp(int operation) {
 	return osOperation;
 }
 
-int osOpToOp(int osOperation){
+int osOpToOp(int /*long*/ osOperation){
 	int operation = 0;
 	if ((osOperation & OS.NSDragOperationCopy) != 0){
 		operation |= DND.DROP_COPY;
@@ -702,7 +702,7 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
 	
 	// get allowed operations
 	int style = getStyle();
-	int allowedActions = draggingState.draggingSourceOperationMask();
+	int /*long*/ allowedActions = draggingState.draggingSourceOperationMask();
 	int operations = osOpToOp(allowedActions) & style;
 	if (operations == DND.DROP_NONE) return false;
 
@@ -723,9 +723,9 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
 	NSArray draggedTypes = dragPBoard.types();
 	if (draggedTypes == null) return false;
 	
-	int draggedTypeCount = draggedTypes.count();
+	int /*long*/ draggedTypeCount = draggedTypes.count();
 	
-	TransferData[] dataTypes = new TransferData[draggedTypeCount];
+	TransferData[] dataTypes = new TransferData[(int)draggedTypeCount];
 	int index = -1;
 	for (int i = 0; i < draggedTypeCount; i++) {
 		id draggedType = draggedTypes.objectAtIndex(i);

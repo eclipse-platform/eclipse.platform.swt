@@ -155,7 +155,7 @@ public class DragSource extends Widget {
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 
 	boolean dragStarted = false;
-	private int delegateJniRef;
+	private int /*long*/ delegateJniRef;
 	
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -366,7 +366,7 @@ void draggedImage_beganAt(NSImage image) {
 	this.dragStarted = true;
 }
 
-void draggedImage_endedAt_operation(NSImage image, NSPoint location, int operation) {
+void draggedImage_endedAt_operation(NSImage image, NSPoint location, int /*long*/ operation) {
 	int swtOperation = osOpToOp(operation);
 	Event event = new DNDEvent();
 	event.widget = this;
@@ -574,7 +574,7 @@ int opToOsOp(int operation) {
 	return osOperation;
 }
 
-int osOpToOp(int osOperation){
+int osOpToOp(int /*long*/ osOperation){
 	int operation = 0;
 	if ((osOperation & OS.NSDragOperationCopy) != 0){
 		operation |= DND.DROP_COPY;
