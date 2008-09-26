@@ -210,16 +210,24 @@ public String open () {
 			NSArray filenames = ((NSOpenPanel)panel).filenames();
 			int count = (int)/*64*/filenames.count();
 			fileNames = new String[count];
-			boolean filterPathSet = false;
 			
 			for (int i = 0; i < count; i++) {
 				filename = new NSString(filenames.objectAtIndex(i));
 				NSString filenameOnly = filename.lastPathComponent();
-				fileNames[i] = filenameOnly.getString();
+				NSString pathOnly = filename.stringByDeletingLastPathComponent();
 				
-				if (!filterPathSet) {
-					filterPath = filename.stringByDeletingLastPathComponent().getString();
-					filterPathSet = true;
+				if (i == 0) {
+					/* Filter path */
+					filterPath = pathOnly.getString();
+
+					/* File name */
+					fileName = fileNames [0] = filenameOnly.getString();
+				} else {									
+					if (pathOnly.getString().equals (filterPath)) {
+						fileNames [i] = filenameOnly.getString();
+					} else {
+						fileNames [i] = filename.getString();
+					}
 				}
 			}
 		}
