@@ -910,10 +910,10 @@ public boolean forceFocus () {
 	shell.setSavedFocus (null);
 	shell.bringToTop (false);
 	if (isDisposed ()) return false;
-	view.window ().makeFirstResponder (focusView ());
+	boolean result = view.window ().makeFirstResponder (focusView ());
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
-	return hasFocus ();
+	return result;
 }
 
 /**
