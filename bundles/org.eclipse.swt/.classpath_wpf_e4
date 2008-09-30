@@ -32,7 +32,10 @@
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/emulated"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
+	<classpathentry kind="src" path="Eclipse SWT Animation/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Animation/wpf"/>
+	<classpathentry kind="src" path="Eclipse SWT Effects/wpf"/>
+	<classpathentry kind="src" path="Eclipse SWT Net/desktop"/>
 	<classpathentry kind="lib" path="extra_jars/exceptions.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.e4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

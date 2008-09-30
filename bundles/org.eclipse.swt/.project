@@ -37,4 +37,71 @@
 		<nature>org.eclipse.team.cvs.core.cvsnature</nature>
 		<nature>org.eclipse.pde.api.tools.apiAnalysisNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Eclipse SWT Animation2</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT JCL</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20JCL</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT Net</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Net</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT/common_e4</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT/common_e4</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT/dojo</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT/dojo</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT/flex</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT/flex</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT Animation/common</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/common</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT Animation/dojo</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/dojo</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT Animation/flex</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/flex</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT Animation/wpf</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/wpf</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT Effects/flex</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Effects/flex</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT PI/dojo</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20PI/dojo</locationURI>
+		</link>
+		<link>
+			<name>Eclipse SWT PI/flex</name>
+			<type>2</type>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20PI/flex</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

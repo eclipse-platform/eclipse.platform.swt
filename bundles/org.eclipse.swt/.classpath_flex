@@ -9,8 +9,8 @@
 	<classpathentry kind="src" path="Eclipse SWT/emulated/ime"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
-	<classpathentry kind="src" path="Eclipse SWT AWT/emulated"/>
-	<classpathentry kind="src" path="Eclipse SWT AWT/common"/>
+	<!--classpathentry kind="src" path="Eclipse SWT AWT/emulated"/-->
+	<!--classpathentry kind="src" path="Eclipse SWT AWT/common"/-->
 	<classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/emulated"/>
 	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
@@ -22,7 +22,16 @@
 	<classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/emulated"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+	<classpathentry kind="src" path="Eclipse SWT/flex"/>
+	<classpathentry kind="src" path="Eclipse SWT PI/flex"/>
+	<classpathentry kind="src" path="Eclipse SWT/common_e4"/>
+	<classpathentry kind="src" path="Eclipse SWT Animation2/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Animation2/flex"/>
+	<classpathentry kind="src" path="Eclipse SWT Effects/flex"/>
+	<classpathentry kind="src" path="Eclipse SWT Net/flex"/>
+	<classpathentry kind="src" path="Eclipse SWT JCL/gwt/common"/>
+	<classpathentry kind="src" path="Eclipse SWT JCL/gwt/extended/common"/>
+	<classpathentry kind="src" path="Eclipse SWT JCL/gwt/extended/actionscript"/>
 	<classpathentry kind="lib" path="extra_jars/exceptions.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.e4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
