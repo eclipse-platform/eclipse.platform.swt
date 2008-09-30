@@ -79,11 +79,6 @@
 			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/flex</locationURI>
 		</link>
 		<link>
-			<name>Eclipse SWT Animation/wpf</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/wpf</locationURI>
-		</link>
-		<link>
 			<name>Eclipse SWT Effects/flex</name>
 			<type>2</type>
 			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Effects/flex</locationURI>
