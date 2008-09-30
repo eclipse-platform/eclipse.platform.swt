@@ -443,18 +443,22 @@ public void setToolTip (ToolTip toolTip) {
 
 /**
  * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
+ * may be null indicating that the default tool tip for the 
+ * control will be shown. For a control that has a default
+ * tool tip, such as the Tree control on Windows, setting
+ * the tool tip text to an empty string replaces the default,
+ * causing no tool tip text to be shown.
  *
- * @param value the new tool tip text (or null)
+ * @param string the new tool tip text (or null)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setToolTipText (String value) {
+public void setToolTipText (String string) {
 	checkWidget ();
-	toolTipText = value;
+	toolTipText = string;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
 	/*
