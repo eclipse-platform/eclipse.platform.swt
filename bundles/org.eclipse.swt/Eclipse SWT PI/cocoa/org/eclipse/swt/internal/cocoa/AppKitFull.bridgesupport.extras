@@ -2902,9 +2902,9 @@
     <method selector="servicesProvider">
       <retval></retval>
     </method>
-    <method selector="setApplicationIconImage:">
-      <arg name="image"></arg>
-      <retval></retval>
+    <method selector="setApplicationIconImage:" swt_gen="true">
+      <arg name="image" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setDelegate:" swt_gen="true">
       <arg name="anObject" swt_gen="true"></arg>
@@ -9356,9 +9356,9 @@
     <method class_method="true" selector="imageUnfilteredTypes">
       <retval></retval>
     </method>
-    <method selector="initByReferencingFile:">
-      <arg name="fileName"></arg>
-      <retval></retval>
+    <method selector="initByReferencingFile:" swt_gen="true">
+      <arg name="fileName" swt_gen="true"></arg>
+      <retval swt_gen="true" swt_java_type="NSImage"></retval>
     </method>
     <method selector="initByReferencingURL:">
       <arg name="url"></arg>

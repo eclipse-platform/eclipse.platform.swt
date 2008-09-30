@@ -85,6 +85,10 @@ public void sendEvent(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_sendEvent_, theEvent != null ? theEvent.id : 0);
 }
 
+public void setApplicationIconImage(NSImage image) {
+	OS.objc_msgSend(this.id, OS.sel_setApplicationIconImage_, image != null ? image.id : 0);
+}
+
 public void setDelegate(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, anObject != null ? anObject.id : 0);
 }

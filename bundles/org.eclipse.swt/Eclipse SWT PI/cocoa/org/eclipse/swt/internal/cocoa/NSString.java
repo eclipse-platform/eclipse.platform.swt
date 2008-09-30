@@ -96,4 +96,9 @@ public static NSString stringWithCharacters(char[] characters, int /*long*/ leng
 	return result != 0 ? new NSString(result) : null;
 }
 
+public static NSString stringWithUTF8String(int /*long*/ nullTerminatedCString) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithUTF8String_, nullTerminatedCString);
+	return result != 0 ? new NSString(result) : null;
+}
+
 }

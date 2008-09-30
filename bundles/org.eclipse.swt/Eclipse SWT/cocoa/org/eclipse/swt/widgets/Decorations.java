@@ -483,13 +483,9 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 	if (parent != null) return;
-//	if (display.dockImage == 0) {
-//		if (image != null) {
-//			OS.SetApplicationDockTileImage (image.handle);
-//		} else {
-//			OS.RestoreApplicationDockTileImage ();
-//		}
-//	}
+	if (display.dockImage == null) {
+		display.application.setApplicationIconImage (image != null ? image.handle : null);
+	}
 }
 
 /**
@@ -524,15 +520,19 @@ public void setImages (Image [] images) {
 	}
 	this.images = images;
 	if (parent != null) return;
-//	if (display.dockImage == 0) {
-//		if (images != null && images.length > 1) {
-//			Image [] bestImages = new Image [images.length];
-//			System.arraycopy (images, 0, bestImages, 0, images.length);
-//			sort (bestImages);
-//			images = bestImages;
-//		}
-//		OS.SetApplicationDockTileImage (images [0].handle);
-//	}
+	if (display.dockImage == null) {
+		if (images != null && images.length > 1) {
+			Image [] bestImages = new Image [images.length];
+			System.arraycopy (images, 0, bestImages, 0, images.length);
+			sort (bestImages);
+			images = bestImages;
+		}
+		if (images != null && images.length > 0) {
+			display.application.setApplicationIconImage (images [0].handle);
+		} else {
+			display.application.setApplicationIconImage (null);
+		}
+	}
 }
 
 /**

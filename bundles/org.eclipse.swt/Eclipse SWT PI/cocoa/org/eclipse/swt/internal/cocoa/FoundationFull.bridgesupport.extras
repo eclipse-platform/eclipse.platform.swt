@@ -10961,9 +10961,9 @@
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="stringWithUTF8String:">
-      <arg name="nullTerminatedCString"></arg>
-      <retval></retval>
+    <method class_method="true" selector="stringWithUTF8String:" swt_gen="true">
+      <arg name="nullTerminatedCString" swt_gen="true"></arg>
+      <retval swt_gen="true" swt_java_type="NSString"></retval>
     </method>
     <method selector="stringsByAppendingPaths:">
       <arg name="paths"></arg>

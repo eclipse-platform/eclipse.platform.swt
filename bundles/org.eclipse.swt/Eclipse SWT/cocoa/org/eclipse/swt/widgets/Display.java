@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -118,6 +120,7 @@ public class Display extends Device {
 
 	NSApplication application;
 	int /*long*/ applicationClass;
+	NSImage dockImage;
 	boolean isEmbedded;
 	
 	NSWindow screenWindow;
@@ -649,21 +652,26 @@ void createDisplay (DeviceData data) {
 		 */
 		int [] psn = new int [2];
 		if (OS.GetCurrentProcess (psn) == OS.noErr) {
-			int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + OS.getpid ()));
+			int pid = OS.getpid ();
+			int /*long*/ ptr = OS.getenv (ascii ("APP_NAME_" + pid));
 			if (ptr  == 0 && APP_NAME != null) {
 				ptr = NSString.stringWith(APP_NAME).UTF8String();	
 			}
 			if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
 			OS.TransformProcessType (psn, OS.kProcessTransformToForegroundApplication);
 			OS.SetFrontProcess (psn);
-//			ptr = OS.getenv (ascii ("APP_ICON_" + pid));
-//			if (ptr != 0) {
-//				int image = readImageRef (ptr);
-//				if (image != 0) {
-//					dockImage = image;
-//					OS.SetApplicationDockTileImage (dockImage);
-//				}
-//			}
+			ptr = OS.getenv (ascii ("APP_ICON_" + pid));
+			if (ptr != 0) {
+				NSString path = NSString.stringWithUTF8String (ptr);
+				NSImage image = (NSImage) new NSImage().alloc();
+				NSImage result = image.initByReferencingFile(path);
+				if (result != null) {
+					dockImage = image;
+					application.setApplicationIconImage(image);
+				} else {
+					image.release();
+				}
+			}
 		}
 
 		String className = "SWTApplication";
@@ -2625,6 +2633,10 @@ void releaseDisplay () {
 	}
 	cursors = null;
 	
+	/* Release Dock image */
+	if (dockImage != null) dockImage.release();
+	dockImage = null;
+
 	if (screenWindow != null) screenWindow.release();
 	screenWindow = null;
 	
