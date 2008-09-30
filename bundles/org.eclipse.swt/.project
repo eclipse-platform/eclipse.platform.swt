@@ -39,11 +39,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Eclipse SWT Animation2</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation</locationURI>
-		</link>
-		<link>
 			<name>Eclipse SWT JCL</name>
 			<type>2</type>
 			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20JCL</locationURI>

@@ -25,8 +25,8 @@
 	<classpathentry kind="src" path="Eclipse SWT/flex"/>
 	<classpathentry kind="src" path="Eclipse SWT PI/flex"/>
 	<classpathentry kind="src" path="Eclipse SWT/common_e4"/>
-	<classpathentry kind="src" path="Eclipse SWT Animation2/common"/>
-	<classpathentry kind="src" path="Eclipse SWT Animation2/flex"/>
+	<classpathentry kind="src" path="Eclipse SWT Animation/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Animation/flex"/>
 	<classpathentry kind="src" path="Eclipse SWT Effects/flex"/>
 	<classpathentry kind="src" path="Eclipse SWT Net/flex"/>
 	<classpathentry kind="src" path="Eclipse SWT JCL/gwt/common"/>
