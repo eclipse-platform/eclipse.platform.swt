@@ -107,7 +107,7 @@ class TabFolderTab extends Tab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Selection", "SelectionIndex"};
+		return new String[] {"Selection", "SelectionIndex", "ToolTipText"};
 	}
 
 	String setMethodName(String methodRoot) {

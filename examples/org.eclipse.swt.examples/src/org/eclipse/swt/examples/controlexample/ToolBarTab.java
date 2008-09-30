@@ -281,6 +281,14 @@ class ToolBarTab extends Tab {
 	}
 	
 	/**
+	 * Returns a list of set/get API method names (without the set/get prefix)
+	 * that can be used to set/get values in the example control(s).
+	 */
+	String[] getMethodNames() {
+		return new String[] {"ToolTipText"};
+	}
+
+	/**
 	 * Gets the short text for the tab folder item.
 	 */
 	String getShortTabText() {
