@@ -31,6 +31,7 @@ public class Snippet305 {
 		Shell shell = new Shell(display);
 		shell.setText("Excel Sheet Selection Example");
 		shell.setLayout(new FillLayout());
+		OleAutomation application;
 		try {
 			OleFrame frame = new OleFrame(shell, SWT.NONE);
 			OleControlSite controlSite = new OleControlSite(frame, SWT.NONE, "Excel.Sheet");
@@ -39,7 +40,7 @@ public class Snippet305 {
 			OleAutomation excelSheet = new OleAutomation(controlSite);
 			int[] dispIDs = excelSheet.getIDsOfNames(new String[] { "Application" });
 			Variant pVarResult = excelSheet.getProperty(dispIDs[0]);
-			OleAutomation application = pVarResult.getAutomation();
+			application = pVarResult.getAutomation();
 			pVarResult.dispose();
 			excelSheet.dispose();
 			
@@ -63,7 +64,6 @@ public class Snippet305 {
 				}
 			};
 			controlSite.addEventListener(application, IID_AppEvents, SheetSelectionChange, listener);
-			application.dispose();
 		} catch (SWTError e) {
 			System.out.println("Unable to open activeX control");
 			return;
@@ -74,6 +74,7 @@ public class Snippet305 {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+		if (application != null) application.dispose();
 		display.dispose();
 	}
 }
