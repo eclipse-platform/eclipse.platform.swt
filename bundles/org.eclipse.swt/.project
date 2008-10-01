@@ -64,19 +64,9 @@
 			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT/flex</locationURI>
 		</link>
 		<link>
-			<name>Eclipse SWT Animation/common</name>
+			<name>Eclipse SWT Animation</name>
 			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/common</locationURI>
-		</link>
-		<link>
-			<name>Eclipse SWT Animation/dojo</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/dojo</locationURI>
-		</link>
-		<link>
-			<name>Eclipse SWT Animation/flex</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation/flex</locationURI>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation</locationURI>
 		</link>
 		<link>
 			<name>Eclipse SWT Effects/flex</name>
