@@ -357,6 +357,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSBaselineOffsetAttributeName)
 }
 #endif
 
+#ifndef NO_NSBeep
+JNIEXPORT void JNICALL OS_NATIVE(NSBeep)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, NSBeep_FUNC);
+	NSBeep();
+	OS_NATIVE_EXIT(env, that, NSBeep_FUNC);
+}
+#endif
+
 #ifndef NO_NSBitsPerPixelFromDepth
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 	(JNIEnv *env, jclass that, jint arg0)

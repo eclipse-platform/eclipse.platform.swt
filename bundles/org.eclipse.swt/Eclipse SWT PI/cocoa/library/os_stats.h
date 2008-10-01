@@ -49,6 +49,7 @@ typedef enum {
 	NSAffineTransformStruct_1sizeof_FUNC,
 	NSBackgroundColorAttributeName_FUNC,
 	NSBaselineOffsetAttributeName_FUNC,
+	NSBeep_FUNC,
 	NSBitsPerPixelFromDepth_FUNC,
 	NSCalibratedRGBColorSpace_FUNC,
 	NSDefaultRunLoopMode_FUNC,

@@ -113,6 +113,8 @@ public class Display extends Device {
 
 	NSDictionary markedAttributes;
 
+	Shell [] modalShells;
+	
 	Menu menuBar;
 	Menu[] menus, popups;
 
@@ -467,6 +469,7 @@ public void asyncExec (Runnable runnable) {
  */
 public void beep () {
 	checkDevice ();
+	OS.NSBeep ();
 }
 
 void cascadeWindow (NSWindow window, NSScreen screen) {
@@ -576,6 +579,22 @@ static String convertToLf(String text) {
 		result.append (Lf);
 	}
 	return result.toString ();
+}
+
+void clearModal (Shell shell) {
+	if (modalShells == null) return;
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) break;
+		if (modalShells [index] == null) return;
+		index++;
+	}
+	if (index == length) return;
+	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
+	modalShells [length] = null;
+	if (index == 0 && modalShells [0] == null) modalShells = null;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 /**
@@ -2638,6 +2657,7 @@ void releaseDisplay () {
 	if (screenWindow != null) screenWindow.release();
 	screenWindow = null;
 	
+	modalShells = null;
 	menuBar = null;
 	menus = null;
 	
@@ -3056,6 +3076,24 @@ void setMenuBar (Menu menu) {
 	}
 }
 
+void setModalShell (Shell shell) {
+	if (modalShells == null) modalShells = new Shell [4];
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) return;
+		if (modalShells [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Shell [] newModalShells = new Shell [length + 4];
+		System.arraycopy (modalShells, 0, newModalShells, 0, length);
+		modalShells = newModalShells;
+	}
+	modalShells [index] = shell;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+}
+
 /**
  * Sets the application defined, display specific data
  * associated with the receiver, to the argument.
@@ -3420,11 +3458,39 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 
 void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent(event);
-	applicationSendMouseEvent(nsEvent, false);
-	objc_super super_struct = new objc_super();
+	int type = nsEvent.type ();
+	boolean beep = false;
+	switch (type) {
+		case OS.NSLeftMouseDown:
+		case OS.NSRightMouseDown:
+		case OS.NSOtherMouseDown:
+			beep = true;
+		case OS.NSLeftMouseUp:
+		case OS.NSRightMouseUp:
+		case OS.NSMouseMoved:
+		case OS.NSLeftMouseDragged:
+		case OS.NSRightMouseDragged:
+		case OS.NSMouseEntered:
+		case OS.NSMouseExited:
+		case OS.NSKeyDown:
+		case OS.NSKeyUp:
+		case OS.NSOtherMouseUp:
+		case OS.NSOtherMouseDragged:
+			NSWindow window = nsEvent.window ();
+			if (window != null) {
+				Shell shell = (Shell) getWidget (window.id);
+				if (shell != null && shell.getModalShell () != null) {
+					if (beep) beep ();	
+					return;
+				}
+			}
+			break;
+	}
+	applicationSendMouseEvent (nsEvent, false);
+	objc_super super_struct = new objc_super ();
 	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	OS.objc_msgSendSuper(super_struct, sel, event);
+	super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
+	OS.objc_msgSendSuper (super_struct, sel, event);
 //	if (nsEvent.type() == OS.NSApplicationDefined && nsEvent.subtype() == SWT_IDLE_TYPE) {
 //		idle = true;
 //	} else {

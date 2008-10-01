@@ -753,6 +753,34 @@ public boolean getMaximized () {
 	return !fullScreen && super.getMaximized ();
 }
 
+Shell getModalShell () {
+	Shell shell = null;
+	Shell [] modalShells = display.modalShells;
+	if (modalShells != null) {
+		int bits = SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		int index = modalShells.length;
+		while (--index >= 0) {
+			Shell modal = modalShells [index];
+			if (modal != null) {
+				if ((modal.style & bits) != 0) {
+					Control control = this;
+					while (control != null) {
+						if (control == modal) break;
+						control = control.parent;
+					}
+					if (control != modal) return modal;
+					break;
+				}
+				if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
+					if (shell == null) shell = getShell ();
+					if (modal.parent == shell) return modal;
+				}
+			}
+		}
+	}
+	return null;
+}
+
 public boolean getMinimized () {
 	checkWidget();
 	if (!getVisible ()) return super.getMinimized ();
@@ -914,7 +942,8 @@ public boolean isVisible () {
  */
 public void open () {
 	checkWidget();
-	setWindowVisible (true, true);
+//	setWindowVisible (true, true);
+	setVisible(true);
 	if (isDisposed ()) return;
 //	if (active) {
 		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
@@ -972,6 +1001,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	display.clearModal (this);
 //	disposed = true;
 	lastActive = null;
 	if (regionPath != null) regionPath.release();
@@ -1387,6 +1417,16 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & mask) != 0) {
+		if (visible) {
+			display.setModalShell (this);
+		} else {
+			display.clearModal (this);
+		}
+	} else {
+		updateModal ();
+	}
 	if (window == null) {
 		super.setVisible(visible);
 	} else {
@@ -1455,6 +1495,10 @@ boolean traverseEscape () {
 	if (!isVisible () || !isEnabled ()) return false;
 	close ();
 	return true;
+}
+
+void updateModal () {
+	// do nothing
 }
 
 void updateSystemUIMode () {

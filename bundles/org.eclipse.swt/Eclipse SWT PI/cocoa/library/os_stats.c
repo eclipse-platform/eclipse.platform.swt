@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 223;
-int OS_nativeFunctionCallCount[223];
+int OS_nativeFunctionCount = 224;
+int OS_nativeFunctionCallCount[224];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -41,6 +41,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAffineTransformStruct_1sizeof",
 	"NSBackgroundColorAttributeName",
 	"NSBaselineOffsetAttributeName",
+	"NSBeep",
 	"NSBitsPerPixelFromDepth",
 	"NSCalibratedRGBColorSpace",
 	"NSDefaultRunLoopMode",

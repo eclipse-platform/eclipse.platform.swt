@@ -1870,7 +1870,7 @@
   <function name="NSAvailableWindowDepths">
     <retval></retval>
   </function>
-  <function name="NSBeep"></function>
+  <function name="NSBeep" swt_gen="true"></function>
   <function name="NSBeginAlertSheet">
     <arg name="title"></arg>
     <arg name="defaultButton"></arg>

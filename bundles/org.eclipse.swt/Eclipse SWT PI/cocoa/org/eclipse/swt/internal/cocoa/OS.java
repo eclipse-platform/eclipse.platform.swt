@@ -3119,6 +3119,7 @@ public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFa
 
 /** Functions */
 
+public static final native void NSBeep();
 /**
  * @param depth cast=(NSWindowDepth)
  */
