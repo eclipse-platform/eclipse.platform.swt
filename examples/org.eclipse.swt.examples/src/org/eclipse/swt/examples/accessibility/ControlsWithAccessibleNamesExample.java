@@ -80,7 +80,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideLabel.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
 //		static Label imageLabel, overrideImageLabel;
-		image = new Image(display, ControlsWithAccessibleNamesExample.class.getResourceAsStream("image.bmp"));
+		image = new Image(display, ControlsWithAccessibleNamesExample.class.getResourceAsStream("run_wiz.gif"));
 		imageLabel = new Label(shell, SWT.BORDER);
 		imageLabel.setImage(image);
 		imageLabel.setToolTipText("Image Label ToolTip");
