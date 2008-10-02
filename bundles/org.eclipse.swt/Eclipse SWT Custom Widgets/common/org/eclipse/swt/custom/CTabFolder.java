@@ -285,6 +285,10 @@ public class CTabFolder extends Composite {
  */
 public CTabFolder(Composite parent, int style) {
 	super(parent, checkStyle (parent, style));
+	init(style);
+}
+
+void init(int style) {
 	super.setLayout(new CTabFolderLayout());
 	int style2 = super.getStyle();
 	oldFont = getFont();
