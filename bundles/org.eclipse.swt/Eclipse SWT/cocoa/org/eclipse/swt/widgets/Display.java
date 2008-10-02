@@ -681,13 +681,9 @@ void createDisplay (DeviceData data) {
 			if (ptr != 0) {
 				NSString path = NSString.stringWithUTF8String (ptr);
 				NSImage image = (NSImage) new NSImage().alloc();
-				NSImage result = image.initByReferencingFile(path);
-				if (result != null) {
-					dockImage = image;
-					application.setApplicationIconImage(image);
-				} else {
-					image.release();
-				}
+				image = image.initByReferencingFile(path);
+				dockImage = image;
+				application.setApplicationIconImage(image);
 			}
 		}
 
