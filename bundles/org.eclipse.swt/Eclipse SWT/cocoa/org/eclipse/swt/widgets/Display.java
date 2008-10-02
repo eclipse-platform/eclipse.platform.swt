@@ -3472,6 +3472,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 		case OS.NSKeyUp:
 		case OS.NSOtherMouseUp:
 		case OS.NSOtherMouseDragged:
+		case OS.NSScrollWheel:
 			NSWindow window = nsEvent.window ();
 			if (window != null) {
 				Shell shell = (Shell) getWidget (window.id);
