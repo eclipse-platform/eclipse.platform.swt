@@ -420,7 +420,20 @@ protected void addObjectReferences() {
 	if (result != COM.S_OK)
 		OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND, result);
 	objIOleObject = new IOleObject(ppvObject[0]);
-	objIOleObject.SetClientSite(iOleClientSite.getAddress());
+	/*
+	 * Although the clientSite was passed in during the creation of OleObject
+	 * (which is required by WMP11 - see bug 173556), some applications ignore this
+	 * parameter (see bug 211663) because it is optional during the OleCreate. 
+	 * To ensure that we don't set the clientSite twice, we will not set the clientSite
+	 * again if it's already defined.
+	 */
+	int /*long*/[] ppvClientSite = new int /*long*/[1];
+	result = objIOleObject.GetClientSite(ppvClientSite);
+	if (ppvClientSite[0] == 0) {
+		objIOleObject.SetClientSite(iOleClientSite.getAddress());
+	} else {
+		Release(); // GetClientSite performs an AddRef so we must release it.
+	}
 	int[] pdwConnection = new int[1];
 	objIOleObject.Advise(iAdviseSink.getAddress(), pdwConnection);
 	objIOleObject.SetHostNames("main", "main");  //$NON-NLS-1$ //$NON-NLS-2$
