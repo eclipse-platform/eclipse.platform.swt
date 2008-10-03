@@ -1029,7 +1029,7 @@ public void setBackground (int index, Color color) {
 		TreeColumn column = parent.getColumn (index);
 		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
 	}
-	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	outlineView.setNeedsDisplayInRect (rect);
 }
 
@@ -1159,7 +1159,7 @@ public void setFont (int index, Font font) {
 		TreeColumn column = parent.getColumn (index);
 		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
 	}
-	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	outlineView.setNeedsDisplayInRect (rect);
 }
 
@@ -1239,7 +1239,7 @@ public void setForeground (int index, Color color){
 		TreeColumn column = parent.getColumn (index);
 		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
 	}
-	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	outlineView.setNeedsDisplayInRect (rect);
 }
 
@@ -1336,7 +1336,7 @@ public void setImage (int index, Image image) {
 		TreeColumn column = parent.getColumn (index);
 		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
 	}
-	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	outlineView.setNeedsDisplayInRect (rect);
 }
 
@@ -1427,7 +1427,7 @@ public void setText (int index, String string) {
 		TreeColumn column = parent.getColumn (index);
 		index = (int)/*64*/outlineView.columnWithIdentifier (column.nsColumn);
 	}
-	NSRect rect = outlineView.frameOfCellAtColumn (index, parent.indexOf (this));
+	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	outlineView.setNeedsDisplayInRect (rect);
 }
 
