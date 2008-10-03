@@ -359,14 +359,11 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (length == 0 && flags == 0) return;
 	gc.checkGC(GC.CLIPPING | GC.TRANSFORM | GC.FOREGROUND);
 	gc.handle.saveGraphicsState();
-//	float[] foreground = gc.data.foreground;
-//	NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], foreground[3]);
-//	textStorage.setForegroundColor(color);
+	float[] fg = gc.data.foreground;
+	NSColor foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);
 	NSPoint pt = new NSPoint();
 	pt.x = x;
 	pt.y = y;
-	NSRange range = new NSRange();
-	range.length = layoutManager.numberOfGlyphs();
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	NSRange selectionRange = null;
 	NSColor selectionColor = null;
@@ -381,9 +378,22 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		layoutManager.addTemporaryAttribute(OS.NSBackgroundColorAttributeName, selectionColor, selectionRange);
 	}
 	//TODO draw selection for flags (DELIMITER_SELECTION)
-	if (range.length > 0) {
+	int numberOfGlyphs = layoutManager.numberOfGlyphs();
+	if (numberOfGlyphs > 0) {
+		NSRange range = new NSRange();
+		for (int i = 0; i < styles.length - 1; i++) {
+			StyleItem run = styles[i];
+			if (run.style != null && run.style.foreground != null) continue;
+			range.location = length != 0 ? translateOffset(run.start) : 0;
+			range.length = translateOffset(styles[i + 1].start) - range.location;
+			layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, foreground, range);
+		}
+		range.location = 0;
+		range.length = numberOfGlyphs;
 		layoutManager.drawBackgroundForGlyphRange(range, pt);
 		layoutManager.drawGlyphsForGlyphRange(range, pt);
+		range.length = length;
+		layoutManager.removeTemporaryAttribute(OS.NSForegroundColorAttributeName, range);
 		NSPoint point = new NSPoint();
 		for (int j = 0; j < styles.length; j++) {
 			StyleItem run = styles[j];
