@@ -28,6 +28,11 @@ public void addTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
 }
 
+public NSIndexSet columnIndexesInRect(NSRect rect) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
+	return result != 0 ? new NSIndexSet(result) : null;
+}
+
 public int /*long*/ columnWithIdentifier(id identifier) {
 	return OS.objc_msgSend(this.id, OS.sel_columnWithIdentifier_, identifier != null ? identifier.id : 0);
 }
@@ -49,6 +54,16 @@ public NSRect frameOfCellAtColumn(int /*long*/ column, int /*long*/ row) {
 public NSTableHeaderView headerView() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_headerView);
 	return result != 0 ? new NSTableHeaderView(result) : null;
+}
+
+public void highlightSelectionInClipRect(NSRect clipRect) {
+	OS.objc_msgSend(this.id, OS.sel_highlightSelectionInClipRect_, clipRect);
+}
+
+public NSSize intercellSpacing() {
+	NSSize result = new NSSize();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_intercellSpacing);
+	return result;
 }
 
 public boolean isRowSelected(int /*long*/ row) {
@@ -103,6 +118,12 @@ public float /*double*/ rowHeight() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_rowHeight);
 }
 
+public NSRange rowsInRect(NSRect rect) {
+	NSRange result = new NSRange();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_rowsInRect_, rect);
+	return result;
+}
+
 public void scrollColumnToVisible(int /*long*/ column) {
 	OS.objc_msgSend(this.id, OS.sel_scrollColumnToVisible_, column);
 }
@@ -154,6 +175,10 @@ public void setDoubleAction(int /*long*/ aSelector) {
 
 public void setHeaderView(NSTableHeaderView headerView) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderView_, headerView != null ? headerView.id : 0);
+}
+
+public void setRowHeight(float /*double*/ rowHeight) {
+	OS.objc_msgSend(this.id, OS.sel_setRowHeight_, rowHeight);
 }
 
 public void setUsesAlternatingRowBackgroundColors(boolean useAlternatingRowColors) {

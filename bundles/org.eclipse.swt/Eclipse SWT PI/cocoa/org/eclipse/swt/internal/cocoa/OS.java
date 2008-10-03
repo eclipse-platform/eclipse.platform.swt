@@ -137,6 +137,8 @@ public static final native int /*long*/ markedRange_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ selectedRange_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
+public static final native int /*long*/ highlightSelectionInClipRect_CALLBACK(int /*long*/ func);
+/** @method flags=no_gen */
 public static final native int /*long*/ attributedSubstringFromRange_CALLBACK(int /*long*/ func);
 /** @method flags=no_gen */
 public static final native int /*long*/ setMarkedText_selectedRange_CALLBACK(int /*long*/ func);
@@ -204,6 +206,11 @@ public static final native int /*long*/ objc_msgSendSuper(objc_super superId, in
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSSize arg0);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0);
+/**
+ *  @method flags=cast
+ *  @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3);
 /** @param cls cast=(Class) */
@@ -432,6 +439,7 @@ public static final int /*long*/ sel_alloc = sel_registerName("alloc");
 public static final int /*long*/ sel_alphaComponent = sel_registerName("alphaComponent");
 public static final int /*long*/ sel_alphaValue = sel_registerName("alphaValue");
 public static final int /*long*/ sel_altKey = sel_registerName("altKey");
+public static final int /*long*/ sel_alternateSelectedControlTextColor = sel_registerName("alternateSelectedControlTextColor");
 public static final int /*long*/ sel_appendBezierPath_ = sel_registerName("appendBezierPath:");
 public static final int /*long*/ sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_ = sel_registerName("appendBezierPathWithArcWithCenter:radius:startAngle:endAngle:");
 public static final int /*long*/ sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_ = sel_registerName("appendBezierPathWithArcWithCenter:radius:startAngle:endAngle:clockwise:");
@@ -486,6 +494,7 @@ public static final int /*long*/ sel_cancel = sel_registerName("cancel");
 public static final int /*long*/ sel_cancelTracking = sel_registerName("cancelTracking");
 public static final int /*long*/ sel_cascadeTopLeftFromPoint_ = sel_registerName("cascadeTopLeftFromPoint:");
 public static final int /*long*/ sel_cell = sel_registerName("cell");
+public static final int /*long*/ sel_cellSizeForBounds_ = sel_registerName("cellSizeForBounds:");
 public static final int /*long*/ sel_changeColor_ = sel_registerName("changeColor:");
 public static final int /*long*/ sel_changeFont_ = sel_registerName("changeFont:");
 public static final int /*long*/ sel_charCode = sel_registerName("charCode");
@@ -513,6 +522,7 @@ public static final int /*long*/ sel_colorUsingColorSpaceName_ = sel_registerNam
 public static final int /*long*/ sel_colorWithDeviceRed_green_blue_alpha_ = sel_registerName("colorWithDeviceRed:green:blue:alpha:");
 public static final int /*long*/ sel_colorWithPatternImage_ = sel_registerName("colorWithPatternImage:");
 public static final int /*long*/ sel_columnAtPoint_ = sel_registerName("columnAtPoint:");
+public static final int /*long*/ sel_columnIndexesInRect_ = sel_registerName("columnIndexesInRect:");
 public static final int /*long*/ sel_columnWithIdentifier_ = sel_registerName("columnWithIdentifier:");
 public static final int /*long*/ sel_comboBoxSelectionDidChange_ = sel_registerName("comboBoxSelectionDidChange:");
 public static final int /*long*/ sel_concat = sel_registerName("concat");
@@ -650,6 +660,7 @@ public static final int /*long*/ sel_filenames = sel_registerName("filenames");
 public static final int /*long*/ sel_fill = sel_registerName("fill");
 public static final int /*long*/ sel_fillRect_ = sel_registerName("fillRect:");
 public static final int /*long*/ sel_finishLaunching = sel_registerName("finishLaunching");
+public static final int /*long*/ sel_firstIndex = sel_registerName("firstIndex");
 public static final int /*long*/ sel_firstRectForCharacterRange_ = sel_registerName("firstRectForCharacterRange:");
 public static final int /*long*/ sel_firstResponder = sel_registerName("firstResponder");
 public static final int /*long*/ sel_flagsChanged_ = sel_registerName("flagsChanged:");
@@ -691,6 +702,8 @@ public static final int /*long*/ sel_headerView = sel_registerName("headerView")
 public static final int /*long*/ sel_helpRequested_ = sel_registerName("helpRequested:");
 public static final int /*long*/ sel_hide_ = sel_registerName("hide:");
 public static final int /*long*/ sel_hideOtherApplications_ = sel_registerName("hideOtherApplications:");
+public static final int /*long*/ sel_highlightColorInView_ = sel_registerName("highlightColorInView:");
+public static final int /*long*/ sel_highlightSelectionInClipRect_ = sel_registerName("highlightSelectionInClipRect:");
 public static final int /*long*/ sel_hitPart = sel_registerName("hitPart");
 public static final int /*long*/ sel_hitTest_ = sel_registerName("hitTest:");
 public static final int /*long*/ sel_hourOfDay = sel_registerName("hourOfDay");
@@ -737,6 +750,7 @@ public static final int /*long*/ sel_insertItemWithObjectValue_atIndex_ = sel_re
 public static final int /*long*/ sel_insertTabViewItem_atIndex_ = sel_registerName("insertTabViewItem:atIndex:");
 public static final int /*long*/ sel_insertText_ = sel_registerName("insertText:");
 public static final int /*long*/ sel_intValue = sel_registerName("intValue");
+public static final int /*long*/ sel_intercellSpacing = sel_registerName("intercellSpacing");
 public static final int /*long*/ sel_interpretKeyEvents_ = sel_registerName("interpretKeyEvents:");
 public static final int /*long*/ sel_invalidate = sel_registerName("invalidate");
 public static final int /*long*/ sel_invert = sel_registerName("invert");
@@ -933,6 +947,7 @@ public static final int /*long*/ sel_rotateByDegrees_ = sel_registerName("rotate
 public static final int /*long*/ sel_rowAtPoint_ = sel_registerName("rowAtPoint:");
 public static final int /*long*/ sel_rowForItem_ = sel_registerName("rowForItem:");
 public static final int /*long*/ sel_rowHeight = sel_registerName("rowHeight");
+public static final int /*long*/ sel_rowsInRect_ = sel_registerName("rowsInRect:");
 public static final int /*long*/ sel_run = sel_registerName("run");
 public static final int /*long*/ sel_runModal = sel_registerName("runModal");
 public static final int /*long*/ sel_runModalForWindow_ = sel_registerName("runModalForWindow:");
@@ -961,6 +976,7 @@ public static final int /*long*/ sel_selectItemAtIndex_ = sel_registerName("sele
 public static final int /*long*/ sel_selectRow_byExtendingSelection_ = sel_registerName("selectRow:byExtendingSelection:");
 public static final int /*long*/ sel_selectRowIndexes_byExtendingSelection_ = sel_registerName("selectRowIndexes:byExtendingSelection:");
 public static final int /*long*/ sel_selectTabViewItemAtIndex_ = sel_registerName("selectTabViewItemAtIndex:");
+public static final int /*long*/ sel_selectedControlTextColor = sel_registerName("selectedControlTextColor");
 public static final int /*long*/ sel_selectedRange = sel_registerName("selectedRange");
 public static final int /*long*/ sel_selectedRow = sel_registerName("selectedRow");
 public static final int /*long*/ sel_selectedRowIndexes = sel_registerName("selectedRowIndexes");
@@ -1043,6 +1059,7 @@ public static final int /*long*/ sel_setHeaderView_ = sel_registerName("setHeade
 public static final int /*long*/ sel_setHidden_ = sel_registerName("setHidden:");
 public static final int /*long*/ sel_setHiddenUntilMouseMoves_ = sel_registerName("setHiddenUntilMouseMoves:");
 public static final int /*long*/ sel_setHighlightMode_ = sel_registerName("setHighlightMode:");
+public static final int /*long*/ sel_setHighlighted_ = sel_registerName("setHighlighted:");
 public static final int /*long*/ sel_setHorizontalScroller_ = sel_registerName("setHorizontalScroller:");
 public static final int /*long*/ sel_setHorizontallyResizable_ = sel_registerName("setHorizontallyResizable:");
 public static final int /*long*/ sel_setIdentifier_ = sel_registerName("setIdentifier:");
@@ -1097,6 +1114,7 @@ public static final int /*long*/ sel_setPullsDown_ = sel_registerName("setPullsD
 public static final int /*long*/ sel_setResizingMask_ = sel_registerName("setResizingMask:");
 public static final int /*long*/ sel_setResourceLoadDelegate_ = sel_registerName("setResourceLoadDelegate:");
 public static final int /*long*/ sel_setRichText_ = sel_registerName("setRichText:");
+public static final int /*long*/ sel_setRowHeight_ = sel_registerName("setRowHeight:");
 public static final int /*long*/ sel_setSelectable_ = sel_registerName("setSelectable:");
 public static final int /*long*/ sel_setSelectedRange_ = sel_registerName("setSelectedRange:");
 public static final int /*long*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
@@ -1196,6 +1214,7 @@ public static final int /*long*/ sel_tile = sel_registerName("tile");
 public static final int /*long*/ sel_timeZone = sel_registerName("timeZone");
 public static final int /*long*/ sel_title = sel_registerName("title");
 public static final int /*long*/ sel_titleOfSelectedItem = sel_registerName("titleOfSelectedItem");
+public static final int /*long*/ sel_titleRectForBounds_ = sel_registerName("titleRectForBounds:");
 public static final int /*long*/ sel_transform = sel_registerName("transform");
 public static final int /*long*/ sel_transformPoint_ = sel_registerName("transformPoint:");
 public static final int /*long*/ sel_transformSize_ = sel_registerName("transformSize:");
@@ -3423,6 +3442,11 @@ public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ 
 public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel, NSRect arg0);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRange result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
 /** @method flags=cast */
@@ -3450,6 +3474,11 @@ public static final native void objc_msgSend_stret(NSRect result, int /*long*/ i
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, boolean arg2);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSRect arg0);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

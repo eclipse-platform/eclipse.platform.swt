@@ -150,6 +150,13 @@ void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
+void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
+}
+
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -411,7 +418,7 @@ void drawBackground (int control, int context) {
 	/* Do nothing */
 }
 
-void drawInteriorFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
 }
 
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
@@ -612,6 +619,9 @@ boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 }
 
 void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+}
+
+void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {	
 }
 
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {

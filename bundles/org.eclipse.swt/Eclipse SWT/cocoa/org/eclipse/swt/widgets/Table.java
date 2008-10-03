@@ -73,6 +73,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	NSTableHeaderView headerView;
 	NSTableColumn firstColumn, checkColumn;
+	NSBrowserCell dataCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
 	boolean ignoreSelect;
 
@@ -345,7 +346,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
 				if (item != null) {
-					columnWidth = Math.max (columnWidth, item.calculateWidth (0, gc));
+					columnWidth = Math.max (columnWidth, item.calculateWidth (0, gc, false));
 				}
 			}
 			gc.dispose ();
@@ -407,9 +408,8 @@ void createHandle () {
 	firstColumn.initWithIdentifier(firstColumn);
 	firstColumn.setMinWidth(0);
 	//column.setResizingMask(OS.NSTableColumnAutoresizingMask);
-	NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
-	firstColumn.setDataCell(cell);
-	cell.release();
+	dataCell = (NSBrowserCell)new SWTBrowserCell ().alloc ().init ();
+	firstColumn.setDataCell (dataCell);
 	widget.addTableColumn (firstColumn);
 
 	scrollView = scrollWidget;
@@ -437,9 +437,7 @@ void createItem (TableColumn column, int index) {
 		((NSTableView)view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
 		((NSTableView)view).moveColumn (columnCount + checkColumn, index + checkColumn);
-		NSCell cell = (NSBrowserCell)new NSBrowserCell().alloc().init();
-		nsColumn.setDataCell(cell);
-		cell.release();
+		nsColumn.setDataCell (dataCell);
 	}
 	column.createJNIRef ();
 	NSTableHeaderCell headerCell = (NSTableHeaderCell)new SWTTableHeaderCell ().alloc ().init ();
@@ -493,6 +491,10 @@ void createItem (TableColumn column, int index) {
 				}
 			}
 		}
+	} else {
+		for (int i = 0; i < itemCount; i++) {
+			items [i].customWidth = -1;
+		}
 	}
 }
 
@@ -528,6 +530,7 @@ Color defaultForeground () {
 void deregister () {
 	super.deregister ();
 	display.removeWidget (headerView);
+	display.removeWidget (dataCell);
 }
 
 /**
@@ -732,6 +735,191 @@ void destroyItem (TableItem item) {
 	} else {
 //		fixScrollBar ();
 	}
+}
+
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+	NSRect rect = new NSRect ();
+	OS.memmove (rect, cellFrame, NSRect.sizeof);
+
+	NSTableView tableView = (NSTableView)this.view;
+	NSBrowserCell cell = new NSBrowserCell (id);
+	NSRange rowsRange = tableView.rowsInRect (rect);
+	int rowIndex = (int)/*64*/rowsRange.location;
+	TableItem item = items [rowIndex];
+	int columnIndex = 0;
+	if (columnCount != 0) {
+		NSIndexSet columnsSet = tableView.columnIndexesInRect (rect);
+		int index = (int)/*64*/columnsSet.firstIndex ();
+		NSArray nsColumns = tableView.tableColumns ();
+		id nsColumn = nsColumns.objectAtIndex (index);
+		for (int i = 0; i < columnCount; i++) {
+			if (columns[i].nsColumn.id == nsColumn.id) {
+				columnIndex = indexOf (columns[i]);
+				break;
+			}
+		}
+	}
+
+	Color background = item.cellBackground != null ? item.cellBackground [columnIndex] : null;
+	if (background == null) background = item.background;
+	boolean drawBackground = background != null;
+	boolean drawForeground = true;
+	boolean isSelected = tableView.isRowSelected (rowIndex);
+	boolean drawSelection = isSelected;
+
+	NSColor nsSelectionBackground = null;
+	NSColor nsSelectionForeground = null;
+	if (isSelected) {
+		if (isFocusControl ()) {
+			nsSelectionForeground = NSColor.alternateSelectedControlTextColor ();
+		} else {
+			nsSelectionForeground = NSColor.selectedControlTextColor ();
+		}
+		nsSelectionForeground = nsSelectionForeground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
+		nsSelectionBackground = cell.highlightColorInView (tableView);
+		nsSelectionBackground = nsSelectionBackground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
+	}
+
+	NSRect fullRect = new NSRect ();
+	fullRect.x = rect.x; fullRect.y = rect.y; fullRect.height = rect.height;
+	if (columnCount == 0) {
+		if (item.customWidth != -1) {
+			fullRect.width = item.customWidth;
+		} else {
+			NSSize contentSize = cell.cellSizeForBounds (rect);
+			fullRect.width = (int)contentSize.width;
+		}
+	} else {
+		NSSize spacing = tableView.intercellSpacing ();
+		fullRect.width = rect.width + spacing.width;
+	}
+
+	if (hooks (SWT.EraseItem)) {
+		NSRect eraseItemRect = null;
+		// TODO how to handle rearranged columns?  The third clause below ensures that
+		// there are either 0 columns or that column 0 is still the first physical column.
+		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || tableView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
+			eraseItemRect = new NSRect ();
+			eraseItemRect.y = fullRect.y;
+			eraseItemRect.width = fullRect.width + checkColumn.width ();
+			eraseItemRect.height = fullRect.height;
+		} else {
+			eraseItemRect = fullRect;
+		}
+		GCData data = new GCData ();
+		data.paintRect = eraseItemRect;
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		if (isSelected) {
+			float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
+			nsSelectionForeground.getComponents (components);	
+			Color selectionForeground = Color.cocoa_new (display, components);
+			gc.setForeground (selectionForeground);
+			components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
+			nsSelectionBackground.getComponents (components);	
+			Color selectionBackground = Color.cocoa_new (display, components);
+			gc.setBackground (selectionBackground);
+		} else {
+			gc.setForeground (item.getForeground (columnIndex));
+			gc.setBackground (item.getBackground (columnIndex));
+		}
+
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.detail = SWT.FOREGROUND;
+		if (drawBackground) event.detail |= SWT.BACKGROUND;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		event.x = (int)eraseItemRect.x;
+		event.y = (int)eraseItemRect.y;
+		event.width = (int)eraseItemRect.width;
+		event.height = (int)eraseItemRect.height;
+		sendEvent (SWT.EraseItem, event);
+		gc.dispose ();
+		if (item.isDisposed ()) return;
+		if (!event.doit) {
+			drawForeground = drawBackground = drawSelection = false; 
+		} else {
+			drawBackground = drawBackground && (event.detail & SWT.BACKGROUND) != 0;
+			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
+			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
+		}
+	}
+
+	if (drawSelection) {
+		// TODO can it be drawn natively in fullRect?
+		NSGraphicsContext context = NSGraphicsContext.currentContext ();
+		context.saveGraphicsState ();
+		nsSelectionBackground.setFill ();
+		NSBezierPath.fillRect (fullRect);
+		context.restoreGraphicsState ();
+	} else {
+		if (drawBackground) {
+			NSGraphicsContext context = NSGraphicsContext.currentContext ();
+			context.saveGraphicsState ();
+			float[] colorRGB = background.handle;
+			NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
+			color.setFill ();
+			NSBezierPath.fillRect (fullRect);
+			context.restoreGraphicsState ();
+		}
+	}
+
+	if (drawForeground) {
+		cell.setHighlighted (false);
+		callSuper (id, sel, rect, view);
+	}
+
+	if (hooks (SWT.PaintItem)) {
+		NSRect contentRect = cell.titleRectForBounds (rect);
+		NSSize contentSize = cell.cellSizeForBounds (rect);
+
+		GCData data = new GCData ();
+		// TODO how to handle rearranged columns?  The third clause below ensures that
+		// there are either 0 columns or that column 0 is still the first physical column.
+		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || tableView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
+			NSRect gcRect = new NSRect ();
+			gcRect.y = fullRect.y;
+			gcRect.width = fullRect.width + checkColumn.width ();
+			gcRect.height = fullRect.height;
+			data.paintRect = gcRect;
+		} else {
+			data.paintRect = fullRect;
+		}
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		if (isSelected) {
+			float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
+			nsSelectionForeground.getComponents (components);	
+			Color selectionForeground = Color.cocoa_new (display, components);
+			gc.setForeground (selectionForeground);
+			components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
+			nsSelectionBackground.getComponents (components);	
+			Color selectionBackground = Color.cocoa_new (display, components);
+			gc.setBackground (selectionBackground);
+			gc.setBackground (display.getSystemColor (SWT.COLOR_GREEN));
+		} else {
+			gc.setForeground (item.getForeground (columnIndex));
+			gc.setBackground (item.getBackground (columnIndex));
+		}
+
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		event.x = (int)contentRect.x;
+		event.y = (int)contentRect.y;
+		event.width = (int)contentSize.width;
+		event.height = (int)fullRect.height;
+		sendEvent (SWT.PaintItem, event);
+		gc.dispose ();
+	}
+}
+
+void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
+	if (true) return;
 }
 
 void fixSelection (int index, boolean add) {
@@ -1367,6 +1555,7 @@ int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*lo
 void register () {
 	super.register ();
 	display.addWidget (headerView, this);
+	display.addWidget (dataCell, this);
 }
 
 void releaseChildren (boolean destroy) {
@@ -1399,6 +1588,8 @@ void releaseHandle () {
 	firstColumn = null;
 	if (checkColumn != null) checkColumn.release();
 	checkColumn = null;
+	if (dataCell != null) dataCell.release();
+	dataCell = null;
 }
 
 void releaseWidget () {	
@@ -1870,7 +2061,7 @@ public void setLinesVisible (boolean show) {
 	((NSTableView)view).setUsesAlternatingRowBackgroundColors(show);
 }
 
-boolean setScrollWidth (TableItem item) {
+boolean setScrollWidth (TableItem item, boolean callMeasureItem) {
 	if (columnCount != 0) return false;
 	if (currentItem != null) {
 //		if (currentItem != item) fixScrollWidth = true;
@@ -1878,17 +2069,13 @@ boolean setScrollWidth (TableItem item) {
 	}
 	if (drawCount != 0) return false;
 	GC gc = new GC (this);
-	int newWidth = item.calculateWidth (0, gc);
+	int newWidth = item.calculateWidth (0, gc, callMeasureItem);
 	gc.dispose ();
+	if (isDisposed ()) return false;
 	newWidth += getInsetWidth ();
-//	short [] width = new short [1];
-//	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-//	if (width [0] < newWidth) {
-//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-//		return true;
-//	}
 	if (firstColumn.width() < newWidth) {
 		firstColumn.setWidth (newWidth);
+		return true;
 	}
 	return false;
 }
@@ -1904,8 +2091,13 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
 	int newWidth = 0;
 	for (int i = 0; i < items.length; i++) {
 		TableItem item = items [i];
-		if (item != null) {
-			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
+		if (item != null && !item.isDisposed ()) {
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc, true));
+			if (isDisposed ()) {
+				gc.dispose ();
+				return false;
+			}
+			if (gc.isDisposed ()) gc = new GC (this);
 		}
 	}
 	gc.dispose ();
@@ -2315,14 +2507,17 @@ int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*lon
 }
 
 void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	TableItem item = items [(int)/*64*/rowIndex];
 	if (checkColumn != null && aTableColumn == checkColumn.id)  {
+		TableItem item = items [(int)/*64*/rowIndex];
 		item.checked = !item.checked;
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
 		event.index = (int)/*64*/rowIndex;
 		postEvent (SWT.Selection, event);
+		NSTableView tableView = (NSTableView)view;
+		NSRect rect = tableView.rectOfRow (rowIndex);
+		tableView.setNeedsDisplayInRect (rect);
 	}
 }
 
@@ -2334,13 +2529,51 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 	if (checkColumn != null && aTableColumn == checkColumn.id) return;
 	TableItem item = items [(int)/*64*/rowIndex];
 	Image image = item.image;
+	int columnIndex = 0;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == aTableColumn) {
 			image = item.getImage (i);
+			columnIndex = i;
 		}
 	}
 	NSBrowserCell cell = new NSBrowserCell (aCell);
+	cell.setFont (item.getFont (columnIndex).handle);
 	cell.setImage (image != null ? image.handle : null);
 	cell.setLeaf (true);
+
+	if (hooks (SWT.MeasureItem)) {
+		NSTableView tableView = (NSTableView)this.view;
+		int nsColumnIndex = (int)/*64*/tableView.columnWithIdentifier (new id (aTableColumn));
+		NSRect rect = tableView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
+		NSRect contentRect = cell.titleRectForBounds (rect);
+		NSSize contentSize = cell.cellSizeForBounds (rect);
+
+		GCData data = new GCData ();
+		data.paintRect = tableView.frame ();
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		int rowHeight = (int)tableView.rowHeight ();
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = (int)contentRect.x;
+		event.y = (int)contentRect.y;
+		event.width = (int)contentSize.width;
+		event.height = rowHeight;
+		sendEvent (SWT.MeasureItem, event);
+		gc.dispose ();
+		if (isDisposed ()) return;
+		if (rowHeight < event.height) {
+			tableView.setRowHeight(event.height);
+		}
+		if (columnCount == 0) {
+			int change = event.width - (item.customWidth != -1 ? item.customWidth : (int)contentSize.width);
+			if (item.customWidth != -1 || event.width != (int)contentSize.width) {
+				item.customWidth = event.width;	
+			}
+			if (change != 0) setScrollWidth (item, false);
+		}
+	}
 }
 }

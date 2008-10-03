@@ -24,6 +24,12 @@ public NSCell(id id) {
 	super(id);
 }
 
+public NSSize cellSizeForBounds(NSRect aRect) {
+	NSSize result = new NSSize();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_cellSizeForBounds_, aRect);
+	return result;
+}
+
 public void drawInteriorWithFrame(NSRect cellFrame, NSView controlView) {
 	OS.objc_msgSend(this.id, OS.sel_drawInteriorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
 }
@@ -42,6 +48,14 @@ public void setAttributedStringValue(NSAttributedString obj) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, obj != null ? obj.id : 0);
 }
 
+public void setFont(NSFont fontObj) {
+	OS.objc_msgSend(this.id, OS.sel_setFont_, fontObj != null ? fontObj.id : 0);
+}
+
+public void setHighlighted(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setHighlighted_, flag);
+}
+
 public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
@@ -57,6 +71,12 @@ public void setWraps(boolean flag) {
 public NSString title() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
+}
+
+public NSRect titleRectForBounds(NSRect theRect) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_titleRectForBounds_, theRect);
+	return result;
 }
 
 public boolean wraps() {

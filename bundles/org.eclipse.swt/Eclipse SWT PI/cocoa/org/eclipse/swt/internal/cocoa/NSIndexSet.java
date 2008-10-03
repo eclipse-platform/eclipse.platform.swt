@@ -28,6 +28,10 @@ public int /*long*/ count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
+public int /*long*/ firstIndex() {
+	return OS.objc_msgSend(this.id, OS.sel_firstIndex);
+}
+
 public int /*long*/ getIndexes(int[] /*long[]*/ indexBuffer, int /*long*/ bufferSize, int /*long*/ range) {
 	return OS.objc_msgSend(this.id, OS.sel_getIndexes_maxCount_inIndexRange_, indexBuffer, bufferSize, range);
 }

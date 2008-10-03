@@ -24,6 +24,11 @@ public NSBrowserCell(id id) {
 	super(id);
 }
 
+public NSColor highlightColorInView(NSView controlView) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_highlightColorInView_, controlView != null ? controlView.id : 0);
+	return result != 0 ? new NSColor(result) : null;
+}
+
 public void setLeaf(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setLeaf_, flag);
 }

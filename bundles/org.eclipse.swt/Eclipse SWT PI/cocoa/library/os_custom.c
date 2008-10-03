@@ -145,6 +145,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(hitTest_1CALLBACK)
 }
 #endif
 
+#ifndef NO_highlightSelectionInClipRect_1CALLBACK
+static jintLong highlightSelectionInClipRect_1CALLBACK;
+static void highlightSelectionInClipRect(id obj, SEL sel, NSRect rect)
+{
+	return ((void (*)(id, SEL, NSRect*))highlightSelectionInClipRect_1CALLBACK)(obj, sel, &rect);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(highlightSelectionInClipRect_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong func)
+{
+	highlightSelectionInClipRect_1CALLBACK = func;
+	return (jintLong)highlightSelectionInClipRect;
+}
+#endif
+
 #ifndef NO_webView_1setFrame_1CALLBACK
 static jintLong webView_1setFrame_1CALLBACK;
 static void webView_1setFrame(id obj, SEL sel, WebView *sender, NSRect rect)

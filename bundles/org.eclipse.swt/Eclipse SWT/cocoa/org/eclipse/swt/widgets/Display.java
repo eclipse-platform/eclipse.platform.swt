@@ -1735,6 +1735,7 @@ void initClasses () {
 	int /*long*/ hitTestProc = OS.hitTest_CALLBACK(proc3);
 	int /*long*/ markedRangeProc = OS.markedRange_CALLBACK(proc2);
 	int /*long*/ selectedRangeProc = OS.selectedRange_CALLBACK(proc2);
+	int /*long*/ highlightSelectionInClipRectProc = OS.highlightSelectionInClipRect_CALLBACK(proc3);
 	int /*long*/ setMarkedText_selectedRangeProc = OS.setMarkedText_selectedRange_CALLBACK(proc4);
 	int /*long*/ attributedSubstringFromRangeProc = OS.attributedSubstringFromRange_CALLBACK(proc3);
 	int /*long*/ characterIndexForPointProc = OS.characterIndexForPoint_CALLBACK(proc3);
@@ -1822,6 +1823,7 @@ void initClasses () {
 	className = "SWTTableView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@:@:@");
@@ -1835,6 +1837,12 @@ void initClasses () {
 
 	className = "SWTTableHeaderCell";
 	cls = OS.objc_allocateClassPair (OS.class_NSTableHeaderCell, className, 0);
+	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
+	OS.objc_registerClassPair (cls);
+
+	className = "SWTBrowserCell";
+	cls = OS.objc_allocateClassPair (OS.class_NSBrowserCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod (cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
@@ -3755,6 +3763,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.insertText (id, sel, arg0);
 	} else if (sel == OS.sel_doCommandBySelector_) {
 		widget.doCommandBySelector (id, sel, arg0);
+	} else if (sel == OS.sel_highlightSelectionInClipRect_) {
+		widget.highlightSelectionInClipRect (id, sel, arg0);
 	}
 	return 0;
 }
@@ -3779,7 +3789,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	} else if (sel == OS.sel_setMarkedText_selectedRange_) {
 		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
-		widget.drawInteriorFrame_inView (id, sel, arg0, arg1);
+		widget.drawInteriorWithFrame_inView (id, sel, arg0, arg1);
 	}
 	return 0;
 }

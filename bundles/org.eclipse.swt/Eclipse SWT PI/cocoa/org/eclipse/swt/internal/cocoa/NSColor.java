@@ -28,6 +28,11 @@ public float /*double*/ alphaComponent() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaComponent);
 }
 
+public static NSColor alternateSelectedControlTextColor() {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_alternateSelectedControlTextColor);
+	return result != 0 ? new NSColor(result) : null;
+}
+
 public static NSColor blackColor() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_blackColor);
 	return result != 0 ? new NSColor(result) : null;
@@ -110,6 +115,11 @@ public float /*double*/ redComponent() {
 
 public static NSColor secondarySelectedControlColor() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_secondarySelectedControlColor);
+	return result != 0 ? new NSColor(result) : null;
+}
+
+public static NSColor selectedControlTextColor() {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedControlTextColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 

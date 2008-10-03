@@ -4369,9 +4369,9 @@
     <method class_method="true" selector="branchImage">
       <retval></retval>
     </method>
-    <method selector="highlightColorInView:">
-      <arg name="controlView"></arg>
-      <retval></retval>
+    <method selector="highlightColorInView:" swt_gen="true">
+      <arg name="controlView" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="highlightedBranchImage">
       <retval></retval>
@@ -4862,9 +4862,9 @@
     <method selector="cellSize">
       <retval></retval>
     </method>
-    <method selector="cellSizeForBounds:">
-      <arg name="aRect"></arg>
-      <retval></retval>
+    <method selector="cellSizeForBounds:" swt_gen="true">
+      <arg name="aRect" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="compare:">
       <arg name="otherCell"></arg>
@@ -5183,17 +5183,17 @@
       <arg name="focusRingType"></arg>
       <retval></retval>
     </method>
-    <method selector="setFont:">
-      <arg name="fontObj"></arg>
-      <retval></retval>
+    <method selector="setFont:" swt_gen="true">
+      <arg name="fontObj" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setFormatter:">
       <arg name="newFormatter"></arg>
       <retval></retval>
     </method>
-    <method selector="setHighlighted:">
-      <arg name="flag"></arg>
-      <retval></retval>
+    <method selector="setHighlighted:" swt_gen="true">
+      <arg name="flag" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setImage:" swt_gen="true">
       <arg name="image" swt_gen="true"></arg>
@@ -5348,9 +5348,9 @@
     <method selector="title" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="titleRectForBounds:">
-      <arg name="theRect"></arg>
-      <retval></retval>
+    <method selector="titleRectForBounds:" swt_gen="true">
+      <arg name="theRect" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="trackMouse:inRect:ofView:untilMouseUp:">
       <arg name="theEvent"></arg>
@@ -5552,8 +5552,8 @@
     <method class_method="true" selector="alternateSelectedControlColor">
       <retval></retval>
     </method>
-    <method class_method="true" selector="alternateSelectedControlTextColor">
-      <retval></retval>
+    <method class_method="true" selector="alternateSelectedControlTextColor" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="blackColor" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -5839,8 +5839,8 @@
     <method class_method="true" selector="selectedControlColor">
       <retval></retval>
     </method>
-    <method class_method="true" selector="selectedControlTextColor">
-      <retval></retval>
+    <method class_method="true" selector="selectedControlTextColor" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="selectedKnobColor">
       <retval></retval>
@@ -19089,9 +19089,9 @@
     <method selector="columnAutoresizingStyle">
       <retval></retval>
     </method>
-    <method selector="columnIndexesInRect:">
-      <arg name="rect"></arg>
-      <retval></retval>
+    <method selector="columnIndexesInRect:" swt_gen="true">
+      <arg name="rect" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="columnWithIdentifier:" swt_gen="true">
       <arg name="identifier" swt_gen="true"></arg>
@@ -19181,9 +19181,9 @@
     <method selector="headerView" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="highlightSelectionInClipRect:">
-      <arg name="clipRect"></arg>
-      <retval></retval>
+    <method selector="highlightSelectionInClipRect:" swt_gen="true">
+      <arg name="clipRect" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="highlightedTableColumn">
       <retval></retval>
@@ -19192,8 +19192,8 @@
       <arg name="tc"></arg>
       <retval></retval>
     </method>
-    <method selector="intercellSpacing">
-      <retval></retval>
+    <method selector="intercellSpacing" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="isColumnSelected:">
       <arg name="column"></arg>
@@ -19254,9 +19254,9 @@
     <method selector="rowHeight" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="rowsInRect:">
-      <arg name="rect"></arg>
-      <retval></retval>
+    <method selector="rowsInRect:" swt_gen="true">
+      <arg name="rect" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="scrollColumnToVisible:" swt_gen="true">
       <arg name="column" swt_gen="true"></arg>
@@ -19410,9 +19410,9 @@
       <arg name="aSize"></arg>
       <retval></retval>
     </method>
-    <method selector="setRowHeight:">
-      <arg name="rowHeight"></arg>
-      <retval></retval>
+    <method selector="setRowHeight:" swt_gen="true">
+      <arg name="rowHeight" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setSelectionHighlightStyle:">
       <arg name="selectionHighlightStyle"></arg>
