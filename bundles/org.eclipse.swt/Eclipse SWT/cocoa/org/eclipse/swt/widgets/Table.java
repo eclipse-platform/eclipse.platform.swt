@@ -918,10 +918,6 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	}
 }
 
-void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
-	if (true) return;
-}
-
 void fixSelection (int index, boolean add) {
 	int [] selection = getSelectionIndices ();
 	if (selection.length == 0) return;
@@ -1439,6 +1435,9 @@ public int getTopIndex () {
     return (int)/*64*/((NSTableView)view).rowAtPoint(point);
 }
 
+void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
+	/* this method is intentionally empty, to prevent native selection from being drawn */
+}
 
 /**
  * Searches the receiver's list starting at the first column
