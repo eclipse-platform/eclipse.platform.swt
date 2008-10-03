@@ -1111,9 +1111,7 @@ public void setFont (Font font) {
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
 	cached = true;
-	NSOutlineView view = (NSOutlineView) parent.view;
-	NSRect rect = view.rectOfRow (parent.indexOf (this));
-	view.setNeedsDisplayInRect (rect);
+	((NSOutlineView) parent.view).reloadItem (handle);
 }
 
 /**
