@@ -1752,7 +1752,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_windowDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowShouldClose_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowWillClose_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_windowWillClose_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidResignKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidBecomeKey_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_timerProc_, proc3, "@:@");
@@ -1970,6 +1969,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_textView_clickedOnLink_atIndex_, proc5, "@:@@@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTEditorView";
