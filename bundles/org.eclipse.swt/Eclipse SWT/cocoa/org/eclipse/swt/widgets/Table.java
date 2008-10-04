@@ -801,7 +801,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || tableView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
 			eraseItemRect = new NSRect ();
 			eraseItemRect.y = fullRect.y;
-			eraseItemRect.width = fullRect.width + checkColumn.width ();
+			eraseItemRect.width = fullRect.x + fullRect.width;
 			eraseItemRect.height = fullRect.height;
 		} else {
 			eraseItemRect = fullRect;
