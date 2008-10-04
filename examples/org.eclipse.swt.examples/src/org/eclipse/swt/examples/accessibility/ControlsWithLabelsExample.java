@@ -36,79 +36,83 @@ public class ControlsWithLabelsExample {
 	static Slider slider;
 	static ProgressBar progressBar;
 	static Sash sash;
-		
+
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
-		shell.setLayout(new GridLayout(2, true));
+		shell.setLayout(new FillLayout());
+		final ScrolledComposite sc1 = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
+		Composite comp = new Composite(sc1, SWT.NONE);
+		sc1.setContent(comp);
+		comp.setLayout(new GridLayout(2, true));
 		shell.setText("All Controls Test");
-		
-		new Label(shell, SWT.NONE).setText("Label for Label");
-		label = new Label(shell, SWT.NONE);
+
+		new Label(comp, SWT.NONE).setText("Label for Label");
+		label = new Label(comp, SWT.NONE);
 		label.setText("Label");
 
-		new Label(shell, SWT.NONE).setText("Label for CLabel");
-		cLabel = new CLabel(shell, SWT.NONE);
+		new Label(comp, SWT.NONE).setText("Label for CLabel");
+		cLabel = new CLabel(comp, SWT.NONE);
 		cLabel.setText("CLabel");
 
-		new Label(shell, SWT.NONE).setText("Label for Push Button");
-		buttonPush = new Button(shell, SWT.PUSH);
+		new Label(comp, SWT.NONE).setText("Label for Push Button");
+		buttonPush = new Button(comp, SWT.PUSH);
 		buttonPush.setText("Push Button");
 
-		new Label(shell, SWT.NONE).setText("Label for Radio Button");
-		buttonRadio = new Button(shell, SWT.RADIO);
+		new Label(comp, SWT.NONE).setText("Label for Radio Button");
+		buttonRadio = new Button(comp, SWT.RADIO);
 		buttonRadio.setText("Radio Button");
 
-		new Label(shell, SWT.NONE).setText("Label for Check Button");
-		buttonCheck = new Button(shell, SWT.CHECK);
+		new Label(comp, SWT.NONE).setText("Label for Check Button");
+		buttonCheck = new Button(comp, SWT.CHECK);
 		buttonCheck.setText("Check Button");
 
-		new Label(shell, SWT.NONE).setText("Label for Toggle Button");
-		buttonToggle = new Button(shell, SWT.TOGGLE);
+		new Label(comp, SWT.NONE).setText("Label for Toggle Button");
+		buttonToggle = new Button(comp, SWT.TOGGLE);
 		buttonToggle.setText("Toggle Button");
 
-		new Label(shell, SWT.NONE).setText("Label for Editable Combo");
-		combo = new Combo(shell, SWT.BORDER);
+		new Label(comp, SWT.NONE).setText("Label for Editable Combo");
+		combo = new Combo(comp, SWT.BORDER);
 		for (int i = 0; i < 4; i++) {
 			combo.add("item" + i);
 		}
 		combo.setText("Combo");
 
-		new Label(shell, SWT.NONE).setText("Label for Read-Only Combo");
-		combo = new Combo(shell, SWT.READ_ONLY | SWT.BORDER);
+		new Label(comp, SWT.NONE).setText("Label for Read-Only Combo");
+		combo = new Combo(comp, SWT.READ_ONLY | SWT.BORDER);
 		for (int i = 0; i < 4; i++) {
 			combo.add("item" + i);
 		}
 		combo.setText("Combo");
 
-		new Label(shell, SWT.NONE).setText("Label for CCombo");
-		cCombo = new CCombo(shell, SWT.BORDER);
+		new Label(comp, SWT.NONE).setText("Label for CCombo");
+		cCombo = new CCombo(comp, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
 			cCombo.add("item" + i);
 		}
 		cCombo.setText("CCombo");
 
-		new Label(shell, SWT.NONE).setText("Label for List");
-		list = new List(shell, SWT.SINGLE | SWT.BORDER);
+		new Label(comp, SWT.NONE).setText("Label for List");
+		list = new List(comp, SWT.SINGLE | SWT.BORDER);
 		list.setItems(new String[] {"Item0", "Item1", "Item2"});
-		
-		new Label(shell, SWT.NONE).setText("Label for Spinner");
-		spinner = new Spinner(shell, SWT.NONE);
-		
-		new Label(shell, SWT.NONE).setText("Label for Single-line Text");
-		textSingle = new Text(shell, SWT.SINGLE | SWT.BORDER);
+
+		new Label(comp, SWT.NONE).setText("Label for Spinner");
+		spinner = new Spinner(comp, SWT.NONE);
+
+		new Label(comp, SWT.NONE).setText("Label for Single-line Text");
+		textSingle = new Text(comp, SWT.SINGLE | SWT.BORDER);
 		textSingle.setText("Contents of Single-line Text");
-		
-		new Label(shell, SWT.NONE).setText("Label for Multi-line Text");
-		textMulti = new Text(shell, SWT.MULTI | SWT.BORDER);
+
+		new Label(comp, SWT.NONE).setText("Label for Multi-line Text");
+		textMulti = new Text(comp, SWT.MULTI | SWT.BORDER);
 		textMulti.setText("\nContents of Multi-line Text\n");
-		
-		new Label(shell, SWT.NONE).setText("Label for StyledText");
-		styledText = new StyledText(shell, SWT.MULTI | SWT.BORDER);
+
+		new Label(comp, SWT.NONE).setText("Label for StyledText");
+		styledText = new StyledText(comp, SWT.MULTI | SWT.BORDER);
 		styledText.setText("\nContents of Multi-line StyledText\n");
-		
-		new Label(shell, SWT.NONE).setText("Label for Table");
-		table = new Table(shell, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
+
+		new Label(comp, SWT.NONE).setText("Label for Table");
+		table = new Table(comp, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		for (int col = 0; col < 3; col++) {
@@ -120,9 +124,9 @@ public class ControlsWithLabelsExample {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(new String [] {"C0R" + row, "C1R" + row, "C2R" + row});
 		}
-		
-		new Label(shell, SWT.NONE).setText("Label for Tree");
-		tree = new Tree(shell, SWT.BORDER | SWT.MULTI);
+
+		new Label(comp, SWT.NONE).setText("Label for Tree");
+		tree = new Tree(comp, SWT.BORDER | SWT.MULTI);
 		for (int i = 0; i < 3; i++) {
 			TreeItem item = new TreeItem(tree, SWT.NONE);
 			item.setText("Item" + i);
@@ -130,9 +134,9 @@ public class ControlsWithLabelsExample {
 				new TreeItem(item, SWT.NONE).setText("Item" + i + j);
 			}
 		}
-		
-		new Label(shell, SWT.NONE).setText("Label for Tree with columns");
-		treeTable = new Tree(shell, SWT.BORDER | SWT.MULTI);
+
+		new Label(comp, SWT.NONE).setText("Label for Tree with columns");
+		treeTable = new Tree(comp, SWT.BORDER | SWT.MULTI);
 		treeTable.setHeaderVisible(true);
 		treeTable.setLinesVisible(true);
 		for (int col = 0; col < 3; col++) {
@@ -147,17 +151,17 @@ public class ControlsWithLabelsExample {
 				new TreeItem(item, SWT.NONE).setText(new String [] {"I" + i + j + "C0", "I" + i + j + "C1", "I" + i + j + "C2"});
 			}
 		}
-		
-		new Label(shell, SWT.NONE).setText("Label for ToolBar");
-		toolBar = new ToolBar(shell, SWT.FLAT);
+
+		new Label(comp, SWT.NONE).setText("Label for ToolBar");
+		toolBar = new ToolBar(comp, SWT.FLAT);
 		for (int i = 0; i < 3; i++) {
 			ToolItem item = new ToolItem(toolBar, SWT.PUSH);
 			item.setText("Item" + i);
 			item.setToolTipText("ToolItem ToolTip" + i);
 		}
-		
-		new Label(shell, SWT.NONE).setText("Label for CoolBar");
-		coolBar = new CoolBar(shell, SWT.FLAT);
+
+		new Label(comp, SWT.NONE).setText("Label for CoolBar");
+		coolBar = new CoolBar(comp, SWT.FLAT);
 		for (int i = 0; i < 2; i++) {
 			CoolItem coolItem = new CoolItem(coolBar, SWT.PUSH);
 			ToolBar coolItemToolBar = new ToolBar(coolBar, SWT.FLAT);
@@ -168,16 +172,16 @@ public class ControlsWithLabelsExample {
 				item.setToolTipText("ToolItem ToolTip" + i + j);
 				if (item.getWidth() > toolItemWidth) toolItemWidth = item.getWidth();
 			}
-	        coolItem.setControl(coolItemToolBar);
-	        Point size = coolItemToolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	        Point coolSize = coolItem.computeSize (size.x, size.y);
-	        coolItem.setMinimumSize(toolItemWidth, coolSize.y);
-	        coolItem.setPreferredSize(coolSize);
-	        coolItem.setSize(coolSize);
+			coolItem.setControl(coolItemToolBar);
+			Point size = coolItemToolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			Point coolSize = coolItem.computeSize (size.x, size.y);
+			coolItem.setMinimumSize(toolItemWidth, coolSize.y);
+			coolItem.setPreferredSize(coolSize);
+			coolItem.setSize(coolSize);
 		}
-		
-		new Label(shell, SWT.NONE).setText("Label for Canvas");
-		canvas = new Canvas(shell, SWT.BORDER);
+
+		new Label(comp, SWT.NONE).setText("Label for Canvas");
+		canvas = new Canvas(comp, SWT.BORDER);
 		canvas.setLayoutData(new GridData(64, 64));
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
@@ -199,14 +203,14 @@ public class ControlsWithLabelsExample {
 			}
 		});
 
-		new Label(shell, SWT.NONE).setText("Label for Group");
-		group = new Group(shell, SWT.NONE);
+		new Label(comp, SWT.NONE).setText("Label for Group");
+		group = new Group(comp, SWT.NONE);
 		group.setText("Group");
 		group.setLayout(new FillLayout());
 		new Text(group, SWT.SINGLE | SWT.BORDER).setText("Text in Group");
-		
-		new Label(shell, SWT.NONE).setText("Label for TabFolder");
-		tabFolder = new TabFolder(shell, SWT.NONE);
+
+		new Label(comp, SWT.NONE).setText("Label for TabFolder");
+		tabFolder = new TabFolder(comp, SWT.NONE);
 		for (int i = 0; i < 3; i++) {
 			TabItem item = new TabItem(tabFolder, SWT.NONE);
 			item.setText("TabItem &" + i);
@@ -215,9 +219,9 @@ public class ControlsWithLabelsExample {
 			itemText.setText("Text for TabItem " + i);
 			item.setControl(itemText);
 		}
-		
-		new Label(shell, SWT.NONE).setText("Label for CTabFolder");
-		cTabFolder = new CTabFolder(shell, SWT.BORDER);
+
+		new Label(comp, SWT.NONE).setText("Label for CTabFolder");
+		cTabFolder = new CTabFolder(comp, SWT.BORDER);
 		for (int i = 0; i < 3; i++) {
 			CTabItem item = new CTabItem(cTabFolder, SWT.NONE);
 			item.setText("CTabItem &" + i);
@@ -227,20 +231,21 @@ public class ControlsWithLabelsExample {
 			item.setControl(itemText);
 		}
 		cTabFolder.setSelection(cTabFolder.getItem(0));
-		
-		new Label(shell, SWT.NONE).setText("Label for Scale");
-		scale = new Scale(shell, SWT.NONE);
-		
-		new Label(shell, SWT.NONE).setText("Label for Slider");
-		slider = new Slider(shell, SWT.NONE);
-		
-		new Label(shell, SWT.NONE).setText("Label for ProgressBar");
-		progressBar = new ProgressBar(shell, SWT.NONE);
-		progressBar.setSelection(50);
-		
-		new Label(shell, SWT.NONE).setText("Label for Sash");
-		sash = new Sash(shell, SWT.NONE);
 
+		new Label(comp, SWT.NONE).setText("Label for Scale");
+		scale = new Scale(comp, SWT.NONE);
+
+		new Label(comp, SWT.NONE).setText("Label for Slider");
+		slider = new Slider(comp, SWT.NONE);
+
+		new Label(comp, SWT.NONE).setText("Label for ProgressBar");
+		progressBar = new ProgressBar(comp, SWT.NONE);
+		progressBar.setSelection(50);
+
+		new Label(comp, SWT.NONE).setText("Label for Sash");
+		sash = new Sash(comp, SWT.NONE);
+
+		comp.setSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
