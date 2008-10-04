@@ -881,7 +881,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || tableView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
 			NSRect gcRect = new NSRect ();
 			gcRect.y = fullRect.y;
-			gcRect.width = fullRect.width + checkColumn.width ();
+			gcRect.width = fullRect.x + fullRect.width;
 			gcRect.height = fullRect.height;
 			data.paintRect = gcRect;
 		} else {
