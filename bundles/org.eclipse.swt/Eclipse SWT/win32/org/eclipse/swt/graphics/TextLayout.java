@@ -655,61 +655,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			if (drawX > clip.x + clip.width) break;
 			if (drawX + run.width >= clip.x) {
 				if (!run.lineBreak || run.softBreak) {
-					int end = run.start + run.length - 1;
-					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
-					if (fullSelection) {
-						if (gdip) {
-							Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX, drawY, run.width, lineHeight);
-						} else {
-							OS.SelectObject(hdc, selBrush);
-							OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, OS.PATCOPY);
-						}
+					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
+					if (gdip) {
+						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, selBrush, hasSelection);
 					} else {
-						if (run.style != null && run.style.background != null) {
-							int bg = run.style.background.handle;
-							if (gdip) {
-								int argb = ((alpha & 0xFF) << 24) | ((bg >> 16) & 0xFF) | (bg & 0xFF00) | ((bg & 0xFF) << 16);
-								int /*long*/ color = Gdip.Color_new(argb); 
-								int /*long*/ brush = Gdip.SolidBrush_new(color);
-								Gdip.Graphics_FillRectangle(gdipGraphics, brush, drawX, drawY, run.width, lineHeight);
-								Gdip.Color_delete(color);
-								Gdip.SolidBrush_delete(brush);
-							} else {
-								int /*long*/ hBrush = OS.CreateSolidBrush (bg);
-								int /*long*/ oldBrush = OS.SelectObject(hdc, hBrush);
-								OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, OS.PATCOPY);
-								OS.SelectObject(hdc, oldBrush);
-								OS.DeleteObject(hBrush);
-							}
-						}
-						boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
-						if (partialSelection) {
-							int selStart = Math.max(selectionStart, run.start) - run.start;
-							int selEnd = Math.min(selectionEnd, end) - run.start;
-							int cChars = run.length;
-							int gGlyphs = run.glyphCount;
-							int[] piX = new int[1];
-							int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
-							OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-							int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-							rect.left = drawX + runX;
-							rect.top = drawY;
-							OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-							runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-							rect.right = drawX + runX;
-							rect.bottom = drawY + lineHeight;
-							if (gdip) {
-								if (rect.left > rect.right) {
-									int tmp = rect.left;
-									rect.left = rect.right;
-									rect.right = tmp;
-								}
-								Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-							} else {
-								OS.SelectObject(hdc, selBrush);
-								OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
-							}
-						}
+						drawRunBackground(run, hdc, rect, selectionStart, selectionEnd, selBrush, hasSelection);
 					}
 				}
 			}
@@ -882,6 +832,53 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (gdipGraphics != 0) Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 		if (selBrush != 0) OS.DeleteObject (selBrush);
 		if (selPen != 0) OS.DeleteObject (selPen);
+	}
+}
+
+void drawRunBackground(StyleItem run, int /*long*/ hdc, RECT rect, int selectionStart, int selectionEnd, int /*long*/ selBrush, boolean hasSelection) {
+	int end = run.start + run.length - 1;
+	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+	if (fullSelection) {
+		OS.SelectObject(hdc, selBrush);
+		OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+	} else {
+		if (run.style != null && run.style.background != null) {
+			int bg = run.style.background.handle;
+			int /*long*/ hBrush = OS.CreateSolidBrush (bg);
+			int /*long*/ oldBrush = OS.SelectObject(hdc, hBrush);
+			OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+			OS.SelectObject(hdc, oldBrush);
+			OS.DeleteObject(hBrush);
+		}
+		boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+		if (partialSelection) {
+			getPartialSelection(run, selectionStart, selectionEnd, rect);
+			OS.SelectObject(hdc, selBrush);
+			OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+		}
+	}
+}
+
+void drawRunBackgroundGDIP(StyleItem run, int /*long*/ graphics, RECT rect, int selectionStart, int selectionEnd, int alpha, int /*long*/ selBrush, boolean hasSelection) {
+	int end = run.start + run.length - 1;
+	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+	if (fullSelection) {
+		Gdip.Graphics_FillRectangle(graphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	} else {
+		if (run.style != null && run.style.background != null) {
+			int bg = run.style.background.handle;
+			int argb = ((alpha & 0xFF) << 24) | ((bg >> 16) & 0xFF) | (bg & 0xFF00) | ((bg & 0xFF) << 16);
+			int /*long*/ color = Gdip.Color_new(argb); 
+			int /*long*/ brush = Gdip.SolidBrush_new(color);
+			Gdip.Graphics_FillRectangle(graphics, brush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+			Gdip.Color_delete(color);
+			Gdip.SolidBrush_delete(brush);
+		}
+		boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+		if (partialSelection) {
+			getPartialSelection(run, selectionStart, selectionEnd, rect);
+			Gdip.Graphics_FillRectangle(graphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		}
 	}
 }
 
@@ -1936,6 +1933,28 @@ public int getOffset (int x, int y, int[] trailing) {
 public int getOrientation () {
 	checkLayout();
 	return orientation;
+}
+
+void getPartialSelection(StyleItem run, int selectionStart, int selectionEnd, RECT rect) {
+	int end = run.start + run.length - 1;
+	int selStart = Math.max(selectionStart, run.start) - run.start;
+	int selEnd = Math.min(selectionEnd, end) - run.start;
+	int cChars = run.length;
+	int gGlyphs = run.glyphCount;
+	int[] piX = new int[1];
+	int x = rect.left;
+	int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
+	OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
+	int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+	rect.left = x + runX;
+	OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
+	runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+	rect.right = x + runX;
+	if (rect.left > rect.right) {
+		int tmp = rect.left;
+		rect.left = rect.right;
+		rect.right = tmp;
+	}
 }
 
 /**
