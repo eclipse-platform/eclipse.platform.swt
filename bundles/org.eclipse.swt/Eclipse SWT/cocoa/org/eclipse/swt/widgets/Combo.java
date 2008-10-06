@@ -1115,7 +1115,11 @@ void setBackground (float [] color) {
 	} else {
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}
-	((NSTextField)view).setBackgroundColor(nsColor);
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO
+	} else {
+		((NSTextField)view).setBackgroundColor(nsColor);
+	}
 }
 
 void setForeground (float [] color) {
@@ -1125,7 +1129,11 @@ void setForeground (float [] color) {
 	} else {
 		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}
-	((NSTextField)view).setTextColor(nsColor);
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO
+	} else {
+		((NSTextField)view).setTextColor(nsColor);
+	}
 }
 
 /**
