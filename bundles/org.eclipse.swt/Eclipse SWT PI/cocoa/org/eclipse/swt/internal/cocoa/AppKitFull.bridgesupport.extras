@@ -14660,8 +14660,8 @@
       <arg name="row"></arg>
       <retval></retval>
     </method>
-    <method selector="outlineTableColumn">
-      <retval></retval>
+    <method selector="outlineTableColumn" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="parentForItem:">
       <arg name="item"></arg>

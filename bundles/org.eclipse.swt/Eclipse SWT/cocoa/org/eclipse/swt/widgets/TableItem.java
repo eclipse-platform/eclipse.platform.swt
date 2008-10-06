@@ -141,7 +141,7 @@ int calculateWidth (int columnIndex, GC gc, boolean callMeasureItem) {
 		NSTableView tableView = (NSTableView)parent.view;
 		int nsColumnIndex = 0;
 		if (parent.columnCount > 0) {
-			tableView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
+			nsColumnIndex = tableView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
 		}
 		int rowIndex = parent.indexOf (this);
 		rect = tableView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
@@ -203,19 +203,17 @@ NSAttributedString createString (int index) {
 	if (font != null) {
 		dict.setObject (font.handle, OS.NSFontAttributeName);
 	}
+	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+	paragraphStyle.autorelease ();
+	paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+	dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 	if (parent.columnCount > 0) {
 		TableColumn column = parent.getColumn (index);
 		int style = column.getStyle ();
 		if ((style & SWT.CENTER) != 0) {
-			NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-			paragraphStyle.autorelease ();
 			paragraphStyle.setAlignment (OS.NSCenterTextAlignment);
-			dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 		} else if ((style & SWT.RIGHT) != 0) {
-			NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
-			paragraphStyle.autorelease ();
 			paragraphStyle.setAlignment (OS.NSRightTextAlignment);
-			dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 		}
 	}
 

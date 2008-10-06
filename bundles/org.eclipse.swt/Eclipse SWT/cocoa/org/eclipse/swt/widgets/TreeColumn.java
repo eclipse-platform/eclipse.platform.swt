@@ -201,7 +201,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void drawInteriorFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
 	NSRect cellRect = new NSRect ();
 	OS.memmove (cellRect, cellFrame, NSRect.sizeof);
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
@@ -412,8 +412,13 @@ public void pack () {
 	int index = parent.indexOf (this);
 	for (int i=0; i<parent.itemCount; i++) {
 		TreeItem item = parent.items [i];
-		if (item != null && item.cached) {
-			width = Math.max (width, item.calculateWidth (index, gc, true));
+		if (item != null && !item.isDisposed () && item.cached) {
+			width = Math.max (width, item.calculateWidth (index, gc, true, true));
+			if (isDisposed ()) {
+				gc.dispose ();
+				return;
+			}
+			if (gc.isDisposed ()) gc = new GC (parent);
 		}
 	}
 	gc.dispose ();
@@ -525,7 +530,7 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	super.setImage (image);
-	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
+	NSTableHeaderView headerView = ((NSOutlineView) parent.view).headerView ();
 	if (headerView == null) return;
 	int /*long*/ index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
@@ -590,7 +595,7 @@ public void setText (String string) {
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
 	displayText = new String (buffer, 0, length);
-	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
+	NSTableHeaderView headerView = ((NSOutlineView) parent.view).headerView ();
 	if (headerView == null) return;
 	int /*long*/ index = ((NSOutlineView)parent.view).columnWithIdentifier (nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);

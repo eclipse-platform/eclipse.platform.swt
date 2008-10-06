@@ -871,6 +871,7 @@ public static final int /*long*/ sel_otherEventWithType_location_modifierFlags_t
 public static final int /*long*/ sel_otherMouseDown_ = sel_registerName("otherMouseDown:");
 public static final int /*long*/ sel_otherMouseDragged_ = sel_registerName("otherMouseDragged:");
 public static final int /*long*/ sel_otherMouseUp_ = sel_registerName("otherMouseUp:");
+public static final int /*long*/ sel_outlineTableColumn = sel_registerName("outlineTableColumn");
 public static final int /*long*/ sel_outlineView_child_ofItem_ = sel_registerName("outlineView:child:ofItem:");
 public static final int /*long*/ sel_outlineView_isItemExpandable_ = sel_registerName("outlineView:isItemExpandable:");
 public static final int /*long*/ sel_outlineView_numberOfChildrenOfItem_ = sel_registerName("outlineView:numberOfChildrenOfItem:");

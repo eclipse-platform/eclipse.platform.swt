@@ -73,6 +73,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Tree extends Composite {
 	NSTableColumn firstColumn, checkColumn;
+	NSBrowserCell dataCell;
 	NSTableHeaderView headerView;
 	TreeItem [] items;
 	int itemCount;
@@ -118,13 +119,6 @@ public class Tree extends Composite {
  */
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
-}
-
-void _addListener (int eventType, Listener listener) {
-	super._addListener (eventType, listener);
-	for (int i = 0; i < items.length; i++) {
-		if (items [i] != null) items [i].width = -1;		
-	}
 }
 
 TreeItem _getItem (TreeItem parentItem, int index, boolean create) {
@@ -326,6 +320,13 @@ public void clearAll (boolean all) {
 	clearAll (null, all);
 }
 
+void clearCustomWidths (TreeItem item) {
+	item.customWidth = -1;
+	for (int i = 0; i < item.itemCount; i++) {
+		clearCustomWidths (items[i]);
+	}
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -351,7 +352,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint;
 	}
 	if (hHint == SWT.DEFAULT) {
-		height = (int)/*64*/((NSTableView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
+		height = (int)/*64*/((NSOutlineView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
 	} else {
 		height = hHint;
 	}
@@ -452,10 +453,9 @@ void createHandle () {
 	firstColumn.headerCell ().setTitle (str);
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn (firstColumn);
-	NSBrowserCell cell = (NSBrowserCell) new NSBrowserCell ().alloc ().init ();
-	cell.setLeaf (true);
-	firstColumn.setDataCell (cell);
-	cell.release ();
+	dataCell = (NSBrowserCell)new SWTBrowserCell ().alloc ().init ();
+	dataCell.setLeaf (true);
+	firstColumn.setDataCell (dataCell);
 	levelIndent = widget.indentationPerLevel ();
 	
 	scrollView = scrollWidget;
@@ -487,13 +487,10 @@ void createItem (TreeColumn column, int index) {
 		nsColumn.initWithIdentifier (nsColumn);
 		nsColumn.setMinWidth(0);
 		nsColumn.headerCell ().setTitle (str);
-		((NSTableView) view).addTableColumn (nsColumn);
+		((NSOutlineView) view).addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
-		((NSTableView) view).moveColumn (columnCount + checkColumn, index + checkColumn);
-		NSBrowserCell cell = (NSBrowserCell) new NSBrowserCell ().alloc ().init ();
-		cell.setLeaf (true);
-		nsColumn.setDataCell (cell);
-		cell.release ();
+		((NSOutlineView) view).moveColumn (columnCount + checkColumn, index + checkColumn);
+		nsColumn.setDataCell (dataCell);
 	}
 	column.createJNIRef ();
 	NSTableHeaderCell headerCell = (NSTableHeaderCell)new SWTTableHeaderCell ().alloc ().init ();
@@ -507,6 +504,10 @@ void createItem (TreeColumn column, int index) {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null) createColumn (item, index);
+		}
+	} else {
+		for (int i = 0; i < itemCount; i++) {
+			clearCustomWidths (items[i]);
 		}
 	}
 }
@@ -575,7 +576,7 @@ Color defaultForeground () {
  */
 public void deselectAll () {
 	checkWidget ();
-	NSTableView widget = (NSTableView) view;
+	NSTableView widget = (NSOutlineView) view;
 	ignoreSelect = true;
 	widget.deselectAll (null);
 	ignoreSelect = false;
@@ -584,6 +585,7 @@ public void deselectAll () {
 void deregister () {
 	super.deregister ();
 	display.removeWidget (headerView);
+	display.removeWidget (dataCell);
 }
 
 /**
@@ -761,6 +763,195 @@ void destroyItem (TreeItem item) {
 //	fixScrollBar ();
 }
 
+void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
+	NSRect rect = new NSRect ();
+	OS.memmove (rect, cellFrame, NSRect.sizeof);
+
+	NSOutlineView outlineView = (NSOutlineView)this.view;
+	NSBrowserCell cell = new NSBrowserCell (id);
+	NSRange rowsRange = outlineView.rowsInRect (rect);
+	int rowIndex = (int)/*64*/rowsRange.location;
+	TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
+	int columnIndex = 0;
+	id nsColumn = null;
+	if (columnCount != 0) {
+		NSIndexSet columnsSet = outlineView.columnIndexesInRect (rect);
+		int index = (int)/*64*/columnsSet.firstIndex ();
+		NSArray nsColumns = outlineView.tableColumns ();
+		nsColumn = nsColumns.objectAtIndex (index);
+		for (int i = 0; i < columnCount; i++) {
+			if (columns[i].nsColumn.id == nsColumn.id) {
+				columnIndex = indexOf (columns[i]);
+				break;
+			}
+		}
+	}
+
+	Color background = item.cellBackground != null ? item.cellBackground [columnIndex] : null;
+	if (background == null) background = item.background;
+	boolean drawBackground = background != null;
+	boolean drawForeground = true;
+	boolean isSelected = outlineView.isRowSelected (rowIndex);
+	boolean drawSelection = isSelected;
+
+	NSColor nsSelectionBackground = null;
+	NSColor nsSelectionForeground = null;
+	if (isSelected) {
+		if (isFocusControl ()) {
+			nsSelectionForeground = NSColor.alternateSelectedControlTextColor ();
+		} else {
+			nsSelectionForeground = NSColor.selectedControlTextColor ();
+		}
+		nsSelectionForeground = nsSelectionForeground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
+		nsSelectionBackground = cell.highlightColorInView (outlineView);
+		nsSelectionBackground = nsSelectionBackground.colorUsingColorSpace (NSColorSpace.deviceRGBColorSpace ());
+	}
+
+	NSRect fullRect = new NSRect ();
+	fullRect.y = rect.y; fullRect.height = rect.height;
+	if (columnCount == 0) {
+		fullRect.x = rect.x;
+		if (item.customWidth != -1) {
+			fullRect.width = item.customWidth;
+		} else {
+			NSSize contentSize = cell.cellSizeForBounds (rect);
+			fullRect.width = (int)contentSize.width;
+		}
+	} else {
+		NSSize spacing = outlineView.intercellSpacing ();
+		if (nsColumn.id == outlineView.outlineTableColumn ().id) {
+			int nsColumnIndex = (int)/*64*/outlineView.columnWithIdentifier (nsColumn);
+			NSRect columnRect = outlineView.rectOfColumn (nsColumnIndex);
+			fullRect.x = columnRect.x; fullRect.width = columnRect.width + (int)/*64*/spacing.width;
+		} else {
+			fullRect.x = rect.x;
+			fullRect.width = rect.width + (int)/*64*/spacing.width;
+		}
+	}
+
+	if (hooks (SWT.EraseItem)) {
+		NSRect eraseItemRect = null;
+		// TODO how to handle rearranged columns?  The third clause below ensures that
+		// there are either 0 columns or that column 0 is still the first physical column.
+		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || outlineView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
+			eraseItemRect = new NSRect ();
+			eraseItemRect.y = fullRect.y;
+			eraseItemRect.width = fullRect.x + fullRect.width;
+			eraseItemRect.height = fullRect.height;
+		} else {
+			eraseItemRect = fullRect;
+		}
+		GCData data = new GCData ();
+		data.paintRect = eraseItemRect;
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		if (isSelected) {
+			float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
+			nsSelectionForeground.getComponents (components);	
+			Color selectionForeground = Color.cocoa_new (display, components);
+			gc.setForeground (selectionForeground);
+			components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
+			nsSelectionBackground.getComponents (components);	
+			Color selectionBackground = Color.cocoa_new (display, components);
+			gc.setBackground (selectionBackground);
+		} else {
+			gc.setForeground (item.getForeground (columnIndex));
+			gc.setBackground (item.getBackground (columnIndex));
+		}
+
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.detail = SWT.FOREGROUND;
+		if (drawBackground) event.detail |= SWT.BACKGROUND;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		event.x = (int)eraseItemRect.x;
+		event.y = (int)eraseItemRect.y;
+		event.width = (int)eraseItemRect.width;
+		event.height = (int)eraseItemRect.height;
+		sendEvent (SWT.EraseItem, event);
+		gc.dispose ();
+		if (item.isDisposed ()) return;
+		if (!event.doit) {
+			drawForeground = drawBackground = drawSelection = false; 
+		} else {
+			drawBackground = drawBackground && (event.detail & SWT.BACKGROUND) != 0;
+			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
+			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
+		}
+	}
+
+	if (drawSelection) {
+		// TODO can it be drawn natively in fullRect?
+		NSGraphicsContext context = NSGraphicsContext.currentContext ();
+		context.saveGraphicsState ();
+		nsSelectionBackground.setFill ();
+		NSBezierPath.fillRect (fullRect);
+		context.restoreGraphicsState ();
+	} else {
+		if (drawBackground) {
+			NSGraphicsContext context = NSGraphicsContext.currentContext ();
+			context.saveGraphicsState ();
+			float[] colorRGB = background.handle;
+			NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
+			color.setFill ();
+			NSBezierPath.fillRect (fullRect);
+			context.restoreGraphicsState ();
+		}
+	}
+
+	if (drawForeground) {
+		cell.setHighlighted (false);
+		callSuper (id, sel, rect, view);
+	}
+
+	if (hooks (SWT.PaintItem)) {
+		NSRect contentRect = cell.titleRectForBounds (rect);
+		NSSize contentSize = cell.cellSizeForBounds (rect);
+
+		GCData data = new GCData ();
+		// TODO how to handle rearranged columns?  The third clause below ensures that
+		// there are either 0 columns or that column 0 is still the first physical column.
+		if (columnIndex == 0 && (style & SWT.CHECK) != 0 && (columnCount == 0 || outlineView.columnWithIdentifier (columns[0].nsColumn) == 1)) {
+			NSRect gcRect = new NSRect ();
+			gcRect.y = fullRect.y;
+			gcRect.width = fullRect.x + fullRect.width;
+			gcRect.height = fullRect.height;
+			data.paintRect = gcRect;
+		} else {
+			data.paintRect = fullRect;
+		}
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		if (isSelected) {
+			float /*double*/[] components = new float /*double*/[(int)/*64*/nsSelectionForeground.numberOfComponents ()];
+			nsSelectionForeground.getComponents (components);	
+			Color selectionForeground = Color.cocoa_new (display, components);
+			gc.setForeground (selectionForeground);
+			components = new float /*double*/[(int)/*64*/nsSelectionBackground.numberOfComponents ()];
+			nsSelectionBackground.getComponents (components);	
+			Color selectionBackground = Color.cocoa_new (display, components);
+			gc.setBackground (selectionBackground);
+			gc.setBackground (display.getSystemColor (SWT.COLOR_GREEN));
+		} else {
+			gc.setForeground (item.getForeground (columnIndex));
+			gc.setBackground (item.getBackground (columnIndex));
+		}
+
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		event.x = (int)contentRect.x;
+		event.y = (int)contentRect.y;
+		event.width = (int)contentSize.width;
+		event.height = (int)fullRect.height;
+		sendEvent (SWT.PaintItem, event);
+		gc.dispose ();
+	}
+}
 
 void fixScrollBar () {
 	/*
@@ -944,7 +1135,7 @@ public int getGridLineWidth () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	NSTableHeaderView headerView = ((NSTableView) view).headerView ();
+	NSTableHeaderView headerView = ((NSOutlineView) view).headerView ();
 	if (headerView == null) return 0;
 	return (int) headerView.bounds ().height;
 }
@@ -970,7 +1161,7 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
-	return ((NSTableView) view).headerView () != null;
+	return ((NSOutlineView) view).headerView () != null;
 }
 
 int getInsetWidth () {
@@ -1077,7 +1268,7 @@ int getItemCount (TreeItem item) {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return (int)((NSTableView) view).rowHeight ();
+	return (int)((NSOutlineView) view).rowHeight ();
 }
 
 /**
@@ -1127,7 +1318,7 @@ public TreeItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
-	return ((NSTableView) view).usesAlternatingRowBackgroundColors ();
+	return ((NSOutlineView) view).usesAlternatingRowBackgroundColors ();
 }
 
 /**
@@ -1197,7 +1388,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return (int)/*64*/((NSTableView) view).numberOfSelectedRows ();
+	return (int)/*64*/((NSOutlineView) view).numberOfSelectedRows ();
 }
 
 /**
@@ -1271,6 +1462,10 @@ public TreeItem getTopItem () {
 //		}
 //	}
 	return null;
+}
+
+void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
+	/* this method is intentionally empty, to prevent native selection from being drawn */
 }
 
 /**
@@ -1399,13 +1594,52 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TreeItem item = (TreeItem) display.getWidget(itemID);
 	Image image = item.image;
+	int columnIndex = 0;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
 			image = item.getImage (i);
+			columnIndex = i;
 		}
 	}
 	NSBrowserCell browserCell = new NSBrowserCell (cell);
 	browserCell.setImage (image != null ? image.handle : null);
+	browserCell.setFont (item.getFont (columnIndex).handle);
+
+	if (hooks (SWT.MeasureItem)) {
+		NSOutlineView view = (NSOutlineView)this.view;
+		int nsColumnIndex = (int)/*64*/view.columnWithIdentifier (new id (tableColumn));
+		int rowIndex = (int)/*64*/view.rowForItem(new id (itemID));
+		NSRect rect = view.frameOfCellAtColumn (nsColumnIndex, rowIndex);
+		NSRect contentRect = browserCell.titleRectForBounds (rect);
+		NSSize contentSize = browserCell.cellSizeForBounds (rect);
+
+		GCData data = new GCData ();
+		data.paintRect = view.frame ();
+		GC gc = GC.cocoa_new (this, data);
+		gc.setFont (item.getFont (columnIndex));
+		int rowHeight = (int)view.rowHeight ();
+		Event event = new Event ();
+		event.item = item;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = (int)contentRect.x;
+		event.y = (int)contentRect.y;
+		event.width = (int)contentSize.width;
+		event.height = rowHeight;
+		sendEvent (SWT.MeasureItem, event);
+		gc.dispose ();
+		if (isDisposed ()) return;
+		if (rowHeight < event.height) {
+			view.setRowHeight (event.height);
+		}
+		if (columnCount == 0) {
+			int change = event.width - (item.customWidth != -1 ? item.customWidth : (int)contentSize.width);
+			if (item.customWidth != -1 || event.width != (int)contentSize.width) {
+				item.customWidth = event.width;	
+			}
+			if (change != 0) setScrollWidth (item);
+		}
+	}
 }
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -1455,19 +1689,24 @@ boolean outlineView_shouldExpandItem (int /*long*/ id, int /*long*/ sel, int /*l
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {
-	TreeItem item = (TreeItem) display.getWidget (itemID);
 	if (checkColumn != null && tableColumn == checkColumn.id)  {
+		TreeItem item = (TreeItem) display.getWidget (itemID);
 		item.checked = !item.checked;
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
 		postEvent (SWT.Selection, event);
+		NSOutlineView view = (NSOutlineView)this.view;
+		int rowIndex = (int)/*64*/view.rowForItem (new id (itemID));
+		NSRect rect = view.rectOfRow (rowIndex);
+		view.setNeedsDisplayInRect (rect);
 	}
 }
 
 void register () {
 	super.register ();
 	display.addWidget (headerView, this);
+	display.addWidget (dataCell, this);
 }
 
 void releaseChildren (boolean destroy) {
@@ -1498,6 +1737,8 @@ void releaseHandle () {
 	firstColumn = null;
 	if (checkColumn != null) checkColumn.release ();
 	checkColumn = null;
+	if (dataCell != null) dataCell.release ();
+	dataCell = null;
 }
 
 void releaseWidget () {
@@ -1612,7 +1853,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	NSTableView widget = (NSTableView) view;
+	NSOutlineView widget = (NSOutlineView) view;
 	ignoreSelect = true;
 	widget.selectAll (null);
 	ignoreSelect = false;
@@ -1670,7 +1911,7 @@ void setBackground (float [] color) {
 	} else {
 		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
 	}
-	((NSTableView) view).setBackgroundColor (nsColor);
+	((NSOutlineView) view).setBackgroundColor (nsColor);
 }
 
 /**
@@ -1770,7 +2011,7 @@ void setFont (NSFont font) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-	((NSTableView) view).setHeaderView (show ? headerView : null);
+	((NSOutlineView) view).setHeaderView (show ? headerView : null);
 }
 
 /**
@@ -1869,7 +2110,7 @@ void setItemHeight (Image image) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-	((NSTableView) view).setUsesAlternatingRowBackgroundColors (show);
+	((NSOutlineView) view).setUsesAlternatingRowBackgroundColors (show);
 }
 
 public void setRedraw (boolean redraw) {
@@ -2015,7 +2256,7 @@ public void setSortColumn (TreeColumn column) {
 	TreeColumn oldSortColumn = sortColumn;
 	sortColumn = column;
 	if (sortDirection == SWT.NONE) return;
-	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
+	NSTableHeaderView headerView = ((NSOutlineView)view).headerView ();
 	if (headerView == null) return;
 	if (oldSortColumn != null) {
 		int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (oldSortColumn.nsColumn);
@@ -2048,7 +2289,7 @@ public void setSortDirection  (int direction) {
 	if (direction == sortDirection) return;
 	sortDirection = direction;
 	if (sortColumn == null) return;
-	NSTableHeaderView headerView = ((NSTableView)view).headerView ();
+	NSTableHeaderView headerView = ((NSOutlineView)view).headerView ();
 	if (headerView == null) return;
 	int /*long*/ index = ((NSOutlineView)view).columnWithIdentifier (sortColumn.nsColumn);
 	NSRect rect = headerView.headerRectOfColumn (index);
@@ -2082,7 +2323,7 @@ public void setTopItem (TreeItem item) {
 	showItem (item, false);
 	NSOutlineView outlineView = (NSOutlineView) view;
 	//FIXME
-	((NSTableView) view).scrollRowToVisible (outlineView.rowForItem (item.handle));
+	((NSOutlineView) view).scrollRowToVisible (outlineView.rowForItem (item.handle));
 }
 
 /**
