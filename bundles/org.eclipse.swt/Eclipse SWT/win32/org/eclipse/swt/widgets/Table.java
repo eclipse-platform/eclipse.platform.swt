@@ -79,7 +79,7 @@ public class Table extends Composite {
 	RECT focusRect;
 	int /*long*/ headerToolTipHandle;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
-	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
+	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ int /*long*/ HeaderProc;
@@ -401,7 +401,12 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 					OS.InvalidateRect (handle, null, true);
 				}
 			}
+			break;
 		}
+		
+		case OS.WM_PAINT:
+			painted = true;
+			break;
 	}
 	return code;
 }
@@ -2374,6 +2379,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
+	if (!painted && hooks (SWT.MeasureItem)) hitTestSelection (0, 0, 0);
 	int /*long*/ empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 	int /*long*/ oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 	return OS.HIWORD (oneItem) - OS.HIWORD (empty);
@@ -3476,7 +3482,10 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hD
 				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
 			}
 		}
-		if (event.height > getItemHeight ()) setItemHeight (event.height);
+		int /*long*/ empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+		int /*long*/ oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+		int itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
+		if (event.height > itemHeight) setItemHeight (event.height);
 	}
 	return event;
 }
@@ -4920,6 +4929,7 @@ public void setTopIndex (int index) {
 	checkWidget (); 
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
 	if (index == topIndex) return;
+	if (!painted && hooks (SWT.MeasureItem)) hitTestSelection (index, 0, 0);
 	
 	/*
 	* Bug in Windows.  For some reason, LVM_SCROLL refuses to
@@ -5069,6 +5079,7 @@ public void showColumn (TableColumn column) {
 }
 
 void showItem (int index) {
+	if (!painted && hooks (SWT.MeasureItem)) hitTestSelection (index, 0, 0);
 	/*
 	* Bug in Windows.  For some reason, when there is insufficient space
 	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
