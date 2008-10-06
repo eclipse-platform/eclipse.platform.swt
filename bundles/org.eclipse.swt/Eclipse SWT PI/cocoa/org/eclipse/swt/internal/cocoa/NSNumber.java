@@ -38,6 +38,11 @@ public static NSNumber numberWithInt(int value) {
 	return result != 0 ? new NSNumber(result) : null;
 }
 
+public static NSNumber numberWithInteger(int /*long*/ value) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_numberWithInteger_, value);
+	return result != 0 ? new NSNumber(result) : null;
+}
+
 public static NSValue valueWithPoint(NSPoint point) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSNumber, OS.sel_valueWithPoint_, point);
 	return result != 0 ? new NSValue(result) : null;

@@ -645,7 +645,11 @@ void createDisplay (DeviceData data) {
 		error(SWT.ERROR_NOT_IMPLEMENTED);
 	}
 
-	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	NSThread nsthread = NSThread.currentThread();
+	NSMutableDictionary dictionary = nsthread.threadDictionary();
+	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
+	pool = new NSAutoreleasePool(dictionary.objectForKey(key));
+
 	application = NSApplication.sharedApplication();
 
 	/*
@@ -2534,30 +2538,27 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	try {
-		boolean events = false;
-		events |= runTimers ();
-		events |= runContexts ();
-		events |= runPopups ();
-		NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
-		if (event != null) {
-			events = true;
-			application.sendEvent(event);
-		}
+	pool.release();
+	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	boolean events = false;
+	events |= runTimers ();
+	events |= runContexts ();
+	events |= runPopups ();
+	NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+	if (event != null) {
+		events = true;
+		application.sendEvent(event);
+	}
 //		NSEvent event = NSEvent.otherEventWithType(OS.NSApplicationDefined, new NSPoint(), 0, 0, 0, null, SWT_IDLE_TYPE, 0, 0);
 //		application.postEvent(event, false);
 //		idle = true;
 //		application.run();
 //		events |= !idle;
-		if (events) {
-			runDeferredEvents ();
-			return true;
-		}
-		return runAsyncMessages (false);
-	} finally {
-		pool.release();
+	if (events) {
+		runDeferredEvents ();
+		return true;
 	}
+	return runAsyncMessages (false);
 }
 
 static void register (Display display) {
@@ -3172,15 +3173,12 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	NSAutoreleasePool pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	try {
-		allowTimers = runAsyncMessages = false;
-		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
-		allowTimers = runAsyncMessages = true;
-		return true;
-	} finally {
-		pool.release();
-	}
+	pool.release();
+	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	allowTimers = runAsyncMessages = false;
+	NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+	allowTimers = runAsyncMessages = true;
+	return true;
 }
 
 int sourceProc (int info) {

@@ -69,8 +69,14 @@ Font(Device device) {
 public Font(Device device, FontData fd) {
 	super(device);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**	 
@@ -103,9 +109,15 @@ public Font(Device device, FontData[] fds) {
 	for (int i=0; i<fds.length; i++) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	FontData fd = fds[0];
-	init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		FontData fd = fds[0];
+		init(fd.getName(), fd.getHeightF(), fd.getStyle(), fd.nsName);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**	 
@@ -132,8 +144,14 @@ public Font(Device device, FontData[] fds) {
  */
 public Font(Device device, String name, int height, int style) {
 	super(device);
-	init(name, height, style, null);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		init(name, height, style, null);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /*public*/ Font(Device device, String name, float height, int style) {
@@ -178,17 +196,23 @@ public boolean equals(Object object) {
  */
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSString family = handle.familyName();
-	String name = family.getString();
-	NSString str = handle.fontName();
-	String nsName = str.getString();
-	int style = SWT.NORMAL;
-	if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
-	if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
-	Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-	FontData data = new FontData(name, (float)/*64*/handle.pointSize() * screenDPI.y / dpi.y, style);
-	data.nsName = nsName;
-	return new FontData[]{data};
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSString family = handle.familyName();
+		String name = family.getString();
+		NSString str = handle.fontName();
+		String nsName = str.getString();
+		int style = SWT.NORMAL;
+		if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
+		if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
+		Point dpi = device.dpi, screenDPI = device.getScreenDPI();
+		FontData data = new FontData(name, (float)/*64*/handle.pointSize() * screenDPI.y / dpi.y, style);
+		data.nsName = nsName;
+		return new FontData[]{data};
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**	 

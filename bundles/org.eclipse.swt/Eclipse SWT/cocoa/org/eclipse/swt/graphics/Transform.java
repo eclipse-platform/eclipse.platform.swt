@@ -130,11 +130,17 @@ public Transform(Device device, float[] elements) {
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
-	handle = NSAffineTransform.transform();
-	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-	handle.retain();
-	setElements(m11, m12, m21, m22, dx, dy);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		handle = NSAffineTransform.transform();
+		if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
+		handle.retain();
+		setElements(m11, m12, m21, m22, dx, dy);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 static float[] checkTransform(float[] elements) {
@@ -166,13 +172,19 @@ public void getElements(float[] elements) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSAffineTransformStruct struct = handle.transformStruct();
-	elements[0] = (float)/*64*/struct.m11;
-	elements[1] = (float)/*64*/struct.m12;
-	elements[2] = (float)/*64*/struct.m21;
-	elements[3] = (float)/*64*/struct.m22;
-	elements[4] = (float)/*64*/struct.tX;
-	elements[5] = (float)/*64*/struct.tY;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSAffineTransformStruct struct = handle.transformStruct();
+		elements[0] = (float)/*64*/struct.m11;
+		elements[1] = (float)/*64*/struct.m12;
+		elements[2] = (float)/*64*/struct.m21;
+		elements[3] = (float)/*64*/struct.m22;
+		elements[4] = (float)/*64*/struct.tX;
+		elements[5] = (float)/*64*/struct.tY;
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -187,10 +199,16 @@ public void getElements(float[] elements) {
  */
 public void identity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAffineTransformStruct struct = new NSAffineTransformStruct();
-	struct.m11 = 1;
-	struct.m22 = 1;
-	handle.setTransformStruct(struct);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSAffineTransformStruct struct = new NSAffineTransformStruct();
+		struct.m11 = 1;
+		struct.m22 = 1;
+		handle.setTransformStruct(struct);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -204,11 +222,17 @@ public void identity() {
  */
 public void invert() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAffineTransformStruct struct = handle.transformStruct();
-	if ((struct.m11 * struct.m22 - struct.m12 * struct.m21) == 0) {
-		SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSAffineTransformStruct struct = handle.transformStruct();
+		if ((struct.m11 * struct.m22 - struct.m12 * struct.m21) == 0) {
+			SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+		}
+		handle.invert();
+	} finally {
+		if (pool != null) pool.release();
 	}
-	handle.invert();
 }
 
 /**
@@ -233,8 +257,14 @@ public boolean isDisposed() {
  */
 public boolean isIdentity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAffineTransformStruct struct = handle.transformStruct();
-	return struct.m11 == 1 && struct.m12 == 0 && struct.m21 == 0 && struct.m22 == 1 && struct.tX == 0 && struct.tY == 0;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSAffineTransformStruct struct = handle.transformStruct();
+		return struct.m11 == 1 && struct.m12 == 0 && struct.m21 == 0 && struct.m22 == 1 && struct.tX == 0 && struct.tY == 0;
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -256,7 +286,13 @@ public void multiply(Transform matrix) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (matrix == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (matrix.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	handle.prependTransform(matrix.handle);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		handle.prependTransform(matrix.handle);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -274,7 +310,13 @@ public void multiply(Transform matrix) {
  */
 public void rotate(float angle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle.rotateByDegrees(angle);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		handle.rotateByDegrees(angle);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -290,7 +332,13 @@ public void rotate(float angle) {
  */
 public void scale(float scaleX, float scaleY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle.scaleXBy(scaleX, scaleY);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		handle.scaleXBy(scaleX, scaleY);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -310,14 +358,20 @@ public void scale(float scaleX, float scaleY) {
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAffineTransformStruct struct = new NSAffineTransformStruct();
-	struct.m11 = m11;
-	struct.m12 = m12;
-	struct.m21 = m21;
-	struct.m22 = m22;
-	struct.tX = dx;
-	struct.tY = dy;
-	handle.setTransformStruct(struct);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSAffineTransformStruct struct = new NSAffineTransformStruct();
+		struct.m11 = m11;
+		struct.m12 = m12;
+		struct.m21 = m21;
+		struct.m22 = m22;
+		struct.tX = dx;
+		struct.tY = dy;
+		handle.setTransformStruct(struct);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -335,14 +389,20 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
  */
 public void shear(float shearX, float shearY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAffineTransformStruct struct = new NSAffineTransformStruct();
-	struct.m11 = 1;
-	struct.m12 = shearX;
-	struct.m21 = shearY;
-	struct.m22 = 1;
-	NSAffineTransform matrix = NSAffineTransform.transform();
-	matrix.setTransformStruct(struct);
-	handle.prependTransform(matrix);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSAffineTransformStruct struct = new NSAffineTransformStruct();
+		struct.m11 = 1;
+		struct.m12 = shearX;
+		struct.m21 = shearY;
+		struct.m22 = 1;
+		NSAffineTransform matrix = NSAffineTransform.transform();
+		matrix.setTransformStruct(struct);
+		handle.prependTransform(matrix);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /** 
@@ -362,14 +422,20 @@ public void shear(float shearX, float shearY) {
 public void transform(float[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSPoint point = new NSPoint();
-	int length = pointArray.length / 2;
-	for (int i = 0, j = 0; i < length; i++, j += 2) {
-		point.x = pointArray[j];
-		point.y = pointArray[j + 1];
-		point = handle.transformPoint(point);
-		pointArray[j] = (float)/*64*/point.x;				
-		pointArray[j + 1] = (float)/*64*/point.y;				
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSPoint point = new NSPoint();
+		int length = pointArray.length / 2;
+		for (int i = 0, j = 0; i < length; i++, j += 2) {
+			point.x = pointArray[j];
+			point.y = pointArray[j + 1];
+			point = handle.transformPoint(point);
+			pointArray[j] = (float)/*64*/point.x;				
+			pointArray[j + 1] = (float)/*64*/point.y;				
+		}
+	} finally {
+		if (pool != null) pool.release();
 	}
 }
 
@@ -386,7 +452,13 @@ public void transform(float[] pointArray) {
  */
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle.translateXBy(offsetX, offsetY);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		handle.translateXBy(offsetX, offsetY);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**

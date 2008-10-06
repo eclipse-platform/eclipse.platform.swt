@@ -7062,9 +7062,9 @@
       <arg name="value" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method class_method="true" selector="numberWithInteger:">
-      <arg name="value"></arg>
-      <retval></retval>
+    <method class_method="true" selector="numberWithInteger:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="numberWithLong:">
       <arg name="value"></arg>
@@ -11095,15 +11095,15 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSThread">
+  <class name="NSThread" swt_gen="mixed">
     <method class_method="true" selector="callStackReturnAddresses">
       <retval></retval>
     </method>
     <method selector="cancel">
       <retval></retval>
     </method>
-    <method class_method="true" selector="currentThread">
-      <retval></retval>
+    <method class_method="true" selector="currentThread" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="detachNewThreadSelector:toTarget:withObject:">
       <arg name="selector"></arg>
@@ -11132,8 +11132,8 @@
     <method selector="isFinished">
       <retval></retval>
     </method>
-    <method class_method="true" selector="isMainThread">
-      <retval></retval>
+    <method class_method="true" selector="isMainThread" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="isMainThread">
       <retval></retval>
@@ -11176,8 +11176,8 @@
     <method selector="start">
       <retval></retval>
     </method>
-    <method selector="threadDictionary">
-      <retval></retval>
+    <method selector="threadDictionary" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="threadPriority">
       <retval></retval>

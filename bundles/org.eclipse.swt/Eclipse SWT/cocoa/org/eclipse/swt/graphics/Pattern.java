@@ -69,10 +69,16 @@ public Pattern(Device device, Image image) {
 	super(device);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	this.image = image;
-	color = NSColor.colorWithPatternImage(image.handle);
-	color.retain();
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		this.image = image;
+		color = NSColor.colorWithPatternImage(image.handle);
+		color.retain();
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -152,20 +158,26 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	pt1 = new NSPoint();
-	pt2 = new NSPoint();
-	pt1.x = x1;
-	pt1.y = y1;
-	pt2.x = x2;
-	pt2.y = y2;
-	this.color1 = color1.handle;
-	this.color2 = color2.handle;
-	this.alpha1 = alpha1;
-	this.alpha2 = alpha2;
-	NSColor start = NSColor.colorWithDeviceRed(color1.handle[0], color1.handle[1], color1.handle[2], alpha1 / 255f);
-	NSColor end = NSColor.colorWithDeviceRed(color2.handle[0], color2.handle[1], color2.handle[2], alpha2 / 255f);
-	gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(start, end);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		pt1 = new NSPoint();
+		pt2 = new NSPoint();
+		pt1.x = x1;
+		pt1.y = y1;
+		pt2.x = x2;
+		pt2.y = y2;
+		this.color1 = color1.handle;
+		this.color2 = color2.handle;
+		this.alpha1 = alpha1;
+		this.alpha2 = alpha2;
+		NSColor start = NSColor.colorWithDeviceRed(color1.handle[0], color1.handle[1], color1.handle[2], alpha1 / 255f);
+		NSColor end = NSColor.colorWithDeviceRed(color2.handle[0], color2.handle[1], color2.handle[2], alpha2 / 255f);
+		gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(start, end);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 void destroy() {

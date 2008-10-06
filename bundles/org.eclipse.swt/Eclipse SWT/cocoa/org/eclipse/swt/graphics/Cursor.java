@@ -106,35 +106,41 @@ Cursor(Device device) {
  */
 public Cursor(Device device, int style) {
 	super(device);
-	switch (style) {
-		case SWT.CURSOR_HAND: 			handle = NSCursor.pointingHandCursor(); break;
-		case SWT.CURSOR_ARROW: 			handle = NSCursor.arrowCursor(); break;
-		case SWT.CURSOR_WAIT: 			handle = NSCursor.arrowCursor(); break;
-		case SWT.CURSOR_CROSS:	 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_APPSTARTING: 	handle = NSCursor.arrowCursor(); break;
-		case SWT.CURSOR_HELP: 			handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZEALL: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZENESW: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZENS:			handle = NSCursor.resizeUpDownCursor(); break;
-		case SWT.CURSOR_SIZENWSE: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZEWE: 		handle = NSCursor.resizeLeftRightCursor(); break;
-		case SWT.CURSOR_SIZEN: 			handle = NSCursor.resizeUpCursor(); break;
-		case SWT.CURSOR_SIZES: 			handle = NSCursor.resizeDownCursor(); break;
-		case SWT.CURSOR_SIZEE: 			handle = NSCursor.resizeRightCursor(); break;
-		case SWT.CURSOR_SIZEW: 			handle = NSCursor.resizeLeftCursor(); break;
-		case SWT.CURSOR_SIZENE: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZESE: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZESW: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_SIZENW: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_UPARROW: 		handle = NSCursor.crosshairCursor(); break;
-		case SWT.CURSOR_IBEAM: 			handle = NSCursor.IBeamCursor(); break;
-		case SWT.CURSOR_NO: 			handle = NSCursor.crosshairCursor(); break;
-		default:
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		switch (style) {
+			case SWT.CURSOR_HAND: 			handle = NSCursor.pointingHandCursor(); break;
+			case SWT.CURSOR_ARROW: 			handle = NSCursor.arrowCursor(); break;
+			case SWT.CURSOR_WAIT: 			handle = NSCursor.arrowCursor(); break;
+			case SWT.CURSOR_CROSS:	 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_APPSTARTING: 	handle = NSCursor.arrowCursor(); break;
+			case SWT.CURSOR_HELP: 			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZEALL: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZENESW: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZENS:			handle = NSCursor.resizeUpDownCursor(); break;
+			case SWT.CURSOR_SIZENWSE: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZEWE: 		handle = NSCursor.resizeLeftRightCursor(); break;
+			case SWT.CURSOR_SIZEN: 			handle = NSCursor.resizeUpCursor(); break;
+			case SWT.CURSOR_SIZES: 			handle = NSCursor.resizeDownCursor(); break;
+			case SWT.CURSOR_SIZEE: 			handle = NSCursor.resizeRightCursor(); break;
+			case SWT.CURSOR_SIZEW: 			handle = NSCursor.resizeLeftCursor(); break;
+			case SWT.CURSOR_SIZENE: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZESE: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZESW: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_SIZENW: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_UPARROW: 		handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_IBEAM: 			handle = NSCursor.IBeamCursor(); break;
+			case SWT.CURSOR_NO: 			handle = NSCursor.crosshairCursor(); break;
+			default:
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		handle.retain();
+		handle.setOnMouseEntered(true);
+		init();
+	} finally {
+		if (pool != null) pool.release();
 	}
-	handle.retain();
-	handle.setOnMouseEntered(true);
-	init();
 }
 
 /**	 
@@ -211,8 +217,14 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			offset += 4;
 		}
 	}
-	createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
@@ -320,8 +332,14 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			data[i] = alphaData[i/4];
 		}
 	}
-	createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		createNSCursor(hotspotX, hotspotY, data, source.width, source.height);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 void destroy() {
