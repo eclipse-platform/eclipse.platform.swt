@@ -482,15 +482,19 @@ void createItem (TreeColumn column, int index) {
 		firstColumn = null;
 	} else {
 		//TODO - set attributes, alignment etc.
+		NSOutlineView outlineView = (NSOutlineView)view;
 		NSString str = NSString.stringWith ("");
 		nsColumn = (NSTableColumn) new NSTableColumn ().alloc ();
 		nsColumn.initWithIdentifier (nsColumn);
 		nsColumn.setMinWidth(0);
 		nsColumn.headerCell ().setTitle (str);
-		((NSOutlineView) view).addTableColumn (nsColumn);
+		outlineView.addTableColumn (nsColumn);
 		int checkColumn = (style & SWT.CHECK) != 0 ? 1 : 0;
-		((NSOutlineView) view).moveColumn (columnCount + checkColumn, index + checkColumn);
+		outlineView.moveColumn (columnCount + checkColumn, index + checkColumn);
 		nsColumn.setDataCell (dataCell);
+		if (index == 0) {
+			outlineView.setOutlineTableColumn (nsColumn);
+		}
 	}
 	column.createJNIRef ();
 	NSTableHeaderCell headerCell = (NSTableHeaderCell)new SWTTableHeaderCell ().alloc ().init ();
