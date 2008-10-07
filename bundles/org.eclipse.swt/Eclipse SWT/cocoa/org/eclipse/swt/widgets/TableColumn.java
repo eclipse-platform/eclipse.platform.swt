@@ -202,6 +202,19 @@ void destroyWidget () {
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long*/ cellFrame, int /*long*/ view) {
 	NSRect cellRect = new NSRect ();
 	OS.memmove (cellRect, cellFrame, NSRect.sizeof);
+
+	/*
+	 * Feature in Cocoa.  When the last column in a table does not reach the
+	 * rightmost edge of the table view, the cell that draws the rightmost-
+	 * column's header is also invoked to draw the header space between its
+	 * right edge and the table's right edge.  If this case is detected then
+	 * nothing should be drawn.
+	 */
+	NSTableView tableView = (NSTableView)parent.view;
+	int columnIndex = (int)/*64*/tableView.columnWithIdentifier (nsColumn);
+	NSRect headerRect = parent.headerView.headerRectOfColumn (columnIndex);
+	if (headerRect.x != cellRect.x || headerRect.width != cellRect.width) return;
+
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 	context.saveGraphicsState ();
 
