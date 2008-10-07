@@ -2272,7 +2272,12 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			break;
 	}
 	if (event.button != 0) event.count = (int)/*64*/nsEvent.clickCount();
-	NSPoint windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation());
+	NSPoint windowPoint;
+	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
+		windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation()); 
+	} else {
+		windowPoint = nsEvent.locationInWindow();
+	}
 	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
 	event.x = (int) point.x;
 	event.y = (int) point.y;
