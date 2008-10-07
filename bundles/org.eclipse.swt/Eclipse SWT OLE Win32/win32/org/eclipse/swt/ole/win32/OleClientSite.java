@@ -421,11 +421,11 @@ protected void addObjectReferences() {
 		OLE.error(OLE.ERROR_INTERFACE_NOT_FOUND, result);
 	objIOleObject = new IOleObject(ppvObject[0]);
 	/*
-	 * Although the clientSite was passed in during the creation of OleObject
-	 * (which is required by WMP11 - see bug 173556), some applications ignore this
-	 * parameter (see bug 211663) because it is optional during the OleCreate. 
-	 * To ensure that we don't set the clientSite twice, we will not set the clientSite
-	 * again if it's already defined.
+	 * Feature in Windows. Despite the fact that the clientSite was provided during the 
+	 * creation of the OleObject (which is required by WMP11 - see bug 173556), 
+	 * some applications choose to ignore this optional parameter (see bug 211663) 
+	 * during OleCreate. The fix is to check whether the clientSite has already been set 
+	 * and set it. Note that setting it twice can result in assert failures.
 	 */
 	int /*long*/[] ppvClientSite = new int /*long*/[1];
 	result = objIOleObject.GetClientSite(ppvClientSite);
