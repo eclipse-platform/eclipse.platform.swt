@@ -747,11 +747,12 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	int rowIndex = (int)/*64*/rowsRange.location;
 	TableItem item = items [rowIndex];
 	int columnIndex = 0;
+	int nsColumnIndex = 0;
 	if (columnCount != 0) {
 		NSIndexSet columnsSet = tableView.columnIndexesInRect (rect);
-		int index = (int)/*64*/columnsSet.firstIndex ();
+		nsColumnIndex = (int)/*64*/columnsSet.firstIndex ();
 		NSArray nsColumns = tableView.tableColumns ();
-		id nsColumn = nsColumns.objectAtIndex (index);
+		id nsColumn = nsColumns.objectAtIndex (nsColumnIndex);
 		for (int i = 0; i < columnCount; i++) {
 			if (columns[i].nsColumn.id == nsColumn.id) {
 				columnIndex = indexOf (columns[i]);
@@ -845,25 +846,36 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
 			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
 		}
+
+		if (drawSelection) {
+			NSRect selectionRect = new NSRect ();
+			selectionRect.y = rect.y; selectionRect.height = rect.height;
+			if (columnCount > 0) {
+				NSRect columnRect = tableView.rectOfColumn (nsColumnIndex);
+				selectionRect.x = columnRect.x; selectionRect.width = columnRect.width;
+			} else {
+				NSRect rowRect = tableView.rectOfRow (rowIndex);
+				if ((style & SWT.CHECK) != 0) {
+					/* highlighting at this stage draws over the checkbox, so don't include its column */
+					int checkWidth = (int)/*64*/checkColumn.width ();
+					selectionRect.x = checkWidth;
+					selectionRect.width = rowRect.width - checkWidth;
+				} else {
+					selectionRect.width = rowRect.width;
+				}
+			}
+			callSuper (tableView.id, OS.sel_highlightSelectionInClipRect_, selectionRect);
+		}	
 	}
 
-	if (drawSelection) {
-		// TODO can it be drawn natively in fullRect?
+	if (drawBackground && !drawSelection) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext ();
 		context.saveGraphicsState ();
-		nsSelectionBackground.setFill ();
+		float[] colorRGB = background.handle;
+		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
+		color.setFill ();
 		NSBezierPath.fillRect (fullRect);
 		context.restoreGraphicsState ();
-	} else {
-		if (drawBackground) {
-			NSGraphicsContext context = NSGraphicsContext.currentContext ();
-			context.saveGraphicsState ();
-			float[] colorRGB = background.handle;
-			NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
-			color.setFill ();
-			NSBezierPath.fillRect (fullRect);
-			context.restoreGraphicsState ();
-		}
 	}
 
 	if (drawForeground) {
@@ -1436,7 +1448,11 @@ public int getTopIndex () {
 }
 
 void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
-	/* this method is intentionally empty, to prevent native selection from being drawn */
+	if (!hooks (SWT.EraseItem)) {
+		NSRect clipRect = new NSRect ();
+		OS.memmove (clipRect, rect, NSRect.sizeof);
+		callSuper (id, sel, clipRect);
+	}
 }
 
 /**

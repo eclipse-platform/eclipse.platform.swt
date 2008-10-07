@@ -150,6 +150,13 @@ void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
+void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, arg0);
+}
+
 void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
