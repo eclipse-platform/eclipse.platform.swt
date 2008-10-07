@@ -332,8 +332,10 @@ boolean needHScroll(Rectangle contentRect, boolean vVisible) {
 	ScrollBar vBar = getVerticalBar();
 	if (vVisible && vBar != null) hostRect.width -= vBar.getSize().x;
 	
+	ScrolledCompositeLayout layout = (ScrolledCompositeLayout) getLayout();
+	Point minSize = layout.getMinSize(content, minWidth, minHeight);
 	if (!expandHorizontal && contentRect.width > hostRect.width) return true;
-	if (expandHorizontal && minWidth > hostRect.width) return true;
+	if (expandHorizontal && minSize.x > hostRect.width) return true;
 	return false;
 }
 
@@ -347,8 +349,10 @@ boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 	ScrollBar hBar = getHorizontalBar();
 	if (hVisible && hBar != null) hostRect.height -= hBar.getSize().y;
 	
+	ScrolledCompositeLayout layout = (ScrolledCompositeLayout) getLayout();
+	Point minSize = layout.getMinSize(content, minWidth, minHeight);
 	if (!expandVertical && contentRect.height > hostRect.height) return true;
-	if (expandVertical && minHeight > hostRect.height) return true;
+	if (expandVertical && minSize.y > hostRect.height) return true;
 	return false;
 }
 
@@ -559,7 +563,7 @@ public void setLayout (Layout layout) {
  * content with the vertical scroll bar.  This value is only relevant if  
  * setExpandVertical(true) has been set.
  * 
- * @param height the minimum height or 0 for default height
+ * @param height the minimum height or SWT.DEFAULT for default height
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -583,7 +587,7 @@ public void setMinHeight(int height) {
  */
 public void setMinSize(Point size) {
 	if (size == null) {
-		setMinSize(0, 0);
+		setMinSize(SWT.DEFAULT, SWT.DEFAULT);
 	} else {
 		setMinSize(size.x, size.y);
 	}
@@ -593,8 +597,8 @@ public void setMinSize(Point size) {
  * content with the horizontal scroll bar.  This value is only relevant if  
  * setExpandHorizontal(true) and setExpandVertical(true) have been set.
  * 
- * @param width the minimum width or 0 for default width
- * @param height the minimum height or 0 for default height
+ * @param width the minimum width or SWT.DEFAULT for default width
+ * @param height the minimum height or SWT.DEFAULT for default height
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -604,8 +608,8 @@ public void setMinSize(Point size) {
 public void setMinSize(int width, int height) {
 	checkWidget();
 	if (width == minWidth && height == minHeight) return;
-	minWidth = Math.max(0, width);
-	minHeight = Math.max(0, height);
+	minWidth = width < 0 ? SWT.DEFAULT : width;
+	minHeight = height < 0 ? SWT.DEFAULT : height;
 	layout(false);
 }
 /**
@@ -613,7 +617,7 @@ public void setMinSize(int width, int height) {
  * content with the horizontal scroll bar.  This value is only relevant if  
  * setExpandHorizontal(true) has been set.
  * 
- * @param width the minimum width or 0 for default width
+ * @param width the minimum width or SWT.DEFAULT for default width
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
