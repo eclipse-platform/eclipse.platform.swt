@@ -652,12 +652,12 @@ public void setVisible (boolean visible) {
 	parent.setScrollBarVisible (this, visible);
 }
 
-void updateBar(int selection, int minimum, int maximum, int thumb) {
+void updateBar (int selection, int minimum, int maximum, int thumb) {
 	NSScroller widget = (NSScroller) view;
 	selection = Math.max (minimum, Math.min (maximum - thumb, selection));
 	int range = maximum - thumb - minimum;
-	float fraction = range < 0 ? 1 : (float) (selection - minimum) / range;
-	float knob = minimum == maximum ? 1 : (float) (thumb - minimum) / maximum - minimum;
+	float fraction = range <= 0 ? 1 : (float) (selection - minimum) / range;
+	float knob = range <= 0 ? 1 : (float) thumb / (maximum - minimum);
 	widget.setFloatValue (fraction, knob);
 	widget.setEnabled (range > 0); 
 }
