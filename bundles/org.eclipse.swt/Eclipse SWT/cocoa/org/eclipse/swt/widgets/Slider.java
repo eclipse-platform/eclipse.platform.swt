@@ -446,12 +446,13 @@ public void setSelection (int value) {
 	updateBar(value, minimum, maximum, thumb);
 }
 
-void updateBar(int selection, int minimum, int maximum, int thumb) {
+void updateBar (int selection, int minimum, int maximum, int thumb) {
 	NSScroller widget = (NSScroller)view;
-	selection = Math.max(minimum, Math.min(maximum - thumb, selection));
-	float fraction = minimum == maximum ? 1 : (float)(selection - minimum) / (maximum - thumb - minimum);
-	float knob = minimum == maximum ? 1 : (float)(thumb - minimum) / (maximum - minimum);
-	widget.setFloatValue(fraction, knob);
+	selection = Math.max (minimum, Math.min (maximum - thumb, selection));
+	int range = maximum - thumb - minimum;
+	float fraction = range <= 0 ? 1 : (float)(selection - minimum) / range;
+	float knob = range <= 0 ? 1 : (float)thumb / (maximum - minimum);
+	widget.setFloatValue (fraction, knob);
 }
 
 /**
