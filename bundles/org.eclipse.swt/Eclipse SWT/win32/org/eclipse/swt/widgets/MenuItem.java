@@ -717,6 +717,9 @@ public void setEnabled (boolean enabled) {
  * <p>
  * Note: This operation is a hint and is not supported on
  * platforms that do not have this concept (for example, Windows NT).
+ * Furthermore, some platforms (such as GTK), cannot display both
+ * a check box and an image at the same time.  Instead, they hide
+ * the image and display the check box.
  * </p>
  *
  * @param image the image to display
