@@ -22740,8 +22740,8 @@
     <method selector="canBeVisibleOnAllSpaces">
       <retval></retval>
     </method>
-    <method selector="canBecomeKeyWindow">
-      <retval></retval>
+    <method selector="canBecomeKeyWindow" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="canBecomeMainWindow">
       <retval></retval>

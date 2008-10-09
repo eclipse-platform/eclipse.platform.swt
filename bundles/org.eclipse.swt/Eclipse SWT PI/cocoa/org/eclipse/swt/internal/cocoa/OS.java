@@ -488,6 +488,7 @@ public static final int /*long*/ sel_bytes = sel_registerName("bytes");
 public static final int /*long*/ sel_bytesPerPlane = sel_registerName("bytesPerPlane");
 public static final int /*long*/ sel_bytesPerRow = sel_registerName("bytesPerRow");
 public static final int /*long*/ sel_calendarDate = sel_registerName("calendarDate");
+public static final int /*long*/ sel_canBecomeKeyWindow = sel_registerName("canBecomeKeyWindow");
 public static final int /*long*/ sel_canGoBack = sel_registerName("canGoBack");
 public static final int /*long*/ sel_canGoForward = sel_registerName("canGoForward");
 public static final int /*long*/ sel_canShowMIMEType_ = sel_registerName("canShowMIMEType:");

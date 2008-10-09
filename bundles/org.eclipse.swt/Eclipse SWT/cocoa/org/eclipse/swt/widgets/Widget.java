@@ -171,6 +171,10 @@ boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
 	return OS.objc_msgSendSuper(super_struct, sel) != 0;
 }
 
+boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+	return callSuperBoolean (id, sel);
+}
+
 int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
 	return OS.NSNotFound;
 }

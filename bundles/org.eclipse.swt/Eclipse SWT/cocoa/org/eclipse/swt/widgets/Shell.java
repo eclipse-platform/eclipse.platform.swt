@@ -444,6 +444,11 @@ void bringToTop (boolean force) {
 	}
 }
 
+boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+	if (window.styleMask () == OS.NSBorderlessWindowMask) return true;
+	return super.canBecomeKeyWindow (id, sel);
+}
+
 void checkOpen () {
 	if (!opened) resized = false;
 }

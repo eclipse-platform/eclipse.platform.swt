@@ -2021,6 +2021,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 }
 
@@ -3649,6 +3650,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return result;
 	} else if (sel == OS.sel_hasMarkedText) {
 		return widget.hasMarkedText (id, sel) ? 1 : 0;
+	} else if (sel == OS.sel_canBecomeKeyWindow) {
+		return widget.canBecomeKeyWindow (id, sel) ? 1 : 0;
 	}
 	return 0;
 }

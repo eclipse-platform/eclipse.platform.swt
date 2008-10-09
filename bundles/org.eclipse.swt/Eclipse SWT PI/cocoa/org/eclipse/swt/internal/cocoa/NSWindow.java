@@ -28,6 +28,10 @@ public float /*double*/ alphaValue() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
 }
 
+public boolean canBecomeKeyWindow() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_canBecomeKeyWindow);
+}
+
 public NSPoint cascadeTopLeftFromPoint(NSPoint topLeftPoint) {
 	NSPoint result = new NSPoint();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_cascadeTopLeftFromPoint_, topLeftPoint);
