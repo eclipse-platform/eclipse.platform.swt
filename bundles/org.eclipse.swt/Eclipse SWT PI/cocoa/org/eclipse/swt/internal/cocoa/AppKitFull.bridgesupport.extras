@@ -17240,9 +17240,9 @@
     <method selector="pageScroll">
       <retval></retval>
     </method>
-    <method selector="reflectScrolledClipView:">
-      <arg name="cView"></arg>
-      <retval></retval>
+    <method selector="reflectScrolledClipView:" swt_gen="true">
+      <arg name="cView" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="rulerViewClass">
       <retval></retval>

@@ -858,6 +858,9 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
+void reflectScrolledClipView (int /*long*/ aClipView) {	
+}
+
 void register () {
 }
 

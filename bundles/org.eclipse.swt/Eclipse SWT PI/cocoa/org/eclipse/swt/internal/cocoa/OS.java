@@ -912,6 +912,7 @@ public static final int /*long*/ sel_recentSearches = sel_registerName("recentSe
 public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
 public static final int /*long*/ sel_rectOfRow_ = sel_registerName("rectOfRow:");
 public static final int /*long*/ sel_redComponent = sel_registerName("redComponent");
+public static final int /*long*/ sel_reflectScrolledClipView_ = sel_registerName("reflectScrolledClipView:");
 public static final int /*long*/ sel_registerForDraggedTypes_ = sel_registerName("registerForDraggedTypes:");
 public static final int /*long*/ sel_release = sel_registerName("release");
 public static final int /*long*/ sel_reload_ = sel_registerName("reload:");

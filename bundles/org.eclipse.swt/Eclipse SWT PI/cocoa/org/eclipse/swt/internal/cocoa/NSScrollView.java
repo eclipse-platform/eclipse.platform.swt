@@ -58,6 +58,10 @@ public static NSSize frameSizeForContentSize(NSSize cSize, boolean hFlag, boolea
 	return result;
 }
 
+public void reflectScrolledClipView(NSClipView cView) {
+	OS.objc_msgSend(this.id, OS.sel_reflectScrolledClipView_, cView != null ? cView.id : 0);
+}
+
 public void setAutohidesScrollers(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAutohidesScrollers_, flag);
 }

@@ -1811,6 +1811,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendHorizontalSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_pageDown_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_pageUp_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_reflectScrolledClipView_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3764,6 +3765,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.doCommandBySelector (id, sel, arg0);
 	} else if (sel == OS.sel_highlightSelectionInClipRect_) {
 		widget.highlightSelectionInClipRect (id, sel, arg0);
+	} else if (sel == OS.sel_reflectScrolledClipView_) {
+		widget.reflectScrolledClipView (arg0);
 	}
 	return 0;
 }
