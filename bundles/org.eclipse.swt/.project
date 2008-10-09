@@ -36,7 +36,6 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.team.cvs.core.cvsnature</nature>
 		<nature>org.eclipse.pde.api.tools.apiAnalysisNature</nature>
-		<nature>org.eclipse.swt.tools.actionscript.core.actionscriptnature</nature>
 	</natures>
 	<linkedResources>
 		<link>
