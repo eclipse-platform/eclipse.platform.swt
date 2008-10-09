@@ -27,8 +27,7 @@
 	<classpathentry kind="src" path="Eclipse SWT Net/dojo"/>
 	<classpathentry kind="src" path="Eclipse SWT Animation/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Animation/dojo"/>
-	<classpathentry kind="src" path="Eclipse SWT JCL/archive/common"/>
-	<classpathentry kind="src" path="Eclipse SWT JCL/archive/dojo"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt.e4.jcl"/>
 	<classpathentry kind="lib" path="extra_jars/exceptions.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
