@@ -295,7 +295,13 @@ void checkGC(int mask) {
 		if ((state & FONT) != 0) {
 			Font font = data.font;
 			OS.SelectObject(handle, font.handle);
-			int /*long*/ gdipFont = createGdipFont(handle, font.handle);
+			int /*long*/[] hFont = new int /*long*/[1];
+			int /*long*/ gdipFont = createGdipFont(handle, font.handle, gdipGraphics, hFont);
+			if (hFont[0] != 0) {
+				OS.SelectObject(handle, hFont[0]);
+				if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
+				data.hGDIFont = hFont[0];
+			}
 			if (data.gdipFont != 0) Gdip.Font_delete(data.gdipFont);
 			data.gdipFont = gdipFont;
 		}
@@ -532,8 +538,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		}
 	}
 }
-
-static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont) {
+static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*long*/ graphics, int /*long*/[] outFont) {
 	int /*long*/ font = Gdip.Font_new(hDC, hFont);
 	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (!Gdip.Font_IsAvailable(font)) {
@@ -564,6 +569,13 @@ static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont) {
 		char[] buffer = new char[name.length() + 1];
 		name.getChars(0, name.length(), buffer, 0);
 		font = Gdip.Font_new(buffer, size, style, Gdip.UnitPixel, 0);
+		if (outFont != null) {
+			int /*long*/ hHeap = OS.GetProcessHeap();
+			int pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONTW.sizeof);
+			Gdip.Font_GetLogFontW(font, graphics, pLogFont);
+			outFont[0] = OS.CreateFontIndirectW(pLogFont);
+			OS.HeapFree(hHeap, 0, pLogFont);
+		}
 	}
 	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	return font;
@@ -644,9 +656,10 @@ void disposeGdip() {
 	if (data.gdipBgBrush != 0) destroyGdipBrush(data.gdipBgBrush);
 	if (data.gdipFgBrush != 0) destroyGdipBrush(data.gdipFgBrush);
 	if (data.gdipFont != 0) Gdip.Font_delete(data.gdipFont);
+	if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
 	if (data.gdipGraphics != 0) Gdip.Graphics_delete(data.gdipGraphics);
 	data.gdipGraphics = data.gdipBrush = data.gdipBgBrush = data.gdipFgBrush =
-		data.gdipFont = data.gdipPen = 0;
+		data.gdipFont = data.gdipPen = data.hGDIFont = 0;
 }
 
 /**

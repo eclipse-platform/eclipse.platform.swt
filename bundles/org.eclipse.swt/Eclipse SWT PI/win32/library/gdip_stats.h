@@ -57,6 +57,7 @@ typedef enum {
 	FontFamily_1delete_FUNC,
 	FontFamily_1new_FUNC,
 	Font_1GetFamily_FUNC,
+	Font_1GetLogFontW_FUNC,
 	Font_1GetSize_FUNC,
 	Font_1GetStyle_FUNC,
 	Font_1IsAvailable_FUNC,

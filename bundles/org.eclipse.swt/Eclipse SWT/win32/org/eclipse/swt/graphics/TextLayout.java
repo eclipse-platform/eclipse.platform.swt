@@ -736,9 +736,18 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if (hFont != lastHFont) {
 							lastHFont = hFont;
 							if (gdipFont != 0) Gdip.Font_delete(gdipFont);
-							gdipFont = GC.createGdipFont(hdc, hFont);
+							gdipFont = Gdip.Font_new(hdc, hFont);
+							if (gdipFont == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+							if (!Gdip.Font_IsAvailable(gdipFont)) {
+								Gdip.Font_delete(gdipFont);
+								gdipFont = 0;
+							}
 						}
-						pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipForeground, gdipSelForeground, selectionStart, selectionEnd, alpha);
+						if (gdipFont != 0) {
+							pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipForeground, gdipSelForeground, selectionStart, selectionEnd, alpha);
+						} else {
+							pRect = drawRunTextGDIPRaster(gdipGraphics, run, rect, baseline, foreground, selForeground, selectionStart, selectionEnd);
+						}
 						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipForeground, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha);
 						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipForeground, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
 						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipForeground, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha);
@@ -1053,6 +1062,46 @@ RECT drawRunTextGDIP(int /*long*/ graphics, StyleItem run, RECT rect, int /*long
 	}
 	if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
 	return partialSelection ? rect : null;
+}
+
+RECT drawRunTextGDIPRaster(int /*long*/ graphics, StyleItem run, RECT rect, int baseline, int color, int selectionColor, int selectionStart, int selectionEnd) {
+	int /*long*/ clipRgn = 0;
+	Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+	int /*long*/ rgn = Gdip.Region_new();
+	if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Gdip.Graphics_GetClip(graphics, rgn);
+	if (!Gdip.Region_IsInfinite(rgn, graphics)) {
+		clipRgn = Gdip.Region_GetHRGN(rgn, graphics);
+	}
+	Gdip.Region_delete(rgn);
+	Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+	float[] lpXform = null;
+	int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+	if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Gdip.Graphics_GetTransform(graphics, matrix);
+	if (!Gdip.Matrix_IsIdentity(matrix)) {
+		lpXform = new float[6];
+		Gdip.Matrix_GetElements(matrix, lpXform);
+	}
+	Gdip.Matrix_delete(matrix);
+	int /*long*/ hdc = Gdip.Graphics_GetHDC(graphics);
+	int state = OS.SaveDC(hdc);
+	if (lpXform != null) {
+		OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+		OS.SetWorldTransform(hdc, lpXform);
+	}
+	if (clipRgn != 0) {
+		OS.SelectClipRgn(hdc, clipRgn);
+		OS.DeleteObject(clipRgn);
+	}
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
+	}
+	OS.SetBkMode(hdc, OS.TRANSPARENT);
+	RECT pRect = drawRunText(hdc, run, rect, baseline, color, selectionColor, selectionStart, selectionEnd);
+	OS.RestoreDC(hdc, state);
+	Gdip.Graphics_ReleaseHDC(graphics, hdc);
+	return pRect;
 }
 
 RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {

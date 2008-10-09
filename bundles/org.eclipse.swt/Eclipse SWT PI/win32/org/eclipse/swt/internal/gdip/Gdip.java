@@ -258,6 +258,13 @@ public static final native int Font_GetStyle(int /*long*/ font);
 /**
  * @method flags=cpp
  * @param font cast=(Font *)
+ * @param g cast=(const Graphics *)
+ * @param logfontW cast=(LOGFONTW *)
+ */
+public static final native int Font_GetLogFontW (int /*long*/ font, int /*long*/ g, int /*long*/  logfontW);
+/**
+ * @method flags=cpp
+ * @param font cast=(Font *)
  */
 public static final native boolean Font_IsAvailable(int /*long*/ font);
 /** @method flags=new */

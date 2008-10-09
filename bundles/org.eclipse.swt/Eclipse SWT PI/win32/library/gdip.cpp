@@ -319,6 +319,19 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetFamily)
 }
 #endif
 
+#ifndef NO_Font_1GetLogFontW
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetLogFontW)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetLogFontW)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Font_1GetLogFontW_FUNC);
+	rc = (jint)((Font *)arg0)->GetLogFontW((const Graphics *)arg1, (LOGFONTW *)arg2);
+	Gdip_NATIVE_EXIT(env, that, Font_1GetLogFontW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Font_1GetSize
 extern "C" JNIEXPORT jfloat JNICALL Gdip_NATIVE(Font_1GetSize)(JNIEnv *env, jclass that, jintLong arg0);
 JNIEXPORT jfloat JNICALL Gdip_NATIVE(Font_1GetSize)

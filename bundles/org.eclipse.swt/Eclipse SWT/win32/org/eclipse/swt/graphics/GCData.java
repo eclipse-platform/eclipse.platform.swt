@@ -56,6 +56,7 @@ public final class GCData {
 	public int /*long*/ gdipFgBrush;
 	public int /*long*/ gdipBgBrush;
 	public int /*long*/ gdipFont;
+	public int /*long*/ hGDIFont;
 	public float gdipXOffset, gdipYOffset;
 	public int uiState = 0;
 	public boolean focusDrawn;
