@@ -619,11 +619,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int foreground = data.foreground;
 	int alpha = data.alpha;
 	boolean gdip = gdipGraphics != 0;
-	int /*long*/ foregroundBrush = 0;
+	int /*long*/ gdipForeground = 0;
 	int state = 0;
 	if (gdip) {
 		gc.checkGC(GC.FOREGROUND);
-		foregroundBrush = gc.getFgBrush();
+		gdipForeground = gc.getFgBrush();
 	} else {
 		state = OS.SaveDC(hdc);
 		if ((data.style & SWT.MIRRORED) != 0) {
@@ -640,15 +640,16 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionEnd = translateOffset(selectionEnd);
 	}
 	RECT rect = new RECT();
-	int /*long*/ selBrush = 0, selPen = 0, selBrushFg = 0, gdipFont = 0, lastHFont = 0;
+	int /*long*/ gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
+	int /*long*/ selBackground = 0;
+	int selForeground = 0;
 	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		if (gdip) {
-			selBrush = createGdipBrush(selectionBackground, alpha);
-			selBrushFg = createGdipBrush(selectionForeground, alpha);
-			selPen = Gdip.Pen_new(selBrushFg, 1);
+			gdipSelBackground = createGdipBrush(selectionBackground, alpha);
+			gdipSelForeground = createGdipBrush(selectionForeground, alpha);
 		} else {
-			selBrush = OS.CreateSolidBrush(selectionBackground.handle);
-			selPen = OS.CreatePen(OS.PS_SOLID, 1, selectionForeground.handle);
+			selBackground = OS.CreateSolidBrush(selectionBackground.handle);
+			selForeground = selectionForeground.handle;
 		}
 	}
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
@@ -682,9 +683,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					width = lineHeight / 3;
 				}
 				if (gdip) {
-					Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX + lineWidth[line], drawY, width, lineHeight);
+					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidth[line], drawY, width, lineHeight);
 				} else {
-					OS.SelectObject(hdc, selBrush);
+					OS.SelectObject(hdc, selBackground);
 					OS.PatBlt(hdc, drawX + lineWidth[line], drawY, width, lineHeight, OS.PATCOPY);
 				}
 			}
@@ -702,9 +703,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				if (!run.lineBreak || run.softBreak) {
 					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
 					if (gdip) {
-						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, selBrush, hasSelection);
+						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, gdipSelBackground, hasSelection);
 					} else {
-						drawRunBackground(run, hdc, rect, selectionStart, selectionEnd, selBrush, hasSelection);
+						drawRunBackground(run, hdc, rect, selectionStart, selectionEnd, selBackground, hasSelection);
 					}
 				}
 			}
@@ -737,36 +738,29 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							if (gdipFont != 0) Gdip.Font_delete(gdipFont);
 							gdipFont = GC.createGdipFont(hdc, hFont);
 						}
-						pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, foregroundBrush, selBrushFg, selectionStart, selectionEnd, alpha);
-						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, foregroundBrush, selBrushFg, underlineClip, pRect, selectionStart, selectionEnd, alpha);
-						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, foregroundBrush, selBrushFg, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
-						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, foregroundBrush, selBrushFg, borderClip, pRect, selectionStart, selectionEnd, alpha);
+						pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipForeground, gdipSelForeground, selectionStart, selectionEnd, alpha);
+						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipForeground, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha);
+						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipForeground, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
+						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipForeground, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha);
 					}  else {
-						int /*long*/ selForeground = selectionForeground != null ? selectionForeground.handle : 0;
 						pRect = drawRunText(hdc, run, rect, baseline, foreground, selForeground, selectionStart, selectionEnd);
 						underlineClip = drawUnderline(hdc, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, foreground, selForeground, underlineClip, pRect, selectionStart, selectionEnd);
 						strikeoutClip = drawStrikeout(hdc, x, drawY + baseline, lineRuns, i, foreground, selForeground, strikeoutClip, pRect, selectionStart, selectionEnd);
-						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i,foreground, selForeground, borderClip, pRect,  selectionStart, selectionEnd);
+						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i, foreground, selForeground, borderClip, pRect,  selectionStart, selectionEnd);
 					}
 				}
 			}
 			drawX += run.width;
 		}
 	}
-	if (gdip) {
-		if (selBrush != 0) Gdip.SolidBrush_delete(selBrush);
-		if (selBrushFg != 0) Gdip.SolidBrush_delete(selBrushFg);
-		if (selPen != 0) Gdip.Pen_delete(selPen);
-		if (gdipFont != 0) Gdip.Font_delete(gdipFont);
-	} else {
-		OS.RestoreDC(hdc, state);
-		if (gdipGraphics != 0) Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
-		if (selBrush != 0) OS.DeleteObject (selBrush);
-		if (selPen != 0) OS.DeleteObject (selPen);
-	}
+	if (gdipSelBackground != 0) Gdip.SolidBrush_delete(gdipSelBackground);
+	if (gdipSelForeground != 0) Gdip.SolidBrush_delete(gdipSelForeground);
+	if (gdipFont != 0) Gdip.Font_delete(gdipFont);
+	if (state != 0)	OS.RestoreDC(hdc, state);
+	if (selBackground != 0) OS.DeleteObject (selBackground);
 }
 
-RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
 	StyleItem run = line[index]; 
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -950,7 +944,7 @@ void drawRunBackgroundGDIP(StyleItem run, int /*long*/ graphics, RECT rect, int 
 	}
 }
 
-RECT drawRunText(int /*long*/ hdc, StyleItem run, RECT rect, int baseline, int /*long*/ color, int /*long*/ selectionColor, int selectionStart, int selectionEnd) {
+RECT drawRunText(int /*long*/ hdc, StyleItem run, RECT rect, int baseline, int color, int selectionColor, int selectionStart, int selectionEnd) {
 	int end = run.start + run.length - 1;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
@@ -1061,7 +1055,7 @@ RECT drawRunTextGDIP(int /*long*/ graphics, StyleItem run, RECT rect, int /*long
 	return partialSelection ? rect : null;
 }
 
-RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -1165,7 +1159,7 @@ RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] l
 	return clipRect;
 }
 
-RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
