@@ -36,12 +36,13 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.team.cvs.core.cvsnature</nature>
 		<nature>org.eclipse.pde.api.tools.apiAnalysisNature</nature>
+		<nature>org.eclipse.swt.tools.actionscript.core.actionscriptnature</nature>
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Eclipse SWT JCL</name>
+			<name>Eclipse SWT Animation</name>
 			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20JCL</locationURI>
+			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation</locationURI>
 		</link>
 		<link>
 			<name>Eclipse SWT Net</name>
@@ -62,11 +63,6 @@
 			<name>Eclipse SWT/flex</name>
 			<type>2</type>
 			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT/flex</locationURI>
-		</link>
-		<link>
-			<name>Eclipse SWT Animation</name>
-			<type>2</type>
-			<locationURI>WORKSPACE/org.eclipse.swt.e4/Eclipse%20SWT%20Animation</locationURI>
 		</link>
 		<link>
 			<name>Eclipse SWT Effects/flex</name>
