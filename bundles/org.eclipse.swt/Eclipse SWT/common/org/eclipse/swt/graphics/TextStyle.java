@@ -262,7 +262,12 @@ boolean isAdherentBorder(TextStyle style) {
 	if (borderStyle != style.borderStyle) return false;
 	if (borderColor != null) {
 		if (!borderColor.equals(style.borderColor)) return false;
-	} else if (style.borderColor != null) return false;
+	} else {
+		if (style.borderColor != null) return false;
+		if (foreground != null) {
+			if (!foreground.equals(style.foreground)) return false;
+		} else if (style.foreground != null) return false;
+	}
 	return true;
 }
 
@@ -273,7 +278,12 @@ boolean isAdherentUnderline(TextStyle style) {
 	if (underlineStyle != style.underlineStyle) return false;
 	if (underlineColor != null) {
 		if (!underlineColor.equals(style.underlineColor)) return false;
-	} else if (style.underlineColor != null) return false;
+	} else {
+		if (style.underlineColor != null) return false;
+		if (foreground != null) {
+			if (!foreground.equals(style.foreground)) return false;
+		} else if (style.foreground != null) return false;
+	}
 	return true;
 }
 
@@ -283,7 +293,12 @@ boolean isAdherentStrikeout(TextStyle style) {
 	if (strikeout != style.strikeout) return false;
 	if (strikeoutColor != null) {
 		if (!strikeoutColor.equals(style.strikeoutColor)) return false;
-	} else if (style.strikeoutColor != null) return false;
+	} else {
+		if (style.strikeoutColor != null) return false;
+		if (foreground != null) {
+			if (!foreground.equals(style.foreground)) return false;
+		} else if (style.foreground != null) return false;
+	}
 	return true;
 }
 
