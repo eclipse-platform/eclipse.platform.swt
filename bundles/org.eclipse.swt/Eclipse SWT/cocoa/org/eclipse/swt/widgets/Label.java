@@ -131,8 +131,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			rect.width = wHint != SWT.DEFAULT ? wHint : Float.MAX_VALUE;
 			rect.height = hHint != SWT.DEFAULT ? hHint : Float.MAX_VALUE;
 			NSSize size = textView.cell ().cellSizeForBounds (rect);
-			width = (int)size.width;
-			height = (int)size.height;
+			width = (int)Math.ceil (size.width);
+			height = (int)Math.ceil (size.height);
 		}
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;

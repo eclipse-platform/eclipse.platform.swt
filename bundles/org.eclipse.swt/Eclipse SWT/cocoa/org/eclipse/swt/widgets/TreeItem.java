@@ -241,7 +241,7 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 		NSRect rect = new NSRect ();
 		rect.width = rect.height = Float.MAX_VALUE;
 		NSSize size = cell.cellSizeForBounds (rect);
-		width = (int)size.width;
+		width = (int)Math.ceil (size.width);
 
 		if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
 			NSOutlineView outlineView = (NSOutlineView)parent.view;

@@ -135,7 +135,7 @@ int calculateWidth (int columnIndex, GC gc, boolean callMeasureItem) {
 	NSRect rect = new NSRect ();
 	rect.width = rect.height = Float.MAX_VALUE;
 	NSSize size = cell.cellSizeForBounds (rect);
-	int width = (int)size.width;
+	int width = (int)Math.ceil (size.width);
 
 	if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
 		NSTableView tableView = (NSTableView)parent.view;
