@@ -820,7 +820,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 			fullRect.width = item.customWidth;
 		} else {
 			NSSize contentSize = cell.cellSizeForBounds (rect);
-			fullRect.width = (int)Math.ceil (contentSize.width);
+			fullRect.width = contentSize.width;
 		}
 	} else {
 		NSSize spacing = outlineView.intercellSpacing ();
