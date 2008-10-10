@@ -571,7 +571,7 @@ static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*l
 		font = Gdip.Font_new(buffer, size, style, Gdip.UnitPixel, 0);
 		if (outFont != null) {
 			int /*long*/ hHeap = OS.GetProcessHeap();
-			int pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONTW.sizeof);
+			int /*long*/ pLogFont = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, LOGFONTW.sizeof);
 			Gdip.Font_GetLogFontW(font, graphics, pLogFont);
 			outFont[0] = OS.CreateFontIndirectW(pLogFont);
 			OS.HeapFree(hHeap, 0, pLogFont);

@@ -525,7 +525,7 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
-int createGdipBrush(Color color, int alpha) {
+int /*long*/ createGdipBrush(Color color, int alpha) {
 	int pixel = color.handle;
 	int argb = ((alpha & 0xFF) << 24) | ((pixel >> 16) & 0xFF) | (pixel & 0xFF00) | ((pixel & 0xFF) << 16);
 	int /*long*/ gdiColor = Gdip.Color_new(argb); 
