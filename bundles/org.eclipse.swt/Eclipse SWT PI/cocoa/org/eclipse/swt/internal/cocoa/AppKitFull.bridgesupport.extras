@@ -12261,9 +12261,9 @@
       <arg name="notification"></arg>
       <retval></retval>
     </method>
-    <method selector="applicationWillResignActive:">
-      <arg name="notification"></arg>
-      <retval></retval>
+    <method selector="applicationWillResignActive:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="applicationWillTerminate:">
       <arg name="notification"></arg>

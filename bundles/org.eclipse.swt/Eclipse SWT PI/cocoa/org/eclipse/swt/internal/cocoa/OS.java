@@ -451,6 +451,7 @@ public static final int /*long*/ sel_appendBezierPathWithRoundedRect_xRadius_yRa
 public static final int /*long*/ sel_appendString_ = sel_registerName("appendString:");
 public static final int /*long*/ sel_applicationShouldTerminate_ = sel_registerName("applicationShouldTerminate:");
 public static final int /*long*/ sel_applicationWillFinishLaunching_ = sel_registerName("applicationWillFinishLaunching:");
+public static final int /*long*/ sel_applicationWillResignActive_ = sel_registerName("applicationWillResignActive:");
 public static final int /*long*/ sel_applicationWillTerminate_ = sel_registerName("applicationWillTerminate:");
 public static final int /*long*/ sel_archivedDataWithRootObject_ = sel_registerName("archivedDataWithRootObject:");
 public static final int /*long*/ sel_array = sel_registerName("array");

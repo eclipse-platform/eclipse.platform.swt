@@ -29,6 +29,10 @@ public NSObject alloc() {
 	return this;
 }
 
+public void applicationWillResignActive(NSNotification notification) {
+	OS.objc_msgSend(this.id, OS.sel_applicationWillResignActive_, notification != null ? notification.id : 0);
+}
+
 public NSImage draggedImage() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_draggedImage);
 	return result != 0 ? new NSImage(result) : null;
