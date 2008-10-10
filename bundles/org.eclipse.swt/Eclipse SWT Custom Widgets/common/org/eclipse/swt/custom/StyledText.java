@@ -1264,7 +1264,7 @@ public StyledText(Composite parent, int style) {
 	setCaret(defaultCaret);	
 	calculateScrollBars();
 	createKeyBindings();
-	setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
+	super.setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 	installListeners();
 	initializeAccessible();
 	setData("DEFAULT_DROP_TARGET_EFFECT", new StyledTextDropTargetEffect(this));
@@ -7091,11 +7091,10 @@ public void setBlockSelection(boolean blockSelection) {
 	//TODO WRAP 
 	if (wordWrap) return;
 	this.blockSelection = blockSelection;
-	if (blockSelection) {
+	if (cursor == null) {
 		Display display = getDisplay();
-		super.setCursor(display.getSystemCursor(SWT.CURSOR_CROSS));
-	} else {
-		setCursor(this.cursor);
+		int type = blockSelection ? SWT.CURSOR_CROSS : SWT.CURSOR_IBEAM; 
+		super.setCursor(display.getSystemCursor(type));
 	}
 	clearBlockSelection();
 }
@@ -7307,7 +7306,8 @@ public void setCursor (Cursor cursor) {
 	this.cursor = cursor;
 	if (cursor == null) {
 		Display display = getDisplay();
-		super.setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
+		int type = blockSelection ? SWT.CURSOR_CROSS : SWT.CURSOR_IBEAM; 
+		super.setCursor(display.getSystemCursor(type));
 	} else {
 		super.setCursor(cursor);
 	}
