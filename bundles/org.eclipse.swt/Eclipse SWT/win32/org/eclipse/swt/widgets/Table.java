@@ -2301,8 +2301,13 @@ public TableItem getItem (Point point) {
 	pinfo.y = point.y;
 	if ((style & SWT.FULL_SELECTION) == 0) {
 		if (hooks (SWT.MeasureItem)) {
-			OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
-			if (pinfo.iItem == -1) {
+			/*
+			*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+			*  a point that is above the table, instead of returning -1 to
+			*  indicate that the hittest failed, a negative index is returned.
+			*  The fix is to consider any value that is negative a failure.
+			*/
+			if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) < 0) {
 				RECT rect = new RECT ();
 				rect.left = OS.LVIR_ICON;
 				ignoreCustomDraw = true;
@@ -2310,7 +2315,14 @@ public TableItem getItem (Point point) {
 				ignoreCustomDraw = false;
 				if (code != 0) {
 					pinfo.x = rect.left;
+					/*
+					*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+					*  a point that is above the table, instead of returning -1 to
+					*  indicate that the hittest failed, a negative index is returned.
+					*  The fix is to consider any value that is negative a failure.
+					*/
 					OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+					if (pinfo.iItem < 0) pinfo.iItem = -1;
 				}
 			}
 			if (pinfo.iItem != -1 && pinfo.iSubItem == 0) {
@@ -3518,8 +3530,13 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	if ((style & SWT.FULL_SELECTION) == 0) {
 		if (hooks (SWT.MeasureItem)) {
-			OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
-			if (pinfo.iItem == -1) {
+			/*
+			*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+			*  a point that is above the table, instead of returning -1 to
+			*  indicate that the hittest failed, a negative index is returned.
+			*  The fix is to consider any value that is negative a failure.
+			*/
+			if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) < 0) {
 				int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 				if (count != 0) {
 					RECT rect = new RECT ();
@@ -3529,7 +3546,14 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int /*long*/ wParam, 
 					ignoreCustomDraw = false;
 					if (code != 0) {
 						pinfo.x = rect.left;
+						/*
+						*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+						*  a point that is above the table, instead of returning -1 to
+						*  indicate that the hittest failed, a negative index is returned.
+						*  The fix is to consider any value that is negative a failure.
+						*/
 						OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo);
+						if (pinfo.iItem < 0) pinfo.iItem = -1;
 						pinfo.flags &= ~(OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL);
 					}
 				}
@@ -6754,8 +6778,14 @@ LRESULT wmNotifyToolTip (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				OS.POINTSTOPOINT (pt, pos);
 				OS.ScreenToClient (handle, pt);
 				pinfo.x = pt.x;
-				pinfo.y = pt.y;
-				if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) != -1) {
+				pinfo.y = pt.y;	
+				/*
+				*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+				*  a point that is above the table, instead of returning -1 to
+				*  indicate that the hittest failed, a negative index is returned.
+				*  The fix is to consider any value that is negative a failure.
+				*/
+				if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) >= 0) {
 					TableItem item = _getItem (pinfo.iItem);
 					int /*long*/ hDC = OS.GetDC (handle);
 					int /*long*/ oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -6849,7 +6879,13 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, int /*long*/ lParam) {
 			OS.ScreenToClient (handle, pt);
 			pinfo.x = pt.x;
 			pinfo.y = pt.y;
-			if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) != -1) {
+			/*
+			*  Bug in Windows.  When LVM_SUBITEMHITTEST is used to hittest
+			*  a point that is above the table, instead of returning -1 to
+			*  indicate that the hittest failed, a negative index is returned.
+			*  The fix is to consider any value that is negative a failure.
+			*/
+			if (OS.SendMessage (handle, OS.LVM_SUBITEMHITTEST, 0, pinfo) >= 0) {
 				TableItem item = _getItem (pinfo.iItem);
 				int /*long*/ hDC = OS.GetDC (handle);
 				int /*long*/ hFont = item.fontHandle (pinfo.iSubItem);
