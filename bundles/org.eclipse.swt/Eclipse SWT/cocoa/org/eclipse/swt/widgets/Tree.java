@@ -826,10 +826,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		NSSize spacing = outlineView.intercellSpacing ();
 		if (nsColumn.id == outlineView.outlineTableColumn ().id) {
 			NSRect columnRect = outlineView.rectOfColumn (nsColumnIndex);
-			fullRect.x = columnRect.x; fullRect.width = columnRect.width + (int)/*64*/spacing.width;
+			fullRect.x = columnRect.x; fullRect.width = columnRect.width + spacing.width;
 		} else {
 			fullRect.x = rect.x;
-			fullRect.width = rect.width + (int)/*64*/spacing.width;
+			fullRect.width = rect.width + spacing.width;
 		}
 	}
 
