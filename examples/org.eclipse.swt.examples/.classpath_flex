@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry excluding="org/eclipse/swt/examples/accessibility/|org/eclipse/swt/examples/addressbook/|org/eclipse/swt/examples/browserexample/|org/eclipse/swt/examples/clipboard/|org/eclipse/swt/examples/dnd/|org/eclipse/swt/examples/fileviewer/|org/eclipse/swt/examples/graphics/|org/eclipse/swt/examples/helloworld/|org/eclipse/swt/examples/hoverhelp/|org/eclipse/swt/examples/imageanalyzer/|org/eclipse/swt/examples/javaviewer/|org/eclipse/swt/examples/layoutexample/|org/eclipse/swt/examples/paint/|org/eclipse/swt/examples/texteditor/" including="examples_control.properties|org/eclipse/swt/examples/controlexample/" kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
