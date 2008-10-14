@@ -690,6 +690,11 @@ void pageUp(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
 	super.pageUp(id, sel, sender);
 }
 
+void reflectScrolledClipView (int /*long*/ id, int /*long*/ sel, int /*long*/ aClipView) {
+	if ((state & CANVAS) != 0) return;
+	super.reflectScrolledClipView (id, sel, aClipView);
+}
+
 void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {

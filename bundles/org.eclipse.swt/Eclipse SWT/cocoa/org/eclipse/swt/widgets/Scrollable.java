@@ -233,10 +233,6 @@ boolean isTrim (NSView view) {
 	return super.isTrim (view);
 }
 
-void reflectScrolledClipView (int /*long*/ aClipView) {
-	/* intentionally overrides this NSScrollView method to do nothing */
-}
-
 void register () {
 	super.register ();
 	if (scrollView != null) display.addWidget (scrollView, this);

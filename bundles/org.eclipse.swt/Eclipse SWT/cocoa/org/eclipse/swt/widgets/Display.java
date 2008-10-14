@@ -3775,7 +3775,7 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 	} else if (sel == OS.sel_highlightSelectionInClipRect_) {
 		widget.highlightSelectionInClipRect (id, sel, arg0);
 	} else if (sel == OS.sel_reflectScrolledClipView_) {
-		widget.reflectScrolledClipView (arg0);
+		widget.reflectScrolledClipView (id, sel, arg0);
 	}
 	return 0;
 }
