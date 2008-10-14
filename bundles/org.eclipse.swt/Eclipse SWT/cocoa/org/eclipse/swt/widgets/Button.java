@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -87,6 +88,37 @@ public class Button extends Control {
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
+int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	NSString nsAttributeName = new NSString(arg0);
+	
+	if (accessible != null) {
+		id returnObject = accessible.internal_accessibilityAttributeValue(nsAttributeName, ACC.CHILDID_SELF);
+		if (returnObject != null) return returnObject.id;
+	}
+	
+	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
+		NSString role = null;
+		
+		if ((style & SWT.RADIO) != 0) {
+			role = OS.NSAccessibilityRadioButtonRole;
+		} else if ((style & SWT.ARROW) != 0) {
+			role = OS.NSAccessibilityButtonRole;
+		}
+		
+		if (role != null) {
+			if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute))
+				return role.id;
+			else {
+				int roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
+				return roleDescription;
+			}
+		}
+	}
+	
+	return super.accessibilityAttributeValue(id, sel, arg0);
+}
+
 
 /**
  * Adds the listener to the collection of listeners who will

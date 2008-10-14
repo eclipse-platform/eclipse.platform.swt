@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.cocoa.*;
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -96,6 +97,43 @@ public ToolBar (Composite parent, int style) {
 	} else {
 		this.style |= SWT.HORIZONTAL;
 	}
+}
+
+int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+
+	if (accessible != null) {
+		id returnObject = accessible.internal_accessibilityAttributeNames(null, ACC.CHILDID_SELF);
+		if (returnObject != null) return returnObject.id;
+	}
+
+	return super.accessibilityAttributeNames(id, sel);
+}
+
+int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	NSString nsAttributeName = new NSString(arg0);
+	
+	if (accessible != null) {
+		id returnObject = accessible.internal_accessibilityAttributeValue(nsAttributeName, ACC.CHILDID_SELF);
+		if (returnObject != null) return returnObject.id;
+	}
+	
+	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
+		NSString role = OS.NSAccessibilityToolbarRole;
+
+		if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute))
+			return role.id;
+		else {
+			int roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
+			return roleDescription;
+		}
+	}
+	
+	return super.accessibilityAttributeValue(id, sel, arg0);
+}
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	// Toolbars aren't ignored.
+	return false;	
 }
 
 static int checkStyle (int style) {

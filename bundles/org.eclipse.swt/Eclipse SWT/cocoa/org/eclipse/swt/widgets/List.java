@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -75,6 +75,36 @@ public class List extends Scrollable {
  */
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	
+	if (accessible != null) {
+		NSString attribute = new NSString(arg0);
+		id returnValue = accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF);
+		if (returnValue != null) return returnValue.id;
+	}
+	
+	NSString attributeName = new NSString(arg0);
+	
+	// Accessibility Verifier queries for a title or description.  NSOutlineView doesn't
+	// seem to return either, so we return a default description value here.
+	if (attributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
+		return NSString.stringWith("").id;
+	}
+
+//	if (attributeName.isEqualToString(OS.NSAccessibilityHeaderAttribute)) {
+//		/*
+//		* Bug in the Macintosh.  Even when the header is not visible,
+//		* VoiceOver still reports each column header's role for every row.
+//		* This is confusing and overly verbose.  The fix is to return
+//		* "no header" when the screen reader asks for the header, by
+//		* returning noErr without setting the event parameter.
+//		*/
+//		return 0;
+//	}
+	
+	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
 /**

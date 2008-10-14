@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
@@ -132,6 +133,30 @@ boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
+int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+
+	if (accessible != null) {
+		// If there is an accessible, don't use the base set of attributes from NSView as this composite may be a
+		// lightweight version of something that isn't expected to provide one or more of those properties.
+		id returnObject = accessible.internal_accessibilityAttributeNames(null, ACC.CHILDID_SELF);
+		if (returnObject != null) return returnObject.id;
+	}
+
+	return super.accessibilityAttributeNames(id, sel);
+}
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	// Always ignore scrollers.
+	if (scrollView != null && id == scrollView.id) return true;
+
+	// If we have an accessible, this is a lightweight component that wants
+	// to provide accessible information.  But, we always ignore the content view
+	// of Shells.
+	if (view != null && id == view.id) {
+		if (accessible != null) return (this instanceof Shell);
+	}
+	return super.accessibilityIsIgnored(id, sel);	
+}
 
 /**
  * Clears any data that has been cached by a Layout for all widgets that 

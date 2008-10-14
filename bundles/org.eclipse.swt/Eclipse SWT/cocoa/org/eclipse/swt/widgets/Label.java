@@ -11,10 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a non-selectable
@@ -94,6 +93,11 @@ public class Label extends Control {
  */
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	if (id == view.id) return true;
+	return super.accessibilityIsIgnored(id, sel);	
 }
 
 static int checkStyle (int style) {

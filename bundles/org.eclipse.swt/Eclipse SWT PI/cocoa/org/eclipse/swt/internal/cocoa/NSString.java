@@ -52,6 +52,10 @@ public void getCharacters(char[] buffer, NSRange aRange) {
 	OS.objc_msgSend(this.id, OS.sel_getCharacters_range_, buffer, aRange);
 }
 
+public boolean isEqualToString(NSString aString) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isEqualToString_, aString != null ? aString.id : 0);
+}
+
 public NSString lastPathComponent() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_lastPathComponent);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
@@ -73,6 +77,11 @@ public NSString stringByAddingPercentEscapesUsingEncoding(int /*long*/ enc) {
 
 public NSString stringByAppendingPathComponent(NSString str) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAppendingPathComponent_, str != null ? str.id : 0);
+	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
+}
+
+public NSString stringByAppendingString(NSString aString) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByAppendingString_, aString != null ? aString.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 

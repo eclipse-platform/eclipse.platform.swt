@@ -30,6 +30,12 @@ public NSPoint pointValue() {
 	return result;
 }
 
+public NSRange rangeValue() {
+	NSRange result = new NSRange();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_rangeValue);
+	return result;
+}
+
 public NSSize sizeValue() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_sizeValue);

@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -77,6 +77,100 @@ public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	int cursorStyle = (style & SWT.VERTICAL) != 0 ? SWT.CURSOR_SIZEWE : SWT.CURSOR_SIZENS;
 	sizeCursor = new Cursor (display, cursorStyle);
+}
+
+int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+	int returnValue = super.accessibilityAttributeNames(id, sel);
+	NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
+	NSArray baseArray = new NSArray(returnValue);
+	ourAttributes.addObjectsFromArray(baseArray);
+	
+	// The accessibility documentation says that these next two are optional, but the
+	// Accessibility Verifier says they are required.
+	ourAttributes.addObject(OS.NSAccessibilityNextContentsAttribute);
+	ourAttributes.addObject(OS.NSAccessibilityPreviousContentsAttribute);
+	ourAttributes.addObject(OS.NSAccessibilityOrientationAttribute);
+	ourAttributes.addObject(OS.NSAccessibilityValueAttribute);
+	ourAttributes.addObject(OS.NSAccessibilityMaxValueAttribute);
+	ourAttributes.addObject(OS.NSAccessibilityMinValueAttribute);
+	
+	return ourAttributes.id;
+}
+
+public int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	int returnValue = 0;
+	NSString attributeName = new NSString(arg0);
+	
+	if (accessible != null) {
+		id returnObject = accessible.internal_accessibilityAttributeValue(attributeName, ACC.CHILDID_SELF);
+		
+		if (returnObject != null) returnValue = returnObject.id;
+	}
+
+	if (returnValue != 0) return returnValue;
+
+	if (attributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || attributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
+		NSString roleText = OS.NSAccessibilitySplitterRole;
+
+		if (attributeName.isEqualToString (OS.NSAccessibilityRoleAttribute)) {
+			return roleText.id;
+		} else { // NSAccessibilityRoleDescriptionAttribute
+			return OS.NSAccessibilityRoleDescription (roleText.id, 0);
+		}
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityOrientationAttribute)) {
+		NSString orientation = (style & SWT.VERTICAL) != 0 ? OS.NSAccessibilityVerticalOrientationValue : OS.NSAccessibilityHorizontalOrientationValue;
+		return orientation.id;
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityValueAttribute)) {
+		Point location = getLocation();
+		int value = (style & SWT.VERTICAL) != 0 ? location.x : location.y;
+		return NSNumber.numberWithInt(value).id;
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityMaxValueAttribute)) {
+		NSRect parentBounds = view.bounds();
+		float maxValue = (style & SWT.VERTICAL) != 0 ?
+				parentBounds.width :
+				parentBounds.height;
+		return NSNumber.numberWithInt((int)maxValue).id;
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityMinValueAttribute)) {
+		return NSNumber.numberWithInt(0).id;
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityNextContentsAttribute)) {
+		Control[] children =  parent._getChildren();
+		Control nextView = null;
+		for (int i = 0; i < children.length; i++) {
+			if (children[i] == this) {
+				if (i < children.length - 1) {
+					nextView = children[i + 1];
+					break;
+				}
+			}
+		}
+		
+		if (nextView != null) 
+			return NSArray.arrayWithObject(nextView.view).id;
+		else
+			return NSArray.array().id;
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityPreviousContentsAttribute)) {
+		Control[] children =  parent._getChildren();
+		Control nextView = null;
+		for (int i = 0; i < children.length; i++) {
+			if (children[i] == this) {
+				if (i > 0) {
+					nextView = children[i - 1];
+					break;
+				}
+			}
+		}
+		
+		if (nextView != null) 
+			return NSArray.arrayWithObject(nextView.view).id;
+		else
+			return NSArray.array().id;
+	}
+
+	return super.accessibilityAttributeValue(id, sel, arg0);
+}
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	return false;	
 }
 
 /**

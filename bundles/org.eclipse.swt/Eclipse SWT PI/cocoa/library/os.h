@@ -45,10 +45,10 @@ extern jint CPSSetProcessName(void *, jintLong);
 #define OS_NATIVE_EXIT(env, that, func) \
 	} \
 	@catch (NSException *nsx) { \
+		NSLog(@"Exception thrown: %@ %@", [nsx name], [nsx reason]); \
 		jclass threadClass = (*env)->FindClass(env, "java/lang/Thread"); \
 		jmethodID dumpStackID = (*env)->GetStaticMethodID(env, threadClass, "dumpStack", "()V"); \
 		if (dumpStackID != NULL) (*env)->CallStaticVoidMethod(env, threadClass, dumpStackID, 0); \
-		@throw; \
 	}
 #endif
 

@@ -2146,9 +2146,9 @@
       <arg name="separator"></arg>
       <retval></retval>
     </method>
-    <method selector="containsObject:">
-      <arg name="anObject"></arg>
-      <retval></retval>
+    <method selector="containsObject:" swt_gen="true">
+      <arg name="anObject" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="count" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -6223,9 +6223,9 @@
       <arg name="anObject" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="addObjectsFromArray:">
-      <arg name="otherArray"></arg>
-      <retval></retval>
+    <method selector="addObjectsFromArray:" swt_gen="true">
+      <arg name="otherArray" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="arrayWithCapacity:" swt_gen="true">
       <arg name="numItems" swt_gen="true"></arg>
@@ -6260,9 +6260,9 @@
     <method selector="removeLastObject">
       <retval></retval>
     </method>
-    <method selector="removeObject:">
-      <arg name="anObject"></arg>
-      <retval></retval>
+    <method selector="removeObject:" swt_gen="true">
+      <arg name="anObject" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="removeObject:inRange:">
       <arg name="anObject"></arg>
@@ -7905,8 +7905,8 @@
     <method selector="dealloc">
       <retval></retval>
     </method>
-    <method selector="description">
-      <retval></retval>
+    <method selector="description" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="description">
       <retval></retval>
@@ -10704,9 +10704,9 @@
     <method selector="isAbsolutePath">
       <retval></retval>
     </method>
-    <method selector="isEqualToString:">
-      <arg name="aString"></arg>
-      <retval></retval>
+    <method selector="isEqualToString:" swt_gen="true">
+      <arg name="aString" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="lastPathComponent" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -10847,9 +10847,9 @@
       <arg name="str"></arg>
       <retval></retval>
     </method>
-    <method selector="stringByAppendingString:">
-      <arg name="aString"></arg>
-      <retval></retval>
+    <method selector="stringByAppendingString:" swt_gen="true">
+      <arg name="aString" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="stringByDeletingLastPathComponent" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -12299,8 +12299,8 @@
     <method selector="pointerValue">
       <retval></retval>
     </method>
-    <method selector="rangeValue">
-      <retval></retval>
+    <method selector="rangeValue" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="rectValue">
       <retval></retval>

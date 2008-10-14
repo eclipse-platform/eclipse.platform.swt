@@ -650,7 +650,13 @@ public boolean getEditable () {
 }
 
 char [] getEditText () {
-	NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+	NSString str = null;
+	if ((style & SWT.SINGLE) != 0) {
+		str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+	} else {
+		str = ((NSTextView)view).textStorage().string();
+	}
+
 	int length = (int)/*64*/str.length ();
 	char [] buffer = new char [length];
 	if (hiddenText != null) {
@@ -664,7 +670,13 @@ char [] getEditText () {
 }
 
 char [] getEditText (int start, int end) {
-	NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+	NSString str = null;
+	if ((style & SWT.SINGLE) != 0) {
+		str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+	} else {
+		str = ((NSTextView)view).textStorage().string();
+	}
+
 	int length = (int)/*64*/str.length ();
 	end = Math.min (end, length - 1);
 	if (start > end) return new char [0];

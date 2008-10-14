@@ -34,6 +34,10 @@ public static NSArray arrayWithObject(id anObject) {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public boolean containsObject(id anObject) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_containsObject_, anObject != null ? anObject.id : 0);
+}
+
 public int /*long*/ count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }

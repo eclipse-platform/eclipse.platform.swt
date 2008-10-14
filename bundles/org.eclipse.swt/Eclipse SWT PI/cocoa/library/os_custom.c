@@ -294,3 +294,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSZeroRect)
 	return rc;
 }
 #endif
+
+#ifndef NO_accessibilityHitTest_1CALLBACK
+static jintLong accessibilityHitTest_1CALLBACK;
+static void accessibilityHitTest(id obj, SEL sel, NSPoint point)
+{
+	return ((void (*)(id, SEL, NSPoint *))accessibilityHitTest_1CALLBACK)(obj, sel, &point);
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(accessibilityHitTest_1CALLBACK)
+(JNIEnv *env, jclass that, jintLong func)
+{
+	accessibilityHitTest_1CALLBACK = func;
+	return (jintLong)accessibilityHitTest;
+}
+#endif

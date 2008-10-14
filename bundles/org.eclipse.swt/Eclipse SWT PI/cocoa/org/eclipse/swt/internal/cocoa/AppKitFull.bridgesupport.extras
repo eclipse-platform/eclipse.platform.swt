@@ -17,254 +17,254 @@
   <opaque name="NSModalSession"></opaque>
   <constant name="NSAbortModalException"></constant>
   <constant name="NSAbortPrintingException"></constant>
-  <constant name="NSAccessibilityAllowedValuesAttribute"></constant>
-  <constant name="NSAccessibilityApplicationActivatedNotification"></constant>
-  <constant name="NSAccessibilityApplicationDeactivatedNotification"></constant>
-  <constant name="NSAccessibilityApplicationHiddenNotification"></constant>
-  <constant name="NSAccessibilityApplicationRole"></constant>
-  <constant name="NSAccessibilityApplicationShownNotification"></constant>
-  <constant name="NSAccessibilityAscendingSortDirectionValue"></constant>
-  <constant name="NSAccessibilityAttachmentTextAttribute"></constant>
-  <constant name="NSAccessibilityAttributedStringForRangeParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityBackgroundColorTextAttribute"></constant>
-  <constant name="NSAccessibilityBoundsForRangeParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityBrowserRole"></constant>
-  <constant name="NSAccessibilityBusyIndicatorRole"></constant>
-  <constant name="NSAccessibilityButtonRole"></constant>
-  <constant name="NSAccessibilityCancelAction"></constant>
-  <constant name="NSAccessibilityCancelButtonAttribute"></constant>
-  <constant name="NSAccessibilityCenterTabStopMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityCentimetersUnitValue"></constant>
-  <constant name="NSAccessibilityCheckBoxRole"></constant>
-  <constant name="NSAccessibilityChildrenAttribute"></constant>
-  <constant name="NSAccessibilityClearButtonAttribute"></constant>
-  <constant name="NSAccessibilityCloseButtonAttribute"></constant>
-  <constant name="NSAccessibilityCloseButtonSubrole"></constant>
-  <constant name="NSAccessibilityColorWellRole"></constant>
-  <constant name="NSAccessibilityColumnCountAttribute"></constant>
-  <constant name="NSAccessibilityColumnRole"></constant>
-  <constant name="NSAccessibilityColumnTitlesAttribute"></constant>
-  <constant name="NSAccessibilityColumnsAttribute"></constant>
-  <constant name="NSAccessibilityComboBoxRole"></constant>
-  <constant name="NSAccessibilityConfirmAction"></constant>
-  <constant name="NSAccessibilityContentsAttribute"></constant>
-  <constant name="NSAccessibilityCreatedNotification"></constant>
-  <constant name="NSAccessibilityDecimalTabStopMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityDecrementAction"></constant>
-  <constant name="NSAccessibilityDecrementArrowSubrole"></constant>
-  <constant name="NSAccessibilityDecrementButtonAttribute"></constant>
-  <constant name="NSAccessibilityDecrementPageSubrole"></constant>
-  <constant name="NSAccessibilityDefaultButtonAttribute"></constant>
-  <constant name="NSAccessibilityDeleteAction"></constant>
-  <constant name="NSAccessibilityDescendingSortDirectionValue"></constant>
-  <constant name="NSAccessibilityDescriptionAttribute"></constant>
-  <constant name="NSAccessibilityDialogSubrole"></constant>
-  <constant name="NSAccessibilityDisclosedByRowAttribute"></constant>
-  <constant name="NSAccessibilityDisclosedRowsAttribute"></constant>
-  <constant name="NSAccessibilityDisclosingAttribute"></constant>
-  <constant name="NSAccessibilityDisclosureLevelAttribute"></constant>
-  <constant name="NSAccessibilityDisclosureTriangleRole"></constant>
-  <constant name="NSAccessibilityDocumentAttribute"></constant>
-  <constant name="NSAccessibilityDrawerCreatedNotification"></constant>
-  <constant name="NSAccessibilityDrawerRole"></constant>
-  <constant name="NSAccessibilityEditedAttribute"></constant>
-  <constant name="NSAccessibilityEnabledAttribute"></constant>
-  <constant name="NSAccessibilityErrorCodeExceptionInfo"></constant>
-  <constant name="NSAccessibilityException"></constant>
-  <constant name="NSAccessibilityExpandedAttribute"></constant>
-  <constant name="NSAccessibilityFilenameAttribute"></constant>
-  <constant name="NSAccessibilityFirstLineIndentMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityFloatingWindowSubrole"></constant>
-  <constant name="NSAccessibilityFocusedAttribute"></constant>
-  <constant name="NSAccessibilityFocusedUIElementAttribute"></constant>
-  <constant name="NSAccessibilityFocusedUIElementChangedNotification"></constant>
-  <constant name="NSAccessibilityFocusedWindowAttribute"></constant>
-  <constant name="NSAccessibilityFocusedWindowChangedNotification"></constant>
-  <constant name="NSAccessibilityFontFamilyKey"></constant>
-  <constant name="NSAccessibilityFontNameKey"></constant>
-  <constant name="NSAccessibilityFontSizeKey"></constant>
-  <constant name="NSAccessibilityFontTextAttribute"></constant>
-  <constant name="NSAccessibilityForegroundColorTextAttribute"></constant>
-  <constant name="NSAccessibilityFrontmostAttribute"></constant>
-  <constant name="NSAccessibilityGridRole"></constant>
-  <constant name="NSAccessibilityGroupRole"></constant>
-  <constant name="NSAccessibilityGrowAreaAttribute"></constant>
-  <constant name="NSAccessibilityGrowAreaRole"></constant>
-  <constant name="NSAccessibilityHeadIndentMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityHeaderAttribute"></constant>
-  <constant name="NSAccessibilityHelpAttribute"></constant>
-  <constant name="NSAccessibilityHelpTagCreatedNotification"></constant>
-  <constant name="NSAccessibilityHelpTagRole"></constant>
-  <constant name="NSAccessibilityHiddenAttribute"></constant>
-  <constant name="NSAccessibilityHorizontalOrientationValue"></constant>
-  <constant name="NSAccessibilityHorizontalScrollBarAttribute"></constant>
-  <constant name="NSAccessibilityImageRole"></constant>
-  <constant name="NSAccessibilityInchesUnitValue"></constant>
-  <constant name="NSAccessibilityIncrementAction"></constant>
-  <constant name="NSAccessibilityIncrementArrowSubrole"></constant>
-  <constant name="NSAccessibilityIncrementButtonAttribute"></constant>
-  <constant name="NSAccessibilityIncrementPageSubrole"></constant>
-  <constant name="NSAccessibilityIncrementorRole"></constant>
-  <constant name="NSAccessibilityIndexAttribute"></constant>
-  <constant name="NSAccessibilityInsertionPointLineNumberAttribute"></constant>
-  <constant name="NSAccessibilityLabelUIElementsAttribute"></constant>
-  <constant name="NSAccessibilityLabelValueAttribute"></constant>
-  <constant name="NSAccessibilityLeftTabStopMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityLineForIndexParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityLinkRole"></constant>
-  <constant name="NSAccessibilityLinkTextAttribute"></constant>
-  <constant name="NSAccessibilityLinkedUIElementsAttribute"></constant>
-  <constant name="NSAccessibilityListRole"></constant>
-  <constant name="NSAccessibilityMainAttribute"></constant>
-  <constant name="NSAccessibilityMainWindowAttribute"></constant>
-  <constant name="NSAccessibilityMainWindowChangedNotification"></constant>
-  <constant name="NSAccessibilityMarkerGroupUIElementAttribute"></constant>
-  <constant name="NSAccessibilityMarkerTypeAttribute"></constant>
-  <constant name="NSAccessibilityMarkerTypeDescriptionAttribute"></constant>
-  <constant name="NSAccessibilityMarkerUIElementsAttribute"></constant>
-  <constant name="NSAccessibilityMarkerValuesAttribute"></constant>
-  <constant name="NSAccessibilityMatteContentUIElementAttribute"></constant>
-  <constant name="NSAccessibilityMatteHoleAttribute"></constant>
-  <constant name="NSAccessibilityMatteRole"></constant>
-  <constant name="NSAccessibilityMaxValueAttribute"></constant>
-  <constant name="NSAccessibilityMenuBarAttribute"></constant>
-  <constant name="NSAccessibilityMenuBarRole"></constant>
-  <constant name="NSAccessibilityMenuButtonRole"></constant>
-  <constant name="NSAccessibilityMenuItemRole"></constant>
-  <constant name="NSAccessibilityMenuRole"></constant>
-  <constant name="NSAccessibilityMinValueAttribute"></constant>
-  <constant name="NSAccessibilityMinimizeButtonAttribute"></constant>
-  <constant name="NSAccessibilityMinimizeButtonSubrole"></constant>
-  <constant name="NSAccessibilityMinimizedAttribute"></constant>
-  <constant name="NSAccessibilityMisspelledTextAttribute"></constant>
-  <constant name="NSAccessibilityModalAttribute"></constant>
-  <constant name="NSAccessibilityMovedNotification"></constant>
-  <constant name="NSAccessibilityNextContentsAttribute"></constant>
-  <constant name="NSAccessibilityNumberOfCharactersAttribute"></constant>
-  <constant name="NSAccessibilityOrderedByRowAttribute"></constant>
-  <constant name="NSAccessibilityOrientationAttribute"></constant>
-  <constant name="NSAccessibilityOutlineRole"></constant>
-  <constant name="NSAccessibilityOutlineRowSubrole"></constant>
-  <constant name="NSAccessibilityOverflowButtonAttribute"></constant>
-  <constant name="NSAccessibilityParentAttribute"></constant>
-  <constant name="NSAccessibilityPicasUnitValue"></constant>
-  <constant name="NSAccessibilityPickAction"></constant>
-  <constant name="NSAccessibilityPointsUnitValue"></constant>
-  <constant name="NSAccessibilityPopUpButtonRole"></constant>
+  <constant name="NSAccessibilityAllowedValuesAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityApplicationActivatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityApplicationDeactivatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityApplicationHiddenNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityApplicationRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityApplicationShownNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityAscendingSortDirectionValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityAttachmentTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityAttributedStringForRangeParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityBackgroundColorTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityBoundsForRangeParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityBrowserRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityBusyIndicatorRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityButtonRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCancelAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCancelButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCenterTabStopMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCentimetersUnitValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCheckBoxRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityChildrenAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityClearButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCloseButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCloseButtonSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColorWellRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColumnCountAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColumnRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColumnTitlesAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColumnsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityComboBoxRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityConfirmAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityContentsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityCreatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDecimalTabStopMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDecrementAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDecrementArrowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDecrementButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDecrementPageSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDefaultButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDeleteAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDescendingSortDirectionValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDescriptionAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDialogSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDisclosedByRowAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDisclosedRowsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDisclosingAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDisclosureLevelAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDisclosureTriangleRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDocumentAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDrawerCreatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDrawerRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityEditedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityEnabledAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityErrorCodeExceptionInfo" swt_gen="true"></constant>
+  <constant name="NSAccessibilityException" swt_gen="true"></constant>
+  <constant name="NSAccessibilityExpandedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFilenameAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFirstLineIndentMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFloatingWindowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFocusedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFocusedUIElementAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFocusedUIElementChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFocusedWindowAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFocusedWindowChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFontFamilyKey" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFontNameKey" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFontSizeKey" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFontTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityForegroundColorTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityFrontmostAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityGridRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityGroupRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityGrowAreaAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityGrowAreaRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHeadIndentMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHeaderAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHelpAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHelpTagCreatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHelpTagRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHiddenAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHorizontalOrientationValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityHorizontalScrollBarAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityImageRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityInchesUnitValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityIncrementAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityIncrementArrowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityIncrementButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityIncrementPageSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityIncrementorRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityIndexAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityInsertionPointLineNumberAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLabelUIElementsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLabelValueAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLeftTabStopMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLineForIndexParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLinkRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLinkTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityLinkedUIElementsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityListRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMainAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMainWindowAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMainWindowChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMarkerGroupUIElementAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMarkerTypeAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMarkerTypeDescriptionAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMarkerUIElementsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMarkerValuesAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMatteContentUIElementAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMatteHoleAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMatteRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMaxValueAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMenuBarAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMenuBarRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMenuButtonRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMenuItemRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMenuRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMinValueAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMinimizeButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMinimizeButtonSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMinimizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMisspelledTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityModalAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityMovedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityNextContentsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityNumberOfCharactersAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityOrderedByRowAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityOrientationAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityOutlineRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityOutlineRowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityOverflowButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityParentAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityPicasUnitValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityPickAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityPointsUnitValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityPopUpButtonRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityPositionAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityPressAction"></constant>
-  <constant name="NSAccessibilityPreviousContentsAttribute"></constant>
-  <constant name="NSAccessibilityProgressIndicatorRole"></constant>
-  <constant name="NSAccessibilityProxyAttribute"></constant>
-  <constant name="NSAccessibilityRTFForRangeParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityRadioButtonRole"></constant>
-  <constant name="NSAccessibilityRadioGroupRole"></constant>
-  <constant name="NSAccessibilityRaiseAction"></constant>
-  <constant name="NSAccessibilityRangeForIndexParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityRangeForLineParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityRangeForPositionParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityResizedNotification"></constant>
-  <constant name="NSAccessibilityRightTabStopMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityRoleAttribute"></constant>
-  <constant name="NSAccessibilityRoleDescriptionAttribute"></constant>
-  <constant name="NSAccessibilityRowCountAttribute"></constant>
-  <constant name="NSAccessibilityRowCountChangedNotification"></constant>
-  <constant name="NSAccessibilityRowRole"></constant>
-  <constant name="NSAccessibilityRowsAttribute"></constant>
-  <constant name="NSAccessibilityRulerMarkerRole"></constant>
-  <constant name="NSAccessibilityRulerRole"></constant>
-  <constant name="NSAccessibilityScrollAreaRole"></constant>
-  <constant name="NSAccessibilityScrollBarRole"></constant>
-  <constant name="NSAccessibilitySearchButtonAttribute"></constant>
-  <constant name="NSAccessibilitySearchFieldSubrole"></constant>
-  <constant name="NSAccessibilitySearchMenuAttribute"></constant>
-  <constant name="NSAccessibilitySecureTextFieldSubrole"></constant>
-  <constant name="NSAccessibilitySelectedAttribute"></constant>
-  <constant name="NSAccessibilitySelectedChildrenAttribute"></constant>
-  <constant name="NSAccessibilitySelectedChildrenChangedNotification"></constant>
-  <constant name="NSAccessibilitySelectedColumnsAttribute"></constant>
-  <constant name="NSAccessibilitySelectedColumnsChangedNotification"></constant>
-  <constant name="NSAccessibilitySelectedRowsAttribute"></constant>
-  <constant name="NSAccessibilitySelectedRowsChangedNotification"></constant>
-  <constant name="NSAccessibilitySelectedTextAttribute"></constant>
-  <constant name="NSAccessibilitySelectedTextChangedNotification"></constant>
-  <constant name="NSAccessibilitySelectedTextRangeAttribute"></constant>
-  <constant name="NSAccessibilitySelectedTextRangesAttribute"></constant>
-  <constant name="NSAccessibilityServesAsTitleForUIElementsAttribute"></constant>
-  <constant name="NSAccessibilityShadowTextAttribute"></constant>
-  <constant name="NSAccessibilitySharedCharacterRangeAttribute"></constant>
-  <constant name="NSAccessibilitySharedTextUIElementsAttribute"></constant>
-  <constant name="NSAccessibilitySheetCreatedNotification"></constant>
-  <constant name="NSAccessibilitySheetRole"></constant>
-  <constant name="NSAccessibilityShowMenuAction"></constant>
-  <constant name="NSAccessibilityShownMenuAttribute"></constant>
+  <constant name="NSAccessibilityPressAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityPreviousContentsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityProgressIndicatorRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityProxyAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRTFForRangeParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRadioButtonRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRadioGroupRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRaiseAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRangeForLineParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRangeForPositionParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityResizedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRightTabStopMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRowCountAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRowCountChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRowsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRulerMarkerRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRulerRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityScrollAreaRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityScrollBarRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySearchButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySearchFieldSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySearchMenuAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySecureTextFieldSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedChildrenAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedChildrenChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedColumnsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedColumnsChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedRowsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedRowsChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedTextChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedTextRangeAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySelectedTextRangesAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityServesAsTitleForUIElementsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityShadowTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySharedCharacterRangeAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySharedTextUIElementsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySheetCreatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySheetRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityShowMenuAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityShownMenuAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilitySizeAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilitySliderRole"></constant>
-  <constant name="NSAccessibilitySortButtonRole"></constant>
-  <constant name="NSAccessibilitySortDirectionAttribute"></constant>
-  <constant name="NSAccessibilitySplitGroupRole"></constant>
-  <constant name="NSAccessibilitySplitterRole"></constant>
-  <constant name="NSAccessibilitySplittersAttribute"></constant>
-  <constant name="NSAccessibilityStandardWindowSubrole"></constant>
-  <constant name="NSAccessibilityStaticTextRole"></constant>
-  <constant name="NSAccessibilityStrikethroughColorTextAttribute"></constant>
-  <constant name="NSAccessibilityStrikethroughTextAttribute"></constant>
-  <constant name="NSAccessibilityStringForRangeParameterizedAttribute"></constant>
-  <constant name="NSAccessibilityStyleRangeForIndexParameterizedAttribute"></constant>
-  <constant name="NSAccessibilitySubroleAttribute"></constant>
-  <constant name="NSAccessibilitySuperscriptTextAttribute"></constant>
-  <constant name="NSAccessibilitySystemDialogSubrole"></constant>
-  <constant name="NSAccessibilitySystemFloatingWindowSubrole"></constant>
-  <constant name="NSAccessibilitySystemWideRole"></constant>
-  <constant name="NSAccessibilityTabGroupRole"></constant>
-  <constant name="NSAccessibilityTableRole"></constant>
-  <constant name="NSAccessibilityTableRowSubrole"></constant>
-  <constant name="NSAccessibilityTabsAttribute"></constant>
-  <constant name="NSAccessibilityTailIndentMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityTextAreaRole"></constant>
-  <constant name="NSAccessibilityTextAttachmentSubrole"></constant>
-  <constant name="NSAccessibilityTextFieldRole"></constant>
-  <constant name="NSAccessibilityTextLinkSubrole"></constant>
-  <constant name="NSAccessibilityTimelineSubrole"></constant>
-  <constant name="NSAccessibilityTitleAttribute"></constant>
-  <constant name="NSAccessibilityTitleChangedNotification"></constant>
-  <constant name="NSAccessibilityTitleUIElementAttribute"></constant>
-  <constant name="NSAccessibilityToolbarButtonAttribute"></constant>
-  <constant name="NSAccessibilityToolbarButtonSubrole"></constant>
-  <constant name="NSAccessibilityToolbarRole"></constant>
-  <constant name="NSAccessibilityTopLevelUIElementAttribute"></constant>
-  <constant name="NSAccessibilityUIElementDestroyedNotification"></constant>
-  <constant name="NSAccessibilityURLAttribute"></constant>
-  <constant name="NSAccessibilityUnderlineColorTextAttribute"></constant>
-  <constant name="NSAccessibilityUnderlineTextAttribute"></constant>
-  <constant name="NSAccessibilityUnitDescriptionAttribute"></constant>
-  <constant name="NSAccessibilityUnitsAttribute"></constant>
-  <constant name="NSAccessibilityUnknownMarkerTypeValue"></constant>
-  <constant name="NSAccessibilityUnknownRole"></constant>
-  <constant name="NSAccessibilityUnknownSortDirectionValue"></constant>
-  <constant name="NSAccessibilityUnknownSubrole"></constant>
-  <constant name="NSAccessibilityUnknownUnitValue"></constant>
-  <constant name="NSAccessibilityValueAttribute"></constant>
-  <constant name="NSAccessibilityValueChangedNotification"></constant>
-  <constant name="NSAccessibilityValueDescriptionAttribute"></constant>
-  <constant name="NSAccessibilityValueIndicatorRole"></constant>
-  <constant name="NSAccessibilityVerticalOrientationValue"></constant>
-  <constant name="NSAccessibilityVerticalScrollBarAttribute"></constant>
-  <constant name="NSAccessibilityVisibleCharacterRangeAttribute"></constant>
-  <constant name="NSAccessibilityVisibleChildrenAttribute"></constant>
-  <constant name="NSAccessibilityVisibleColumnsAttribute"></constant>
-  <constant name="NSAccessibilityVisibleNameKey"></constant>
-  <constant name="NSAccessibilityVisibleRowsAttribute"></constant>
-  <constant name="NSAccessibilityWindowAttribute"></constant>
-  <constant name="NSAccessibilityWindowCreatedNotification"></constant>
-  <constant name="NSAccessibilityWindowDeminiaturizedNotification"></constant>
-  <constant name="NSAccessibilityWindowMiniaturizedNotification"></constant>
-  <constant name="NSAccessibilityWindowMovedNotification"></constant>
-  <constant name="NSAccessibilityWindowResizedNotification"></constant>
-  <constant name="NSAccessibilityWindowRole"></constant>
-  <constant name="NSAccessibilityWindowsAttribute"></constant>
-  <constant name="NSAccessibilityZoomButtonAttribute"></constant>
-  <constant name="NSAccessibilityZoomButtonSubrole"></constant>
+  <constant name="NSAccessibilitySliderRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySortButtonRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySortDirectionAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySplitGroupRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySplitterRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySplittersAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityStandardWindowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityStaticTextRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityStrikethroughColorTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityStrikethroughTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityStringForRangeParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityStyleRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySubroleAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySuperscriptTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySystemDialogSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySystemFloatingWindowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySystemWideRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTabGroupRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTableRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTableRowSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTabsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTailIndentMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTextAreaRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTextAttachmentSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTextFieldRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTextLinkSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTimelineSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTitleAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTitleChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityToolbarButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityToolbarButtonSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUIElementDestroyedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityURLAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnderlineColorTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnderlineTextAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnitDescriptionAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnitsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnknownMarkerTypeValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnknownRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnknownSortDirectionValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnknownSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUnknownUnitValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityValueAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityValueChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityValueDescriptionAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityValueIndicatorRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVerticalOrientationValue" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVerticalScrollBarAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVisibleCharacterRangeAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVisibleChildrenAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVisibleColumnsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVisibleNameKey" swt_gen="true"></constant>
+  <constant name="NSAccessibilityVisibleRowsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowCreatedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowDeminiaturizedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowMiniaturizedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowMovedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowResizedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityWindowsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityZoomButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityZoomButtonSubrole" swt_gen="true"></constant>
   <constant name="NSAlignmentBinding"></constant>
   <constant name="NSAllRomanInputSourcesLocaleIdentifier"></constant>
   <constant name="NSAllowsEditingMultipleValuesSelectionBindingOption"></constant>
@@ -1821,43 +1821,43 @@
   <enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
   <enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
   <enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
-  <function name="NSAccessibilityActionDescription">
-    <arg name="action"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityActionDescription" swt_gen="true">
+    <arg name="action" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="NSAccessibilityPostNotification">
-    <arg name="element"></arg>
-    <arg name="notification"></arg>
+  <function name="NSAccessibilityPostNotification" swt_gen="true">
+    <arg name="element" swt_gen="true"></arg>
+    <arg name="notification" swt_gen="true"></arg>
   </function>
-  <function name="NSAccessibilityRaiseBadArgumentException">
-    <arg name="element"></arg>
-    <arg name="attribute"></arg>
-    <arg name="value"></arg>
+  <function name="NSAccessibilityRaiseBadArgumentException" swt_gen="true">
+    <arg name="element" swt_gen="true"></arg>
+    <arg name="attribute" swt_gen="true"></arg>
+    <arg name="value" swt_gen="true"></arg>
   </function>
-  <function name="NSAccessibilityRoleDescription">
-    <arg name="role"></arg>
-    <arg name="subrole"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityRoleDescription" swt_gen="true">
+    <arg name="role" swt_gen="true"></arg>
+    <arg name="subrole" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="NSAccessibilityRoleDescriptionForUIElement">
-    <arg name="element"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityRoleDescriptionForUIElement" swt_gen="true">
+    <arg name="element" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="NSAccessibilityUnignoredAncestor">
-    <arg name="element"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityUnignoredAncestor" swt_gen="true">
+    <arg name="element" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="NSAccessibilityUnignoredChildren">
-    <arg name="originalChildren"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityUnignoredChildren" swt_gen="true">
+    <arg name="originalChildren" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="NSAccessibilityUnignoredChildrenForOnlyChild">
-    <arg name="originalChild"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityUnignoredChildrenForOnlyChild" swt_gen="true">
+    <arg name="originalChild" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
-  <function name="NSAccessibilityUnignoredDescendant">
-    <arg name="element"></arg>
-    <retval></retval>
+  <function name="NSAccessibilityUnignoredDescendant" swt_gen="true">
+    <arg name="element" swt_gen="true"></arg>
+    <retval swt_gen="true"></retval>
   </function>
   <function name="NSApplicationLoad">
     <retval></retval>
@@ -23882,40 +23882,40 @@
       <retval></retval>
     </method>
   </class>
-  <informal_protocol name="NSAccessibility" swt_gen="mixed">
-    <method selector="accessibilityActionDescription:">
-      <arg name="action"></arg>
+  <informal_protocol name="NSAccessibility" swt_gen="true">
+    <method selector="accessibilityActionDescription:" swt_gen="true">
+      <arg name="action" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilityActionNames"></method>
-    <method selector="accessibilityAttributeNames"></method>
+    <method selector="accessibilityActionNames" swt_gen="true"></method>
+    <method selector="accessibilityAttributeNames" swt_gen="true"></method>
     <method selector="accessibilityAttributeValue:" swt_gen="true">
       <arg name="attribute" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilityAttributeValue:forParameter:">
-      <arg name="attribute"></arg>
-      <arg name="parameter"></arg>
+    <method selector="accessibilityAttributeValue:forParameter:" swt_gen="true">
+      <arg name="attribute" swt_gen="true"></arg>
+      <arg name="parameter" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilityFocusedUIElement"></method>
-    <method selector="accessibilityHitTest:">
-      <arg name="point"></arg>
+    <method selector="accessibilityFocusedUIElement" swt_gen="true"></method>
+    <method selector="accessibilityHitTest:" swt_gen="true">
+      <arg name="point" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilityIsAttributeSettable:">
-      <arg name="attribute"></arg>
+    <method selector="accessibilityIsAttributeSettable:" swt_gen="true">
+      <arg name="attribute" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilityIsIgnored"></method>
-    <method selector="accessibilityParameterizedAttributeNames"></method>
-    <method selector="accessibilityPerformAction:">
-      <arg name="action"></arg>
+    <method selector="accessibilityIsIgnored" swt_gen="true"></method>
+    <method selector="accessibilityParameterizedAttributeNames" swt_gen="true"></method>
+    <method selector="accessibilityPerformAction:" swt_gen="true">
+      <arg name="action" swt_gen="true"></arg>
     </method>
-    <method selector="accessibilitySetValue:forAttribute:">
-      <arg name="value"></arg>
-      <arg name="attribute"></arg>
+    <method selector="accessibilitySetValue:forAttribute:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <arg name="attribute" swt_gen="true"></arg>
     </method>
   </informal_protocol>
-  <informal_protocol name="NSAccessibilityAdditions">
-    <method selector="accessibilitySetOverrideValue:forAttribute:">
-      <arg name="value"></arg>
-      <arg name="attribute"></arg>
+  <informal_protocol name="NSAccessibilityAdditions" swt_gen="true">
+    <method selector="accessibilitySetOverrideValue:forAttribute:" swt_gen="true">
+      <arg name="value" swt_gen="true"></arg>
+      <arg name="attribute" swt_gen="true"></arg>
     </method>
   </informal_protocol>
   <informal_protocol name="NSAlertDelegate">

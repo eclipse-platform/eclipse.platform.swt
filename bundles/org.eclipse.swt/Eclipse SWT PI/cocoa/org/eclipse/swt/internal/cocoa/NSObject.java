@@ -109,6 +109,11 @@ public id copy() {
 	return result != 0 ? new id(result) : null;
 }
 
+public NSString description() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_description);
+	return result != 0 ? new NSString(result) : null;
+}
+
 public NSObject init() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_init);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);

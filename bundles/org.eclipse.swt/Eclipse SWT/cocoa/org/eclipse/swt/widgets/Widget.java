@@ -129,6 +129,74 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+int accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	return callSuperObject(id, sel, arg0);
+}
+
+int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
+	return callSuperObject(id, sel);
+}
+
+int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+	return callSuperObject(id, sel);
+}
+
+int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	int returnValue = 0;
+	NSString attribute = new NSString(arg0);
+
+	/*
+	 * Bug in Accessibility Verifier: All accessible components are often queried for their title
+	 * attribute, even when they are documented to not support a title. Fix is to return the name of the
+	 * name of the widget (which is effectively its classname). Shells do have a title, though.
+	 * 
+	 * The same is true for subroles, but in this case returning null is okay.
+	 */
+	if (attribute.isEqualToString (OS.NSAccessibilitySubroleAttribute)) {
+		returnValue = 0;
+	} else if (attribute.isEqualToString (OS.NSAccessibilityTitleAttribute)) {
+		returnValue = (this instanceof Shell) ? callSuperObject(id, sel, arg0) : 0;
+	} else {
+		returnValue = callSuperObject(id, sel, arg0);
+	}
+	
+	return returnValue;
+}
+
+int accessibilityAttributeValue_forParameter(int id, int sel, int /*long*/ arg0, int /*long*/ arg1) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
+}
+
+int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
+	return callSuperObject(id, sel);
+}
+
+int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, point);
+}
+
+boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	return callSuperBoolean(id, sel, arg0);
+}
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	return callSuperBoolean(id, sel);
+}
+
+int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
+	return callSuperObject(id, sel);
+}
+
+void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	callSuper(id, sel, arg0);
+}
+
 String getClipboardText () {
 	NSPasteboard pasteboard = NSPasteboard.generalPasteboard ();
 	NSString string = pasteboard.stringForType (OS.NSStringPboardType);
@@ -173,6 +241,27 @@ boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
 
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean (id, sel);
+}
+
+boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg0) != 0;
+}
+
+int callSuperObject(int /*long*/ id, int /*long*/ sel) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel);
+}
+
+int callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
 int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {

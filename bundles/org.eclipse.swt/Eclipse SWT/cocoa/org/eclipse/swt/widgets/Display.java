@@ -1710,6 +1710,20 @@ void addFrameMethods(int /*long*/ cls, int /*long*/ setFrameOriginProc, int /*lo
 	OS.class_addMethod(cls, OS.sel_setFrameSize_, setFrameSizeProc, "@:{NSSize}");	
 }
 
+void addAccessibilityMethods(int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, int /*long*/ proc4, int /*long*/ accessibilityHitTestProc) {
+	OS.class_addMethod(cls, OS.sel_accessibilityActionNames, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_accessibilityAttributeNames, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_accessibilityParameterizedAttributeNames, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_accessibilityFocusedUIElement, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_accessibilityIsIgnored, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_accessibilityAttributeValue_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_accessibilityIsAttributeSettable_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_accessibilityHitTest_, accessibilityHitTestProc, "@:{NSPoint}");
+	OS.class_addMethod(cls, OS.sel_accessibilityAttributeValue_forParameter_, proc4, "@:@@");	
+	OS.class_addMethod(cls, OS.sel_accessibilityPerformAction_, proc3, "@:@");	
+	OS.class_addMethod(cls, OS.sel_accessibilityActionDescription_, proc3, "@:@");	
+}
+
 void initClasses () {
 	if (OS.objc_lookUpClass ("SWTView") != 0) return;
 	
@@ -1746,7 +1760,8 @@ void initClasses () {
 	int /*long*/ characterIndexForPointProc = OS.characterIndexForPoint_CALLBACK(proc3);
 	int /*long*/ firstRectForCharacterRangeProc = OS.firstRectForCharacterRange_CALLBACK(proc3);	
 	int /*long*/ textWillChangeSelectionProc = OS.textView_willChangeSelectionFromCharacterRange_toCharacterRange_CALLBACK(proc5);
-
+	int /*long*/ accessibilityHitTestProc = OS.accessibilityHitTest_CALLBACK(proc3);
+	
 	String types = "*";
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
@@ -1803,6 +1818,7 @@ void initClasses () {
 	
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTScrollView";
@@ -1815,6 +1831,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_reflectScrolledClipView_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTButton";
@@ -1823,6 +1840,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTableView";
@@ -1838,6 +1856,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTableHeaderCell";
@@ -1875,6 +1894,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTTreeItem";
@@ -1889,6 +1909,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tabView_didSelectTabViewItem_, proc4, "@:@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTBox";
@@ -1896,6 +1917,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTProgressIndicator";
@@ -1903,6 +1925,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
 
 	className = "SWTSlider";
@@ -1910,6 +1933,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
 	
 	className = "SWTPopUpButton";
@@ -1918,6 +1942,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTComboBox";
@@ -1930,6 +1955,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTDatePicker";
@@ -1938,6 +1964,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTImageView";
@@ -1945,6 +1972,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTStepper";
@@ -1953,6 +1981,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTScroller";
@@ -1961,6 +1990,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTMenuItem";
@@ -1974,6 +2004,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_insertText_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
@@ -1993,6 +2024,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
@@ -2003,6 +2035,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
@@ -2013,6 +2046,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
@@ -2024,6 +2058,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 }
 
@@ -2550,6 +2585,8 @@ public boolean readAndDispatch () {
 	events |= runContexts ();
 	events |= runPopups ();
 	NSEvent event = application.nextEventMatchingMask(0, null, OS.NSDefaultRunLoopMode, true);
+	
+	try {
 	if (event != null) {
 		events = true;
 		application.sendEvent(event);
@@ -2559,11 +2596,16 @@ public boolean readAndDispatch () {
 //		idle = true;
 //		application.run();
 //		events |= !idle;
-	if (events) {
-		runDeferredEvents ();
-		return true;
+		if (events) {
+			runDeferredEvents ();
+			return true;
+		}
+		return runAsyncMessages (false);
+	} catch (Exception e) {
+		e.printStackTrace();
+		return false;
 	}
-	return runAsyncMessages (false);
+	
 }
 
 static void register (Display display) {
@@ -3180,9 +3222,14 @@ public boolean sleep () {
 	if (getMessageCount () != 0) return true;
 	pool.release();
 	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
-	allowTimers = runAsyncMessages = false;
-	NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
-	allowTimers = runAsyncMessages = true;
+	try {
+		allowTimers = runAsyncMessages = false;
+		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+		allowTimers = runAsyncMessages = true;
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+
 	return true;
 }
 
@@ -3659,6 +3706,16 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.hasMarkedText (id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_canBecomeKeyWindow) {
 		return widget.canBecomeKeyWindow (id, sel) ? 1 : 0;
+	} else if (sel == OS.sel_accessibilityActionNames) {
+		return widget.accessibilityActionNames(id, sel);
+	} else if (sel == OS.sel_accessibilityAttributeNames) {
+		return widget.accessibilityAttributeNames(id, sel);
+	} else if (sel == OS.sel_accessibilityParameterizedAttributeNames) {
+		return widget.accessibilityParameterizedAttributeNames(id, sel);
+	} else if (sel == OS.sel_accessibilityFocusedUIElement) {
+		return widget.accessibilityFocusedUIElement(id, sel);
+	} else if (sel == OS.sel_accessibilityIsIgnored) {
+		return (widget.accessibilityIsIgnored(id, sel) ? 1 : 0);
 	}
 	return 0;
 }
@@ -3779,6 +3836,18 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.highlightSelectionInClipRect (id, sel, arg0);
 	} else if (sel == OS.sel_reflectScrolledClipView_) {
 		widget.reflectScrolledClipView (id, sel, arg0);
+	} else if (sel == OS.sel_accessibilityHitTest_) {
+		NSPoint point = new NSPoint();
+		OS.memmove(point, arg0, NSPoint.sizeof);
+		return widget.accessibilityHitTest(id, sel, point);
+	} else if (sel == OS.sel_accessibilityAttributeValue_) {
+		return widget.accessibilityAttributeValue(id, sel, arg0);
+	} else if (sel == OS.sel_accessibilityIsAttributeSettable_) {
+		return (widget.accessibilityIsAttributeSettable(id, sel, arg0) ? 1 : 0);
+	} else if (sel == OS.sel_accessibilityPerformAction_) {
+		widget.accessibilityPerformAction(id, sel, arg0);
+	} else if (sel == OS.sel_accessibilityActionDescription_) {
+		widget.accessibilityActionDescription(id, sel, arg0);
 	}
 	return 0;
 }
@@ -3804,6 +3873,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.setMarkedText_selectedRange (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_drawInteriorWithFrame_inView_) {
 		widget.drawInteriorWithFrame_inView (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
+		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	}
 	return 0;
 }

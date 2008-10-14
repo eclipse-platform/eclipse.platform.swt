@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -133,6 +132,50 @@ public ToolItem (ToolBar parent, int style, int index) {
 	this.parent = parent;
 	parent.createItem (this, index);
 }
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	return true;
+}
+
+//int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+//	NSString nsAttributeName = new NSString(arg0);
+//	System.out.println("Attribute " + nsAttributeName.getString() + " for " + new NSObject(id).description().getString());
+//
+//	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
+//		NSString roleText = ((style & SWT.PUSH) != 0) ? OS.NSAccessibilityButtonRole
+//				: ((style & SWT.RADIO) != 0) ? OS.NSAccessibilityRadioButtonRole
+//				: ((style & SWT.CHECK) != 0) ? OS.NSAccessibilityCheckBoxRole
+//				: ((style & SWT.DROP_DOWN) != 0) ? OS.NSAccessibilityMenuButtonRole
+//				: null; // SEPARATOR
+//		if (roleText != null) {
+//			if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute)) {
+//				return roleText.id;
+//			} else { // NSAccessibilityRoleDescriptionAttribute
+//				int /*long*/ description = OS.NSAccessibilityRoleDescription (roleText.id, OS.NSAccessibilityToolbarButtonSubrole.id);
+//				return description;
+//			}
+//		}
+//	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilitySubroleAttribute)) {		
+//		NSString subroleText = OS.NSAccessibilityToolbarButtonSubrole;
+//		return subroleText.id;
+//	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityTitleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
+//		String accessibleText = toolTipText;
+//		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
+//		if (!(accessibleText == null || accessibleText.equals(""))) {
+//			return NSString.stringWith(accessibleText).id;
+//		} else {
+//			return NSString.stringWith("").id;
+//		}
+//	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+//		NSNumber value = NSNumber.numberWithInt(selection ? 1 : 0);
+//		return value.id;
+//	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
+//		NSNumber value = NSNumber.numberWithInt(getEnabled() ? 1 : 0);
+//		return value.id;
+//	}
+//
+//	return super.accessibilityAttributeValue(id, sel, arg0);
+//}
 
 /**
  * Adds the listener to the collection of listeners who will

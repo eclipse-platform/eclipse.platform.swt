@@ -28,9 +28,17 @@ public void addObject(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_addObject_, anObject != null ? anObject.id : 0);
 }
 
+public void addObjectsFromArray(NSArray otherArray) {
+	OS.objc_msgSend(this.id, OS.sel_addObjectsFromArray_, otherArray != null ? otherArray.id : 0);
+}
+
 public static NSMutableArray arrayWithCapacity(int /*long*/ numItems) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_arrayWithCapacity_, numItems);
 	return result != 0 ? new NSMutableArray(result) : null;
+}
+
+public void removeObject(id anObject) {
+	OS.objc_msgSend(this.id, OS.sel_removeObject_, anObject != null ? anObject.id : 0);
 }
 
 public static NSArray array() {

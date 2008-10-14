@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -403,6 +404,31 @@ static int checkStyle (int style) {
 	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
 	if ((style & SWT.PRIMARY_MODAL) != 0) return bits | SWT.PRIMARY_MODAL;
 	return bits;
+}
+
+int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	
+	NSString attributeName = new NSString(arg0);
+	
+	if (accessible != null) {
+		id returnObject = accessible.internal_accessibilityAttributeValue(attributeName, ACC.CHILDID_SELF);
+		if (returnObject != null) return returnObject.id;
+	}
+	
+	// Accessibility Verifier requires a subrole for windows, even though most other controls don't have a subrole.
+	// So, we need to override and return the right subrole here.
+	if (attributeName.isEqualToString (OS.NSAccessibilitySubroleAttribute)) {
+		NSString roleText = null;
+
+		if ((style & SWT.ON_TOP) != 0)
+			roleText = OS.NSAccessibilityFloatingWindowSubrole;
+		else
+			roleText = OS.NSAccessibilityStandardWindowSubrole;
+		
+		return roleText.id;
+	}
+	
+	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
 /**

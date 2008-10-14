@@ -85,6 +85,13 @@ boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	if (id == view.id) return true;
+	return super.accessibilityIsIgnored(id, sel);
+}
+
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending

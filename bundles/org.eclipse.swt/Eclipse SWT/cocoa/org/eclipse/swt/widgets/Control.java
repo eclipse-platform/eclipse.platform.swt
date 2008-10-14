@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -103,6 +102,166 @@ public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	createWidget ();
+}
+
+int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
+	int superResult = super.accessibilityActionNames(id, sel);
+	NSArray superActions = new NSArray(superResult);
+	NSMutableArray allActions = NSMutableArray.arrayWithCapacity(superActions.count());
+	allActions.addObjectsFromArray(superActions);
+	
+	// Add in any specific accessibility actions that the control wants to support.
+	NSString extraActions[] = getAxActions();
+	
+	if (extraActions != null) {
+		for (int i = 0; i < extraActions.length; i++) {
+			if (!allActions.containsObject(extraActions[i]))
+				allActions.addObject(extraActions[i]);
+		}
+	}
+	
+	if (accessible != null) {
+		NSArray returnValue = accessible.internal_accessibilityActionNames(allActions, ACC.CHILDID_SELF);
+		return (returnValue != null ? returnValue.id : superResult);
+	} else {
+		return allActions.id;
+	}
+}
+
+int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+	int superResult = super.accessibilityAttributeNames(id, sel);
+	NSArray superAttributes = new NSArray(superResult);
+	NSMutableArray allAttributes = NSMutableArray.arrayWithCapacity(superAttributes.count());
+	allAttributes.addObjectsFromArray(superAttributes);
+	
+	// Add in any specific accessibility properties that the control wants to support.
+	NSString extraAttributes[] = getAxAttributes();
+	
+	if (extraAttributes != null) {
+		for (int i = 0; i < extraAttributes.length; i++) {
+			if (!allAttributes.containsObject(extraAttributes[i]))
+				allAttributes.addObject(extraAttributes[i]);
+		}
+	}
+	
+	if (accessible != null) {
+		NSArray returnValue = accessible.internal_accessibilityAttributeNames(allAttributes, ACC.CHILDID_SELF);
+		return (returnValue != null ? returnValue.id : superResult);
+	} else {
+		return allAttributes.id;
+	}
+}
+
+int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
+	int superResult = super.accessibilityParameterizedAttributeNames(id, sel);
+	NSArray superAttributes = new NSArray(superResult);
+	NSMutableArray allAttributes = NSMutableArray.arrayWithCapacity(superAttributes.count());
+	allAttributes.addObjectsFromArray(superAttributes);
+
+	// Add in any specific parameterized accessibility properties that the control wants to support.
+	NSString extraAttributes[] = getAxParameterizedAttributes();
+
+	if (extraAttributes != null) {
+		for (int i = 0; i < extraAttributes.length; i++) {
+			if (!allAttributes.containsObject(extraAttributes[i]))
+				allAttributes.addObject(extraAttributes[i]);
+		}
+	}
+
+	if (accessible != null) {
+		NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(allAttributes, ACC.CHILDID_SELF);
+		return (returnValue != null ? returnValue.id : superResult);
+	} else {
+		return allAttributes.id;
+	}
+}
+
+
+//boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+//	
+//	if (accessible != null) {
+//		return accessible.accessibilityIsIgnored(ACC.CHILDID_SELF);
+//	}
+//
+//	return super.accessibilityIsIgnored(id, sel);	
+//}
+
+boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+
+	// TODO: Carbon didn't support setting attributes, so for now Cocoa doesn't as well.
+	//	NSString attribute = new NSString(arg0);
+	//		
+	//	if (accessible != null) {
+	//		return accessible.accessibilityIsAttributeSettable(attribute, ACC.CHILDID_SELF);
+	//	}	
+	//
+	//	return super.accessibilityIsAttributeSettable(id, sel, arg0);
+	return false;
+}
+
+int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
+	id returnValue = null;
+	if (accessible != null) {
+		returnValue = accessible.internal_accessibilityFocusedUIElement(ACC.CHILDID_SELF);
+	}
+
+	// If we had an accessible and it didn't handle the attribute request, let the
+	// superclass handle it.
+	if (returnValue == null)
+		return super.accessibilityFocusedUIElement(id, sel);
+	else
+		return returnValue.id;
+}
+
+int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+	id returnValue = null;
+	if (accessible != null) {
+		returnValue = accessible.internal_accessibilityHitTest(point, ACC.CHILDID_SELF);
+	}
+
+	// If we had an accessible and it didn't handle the attribute request, let the
+	// superclass handle it.
+	if (returnValue == null)
+		return super.accessibilityHitTest(id, sel, point);
+	else
+		return returnValue.id;
+}
+
+int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	NSString attribute = new NSString(arg0);
+	int returnValue = 0;
+	id returnObject = null;
+	
+	if (accessible != null) {
+		returnObject = accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF);
+	}
+
+	// If we had an accessible and it didn't handle the attribute request, let the
+	// superclass handle it.
+	if (returnObject == null) {
+		returnValue = super.accessibilityAttributeValue(id, sel, arg0);
+	} else {
+		returnValue = returnObject.id;
+	}
+	
+	return returnValue;
+}
+
+int accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	NSString attribute = new NSString(arg0);
+	
+	id returnValue = null;
+	if (accessible != null) {
+		id parameter = new id(arg1);
+		returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
+	}
+
+	// If we had an accessible and it didn't handle the attribute request, let the
+	// superclass handle it.
+	if (returnValue == null)
+		return super.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
+	else
+		return returnValue.id;
 }
 
 boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
@@ -938,7 +1097,30 @@ public Accessible getAccessible () {
 	if (accessible == null) accessible = new_Accessible (this);
 	return accessible;
 }
-	
+
+NSString [] getAxActions () {
+	return null;
+}
+
+/*
+ * getAxAttributes and getAxParameterizedAttributes return an array of 
+ * additional NSAccessibility constants that the control supports over and above
+ * the base set defined in Accessible.  getAxParameterizedAttributes is for those
+ * text-specific attributes documented to take a parameter.
+ * 
+ * NOTE: It is up to the implementors of these methods to ensure that only the
+ * right kinds of attributes are returned in the respective return values.  No verification
+ * is done on the constants to ensure that non-parameterized attributes appear in the
+ * parameterized list and vice-versa.
+ */
+NSString [] getAxAttributes () {
+	return null;
+}
+
+NSString [] getAxParameterizedAttributes () {
+	return null;
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -1345,7 +1527,7 @@ boolean hasBorder () {
 }
 
 boolean hasFocus () {
-	return this == display.getFocusControl ();
+	return (view.window().firstResponder().id == view.id);
 }
 
 int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
