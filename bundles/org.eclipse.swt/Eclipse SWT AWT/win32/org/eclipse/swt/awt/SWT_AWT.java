@@ -33,6 +33,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
 
@@ -284,16 +285,9 @@ public static Frame new_Frame (final Composite parent) {
 							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
+							} else {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 								frame.dispatchEvent (new WindowEvent (frame, 207 /*WindowEvent.WINDOW_GAINED_FOCUS*/));
-							} else {
-								try {
-									/* Initialize the default focus traversal policy */
-									Class clazz = frame.getClass();
-									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
-									if (method != null) method.invoke(frame, new Object[]{new Boolean(true)});
-								} catch (Throwable e) {}
 							}
 						}
 					});
@@ -304,16 +298,9 @@ public static Frame new_Frame (final Composite parent) {
 							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-							} else if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 5, 0)) {
+							} else {
 								frame.dispatchEvent (new WindowEvent (frame, 208 /*WindowEvent.WINDOW_LOST_FOCUS*/));
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-							} else {
-								try {
-									/* Initialize the default focus traversal policy */
-									Class clazz = frame.getClass();
-									Method method = clazz.getMethod("synthesizeWindowActivation", new Class[]{boolean.class});
-									if (method != null) method.invoke(frame, new Object[]{new Boolean(false)});
-								} catch (Throwable e) {}
 							}
 						}
 					});
@@ -323,6 +310,24 @@ public static Frame new_Frame (final Composite parent) {
 	};
 	parent.addListener (SWT.Activate, listener);
 	parent.addListener (SWT.Deactivate, listener);
+	if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 5, 0)){
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowActivated(WindowEvent event) {
+				try {
+					Class clazz = frame.getClass();
+					Method method = clazz.getMethod("synthesizeWindowActivation", new Class[] { boolean.class });
+					if (method != null) method.invoke(frame, new Object[] { new Boolean(true) });
+				} catch (Throwable e) {}
+			}
+			public void windowDeactivated(WindowEvent event) {
+				try {
+					Class clazz = frame.getClass();
+					Method method = clazz.getMethod("synthesizeWindowActivation", new Class[] { boolean.class });
+					if (method != null) method.invoke(frame, new Object[] { new Boolean(false) });
+				} catch (Throwable e) {}
+			}
+		});
+	}
 	parent.addListener (SWT.Dispose, listener);
 	
 	parent.getDisplay().asyncExec(new Runnable() {
