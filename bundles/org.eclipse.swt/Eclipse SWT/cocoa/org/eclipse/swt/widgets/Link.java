@@ -136,10 +136,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 	// TODO is this true?  if so, can this rounding be turned off?
 	/*
-	 * Width is incremented by 1 below to ensure that it is wide enough 
-	 * to show the full text.  NSTextStorage.size() seems to return a
-	 * width value that is rounded down because its result is never
-	 * fractional.
+	 * Bug in Cocoa.  NSTextStorage.size() seems to return a width
+	 * value that is rounded down, because its result is never
+	 * fractional.  The workaround is to increment width by 1
+	 * to ensure that it is wide enough to show the full text.  
 	 */
 	width += 1;
 	return new Point (width, height);
