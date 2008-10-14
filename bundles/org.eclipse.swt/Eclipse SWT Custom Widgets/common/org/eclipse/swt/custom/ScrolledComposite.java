@@ -681,10 +681,16 @@ public void showControl(Control control) {
 	Rectangle itemRect = getDisplay().map(control.getParent(), this, control.getBounds());
 	Rectangle area = getClientArea();
 	Point origin = getOrigin();
-	if (itemRect.x < 0) origin.x = Math.max(0, origin.x + itemRect.x);
-	if (itemRect.y < 0) origin.y = Math.max(0, origin.y + itemRect.y);
-	if (area.width < itemRect.x + itemRect.width) origin.x = Math.max(0, origin.x + itemRect.x + itemRect.width - area.width);
-	if (area.height < itemRect.y + itemRect.height) origin.y = Math.max(0, origin.y + itemRect.y + itemRect.height - area.height);
+	if (itemRect.x < 0) {
+		origin.x = Math.max(0, origin.x + itemRect.x);
+	} else {
+		if (area.width < itemRect.x + itemRect.width) origin.x = Math.max(0, origin.x + itemRect.x + Math.min(itemRect.width, area.width) - area.width);
+	}
+	if (itemRect.y < 0) {
+		origin.y = Math.max(0, origin.y + itemRect.y);
+	} else {
+		if (area.height < itemRect.y + itemRect.height) origin.y = Math.max(0, origin.y + itemRect.y + Math.min(itemRect.height, area.height) - area.height);
+	}
 	setOrigin(origin);
 }
 
