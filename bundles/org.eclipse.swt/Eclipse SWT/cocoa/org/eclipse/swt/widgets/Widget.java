@@ -814,6 +814,9 @@ boolean outlineView_shouldExpandItem(int /*long*/ id, int /*long*/ sel, int /*lo
 	return false;
 }
 
+void outlineViewItemDidExpand(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
 void outlineViewSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 

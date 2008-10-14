@@ -1864,6 +1864,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineViewItemDidExpand_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldCollapseItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldExpandItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
@@ -3744,6 +3745,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.menuNeedsUpdate(id, sel, arg0);
 	} else if (sel == OS.sel_outlineViewSelectionDidChange_) {
 		widget.outlineViewSelectionDidChange(id, sel, arg0);
+	} else if (sel == OS.sel_outlineViewItemDidExpand_) {
+		widget.outlineViewItemDidExpand(id, sel, arg0);
 	} else if (sel == OS.sel_sendEvent_) {
 		widget.windowSendEvent(id, sel, arg0);
 	} else if (sel == OS.sel_helpRequested_) {

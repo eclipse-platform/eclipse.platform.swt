@@ -29,4 +29,9 @@ public id object() {
 	return result != 0 ? new id(result) : null;
 }
 
+public NSDictionary userInfo() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_userInfo);
+	return result != 0 ? new NSDictionary(result) : null;
+}
+
 }

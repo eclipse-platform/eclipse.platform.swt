@@ -228,6 +228,7 @@ static int checkIndex (int index) {
 	return index;
 }
 
+/* note that the result includes tree hierarchy indentation for column 0 */
 int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasureItem) {
 	int width = 0;
 	if (!callMeasureItem && customWidth != -1) {
@@ -270,10 +271,20 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 				if (customWidth != -1 || event.width != width) {
 					customWidth = event.width;	
 				}
-				if (change != 0) parent.setScrollWidth (this);
+				if (change != 0) parent.setScrollWidth (this, false, false);
 			}
 			width = event.width;
 		}
+	}
+
+	if (columnIndex == 0) {
+		NSTableColumn column = parent.columnCount == 0 ? parent.firstColumn : parent.columns[0].nsColumn;
+		NSOutlineView outlineView = (NSOutlineView)parent.view;
+		int rowIndex = (int)/*64*/outlineView.rowForItem (handle);
+		int nsColumnIndex = (int)/*64*/outlineView.columnWithIdentifier (column);
+		NSRect columnRect = outlineView.rectOfColumn (nsColumnIndex);
+		NSRect cellRect = outlineView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
+		width += (cellRect.x - columnRect.x);
 	}
 	if (recurse && expanded) {
 		for (int i = 0; i < items.length; i++) {
@@ -1346,8 +1357,8 @@ public void setImage (int index, Image image) {
 		images [index] = image;	
 	}
 //	cached = true;
-//	if (index == 0) parent.setScrollWidth (this);
-	
+	if (index == 0) parent.setScrollWidth (this, false, true);
+
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
 		outlineView.reloadItem (handle);
@@ -1441,7 +1452,7 @@ public void setText (int index, String string) {
 		strings [index] = string;
 	}
 	cached = true;
-	if (index == 0) parent.setScrollWidth (this);
+	if (index == 0) parent.setScrollWidth (this, false, true);
 
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	if (parent.hooks (SWT.MeasureItem) || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {

@@ -6870,8 +6870,8 @@
     <method selector="object" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="userInfo">
-      <retval></retval>
+    <method selector="userInfo" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="NSNotificationCenter" swt_gen="mixed">

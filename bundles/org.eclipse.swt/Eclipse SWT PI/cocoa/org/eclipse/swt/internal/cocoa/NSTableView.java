@@ -28,6 +28,10 @@ public void addTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
 }
 
+public int /*long*/ columnAutoresizingStyle() {
+	return OS.objc_msgSend(this.id, OS.sel_columnAutoresizingStyle);
+}
+
 public NSIndexSet columnIndexesInRect(NSRect rect) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
 	return result != 0 ? new NSIndexSet(result) : null;
@@ -159,6 +163,10 @@ public void setAllowsMultipleSelection(boolean flag) {
 
 public void setBackgroundColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, color != null ? color.id : 0);
+}
+
+public void setColumnAutoresizingStyle(int /*long*/ style) {
+	OS.objc_msgSend(this.id, OS.sel_setColumnAutoresizingStyle_, style);
 }
 
 public void setDataSource(id aSource) {

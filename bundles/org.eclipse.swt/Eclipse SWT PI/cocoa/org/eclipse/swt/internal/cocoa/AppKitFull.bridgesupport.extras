@@ -19086,8 +19086,8 @@
       <arg name="point"></arg>
       <retval></retval>
     </method>
-    <method selector="columnAutoresizingStyle">
-      <retval></retval>
+    <method selector="columnAutoresizingStyle" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="columnIndexesInRect:" swt_gen="true">
       <arg name="rect" swt_gen="true"></arg>
@@ -19351,9 +19351,9 @@
       <arg name="color" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setColumnAutoresizingStyle:">
-      <arg name="style"></arg>
-      <retval></retval>
+    <method selector="setColumnAutoresizingStyle:" swt_gen="true">
+      <arg name="style" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setCornerView:">
       <arg name="cornerView"></arg>
@@ -24669,8 +24669,8 @@
     <method selector="outlineViewItemDidCollapse:">
       <arg name="notification"></arg>
     </method>
-    <method selector="outlineViewItemDidExpand:">
-      <arg name="notification"></arg>
+    <method selector="outlineViewItemDidExpand:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
     </method>
     <method selector="outlineViewItemWillCollapse:">
       <arg name="notification"></arg>

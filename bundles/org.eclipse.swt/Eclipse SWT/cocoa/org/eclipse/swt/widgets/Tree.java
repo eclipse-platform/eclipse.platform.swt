@@ -1626,7 +1626,7 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 	if (hooks (SWT.MeasureItem)) {
 		NSOutlineView view = (NSOutlineView)this.view;
 		int nsColumnIndex = (int)/*64*/view.columnWithIdentifier (new id (tableColumn));
-		int rowIndex = (int)/*64*/view.rowForItem(new id (itemID));
+		int rowIndex = (int)/*64*/view.rowForItem (new id (itemID));
 		NSRect rect = view.frameOfCellAtColumn (nsColumnIndex, rowIndex);
 		NSRect contentRect = browserCell.titleRectForBounds (rect);
 		NSSize contentSize = browserCell.cellSizeForBounds (rect);
@@ -1655,16 +1655,25 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 			if (item.customWidth != -1 || event.width != (int)Math.ceil (contentSize.width)) {
 				item.customWidth = event.width;	
 			}
-			if (change != 0) setScrollWidth (item);
+			if (change != 0) setScrollWidth (item, false, false);
 		}
 	}
+}
+
+void outlineViewItemDidExpand (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	NSNotification nsNotification = new NSNotification (notification);
+	NSDictionary info = nsNotification.userInfo ();
+	NSString key = NSString.stringWith ("NSObject"); //$NON-NLS-1$
+	int /*long*/ itemHandle = info.objectForKey (key).id;
+	TreeItem item = (TreeItem)display.getWidget (itemHandle);
+	setScrollWidth (item.getItems (), true, true);
 }
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	if (ignoreSelect) return;
 	NSOutlineView widget = (NSOutlineView) view;
 	int row = (int)/*64*/widget.selectedRow ();
-	if(row == -1)
+	if (row == -1)
 		postEvent (SWT.Selection);
 	else {
 		id _id = widget.itemAtRow (row);
@@ -2135,48 +2144,47 @@ public void setRedraw (boolean redraw) {
 	checkWidget ();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) {
-		setScrollWidth (true);
+		setScrollWidth ();
 	}
 }
 
-boolean setScrollWidth (TreeItem item) {
-//	if (ignoreRedraw || drawCount != 0) return false;
+boolean setScrollWidth () {
+	return setScrollWidth (items, true, true);
+}
+
+boolean setScrollWidth (TreeItem item, boolean recurse, boolean callMeasureItem) {
+	return setScrollWidth (new TreeItem[] {item}, recurse, callMeasureItem);
+}
+
+boolean setScrollWidth (TreeItem[] items, boolean recurse, boolean callMeasureItem) {
 	if (columnCount != 0) return false;
-//	TreeItem parentItem = item.parentItem;
-//	if (parentItem != null && !parentItem._getExpanded ()) return false;
-//	GC gc = new GC (this);
-//	int newWidth = item.calculateWidth (0, gc);
-//	gc.dispose ();
-//	newWidth += getInsetWidth (column_id, false);
-//	short [] width = new short [1];
-//	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-//	if (width [0] < newWidth) {
-//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-//		return true;
+//	if (currentItem != null) {
+//		if (currentItem != item) fixScrollWidth = true;
+//		return false;
 //	}
-//	firstColumn.setWidth(400);
+	if (/*ignoreRedraw ||*/ drawCount != 0) return false;
+	int newWidth = 0;
+	GC gc = new GC (this);
+	for (int i = 0; i < items.length; i++) {
+		TreeItem item = items[i];
+		if (item != null && !item.isDisposed ()) {
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc, recurse, callMeasureItem));
+			if (isDisposed ()) {
+				gc.dispose ();
+				return false;
+			}
+		}
+	}
+	gc.dispose ();
+	if (firstColumn.width () < newWidth) {
+		NSOutlineView outlineView = (NSOutlineView)view;
+		int /*long*/ oldResize = outlineView.columnAutoresizingStyle ();
+		outlineView.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
+		firstColumn.setWidth (newWidth);
+		outlineView.setColumnAutoresizingStyle (oldResize);
+		return true;
+	}
 	return false;
-}
-
-boolean setScrollWidth (boolean set) {
-//	return setScrollWidth(set, childIds, true);
-	return false;
-}
-
-boolean setScrollWidth (boolean set, int[] childIds, boolean recurse) {
-//	if (ignoreRedraw || drawCount != 0) return false;
-//	if (columnCount != 0 || childIds == null) return false;
-//	GC gc = new GC (this);
-//	int newWidth = calculateWidth (childIds, gc, recurse, 0, 0);
-//	gc.dispose ();
-//	newWidth += getInsetWidth (column_id, false);
-//	if (!set) {
-//		short [] width = new short [1];
-//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-//		if (width [0] >= newWidth) return false;
-//	}
-//	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-	return true;
 }
 
 /**

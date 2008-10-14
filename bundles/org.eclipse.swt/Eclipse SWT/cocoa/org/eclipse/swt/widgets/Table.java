@@ -2055,6 +2055,14 @@ public void setItemCount (int count) {
 	}
 }
 
+public void setRedraw (boolean redraw) {
+	checkWidget ();
+	super.setRedraw (redraw);
+	if (redraw && drawCount == 0) {
+		setScrollWidth ();
+	}
+}
+
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -2076,58 +2084,44 @@ public void setLinesVisible (boolean show) {
 	((NSTableView)view).setUsesAlternatingRowBackgroundColors(show);
 }
 
+boolean setScrollWidth () {
+	return setScrollWidth (items, true);
+}
+
 boolean setScrollWidth (TableItem item, boolean callMeasureItem) {
+	return setScrollWidth (new TableItem[] {item}, callMeasureItem);
+}
+
+boolean setScrollWidth (TableItem items[], boolean callMeasureItem) {
 	if (columnCount != 0) return false;
 	if (currentItem != null) {
 //		if (currentItem != item) fixScrollWidth = true;
 		return false;
 	}
-	if (drawCount != 0) return false;
-	GC gc = new GC (this);
-	int newWidth = item.calculateWidth (0, gc, callMeasureItem);
-	gc.dispose ();
-	if (isDisposed ()) return false;
-	newWidth += getInsetWidth ();
-	if (firstColumn.width() < newWidth) {
-		firstColumn.setWidth (newWidth);
-		return true;
-	}
-	return false;
-}
-
-boolean setScrollWidth (TableItem [] items, boolean set) {
-	if (columnCount != 0) return false;
-	if (currentItem != null) {
-//		fixScrollWidth = true;
-		return false;
-	}
-	if (drawCount != 0) return false;
-	GC gc = new GC (this);
+	if (/*ignoreRedraw ||*/ drawCount != 0) return false;
 	int newWidth = 0;
+	GC gc = new GC (this);
 	for (int i = 0; i < items.length; i++) {
-		TableItem item = items [i];
+		TableItem item = items[i];
 		if (item != null && !item.isDisposed ()) {
-			newWidth = Math.max (newWidth, item.calculateWidth (0, gc, true));
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc, callMeasureItem));
 			if (isDisposed ()) {
 				gc.dispose ();
 				return false;
 			}
-			if (gc.isDisposed ()) gc = new GC (this);
 		}
 	}
 	gc.dispose ();
 	newWidth += getInsetWidth ();
-//	if (!set) {
-//		short [] width = new short [1];
-//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-//		if (width [0] >= newWidth) return false;
-//	}
-//	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-	if (!set) {
-		if (firstColumn.width() > newWidth) return false;
+	if (firstColumn.width () < newWidth) {
+		NSTableView tableView = (NSTableView)view;
+		int /*long*/ oldResize = tableView.columnAutoresizingStyle ();
+		tableView.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
+		firstColumn.setWidth (newWidth);
+		tableView.setColumnAutoresizingStyle (oldResize);
+		return true;
 	}
-	firstColumn.setWidth (newWidth);
-	return true;
+	return false;
 }
 
 /**
