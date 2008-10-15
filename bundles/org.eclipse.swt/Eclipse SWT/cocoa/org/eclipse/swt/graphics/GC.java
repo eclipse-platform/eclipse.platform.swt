@@ -615,12 +615,20 @@ NSAttributedString createString(String string, int flags) {
 		color = NSColor.colorWithDeviceRed(background[0], background[1], background[2], data.alpha / 255f);
 		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
+	if ((flags & SWT.DRAW_TAB) == 0) {
+		NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
+		paragraph.setAlignment(OS.NSLeftTextAlignment);
+		paragraph.setLineBreakMode(OS.NSLineBreakByClipping);
+		paragraph.setTabStops(NSArray.array());
+		dict.setObject(paragraph, OS.NSParagraphStyleAttributeName);
+		paragraph.release();
+	}
 	int length = string.length();
 	char[] chars = new char[length];
 	string.getChars(0, length, chars, 0);
 	int breakCount = 0;
 	int[] breaks = null;
-	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
+	if ((flags & SWT.DRAW_MNEMONIC) !=0 || (flags & SWT.DRAW_DELIMITER) == 0) {
 		int i=0, j=0;
 		while (i < chars.length) {
 			char c = chars [j++] = chars [i++];
@@ -635,7 +643,7 @@ NSAttributedString createString(String string, int flags) {
 				}
 				case '\r':
 				case '\n': {
-					if ((flags & SWT.DRAW_DELIMITER) != 0) {
+					if ((flags & SWT.DRAW_DELIMITER) == 0) {
 						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
 						j--;
 						if (breaks == null) {
