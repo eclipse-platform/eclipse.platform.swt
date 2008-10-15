@@ -36,7 +36,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	
-	final ScrolledComposite scrollComposite = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+	final ScrolledComposite scrollComposite = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
 
 	final Composite parent = new Composite(scrollComposite, SWT.NONE);
 	for(int i = 0; i <= 50; i++) {
@@ -55,7 +55,7 @@ public static void main(String[] args) {
 	scrollComposite.addControlListener(new ControlAdapter() {
 		public void controlResized(ControlEvent e) {
 			Rectangle r = scrollComposite.getClientArea();
-			scrollComposite.setMinSize(Math.max(300, r.width), SWT.DEFAULT);
+			scrollComposite.setMinSize(parent.computeSize(r.width, SWT.DEFAULT));
 		}
 	});
 
