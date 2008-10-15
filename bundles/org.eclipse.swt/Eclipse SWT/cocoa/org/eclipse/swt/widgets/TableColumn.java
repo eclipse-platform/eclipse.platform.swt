@@ -608,6 +608,8 @@ public void setText (String string) {
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
 	displayText = new String (buffer, 0, length);
+	NSString title = NSString.stringWith (displayText);
+	nsColumn.headerCell ().setTitle (title);
 	NSTableHeaderView headerView = ((NSTableView) parent.view).headerView ();
 	if (headerView == null) return;
 	int /*long*/ index = ((NSTableView)parent.view).columnWithIdentifier (nsColumn);
