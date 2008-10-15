@@ -1550,7 +1550,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 				Event event = new Event ();
 				if (length == 1) setKeyState (event, SWT.KeyDown, nsEvent);
 				event.character = buffer [i];
-				sendKeyEvent (SWT.KeyDown, event);
+				if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return false;
 			}
 		}
 		if ((state & CANVAS) != 0) return true;

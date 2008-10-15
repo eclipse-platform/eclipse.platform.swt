@@ -420,6 +420,7 @@ void createHandle () {
 //		widget.setTarget(widget);
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setRichText (false);
+		widget.setDelegate(widget);
 		
 		view = widget;
 		scrollView = scrollWidget;
@@ -1260,10 +1261,55 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		short keyCode = nsEvent.keyCode ();
 		switch (keyCode) {
 			case 76: /* KP Enter */
-			case 36: { /* Return */
+			case 36: /* Return */
 				postEvent (SWT.DefaultSelection);
-			}
 		}
+	}
+	if ((stateMask & SWT.COMMAND) != 0) return result;
+	String oldText = "";
+	int charCount = getCharCount ();
+	Point selection = getSelection ();
+	int start = selection.x, end = selection.y;
+	short keyCode = nsEvent.keyCode ();
+	NSString characters = nsEvent.charactersIgnoringModifiers();
+	char character = (char) characters.characterAtIndex(0);
+	switch (keyCode) {
+		case 51: /* Backspace */
+			if (start == end) {
+				if (start == 0) return true;
+				start = Math.max (0, start - 1);
+			}
+			break;
+		case 117: /* Delete */
+			if (start == end) {
+				if (start == charCount) return true;
+				end = Math.min (end + 1, charCount);
+			}
+			break;
+		case 36: /* Return */
+			if ((style & SWT.SINGLE) != 0) return true;
+			oldText = DELIMITER;
+			break;
+		default:
+			if (character != '\t' && character < 0x20) return true;
+			oldText = new String (new char [] {character});
+	}
+	String newText = verifyText (oldText, start, end, nsEvent);
+	if (newText == null) return false;
+	if (charCount - (end - start) + newText.length () > textLimit) {
+		return false;
+	}
+	result = newText == oldText;
+	if (newText != oldText || hiddenText != null) {
+		if ((style & SWT.SINGLE) != 0) {
+			insertEditText (newText);
+		} else {
+			NSString str = NSString.stringWith (newText);
+			NSTextView widget = (NSTextView) view;
+			NSRange range = widget.selectedRange ();
+			widget.textStorage ().replaceCharactersInRange (range, str);
+		}
+		if (newText.length () != 0) sendEvent (SWT.Modify);
 	}
 	return result;
 }
@@ -1750,16 +1796,12 @@ int traversalCode (int key, NSEvent theEvent) {
 	return bits;
 }
 
-String verifyText (String string, int start, int end, Event keyEvent) {
+String verifyText (String string, int start, int end, NSEvent keyEvent) {
 	Event event = new Event ();
+	if (keyEvent != null) setKeyState(event, SWT.MouseDown, keyEvent);
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	if (keyEvent != null) {
-		event.character = keyEvent.character;
-		event.keyCode = keyEvent.keyCode;
-		event.stateMask = keyEvent.stateMask;
-	}
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify
