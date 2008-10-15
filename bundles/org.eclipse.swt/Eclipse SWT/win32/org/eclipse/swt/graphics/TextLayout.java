@@ -975,7 +975,7 @@ RECT drawRunText(int /*long*/ hdc, StyleItem run, RECT rect, int baseline, int c
 		OS.SetTextColor(hdc, selectionColor);
 		OS.ScriptTextOut(hdc, run.psc, x, y, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 	}
-	return partialSelection ? rect : null;
+	return fullSelection || partialSelection ? rect : null;
 }
 
 RECT drawRunTextGDIP(int /*long*/ graphics, StyleItem run, RECT rect, int /*long*/ gdipFont, int baseline, int /*long*/ color, int /*long*/ selectionColor, int selectionStart, int selectionEnd, int alpha) {
@@ -1059,7 +1059,7 @@ RECT drawRunTextGDIP(int /*long*/ graphics, StyleItem run, RECT rect, int /*long
 		Gdip.Graphics_Restore(graphics, gstateMirrored);
 	}
 	if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
-	return partialSelection ? rect : null;
+	return fullSelection || partialSelection ? rect : null;
 }
 
 RECT drawRunTextGDIPRaster(int /*long*/ graphics, StyleItem run, RECT rect, int baseline, int color, int selectionColor, int selectionStart, int selectionEnd) {
