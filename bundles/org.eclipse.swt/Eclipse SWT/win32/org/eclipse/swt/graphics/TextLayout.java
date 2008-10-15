@@ -631,19 +631,16 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
-		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
-		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
-		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
-		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
-		selectionStart = translateOffset(selectionStart);
-		selectionEnd = translateOffset(selectionEnd);
-	}
-	RECT rect = new RECT();
 	int /*long*/ gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
 	int /*long*/ selBackground = 0;
 	int selForeground = 0;
 	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
+		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		if (hasSelection) {
+			selectionStart = translateOffset(Math.min(Math.max(0, selectionStart), length - 1));
+			selectionEnd = translateOffset(Math.min(Math.max(0, selectionEnd), length - 1));
+		}
 		if (gdip) {
 			gdipSelBackground = createGdipBrush(selectionBackground, alpha);
 			gdipSelForeground = createGdipBrush(selectionForeground, alpha);
@@ -652,6 +649,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			selForeground = selectionForeground.handle;
 		}
 	}
+	RECT rect = new RECT();
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndent(line);
