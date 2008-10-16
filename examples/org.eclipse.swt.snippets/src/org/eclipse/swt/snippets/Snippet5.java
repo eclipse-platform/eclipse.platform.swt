@@ -46,8 +46,7 @@ public static void main (String [] args)
     c2.setContent(b2);
     c2.setExpandHorizontal(true);
     c2.setExpandVertical(true);
-    c2.setMinWidth(400);
-    c2.setMinHeight(400);
+    c2.setMinSize(400, 400);
 
     shell.setSize(600, 300);
     shell.open ();
