@@ -896,7 +896,6 @@ public class Accessible {
 	
 	id getPositionAttribute (int childID) {
 		id returnValue = null;
-		NSPoint osPositionAttribute = new NSPoint ();
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
 		event.width = -1;
@@ -910,20 +909,17 @@ public class Accessible {
 		
 		if (event.width != -1) {
 			// The point returned is the lower-left coordinate of the widget in lower-left relative screen coordinates.
+			NSPoint osPositionAttribute = new NSPoint ();
 			osPositionAttribute.x = event.x;
-			osPositionAttribute.y = (int) (primaryMonitor.getBounds().height - event.y) - event.height;
-		} else {
-			Rectangle location = control.getBounds();
-			Point pt = control.getParent().toDisplay(location.x, location.y);
-			osPositionAttribute.x = pt.x;
-			osPositionAttribute.y = (int) (primaryMonitor.getBounds().height - pt.y) - location.height;
+			osPositionAttribute.y = primaryMonitor.getBounds().height - event.y - event.height;
+			returnValue = NSValue.valueWithPoint(osPositionAttribute);
 		}
 		
-		returnValue = NSValue.valueWithPoint(osPositionAttribute);
 		return returnValue;
 	}
 	
 	id getSizeAttribute (int childID) {
+		id returnValue = null;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
 		event.width = -1;
@@ -937,13 +933,10 @@ public class Accessible {
 		if (event.width != -1) {
 			controlSize.width = event.width;
 			controlSize.height = event.height;
-		} else {
-			Rectangle bounds = control.getBounds();
-			controlSize.width = bounds.width;
-			controlSize.height = bounds.height;
+			returnValue = NSValue.valueWithSize(controlSize);
 		}
 		
-		return NSValue.valueWithSize(controlSize);
+		return returnValue;
 	}
 	
 	id getDescriptionAttribute (int childID) {
