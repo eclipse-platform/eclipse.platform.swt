@@ -584,6 +584,7 @@ int[] getRanges(int start, int length) {
 		if (rangeStart >= styleCount) return null;
 		if (styles[rangeStart].start > end) return null;
 		int rangeEnd = Math.min(styleCount - 1, getRangeIndex(end, rangeStart - 1, styleCount));
+		if (styles[rangeEnd].start > end) rangeEnd = Math.max(rangeStart, rangeEnd - 1);
 		newRanges = new int[(rangeEnd - rangeStart + 1) << 1];
 		for (int i = rangeStart, j = 0; i <= rangeEnd; i++, j += 2) {
 			StyleRange style = styles[i];
@@ -626,6 +627,7 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 		if (rangeStart >= styleCount) return null;
 		if (styles[rangeStart].start > end) return null;
 		int rangeEnd = Math.min(styleCount - 1, getRangeIndex(end, rangeStart - 1, styleCount));
+		if (styles[rangeEnd].start > end) rangeEnd = Math.max(rangeStart, rangeEnd - 1);
 		newStyles = new StyleRange[rangeEnd - rangeStart + 1];
 		System.arraycopy(styles, rangeStart, newStyles, 0, newStyles.length);
 	}
