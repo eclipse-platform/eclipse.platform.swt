@@ -627,16 +627,18 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 		newStyles = new StyleRange[rangeEnd - rangeStart + 1];
 		System.arraycopy(styles, rangeStart, newStyles, 0, newStyles.length);
 	}
-	StyleRange style = newStyles[0];
-	if (start > style.start) {
-		if (!includeRanges || ranges == null) newStyles[0] = style = (StyleRange)style.clone();
-		style.length = style.start + style.length - start;
-		style.start = start;
-	}
-	style = newStyles[newStyles.length - 1];
-	if (end < style.start + style.length - 1) {
-		if (!includeRanges || ranges == null) newStyles[newStyles.length - 1] = style = (StyleRange)style.clone();
-		style.length = end - style.start + 1;
+	if (includeRanges || ranges == null) {
+		StyleRange style = newStyles[0];
+		if (start > style.start) {
+			newStyles[0] = style = (StyleRange)style.clone();
+			style.length = style.start + style.length - start;
+			style.start = start;
+		}
+		style = newStyles[newStyles.length - 1];
+		if (end < style.start + style.length - 1) {
+			newStyles[newStyles.length - 1] = style = (StyleRange)style.clone();
+			style.length = end - style.start + 1;
+		}
 	}
 	return newStyles;
 }
