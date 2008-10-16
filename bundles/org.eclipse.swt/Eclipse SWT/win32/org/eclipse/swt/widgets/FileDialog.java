@@ -329,7 +329,7 @@ public String open () {
 	if (save && overwrite) struct.Flags |= OS.OFN_OVERWRITEPROMPT;
 	Callback callback = null;
 	if ((style & SWT.MULTI) != 0) {
-		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER;
+		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER | OS.OFN_ENABLESIZING;
 		if (!OS.IsWinCE && USE_HOOK) {
 			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
 			int /*long*/ lpfnHook = callback.getAddress ();

@@ -1226,6 +1226,7 @@ public class OS extends C {
 	public static final int OFN_ALLOWMULTISELECT = 0x200;
 	public static final int OFN_EXPLORER = 0x80000;
 	public static final int OFN_ENABLEHOOK = 0x20;
+	public static final int OFN_ENABLESIZING = 0x800000;
 	public static final int OFN_HIDEREADONLY = 0x4;
 	public static final int OFN_NOCHANGEDIR = 0x8;
 	public static final int OFN_OVERWRITEPROMPT = 0x2;
