@@ -396,13 +396,13 @@ public class ControlsWithAccessibleNamesExample {
 		
 //		Composite composite, overrideComposite;
 		composite = new Composite(shell, SWT.BORDER);
-		composite.setLayoutData(new GridData(64, 64));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		composite.setLayout(new GridLayout());
 		new Button(composite, SWT.RADIO).setText("Child 1");
 		new Button(composite, SWT.RADIO).setText("Child 2");
 
 		overrideComposite = new Composite(shell, SWT.BORDER);
-		overrideComposite.setLayoutData(new GridData(64, 64));
+		overrideComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		overrideComposite.setLayout(new GridLayout());
 		new Button(overrideComposite, SWT.RADIO).setText("Child 1");
 		new Button(overrideComposite, SWT.RADIO).setText("Child 2");
