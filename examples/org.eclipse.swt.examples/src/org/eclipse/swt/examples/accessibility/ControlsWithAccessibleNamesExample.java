@@ -503,6 +503,17 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCTabFolder.setData("child", "CTabItem");
 		overrideCTabFolder.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
+//		StyledText styledText, overrideStyledText;
+		styledText = new StyledText(shell, SWT.SINGLE | SWT.BORDER);
+		styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		styledText.setText("Contents of StyledText");
+		
+		overrideStyledText = new StyledText(shell, SWT.SINGLE | SWT.BORDER);
+		overrideStyledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		overrideStyledText.setText("Contents of StyledText");
+		overrideStyledText.setData("name", "StyledText");
+		overrideStyledText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+	
 //		Scale scale, overrideScale;
 		scale = new Scale(shell, SWT.NONE);
 		scale.setToolTipText("Scale ToolTip");
