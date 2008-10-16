@@ -567,6 +567,7 @@ int getRangeIndex(int offset, int low, int high) {
 	return high;
 }
 int[] getRanges(int start, int length) {
+	if (length == 0) return null;
 	int[] newRanges;
 	int end = start + length - 1;
 	if (ranges != null) {
@@ -600,6 +601,7 @@ int[] getRanges(int start, int length) {
 	return newRanges;
 }
 StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
+	if (length == 0) return null;
 	StyleRange[] newStyles;
 	int end = start + length - 1;
 	if (ranges != null) {
