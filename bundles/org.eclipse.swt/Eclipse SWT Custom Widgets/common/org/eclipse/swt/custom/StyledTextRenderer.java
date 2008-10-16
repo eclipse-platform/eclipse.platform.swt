@@ -575,6 +575,7 @@ int[] getRanges(int start, int length) {
 		if (rangeStart >= rangeCount) return null;
 		if (ranges[rangeStart] > end) return null;
 		int rangeEnd = Math.min(rangeCount - 2, getRangeIndex(end, rangeStart - 1, rangeCount));
+		if (ranges[rangeEnd] > end) rangeEnd = Math.max(rangeStart, rangeEnd - 2);
 		newRanges = new int[rangeEnd - rangeStart + 2];
 		System.arraycopy(ranges, rangeStart, newRanges, 0, newRanges.length);
 	} else {
@@ -587,20 +588,14 @@ int[] getRanges(int start, int length) {
 			StyleRange style = styles[i];
 			newRanges[j] = style.start;
 			newRanges[j + 1] = style.length;
-		}		
+		}
 	}
 	if (start > newRanges[0]) {
 		newRanges[1] = newRanges[0] + newRanges[1] - start;
 		newRanges[0] = start;
 	}
 	if (end < newRanges[newRanges.length - 2] + newRanges[newRanges.length - 1] - 1) {
-		if (end < newRanges[newRanges.length - 2]) {
-			int[] tmp = new int[newRanges.length - 2];
-			System.arraycopy(newRanges, 0, tmp, 0, newRanges.length - 2);
-			newRanges = tmp;
-		} else {
-			newRanges[newRanges.length - 1] = end - newRanges[newRanges.length - 2] + 1;
-		}
+		newRanges[newRanges.length - 1] = end - newRanges[newRanges.length - 2] + 1;
 	}
 	return newRanges;
 }
@@ -613,6 +608,7 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 		if (rangeStart >= rangeCount) return null;
 		if (ranges[rangeStart] > end) return null;
 		int rangeEnd = Math.min(rangeCount - 2, getRangeIndex(end, rangeStart - 1, rangeCount));
+		if (ranges[rangeEnd] > end) rangeEnd = Math.max(rangeStart, rangeEnd - 2);
 		newStyles = new StyleRange[((rangeEnd - rangeStart) >> 1) + 1];
 		if (includeRanges) {
 			for (int i = rangeStart, j = 0; i <= rangeEnd; i += 2, j++) {
@@ -639,14 +635,8 @@ StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 	}
 	style = newStyles[newStyles.length - 1];
 	if (end < style.start + style.length - 1) {
-		if (end < style.start) {
-			StyleRange[] tmp = new StyleRange[newStyles.length - 1];
-			System.arraycopy(newStyles, 0, tmp, 0, newStyles.length - 1);
-			newStyles = tmp;
-		} else {
-			if (!includeRanges || ranges == null) newStyles[newStyles.length - 1] = style = (StyleRange)style.clone();
-			style.length = end - style.start + 1;
-		}
+		if (!includeRanges || ranges == null) newStyles[newStyles.length - 1] = style = (StyleRange)style.clone();
+		style.length = end - style.start + 1;
 	}
 	return newStyles;
 }
