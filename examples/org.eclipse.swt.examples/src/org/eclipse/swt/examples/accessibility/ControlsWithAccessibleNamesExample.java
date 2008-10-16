@@ -44,13 +44,19 @@ public class ControlsWithAccessibleNamesExample {
 	static Sash sash, overrideSash;
 	static Scale scale, overrideScale;
 	static Slider slider, overrideSlider;
-	static Image image;
+	static Image smallImage, largeImage, transparentImage;
 		
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
 		shell.setLayout(new GridLayout(2, true));
 		shell.setText("Override Accessibility Test");
+		
+		largeImage = new Image(display, ControlsWithAccessibleNamesExample.class.getResourceAsStream("run_wiz.gif"));
+		smallImage = new Image(display, ControlsWithAccessibleNamesExample.class.getResourceAsStream("run.gif"));
+		ImageData source = smallImage.getImageData();
+		ImageData mask = source.getTransparencyMask();
+		transparentImage = new Image(display, source, mask);
 		
 		new Label(shell, SWT.NONE).setText("Use Platform Name");
 		new Label(shell, SWT.NONE).setText("Override Platform Name");
@@ -74,11 +80,11 @@ public class ControlsWithAccessibleNamesExample {
 			}
 		};
 		
-//		static Shell shell;
+//		Shell shell;
 		shell.setData("name", "Shell");
 		shell.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Label label, overrideLabel;
+//		Label label, overrideLabel;
 		label = new Label(shell, SWT.BORDER);
 		label.setText("Label");
 		label.setToolTipText("Label ToolTip");
@@ -89,19 +95,18 @@ public class ControlsWithAccessibleNamesExample {
 		overrideLabel.setData("name", "Label");
 		overrideLabel.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Label imageLabel, overrideImageLabel;
-		image = new Image(display, ControlsWithAccessibleNamesExample.class.getResourceAsStream("run_wiz.gif"));
+//		Label imageLabel, overrideImageLabel;
 		imageLabel = new Label(shell, SWT.BORDER);
-		imageLabel.setImage(image);
+		imageLabel.setImage(largeImage);
 		imageLabel.setToolTipText("Image Label ToolTip");
 
 		overrideImageLabel = new Label(shell, SWT.BORDER);
-		overrideImageLabel.setImage(image);
+		overrideImageLabel.setImage(largeImage);
 		overrideImageLabel.setToolTipText("Image Label ToolTip");
 		overrideImageLabel.setData("name", "Image Label");
 		overrideImageLabel.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Button button, overrideButton;
+//		Button button, overrideButton;
 		button = new Button(shell, SWT.PUSH);
 		button.setText("Button");
 		button.setToolTipText("Button ToolTip");
@@ -112,18 +117,18 @@ public class ControlsWithAccessibleNamesExample {
 		overrideButton.setData("name", "Button");
 		overrideButton.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Button imageButton, overrideImageButton;
+//		Button imageButton, overrideImageButton;
 		imageButton = new Button(shell, SWT.PUSH);
-		imageButton.setImage(image);
+		imageButton.setImage(smallImage);
 		imageButton.setToolTipText("Image Button ToolTip");
 		
 		overrideImageButton = new Button(shell, SWT.PUSH);
-		overrideImageButton.setImage(image);
+		overrideImageButton.setImage(smallImage);
 		overrideImageButton.setToolTipText("Image Button ToolTip");
 		overrideImageButton.setData("name", "Image Button");
 		overrideImageButton.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static Combo combo, overrideCombo;
+//		Combo combo, overrideCombo;
 		combo = new Combo(shell, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
 			combo.add("item" + i);
@@ -140,7 +145,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCombo.setData("name", "Combo");
 		overrideCombo.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 				
-//		static Spinner spinner, overrideSpinner;
+//		Spinner spinner, overrideSpinner;
 		spinner = new Spinner(shell, SWT.BORDER);
 		spinner.setSelection(5);
 		spinner.setToolTipText("Spinner ToolTip");
@@ -151,7 +156,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideSpinner.setData("name", "Spinner");
 		overrideSpinner.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 				
-//		static List list, overrideList;
+//		List list, overrideList;
 		list = new List(shell, SWT.SINGLE | SWT.BORDER);
 		list.setItems(new String[] {"Item0", "Item1", "Item2"});
 		
@@ -161,18 +166,18 @@ public class ControlsWithAccessibleNamesExample {
 		overrideList.setData("child", "List Item");
 		overrideList.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static Text text, overrideText;
+//		Text text, overrideText;
 		text = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		text.setText("Contents of Text");
 		
 		overrideText = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		overrideText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		overrideText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		overrideText.setText("Contents of Text");
 		overrideText.setData("name", "Text");
 		overrideText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static Table table, overrideTable;
+//		Table table, overrideTable;
 		table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -202,9 +207,8 @@ public class ControlsWithAccessibleNamesExample {
 		overrideTable.setData("child", "Table Item");
 		overrideTable.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static Tree tree, overrideTree;
+//		Tree tree, overrideTree;
 		tree = new Tree(shell, SWT.BORDER | SWT.MULTI);
-		tree.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		for (int i = 0; i < 3; i++) {
 			TreeItem item = new TreeItem(tree, SWT.NONE);
 			item.setText("Item" + i);
@@ -214,7 +218,6 @@ public class ControlsWithAccessibleNamesExample {
 		}
 		
 		overrideTree = new Tree(shell, SWT.BORDER | SWT.MULTI);
-		overrideTree.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		for (int i = 0; i < 3; i++) {
 			TreeItem item = new TreeItem(overrideTree, SWT.NONE);
 			item.setText("Item" + i);
@@ -226,11 +229,10 @@ public class ControlsWithAccessibleNamesExample {
 		overrideTree.setData("child", "Tree Item");
 		overrideTree.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 						
-//		static Tree treeTable, overrideTreeTable;
+//		Tree treeTable, overrideTreeTable;
 		treeTable = new Tree(shell, SWT.BORDER | SWT.MULTI);
 		treeTable.setHeaderVisible(true);
 		treeTable.setLinesVisible(true);
-		treeTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		for (int col = 0; col < 3; col++) {
 			TreeColumn column = new TreeColumn(treeTable, SWT.NONE);
 			column.setText("Col " + col);
@@ -247,7 +249,6 @@ public class ControlsWithAccessibleNamesExample {
 		overrideTreeTable = new Tree(shell, SWT.BORDER | SWT.MULTI);
 		overrideTreeTable.setHeaderVisible(true);
 		overrideTreeTable.setLinesVisible(true);
-		overrideTreeTable.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		for (int col = 0; col < 3; col++) {
 			TreeColumn column = new TreeColumn(overrideTreeTable, SWT.NONE);
 			column.setText("Col " + col);
@@ -264,7 +265,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideTreeTable.setData("child", "tree Table Item");
 		overrideTreeTable.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 						
-//		static ToolBar toolBar, overrideToolBar;
+//		ToolBar toolBar, overrideToolBar;
 		toolBar = new ToolBar(shell, SWT.FLAT);
 		for (int i = 0; i < 3; i++) {
 			ToolItem item = new ToolItem(toolBar, SWT.PUSH);
@@ -282,37 +283,25 @@ public class ControlsWithAccessibleNamesExample {
 		overrideToolBar.setData("child", "ToolBar Item");
 		overrideToolBar.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static ToolBar imageToolBar, overrideImageToolBar;
+//		ToolBar imageToolBar, overrideImageToolBar;
 		imageToolBar = new ToolBar(shell, SWT.FLAT);
 		for (int i = 0; i < 3; i++) {
 			ToolItem item = new ToolItem(imageToolBar, SWT.PUSH);
-			try {
-				ImageData source = new ImageData(ControlsWithAccessibleNamesExample.class.getResourceAsStream("run.gif"));
-				ImageData mask = source.getTransparencyMask();
-				item.setImage(new Image(display, source, mask));
-			} catch (Exception e) {
-				item.setText("Image?");
-			}
+			item.setImage(transparentImage);
 			item.setToolTipText("Image ToolItem ToolTip" + i);
 		}
 		
 		overrideImageToolBar = new ToolBar(shell, SWT.FLAT);
 		for (int i = 0; i < 3; i++) {
 			ToolItem item = new ToolItem(overrideImageToolBar, SWT.PUSH);
-			try {
-				ImageData source = new ImageData(ControlsWithAccessibleNamesExample.class.getResourceAsStream("run.gif"));
-				ImageData mask = source.getTransparencyMask();
-				item.setImage(new Image(display, source, mask));
-			} catch (Exception e) {
-				item.setText("Image?");
-			}
+			item.setImage(transparentImage);
 			item.setToolTipText("Image ToolItem ToolTip" + i);
 		}
 		overrideImageToolBar.setData("name", "Image ToolBar");
 		overrideImageToolBar.setData("child", "Image ToolBar Item");
 		overrideImageToolBar.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static CoolBar coolBar, overrideCoolBar;
+//		CoolBar coolBar, overrideCoolBar;
 		coolBar = new CoolBar(shell, SWT.FLAT);
 		for (int i = 0; i < 2; i++) {
 			CoolItem coolItem = new CoolItem(coolBar, SWT.PUSH);
@@ -355,7 +344,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCoolBar.setData("child", "CoolBar Item");
 		overrideCoolBar.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 				
-//		static Canvas canvas, overrideCanvas;
+//		Canvas canvas, overrideCanvas;
 		canvas = new Canvas(shell, SWT.BORDER);
 		canvas.setLayoutData(new GridData(64, 64));
 		canvas.addPaintListener(new PaintListener() {
@@ -402,7 +391,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCanvas.setData("name", "Canvas");
 		overrideCanvas.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static Group group, overrideGroup;
+//		Group group, overrideGroup;
 		group = new Group(shell, SWT.NONE);
 		group.setText("Group");
 		group.setLayout(new FillLayout());
@@ -415,7 +404,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideGroup.setData("name", "Group");
 		overrideGroup.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static TabFolder tabFolder, overrideTabFolder;
+//		TabFolder tabFolder, overrideTabFolder;
 		tabFolder = new TabFolder(shell, SWT.NONE);
 		for (int i = 0; i < 3; i++) {
 			TabItem item = new TabItem(tabFolder, SWT.NONE);
@@ -439,7 +428,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideTabFolder.setData("child", "TabItem");
 		overrideTabFolder.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static CLabel cLabel, overrideCLabel;
+//		CLabel cLabel, overrideCLabel;
 		cLabel = new CLabel(shell, SWT.BORDER);
 		cLabel.setText("CLabel");
 		cLabel.setToolTipText("CLabel ToolTip");
@@ -452,7 +441,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCLabel.setData("name", "CLabel");
 		overrideCLabel.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
-//		static CCombo cCombo, overrideCCombo;
+//		CCombo cCombo, overrideCCombo;
 		cCombo = new CCombo(shell, SWT.BORDER);
 		for (int i = 0; i < 5; i++) {
 			cCombo.add("item" + i);
@@ -470,7 +459,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCCombo.setData("name", "CCombo");
 		overrideCCombo.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 				
-//		static CTabFolder cTabFolder, overrideCTabFolder;
+//		CTabFolder cTabFolder, overrideCTabFolder;
 		cTabFolder = new CTabFolder(shell, SWT.NULL);
 		for (int i = 0; i < 3; i++) {
 			CTabItem item = new CTabItem(cTabFolder, SWT.NULL);
@@ -496,7 +485,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCTabFolder.setData("child", "CTabItem");
 		overrideCTabFolder.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Scale scale, overrideScale;
+//		Scale scale, overrideScale;
 		scale = new Scale(shell, SWT.NONE);
 		scale.setToolTipText("Scale ToolTip");
 
@@ -505,7 +494,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideScale.setData("name", "Scale");
 		overrideScale.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Slider slider, overrideSlider;
+//		Slider slider, overrideSlider;
 		slider = new Slider(shell, SWT.NONE);
 		slider.setToolTipText("Slider ToolTip");
 
@@ -514,7 +503,7 @@ public class ControlsWithAccessibleNamesExample {
 		overrideSlider.setData("name", "Slider");
 		overrideSlider.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static ProgressBar progressBar, overrideProgressBar;
+//		ProgressBar progressBar, overrideProgressBar;
 		progressBar = new ProgressBar(shell, SWT.NONE);
 		progressBar.setSelection(50);
 		progressBar.setToolTipText("ProgressBar ToolTip");
@@ -525,21 +514,25 @@ public class ControlsWithAccessibleNamesExample {
 		overrideProgressBar.setData("name", "ProgressBar");
 		overrideProgressBar.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 
-//		static Sash sash, overrideSash;
-		sash = new Sash(shell, SWT.NONE);
+//		Sash sash, overrideSash;
+		sash = new Sash(shell, SWT.BORDER);
 		sash.setToolTipText("Sash ToolTip");
+		sash.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
-		overrideSash = new Sash(shell, SWT.NONE);
+		overrideSash = new Sash(shell, SWT.BORDER);
 		overrideSash.setToolTipText("Sash ToolTip");
 		overrideSash.setData("name", "Sash");
 		overrideSash.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+		overrideSash.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		image.dispose();
+		largeImage.dispose();
+		smallImage.dispose();
+		transparentImage.dispose();
 		display.dispose();
 	}
 }
