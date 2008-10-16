@@ -34,6 +34,7 @@ public class ControlsWithAccessibleNamesExample {
 	static ToolBar imageToolBar, overrideImageToolBar;
 	static CoolBar coolBar, overrideCoolBar;
 	static Canvas canvas, overrideCanvas;
+	static Composite composite, overrideComposite;
 	static Group group, overrideGroup;
 	static TabFolder tabFolder, overrideTabFolder;
 	static CLabel cLabel, overrideCLabel;
@@ -261,8 +262,8 @@ public class ControlsWithAccessibleNamesExample {
 				new TreeItem(item, SWT.NONE).setText(new String [] {"I" + i + j + "C0", "I" + i + j + "C1", "I" + i + j + "C2"});
 			}
 		}
-		overrideTreeTable.setData("name", "tree Table");
-		overrideTreeTable.setData("child", "tree Table Item");
+		overrideTreeTable.setData("name", "Tree Table");
+		overrideTreeTable.setData("child", "Tree Table Item");
 		overrideTreeTable.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 						
 //		ToolBar toolBar, overrideToolBar;
@@ -346,13 +347,14 @@ public class ControlsWithAccessibleNamesExample {
 				
 //		Canvas canvas, overrideCanvas;
 		canvas = new Canvas(shell, SWT.BORDER);
-		canvas.setLayoutData(new GridData(64, 64));
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				e.gc.drawString("Canvas", 15, 25);
 			}
 		});
-		canvas.setCaret (new Caret(canvas, SWT.NONE));
+		Caret caret = new Caret(canvas, SWT.NONE);
+		caret.setSize(2, 10);
+		canvas.setCaret (caret);
 		/* Hook key listener so canvas will take focus during traversal in. */
 		canvas.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
@@ -368,13 +370,14 @@ public class ControlsWithAccessibleNamesExample {
 		});
 
 		overrideCanvas = new Canvas(shell, SWT.BORDER);
-		overrideCanvas.setLayoutData(new GridData(64, 64));
 		overrideCanvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				e.gc.drawString("Canvas", 15, 25);
 			}
 		});
-		overrideCanvas.setCaret (new Caret(overrideCanvas, SWT.NONE));
+		caret = new Caret(overrideCanvas, SWT.NONE);
+		caret.setSize(2, 10);
+		overrideCanvas.setCaret (caret);
 		/* Hook key listener so canvas will take focus during traversal in. */
 		overrideCanvas.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
@@ -390,6 +393,21 @@ public class ControlsWithAccessibleNamesExample {
 		});
 		overrideCanvas.setData("name", "Canvas");
 		overrideCanvas.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
+		
+//		Composite composite, overrideComposite;
+		composite = new Composite(shell, SWT.BORDER);
+		composite.setLayoutData(new GridData(64, 64));
+		composite.setLayout(new GridLayout());
+		new Button(composite, SWT.RADIO).setText("Child 1");
+		new Button(composite, SWT.RADIO).setText("Child 2");
+
+		overrideComposite = new Composite(shell, SWT.BORDER);
+		overrideComposite.setLayoutData(new GridData(64, 64));
+		overrideComposite.setLayout(new GridLayout());
+		new Button(overrideComposite, SWT.RADIO).setText("Child 1");
+		new Button(overrideComposite, SWT.RADIO).setText("Child 2");
+		overrideComposite.setData("name", "Composite");
+		overrideComposite.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
 		
 //		Group group, overrideGroup;
 		group = new Group(shell, SWT.NONE);
