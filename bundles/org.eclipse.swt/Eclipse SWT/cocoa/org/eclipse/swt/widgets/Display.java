@@ -3627,6 +3627,12 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 			Event event = new Event ();
 			display.sendEvent (SWT.Close, event);
 			if (event.doit) {
+				/* Feature in Cocoa.  The OS auto releases the display's
+			    * screenWindow when the application is terminated with 
+				* the terminate action (Command-Q).  In this case we
+				* need to avoid releasing the window ourselves.
+				*/
+				display.screenWindow = null;
 				return OS.NSTerminateNow;
 			}
 		}
