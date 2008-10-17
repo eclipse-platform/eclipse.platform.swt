@@ -4088,7 +4088,7 @@ int getOffsetAtPoint(int x, int y, int[] trailing, boolean inTextOnly) {
 	int lineIndex = getLineIndex(y);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(lineIndex);	
-	x += horizontalScrollOffset - leftMargin ;
+	x += horizontalScrollOffset - leftMargin;
 	y -= getLinePixel(lineIndex);
 	int offset = layout.getOffset(x, y, trailing);
 	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offset));
@@ -5557,7 +5557,7 @@ void handlePaint(Event event) {
 		int left = blockXAnchor - horizontalScrollOffset;
 		int top = getLinePixel(firstLine);
 		int right = blockXLocation - horizontalScrollOffset;
-		int bottom = getLinePixel(lastLine + 1);
+		int bottom = getLinePixel(lastLine + 1) - 1;
 		gc.drawRectangle(left, top, right - left, bottom - top);
 		gc.setAdvanced(true);
 		gc.setAlpha(100);
