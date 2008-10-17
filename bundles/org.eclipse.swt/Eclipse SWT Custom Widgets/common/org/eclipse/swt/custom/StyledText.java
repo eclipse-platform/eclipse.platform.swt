@@ -5013,6 +5013,10 @@ public void insert(String string) {
 	replaceTextRange(sel.x, sel.y, string);
 }
 void insertBlockSelectionText(String text, int action) {
+	if (text.length() == 1) {
+		char key = text.charAt(0);
+		if (key == SWT.CR || key == SWT.LF) return;
+	}
 	int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
 	int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
 	if (firstLine > lastLine) {
@@ -5026,49 +5030,52 @@ void insertBlockSelectionText(String text, int action) {
 		left = blockXLocation;
 		right = blockXAnchor;
 	}
-	int start = 0;
-	int end = 0;
-	StringBuffer buffer = new StringBuffer(); 
+	int[] trailing = new int[1];
+	int offset = 0, delta = 0;
 	for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
 		String line = content.getLine(lineIndex);
 		int lineOffset = content.getOffsetAtLine(lineIndex);
-		//TODO BAD DOESN'T HANDLE BIDI
-		int lineStart = getOffsetAtPoint(left, 0, lineIndex);
-		int lineEnd = getOffsetAtPoint(right, 0, lineIndex);
-		switch (action) {
-			case ST.DELETE_PREVIOUS: {
-				if (lineStart == lineEnd && lineStart > lineOffset) {
-					if (getOffsetAtPoint(left, getLinePixel(lineIndex), null, true) != -1) {
-						lineStart = getClusterPrevious(lineStart, lineIndex);
-					}
-				}
-				break;
+		int lineEndOffset = lineOffset + line.length();
+		int linePixel = getLinePixel(lineIndex);
+		int start = getOffsetAtPoint(left, linePixel, trailing, true);
+		boolean outOfLine = start == -1;
+		if (outOfLine) {
+			start = left < leftMargin ? lineOffset : lineEndOffset;
+		} else {
+			start += trailing[0];
+		}
+		int end = getOffsetAtPoint(right, linePixel, trailing, true);
+		if (end == -1) {
+			end = right < leftMargin ? lineOffset : lineEndOffset; 
+		} else {
+			end += trailing[0];
+		}
+		if (start == end && !outOfLine) {
+			switch (action) {
+				case ST.DELETE_PREVIOUS: 
+					if (start > lineOffset) start = getClusterPrevious(start, lineIndex);
+					break;
+				case ST.DELETE_NEXT: 
+					if (end < lineEndOffset) end = getClusterNext(end, lineIndex);
+					break;
 			}
-			case ST.DELETE_NEXT: {
-				if (lineStart == lineEnd && lineEnd < lineOffset + line.length()) {
-					lineEnd = getClusterNext(lineEnd, lineIndex);
-				}
-				break;
+		}
+		if (outOfLine) {
+			if (line.length() > delta) {
+				delta = line.length();
+				offset = lineEndOffset + text.length();
 			}
+		} else {
+			offset = start + text.length();
+			delta = content.getCharCount();
 		}
-		if (lineIndex == firstLine) start = lineStart;
-		if (lineIndex == lastLine) end = lineEnd;
-		if (lineIndex != firstLine) {
-			buffer.append(line.substring(0, lineStart - lineOffset));
-		}
-		buffer.append(text);
-		if (lineIndex != lastLine) {
-			buffer.append(line.substring(lineEnd - lineOffset));
-			buffer.append(content.getLineDelimiter());
-		}
+		Event event = new Event();
+		event.text = text;
+		event.start = start;
+		event.end = end;
+		sendKeyEvent(event);
 	}
-	Event event = new Event();
-	event.text = buffer.toString();
-	event.start = start;
-	event.end = end;
-	sendKeyEvent(event);
-
-	int x = getPointAtOffset(caretOffset).x;
+	int x = getPointAtOffset(offset).x;
 	setBlockSelectionLocation(x, blockYLocation - getVerticalScrollOffset());
 	blockXAnchor = blockXLocation;
 }
