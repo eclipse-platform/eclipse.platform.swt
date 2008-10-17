@@ -2088,6 +2088,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		NSWindow window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
 		window = window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		window.setReleasedWhenClosed(false);
 		screenWindow = window;
 	}
 	NSGraphicsContext context = screenWindow.graphicsContext();
@@ -3627,12 +3628,6 @@ static int /*long*/ applicationDelegateProc(int /*long*/ id, int /*long*/ sel, i
 			Event event = new Event ();
 			display.sendEvent (SWT.Close, event);
 			if (event.doit) {
-				/* Feature in Cocoa.  The OS auto releases the display's
-			    * screenWindow when the application is terminated with 
-				* the terminate action (Command-Q).  In this case we
-				* need to avoid releasing the window ourselves.
-				*/
-				display.screenWindow = null;
 				return OS.NSTerminateNow;
 			}
 		}
