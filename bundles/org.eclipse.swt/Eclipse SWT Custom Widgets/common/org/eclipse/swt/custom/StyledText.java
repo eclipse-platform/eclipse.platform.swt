@@ -2229,9 +2229,7 @@ void doBackspace() {
 void doBlockSelectionMoveByKeyboard(int direction) {
 	if (blockSelection) {
 		if (blockXLocation == -1) {
-			int x = getPointAtOffset(caretOffset).x;
-			int y = getLinePixel(getCaretLine());
-			setBlockSelectionLocation(x, y);
+			setBlockSelectionOffset(caretOffset);
 		}
 		int x = blockXLocation - horizontalScrollOffset;
 		int y = blockYLocation - getVerticalScrollOffset();
@@ -2588,13 +2586,14 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	updateCaretDirection = true;
 	
 	if (blockSelection) {
+		if (!select) clearBlockSelection(true);
 		int[] trailing = new int[1]; 
 		int offset = getOffsetAtPoint(x, y, trailing, true);
 		if (offset != -1) {
-			x = getPointAtOffset(offset + trailing[0]).x;
+			setBlockSelectionOffset(offset + trailing[0]);
+		} else {
+			setBlockSelectionLocation(x, y);
 		}
-		if (!select) clearBlockSelection(true);
-		setBlockSelectionLocation(x, y);
 		return;
 	}
 	
@@ -7157,10 +7156,8 @@ public void setBlockSelection(boolean blockSelection) {
 		int start = selection.x;
 		int end = selection.y;
 		if (start != end) {
-			Point pt = getPointAtOffset(start);
-			setBlockSelectionLocation(pt.x, pt.y);
-			pt = getPointAtOffset(end);
-			setBlockSelectionLocation(pt.x, pt.y);
+			setBlockSelectionOffset(start);
+			setBlockSelectionOffset(end);
 		}
 	} else {
 		clearBlockSelection(false);
@@ -7171,6 +7168,29 @@ void setBlockSelectionLocation (int x, int y) {
 	blockXLocation = x + horizontalScrollOffset;
 	blockYLocation = y + verticalScrollOffset;
 	caretOffset = getOffsetAtPoint(blockXLocation - horizontalScrollOffset, blockYLocation - verticalScrollOffset);
+	if (blockXAnchor == -1) {
+		blockXAnchor = blockXLocation;
+		blockYAnchor = blockYLocation;
+		selectionAnchor = caretOffset;
+	}
+	if (caretOffset > selectionAnchor) {
+		selection.x = selectionAnchor;
+		selection.y = caretOffset;
+	} else {
+		selection.x = caretOffset;
+		selection.y = selectionAnchor;
+	}
+	getCaret().setVisible(false);
+	setCaretLocation();
+	//TODO REDRAW TOO MUCH
+	super.redraw();
+}
+void setBlockSelectionOffset (int offset) {
+	Point point = getPointAtOffset(offset);
+	int verticalScrollOffset = getVerticalScrollOffset();
+	blockXLocation = point.x + horizontalScrollOffset;
+	blockYLocation = point.y + verticalScrollOffset;
+	caretOffset = offset;
 	if (blockXAnchor == -1) {
 		blockXAnchor = blockXLocation;
 		blockYAnchor = blockYLocation;
@@ -8163,10 +8183,8 @@ void setSelection(int start, int length, boolean sendEvent) {
 		(length < 0 && selectionAnchor != selection.y)) {
 		if (blockSelection) {
 			clearBlockSelection(true);
-			Point pt = getPointAtOffset(start);
-			setBlockSelectionLocation(pt.x, pt.y);
-			pt = getPointAtOffset(end);
-			setBlockSelectionLocation(pt.x, pt.y);
+			setBlockSelectionOffset(start);
+			setBlockSelectionOffset(end);
 		} else {
 			clearSelection(sendEvent);
 			if (length < 0) {
