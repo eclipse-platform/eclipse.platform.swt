@@ -6335,7 +6335,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		// fixes 1GBB8NJ
 		if (updateCaret) {
 			// always update the caret location. fixes 1G8FODP
-			setSelection(event.start + event.text.length(), 0, true);
+			setSelection(event.start + event.text.length(), 0, true, false);
 			showCaret();
 		}
 		sendModifyEvent(event);
@@ -8246,7 +8246,7 @@ public void setSelection(int start, int end) {
  * @param sendEvent a Selection event is sent when set to true and when 
  * 	the selection is reset.
  */
-void setSelection(int start, int length, boolean sendEvent) {
+void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 	int end = start + length;
 	if (start > end) {
 		int temp = end;
@@ -8258,7 +8258,7 @@ void setSelection(int start, int length, boolean sendEvent) {
 	if (selection.x != start || selection.y != end || 
 		(length > 0 && selectionAnchor != selection.x) || 
 		(length < 0 && selectionAnchor != selection.y)) {
-		if (blockSelection) {
+		if (blockSelection && doBlock) {
 			clearBlockSelection(true);
 			setBlockSelectionOffset(start);
 			setBlockSelectionOffset(end);
@@ -8311,7 +8311,7 @@ public void setSelectionRange(int start, int length) {
 		// is thrown. Fixes 1GDKK3R
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	setSelection(start, length, false);
+	setSelection(start, length, false, true);
 	setCaretLocation();
 }
 /** 
@@ -8873,10 +8873,10 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 	}
 	if (selection.y > startOffset && selection.x < startOffset + replacedLength) {
 		// selection intersects replaced text. set caret behind text change
-		setSelection(startOffset + newLength, 0, true);
+		setSelection(startOffset + newLength, 0, true, false);
 	} else {
 		// move selection to keep same text selected
-		setSelection(selection.x + newLength - replacedLength, selection.y - selection.x, true);
+		setSelection(selection.x + newLength - replacedLength, selection.y - selection.x, true, false);
 	}
 	setCaretLocation();
 }
