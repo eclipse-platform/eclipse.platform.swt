@@ -1298,6 +1298,8 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 			}
 			break;
 		case OS.NSScrollWheel:
+		case OS.NSKeyDown:
+		case OS.NSKeyUp:
 			int state = OS.GetCurrentButtonState ();
 			if ((state & 0x1) != 0) event.stateMask |= SWT.BUTTON1;
 			if ((state & 0x2) != 0) event.stateMask |= SWT.BUTTON3;
