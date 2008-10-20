@@ -3306,51 +3306,6 @@ public boolean getBlockSelection() {
 	checkWidget();
 	return blockSelection;
 }
-/**
- * TEMPORARY CODE - API SUBJECT TO CHANGE
- * 
- * Returns the ranges of text that are inside the block selection rectangle.
- * <p>
- * The ranges array contains start and length pairs. When the receiver is not
- * in block selection mode the return arrays contains the start and length of
- * the regular selection.
- *
- * @return the ranges array
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.5
- */
-public int[] getBlockSelectionRanges() {
-	checkWidget();
-	if (blockSelection && blockXLocation != -1) {
-		int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
-		int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
-		if (firstLine > lastLine) {
-			int temp = firstLine;
-			firstLine = lastLine;
-			lastLine = temp;
-		}
-		int left = blockXAnchor;
-		int right = blockXLocation;
-		if (left > right) {
-			left = blockXLocation;
-			right = blockXAnchor;
-		}
-		int[] ranges = new int[(lastLine - firstLine + 1) * 2];
-		int index = 0;
-		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
-			int start = getOffsetAtPoint(left, 0, lineIndex);
-			ranges[index++] = start;
-			ranges[index++] = getOffsetAtPoint(right, 0, lineIndex) - start;
-		}
-		return ranges;
-	}
-	return new int[] {selection.x, selection.y - selection.x};
-}
 /** 
  * Returns the index of the last fully visible line.
  *
@@ -4332,6 +4287,51 @@ public Point getSelection() {
 public Point getSelectionRange() {
 	checkWidget();
 	return new Point(selection.x, selection.y - selection.x);
+}
+/**
+ * TEMPORARY CODE - API SUBJECT TO CHANGE
+ * 
+ * Returns the ranges of text that are inside the block selection rectangle.
+ * <p>
+ * The ranges array contains start and length pairs. When the receiver is not
+ * in block selection mode the return arrays contains the start and length of
+ * the regular selection.
+ *
+ * @return the ranges array
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.5
+ */
+public int[] getSelectionRanges() {
+	checkWidget();
+	if (blockSelection && blockXLocation != -1) {
+		int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
+		int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
+		if (firstLine > lastLine) {
+			int temp = firstLine;
+			firstLine = lastLine;
+			lastLine = temp;
+		}
+		int left = blockXAnchor;
+		int right = blockXLocation;
+		if (left > right) {
+			left = blockXLocation;
+			right = blockXAnchor;
+		}
+		int[] ranges = new int[(lastLine - firstLine + 1) * 2];
+		int index = 0;
+		for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
+			int start = getOffsetAtPoint(left, 0, lineIndex);
+			ranges[index++] = start;
+			ranges[index++] = getOffsetAtPoint(right, 0, lineIndex) - start;
+		}
+		return ranges;
+	}
+	return new int[] {selection.x, selection.y - selection.x};
 }
 /**
  * Returns the receiver's selection background color.
