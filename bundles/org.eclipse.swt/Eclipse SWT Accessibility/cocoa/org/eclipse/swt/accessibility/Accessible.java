@@ -14,7 +14,6 @@ package org.eclipse.swt.accessibility;
 import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
