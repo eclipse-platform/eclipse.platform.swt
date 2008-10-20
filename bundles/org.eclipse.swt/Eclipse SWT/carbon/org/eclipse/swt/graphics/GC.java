@@ -3440,6 +3440,9 @@ int setString(String string, int flags) {
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.xorMode = xor;
+	if (OS.VERSION >= 0x1040) {
+		OS.CGContextSetBlendMode(handle, xor ? OS.kCGBlendModeDifference : OS.kCGBlendModeNormal);
+	}
 }
 
 /**
