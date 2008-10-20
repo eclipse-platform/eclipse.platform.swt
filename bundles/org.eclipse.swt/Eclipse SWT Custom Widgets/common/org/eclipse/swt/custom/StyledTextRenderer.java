@@ -358,6 +358,9 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	Point selection = styledText.getSelection();
 	int selectionStart = selection.x - lineOffset;
 	int selectionEnd = selection.y - lineOffset;
+	if (styledText.getBlockSelection()) {
+		selectionStart = selectionEnd = 0;
+	}
 	Rectangle client = styledText.getClientArea();  
 	Color lineBackground = getLineBackground(lineIndex, null);
 	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);

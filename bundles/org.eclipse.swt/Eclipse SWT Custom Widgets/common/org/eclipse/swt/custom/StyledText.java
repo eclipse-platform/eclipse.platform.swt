@@ -163,8 +163,8 @@ public class StyledText extends Canvas {
 	
 	//block selection
 	boolean blockSelection;
-	int blockXAnchor, blockYAnchor;
-	int blockXLocation, blockYLocation;
+	int blockXAnchor = -1, blockYAnchor = -1;
+	int blockXLocation = -1, blockYLocation = -1;
 	
 
 	final static boolean IS_MAC, IS_GTK, IS_MOTIF;
@@ -1651,9 +1651,9 @@ void claimRightFreeSpace() {
 		scrollHorizontal(newHorizontalOffset - horizontalScrollOffset, true);					
 	}
 }
-void clearBlockSelection() {
+void clearBlockSelection(boolean reset) {
 	//TODO SEND SELECTION EVENT ?
-	resetSelection();
+	if (reset) resetSelection();
 	blockXAnchor = blockYAnchor = -1;
 	blockXLocation = blockYLocation = -1;
 	caretDirection = SWT.NULL;
@@ -2069,7 +2069,7 @@ public void cut() {
 	if (blockSelection && blockXLocation != -1) {
 		copy(DND.CLIPBOARD);
 		insertBlockSelectionText("", SWT.NULL);
-		clearBlockSelection();
+		clearBlockSelection(true);
 		return;
 	}
 	int length = selection.y - selection.x;
@@ -2593,7 +2593,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 		if (offset != -1) {
 			x = getPointAtOffset(offset + trailing[0]).x;
 		}
-		if (!select) clearBlockSelection();
+		if (!select) clearBlockSelection(true);
 		setBlockSelectionLocation(x, y);
 		return;
 	}
@@ -6112,7 +6112,7 @@ boolean invokeBlockSelectionAction(int action) {
 		case ST.TEXT_END:
 		case ST.WINDOW_START:
 		case ST.WINDOW_END:
-			clearBlockSelection();
+			clearBlockSelection(true);
 			return false;
 		// Selection
 		case ST.SELECT_LINE_UP:
@@ -6300,7 +6300,7 @@ public void paste(){
 	if (text != null && text.length() > 0) {
 		if (blockSelection && blockXLocation != -1) {
 			insertBlockSelectionText(getModelDelimitedText(text), SWT.NULL);
-			clearBlockSelection();
+			clearBlockSelection(true);
 			return;
 		}
 		Event event = new Event();
@@ -7146,7 +7146,6 @@ public void setBlockSelection(boolean blockSelection) {
 	checkWidget();
 	if ((getStyle() & SWT.SINGLE) != 0) return;
 	if (blockSelection == this.blockSelection) return;
-	//TODO WRAP 
 	if (wordWrap) return;
 	this.blockSelection = blockSelection;
 	if (cursor == null) {
@@ -7154,18 +7153,37 @@ public void setBlockSelection(boolean blockSelection) {
 		int type = blockSelection ? SWT.CURSOR_CROSS : SWT.CURSOR_IBEAM; 
 		super.setCursor(display.getSystemCursor(type));
 	}
-	clearBlockSelection();
+	if (blockSelection) {
+		int start = selection.x;
+		int end = selection.y;
+		if (start != end) {
+			Point pt = getPointAtOffset(start);
+			setBlockSelectionLocation(pt.x, pt.y);
+			pt = getPointAtOffset(end);
+			setBlockSelectionLocation(pt.x, pt.y);
+		}
+	} else {
+		clearBlockSelection(false);
+	}
 }
 void setBlockSelectionLocation (int x, int y) {
-	blockXLocation = Math.min(Math.max(x, leftMargin), clientAreaWidth - leftMargin - rightMargin) + horizontalScrollOffset;
-	blockYLocation = Math.min(Math.max(y, topMargin), clientAreaHeight - topMargin - bottomMargin) + getVerticalScrollOffset();
+	int verticalScrollOffset = getVerticalScrollOffset();
+	blockXLocation = x + horizontalScrollOffset;
+	blockYLocation = y + verticalScrollOffset;
+	caretOffset = getOffsetAtPoint(blockXLocation - horizontalScrollOffset, blockYLocation - verticalScrollOffset);
 	if (blockXAnchor == -1) {
 		blockXAnchor = blockXLocation;
 		blockYAnchor = blockYLocation;
+		selectionAnchor = caretOffset;
+	}
+	if (caretOffset > selectionAnchor) {
+		selection.x = selectionAnchor;
+		selection.y = caretOffset;
+	} else {
+		selection.x = caretOffset;
+		selection.y = selectionAnchor;
 	}
 	getCaret().setVisible(false);
-	caretOffset = getOffsetAtPoint(blockXLocation - horizontalScrollOffset, blockYLocation - getVerticalScrollOffset());
-	resetSelection();
 	setCaretLocation();
 	//TODO REDRAW TOO MUCH
 	super.redraw();
@@ -8139,16 +8157,24 @@ void setSelection(int start, int length, boolean sendEvent) {
 	if (selection.x != start || selection.y != end || 
 		(length > 0 && selectionAnchor != selection.x) || 
 		(length < 0 && selectionAnchor != selection.y)) {
-		clearSelection(sendEvent);
-		if (length < 0) {
-			selectionAnchor = selection.y = end;
-			caretOffset = selection.x = start;
+		if (blockSelection) {
+			clearBlockSelection(true);
+			Point pt = getPointAtOffset(start);
+			setBlockSelectionLocation(pt.x, pt.y);
+			pt = getPointAtOffset(end);
+			setBlockSelectionLocation(pt.x, pt.y);
 		} else {
-			selectionAnchor = selection.x = start;
-			caretOffset = selection.y = end;
+			clearSelection(sendEvent);
+			if (length < 0) {
+				selectionAnchor = selection.y = end;
+				caretOffset = selection.x = start;
+			} else {
+				selectionAnchor = selection.x = start;
+				caretOffset = selection.y = end;
+			}
+			caretAlignment = PREVIOUS_OFFSET_TRAILING;
+			internalRedrawRange(selection.x, selection.y - selection.x);
 		}
-		caretAlignment = PREVIOUS_OFFSET_TRAILING;
-		internalRedrawRange(selection.x, selection.y - selection.x);
 	}
 }
 /** 
@@ -8186,7 +8212,6 @@ public void setSelectionRange(int start, int length) {
 		// is thrown. Fixes 1GDKK3R
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (blockSelection) return;
 	setSelection(start, length, false);
 	setCaretLocation();
 }
