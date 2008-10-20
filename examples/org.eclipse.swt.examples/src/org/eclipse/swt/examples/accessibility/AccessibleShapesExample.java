@@ -29,16 +29,16 @@ public class AccessibleShapesExample {
 		shell.setLayout(new FillLayout());
 		
 		Shape redSquare = new Shape(shell, SWT.NONE);
-		redSquare.setColor("Red");
-		redSquare.setShape("Square");
+		redSquare.setColor(SWT.COLOR_RED);
+		redSquare.setShape("square");
 		
 		Shape blueCircle = new Shape(shell, SWT.NONE);
-		blueCircle.setColor("Blue");
-		blueCircle.setShape("Circle");
+		blueCircle.setColor(SWT.COLOR_BLUE);
+		blueCircle.setShape("circle");
 
 		Shape greenSquare = new Shape(shell, SWT.NONE);
-		greenSquare.setColor("Green");
-		greenSquare.setShape("Square");
+		greenSquare.setColor(SWT.COLOR_GREEN);
+		greenSquare.setShape("square");
 
 		shell.pack();
 		shell.open();
