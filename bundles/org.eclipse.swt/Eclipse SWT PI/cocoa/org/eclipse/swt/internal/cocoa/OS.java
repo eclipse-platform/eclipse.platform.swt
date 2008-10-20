@@ -1145,6 +1145,7 @@ public static final int /*long*/ sel_setPolicyDelegate_ = sel_registerName("setP
 public static final int /*long*/ sel_setPrinter_ = sel_registerName("setPrinter:");
 public static final int /*long*/ sel_setPropertyList_forType_ = sel_registerName("setPropertyList:forType:");
 public static final int /*long*/ sel_setPullsDown_ = sel_registerName("setPullsDown:");
+public static final int /*long*/ sel_setReleasedWhenClosed_ = sel_registerName("setReleasedWhenClosed:");
 public static final int /*long*/ sel_setResizingMask_ = sel_registerName("setResizingMask:");
 public static final int /*long*/ sel_setResourceLoadDelegate_ = sel_registerName("setResourceLoadDelegate:");
 public static final int /*long*/ sel_setRichText_ = sel_registerName("setRichText:");

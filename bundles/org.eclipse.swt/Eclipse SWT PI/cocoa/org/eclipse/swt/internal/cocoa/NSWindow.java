@@ -177,6 +177,10 @@ public void setOpaque(boolean isOpaque) {
 	OS.objc_msgSend(this.id, OS.sel_setOpaque_, isOpaque);
 }
 
+public void setReleasedWhenClosed(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setReleasedWhenClosed_, flag);
+}
+
 public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
