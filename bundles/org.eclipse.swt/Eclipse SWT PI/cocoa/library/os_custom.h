@@ -30,3 +30,4 @@
 #define CloseRgn_LIB "com.apple.Carbon"
 #define instrumentObjcMessageSends_LIB "com.apple.Foundation"
 #define SetThemeCursor_LIB "com.apple.Carbon"
+#define GetCurrentButtonState_LIB "com.apple.Carbon"

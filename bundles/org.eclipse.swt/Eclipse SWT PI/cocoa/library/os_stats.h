@@ -39,6 +39,7 @@ typedef enum {
 	DisposeRgn_FUNC,
 	EmptyRgn_FUNC,
 	Gestalt_FUNC,
+	GetCurrentButtonState_FUNC,
 	GetCurrentProcess_FUNC,
 	GetRegionBounds_FUNC,
 	JNIGetObject_FUNC,

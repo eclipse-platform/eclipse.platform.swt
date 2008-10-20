@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 353;
-int OS_nativeFunctionCallCount[353];
+int OS_nativeFunctionCount = 354;
+int OS_nativeFunctionCallCount[354];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -31,6 +31,7 @@ char * OS_nativeFunctionNames[] = {
 	"DisposeRgn",
 	"EmptyRgn",
 	"Gestalt",
+	"GetCurrentButtonState",
 	"GetCurrentProcess",
 	"GetRegionBounds",
 	"JNIGetObject",

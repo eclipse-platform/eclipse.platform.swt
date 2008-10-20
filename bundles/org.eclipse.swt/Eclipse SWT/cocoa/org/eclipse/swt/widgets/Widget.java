@@ -1297,6 +1297,14 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 				case 4: event.stateMask |= SWT.BUTTON5; break;
 			}
 			break;
+		case OS.NSScrollWheel:
+			int state = OS.GetCurrentButtonState ();
+			if ((state & 0x1) != 0) event.stateMask |= SWT.BUTTON1;
+			if ((state & 0x2) != 0) event.stateMask |= SWT.BUTTON3;
+			if ((state & 0x4) != 0) event.stateMask |= SWT.BUTTON2;
+			if ((state & 0x8) != 0) event.stateMask |= SWT.BUTTON4;
+			if ((state & 0x10) != 0) event.stateMask |= SWT.BUTTON5;
+			break;
 	}
 	switch (type) {
 		case SWT.MouseDown:

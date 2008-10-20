@@ -223,6 +223,26 @@ fail:
 }
 #endif
 
+#ifndef NO_GetCurrentButtonState
+JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentButtonState)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetCurrentButtonState_FUNC);
+/*
+	rc = (jint)GetCurrentButtonState();
+*/
+	{
+		LOAD_FUNCTION(fp, GetCurrentButtonState)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, GetCurrentButtonState_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcess)
 	(JNIEnv *env, jclass that, jintArray arg0)

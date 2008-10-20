@@ -62,6 +62,8 @@ public static final native int TransformProcessType(int[] psn, int transformStat
 public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
 /** @method flags=dynamic */
 public static final native int SetThemeCursor(int themeCursor);
+/** @method flags=dynamic */
+public static final native int GetCurrentButtonState();
 
 public static final int kThemeCopyArrowCursor = 1;
 public static final int kThemeNotAllowedCursor = 18;
