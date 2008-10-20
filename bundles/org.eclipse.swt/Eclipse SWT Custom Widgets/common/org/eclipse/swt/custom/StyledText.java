@@ -2068,7 +2068,7 @@ public void cut() {
 	checkWidget();
 	if (blockSelection && blockXLocation != -1) {
 		copy(DND.CLIPBOARD);
-		insertBlockSelectionText("", SWT.NULL);
+		insertBlockSelectionText((char)0, SWT.NULL);
 		clearBlockSelection(true);
 		return;
 	}
@@ -2295,7 +2295,7 @@ void doBlockSelectionMoveByKeyboard(int direction) {
  */
 void doContent(char key) {
 	if (blockSelection && blockXLocation != -1) {
-		insertBlockSelectionText(new String(new char[] {key}), SWT.NULL);
+		insertBlockSelectionText(key, SWT.NULL);
 		return;
 	}
 	
@@ -5059,14 +5059,89 @@ public void insert(String string) {
 	if (string == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	Point sel = getSelectionRange();
-	replaceTextRange(sel.x, sel.y, string);
-}
-void insertBlockSelectionText(String text, int action) {
-	if (text.length() == 1) {
-		char key = text.charAt(0);
-		if (key == SWT.CR || key == SWT.LF) return;
+	if (blockSelection) {
+		insertBlockSelectionText(string); 
+	} else {
+		Point sel = getSelectionRange();
+		replaceTextRange(sel.x, sel.y, string);
 	}
+}
+void insertBlockSelectionText(String text) {
+	int lineCount = 1;
+	for (int i = 0; i < text.length(); i++) {
+		char ch = text.charAt(i);
+		if (ch == '\n' || ch == '\r') {
+			lineCount++;
+			if (ch == '\r' && i + 1 < text.length() && text.charAt(i + 1) == '\n') {
+				i++;
+			}
+		}
+	}
+	String[] lines = new String[lineCount];
+	int start = 0;
+	lineCount = 0;
+	for (int i = 0; i < text.length(); i++) {
+		char ch = text.charAt(i);
+		if (ch == '\n' || ch == '\r') {
+			lines[lineCount++] = text.substring(start, i);
+			if (ch == '\r' && i + 1 < text.length() && text.charAt(i + 1) == '\n') {
+				i++;
+			}
+			start = i + 1;
+		}
+	}
+	lines[lineCount++] = text.substring(start);
+	int firstLine, lastLine, left, right;
+	if (blockXLocation != -1) {
+		firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
+		lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
+		if (firstLine > lastLine) {
+			int temp = firstLine;
+			firstLine = lastLine;
+			lastLine = temp;
+		}
+		left = blockXAnchor;
+		right = blockXLocation;
+		if (left > right) {
+			left = blockXLocation;
+			right = blockXAnchor;
+		}
+	} else {
+		firstLine = lastLine = getCaretLine();
+		left = right = getPointAtOffset(caretOffset).x;
+	}
+	int index = 0, end, lineIndex = firstLine;
+	while (lineIndex <= lastLine) {
+		start = getOffsetAtPoint(left, 0, lineIndex);
+		end = getOffsetAtPoint(right, 0, lineIndex);
+		Event event = new Event();
+		event.text = index < lineCount ? lines[index++] : "";
+		event.start = start;
+		event.end = end;
+		sendKeyEvent(event);
+		lineIndex++;
+	}
+	while (index < lineCount) {
+		int maxLines = content.getLineCount();
+		String line;
+		if (lineIndex < maxLines) {
+			start = end = getOffsetAtPoint(left, 0, lineIndex);
+			line = lines[index]; 
+		} else {
+			start = end = content.getCharCount();
+			line = content.getLineDelimiter() + lines[index];
+		}
+		Event event = new Event();
+		event.text = line;
+		event.start = start;
+		event.end = end;
+		sendKeyEvent(event);
+		lineIndex++;
+		index++;
+	}
+}
+void insertBlockSelectionText(char key, int action) {
+	if (key == SWT.CR || key == SWT.LF) return;
 	int firstLine = getLineIndex(blockYAnchor - getVerticalScrollOffset());
 	int lastLine = getLineIndex(blockYLocation - getVerticalScrollOffset()); 
 	if (firstLine > lastLine) {
@@ -5082,6 +5157,8 @@ void insertBlockSelectionText(String text, int action) {
 	}
 	int[] trailing = new int[1];
 	int offset = 0, delta = 0;
+	String text = key != 0 ? new String(new char[] {key}) : "";
+	int length = text.length();
 	for (int lineIndex = firstLine; lineIndex <= lastLine; lineIndex++) {
 		String line = content.getLine(lineIndex);
 		int lineOffset = content.getOffsetAtLine(lineIndex);
@@ -5113,10 +5190,10 @@ void insertBlockSelectionText(String text, int action) {
 		if (outOfLine) {
 			if (line.length() > delta) {
 				delta = line.length();
-				offset = lineEndOffset + text.length();
+				offset = lineEndOffset + length;
 			}
 		} else {
-			offset = start + text.length();
+			offset = start + length;
 			delta = content.getCharCount();
 		}
 		Event event = new Event();
@@ -6147,7 +6224,7 @@ boolean invokeBlockSelectionAction(int action) {
 		case ST.DELETE_PREVIOUS:
 		case ST.DELETE_NEXT:
 			if (blockXLocation != -1) {
-				insertBlockSelectionText("", action);
+				insertBlockSelectionText((char)0, action);
 				return true;
 			}
 			return false;
@@ -6297,8 +6374,8 @@ public void paste(){
 	checkWidget();	
 	String text = (String) getClipboardContent(DND.CLIPBOARD);
 	if (text != null && text.length() > 0) {
-		if (blockSelection && blockXLocation != -1) {
-			insertBlockSelectionText(getModelDelimitedText(text), SWT.NULL);
+		if (blockSelection) {
+			insertBlockSelectionText(text);
 			clearBlockSelection(true);
 			return;
 		}
