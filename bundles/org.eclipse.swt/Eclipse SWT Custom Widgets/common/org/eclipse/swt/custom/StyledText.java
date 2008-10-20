@@ -7312,7 +7312,11 @@ public void setCaretOffset(int offset) {
 		caretAlignment = PREVIOUS_OFFSET_TRAILING;
 		// clear the selection if the caret is moved.
 		// don't notify listeners about the selection change.
-		clearSelection(false);
+		if (blockSelection) {
+			clearBlockSelection(true);
+		} else {
+			clearSelection(false);
+		}
 	}
 	setCaretLocation();
 }	
