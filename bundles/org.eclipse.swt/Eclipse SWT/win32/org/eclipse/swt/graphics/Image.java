@@ -572,12 +572,12 @@ public Image (Device device, InputStream stream) {
 public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	initGdip(filename);
+	initNative(filename);
 	if (this.handle == 0) init(new ImageData(filename));
 	init();
 }
 
-void initGdip(String filename) {
+void initNative(String filename) {
 	boolean gdip = true;
 	try {
 		device.checkGDIP();
