@@ -2130,8 +2130,13 @@ void doAutoScroll(int direction, int distance) {
 			public void run() {
 				if (autoScrollDirection == SWT.UP) {
 					if (blockSelection) {
-						int pixels = Math.max(-autoScrollDistance, -getVerticalScrollOffset());
-						scrollVertical(pixels, true);
+						int verticalScrollOffset = getVerticalScrollOffset();
+						int y = blockYLocation - verticalScrollOffset;
+						int pixels = Math.max(-autoScrollDistance, -verticalScrollOffset);
+						if (pixels != 0) {
+							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels);
+							scrollVertical(pixels, true);
+						}
 					} else {
 						doSelectionPageUp(autoScrollDistance);
 					}
@@ -2146,9 +2151,14 @@ void doAutoScroll(int direction, int distance) {
 			public void run() {
 				if (autoScrollDirection == SWT.DOWN) {
 					if (blockSelection) {
-						int max = renderer.getHeight() - getVerticalScrollOffset() - clientAreaHeight;
+						int verticalScrollOffset = getVerticalScrollOffset();
+						int y = blockYLocation - verticalScrollOffset;
+						int max = renderer.getHeight() - verticalScrollOffset - clientAreaHeight;
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
-						scrollVertical(pixels, true);
+						if (pixels != 0) {
+							setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y + pixels);
+							scrollVertical(pixels, true);
+						}
 					} else {
 						doSelectionPageDown(autoScrollDistance);
 					}
@@ -2163,9 +2173,13 @@ void doAutoScroll(int direction, int distance) {
 			public void run() {
 				if (autoScrollDirection == ST.COLUMN_NEXT) {
 					if (blockSelection) {
+						int x = blockXLocation - horizontalScrollOffset;
 						int max = renderer.getWidth() - horizontalScrollOffset - (clientAreaWidth - leftMargin - rightMargin);
 						int pixels = Math.min(autoScrollDistance, Math.max(0,max));
-						scrollHorizontal(pixels, true);
+						if (pixels != 0) {
+							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset());
+							scrollHorizontal(pixels, true);
+						}
 					} else {
 						doVisualNext();
 						setMouseWordSelectionAnchor();
@@ -2183,8 +2197,12 @@ void doAutoScroll(int direction, int distance) {
 			public void run() {
 				if (autoScrollDirection == ST.COLUMN_PREVIOUS) {
 					if (blockSelection) {
+						int x = blockXLocation - horizontalScrollOffset;
 						int pixels = Math.max(-autoScrollDistance, -horizontalScrollOffset);
-						scrollHorizontal(pixels, true);
+						if (pixels != 0) {
+							setBlockSelectionLocation(x + pixels, blockYLocation - getVerticalScrollOffset());
+							scrollHorizontal(pixels, true);
+						}
 					} else {
 						doVisualPrevious();
 						setMouseWordSelectionAnchor();
@@ -2582,6 +2600,8 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	updateCaretDirection = true;
 	
 	if (blockSelection) {
+		x = Math.max(leftMargin, Math.min(x, clientAreaWidth - leftMargin - rightMargin));
+		y = Math.max(topMargin, Math.min(y, clientAreaHeight - topMargin - bottomMargin));
 		if (!select) clearBlockSelection(true);
 		int[] trailing = new int[1]; 
 		int offset = getOffsetAtPoint(x, y, trailing, true);
