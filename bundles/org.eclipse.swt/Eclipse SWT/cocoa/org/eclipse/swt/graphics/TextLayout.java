@@ -256,6 +256,7 @@ void computeRuns() {
 	NSRect[] bounds = new NSRect[numberOfLines];
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
 		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
+		if (numberOfLines < bounds.length - 1) bounds[numberOfLines].height -= spacing;
 	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 	    offsets[numberOfLines] = (int)/*64*/lineRange.location;
 	    index = lineRange.location + lineRange.length;
@@ -611,7 +612,7 @@ public Rectangle getBounds() {
 			NSFont nsFont = font.handle;
 			rect.height = Math.max(rect.height, layoutManager.defaultLineHeightForFont(nsFont));
 		}
-		rect.height = Math.max(rect.height, ascent + descent);
+		rect.height = Math.max(rect.height, ascent + descent) + spacing;
 		return new Rectangle(0, 0, (int)rect.width, (int)rect.height);
 	} finally {
 		if (pool != null) pool.release();
