@@ -571,8 +571,13 @@ public Image (Device device, InputStream stream) {
  */
 public Image (Device device, String filename) {
 	super(device);
-	device = this.device;
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	initGdip(filename);
+	if (this.handle == 0) init(new ImageData(filename));
+	init();
+}
+
+void initGdip(String filename) {
 	boolean gdip = true;
 	try {
 		device.checkGDIP();
@@ -732,12 +737,9 @@ public Image (Device device, String filename) {
 			Gdip.Bitmap_delete(bitmap);
 			if (status == 0) {
 				if (this.handle == 0) SWT.error(error);
-				return;
 			}
 		}
 	}
-	init(new ImageData(filename));
-	init();
 }
 
 /** 
