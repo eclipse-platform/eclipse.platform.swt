@@ -2226,60 +2226,56 @@ void doBackspace() {
 		sendKeyEvent(event);
 	}
 }
-void doBlockSelectionMoveByKeyboard(int direction) {
-	if (blockSelection) {
-		if (blockXLocation == -1) {
-			setBlockSelectionOffset(caretOffset);
+void doBlockColumn(boolean next) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	int x = blockXLocation - horizontalScrollOffset;
+	int y = blockYLocation - getVerticalScrollOffset();
+	int[] trailing = new int[1];
+	int offset = getOffsetAtPoint(x, y, trailing, true);
+	if (offset != -1) {
+		offset += trailing[0];
+		int lineIndex = content.getLineAtOffset(offset);
+		int newOffset;
+		if (next) {
+			newOffset = getClusterNext(offset, lineIndex);
+		} else {
+			newOffset = getClusterPrevious(offset, lineIndex);
 		}
-		int x = blockXLocation - horizontalScrollOffset;
-		int y = blockYLocation - getVerticalScrollOffset();
-		int lineIndex = getLineIndex(y);
-		switch (direction) {
-			case SWT.UP:
-				if (lineIndex > 0) {
-					y -= getLineHeight();
-				}
-				break;
-			case SWT.DOWN:
-				int lineCount = content.getLineCount();
-				if (lineIndex < lineCount - 1) {
-					y += getLineHeight();
-				}
-				break;
-			case ST.COLUMN_PREVIOUS: {
-				int offset = getOffsetAtPoint(x, y, null, true);
-				int newOffset = offset != -1 ? getClusterPrevious(offset, lineIndex) : offset;  
-				if (offset != newOffset) {
-					x = getPointAtOffset(newOffset).x;
-				} else {
-					x -= 20;
-				}
-				break;
-			}
-			case ST.COLUMN_NEXT: {
-				int[] trailing = new int[1];
-				int offset = getOffsetAtPoint(x, y, trailing, true);
-				if (offset != -1) {
-					String line = content.getLine(lineIndex);
-					int lineOffset = content.getOffsetAtLine(lineIndex);
-					if (offset + trailing[0] - lineOffset < line.length()) {
-						offset = getClusterNext(offset + trailing[0], lineIndex);
-					} else {
-						offset = -1;
-					}
-				}
-				if (offset != -1) {
-					x = getPointAtOffset(offset).x;
-				} else {
-					x += 20;
-				}
-				break;
+		offset = newOffset != offset ? newOffset : -1;
+	}
+	if (offset != -1) {
+		setBlockSelectionOffset(offset);
+		showCaret();
+	} else {
+		int width = next ? renderer.averageCharWidth : -renderer.averageCharWidth;
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
+		setBlockSelectionLocation(x, y);
+		Rectangle rect = new Rectangle(x, y, 0, 0);
+		showLocation(rect, true);
+	}
+}
+void doBlockLine(boolean up) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	int y = blockYLocation - getVerticalScrollOffset();
+	int lineIndex = getLineIndex(y);
+	if (up) {
+		if (lineIndex > 0) {
+			y = getLinePixel(lineIndex - 1);
+			setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y);
+			if (y < topMargin) {
+				scrollVertical(y - topMargin, true);
 			}
 		}
-		if (x != (blockXLocation - horizontalScrollOffset) || y != (blockYLocation - getVerticalScrollOffset())) {
-			setBlockSelectionLocation(x, y);
-			//TODO BETTER AUTO SCROLL 
-			showCaret();
+	} else {
+		int lineCount = content.getLineCount();
+		if (lineIndex + 1 < lineCount) {
+			y = getLinePixel(lineIndex + 2) - 1;
+			setBlockSelectionLocation(blockXLocation - horizontalScrollOffset, y);
+			int bottom = clientAreaHeight - bottomMargin; 
+			if (y > bottom) {
+				scrollVertical(y - bottom, true);
+			}
 		}
 	}
 }
@@ -6020,7 +6016,7 @@ char _findMnemonic (String string) {
  */
 public void invokeAction(int action) {
 	checkWidget();
-	if (blockSelection && invokeBlockSelectionAction(action)) return;
+	if (blockSelection && invokeBlockAction(action)) return;
 	updateCaretDirection = true;
 	switch (action) {
 		// Navigation
@@ -6171,7 +6167,7 @@ public void invokeAction(int action) {
 * Returns true if an action should not be performed when block
 * selection in active  
 */
-boolean invokeBlockSelectionAction(int action) {
+boolean invokeBlockAction(int action) {
 	switch (action) {
 		// Navigation
 		case ST.LINE_UP:
@@ -6192,16 +6188,16 @@ boolean invokeBlockSelectionAction(int action) {
 			return false;
 		// Selection
 		case ST.SELECT_LINE_UP:
-			doBlockSelectionMoveByKeyboard(SWT.UP);
+			doBlockLine(true);
 			return true;
 		case ST.SELECT_LINE_DOWN:
-			doBlockSelectionMoveByKeyboard(SWT.DOWN);
+			doBlockLine(false);
 			return true;
 		case ST.SELECT_COLUMN_PREVIOUS:
-			doBlockSelectionMoveByKeyboard(ST.COLUMN_PREVIOUS);
+			doBlockColumn(false);
 			return true;
 		case ST.SELECT_COLUMN_NEXT:
-			doBlockSelectionMoveByKeyboard(ST.COLUMN_NEXT);
+			doBlockColumn(true);
 			return true;
 		case ST.SELECT_ALL:
 		case ST.SELECT_LINE_START:
