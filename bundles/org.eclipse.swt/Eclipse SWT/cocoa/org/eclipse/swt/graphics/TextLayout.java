@@ -485,6 +485,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
 								rect.x += pt.x + 0.5f;
 								rect.y += pt.y + 0.5f;
+								rect.width -= 0.5f;
+								rect.height -= 0.5f;
 								float[] color = null;
 								if (style.borderColor != null) color = style.borderColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
