@@ -235,6 +235,7 @@ public FontData[] getFontData() {
 public static Font cocoa_new(Device device, NSFont handle) {
 	Font font = new Font(device);
 	font.handle = handle;
+	font.handle.retain();
 	return font;
 }
 

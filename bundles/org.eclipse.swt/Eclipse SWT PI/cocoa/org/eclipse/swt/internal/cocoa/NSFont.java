@@ -55,6 +55,10 @@ public float /*double*/ pointSize() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
 }
 
+public static float /*double*/ smallSystemFontSize() {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_smallSystemFontSize);
+}
+
 public static NSFont systemFontOfSize(float /*double*/ fontSize) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_systemFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
@@ -62,6 +66,10 @@ public static NSFont systemFontOfSize(float /*double*/ fontSize) {
 
 public static float /*double*/ systemFontSize() {
 	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSize);
+}
+
+public static float /*double*/ systemFontSizeForControlSize(int /*long*/ controlSize) {
+	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSizeForControlSize_, controlSize);
 }
 
 }

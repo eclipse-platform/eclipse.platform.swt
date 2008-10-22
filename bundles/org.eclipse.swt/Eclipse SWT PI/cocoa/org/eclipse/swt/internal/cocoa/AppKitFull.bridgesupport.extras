@@ -8460,8 +8460,8 @@
       <arg name="aFont"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="smallSystemFontSize">
-      <retval></retval>
+    <method class_method="true" selector="smallSystemFontSize" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="systemFontOfSize:" swt_gen="true">
       <arg name="fontSize" swt_gen="true"></arg>
@@ -8470,9 +8470,9 @@
     <method class_method="true" selector="systemFontSize" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method class_method="true" selector="systemFontSizeForControlSize:">
-      <arg name="controlSize"></arg>
-      <retval></retval>
+    <method class_method="true" selector="systemFontSizeForControlSize:" swt_gen="true">
+      <arg name="controlSize" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="textTransform">
       <retval></retval>

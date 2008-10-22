@@ -500,8 +500,10 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 	
 	/* Initialize the system font slot */
+	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
+	float systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
 	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
-	NSFont font = NSFont.systemFontOfSize(NSFont.systemFontSize() * dpi.y / screenDPI.y);
+	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
 	systemFont = Font.cocoa_new(this, font);
 }
 

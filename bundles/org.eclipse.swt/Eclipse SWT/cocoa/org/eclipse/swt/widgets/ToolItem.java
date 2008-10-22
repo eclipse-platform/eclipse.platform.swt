@@ -133,10 +133,6 @@ public ToolItem (ToolBar parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-	return true;
-}
-
 //int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 //	NSString nsAttributeName = new NSString(arg0);
 //	System.out.println("Attribute " + nsAttributeName.getString() + " for " + new NSObject(id).description().getString());
@@ -294,7 +290,7 @@ NSAttributedString createString() {
 		NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
 		dict.setObject(color, OS.NSForegroundColorAttributeName);
 	}
-	Font font = parent.font;
+	Font font = parent.getFont();
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName);
 	}

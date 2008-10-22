@@ -224,6 +224,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	NSSize stringSize = null, imageSize = null;
 	NSAttributedString attrString = null;
 	if (displayText != null) {
+		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
+		dict.setObject(getParent().getFont().handle, OS.NSFontAttributeName);		
 		NSString string = NSString.stringWith (displayText);
 		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, null);
 		stringSize = attrString.size ();
