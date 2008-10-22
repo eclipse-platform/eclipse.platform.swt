@@ -105,86 +105,38 @@ public Control (Composite parent, int style) {
 }
 
 int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
-	int superResult = super.accessibilityActionNames(id, sel);
-	NSArray superActions = new NSArray(superResult);
-	NSMutableArray allActions = NSMutableArray.arrayWithCapacity(superActions.count());
-	allActions.addObjectsFromArray(superActions);
-	
-	// Add in any specific accessibility actions that the control wants to support.
-	NSString extraActions[] = getAxActions();
-	
-	if (extraActions != null) {
-		for (int i = 0; i < extraActions.length; i++) {
-			if (!allActions.containsObject(extraActions[i]))
-				allActions.addObject(extraActions[i]);
-		}
-	}
-	
 	if (accessible != null) {
-		NSArray returnValue = accessible.internal_accessibilityActionNames(allActions, ACC.CHILDID_SELF);
-		return (returnValue != null ? returnValue.id : superResult);
-	} else {
-		return allActions.id;
+		NSArray returnValue = accessible.internal_accessibilityActionNames(ACC.CHILDID_SELF);
+		if (returnValue != null) return returnValue.id;
 	}
+	
+	return super.accessibilityActionNames(id, sel);
 }
 
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	int superResult = super.accessibilityAttributeNames(id, sel);
-	NSArray superAttributes = new NSArray(superResult);
-	NSMutableArray allAttributes = NSMutableArray.arrayWithCapacity(superAttributes.count());
-	allAttributes.addObjectsFromArray(superAttributes);
 	
-	// Add in any specific accessibility properties that the control wants to support.
-	NSString extraAttributes[] = getAxAttributes();
-	
-	if (extraAttributes != null) {
-		for (int i = 0; i < extraAttributes.length; i++) {
-			if (!allAttributes.containsObject(extraAttributes[i]))
-				allAttributes.addObject(extraAttributes[i]);
+	if (id == view.id) {
+		if (accessible != null) {
+			NSArray returnValue = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
+			if (returnValue != null) return returnValue.id;
 		}
 	}
-	
-	if (accessible != null) {
-		NSArray returnValue = accessible.internal_accessibilityAttributeNames(allAttributes, ACC.CHILDID_SELF);
-		return (returnValue != null ? returnValue.id : superResult);
-	} else {
-		return allAttributes.id;
-	}
+
+	return super.accessibilityAttributeNames(id, sel);
 }
 
 int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	int superResult = super.accessibilityParameterizedAttributeNames(id, sel);
-	NSArray superAttributes = new NSArray(superResult);
-	NSMutableArray allAttributes = NSMutableArray.arrayWithCapacity(superAttributes.count());
-	allAttributes.addObjectsFromArray(superAttributes);
 
-	// Add in any specific parameterized accessibility properties that the control wants to support.
-	NSString extraAttributes[] = getAxParameterizedAttributes();
-
-	if (extraAttributes != null) {
-		for (int i = 0; i < extraAttributes.length; i++) {
-			if (!allAttributes.containsObject(extraAttributes[i]))
-				allAttributes.addObject(extraAttributes[i]);
+	if (id == view.id) {
+		if (accessible != null) {
+			NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(ACC.CHILDID_SELF);
+			if (returnValue != null) return returnValue.id;
 		}
 	}
 
-	if (accessible != null) {
-		NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(allAttributes, ACC.CHILDID_SELF);
-		return (returnValue != null ? returnValue.id : superResult);
-	} else {
-		return allAttributes.id;
-	}
+	return super.accessibilityParameterizedAttributeNames(id, sel);
 }
 
-
-//boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-//	
-//	if (accessible != null) {
-//		return accessible.accessibilityIsIgnored(ACC.CHILDID_SELF);
-//	}
-//
-//	return super.accessibilityIsIgnored(id, sel);	
-//}
 
 boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 
@@ -251,11 +203,14 @@ int accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, 
 	NSString attribute = new NSString(arg0);
 	
 	id returnValue = null;
-	if (accessible != null) {
-		id parameter = new id(arg1);
-		returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
+	
+	if (id == view.id) {
+		if (accessible != null) {
+			id parameter = new id(arg1);
+			returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
+		}
 	}
-
+	
 	// If we had an accessible and it didn't handle the attribute request, let the
 	// superclass handle it.
 	if (returnValue == null)
@@ -1096,29 +1051,6 @@ public Accessible getAccessible () {
 	checkWidget ();
 	if (accessible == null) accessible = new_Accessible (this);
 	return accessible;
-}
-
-NSString [] getAxActions () {
-	return null;
-}
-
-/*
- * getAxAttributes and getAxParameterizedAttributes return an array of 
- * additional NSAccessibility constants that the control supports over and above
- * the base set defined in Accessible.  getAxParameterizedAttributes is for those
- * text-specific attributes documented to take a parameter.
- * 
- * NOTE: It is up to the implementors of these methods to ensure that only the
- * right kinds of attributes are returned in the respective return values.  No verification
- * is done on the constants to ensure that non-parameterized attributes appear in the
- * parameterized list and vice-versa.
- */
-NSString [] getAxAttributes () {
-	return null;
-}
-
-NSString [] getAxParameterizedAttributes () {
-	return null;
 }
 
 /**

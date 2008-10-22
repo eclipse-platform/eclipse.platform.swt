@@ -43,7 +43,8 @@ public class Sash extends Control {
 	int lastX, lastY, startX, startY;
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
-
+	NSArray accessibilityAttributes = null;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -80,21 +81,29 @@ public Sash (Composite parent, int style) {
 }
 
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	int returnValue = super.accessibilityAttributeNames(id, sel);
-	NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
-	NSArray baseArray = new NSArray(returnValue);
-	ourAttributes.addObjectsFromArray(baseArray);
+	if (accessibilityAttributes == null) {
+		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
+		ourAttributes.addObject(OS.NSAccessibilityRoleAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityRoleDescriptionAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityParentAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityPositionAttribute);
+		ourAttributes.addObject(OS.NSAccessibilitySizeAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityWindowAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityTopLevelUIElementAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityFocusedAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityValueAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityMaxValueAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityMinValueAttribute);
+		// The accessibility documentation says that these next two are optional, but the
+		// Accessibility Verifier says they are required.
+		ourAttributes.addObject(OS.NSAccessibilityNextContentsAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityPreviousContentsAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityOrientationAttribute);
+		accessibilityAttributes = ourAttributes;
+		accessibilityAttributes.retain();
+	}
 	
-	// The accessibility documentation says that these next two are optional, but the
-	// Accessibility Verifier says they are required.
-	ourAttributes.addObject(OS.NSAccessibilityNextContentsAttribute);
-	ourAttributes.addObject(OS.NSAccessibilityPreviousContentsAttribute);
-	ourAttributes.addObject(OS.NSAccessibilityOrientationAttribute);
-	ourAttributes.addObject(OS.NSAccessibilityValueAttribute);
-	ourAttributes.addObject(OS.NSAccessibilityMaxValueAttribute);
-	ourAttributes.addObject(OS.NSAccessibilityMinValueAttribute);
-	
-	return ourAttributes.id;
+	return accessibilityAttributes.id;
 }
 
 public int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -117,6 +126,8 @@ public int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*
 		} else { // NSAccessibilityRoleDescriptionAttribute
 			return OS.NSAccessibilityRoleDescription (roleText.id, 0);
 		}
+	} else if (attributeName.isEqualToString (OS.NSAccessibilityEnabledAttribute)) {
+		return NSNumber.numberWithBool(isEnabled()).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityOrientationAttribute)) {
 		NSString orientation = (style & SWT.VERTICAL) != 0 ? OS.NSAccessibilityVerticalOrientationValue : OS.NSAccessibilityHorizontalOrientationValue;
 		return orientation.id;
@@ -386,6 +397,12 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (event.doit) {
 		setBounds (event.x, event.y, (int)frame.width, (int)frame.height);
 	}
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (accessibilityAttributes != null) accessibilityAttributes.release();
+	accessibilityAttributes = null;
 }
 
 void releaseWidget () {

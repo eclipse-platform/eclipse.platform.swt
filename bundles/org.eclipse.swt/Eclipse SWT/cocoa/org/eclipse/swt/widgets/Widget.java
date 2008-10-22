@@ -142,25 +142,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 }
 
 int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	int returnValue = 0;
-	NSString attribute = new NSString(arg0);
-
-	/*
-	 * Bug in Accessibility Verifier: All accessible components are often queried for their title
-	 * attribute, even when they are documented to not support a title. Fix is to return the name of the
-	 * name of the widget (which is effectively its classname). Shells do have a title, though.
-	 * 
-	 * The same is true for subroles, but in this case returning null is okay.
-	 */
-	if (attribute.isEqualToString (OS.NSAccessibilitySubroleAttribute)) {
-		returnValue = 0;
-	} else if (attribute.isEqualToString (OS.NSAccessibilityTitleAttribute)) {
-		returnValue = (this instanceof Shell) ? callSuperObject(id, sel, arg0) : 0;
-	} else {
-		returnValue = callSuperObject(id, sel, arg0);
-	}
-	
-	return returnValue;
+	return callSuperObject(id, sel, arg0);
 }
 
 int accessibilityAttributeValue_forParameter(int id, int sel, int /*long*/ arg0, int /*long*/ arg1) {

@@ -109,12 +109,6 @@ public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-	if (id == view.id) return true;
-	return super.accessibilityIsIgnored(id, sel);
-}
-
-
 /**
  * Adds the argument to the end of the receiver's list.
  *

@@ -134,27 +134,28 @@ boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 }
 
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-
-	if (accessible != null) {
-		// If there is an accessible, don't use the base set of attributes from NSView as this composite may be a
-		// lightweight version of something that isn't expected to provide one or more of those properties.
-		id returnObject = accessible.internal_accessibilityAttributeNames(null, ACC.CHILDID_SELF);
-		if (returnObject != null) return returnObject.id;
+	
+	if (id == view.id) {
+		if (accessible != null) {
+			// If there is an accessible, it may provide its own list of attributes if it's a lightweight control.
+			// If not, let Cocoa handle it for this view.
+			id returnObject = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
+			if (returnObject != null) return returnObject.id;
+		}
 	}
-
+	
 	return super.accessibilityAttributeNames(id, sel);
 }
 
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-	// Always ignore scrollers.
-	if (scrollView != null && id == scrollView.id) return true;
-
-	// If we have an accessible, this is a lightweight component that wants
-	// to provide accessible information.  But, we always ignore the content view
-	// of Shells.
+	// If we have an accessible and it represents a valid accessible role, this view is not ignored.
 	if (view != null && id == view.id) {
-		if (accessible != null) return (this instanceof Shell);
+		if (accessible != null) {
+			id role = accessible.internal_accessibilityAttributeValue(OS.NSAccessibilityRoleAttribute, ACC.CHILDID_SELF);
+			return (role == null); 
+		}
 	}
+
 	return super.accessibilityIsIgnored(id, sel);	
 }
 

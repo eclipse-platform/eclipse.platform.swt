@@ -101,7 +101,7 @@ class SWTAccessibleDelegate extends NSObject {
 		if (actionNames != null)
 			return retainedAutoreleased(actionNames);
 		
-		actionNames = accessibleParent.internal_accessibilityActionNames(null, childID);
+		actionNames = accessibleParent.internal_accessibilityActionNames(childID);
 		actionNames.retain();
 		return retainedAutoreleased(actionNames);
 	}
@@ -111,7 +111,7 @@ class SWTAccessibleDelegate extends NSObject {
 		if (attributeNames != null)
 			return retainedAutoreleased(attributeNames);
 		
-		attributeNames = accessibleParent.internal_accessibilityAttributeNames(null, childID);
+		attributeNames = accessibleParent.internal_accessibilityAttributeNames(childID);
 		attributeNames.retain();
 		return retainedAutoreleased(attributeNames);
 	}
@@ -126,7 +126,7 @@ class SWTAccessibleDelegate extends NSObject {
 		if (parameterizedAttributeNames != null)
 			return retainedAutoreleased(parameterizedAttributeNames);
 		
-		parameterizedAttributeNames = accessibleParent.internal_accessibilityParameterizedAttributeNames(null, childID);
+		parameterizedAttributeNames = accessibleParent.internal_accessibilityParameterizedAttributeNames(childID);
 		parameterizedAttributeNames.retain();
 		return retainedAutoreleased(parameterizedAttributeNames);
 	}

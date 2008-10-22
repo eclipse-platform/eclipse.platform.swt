@@ -406,29 +406,10 @@ static int checkStyle (int style) {
 	return bits;
 }
 
-int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	
-	NSString attributeName = new NSString(arg0);
-	
-	if (accessible != null) {
-		id returnObject = accessible.internal_accessibilityAttributeValue(attributeName, ACC.CHILDID_SELF);
-		if (returnObject != null) return returnObject.id;
-	}
-	
-	// Accessibility Verifier requires a subrole for windows, even though most other controls don't have a subrole.
-	// So, we need to override and return the right subrole here.
-	if (attributeName.isEqualToString (OS.NSAccessibilitySubroleAttribute)) {
-		NSString roleText = null;
-
-		if ((style & SWT.ON_TOP) != 0)
-			roleText = OS.NSAccessibilityFloatingWindowSubrole;
-		else
-			roleText = OS.NSAccessibilityStandardWindowSubrole;
-		
-		return roleText.id;
-	}
-	
-	return super.accessibilityAttributeValue(id, sel, arg0);
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	// The content view of a shell is always ignored.
+	if (id == view.id) return true;
+	return super.accessibilityIsIgnored(id, sel);
 }
 
 /**

@@ -73,6 +73,12 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	// Always ignore scrollers.
+	if (scrollView != null && id == scrollView.id) return true;
+	return super.accessibilityIsIgnored(id, sel);	
+}
+
 /**
  * Given a desired <em>client area</em> for the receiver
  * (as described by the arguments), returns the bounding

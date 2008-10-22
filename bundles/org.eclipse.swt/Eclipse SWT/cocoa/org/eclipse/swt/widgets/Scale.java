@@ -114,16 +114,13 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	NSSlider widget = (NSSlider)view;
-	NSRect oldRect = widget.frame();
-	widget.sizeToFit();
-	NSRect newRect = widget.frame();
-	widget.setFrame (oldRect);
-	int width = 0, height = 0;
+	NSSize size = widget.cell().cellSizeForBounds(widget.bounds());
+	int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	if ((style & SWT.HORIZONTAL) != 0) {		
-		height = (int)newRect.height;
+		height = (int)Math.ceil(size.height);
 		width = height * 10;
 	} else {
-		width = (int)newRect.width;
+		width = (int)Math.ceil(size.width);
 		height = width * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -134,11 +131,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	NSSlider widget = (NSSlider)new SWTSlider().alloc();
 	NSRect rect = new NSRect();
-	if ((style & SWT.HORIZONTAL) != 0) {
 		rect.width = 1;
-	} else {
 		rect.height = 1;
-	}
 	widget.initWithFrame(rect);
 	widget.setMaxValue(100);
 	view = widget;

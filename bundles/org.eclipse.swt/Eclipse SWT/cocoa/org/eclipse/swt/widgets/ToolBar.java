@@ -47,7 +47,8 @@ import org.eclipse.swt.graphics.*;
 public class ToolBar extends Composite {
 	int itemCount;
 	ToolItem [] items;
-
+	NSArray accessibilityAttributes = null;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -99,14 +100,27 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
+// TODO: Return a valid set of attributes for a toolbar.
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-
-	if (accessible != null) {
-		id returnObject = accessible.internal_accessibilityAttributeNames(null, ACC.CHILDID_SELF);
-		if (returnObject != null) return returnObject.id;
+	
+	if (accessibilityAttributes == null) {
+		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
+		ourAttributes.addObject(OS.NSAccessibilityRoleAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityRoleDescriptionAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityParentAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityPositionAttribute);
+		ourAttributes.addObject(OS.NSAccessibilitySizeAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityWindowAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityTopLevelUIElementAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityHelpAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityEnabledAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityFocusedAttribute);
+		ourAttributes.addObject(OS.NSAccessibilityChildrenAttribute);
+		accessibilityAttributes = ourAttributes;
+		accessibilityAttributes.retain();
 	}
-
-	return super.accessibilityAttributeNames(id, sel);
+	
+	return accessibilityAttributes.id;
 }
 
 int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -126,6 +140,11 @@ int accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/
 			int roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
 			return roleDescription;
 		}
+	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
+		return NSNumber.numberWithBool(isEnabled()).id;
+	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityFocusedAttribute)) {
+		boolean focused = (view.id == view.window().firstResponder().id);
+		return NSNumber.numberWithBool(focused).id;
 	}
 	
 	return super.accessibilityAttributeValue(id, sel, arg0);
@@ -454,6 +473,12 @@ void releaseChildren (boolean destroy) {
 		items = null;
 	}
 	super.releaseChildren (destroy);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (accessibilityAttributes != null) accessibilityAttributes.release();
+	accessibilityAttributes = null;
 }
 
 void removeControl (Control control) {

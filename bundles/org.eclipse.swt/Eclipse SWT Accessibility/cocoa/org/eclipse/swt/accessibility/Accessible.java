@@ -14,6 +14,7 @@ package org.eclipse.swt.accessibility;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
@@ -52,8 +53,7 @@ public class Accessible {
 		OS.NSAccessibilityPositionAttribute,
 		OS.NSAccessibilitySizeAttribute,
 		OS.NSAccessibilityWindowAttribute,
-		OS.NSAccessibilityTopLevelUIElementAttribute,
-		OS.NSAccessibilityDescriptionAttribute,
+		OS.NSAccessibilityTopLevelUIElementAttribute
 	};
 
 	static NSString[] baseTextAttributes = {
@@ -192,7 +192,7 @@ public class Accessible {
 		return NSString.stringWith("");
 	}
 
-	public NSArray internal_accessibilityActionNames(NSArray extraActions, int childID) {
+	public NSArray internal_accessibilityActionNames(int childID) {
 		// The supported action list depends on the role played by the control.
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
@@ -211,14 +211,8 @@ public class Accessible {
 			return retainedAutoreleased(actionNames);
 		}
 		
-		int baseAttributeCount = (extraActions == null ? 0 : extraActions.count());
-		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(baseAttributeCount);
+		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(5);
 		
-		
-		if (extraActions != null) {
-			returnValue.addObjectsFromArray(extraActions);
-		}
-
 		switch (event.detail) {
 		case ACC.ROLE_PUSHBUTTON:
 		case ACC.ROLE_RADIOBUTTON:
@@ -245,7 +239,7 @@ public class Accessible {
 		}
 	}
 
-	public NSArray internal_accessibilityAttributeNames(NSArray extraAttributes, int childID) {
+	public NSArray internal_accessibilityAttributeNames(int childID) {
 		// The supported attribute set depends on the role played by the control.
 		// We may need to add or remove from the base set as needed.
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -256,7 +250,8 @@ public class Accessible {
 			listener.getRole(event);
 		}
 
-		// No accessible listener is overriding the role of the control, so let Cocoa the default set for the control.
+		// No accessible listener is overriding the role of the control, so let Cocoa
+		// return the default set for the control.
 		if (event.detail == -1)
 			return null;
 		
@@ -264,12 +259,7 @@ public class Accessible {
 			return retainedAutoreleased(attributeNames);
 		}
 		
-		int extraAttributeCount = (extraAttributes == null ? 0 : extraAttributes.count());
-		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(baseAttributes.length + extraAttributeCount);
-		
-		if (extraAttributes != null) {
-			returnValue.addObjectsFromArray(extraAttributes);
-		}
+		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(baseAttributes.length);
 
 		/* Add our list of supported attributes to the array.
 		 * Make sure each attribute name is not already in the array before appending.
@@ -418,7 +408,7 @@ public class Accessible {
 		
 		/* Or the application can answer a valid child ID, including CHILDID_SELF and CHILDID_NONE. */
 		if (event.childID == ACC.CHILDID_SELF || event.childID == ACC.CHILDID_NONE) {
-			return new id(OS.NSAccessibilityUnignoredAncestor(viewFromControl().id));
+			return new id(OS.NSAccessibilityUnignoredAncestor(control.view.id));
 		}	
 
 		return new id(OS.NSAccessibilityUnignoredAncestor(childIDToOs(event.childID).id));
@@ -445,11 +435,11 @@ public class Accessible {
 			return null;
 		
 		if (event.accessible != null) {
-			return new id(OS.NSAccessibilityUnignoredAncestor(event.accessible.viewFromControl().id));
+			return new id(OS.NSAccessibilityUnignoredAncestor(event.accessible.control.view.id));
 		}
 	
 		if (event.childID == ACC.CHILDID_SELF || event.childID == ACC.CHILDID_NONE) {
-			return new id(OS.NSAccessibilityUnignoredAncestor(viewFromControl().id));
+			return new id(OS.NSAccessibilityUnignoredAncestor(control.view.id));
 		}
 	
 		return new id(OS.NSAccessibilityUnignoredAncestor(childIDToOs(event.childID).id));
@@ -465,18 +455,13 @@ public class Accessible {
 	}
 
 	// parameterized attribute methods
-	public NSArray internal_accessibilityParameterizedAttributeNames(NSArray extraAttributes, int childID) {
+	public NSArray internal_accessibilityParameterizedAttributeNames(int childID) {
 
 		if ((childID == ACC.CHILDID_SELF) && (parameterizedAttributeNames != null)) {
 			return retainedAutoreleased(parameterizedAttributeNames);
 		}
 
-		int baseAttributeCount = (extraAttributes == null ? 0 : extraAttributes.count());
-		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(baseAttributeCount);
-
-		if (extraAttributes != null) {
-			returnValue.addObjectsFromArray(extraAttributes);
-		}
+		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(4);
 
 		if (accessibleTextListeners.size() > 0) {
 			for (int i = 0; i < baseParameterizedAttributes.length; i++) {
@@ -775,7 +760,7 @@ public class Accessible {
 
 		// Invalid childID at this point means the application did not implement getFocus, so 
 		// let the default handler return the native focus.
-		boolean hasFocus = (this.control.view.window().firstResponder() == viewFromControl());
+		boolean hasFocus = (this.control.view.window().firstResponder() == control.view);
 		return NSNumber.numberWithBool(hasFocus);
 	}
 	
@@ -813,7 +798,7 @@ public class Accessible {
 							id accChild = childIDToOs(((Integer)child).intValue());							
 							childArray.addObject(accChild);
 						} else {
-							childArray.addObject(((Accessible)child).viewFromControl());
+							childArray.addObject(((Accessible)child).control.view);
 						}
 					}
 
@@ -867,7 +852,7 @@ public class Accessible {
 								childArray.addObject(accChild);
 							}
 						} else {
-							childArray.addObject(((Accessible)child).viewFromControl());
+							childArray.addObject(((Accessible)child).control.view);
 						}
 					}
 
@@ -906,12 +891,26 @@ public class Accessible {
 
 		Monitor primaryMonitor = Display.getCurrent().getPrimaryMonitor();
 		
+		NSPoint osPositionAttribute = new NSPoint ();
 		if (event.width != -1) {
 			// The point returned is the lower-left coordinate of the widget in lower-left relative screen coordinates.
-			NSPoint osPositionAttribute = new NSPoint ();
 			osPositionAttribute.x = event.x;
 			osPositionAttribute.y = primaryMonitor.getBounds().height - event.y - event.height;
 			returnValue = NSValue.valueWithPoint(osPositionAttribute);
+		} else {
+			if (childID != ACC.CHILDID_SELF) {
+				Point pt = null;
+				Rectangle location = control.getBounds();
+
+				if (control.getParent() != null)
+					pt = control.getParent().toDisplay(location.x, location.y);
+				else 
+					pt = ((Shell)control).toDisplay(location.x, location.y);
+
+				osPositionAttribute.x = pt.x;
+				osPositionAttribute.y = pt.y;
+				returnValue = NSValue.valueWithPoint(osPositionAttribute);
+			}
 		}
 		
 		return returnValue;
@@ -933,6 +932,11 @@ public class Accessible {
 			controlSize.width = event.width;
 			controlSize.height = event.height;
 			returnValue = NSValue.valueWithSize(controlSize);
+		} else {
+			if (childID != ACC.CHILDID_SELF) {
+				controlSize.width = controlSize.height = 0;
+				returnValue = NSValue.valueWithSize(controlSize);
+			}
 		}
 		
 		return returnValue;
@@ -952,18 +956,7 @@ public class Accessible {
 
 		// If no description was provided, try the name.
 		if (returnValue == null) {
-			for (int i = 0; i < accessibleListeners.size(); i++) {
-				AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
-				listener.getName(event);
-			}
-
-			returnValue = (event.result != null ? NSString.stringWith(event.result) : null);
-
-			// If that failed and we are a composite or a canvas return a blank string -- otherwise, let the
-			// Cocoa control handle it.
-			if (returnValue == null) {
-				if (control instanceof Composite) returnValue = NSString.stringWith("");
-			}
+			if (control instanceof Composite) returnValue = NSString.stringWith("");
 		}
 
 		return returnValue;
@@ -1282,7 +1275,7 @@ public class Accessible {
 	 */
 	public void selectionChanged () {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(viewFromControl().id, OS.NSAccessibilitySelectedChildrenChangedNotification.id);
+		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id);
 	}
 
 	/**
@@ -1298,7 +1291,7 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(viewFromControl().id, OS.NSAccessibilityFocusedUIElementChangedNotification.id);
+		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilityFocusedUIElementChangedNotification.id);
 	}
 
 	/**
@@ -1316,7 +1309,7 @@ public class Accessible {
 	 */
 	public void textCaretMoved (int index) {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(viewFromControl().id, OS.NSAccessibilitySelectedTextChangedNotification.id);
+		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedTextChangedNotification.id);
 	}
 	
 	/**
@@ -1340,7 +1333,7 @@ public class Accessible {
 	 */
 	public void textChanged (int type, int startIndex, int length) {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(viewFromControl().id, OS.NSAccessibilityValueChangedNotification.id);
+		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilityValueChangedNotification.id);
 	}
 	
 	/**
@@ -1356,22 +1349,12 @@ public class Accessible {
 	 */
 	public void textSelectionChanged () {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(viewFromControl().id, OS.NSAccessibilitySelectedTextChangedNotification.id);
-	}
-	
-	id viewFromControl() {
-		// The view of a Shell is its contents view, which is always ignored for accessibility purposes.
-		// So, if asked to return the view of a Shell, return the window itself.
-//		if (control instanceof Shell) {
-//			return control.view.window();
-//		} else {
-			return control.view;
-//		}
+		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedTextChangedNotification.id);
 	}
 	
 	id childIDToOs(int childID) {
 		if (childID == ACC.CHILDID_SELF) {
-			return viewFromControl();
+			return control.view;
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
@@ -1416,13 +1399,7 @@ public class Accessible {
 				if ((style & SWT.MULTI) != 0) {
 					nsReturnValue = OS.NSAccessibilityTextAreaRole;
 				} else {
-					if ((style & SWT.SEARCH) != 0) {
-						nsReturnValue = concatStringsAsRole(OS.NSAccessibilityTextFieldRole, OS.NSAccessibilitySearchFieldSubrole);
-					} else if ((style & SWT.PASSWORD) != 0) {
-						nsReturnValue = concatStringsAsRole(OS.NSAccessibilityTextFieldRole, OS.NSAccessibilitySecureTextFieldSubrole);
-					} else {
-						nsReturnValue = OS.NSAccessibilityTextFieldRole;
-					}
+					nsReturnValue = OS.NSAccessibilityTextFieldRole;
 				}
 				
 				break;
