@@ -125,6 +125,7 @@ public class Display extends Device {
 	
 	NSWindow screenWindow;
 	NSAutoreleasePool pool;
+	int loopCounter = 0;
 	boolean idle;
 	static final short SWT_IDLE_TYPE = 1;
 
@@ -2579,8 +2580,11 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	pool.release();
-	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	if (loopCounter == 0) {
+		pool.release();
+		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	}
+	loopCounter ++;
 	boolean events = false;
 	events |= runTimers ();
 	events |= runContexts ();
@@ -2605,6 +2609,8 @@ public boolean readAndDispatch () {
 	} catch (Exception e) {
 		e.printStackTrace();
 		return false;
+	} finally {
+		loopCounter --;
 	}
 	
 }
@@ -3221,8 +3227,10 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	pool.release();
-	pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	if (loopCounter == 0) {
+		pool.release();
+		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
+	}
 	try {
 		allowTimers = runAsyncMessages = false;
 		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
