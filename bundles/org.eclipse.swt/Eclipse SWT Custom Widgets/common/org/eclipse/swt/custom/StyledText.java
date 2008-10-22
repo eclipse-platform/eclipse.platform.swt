@@ -2273,7 +2273,43 @@ void doBlockColumn(boolean next) {
 		showLocation(rect, true);
 	}
 }
-void doBlockLine(boolean up) {
+void doBlockWord(boolean next) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	int x = blockXLocation - horizontalScrollOffset;
+	int y = blockYLocation - getVerticalScrollOffset();
+	int[] trailing = new int[1];
+	int offset = getOffsetAtPoint(x, y, trailing, true);
+	if (offset != -1) {
+		offset += trailing[0];
+		int lineIndex = content.getLineAtOffset(offset);
+		int lineOffset = content.getOffsetAtLine(lineIndex);
+		String lineText = content.getLine(lineIndex);
+		int lineLength = lineText.length();
+		int newOffset = offset;
+		if (next) {
+			if (offset < lineOffset + lineLength) {
+				newOffset = getWordNext(offset, SWT.MOVEMENT_WORD);
+			}
+		} else {
+			if (offset > lineOffset) {
+				newOffset = getWordPrevious(offset, SWT.MOVEMENT_WORD);
+			}
+		}
+		offset = newOffset != offset ? newOffset : -1;
+	}
+	if (offset != -1) {
+		setBlockSelectionOffset(offset);
+		showCaret();
+	} else {
+		int width = (next ? renderer.averageCharWidth : -renderer.averageCharWidth) * 6;
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		x = Math.max(0, Math.min(blockXLocation + width, maxWidth)) - horizontalScrollOffset;
+		setBlockSelectionLocation(x, y);
+		Rectangle rect = new Rectangle(x, y, 0, 0);
+		showLocation(rect, true);
+	}
+}
+void doBlockLineVertical(boolean up) {
 	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
 	int y = blockYLocation - getVerticalScrollOffset();
 	int lineIndex = getLineIndex(y);
@@ -2295,6 +2331,43 @@ void doBlockLine(boolean up) {
 				scrollVertical(y - bottom, true);
 			}
 		}
+	}
+}
+void doBlockLineHorizontal(boolean end) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset);
+	int x = blockXLocation - horizontalScrollOffset;
+	int y = blockYLocation - getVerticalScrollOffset();
+	int lineIndex = getLineIndex(y);
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	String lineText = content.getLine(lineIndex);
+	int lineLength = lineText.length();
+	int[] trailing = new int[1];
+	int offset = getOffsetAtPoint(x, y, trailing, true);
+	if (offset != -1) {
+		offset += trailing[0];
+		int newOffset = offset;
+		if (end) {
+			if (offset < lineOffset + lineLength) {
+				newOffset = lineOffset + lineLength;
+			}
+		} else {
+			if (offset > lineOffset) {
+				newOffset = lineOffset;
+			}
+		}
+		offset = newOffset != offset ? newOffset : -1;
+	} else {
+		if (!end) offset = lineOffset + lineLength;
+	}
+	if (offset != -1) {
+		setBlockSelectionOffset(offset);
+		showCaret();
+	} else {
+		int maxWidth = Math.max(clientAreaWidth - rightMargin - leftMargin, renderer.getWidth());
+		x = (end ? maxWidth : 0) - horizontalScrollOffset;
+		setBlockSelectionLocation(x, y);
+		Rectangle rect = new Rectangle(x, y, 0, 0);
+		showLocation(rect, true);
 	}
 }
 /**
@@ -6208,24 +6281,32 @@ boolean invokeBlockAction(int action) {
 			return false;
 		// Selection
 		case ST.SELECT_LINE_UP:
-			doBlockLine(true);
+			doBlockLineVertical(true);
 			return true;
 		case ST.SELECT_LINE_DOWN:
-			doBlockLine(false);
+			doBlockLineVertical(false);
 			return true;
+		case ST.SELECT_LINE_START:
+			doBlockLineHorizontal(false);
+			return true;
+		case ST.SELECT_LINE_END:
+			doBlockLineHorizontal(true);
+			return false;
 		case ST.SELECT_COLUMN_PREVIOUS:
 			doBlockColumn(false);
 			return true;
 		case ST.SELECT_COLUMN_NEXT:
 			doBlockColumn(true);
 			return true;
+		case ST.SELECT_WORD_PREVIOUS:
+			doBlockWord(false);
+			return true;
+		case ST.SELECT_WORD_NEXT:
+			doBlockWord(true);
+			return true;
 		case ST.SELECT_ALL:
-		case ST.SELECT_LINE_START:
-		case ST.SELECT_LINE_END:
 		case ST.SELECT_PAGE_UP:
 		case ST.SELECT_PAGE_DOWN:
-		case ST.SELECT_WORD_PREVIOUS:
-		case ST.SELECT_WORD_NEXT:
 		case ST.SELECT_TEXT_START:
 		case ST.SELECT_TEXT_END:
 		case ST.SELECT_WINDOW_START:
