@@ -563,6 +563,8 @@ void createHandle () {
 		windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 		window.setDelegate(windowDelegate);
 		
+		window.disableCursorRects();
+		
 		id id = window.fieldEditor (true, null);
 		if (id != null) {
 			OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));

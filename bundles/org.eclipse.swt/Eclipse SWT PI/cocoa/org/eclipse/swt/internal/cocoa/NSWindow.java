@@ -65,6 +65,10 @@ public NSPoint convertScreenToBase(NSPoint aPoint) {
 	return result;
 }
 
+public void disableCursorRects() {
+	OS.objc_msgSend(this.id, OS.sel_disableCursorRects);
+}
+
 public NSText fieldEditor(boolean createFlag, id anObject) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_fieldEditor_forObject_, createFlag, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSText(result) : null;

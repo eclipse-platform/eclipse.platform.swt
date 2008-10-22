@@ -22845,8 +22845,8 @@
     <method selector="deviceDescription">
       <retval></retval>
     </method>
-    <method selector="disableCursorRects">
-      <retval></retval>
+    <method selector="disableCursorRects" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="disableFlushWindow">
       <retval></retval>

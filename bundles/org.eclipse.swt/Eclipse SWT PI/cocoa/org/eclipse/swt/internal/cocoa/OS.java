@@ -630,6 +630,7 @@ public static final int /*long*/ sel_deviceRGBColorSpace = sel_registerName("dev
 public static final int /*long*/ sel_dictionary = sel_registerName("dictionary");
 public static final int /*long*/ sel_dictionaryWithCapacity_ = sel_registerName("dictionaryWithCapacity:");
 public static final int /*long*/ sel_dictionaryWithObject_forKey_ = sel_registerName("dictionaryWithObject:forKey:");
+public static final int /*long*/ sel_disableCursorRects = sel_registerName("disableCursorRects");
 public static final int /*long*/ sel_disabledControlTextColor = sel_registerName("disabledControlTextColor");
 public static final int /*long*/ sel_displayIfNeeded = sel_registerName("displayIfNeeded");
 public static final int /*long*/ sel_distantFuture = sel_registerName("distantFuture");
