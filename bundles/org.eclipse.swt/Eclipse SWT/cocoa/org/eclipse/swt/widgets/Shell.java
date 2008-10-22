@@ -977,8 +977,13 @@ public boolean isVisible () {
  */
 public void open () {
 	checkWidget();
-//	setWindowVisible (true, true);
-	setVisible(true);
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & mask) != 0) {
+			display.setModalShell (this);
+	} else {
+		updateModal ();
+	}
+	setWindowVisible (true, true);
 	if (isDisposed ()) return;
 //	if (active) {
 		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
@@ -1528,7 +1533,11 @@ void setZOrder (Control control, boolean above) {
 boolean traverseEscape () {
 	if (parent == null) return false;
 	if (!isVisible () || !isEnabled ()) return false;
-	close ();
+//	display.asyncExec(new Runnable() {
+//		public void run() {
+			close ();
+//		}
+//	});
 	return true;
 }
 
@@ -1611,4 +1620,7 @@ boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window
 	return false;
 }
 
+void keyDown(int id, int sel, int theEvent) {
+	super.keyDown(id, sel, theEvent);
+}
 }
