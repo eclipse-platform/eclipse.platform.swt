@@ -355,22 +355,35 @@ NSScreen getPrimaryScreen () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
-	NSArray fonts = NSFontManager.sharedFontManager().availableFonts();
-	int count = 0;
-	FontData[] fds = new FontData[(int)/*64*/fonts.count()];
-	for (int i = 0; i < fds.length; i++) {
-		NSString str = new NSString(fonts.objectAtIndex(i));
-		String nsName = str.getString();
-		String name = nsName;
-		int index = nsName.indexOf('-');
-		if (index != -1) name = name.substring(0, index);
-		int style = SWT.NORMAL;
-		if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
-		if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
-		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
-			FontData data = new FontData(name, 0, style);
-			data.nsName = nsName;
-			fds[count++] = data;
+	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
+	int famCount = families.count();
+	int count = 0;	
+	FontData[] fds = new FontData[100];
+	for (int i = 0; i < famCount; i++) {
+		NSString nsfamily = new NSString(families.objectAtIndex(i));
+		String family = nsfamily.getString();
+		NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsfamily);
+		int fontCount = fonts.count();
+		for (int j = 0; j < fontCount; j++) {
+			NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
+			NSString str = new NSString(fontDetails.objectAtIndex(0));
+			String nsName = str.getString();
+			String name  = nsName;
+			int index = nsName.indexOf('-');
+			if (index != -1) name = name.substring(0, index);
+			int style = SWT.NORMAL;
+			if (nsName.indexOf("Italic") != -1) style |= SWT.ITALIC;
+			if (nsName.indexOf("Bold") != -1) style |= SWT.BOLD;
+			if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+				FontData data = new FontData(family, 0, style);
+				data.nsName = nsName;
+				if (count == fds.length) {
+					FontData[] newFds = new FontData[fds.length + 100];
+					System.arraycopy(fds, 0, newFds, 0, fds.length);
+					fds = newFds;
+				}
+				fds[count++] = data;
+			}
 		}
 	}
 	if (count == fds.length) return fds;
