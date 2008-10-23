@@ -3307,14 +3307,18 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 	if (index != timerList.length) {
 		NSTimer timer = nsTimers [index];
-		if (milliseconds < 0) {
-			timer.invalidate();
+		if (timer == null) {
 			timerList [index] = null;
-			nsTimers [index] = null;
 		} else {
-			timer.setFireDate(NSDate.dateWithTimeIntervalSinceNow (milliseconds / 1000.0));
+			if (milliseconds < 0) {
+				timer.invalidate();
+				timerList [index] = null;
+				nsTimers [index] = null;
+			} else {
+				timer.setFireDate(NSDate.dateWithTimeIntervalSinceNow (milliseconds / 1000.0));
+			}
+			return;
 		}
-		return;
 	} 
 	if (milliseconds < 0) return;
 	index = 0;
