@@ -296,7 +296,7 @@ void checkGC(int mask) {
 			Font font = data.font;
 			OS.SelectObject(handle, font.handle);
 			int /*long*/[] hFont = new int /*long*/[1];
-			int /*long*/ gdipFont = createGdipFont(font.handle, gdipGraphics, hFont);
+			int /*long*/ gdipFont = createGdipFont(handle, font.handle, gdipGraphics, hFont);
 			if (hFont[0] != 0) {
 				OS.SelectObject(handle, hFont[0]);
 				if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
@@ -538,8 +538,8 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		}
 	}
 }
-static int /*long*/ createGdipFont(int /*long*/ hFont, int /*long*/ graphics, int /*long*/[] outFont) {
-	int /*long*/ font = Gdip.Font_new(0, hFont);
+static int /*long*/ createGdipFont(int /*long*/ hDC, int /*long*/ hFont, int /*long*/ graphics, int /*long*/[] outFont) {
+	int /*long*/ font = Gdip.Font_new(hDC, hFont);
 	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (!Gdip.Font_IsAvailable(font)) {
 		Gdip.Font_delete(font);
