@@ -3904,8 +3904,8 @@
     <method selector="borderType">
       <retval></retval>
     </method>
-    <method selector="borderWidth">
-      <retval></retval>
+    <method selector="borderWidth" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="boxType">
       <retval></retval>

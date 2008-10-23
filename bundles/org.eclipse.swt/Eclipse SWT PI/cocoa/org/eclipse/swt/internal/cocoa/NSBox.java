@@ -24,6 +24,10 @@ public NSBox(id id) {
 	super(id);
 }
 
+public float /*double*/ borderWidth() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_borderWidth);
+}
+
 public NSSize contentViewMargins() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_contentViewMargins);
