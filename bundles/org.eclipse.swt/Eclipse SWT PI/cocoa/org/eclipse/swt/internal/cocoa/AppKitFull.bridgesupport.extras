@@ -8600,8 +8600,8 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="availableFontFamilies">
-      <retval></retval>
+    <method selector="availableFontFamilies" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="availableFontNamesMatchingFontDescriptor:">
       <arg name="descriptor"></arg>
@@ -8614,9 +8614,9 @@
     <method selector="availableFonts" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="availableMembersOfFontFamily:">
-      <arg name="fam"></arg>
-      <retval></retval>
+    <method selector="availableMembersOfFontFamily:" swt_gen="true">
+      <arg name="fam" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="collectionNames">
       <retval></retval>

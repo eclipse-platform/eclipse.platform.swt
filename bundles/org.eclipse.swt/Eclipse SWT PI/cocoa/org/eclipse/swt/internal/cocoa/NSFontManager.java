@@ -24,8 +24,18 @@ public NSFontManager(id id) {
 	super(id);
 }
 
+public NSArray availableFontFamilies() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableFontFamilies);
+	return result != 0 ? new NSArray(result) : null;
+}
+
 public NSArray availableFonts() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableFonts);
+	return result != 0 ? new NSArray(result) : null;
+}
+
+public NSArray availableMembersOfFontFamily(NSString fam) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableMembersOfFontFamily_, fam != null ? fam.id : 0);
 	return result != 0 ? new NSArray(result) : null;
 }
 
