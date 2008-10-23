@@ -342,10 +342,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	widget.sizeToFit();
 	NSRect newRect = widget.frame();
 	widget.setFrame (oldRect);
-	width = (int)newRect.width;
-	height = (int)newRect.height;
+	width = (int)Math.ceil (newRect.width);
+	height = (int)Math.ceil (newRect.height);
+	/*
+	* Feature in Cocoa.  Attempting to create an NSComboBox with a
+	* height > 27 spews a very long warning message to stdout and
+	* often draws the combo incorrectly.  The workaround is to limit
+	* the returned height of editable Combos to the height that is
+	* required to display their text, even if a larger hHint is specified.
+	*/
+	if (hHint != SWT.DEFAULT) {
+		if ((style & SWT.READ_ONLY) != 0 || hHint < height) height = hHint;
+	}
 	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
 }
 
@@ -1223,6 +1232,25 @@ void setBackground (float [] color) {
 	} else {
 		((NSTextField)view).setBackgroundColor(nsColor);
 	}
+}
+
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	/*
+	 * Feature in Cocoa.  Attempting to create an NSComboBox with a
+	 * height > 27 spews a very long warning message to stdout and
+	 * often draws the combo incorrectly.  The workaround is to limit
+	 * the height of editable Combos to the height that is required
+	 * to display their text.
+	 */
+	if ((style & SWT.READ_ONLY) == 0) {
+		NSControl widget = (NSControl)view;
+		NSRect oldRect = widget.frame ();
+		widget.sizeToFit ();
+		NSRect newRect = widget.frame ();
+		widget.setFrame (oldRect);
+		height = Math.min (height, (int)Math.ceil (newRect.height));
+	}
+	super.setBounds (x, y, width, height, move, resize);
 }
 
 void setForeground (float [] color) {
