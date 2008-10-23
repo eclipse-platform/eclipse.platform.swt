@@ -281,8 +281,7 @@ public void addString(String string, float x, float y, Font font) {
 	int length = string.length();
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
-	int /*long*/ hDC = device.internal_new_GC(null);
-	int /*long*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, null);
+	int /*long*/ gdipFont = GC.createGdipFont(font.handle, 0, null);
 	PointF point = new PointF();
 	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 	point.Y = y;
@@ -294,7 +293,6 @@ public void addString(String string, float x, float y, Font font) {
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 	Gdip.FontFamily_delete(family);
 	Gdip.Font_delete(gdipFont);
-	device.internal_dispose_GC(hDC, null);
 }
 
 /**
