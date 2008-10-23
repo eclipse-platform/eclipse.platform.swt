@@ -338,20 +338,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	NSControl widget = (NSControl)view;
-	if ((style & SWT.READ_ONLY) != 0) {
-		NSRect oldRect = widget.frame();
-		widget.sizeToFit();
-		NSRect newRect = widget.frame();
-		widget.setFrame (oldRect);
-		width = (int)Math.ceil (newRect.width);
-		height = (int)Math.ceil (newRect.height);
-	} else {
-		NSRect rect = new NSRect ();
-		rect.width = rect.height = Float.MAX_VALUE;
-		NSSize size = widget.cell ().cellSizeForBounds (rect);
-		width = (int)Math.ceil (size.width);
-		height = (int)Math.ceil (size.height);
-	}
+	NSRect rect = new NSRect ();
+	rect.width = rect.height = Float.MAX_VALUE;
+	NSSize size = widget.cell ().cellSizeForBounds (rect);
+	width = (int)Math.ceil (size.width);
+	height = (int)Math.ceil (size.height);
 	/*
 	* Feature in Cocoa.  Attempting to create an NSComboBox with a
 	* height > 27 spews a very long warning message to stdout and
