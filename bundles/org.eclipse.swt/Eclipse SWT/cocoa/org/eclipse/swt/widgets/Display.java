@@ -2606,9 +2606,6 @@ public boolean readAndDispatch () {
 			return true;
 		}
 		return runAsyncMessages (false);
-	} catch (Exception e) {
-		e.printStackTrace();
-		return false;
 	} finally {
 		loopCounter --;
 	}
@@ -3231,14 +3228,9 @@ public boolean sleep () {
 		pool.release();
 		pool = (NSAutoreleasePool)new NSAutoreleasePool().alloc().init();
 	}
-	try {
-		allowTimers = runAsyncMessages = false;
-		NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
-		allowTimers = runAsyncMessages = true;
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-
+	allowTimers = runAsyncMessages = false;
+	NSRunLoop.currentRunLoop().runMode(OS.NSDefaultRunLoopMode, NSDate.distantFuture());
+	allowTimers = runAsyncMessages = true;
 	return true;
 }
 
