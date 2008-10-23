@@ -8576,13 +8576,13 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			rangeEnd = styles[styles.length - 1].start + styles[styles.length - 1].length;
 		}
 	}
-	int lastLineBottom = 0;
+	int expectedBottom = 0;
 	if (!isFixedLineHeight() && !reset) {
 		int lineEnd = content.getLineAtOffset(Math.max(end, rangeEnd));
 		int partialTopIndex = getPartialTopIndex();
 		int partialBottomIndex = getPartialBottomIndex();
 		if (partialTopIndex <= lineEnd && lineEnd <= partialBottomIndex) {
-			lastLineBottom = getLinePixel(lineEnd + 1);
+			expectedBottom = getLinePixel(lineEnd + 1);
 		}
 	}
 	if (reset) {
@@ -8603,21 +8603,18 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 		int partialTopIndex = getPartialTopIndex();
 		int partialBottomIndex = getPartialBottomIndex();
 		if (!(lineStart > partialBottomIndex || lineEnd < partialTopIndex)) {
-			int y = 0;
-			int height = clientAreaHeight;
+			int top = 0;
+			int bottom = clientAreaHeight;
 			if (partialTopIndex <= lineStart && lineStart <= partialBottomIndex) {
-				int lineTop = Math.max(y, getLinePixel(lineStart));
-				y = lineTop;
-				height -= lineTop;
+				top = Math.max(0, getLinePixel(lineStart));
 			}
 			if (partialTopIndex <= lineEnd && lineEnd <= partialBottomIndex) {
-				int newLastLineBottom = getLinePixel(lineEnd + 1);
-				if (!isFixedLineHeight()) {
-					scrollText(lastLineBottom, newLastLineBottom);
-				}
-				height = newLastLineBottom - y;
+				bottom = getLinePixel(lineEnd + 1);
 			}
-			super.redraw(0, y, clientAreaWidth, height, false);		
+			if (!isFixedLineHeight() && bottom != expectedBottom) {
+				bottom = clientAreaHeight;
+			}
+			super.redraw(0, top, clientAreaWidth, bottom - top, false);		
 		}
 	}
 	setCaretLocation();
