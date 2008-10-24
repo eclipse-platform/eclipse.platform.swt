@@ -134,8 +134,8 @@ protected void checkSubclass () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed);
 	if (wHint == SWT.DEFAULT && items.length > 0) {
-		NSSize mimSize = ((NSTabView)view).minimumSize();
-		Rectangle trim = computeTrim (0, 0, (int)mimSize.width, 0);
+		NSSize minSize = ((NSTabView)view).minimumSize();
+		Rectangle trim = computeTrim (0, 0, (int)Math.ceil (minSize.width), 0);
 		size.x = Math.max (trim.width, size.x);
 	}
 	return size;
@@ -143,32 +143,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-//	CGRect oldBounds = new CGRect (), bounds = oldBounds;
-//	OS.HIViewGetFrame (handle, oldBounds);
-//	int MIN_SIZE = 100;
-//	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-//		OS.HIViewSetDrawingEnabled (handle, false);
-//		bounds = new CGRect ();
-//		bounds.width = bounds.height = 100;
-//		OS.HIViewSetFrame (handle, bounds);
-//	}
-//	Rect client = new Rect ();
-//	OS.GetTabContentRect (handle, client);
-//	if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
-//		OS.HIViewSetFrame (handle, oldBounds);
-//		OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
-//	}
-//	x -= client.left;
-//	y -= client.top;
-//	width += (int) bounds.width - (client.right - client.left);
-//	height += (int) bounds.height - (client.bottom - client.top);
-//	Rect inset = getInset ();
-//	x -= inset.left;
-//	y -= inset.top;
-//	width += inset.left + inset.right;
-//	height += inset.top + inset.bottom;
-//	return new Rectangle (-client.left, -client.top, width, height);
-	return super.computeTrim(x, y, width, height);
+	NSTabView widget = (NSTabView)view;
+	NSRect rect = widget.contentRect ();
+	x -= rect.x; y -= rect.y;
+	width += Math.ceil (rect.x); height += Math.ceil (rect.y);
+	return super.computeTrim (x, y, width, height);
 }
 
 void createHandle () {
@@ -225,8 +204,8 @@ public Rectangle getClientArea () {
 	NSRect rect = ((NSTabView)view).contentRect();
 	int x = Math.max (0, (int)rect.x);
 	int y = Math.max (0, (int)rect.y);
-	int width = Math.max (0, (int)rect.width);
-	int height = Math.max (0, (int)rect.height);
+	int width = Math.max (0, (int)Math.ceil (rect.width));
+	int height = Math.max (0, (int)Math.ceil (rect.height));
 	return new Rectangle (x, y, width, height);
 }
 
