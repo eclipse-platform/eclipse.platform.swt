@@ -29,4 +29,12 @@ public NSArray recentSearches() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSSearchField, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSSearchField, OS.sel_setCellClass_, factoryId);
+}
+
 }

@@ -3987,8 +3987,8 @@
     <method selector="title">
       <retval></retval>
     </method>
-    <method selector="titleCell">
-      <retval swt_java_type="NSCell"></retval>
+    <method selector="titleCell" swt_gen="true">
+      <retval swt_gen="true" swt_java_type="NSCell"></retval>
     </method>
     <method selector="titleFont">
       <retval></retval>
@@ -5187,9 +5187,9 @@
       <arg name="fontObj" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setFormatter:">
-      <arg name="newFormatter"></arg>
-      <retval></retval>
+    <method selector="setFormatter:" swt_gen="true">
+      <arg name="newFormatter" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setHighlighted:" swt_gen="true">
       <arg name="flag" swt_gen="true"></arg>
@@ -6450,8 +6450,8 @@
     <method selector="cell" swt_gen="true">
       <retval swt_gen="true" swt_java_type="NSCell"></retval>
     </method>
-    <method class_method="true" selector="cellClass">
-      <retval></retval>
+    <method class_method="true" selector="cellClass" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="currentEditor" swt_gen="true">
       <retval swt_gen="true"></retval>
@@ -6548,9 +6548,9 @@
       <arg name="aCell"></arg>
       <retval></retval>
     </method>
-    <method class_method="true" selector="setCellClass:">
-      <arg name="factoryId"></arg>
-      <retval></retval>
+    <method class_method="true" selector="setCellClass:" swt_gen="true">
+      <arg name="factoryId" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setContinuous:">
       <arg name="flag"></arg>
@@ -6578,9 +6578,9 @@
       <arg name="fontObj" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="setFormatter:">
-      <arg name="newFormatter"></arg>
-      <retval></retval>
+    <method selector="setFormatter:" swt_gen="true">
+      <arg name="newFormatter" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setIgnoresMultiClick:">
       <arg name="flag"></arg>
@@ -6605,9 +6605,9 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="setStringValue:">
-      <arg name="aString"></arg>
-      <retval></retval>
+    <method selector="setStringValue:" swt_gen="true">
+      <arg name="aString" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setTag:">
       <arg name="anInt"></arg>
@@ -6620,8 +6620,8 @@
     <method selector="sizeToFit" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="stringValue">
-      <retval></retval>
+    <method selector="stringValue" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="tag">
       <retval></retval>

@@ -201,8 +201,14 @@ NSAttributedString createString() {
 
 void deregister () {
 	super.deregister ();
-	if (textView != null) display.removeWidget (textView);
-	if (imageView != null) display.removeWidget (imageView);
+	if (textView != null) {
+		display.removeWidget(textView);
+		display.removeWidget(textView.cell());
+	}
+	if (imageView != null) {
+		display.removeWidget (imageView);
+		display.removeWidget (imageView.cell());
+	}
 }
 
 /**
@@ -267,8 +273,14 @@ public String getText () {
 
 void register () {
 	super.register ();
-	if (textView != null) display.addWidget (textView, this);
-	if (imageView != null) display.addWidget (imageView, this);
+	if (textView != null) {
+		display.addWidget (textView, this);
+		display.addWidget (textView.cell(), this);
+	}
+	if (imageView != null) {
+		display.addWidget (imageView, this);
+		display.addWidget (imageView.cell(), this);
+	}
 }
 
 void releaseHandle () {

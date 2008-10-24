@@ -439,6 +439,12 @@ Color defaultForeground () {
     return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
+
+void deregister() {
+	super.deregister();
+	display.removeWidget(((NSControl)view).cell());
+}
+
 /**
  * Deselects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already deselected, it remains
@@ -883,6 +889,11 @@ public void paste () {
 	start += newText.length ();
 	setSelection (new Point (start, start));
 	sendEvent (SWT.Modify);
+}
+
+void register() {
+	super.register();
+	display.addWidget(((NSControl)view).cell(), this);
 }
 
 void releaseWidget () {

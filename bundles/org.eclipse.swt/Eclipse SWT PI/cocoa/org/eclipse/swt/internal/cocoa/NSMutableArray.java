@@ -41,6 +41,10 @@ public void removeObject(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_removeObject_, anObject != null ? anObject.id : 0);
 }
 
+public void removeObjectAtIndex(int /*long*/ index) {
+	OS.objc_msgSend(this.id, OS.sel_removeObjectAtIndex_, index);
+}
+
 public static NSArray array() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_array);
 	return result != 0 ? new NSArray(result) : null;

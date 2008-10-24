@@ -2851,7 +2851,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSCharacterSet">
+  <class name="NSCharacterSet" swt_gen="mixed">
     <method class_method="true" selector="alphanumericCharacterSet">
       <retval></retval>
     </method>
@@ -2861,9 +2861,9 @@
     <method class_method="true" selector="capitalizedLetterCharacterSet">
       <retval></retval>
     </method>
-    <method selector="characterIsMember:">
-      <arg name="aCharacter"></arg>
-      <retval></retval>
+    <method selector="characterIsMember:" swt_gen="true">
+      <arg name="aCharacter" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="characterSetWithBitmapRepresentation:">
       <arg name="data"></arg>
@@ -2884,8 +2884,8 @@
     <method class_method="true" selector="controlCharacterSet">
       <retval></retval>
     </method>
-    <method class_method="true" selector="decimalDigitCharacterSet">
-      <retval></retval>
+    <method class_method="true" selector="decimalDigitCharacterSet" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="decomposableCharacterSet">
       <retval></retval>
@@ -5110,7 +5110,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSFormatter">
+  <class name="NSFormatter" swt_gen="mixed">
     <method selector="attributedStringForObjectValue:withDefaultAttributes:">
       <arg name="obj"></arg>
       <arg name="attrs"></arg>
@@ -5140,9 +5140,9 @@
       <arg name="error"></arg>
       <retval></retval>
     </method>
-    <method selector="stringForObjectValue:">
-      <arg name="obj"></arg>
-      <retval></retval>
+    <method selector="stringForObjectValue:" swt_gen="true">
+      <arg name="obj" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
   </class>
   <class name="NSGarbageCollector">
@@ -6269,9 +6269,9 @@
       <arg name="range"></arg>
       <retval></retval>
     </method>
-    <method selector="removeObjectAtIndex:">
-      <arg name="index"></arg>
-      <retval></retval>
+    <method selector="removeObjectAtIndex:" swt_gen="true">
+      <arg name="index" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="removeObjectIdenticalTo:">
       <arg name="anObject"></arg>
@@ -7127,12 +7127,12 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSNumberFormatter" swt_superclass="NSFormatter">
-    <method selector="allowsFloats">
-      <retval></retval>
+  <class name="NSNumberFormatter" swt_gen="mixed" swt_superclass="NSFormatter">
+    <method selector="allowsFloats" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="alwaysShowsDecimalSeparator">
-      <retval></retval>
+    <method selector="alwaysShowsDecimalSeparator" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="attributedStringForNil">
       <retval></retval>
@@ -7155,8 +7155,8 @@
     <method selector="currencySymbol">
       <retval></retval>
     </method>
-    <method selector="decimalSeparator">
-      <retval></retval>
+    <method selector="decimalSeparator" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="defaultFormatterBehavior">
       <retval></retval>
@@ -7210,20 +7210,20 @@
     <method selector="localizesFormat">
       <retval></retval>
     </method>
-    <method selector="maximum">
-      <retval></retval>
+    <method selector="maximum" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="maximumFractionDigits">
-      <retval></retval>
+    <method selector="maximumFractionDigits" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="maximumIntegerDigits">
-      <retval></retval>
+    <method selector="maximumIntegerDigits" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="maximumSignificantDigits">
       <retval></retval>
     </method>
-    <method selector="minimum">
-      <retval></retval>
+    <method selector="minimum" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="minimumFractionDigits">
       <retval></retval>
@@ -7304,9 +7304,9 @@
     <method selector="secondaryGroupingSize">
       <retval></retval>
     </method>
-    <method selector="setAllowsFloats:">
-      <arg name="flag"></arg>
-      <retval></retval>
+    <method selector="setAllowsFloats:" swt_gen="true">
+      <arg name="flag" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setAlwaysShowsDecimalSeparator:">
       <arg name="b"></arg>
@@ -7396,33 +7396,33 @@
       <arg name="flag"></arg>
       <retval></retval>
     </method>
-    <method selector="setMaximum:">
-      <arg name="number"></arg>
-      <retval></retval>
+    <method selector="setMaximum:" swt_gen="true">
+      <arg name="number" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="setMaximumFractionDigits:">
-      <arg name="number"></arg>
-      <retval></retval>
+    <method selector="setMaximumFractionDigits:" swt_gen="true">
+      <arg name="number" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="setMaximumIntegerDigits:">
-      <arg name="number"></arg>
-      <retval></retval>
+    <method selector="setMaximumIntegerDigits:" swt_gen="true">
+      <arg name="number" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setMaximumSignificantDigits:">
       <arg name="number"></arg>
       <retval></retval>
     </method>
-    <method selector="setMinimum:">
-      <arg name="number"></arg>
-      <retval></retval>
+    <method selector="setMinimum:" swt_gen="true">
+      <arg name="number" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="setMinimumFractionDigits:">
-      <arg name="number"></arg>
-      <retval></retval>
+    <method selector="setMinimumFractionDigits:" swt_gen="true">
+      <arg name="number" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="setMinimumIntegerDigits:">
-      <arg name="number"></arg>
-      <retval></retval>
+    <method selector="setMinimumIntegerDigits:" swt_gen="true">
+      <arg name="number" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setMinimumSignificantDigits:">
       <arg name="number"></arg>
@@ -7460,9 +7460,9 @@
       <arg name="string"></arg>
       <retval></retval>
     </method>
-    <method selector="setNumberStyle:">
-      <arg name="style"></arg>
-      <retval></retval>
+    <method selector="setNumberStyle:" swt_gen="true">
+      <arg name="style" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setPaddingCharacter:">
       <arg name="string"></arg>
@@ -7472,9 +7472,9 @@
       <arg name="position"></arg>
       <retval></retval>
     </method>
-    <method selector="setPartialStringValidationEnabled:">
-      <arg name="b"></arg>
-      <retval></retval>
+    <method selector="setPartialStringValidationEnabled:" swt_gen="true">
+      <arg name="b" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setPerMillSymbol:">
       <arg name="string"></arg>
@@ -10435,7 +10435,7 @@
     </method>
     <method selector="characterAtIndex:" swt_gen="true">
       <arg name="index" swt_gen="true"></arg>
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_java_type="int" swt_java_type64="long"></retval>
     </method>
     <method selector="commonPrefixWithString:options:">
       <arg name="aString"></arg>

@@ -40,4 +40,12 @@ public void setMinValue(double aDouble) {
 	OS.objc_msgSend(this.id, OS.sel_setMinValue_, aDouble);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSSlider, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSSlider, OS.sel_setCellClass_, factoryId);
+}
+
 }

@@ -100,7 +100,6 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
-// TODO: Return a valid set of attributes for a toolbar.
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
 	if (accessibilityAttributes == null) {
@@ -116,6 +115,23 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 		ourAttributes.addObject(OS.NSAccessibilityEnabledAttribute);
 		ourAttributes.addObject(OS.NSAccessibilityFocusedAttribute);
 		ourAttributes.addObject(OS.NSAccessibilityChildrenAttribute);
+
+		if (accessible != null) {
+			// See if the accessible will override or augment the standard list.
+			// Help, title, and description can be overridden.
+			NSMutableArray extraAttributes = NSMutableArray.arrayWithCapacity(3);
+			extraAttributes.addObject(OS.NSAccessibilityHelpAttribute);
+			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
+			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
+
+			for (int i = extraAttributes.count() - 1; i >= 0; i--) {
+				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
+				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) != null) {
+					ourAttributes.addObject(extraAttributes.objectAtIndex(i));
+				}
+			}
+		}
+		
 		accessibilityAttributes = ourAttributes;
 		accessibilityAttributes.retain();
 	}

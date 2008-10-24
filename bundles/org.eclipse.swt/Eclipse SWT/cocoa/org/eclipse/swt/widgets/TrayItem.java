@@ -162,6 +162,7 @@ void createHandle () {
 void deregister () {
 	super.deregister ();
 	display.removeWidget (view);
+	display.removeWidget(view.cell());
 }
 
 void destroyWidget () {
@@ -250,6 +251,7 @@ public boolean getVisible () {
 void register () {
 	super.register ();
 	display.addWidget (view, this);
+	display.addWidget (((NSControl)view).cell(), this);
 }
 
 void releaseHandle () {

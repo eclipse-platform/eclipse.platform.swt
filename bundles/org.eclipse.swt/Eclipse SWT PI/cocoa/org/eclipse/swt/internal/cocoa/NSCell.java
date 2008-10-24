@@ -52,6 +52,10 @@ public void setFont(NSFont fontObj) {
 	OS.objc_msgSend(this.id, OS.sel_setFont_, fontObj != null ? fontObj.id : 0);
 }
 
+public void setFormatter(NSFormatter newFormatter) {
+	OS.objc_msgSend(this.id, OS.sel_setFormatter_, newFormatter != null ? newFormatter.id : 0);
+}
+
 public void setHighlighted(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setHighlighted_, flag);
 }

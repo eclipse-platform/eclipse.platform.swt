@@ -115,10 +115,43 @@ int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
-	if (id == view.id) {
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
+			
+			// First, see if the accessible is going to define a set of attributes for the control.
+			// If it does, return that.
 			NSArray returnValue = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
 			if (returnValue != null) return returnValue.id;
+			
+			// If not, see if it will override or augment the standard list.
+			// Help, title, and description can be overridden.
+			NSMutableArray extraAttributes = NSMutableArray.arrayWithCapacity(3);
+			extraAttributes.addObject(OS.NSAccessibilityHelpAttribute);
+			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
+			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
+
+			for (int i = extraAttributes.count() - 1; i >= 0; i--) {
+				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
+				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) == null) {
+					extraAttributes.removeObjectAtIndex(i);
+				}
+			}
+
+			if (extraAttributes.count() > 0) {
+				int superResult = super.accessibilityAttributeNames(id, sel);
+				NSArray baseAttributes = new NSArray(superResult);
+				NSMutableArray mutableAttributes = NSMutableArray.arrayWithCapacity(baseAttributes.count() + 1);
+				mutableAttributes.addObjectsFromArray(baseAttributes);
+				
+				for (int i = 0; i < extraAttributes.count(); i++) {
+					id currAttribute = extraAttributes.objectAtIndex(i);
+					if (!mutableAttributes.containsObject(currAttribute)) {
+						mutableAttributes.addObject(currAttribute);
+					}
+				}
+				
+				return mutableAttributes.id;
+			}
 		}
 	}
 
@@ -127,7 +160,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
 int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
-	if (id == view.id) {
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
 			NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(ACC.CHILDID_SELF);
 			if (returnValue != null) return returnValue.id;
@@ -153,8 +186,11 @@ boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int 
 
 int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	id returnValue = null;
-	if (accessible != null) {
-		returnValue = accessible.internal_accessibilityFocusedUIElement(ACC.CHILDID_SELF);
+
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
+		if (accessible != null) {
+			returnValue = accessible.internal_accessibilityFocusedUIElement(ACC.CHILDID_SELF);
+		}
 	}
 
 	// If we had an accessible and it didn't handle the attribute request, let the
@@ -167,8 +203,11 @@ int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 
 int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	id returnValue = null;
-	if (accessible != null) {
-		returnValue = accessible.internal_accessibilityHitTest(point, ACC.CHILDID_SELF);
+
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
+		if (accessible != null) {
+			returnValue = accessible.internal_accessibilityHitTest(point, ACC.CHILDID_SELF);
+		}
 	}
 
 	// If we had an accessible and it didn't handle the attribute request, let the
@@ -204,11 +243,9 @@ int accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, 
 	
 	id returnValue = null;
 	
-	if (id == view.id) {
-		if (accessible != null) {
-			id parameter = new id(arg1);
-			returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
-		}
+	if (accessible != null) {
+		id parameter = new id(arg1);
+		returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
 	}
 	
 	// If we had an accessible and it didn't handle the attribute request, let the

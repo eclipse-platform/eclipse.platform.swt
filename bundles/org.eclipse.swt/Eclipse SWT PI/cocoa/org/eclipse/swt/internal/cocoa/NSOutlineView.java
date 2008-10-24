@@ -78,4 +78,12 @@ public void setOutlineTableColumn(NSTableColumn outlineTableColumn) {
 	OS.objc_msgSend(this.id, OS.sel_setOutlineTableColumn_, outlineTableColumn != null ? outlineTableColumn.id : 0);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSOutlineView, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSOutlineView, OS.sel_setCellClass_, factoryId);
+}
+
 }

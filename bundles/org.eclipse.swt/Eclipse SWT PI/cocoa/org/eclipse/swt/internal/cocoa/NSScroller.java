@@ -36,4 +36,12 @@ public void setFloatValue(float aFloat, float /*double*/ proportion) {
 	OS.objc_msgSend(this.id, OS.sel_setFloatValue_knobProportion_, aFloat, proportion);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSScroller, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSScroller, OS.sel_setCellClass_, factoryId);
+}
+
 }

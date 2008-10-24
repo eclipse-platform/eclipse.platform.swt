@@ -234,6 +234,7 @@ typedef enum {
 	class_1addMethod_FUNC,
 	class_1addProtocol_FUNC,
 	class_1getMethodImplementation_FUNC,
+	class_1getName_FUNC,
 	dragSelectionWithEvent_1offset_1slideBack_1CALLBACK_FUNC,
 	draggedImage_1beganAt_1CALLBACK_FUNC,
 	draggedImage_1endedAt_1operation_1CALLBACK_FUNC,
@@ -692,6 +693,11 @@ typedef enum {
 	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 #else
 	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IIS_FUNC,
+#else
+	objc_1msgSend_1bool__JJS_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1fpret__II_FUNC,

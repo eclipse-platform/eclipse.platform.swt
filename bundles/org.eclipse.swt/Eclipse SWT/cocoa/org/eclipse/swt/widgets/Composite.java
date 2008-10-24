@@ -152,7 +152,7 @@ boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	if (view != null && id == view.id) {
 		if (accessible != null) {
 			id role = accessible.internal_accessibilityAttributeValue(OS.NSAccessibilityRoleAttribute, ACC.CHILDID_SELF);
-			return (role == null); 
+			if (role != null) return false; 
 		}
 	}
 

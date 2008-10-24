@@ -53,4 +53,12 @@ public void setTextColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSDatePicker, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSDatePicker, OS.sel_setCellClass_, factoryId);
+}
+
 }

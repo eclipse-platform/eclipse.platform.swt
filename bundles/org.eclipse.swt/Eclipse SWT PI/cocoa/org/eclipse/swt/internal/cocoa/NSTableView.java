@@ -206,4 +206,12 @@ public boolean usesAlternatingRowBackgroundColors() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_usesAlternatingRowBackgroundColors);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSTableView, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSTableView, OS.sel_setCellClass_, factoryId);
+}
+
 }

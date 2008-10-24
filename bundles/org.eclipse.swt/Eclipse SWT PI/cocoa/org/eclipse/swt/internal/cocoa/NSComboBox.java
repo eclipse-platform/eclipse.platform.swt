@@ -69,4 +69,12 @@ public void setNumberOfVisibleItems(int /*long*/ visibleItems) {
 	OS.objc_msgSend(this.id, OS.sel_setNumberOfVisibleItems_, visibleItems);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSComboBox, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSComboBox, OS.sel_setCellClass_, factoryId);
+}
+
 }

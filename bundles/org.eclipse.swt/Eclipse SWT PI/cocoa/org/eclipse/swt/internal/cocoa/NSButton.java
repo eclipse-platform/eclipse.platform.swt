@@ -64,4 +64,12 @@ public int /*long*/ state() {
 	return OS.objc_msgSend(this.id, OS.sel_state);
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSButton, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSButton, OS.sel_setCellClass_, factoryId);
+}
+
 }

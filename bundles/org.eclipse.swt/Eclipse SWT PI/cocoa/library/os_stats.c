@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 354;
-int OS_nativeFunctionCallCount[354];
+int OS_nativeFunctionCount = 356;
+int OS_nativeFunctionCallCount[356];
 char * OS_nativeFunctionNames[] = {
 	"CFRelease",
 	"CFURLCreateStringByAddingPercentEscapes",
@@ -226,6 +226,7 @@ char * OS_nativeFunctionNames[] = {
 	"class_1addMethod",
 	"class_1addProtocol",
 	"class_1getMethodImplementation",
+	"class_1getName",
 	"dragSelectionWithEvent_1offset_1slideBack_1CALLBACK",
 	"draggedImage_1beganAt_1CALLBACK",
 	"draggedImage_1endedAt_1operation_1CALLBACK",
@@ -684,6 +685,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
 #else
 	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSRect_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IIS",
+#else
+	"objc_1msgSend_1bool__JJS",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1fpret__II",

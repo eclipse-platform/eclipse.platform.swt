@@ -5075,6 +5075,29 @@ fail:
 }
 #endif
 
+#if (!defined(NO_objc_1msgSend_1bool__IIS) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJS) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIS)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jshort arg2)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJS)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jshort arg2)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIS_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJS_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jshort))objc_msgSend_bool)(arg0, arg1, arg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIS_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJS_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend_1fpret__II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1fpret__JJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jdouble JNICALL OS_NATIVE(objc_1msgSend_1fpret__II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

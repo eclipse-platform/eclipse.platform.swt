@@ -89,6 +89,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(drawInteriorWithFrame_1inView_1CALLBACK)
 }
 #endif
 
+#ifndef NO_class_1getName
+JNIEXPORT jstring JNICALL OS_NATIVE(class_1getName)
+(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jstring rc = 0;
+	OS_NATIVE_ENTER(env, that, class_1getName_FUNC);
+	const char *className = class_getName((Class)arg0);
+	if (className != NULL) rc = (*env)->NewStringUTF(env, className);
+	OS_NATIVE_EXIT(env, that, class_1getName_FUNC);
+	return rc;
+}
+#endif
+
+
 #ifndef NO_setFrame_1CALLBACK
 static jintLong setFrame_1CALLBACK;
 static void setFrame(id obj, SEL sel, NSRect rect)

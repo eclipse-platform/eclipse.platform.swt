@@ -248,6 +248,11 @@ void createHandle () {
 	_setAlignment(style);
 }
 
+void deregister () {
+	super.deregister ();
+	display.removeWidget(((NSControl)view).cell());
+}
+
 void drawWidget (int /*long*/ id, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
@@ -399,6 +404,11 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget ();
 	return text;
+}
+
+void register() {
+	super.register();
+	display.addWidget(((NSControl)view).cell(), this);
 }
 
 void releaseWidget () {

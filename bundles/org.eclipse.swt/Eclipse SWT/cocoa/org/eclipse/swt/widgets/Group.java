@@ -112,6 +112,8 @@ NSView contentView () {
 void deregister () {
 	super.deregister ();
 	display.removeWidget (contentView);
+	SWTBox box = (SWTBox)view;
+	display.removeWidget (box.titleCell());
 }
 
 void createHandle () {
@@ -160,6 +162,8 @@ float getThemeAlpha () {
 void register () {
 	super.register ();
 	display.addWidget (contentView, this);
+	SWTBox box = (SWTBox)view;
+	display.addWidget (box.titleCell(), this);
 }
 
 void releaseHandle () {

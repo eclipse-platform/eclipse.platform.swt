@@ -81,4 +81,12 @@ public NSString titleOfSelectedItem() {
 	return result != 0 ? new NSString(result) : null;
 }
 
+public static int /*long*/ cellClass() {
+	return OS.objc_msgSend(OS.class_NSPopUpButton, OS.sel_cellClass);
+}
+
+public static void setCellClass(int /*long*/ factoryId) {
+	OS.objc_msgSend(OS.class_NSPopUpButton, OS.sel_setCellClass_, factoryId);
+}
+
 }

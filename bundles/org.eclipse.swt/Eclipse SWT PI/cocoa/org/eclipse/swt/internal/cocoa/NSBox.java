@@ -70,4 +70,9 @@ public void sizeToFit() {
 	OS.objc_msgSend(this.id, OS.sel_sizeToFit);
 }
 
+public NSCell titleCell() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_titleCell);
+	return result != 0 ? new NSCell(result) : null;
+}
+
 }

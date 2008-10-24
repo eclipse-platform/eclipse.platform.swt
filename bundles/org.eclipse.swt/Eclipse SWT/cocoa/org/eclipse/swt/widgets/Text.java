@@ -488,6 +488,14 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
+void deregister() {
+	super.deregister();
+	
+	if ((style & SWT.SINGLE) != 0) {
+		display.removeWidget(((NSControl)view).cell());
+	}
+}
+
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	if (filter) {
 		Point selection = getSelection ();
@@ -1134,6 +1142,14 @@ public void paste () {
 		}
 	}
 	sendEvent (SWT.Modify);
+}
+
+void register() {
+	super.register();
+	
+	if ((style & SWT.SINGLE) != 0) {
+		display.addWidget(((NSControl)view).cell(), this);
+	}
 }
 
 void releaseWidget () {

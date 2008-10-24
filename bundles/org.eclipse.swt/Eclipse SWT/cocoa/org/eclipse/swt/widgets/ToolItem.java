@@ -133,45 +133,43 @@ public ToolItem (ToolBar parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
-//int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-//	NSString nsAttributeName = new NSString(arg0);
-//	System.out.println("Attribute " + nsAttributeName.getString() + " for " + new NSObject(id).description().getString());
-//
-//	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
-//		NSString roleText = ((style & SWT.PUSH) != 0) ? OS.NSAccessibilityButtonRole
-//				: ((style & SWT.RADIO) != 0) ? OS.NSAccessibilityRadioButtonRole
-//				: ((style & SWT.CHECK) != 0) ? OS.NSAccessibilityCheckBoxRole
-//				: ((style & SWT.DROP_DOWN) != 0) ? OS.NSAccessibilityMenuButtonRole
-//				: null; // SEPARATOR
-//		if (roleText != null) {
-//			if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute)) {
-//				return roleText.id;
-//			} else { // NSAccessibilityRoleDescriptionAttribute
-//				int /*long*/ description = OS.NSAccessibilityRoleDescription (roleText.id, OS.NSAccessibilityToolbarButtonSubrole.id);
-//				return description;
-//			}
-//		}
-//	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilitySubroleAttribute)) {		
-//		NSString subroleText = OS.NSAccessibilityToolbarButtonSubrole;
-//		return subroleText.id;
-//	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityTitleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
-//		String accessibleText = toolTipText;
-//		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
-//		if (!(accessibleText == null || accessibleText.equals(""))) {
-//			return NSString.stringWith(accessibleText).id;
-//		} else {
-//			return NSString.stringWith("").id;
-//		}
-//	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
-//		NSNumber value = NSNumber.numberWithInt(selection ? 1 : 0);
-//		return value.id;
-//	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
-//		NSNumber value = NSNumber.numberWithInt(getEnabled() ? 1 : 0);
-//		return value.id;
-//	}
-//
-//	return super.accessibilityAttributeValue(id, sel, arg0);
-//}
+int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	NSString nsAttributeName = new NSString(arg0);
+
+	if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
+		NSString roleText = ((style & SWT.PUSH) != 0) ? OS.NSAccessibilityButtonRole
+				: ((style & SWT.RADIO) != 0) ? OS.NSAccessibilityRadioButtonRole
+				: ((style & SWT.CHECK) != 0) ? OS.NSAccessibilityCheckBoxRole
+				: ((style & SWT.DROP_DOWN) != 0) ? OS.NSAccessibilityMenuButtonRole
+				: null; // SEPARATOR
+		if (roleText != null) {
+			if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute)) {
+				return roleText.id;
+			} else { // NSAccessibilityRoleDescriptionAttribute
+				int /*long*/ description = OS.NSAccessibilityRoleDescription (roleText.id, 0);
+				return description;
+			}
+		}
+	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityTitleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
+		return (getText() != null ? NSString.stringWith(getText()).id : NSString.stringWith("").id);
+	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityHelpAttribute)) {
+		String accessibleText = toolTipText;
+		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
+		if (!(accessibleText == null || accessibleText.equals(""))) {
+			return NSString.stringWith(accessibleText).id;
+		} else {
+			return NSString.stringWith("").id;
+		}
+	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityValueAttribute) && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		NSNumber value = NSNumber.numberWithInt(selection ? 1 : 0);
+		return value.id;
+	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
+		NSNumber value = NSNumber.numberWithInt(getEnabled() ? 1 : 0);
+		return value.id;
+	}
+
+	return super.accessibilityAttributeValue(id, sel, arg0);
+}
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -312,8 +310,16 @@ NSAttributedString createString() {
 void deregister () {
 	super.deregister ();
 	display.removeWidget(view);
-	if (button != null) display.removeWidget (button);
-	if (arrow != null) display.removeWidget (arrow);
+	
+	if (button != null) {
+		display.removeWidget (button);
+		display.removeWidget (button.cell());
+	}
+	
+	if (arrow != null) {
+		display.removeWidget (arrow);
+		display.removeWidget (arrow.cell());
+	}
 }
 
 void destroyWidget() {
@@ -574,8 +580,16 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 void register () {
 	super.register ();
 	display.addWidget (view, this);
-	if (button != null) display.addWidget (button, this);
-	if (arrow != null) display.addWidget (arrow, this);
+	
+	if (button != null) {
+		display.addWidget (button, this);
+		display.addWidget (button.cell(), this);
+	}
+	
+	if (arrow != null) {
+		display.addWidget (arrow, this);
+		display.addWidget (arrow.cell(), this);
+	}
 }
 
 void releaseParent () {

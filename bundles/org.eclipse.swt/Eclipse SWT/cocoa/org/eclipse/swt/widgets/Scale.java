@@ -138,6 +138,12 @@ void createHandle () {
 	view = widget;
 }
 
+void deregister() {
+	super.deregister();
+	display.removeWidget(((NSControl)view).cell());
+}
+
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -221,6 +227,11 @@ public int getSelection () {
 //		value = maximum - value + minimum;
 //	}
     return (int)((NSSlider)view).doubleValue();
+}
+
+void register() {
+	super.register();
+	display.addWidget(((NSControl)view).cell(), this);
 }
 
 /**
