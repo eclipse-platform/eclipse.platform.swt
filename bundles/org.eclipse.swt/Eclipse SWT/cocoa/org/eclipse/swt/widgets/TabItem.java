@@ -149,8 +149,8 @@ public Rectangle getBounds() {
 		result.y = (int) pt.y;
 		val = new NSValue (sizeValue);
 		NSSize size = val.sizeValue ();
-		result.width = (int) size.width;
-		result.height = (int) size.height;
+		result.width = (int) Math.ceil (size.width);
+		result.height = (int) Math.ceil (size.height);
 	}
 	return result;
 }

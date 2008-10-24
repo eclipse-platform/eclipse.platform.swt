@@ -961,7 +961,7 @@ public void open () {
 	checkWidget();
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
-			display.setModalShell (this);
+		display.setModalShell (this);
 	} else {
 		updateModal ();
 	}
