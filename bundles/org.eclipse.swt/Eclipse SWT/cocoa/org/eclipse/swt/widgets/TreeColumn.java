@@ -421,9 +421,36 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget ();
+
+	int width = 0;
+
+	/* compute header width */
+	if (displayText != null) {
+		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
+		dict.setObject (getParent ().getFont ().handle, OS.NSFontAttributeName);
+		NSString string = NSString.stringWith (displayText);
+		NSAttributedString attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
+		NSSize stringSize = attrString.size ();
+		attrString.release ();
+		width += Math.ceil (stringSize.width);
+		if (image != null) width += MARGIN; /* space between image and text */
+	}
+	if (image != null) {
+		NSSize imageSize = image.handle.size ();
+		width += Math.ceil (imageSize.width);
+	}
+	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
+		NSTableHeaderCell headerCell = nsColumn.headerCell ();
+		NSRect rect = new NSRect ();
+		rect.width = rect.height = Float.MAX_VALUE;
+		NSSize cellSize = headerCell.cellSizeForBounds (rect);
+		rect.height = cellSize.height;
+		NSRect sortRect = headerCell.sortIndicatorRectForBounds (rect);
+		width += Math.ceil (sortRect.width);
+	}
+
+	/* compute item widths down column */
 	GC gc = new GC (parent);
-	int width = gc.stringExtent (text).x;
-	//TODO header extra
 	int index = parent.indexOf (this);
 	for (int i=0; i<parent.itemCount; i++) {
 		TreeItem item = parent.items [i];
