@@ -1073,8 +1073,10 @@ public class Accessible {
 	
 	id getStringForRangeAttribute (id parameter, int childID) {
 		id returnValue = null;
-		NSRange range = new NSRange();
-		// TODO: Convert parameter into an NSRange.
+		
+		// Parameter is an NSRange wrapped in an NSValue. 
+		NSValue parameterObject = new NSValue(parameter.id);
+		NSRange range = parameterObject.rangeValue();		
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
 		event.result = null;
