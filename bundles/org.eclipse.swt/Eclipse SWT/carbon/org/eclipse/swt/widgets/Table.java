@@ -82,7 +82,7 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	GC paintGC;
 	int sortDirection;
-	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, lastIndexOf;
+	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, savedAnchor, headerHeight, lastIndexOf;
 	boolean  ignoreSelect, wasSelected, fixScrollWidth, drawBackground;
 	Rectangle imageBounds;
 	int showIndex, lastHittest, lastHittestColumn;
@@ -654,6 +654,12 @@ void createItem (TableColumn column, int index) {
 
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (savedAnchor != 0) {
+		int savedIndex = getIndex (savedAnchor);
+		if (index <= savedIndex) {
+			savedAnchor = getId (Math.min (itemCount - 1, savedIndex + 1));
+		}
+	}
 	boolean add = drawCount == 0 || index != itemCount;
 	if (add) {
 		checkItems (false);
@@ -905,6 +911,12 @@ void destroyItem (TableItem item) {
 	while (index < itemCount) {
 		if (items [index] == item) break;
 		index++;
+	}
+	if (savedAnchor != 0) {
+		int savedIndex = getIndex (savedAnchor);
+		if (index < savedIndex) {
+			savedAnchor = getId (Math.max (0, savedIndex - 1));
+		}
 	}
 	if (index != itemCount - 1) fixSelection (index, false); 
 	int [] id = new int [] {itemCount};
@@ -2143,6 +2155,18 @@ int itemNotificationProc (int browser, int id, int message) {
 	if (!(0 <= index && index < items.length)) return OS.noErr;
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
+			savedAnchor = 0;
+			break;
+		case OS.kDataBrowserItemDeselected: {
+			int [] selectionCount = new int [1];
+			if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, selectionCount) == OS.noErr) {
+				if (selectionCount [0] == 0) savedAnchor = id;
+			}
+			break;
+		}
+	}
+	switch (message) {
+		case OS.kDataBrowserItemSelected:
 		case OS.kDataBrowserItemDeselected: {
 			TableItem item = _getItem (index);
 			wasSelected = true;
@@ -2339,14 +2363,29 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		* The fix is to save and restore the horizontal scroll position.
 		*/
 		case 125: /* Down */
-		case 126: /* Up*/
+		case 126: /* Up*/ {
+			if (itemCount == 0) break;
 			int [] top = new int [1], left = new int [1];
 			OS.GetDataBrowserScrollPosition (handle, top, left);
-			result = OS.CallNextEventHandler (nextHandler, theEvent);
+			boolean selectItem = false;
+			int [] selectionCount = new int [1];
+			if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, selectionCount) == OS.noErr) {
+				selectItem = savedAnchor != 0 && selectionCount [0] == 0;
+			}
+			if (selectItem) {
+			    int index = getIndex (savedAnchor) + (keyCode [0] == 125 ? 1 : -1);
+			    index = Math.max (0, Math.min (itemCount - 1, index));
+			    int [] itemId = new int [] {getId (index)};
+				OS.SetDataBrowserSelectedItems (handle, 1, itemId, OS.kDataBrowserItemsAssign);
+				result = OS.noErr;
+			} else {
+				result = OS.CallNextEventHandler (nextHandler, theEvent);
+			}
 			OS.GetDataBrowserScrollPosition (handle, top, null);
 			OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
-
 			redrawBackgroundImage ();
+			break;
+		}
 	}
 	return result;
 }
@@ -2412,6 +2451,12 @@ public void remove (int index) {
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
 	if (item != null) item.release (false);
+	if (savedAnchor != 0) {
+		int savedIndex = getIndex (savedAnchor);
+		if (index < savedIndex) {
+			savedAnchor = getId (Math.max (0, savedIndex - 1));
+		}
+	}
 	if (index != itemCount - 1) fixSelection (index, false);
 	int [] id = new int [] {itemCount};
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
@@ -2501,6 +2546,12 @@ public void remove (int [] indices) {
 		if (index != last) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) item.release (false);
+			if (savedAnchor != 0) {
+				int savedIndex = getIndex (savedAnchor);
+				if (index < savedIndex) {
+					savedAnchor = getId (Math.max (0, savedIndex - 1));
+				}
+			}
 			if (index != itemCount - 1) fixSelection (index, false);
 			id [idIndex--] = itemCount;
 			System.arraycopy (items, index + 1, items, index, --itemCount - index);
@@ -2896,6 +2947,8 @@ public void setItemCount (int count) {
 	callbacks.v1_itemNotificationCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (count < itemCount) {
+		int oldAnchor = savedAnchor;
+		int selectionCount = getSelectionCount ();
 		int index = count;
 		int[] id = new int [itemCount - count];
 		while (index < itemCount) {
@@ -2906,6 +2959,10 @@ public void setItemCount (int count) {
 		}
 		if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+		boolean fixAnchor = selectionCount != 0 && getSelectionCount () == 0;
+		if (fixAnchor || (savedAnchor != 0 && savedAnchor != oldAnchor)) {
+			savedAnchor = getId (Math.max (0, count - 1));
 		}
 	}
 	int length = Math.max (4, (count + 3) / 4 * 4);
@@ -3313,7 +3370,7 @@ public void setSortDirection  (int direction) {
 
 void setTableEmpty () {
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
-	itemCount = anchorFirst = anchorLast = 0;
+	itemCount = anchorFirst = anchorLast = savedAnchor = 0;
 	items = new TableItem [4];
 	if (imageBounds != null) {
 		/* Reset the item height to the font height */

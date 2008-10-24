@@ -89,7 +89,7 @@ public class Tree extends Composite {
 	int [] childIds;
 	GC paintGC;
 	int sortDirection;
-	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
+	int columnCount, column_id, idCount, anchorFirst, anchorLast, savedAnchor, headerHeight;
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll, drawBackground;
 	Rectangle imageBounds;
 	TreeItem showItem;
@@ -989,6 +989,11 @@ void destroyItem (TreeColumn column) {
 void destroyItem (TreeItem item) {
 	TreeItem parentItem = item.parentItem;
 	if (parentItem == null || parentItem.getExpanded ()) {
+		int oldAnchor = savedAnchor;
+		int [] index = new int [1];
+		if (OS.GetDataBrowserTableViewItemRow (handle, item.id, index) != OS.noErr) {
+			index = null;
+		}
 		int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 		ignoreExpand = true;
 		if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int [] {item.id}, 0) != OS.noErr) {
@@ -996,6 +1001,14 @@ void destroyItem (TreeItem item) {
 		}
 		visibleCount--;
 		ignoreExpand = false;
+		if (savedAnchor != 0 && savedAnchor != oldAnchor) {
+			if (index != null) {
+		    	int [] itemId = new int [1];
+		    	if (OS.GetDataBrowserTableViewItemID (handle, index [0], itemId) == OS.noErr) {
+		    		savedAnchor = itemId [0];
+		    	}
+	    	}
+		}
 	}
 	/*
 	* Bug in the Macintosh.  When the last child of a tree item is
@@ -2299,6 +2312,18 @@ int itemNotificationProc (int browser, int id, int message) {
 	}
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
+			savedAnchor = 0;
+			break;
+		case OS.kDataBrowserItemDeselected: {
+			int [] selectionCount = new int [1];
+			if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, selectionCount) == OS.noErr) {
+				if (selectionCount [0] == 0) savedAnchor = id;
+			}
+			break;
+		}
+	}
+	switch (message) {
+		case OS.kDataBrowserItemSelected:
 		case OS.kDataBrowserItemDeselected: {
 			wasSelected = true;
 			if (ignoreSelect) break;
@@ -2583,14 +2608,38 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		* The fix is to save and restore the horizontal scroll position.
 		*/
 		case 125: /* Down */
-		case 126: /* Up*/
+		case 126: /* Up*/ {
+			int [] itemCount = new int [1];
+			if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemAnyState, itemCount) == OS.noErr) {
+				if (itemCount [0] == 0) break;
+			}
 			int [] top = new int [1], left = new int [1];
 			OS.GetDataBrowserScrollPosition (handle, top, left);
-			result = OS.CallNextEventHandler (nextHandler, theEvent);
+			int [] itemId = null;
+			int [] selectionCount = new int [1];
+			if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, selectionCount) == OS.noErr) {
+				if (savedAnchor != 0 && selectionCount [0] == 0) {
+					int [] index = new int [1];
+					if (OS.GetDataBrowserTableViewItemRow (handle, savedAnchor, index) == OS.noErr) {
+				    	index [0] = index [0] + (keyCode [0] == 125 ? 1 : -1);
+				    	itemId = new int [1];
+				    	if (OS.GetDataBrowserTableViewItemID (handle, index [0], itemId) != OS.noErr) {
+				    		itemId [0] = savedAnchor;
+				    	}
+					}
+				}
+			}
+			if (itemId != null) {
+				OS.SetDataBrowserSelectedItems (handle, 1, itemId, OS.kDataBrowserItemsAssign);
+				result = OS.noErr;
+			} else {
+				result = OS.CallNextEventHandler (nextHandler, theEvent);
+			}
 			OS.GetDataBrowserScrollPosition (handle, top, null);
 			OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
-			
 			redrawBackgroundImage ();
+			break;
+		}
 	}
 	return result;
 }
@@ -2617,6 +2666,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 void releaseItem (TreeItem item, boolean release) {
 	int id = item.id;
 	if (release) item.release (false);
+	if (savedAnchor == id) savedAnchor = 0;
 	items [id - 1] = null;
 	TreeItem parentItem = item.parentItem;
 	int [] ids = parentItem == null ? childIds : parentItem.childIds;
@@ -2727,7 +2777,7 @@ public void removeAll () {
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
-	anchorFirst = anchorLast = 0;
+	savedAnchor = anchorFirst = anchorLast = 0;
 	visibleCount = 0;
 	setScrollWidth (true);
 }
@@ -3056,6 +3106,8 @@ void setItemCount (TreeItem parentItem, int count) {
 	int [] ids = parentItem == null ? childIds : parentItem.childIds;
 	int removeCount = 0;
 	if (count < itemCount) {
+		int oldAnchor = savedAnchor;
+		int selectionCount = getSelectionCount ();
 		int [] removeIds = new int [itemCount - count];
 		for (int index = ids.length - 1; index >= count; index--) {
 			int id = ids [index];
@@ -3080,6 +3132,19 @@ void setItemCount (TreeItem parentItem, int count) {
 		if (removeCount != 0 && OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, removeCount, removeIds, 0) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
+		boolean fixAnchor = selectionCount != 0 && getSelectionCount () == 0;
+		if (fixAnchor || (savedAnchor != 0 && savedAnchor != oldAnchor)) {
+			savedAnchor = 0;
+			if (count == 0) {
+				savedAnchor = parentItem == null ? 0 : parentItem.id;
+			} else {
+				int index = count - 1;
+				if (0 <= index && index < ids.length) {
+					savedAnchor = ids [index];
+				}
+			}
+		}
+		
 		//TODO - move shrink to paint event
 		// shrink items array
 		int lastIndex = items.length;
