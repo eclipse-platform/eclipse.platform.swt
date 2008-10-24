@@ -67,6 +67,8 @@ public class OleControlSite extends OleClientSite
 	// work around for IE destroying the caret
 	static int SWT_RESTORECARET;
 	
+	static final String SHELL_PROG_ID = "Shell.Explorer";	//$NON-NLS-1$
+
 /**
  * Create an OleControlSite child widget using the OLE Document type associated with the
  * specified file.  The OLE Document type is determined either through header information in the file 
@@ -664,7 +666,7 @@ void onFocusIn(Event e) {
 	OS.SetFocus(phwnd[0]);
 }
 void onFocusOut(Event e) {
-	if (objIOleInPlaceObject != null) {
+	if (objIOleInPlaceObject != null && getProgramID().startsWith(SHELL_PROG_ID)) {
 		/*
 		* Bug in Windows.  When IE7 loses focus and UIDeactivate()
 		* is called, IE destroys the caret even though it is
@@ -705,10 +707,17 @@ void onFocusOut(Event e) {
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
-protected int OnUIDeactivate(int fUndoable) {
+int OnUIDeactivate(int fUndoable) {
 	// controls don't need to do anything for
 	// border space or menubars
+	if (frame == null || frame.isDisposed()) return COM.S_OK;
 	state = STATE_INPLACEACTIVE;
+	frame.SetActiveObject(0,0);
+	redraw();
+	Shell shell = getShell();
+	if (isFocusControl() || frame.isFocusControl()) {
+		shell.traverse(SWT.TRAVERSE_TAB_NEXT);
+	}
 	return COM.S_OK;
 }
 protected int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
