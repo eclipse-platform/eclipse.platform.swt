@@ -410,41 +410,41 @@ public int getSelection () {
 }
 
 int getSelectionText (boolean[] parseFail) {
-		String string = textView.stringValue().getString();
-		try {
-			int value;
-			if (digits > 0) {
-				String decimalSeparator = textFormatter.decimalSeparator().getString();
-				int index = string.indexOf (decimalSeparator);
-				if (index != -1)  {
-					int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
-					String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
-					String decimalPart = string.substring (index + 1);
-					if (decimalPart.length () > digits) {
-						decimalPart = decimalPart.substring (0, digits);
-					} else {
-						int i = digits - decimalPart.length ();
-						for (int j = 0; j < i; j++) {
-							decimalPart = decimalPart + "0";
-						}
-					}
-					int wholeValue = Integer.parseInt (wholePart);
-					int decimalValue = Integer.parseInt (decimalPart);
-					for (int i = 0; i < digits; i++) wholeValue *= 10;
-					value = wholeValue + decimalValue;
-					if (string.startsWith ("-")) value = -value;
+	String string = textView.stringValue().getString();
+	try {
+		int value;
+		if (digits > 0) {
+			String decimalSeparator = textFormatter.decimalSeparator().getString();
+			int index = string.indexOf (decimalSeparator);
+			if (index != -1)  {
+				int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
+				String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
+				String decimalPart = string.substring (index + 1);
+				if (decimalPart.length () > digits) {
+					decimalPart = decimalPart.substring (0, digits);
 				} else {
-					value = Integer.parseInt (string);
-					for (int i = 0; i < digits; i++) value *= 10;
+					int i = digits - decimalPart.length ();
+					for (int j = 0; j < i; j++) {
+						decimalPart = decimalPart + "0";
+					}
 				}
+				int wholeValue = Integer.parseInt (wholePart);
+				int decimalValue = Integer.parseInt (decimalPart);
+				for (int i = 0; i < digits; i++) wholeValue *= 10;
+				value = wholeValue + decimalValue;
+				if (string.startsWith ("-")) value = -value;
 			} else {
 				value = Integer.parseInt (string);
+				for (int i = 0; i < digits; i++) value *= 10;
 			}
-			int max = getMaximum();
-			int min = getMinimum();
-			if (min <= value && value <= max) return value;
-		} catch (NumberFormatException e) {
+		} else {
+			value = Integer.parseInt (string);
 		}
+		int max = getMaximum();
+		int min = getMinimum();
+		if (min <= value && value <= max) return value;
+	} catch (NumberFormatException e) {
+	}
 	parseFail [0] = true;
 	return -1;
 }
@@ -456,28 +456,27 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	int delta = 0;
     int keyChar = 0;
 
-    if (chars.length() != 1)
-    	return;
+    if (chars.length() != 1) return;
     
     keyChar = chars.characterAtIndex(0);
 
     switch (keyChar) {
-    case OS.NSEnterCharacter: /* KP Enter */
-    case OS.NSNewlineCharacter: /* Return */
-    	postEvent (SWT.DefaultSelection);
-    	return;
-    case OS.NSPageUpFunctionKey: delta = pageIncrement; break;
-    case OS.NSPageDownFunctionKey: delta = -pageIncrement; break;
-    case OS.NSDownArrowFunctionKey: delta = -getIncrement(); break;
-    case OS.NSUpArrowFunctionKey: delta = getIncrement(); break;
-    
-    default: {
-    	NSCharacterSet numbers = new NSCharacterSet(NSCharacterSet.decimalDigitCharacterSet().id);
-    	boolean isANumber = numbers.characterIsMember((short) keyChar);
-    	boolean isSeparator = (keyChar == textFormatter.decimalSeparator().characterAtIndex(0));
-    	boolean isMathSymbol = (keyChar == 0x2d || keyChar == 0x2b); // Minus sign, plus sign
-    	if (isANumber || (isSeparator && digits > 0) || isMathSymbol) super.keyDown(id, sel, theEvent);
-    }
+	    case OS.NSEnterCharacter: /* KP Enter */
+	    case OS.NSNewlineCharacter: /* Return */
+	    	postEvent (SWT.DefaultSelection);
+	    	return;
+	    case OS.NSPageUpFunctionKey: delta = pageIncrement; break;
+	    case OS.NSPageDownFunctionKey: delta = -pageIncrement; break;
+	    case OS.NSDownArrowFunctionKey: delta = -getIncrement(); break;
+	    case OS.NSUpArrowFunctionKey: delta = getIncrement(); break;
+	    
+	    default: {
+	    	NSCharacterSet numbers = new NSCharacterSet(NSCharacterSet.decimalDigitCharacterSet().id);
+	    	boolean isANumber = numbers.characterIsMember((short) keyChar);
+	    	boolean isSeparator = (keyChar == textFormatter.decimalSeparator().characterAtIndex(0));
+	    	boolean isMathSymbol = (keyChar == 0x2d || keyChar == 0x2b); // Minus sign, plus sign
+	    	if (isANumber || (isSeparator && digits > 0) || isMathSymbol) super.keyDown(id, sel, theEvent);
+	    }
     }
 
     if (delta != 0) {
@@ -542,8 +541,10 @@ void register () {
 
 void releaseHandle () {
 	super.releaseHandle();
+	if (textFormatter != null) textFormatter.release();
 	if (buttonView != null) buttonView.release();
 	if (textView != null) textView.release();
+	textFormatter = null;
 	buttonView = null;
 	textView = null;
 }
