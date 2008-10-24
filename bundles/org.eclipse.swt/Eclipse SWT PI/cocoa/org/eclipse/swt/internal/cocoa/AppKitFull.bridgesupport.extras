@@ -40,11 +40,11 @@
   <constant name="NSAccessibilityClearButtonAttribute"></constant>
   <constant name="NSAccessibilityCloseButtonAttribute"></constant>
   <constant name="NSAccessibilityCloseButtonSubrole"></constant>
-  <constant name="NSAccessibilityColorWellRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColorWellRole"></constant>
   <constant name="NSAccessibilityColumnCountAttribute"></constant>
   <constant name="NSAccessibilityColumnRole" swt_gen="true"></constant>
-  <constant name="NSAccessibilityColumnTitlesAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityColumnsAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityColumnTitlesAttribute"></constant>
+  <constant name="NSAccessibilityColumnsAttribute"></constant>
   <constant name="NSAccessibilityComboBoxRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityConfirmAction" swt_gen="true"></constant>
   <constant name="NSAccessibilityContentsAttribute" swt_gen="true"></constant>
@@ -55,7 +55,7 @@
   <constant name="NSAccessibilityDecrementButtonAttribute"></constant>
   <constant name="NSAccessibilityDecrementPageSubrole"></constant>
   <constant name="NSAccessibilityDefaultButtonAttribute"></constant>
-  <constant name="NSAccessibilityDeleteAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDeleteAction"></constant>
   <constant name="NSAccessibilityDescendingSortDirectionValue"></constant>
   <constant name="NSAccessibilityDescriptionAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityDialogSubrole" swt_gen="true"></constant>
@@ -66,11 +66,11 @@
   <constant name="NSAccessibilityDisclosureTriangleRole"></constant>
   <constant name="NSAccessibilityDocumentAttribute"></constant>
   <constant name="NSAccessibilityDrawerCreatedNotification"></constant>
-  <constant name="NSAccessibilityDrawerRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityDrawerRole"></constant>
   <constant name="NSAccessibilityEditedAttribute"></constant>
   <constant name="NSAccessibilityEnabledAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityErrorCodeExceptionInfo"></constant>
-  <constant name="NSAccessibilityException" swt_gen="true"></constant>
+  <constant name="NSAccessibilityException"></constant>
   <constant name="NSAccessibilityExpandedAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityFilenameAttribute"></constant>
   <constant name="NSAccessibilityFirstLineIndentMarkerTypeValue"></constant>
@@ -145,10 +145,10 @@
   <constant name="NSAccessibilityOrientationAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityOutlineRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityOutlineRowSubrole" swt_gen="true"></constant>
-  <constant name="NSAccessibilityOverflowButtonAttribute" swt_gen="true"></constant>
+  <constant name="NSAccessibilityOverflowButtonAttribute"></constant>
   <constant name="NSAccessibilityParentAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityPicasUnitValue"></constant>
-  <constant name="NSAccessibilityPickAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityPickAction"></constant>
   <constant name="NSAccessibilityPointsUnitValue"></constant>
   <constant name="NSAccessibilityPopUpButtonRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityPositionAttribute" swt_gen="true"></constant>
@@ -167,8 +167,8 @@
   <constant name="NSAccessibilityRightTabStopMarkerTypeValue"></constant>
   <constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityRowCountAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityRowCountChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityRowCountAttribute"></constant>
+  <constant name="NSAccessibilityRowCountChangedNotification"></constant>
   <constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityRowsAttribute"></constant>
   <constant name="NSAccessibilityRulerMarkerRole"></constant>
@@ -176,9 +176,9 @@
   <constant name="NSAccessibilityScrollAreaRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityScrollBarRole" swt_gen="true"></constant>
   <constant name="NSAccessibilitySearchButtonAttribute"></constant>
-  <constant name="NSAccessibilitySearchFieldSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySearchFieldSubrole"></constant>
   <constant name="NSAccessibilitySearchMenuAttribute"></constant>
-  <constant name="NSAccessibilitySecureTextFieldSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySecureTextFieldSubrole"></constant>
   <constant name="NSAccessibilitySelectedAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilitySelectedChildrenAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilitySelectedChildrenChangedNotification" swt_gen="true"></constant>
@@ -196,13 +196,13 @@
   <constant name="NSAccessibilitySharedTextUIElementsAttribute"></constant>
   <constant name="NSAccessibilitySheetCreatedNotification"></constant>
   <constant name="NSAccessibilitySheetRole"></constant>
-  <constant name="NSAccessibilityShowMenuAction" swt_gen="true"></constant>
+  <constant name="NSAccessibilityShowMenuAction"></constant>
   <constant name="NSAccessibilityShownMenuAttribute"></constant>
   <constant name="NSAccessibilitySizeAttribute" swt_gen="true"></constant>
   <constant name="NSAccessibilitySliderRole" swt_gen="true"></constant>
   <constant name="NSAccessibilitySortButtonRole" swt_gen="true"></constant>
-  <constant name="NSAccessibilitySortDirectionAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilitySplitGroupRole" swt_gen="true"></constant>
+  <constant name="NSAccessibilitySortDirectionAttribute"></constant>
+  <constant name="NSAccessibilitySplitGroupRole"></constant>
   <constant name="NSAccessibilitySplitterRole" swt_gen="true"></constant>
   <constant name="NSAccessibilitySplittersAttribute"></constant>
   <constant name="NSAccessibilityStandardWindowSubrole" swt_gen="true"></constant>
@@ -227,13 +227,13 @@
   <constant name="NSAccessibilityTextLinkSubrole" swt_gen="true"></constant>
   <constant name="NSAccessibilityTimelineSubrole"></constant>
   <constant name="NSAccessibilityTitleAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityTitleChangedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityTitleChangedNotification"></constant>
   <constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityToolbarButtonAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityToolbarButtonSubrole" swt_gen="true"></constant>
+  <constant name="NSAccessibilityToolbarButtonAttribute"></constant>
+  <constant name="NSAccessibilityToolbarButtonSubrole"></constant>
   <constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
   <constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>
-  <constant name="NSAccessibilityUIElementDestroyedNotification" swt_gen="true"></constant>
+  <constant name="NSAccessibilityUIElementDestroyedNotification"></constant>
   <constant name="NSAccessibilityURLAttribute"></constant>
   <constant name="NSAccessibilityUnderlineColorTextAttribute"></constant>
   <constant name="NSAccessibilityUnderlineTextAttribute"></constant>

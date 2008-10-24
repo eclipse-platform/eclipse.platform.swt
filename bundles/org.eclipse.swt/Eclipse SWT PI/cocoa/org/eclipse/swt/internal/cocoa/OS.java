@@ -3119,17 +3119,8 @@ public static final NSString NSAccessibilityCheckBoxRole = new NSString(NSAccess
 public static final native int /*long*/ NSAccessibilityChildrenAttribute();
 public static final NSString NSAccessibilityChildrenAttribute = new NSString(NSAccessibilityChildrenAttribute());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityColorWellRole();
-public static final NSString NSAccessibilityColorWellRole = new NSString(NSAccessibilityColorWellRole());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityColumnRole();
 public static final NSString NSAccessibilityColumnRole = new NSString(NSAccessibilityColumnRole());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityColumnTitlesAttribute();
-public static final NSString NSAccessibilityColumnTitlesAttribute = new NSString(NSAccessibilityColumnTitlesAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityColumnsAttribute();
-public static final NSString NSAccessibilityColumnsAttribute = new NSString(NSAccessibilityColumnsAttribute());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityComboBoxRole();
 public static final NSString NSAccessibilityComboBoxRole = new NSString(NSAccessibilityComboBoxRole());
@@ -3140,23 +3131,14 @@ public static final NSString NSAccessibilityConfirmAction = new NSString(NSAcces
 public static final native int /*long*/ NSAccessibilityContentsAttribute();
 public static final NSString NSAccessibilityContentsAttribute = new NSString(NSAccessibilityContentsAttribute());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityDeleteAction();
-public static final NSString NSAccessibilityDeleteAction = new NSString(NSAccessibilityDeleteAction());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityDescriptionAttribute();
 public static final NSString NSAccessibilityDescriptionAttribute = new NSString(NSAccessibilityDescriptionAttribute());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityDialogSubrole();
 public static final NSString NSAccessibilityDialogSubrole = new NSString(NSAccessibilityDialogSubrole());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityDrawerRole();
-public static final NSString NSAccessibilityDrawerRole = new NSString(NSAccessibilityDrawerRole());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityEnabledAttribute();
 public static final NSString NSAccessibilityEnabledAttribute = new NSString(NSAccessibilityEnabledAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityException();
-public static final NSString NSAccessibilityException = new NSString(NSAccessibilityException());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityExpandedAttribute();
 public static final NSString NSAccessibilityExpandedAttribute = new NSString(NSAccessibilityExpandedAttribute());
@@ -3245,14 +3227,8 @@ public static final NSString NSAccessibilityOutlineRole = new NSString(NSAccessi
 public static final native int /*long*/ NSAccessibilityOutlineRowSubrole();
 public static final NSString NSAccessibilityOutlineRowSubrole = new NSString(NSAccessibilityOutlineRowSubrole());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityOverflowButtonAttribute();
-public static final NSString NSAccessibilityOverflowButtonAttribute = new NSString(NSAccessibilityOverflowButtonAttribute());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityParentAttribute();
 public static final NSString NSAccessibilityParentAttribute = new NSString(NSAccessibilityParentAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityPickAction();
-public static final NSString NSAccessibilityPickAction = new NSString(NSAccessibilityPickAction());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityPopUpButtonRole();
 public static final NSString NSAccessibilityPopUpButtonRole = new NSString(NSAccessibilityPopUpButtonRole());
@@ -3293,12 +3269,6 @@ public static final NSString NSAccessibilityRoleAttribute = new NSString(NSAcces
 public static final native int /*long*/ NSAccessibilityRoleDescriptionAttribute();
 public static final NSString NSAccessibilityRoleDescriptionAttribute = new NSString(NSAccessibilityRoleDescriptionAttribute());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityRowCountAttribute();
-public static final NSString NSAccessibilityRowCountAttribute = new NSString(NSAccessibilityRowCountAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityRowCountChangedNotification();
-public static final NSString NSAccessibilityRowCountChangedNotification = new NSString(NSAccessibilityRowCountChangedNotification());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityRowRole();
 public static final NSString NSAccessibilityRowRole = new NSString(NSAccessibilityRowRole());
 /** @method flags=const */
@@ -3307,12 +3277,6 @@ public static final NSString NSAccessibilityScrollAreaRole = new NSString(NSAcce
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityScrollBarRole();
 public static final NSString NSAccessibilityScrollBarRole = new NSString(NSAccessibilityScrollBarRole());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilitySearchFieldSubrole();
-public static final NSString NSAccessibilitySearchFieldSubrole = new NSString(NSAccessibilitySearchFieldSubrole());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilitySecureTextFieldSubrole();
-public static final NSString NSAccessibilitySecureTextFieldSubrole = new NSString(NSAccessibilitySecureTextFieldSubrole());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySelectedAttribute();
 public static final NSString NSAccessibilitySelectedAttribute = new NSString(NSAccessibilitySelectedAttribute());
@@ -3335,9 +3299,6 @@ public static final NSString NSAccessibilitySelectedTextRangeAttribute = new NSS
 public static final native int /*long*/ NSAccessibilitySelectedTextRangesAttribute();
 public static final NSString NSAccessibilitySelectedTextRangesAttribute = new NSString(NSAccessibilitySelectedTextRangesAttribute());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityShowMenuAction();
-public static final NSString NSAccessibilityShowMenuAction = new NSString(NSAccessibilityShowMenuAction());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySizeAttribute();
 public static final NSString NSAccessibilitySizeAttribute = new NSString(NSAccessibilitySizeAttribute());
 /** @method flags=const */
@@ -3346,12 +3307,6 @@ public static final NSString NSAccessibilitySliderRole = new NSString(NSAccessib
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySortButtonRole();
 public static final NSString NSAccessibilitySortButtonRole = new NSString(NSAccessibilitySortButtonRole());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilitySortDirectionAttribute();
-public static final NSString NSAccessibilitySortDirectionAttribute = new NSString(NSAccessibilitySortDirectionAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilitySplitGroupRole();
-public static final NSString NSAccessibilitySplitGroupRole = new NSString(NSAccessibilitySplitGroupRole());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySplitterRole();
 public static final NSString NSAccessibilitySplitterRole = new NSString(NSAccessibilitySplitterRole());
@@ -3398,26 +3353,14 @@ public static final NSString NSAccessibilityTextLinkSubrole = new NSString(NSAcc
 public static final native int /*long*/ NSAccessibilityTitleAttribute();
 public static final NSString NSAccessibilityTitleAttribute = new NSString(NSAccessibilityTitleAttribute());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilityTitleChangedNotification();
-public static final NSString NSAccessibilityTitleChangedNotification = new NSString(NSAccessibilityTitleChangedNotification());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityTitleUIElementAttribute();
 public static final NSString NSAccessibilityTitleUIElementAttribute = new NSString(NSAccessibilityTitleUIElementAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityToolbarButtonAttribute();
-public static final NSString NSAccessibilityToolbarButtonAttribute = new NSString(NSAccessibilityToolbarButtonAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityToolbarButtonSubrole();
-public static final NSString NSAccessibilityToolbarButtonSubrole = new NSString(NSAccessibilityToolbarButtonSubrole());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityToolbarRole();
 public static final NSString NSAccessibilityToolbarRole = new NSString(NSAccessibilityToolbarRole());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityTopLevelUIElementAttribute();
 public static final NSString NSAccessibilityTopLevelUIElementAttribute = new NSString(NSAccessibilityTopLevelUIElementAttribute());
-/** @method flags=const */
-public static final native int /*long*/ NSAccessibilityUIElementDestroyedNotification();
-public static final NSString NSAccessibilityUIElementDestroyedNotification = new NSString(NSAccessibilityUIElementDestroyedNotification());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityUnknownRole();
 public static final NSString NSAccessibilityUnknownRole = new NSString(NSAccessibilityUnknownRole());
