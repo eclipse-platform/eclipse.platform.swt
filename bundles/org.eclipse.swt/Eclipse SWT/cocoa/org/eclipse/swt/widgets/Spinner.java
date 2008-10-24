@@ -41,6 +41,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Spinner extends Composite {
 	NSTextField textView;
+	NSNumberFormatter textFormatter;
 	NSStepper buttonView;
 	int pageIncrement = 10;
 	int digits = 0;
@@ -258,6 +259,10 @@ void createHandle () {
 	textWidget.initWithFrame(new NSRect());
 //	textWidget.setTarget(widget);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
+	textFormatter = new NSNumberFormatter();
+	textFormatter.alloc().init(); //.autorelease();
+	textFormatter.setNumberStyle(OS.NSNumberFormatterDecimalStyle);
+	//textWidget.cell().setFormatter(textFormatter);
 	widget.addSubview(textWidget);
 	widget.addSubview(buttonWidget);
 	buttonView = buttonWidget;
@@ -292,8 +297,15 @@ public void cut () {
 
 void deregister () {
 	super.deregister ();
-	if (textView != null) display.removeWidget (textView);
-	if (buttonView != null) display.removeWidget (buttonView);
+	if (textView != null) {
+		display.removeWidget (textView);
+		display.removeWidget (textView.cell());
+	}
+	
+	if (buttonView != null) {
+		display.removeWidget (buttonView);
+		display.removeWidget (buttonView.cell());
+	}
 }
 
 void enableWidget (boolean enabled) {
@@ -397,8 +409,101 @@ public int getSelection () {
 	return (int)((NSStepper)buttonView).doubleValue();
 }
 
-int getSelectionText () {
+int getSelectionText (boolean[] parseFail) {
+		String string = textView.stringValue().getString();
+		try {
+			int value;
+			if (digits > 0) {
+				String decimalSeparator = textFormatter.decimalSeparator().getString();
+				int index = string.indexOf (decimalSeparator);
+				if (index != -1)  {
+					int startIndex = string.startsWith ("+") || string.startsWith ("-") ? 1 : 0;
+					String wholePart = startIndex != index ? string.substring (startIndex, index) : "0";
+					String decimalPart = string.substring (index + 1);
+					if (decimalPart.length () > digits) {
+						decimalPart = decimalPart.substring (0, digits);
+					} else {
+						int i = digits - decimalPart.length ();
+						for (int j = 0; j < i; j++) {
+							decimalPart = decimalPart + "0";
+						}
+					}
+					int wholeValue = Integer.parseInt (wholePart);
+					int decimalValue = Integer.parseInt (decimalPart);
+					for (int i = 0; i < digits; i++) wholeValue *= 10;
+					value = wholeValue + decimalValue;
+					if (string.startsWith ("-")) value = -value;
+				} else {
+					value = Integer.parseInt (string);
+					for (int i = 0; i < digits; i++) value *= 10;
+				}
+			} else {
+				value = Integer.parseInt (string);
+			}
+			int max = getMaximum();
+			int min = getMinimum();
+			if (min <= value && value <= max) return value;
+		} catch (NumberFormatException e) {
+		}
+	parseFail [0] = true;
 	return -1;
+}
+
+void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSEvent event = new NSEvent(theEvent);
+	NSString chars = event.charactersIgnoringModifiers();
+	
+	int delta = 0;
+    int keyChar = 0;
+
+    if (chars.length() != 1)
+    	return;
+    
+    keyChar = chars.characterAtIndex(0);
+
+    switch (keyChar) {
+    case OS.NSEnterCharacter: /* KP Enter */
+    case OS.NSNewlineCharacter: /* Return */
+    	postEvent (SWT.DefaultSelection);
+    	return;
+    case OS.NSPageUpFunctionKey: delta = pageIncrement; break;
+    case OS.NSPageDownFunctionKey: delta = -pageIncrement; break;
+    case OS.NSDownArrowFunctionKey: delta = -getIncrement(); break;
+    case OS.NSUpArrowFunctionKey: delta = getIncrement(); break;
+    
+    default: {
+    	NSCharacterSet numbers = new NSCharacterSet(NSCharacterSet.decimalDigitCharacterSet().id);
+    	boolean isANumber = numbers.characterIsMember((short) keyChar);
+    	boolean isSeparator = (keyChar == textFormatter.decimalSeparator().characterAtIndex(0));
+    	boolean isMathSymbol = (keyChar == 0x2d || keyChar == 0x2b); // Minus sign, plus sign
+    	if (isANumber || (isSeparator && digits > 0) || isMathSymbol) super.keyDown(id, sel, theEvent);
+    }
+    }
+
+    if (delta != 0) {
+    	boolean [] parseFail = new boolean [1];
+    	int value = getSelectionText (parseFail);
+    	if (parseFail [0]) {
+    		value = (int)buttonView.doubleValue();
+    	}
+    	int newValue = value + delta;
+    	int max = (int)buttonView.maxValue();
+    	int min = (int)buttonView.minValue();
+    	if ((style & SWT.WRAP) != 0) {
+    		if (newValue > max) newValue = min;
+    		if (newValue < min) newValue = max;
+    	}
+    	newValue = Math.min (Math.max (min, newValue), max);
+    	if (value != newValue) setSelection (newValue, true, true, true);
+    	return;
+    } else {
+    	boolean [] parseFail = new boolean [1];
+    	int value = getSelectionText (parseFail);
+    	if (!parseFail [0]) {
+    		int pos = (int)buttonView.doubleValue();
+    		if (pos != value) setSelection (value, true, false, true);
+    	}
+    }
 }
 
 /**
@@ -424,8 +529,15 @@ public void paste () {
 
 void register () {
 	super.register ();
-	if (textView != null) display.addWidget (textView, this);
-	if (buttonView != null) display.addWidget (buttonView, this);
+	if (textView != null) {
+		display.addWidget (textView, this);
+		display.addWidget (textView.cell(), this);
+	}
+	
+	if (buttonView != null) {
+		display.addWidget (buttonView, this);
+		display.addWidget (buttonView.cell(), this);
+	}
 }
 
 void releaseHandle () {
@@ -550,10 +662,11 @@ void sendSelection () {
 public void setDigits (int value) {
 	checkWidget ();
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-//	if (value == digits) return;
-//	digits = value;
-//	int pos = OS.GetControl32BitValue (buttonHandle);	
-//	setSelection (pos, false, true, false);
+	if (value == digits) return;
+	digits = value;
+	int pos = (int)buttonView.doubleValue();	
+	textFormatter.setMaximumFractionDigits(digits);
+	setSelection (pos, false, true, false);
 }
 
 void setFont(NSFont font) {
@@ -598,6 +711,7 @@ public void setMaximum (int value) {
 	if (value <= min) return;
 	int pos = getSelection();
 	buttonView.setMaxValue(value);
+	textFormatter.setMaximum(NSNumber.numberWithInt(value));
 	if (pos > value) setSelection (value, true, true, false);	
 }
 
@@ -621,6 +735,7 @@ public void setMinimum (int value) {
 	if (value >= max) return;
 	int pos = getSelection();
 	buttonView.setMinValue(value);
+	textFormatter.setMinimum(NSNumber.numberWithInt(value));
 	if (pos < value) setSelection (value, true, true, false);
 }
 
@@ -670,7 +785,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 	if (setText) {
 		String string = String.valueOf (value);
 		if (digits > 0) {
-			String decimalSeparator = ".";//getDecimalSeparator ();
+			String decimalSeparator = textFormatter.decimalSeparator().getString();
 			int index = string.length () - digits;
 			StringBuffer buffer = new StringBuffer ();
 			if (index > 0) {
@@ -691,9 +806,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 			string = verifyText (string, 0, length, null);
 			if (string == null) return;
 		}
-		cell.setTitle(NSString.stringWith(string));
-//		short [] selection = new short [] {0, (short)string.length ()};
-//		OS.SetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+		textView.setStringValue(NSString.stringWith(string));
 		sendEvent (SWT.Modify);
 	}
 	if (notify) postEvent (SWT.Selection);
@@ -740,6 +853,15 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 
 void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	postEvent (SWT.Modify);
+}
+
+void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	boolean [] parseFail = new boolean [1];
+	int value = getSelectionText (parseFail);
+	if (parseFail [0]) {
+		value = (int)buttonView.doubleValue();
+		setSelection (value, false, true, false);
+	}
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
