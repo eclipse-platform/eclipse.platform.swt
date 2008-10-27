@@ -540,7 +540,6 @@ public class ControlsWithAccessibleNamesExample {
 //		Sash sash, overrideSash;
 		sash = new Sash(shell, SWT.BORDER);
 		sash.setToolTipText("Sash ToolTip");
-		sash.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 		overrideSash = new Sash(shell, SWT.BORDER);
 		overrideSash.setToolTipText("Sash ToolTip");
