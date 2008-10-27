@@ -397,6 +397,7 @@ void createHandle () {
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.initWithFrame(new NSRect());
 	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
+	widget.setAllowsColumnReordering (false);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);

@@ -157,6 +157,10 @@ public NSIndexSet selectedRowIndexes() {
 	return result != 0 ? new NSIndexSet(result) : null;
 }
 
+public void setAllowsColumnReordering(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsColumnReordering_, flag);
+}
+
 public void setAllowsMultipleSelection(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAllowsMultipleSelection_, flag);
 }

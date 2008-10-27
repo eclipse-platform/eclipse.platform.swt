@@ -605,6 +605,10 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
+	// TODO how to make only some columns movable?  And handle moveable == false.
+	if (moveable) {
+		((NSTableView)parent.view).setAllowsColumnReordering (true);
+	}
 //	int [] flags = new int [1];
 //	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
 //	if (moveable) {

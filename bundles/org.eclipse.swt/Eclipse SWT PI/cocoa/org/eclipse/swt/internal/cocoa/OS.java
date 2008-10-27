@@ -1046,6 +1046,7 @@ public static final int /*long*/ sel_setAcceptsMouseMovedEvents_ = sel_registerN
 public static final int /*long*/ sel_setAction_ = sel_registerName("setAction:");
 public static final int /*long*/ sel_setAlertStyle_ = sel_registerName("setAlertStyle:");
 public static final int /*long*/ sel_setAlignment_ = sel_registerName("setAlignment:");
+public static final int /*long*/ sel_setAllowsColumnReordering_ = sel_registerName("setAllowsColumnReordering:");
 public static final int /*long*/ sel_setAllowsFloats_ = sel_registerName("setAllowsFloats:");
 public static final int /*long*/ sel_setAllowsMixedState_ = sel_registerName("setAllowsMixedState:");
 public static final int /*long*/ sel_setAllowsMultipleSelection_ = sel_registerName("setAllowsMultipleSelection:");

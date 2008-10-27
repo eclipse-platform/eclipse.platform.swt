@@ -440,6 +440,7 @@ void createHandle () {
 	NSOutlineView widget = (NSOutlineView) new SWTOutlineView ().alloc ();
 	widget.initWithFrame (new NSRect ());
 	widget.setAllowsMultipleSelection ((style & SWT.MULTI) != 0);
+	widget.setAllowsColumnReordering (false);
 	widget.setAutoresizesOutlineColumn (false);
 	widget.setAutosaveExpandedItems (true);
 	widget.setDataSource (widget);
