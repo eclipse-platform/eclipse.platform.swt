@@ -115,7 +115,7 @@ int accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 
 int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
 			
 			// First, see if the accessible is going to define a set of attributes for the control.
