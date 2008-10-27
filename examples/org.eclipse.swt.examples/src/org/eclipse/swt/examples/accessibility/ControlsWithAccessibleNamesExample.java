@@ -183,7 +183,7 @@ public class ControlsWithAccessibleNamesExample {
 		for (int col = 0; col < 3; col++) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setText("Col " + col);
-			column.setWidth(50);
+			column.pack();
 		}
 		for (int row = 0; row < 3; row++) {
 			TableItem item = new TableItem(table, SWT.NONE);
@@ -196,7 +196,7 @@ public class ControlsWithAccessibleNamesExample {
 		for (int col = 0; col < 3; col++) {
 			TableColumn column = new TableColumn(overrideTable, SWT.NONE);
 			column.setText("Col " + col);
-			column.setWidth(50);
+			column.pack();
 		}
 		for (int row = 0; row < 3; row++) {
 			TableItem item = new TableItem(overrideTable, SWT.NONE);
@@ -235,7 +235,7 @@ public class ControlsWithAccessibleNamesExample {
 		for (int col = 0; col < 3; col++) {
 			TreeColumn column = new TreeColumn(treeTable, SWT.NONE);
 			column.setText("Col " + col);
-			column.setWidth(50);
+			column.pack();
 		}
 		for (int i = 0; i < 3; i++) {
 			TreeItem item = new TreeItem(treeTable, SWT.NONE);
@@ -251,7 +251,7 @@ public class ControlsWithAccessibleNamesExample {
 		for (int col = 0; col < 3; col++) {
 			TreeColumn column = new TreeColumn(overrideTreeTable, SWT.NONE);
 			column.setText("Col " + col);
-			column.setWidth(50);
+			column.pack();
 		}
 		for (int i = 0; i < 3; i++) {
 			TreeItem item = new TreeItem(overrideTreeTable, SWT.NONE);
