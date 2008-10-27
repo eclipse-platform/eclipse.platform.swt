@@ -227,8 +227,12 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	if (displayText != null) {
 		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
 		dict.setObject (headerCell.font (), OS.NSFontAttributeName);
+		NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+		paragraphStyle.autorelease ();
+		paragraphStyle.setLineBreakMode (OS.NSLineBreakByClipping);
+		dict.setObject (paragraphStyle, OS.NSParagraphStyleAttributeName);
 		NSString string = NSString.stringWith (displayText);
-		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, null);
+		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
 		stringSize = attrString.size ();
 		contentWidth += Math.ceil (stringSize.width);
 		if (image != null) contentWidth += MARGIN; /* space between image and text */
