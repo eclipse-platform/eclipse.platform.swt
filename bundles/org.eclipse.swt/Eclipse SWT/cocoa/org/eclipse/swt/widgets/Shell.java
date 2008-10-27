@@ -503,10 +503,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	boolean embedded = window != null && (state & FOREIGN_HANDLE) == 0;
 	state |= HIDDEN;
-	
-	if (view == null && !embedded) {
+	if (window == null) {
 		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.NO_TRIM) == 0) {
@@ -538,22 +536,20 @@ void createHandle () {
 		}
 		super.createHandle ();
 		topView ().setHidden (true);
-
-		window.setAcceptsMouseMovedEvents(true);
-		windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
-		window.setDelegate(windowDelegate);
-		
-		window.disableCursorRects();
-		
-		id id = window.fieldEditor (true, null);
-		if (id != null) {
-			OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
-		}
 	} else {
-		state |= CANVAS;
-		//state &= ~HIDDEN;
+//		OS.object_setClass (window.id, OS.objc_getClass("SWTWindow"));
+		state &= ~HIDDEN;
 		//TODO - get the content of the foreign window instead of creating it
-		//super.createHandle ();
+		super.createHandle ();
+		style |= SWT.NO_BACKGROUND;
+	}
+	window.setAcceptsMouseMovedEvents(true);
+	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+	window.setDelegate(windowDelegate);
+	window.disableCursorRects();
+	id id = window.fieldEditor (true, null);
+	if (id != null) {
+		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
 	}
 }
 
