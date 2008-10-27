@@ -40,6 +40,11 @@ public NSRect drawingRectForBounds(NSRect theRect) {
 	return result;
 }
 
+public NSFont font() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
+	return result != 0 ? new NSFont(result) : null;
+}
+
 public void setAllowsMixedState(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAllowsMixedState_, flag);
 }
