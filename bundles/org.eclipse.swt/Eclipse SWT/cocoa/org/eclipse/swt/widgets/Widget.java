@@ -841,6 +841,10 @@ int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 void menuNeedsUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 }
 
+boolean makeFirstResponder(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	return callSuperBoolean(id, sel, notification);
+}
+
 NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
 	return new NSRange ();
 }

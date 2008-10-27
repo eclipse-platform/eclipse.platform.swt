@@ -123,6 +123,8 @@ public class Display extends Device {
 	NSImage dockImage;
 	boolean isEmbedded;
 	
+	Control focusControl;
+	
 	NSWindow screenWindow;
 	NSAutoreleasePool pool;
 	int loopCounter = 0;
@@ -2106,6 +2108,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 }
@@ -3900,6 +3903,8 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.accessibilityPerformAction(id, sel, arg0);
 	} else if (sel == OS.sel_accessibilityActionDescription_) {
 		widget.accessibilityActionDescription(id, sel, arg0);
+	} else if (sel == OS.sel_makeFirstResponder_) {
+		return widget.makeFirstResponder(id, sel, arg0) ? 1 : 0;
 	}
 	return 0;
 }

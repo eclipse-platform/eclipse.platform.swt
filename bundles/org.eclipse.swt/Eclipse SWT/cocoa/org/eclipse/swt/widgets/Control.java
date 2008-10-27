@@ -256,18 +256,6 @@ int accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, 
 		return returnValue.id;
 }
 
-boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
-	boolean result = super.becomeFirstResponder (id, sel);
-	if (result && id == focusView ().id) sendFocusEvent (SWT.FocusIn, false);
-	return result;
-}
-
-boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
-	boolean result = super.resignFirstResponder (id, sel);
-	if (result && id == focusView ().id) sendFocusEvent (SWT.FocusOut, false);
-	return result;
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
