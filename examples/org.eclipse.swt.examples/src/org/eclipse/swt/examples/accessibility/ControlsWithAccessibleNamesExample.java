@@ -169,11 +169,9 @@ public class ControlsWithAccessibleNamesExample {
 		
 //		Text text, overrideText;
 		text = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		text.setText("Contents of Text");
 		
 		overrideText = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		overrideText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		overrideText.setText("Contents of Text");
 		overrideText.setData("name", "Text");
 		overrideText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
@@ -396,13 +394,11 @@ public class ControlsWithAccessibleNamesExample {
 		
 //		Composite composite, overrideComposite;
 		composite = new Composite(shell, SWT.BORDER);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		composite.setLayout(new GridLayout());
 		new Button(composite, SWT.RADIO).setText("Child 1");
 		new Button(composite, SWT.RADIO).setText("Child 2");
 
 		overrideComposite = new Composite(shell, SWT.BORDER);
-		overrideComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		overrideComposite.setLayout(new GridLayout());
 		new Button(overrideComposite, SWT.RADIO).setText("Child 1");
 		new Button(overrideComposite, SWT.RADIO).setText("Child 2");
@@ -505,11 +501,9 @@ public class ControlsWithAccessibleNamesExample {
 
 //		StyledText styledText, overrideStyledText;
 		styledText = new StyledText(shell, SWT.SINGLE | SWT.BORDER);
-		styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		styledText.setText("Contents of StyledText");
 		
 		overrideStyledText = new StyledText(shell, SWT.SINGLE | SWT.BORDER);
-		overrideStyledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		overrideStyledText.setText("Contents of StyledText");
 		overrideStyledText.setData("name", "StyledText");
 		overrideStyledText.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
@@ -552,7 +546,6 @@ public class ControlsWithAccessibleNamesExample {
 		overrideSash.setToolTipText("Sash ToolTip");
 		overrideSash.setData("name", "Sash");
 		overrideSash.getAccessible().addAccessibleListener(overrideAccessibleAdapter);
-		overrideSash.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 		shell.pack();
 		shell.open();
