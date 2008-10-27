@@ -223,9 +223,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 	int contentWidth = 0;
 	NSSize stringSize = null, imageSize = null;
 	NSAttributedString attrString = null;
+	NSTableHeaderCell headerCell = nsColumn.headerCell ();
 	if (displayText != null) {
 		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity(4);
-		dict.setObject(getParent().getFont().handle, OS.NSFontAttributeName);		
+		dict.setObject (headerCell.font (), OS.NSFontAttributeName);
 		NSString string = NSString.stringWith (displayText);
 		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, null);
 		stringSize = attrString.size ();
@@ -239,7 +240,6 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 
 	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 		boolean ascending = parent.sortDirection == SWT.UP;
-		NSTableHeaderCell headerCell = nsColumn.headerCell ();
 		headerCell.drawSortIndicatorWithFrame (cellRect, new NSView(view), ascending, 0);
 		/* remove the arrow's space from the available drawing width */
 		NSRect sortRect = headerCell.sortIndicatorRectForBounds (cellRect);
@@ -427,7 +427,8 @@ public void pack () {
 	/* compute header width */
 	if (displayText != null) {
 		NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (4);
-		dict.setObject (getParent ().getFont ().handle, OS.NSFontAttributeName);
+		NSTableHeaderCell headerCell = nsColumn.headerCell ();
+		dict.setObject (headerCell.font (), OS.NSFontAttributeName);
 		NSString string = NSString.stringWith (displayText);
 		NSAttributedString attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
 		NSSize stringSize = attrString.size ();
