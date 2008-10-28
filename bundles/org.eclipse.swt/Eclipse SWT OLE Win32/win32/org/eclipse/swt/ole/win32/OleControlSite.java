@@ -666,39 +666,42 @@ void onFocusIn(Event e) {
 	OS.SetFocus(phwnd[0]);
 }
 void onFocusOut(Event e) {
-	if (objIOleInPlaceObject != null && getProgramID().startsWith(SHELL_PROG_ID)) {
-		/*
-		* Bug in Windows.  When IE7 loses focus and UIDeactivate()
-		* is called, IE destroys the caret even though it is
-		* no longer owned by IE.  If focus has moved to a control
-		* that shows a caret then the caret disappears.  The fix 
-		* is to detect this case and restore the caret.
-		*/
-		int threadId = OS.GetCurrentThreadId();
-		GUITHREADINFO lpgui1 = new GUITHREADINFO();
-		lpgui1.cbSize = GUITHREADINFO.sizeof;
-		OS.GetGUIThreadInfo(threadId, lpgui1);
-		objIOleInPlaceObject.UIDeactivate();
-		if (lpgui1.hwndCaret != 0) {
-			GUITHREADINFO lpgui2 = new GUITHREADINFO();
-			lpgui2.cbSize = GUITHREADINFO.sizeof;
-			OS.GetGUIThreadInfo(threadId, lpgui2);
-			if (lpgui2.hwndCaret == 0 && lpgui1.hwndCaret == OS.GetFocus()) {
-				if (SWT_RESTORECARET == 0) {
-					SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
-				}
-				/*
-				* If the caret was not restored by SWT, put it back using
-				* the information from GUITHREADINFO.  Note that this will
-				* not be correct when the caret has a bitmap.  There is no
-				* API to query the bitmap that the caret is using.
-				*/
-				if (OS.SendMessage (lpgui1.hwndCaret, SWT_RESTORECARET, 0, 0) == 0) {
-					int width = lpgui1.right - lpgui1.left;
-					int height = lpgui1.bottom - lpgui1.top;
-					OS.CreateCaret (lpgui1.hwndCaret, 0, width, height);
-					OS.SetCaretPos (lpgui1.left, lpgui1.top);
-					OS.ShowCaret (lpgui1.hwndCaret);
+	if (objIOleInPlaceObject != null) {
+		String progID = getProgramID();
+		if (progID != null && progID.startsWith(SHELL_PROG_ID)) {
+			/*
+			* Bug in Windows.  When IE7 loses focus and UIDeactivate()
+			* is called, IE destroys the caret even though it is
+			* no longer owned by IE.  If focus has moved to a control
+			* that shows a caret then the caret disappears.  The fix 
+			* is to detect this case and restore the caret.
+			*/
+			int threadId = OS.GetCurrentThreadId();
+			GUITHREADINFO lpgui1 = new GUITHREADINFO();
+			lpgui1.cbSize = GUITHREADINFO.sizeof;
+			OS.GetGUIThreadInfo(threadId, lpgui1);
+			objIOleInPlaceObject.UIDeactivate();
+			if (lpgui1.hwndCaret != 0) {
+				GUITHREADINFO lpgui2 = new GUITHREADINFO();
+				lpgui2.cbSize = GUITHREADINFO.sizeof;
+				OS.GetGUIThreadInfo(threadId, lpgui2);
+				if (lpgui2.hwndCaret == 0 && lpgui1.hwndCaret == OS.GetFocus()) {
+					if (SWT_RESTORECARET == 0) {
+						SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
+					}
+					/*
+					* If the caret was not restored by SWT, put it back using
+					* the information from GUITHREADINFO.  Note that this will
+					* not be correct when the caret has a bitmap.  There is no
+					* API to query the bitmap that the caret is using.
+					*/
+					if (OS.SendMessage (lpgui1.hwndCaret, SWT_RESTORECARET, 0, 0) == 0) {
+						int width = lpgui1.right - lpgui1.left;
+						int height = lpgui1.bottom - lpgui1.top;
+						OS.CreateCaret (lpgui1.hwndCaret, 0, width, height);
+						OS.SetCaretPos (lpgui1.left, lpgui1.top);
+						OS.ShowCaret (lpgui1.hwndCaret);
+					}
 				}
 			}
 		}
