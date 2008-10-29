@@ -80,7 +80,8 @@ class SashTab extends Tab {
 		/*
 		 * Create the page.  This example does not use layouts.
 		 */
-		sashComp = new Composite(sashGroup, SWT.BORDER | getDefaultStyle());
+		int style = getDefaultStyle();
+		sashComp = new Composite(sashGroup, SWT.BORDER | style);
 	
 		/* Create the list and text widgets */
 		list1 = new List (sashComp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
@@ -91,8 +92,7 @@ class SashTab extends Tab {
 		text.setText (ControlExample.getResourceString("Multi_line"));
 	
 		/* Create the sashes */
-		int style = getDefaultStyle();
-		if (smoothButton.getSelection()) style |= SWT.SMOOTH;
+		style = smoothButton.getSelection() ? SWT.SMOOTH : SWT.NONE;
 		vSash = new Sash (sashComp, SWT.VERTICAL | style);
 		hSash = new Sash (sashComp, SWT.HORIZONTAL | style);
 		
