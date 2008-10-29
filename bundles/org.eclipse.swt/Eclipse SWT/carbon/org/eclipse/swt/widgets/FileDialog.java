@@ -232,6 +232,7 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 						}
 					}
 				}
+				return 0;
 			}
 		}
 	}
