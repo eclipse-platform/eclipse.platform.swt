@@ -939,7 +939,7 @@ private int OnUIActivate() {
 	}
 	return COM.S_OK;
 }
-private int OnUIDeactivate(int fUndoable) {
+int OnUIDeactivate(int fUndoable) {
 	// currently, we are ignoring the fUndoable flag
 	if (frame == null || frame.isDisposed()) return COM.S_OK;
 	state = STATE_INPLACEACTIVE;
