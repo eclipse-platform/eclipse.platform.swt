@@ -90,9 +90,9 @@ public NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination) {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public id autorelease() {
+public NSObject autorelease() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_autorelease);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
 public NSString className() {
