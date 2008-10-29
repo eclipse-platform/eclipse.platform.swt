@@ -7755,7 +7755,7 @@
       <retval></retval>
     </method>
     <method selector="autorelease" swt_gen="true">
-      <retval swt_gen="true"></retval>
+      <retval swt_gen="true" swt_java_type="NSObject"></retval>
     </method>
     <method selector="awakeAfterUsingCoder:">
       <arg name="aDecoder"></arg>
