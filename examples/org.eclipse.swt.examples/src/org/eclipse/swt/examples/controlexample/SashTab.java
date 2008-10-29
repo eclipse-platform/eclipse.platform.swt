@@ -80,7 +80,7 @@ class SashTab extends Tab {
 		/*
 		 * Create the page.  This example does not use layouts.
 		 */
-		sashComp = new Composite(sashGroup, SWT.BORDER);
+		sashComp = new Composite(sashGroup, SWT.BORDER | getDefaultStyle());
 	
 		/* Create the list and text widgets */
 		list1 = new List (sashComp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
