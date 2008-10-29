@@ -90,6 +90,7 @@ class ShellTab extends Tab {
 		final Shell currentShell = shells [shellCount];
 		Button button = new Button(currentShell, SWT.PUSH);
 		button.setBounds(20, 20, 120, 30);
+		button.setText(ControlExample.getResourceString("Button"));
 		Button close = new Button(currentShell, SWT.PUSH);
 		close.setBounds(160, 20, 120, 30);
 		close.setText(ControlExample.getResourceString("Close"));
