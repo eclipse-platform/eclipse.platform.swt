@@ -1011,6 +1011,13 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+void setFont (NSFont font) {
+	super.setFont (font);
+	float ascent = font.ascender ();
+	float descent = -font.descender () + font.leading ();
+	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument.

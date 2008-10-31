@@ -1997,7 +1997,14 @@ public void setColumnOrder (int [] order) {
 }
 
 void setFont(NSFont font) {
-	view.setNeedsDisplay(true);
+	super.setFont (font);
+	if (!hooks (SWT.MeasureItem)) {
+		float ascent = font.ascender ();
+		float descent = -font.descender () + font.leading ();
+		((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
+	} else {
+		view.setNeedsDisplay (true);
+	}
 }
 
 /**
