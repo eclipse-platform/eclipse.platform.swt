@@ -561,7 +561,8 @@ public void setAlignment (int alignment) {
 	int x = getX ();
 	parent.redraw (x, 0, width, parent.clientArea.height, false);
 	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
-		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
+		/* don't damage the header's drawn borders */
+		parent.header.redraw (x, 1, width - 2, parent.getHeaderHeight () - 3, false);		
 	}
 }
 public void setImage (Image value) {
@@ -593,7 +594,8 @@ public void setImage (Image value) {
 	}
 	
 	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
-		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+		/* don't damage the header's drawn borders */
+		parent.header.redraw (getX (), 1, width - 2, parent.getHeaderHeight () - 3, false);
 	}
 }
 /**
@@ -651,7 +653,8 @@ void setSortDirection (int value) {
 		gc.dispose ();
 	}
 	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
-		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+		/* don't damage the header's drawn borders */
+		parent.header.redraw (getX (), 1, width - 2, parent.getHeaderHeight () - 3, false);
 	}
 }
 public void setText (String value) {
@@ -663,7 +666,8 @@ public void setText (String value) {
 	computeDisplayText (gc);
 	gc.dispose ();
 	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
-		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+		/* don't damage the header's drawn borders */
+		parent.header.redraw (getX (), 1, width - 2, parent.getHeaderHeight () - 3, false);
 	}
 }
 /**
