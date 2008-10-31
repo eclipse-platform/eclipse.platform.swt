@@ -228,11 +228,13 @@ Point computeSize () {
 		}
 	} else {
 		if (text.length () != 0 || image != null) {
-			((NSButton)button).sizeToFit ();
+			NSButton widget = (NSButton)button;
+			NSRect oldFrame = widget.frame();
+			widget.sizeToFit ();
 			NSRect frame = button.frame();
 			width = (int)frame.width;
 			height = (int)frame.height;
-			view.setNeedsDisplay(true);
+			widget.setFrame(oldFrame);
 		} else {
 			width = DEFAULT_WIDTH;
 			height = DEFAULT_HEIGHT;
@@ -860,18 +862,18 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	((NSButton)button).setAttributedTitle(createString());
-	
-	parent.relayout ();
+	NSButton widget = (NSButton)button;
+	widget.setAttributedTitle(createString());
 	if (text.length() != 0 && image != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {
-			((NSButton)button).setImagePosition(OS.NSImageLeft);
+			widget.setImagePosition(OS.NSImageLeft);
 		} else {
-			((NSButton)button).setImagePosition(OS.NSImageAbove);		
+			widget.setImagePosition(OS.NSImageAbove);		
 		}
 	} else {
-		((NSButton)button).setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);			
+		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);
 	}
+	parent.relayout ();
 }
 
 /**
@@ -932,15 +934,16 @@ void updateImage (boolean layout) {
 			image = disabledImage;
 		}
 	}
-	((NSButton)button).setImage(image != null ? image.handle : null);
+	NSButton widget = (NSButton)button;
+	widget.setImage(image != null ? image.handle : null);
 	if (text.length() != 0 && image != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {
-			((NSButton)button).setImagePosition(OS.NSImageLeft);
+			widget.setImagePosition(OS.NSImageLeft);
 		} else {
 			((NSButton)button).setImagePosition(OS.NSImageAbove);		
 		}
 	} else {	
-		((NSButton)button).setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
+		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
 	}
 	parent.relayout();
 }
