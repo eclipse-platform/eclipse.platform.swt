@@ -90,6 +90,30 @@ public NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination) {
 	return result != 0 ? new NSArray(result) : null;
 }
 
+public void outlineView(NSOutlineView outlineView, NSTableColumn tableColumn) {
+	OS.objc_msgSend(this.id, OS.sel_outlineView_didClickTableColumn_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0);
+}
+
+public void outlineViewColumnDidMove(NSNotification notification) {
+	OS.objc_msgSend(this.id, OS.sel_outlineViewColumnDidMove_, notification != null ? notification.id : 0);
+}
+
+public void outlineViewColumnDidResize(NSNotification notification) {
+	OS.objc_msgSend(this.id, OS.sel_outlineViewColumnDidResize_, notification != null ? notification.id : 0);
+}
+
+public void tableView(NSTableView tableView, NSTableColumn tableColumn) {
+	OS.objc_msgSend(this.id, OS.sel_tableView_didClickTableColumn_, tableView != null ? tableView.id : 0, tableColumn != null ? tableColumn.id : 0);
+}
+
+public void tableViewColumnDidMove(NSNotification notification) {
+	OS.objc_msgSend(this.id, OS.sel_tableViewColumnDidMove_, notification != null ? notification.id : 0);
+}
+
+public void tableViewColumnDidResize(NSNotification notification) {
+	OS.objc_msgSend(this.id, OS.sel_tableViewColumnDidResize_, notification != null ? notification.id : 0);
+}
+
 public NSObject autorelease() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_autorelease);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);

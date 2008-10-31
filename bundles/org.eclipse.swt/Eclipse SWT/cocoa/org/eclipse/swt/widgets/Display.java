@@ -1870,6 +1870,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
+	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -1908,6 +1911,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -3905,6 +3911,14 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.accessibilityActionDescription(id, sel, arg0);
 	} else if (sel == OS.sel_makeFirstResponder_) {
 		return widget.makeFirstResponder(id, sel, arg0) ? 1 : 0;
+	} else if (sel == OS.sel_tableViewColumnDidMove_) {
+		widget.tableViewColumnDidMove(id, sel, arg0);
+	} else if (sel == OS.sel_tableViewColumnDidResize_) {
+		widget.tableViewColumnDidResize(id, sel, arg0);
+	} else if (sel == OS.sel_outlineViewColumnDidMove_) {
+		widget.outlineViewColumnDidMove(id, sel, arg0);
+	} else if (sel == OS.sel_outlineViewColumnDidResize_) {
+		widget.outlineViewColumnDidResize(id, sel, arg0);
 	}
 	return 0;
 }
@@ -3932,6 +3946,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		widget.drawInteriorWithFrame_inView (id, sel, arg0, arg1);
 	} else if (sel == OS.sel_accessibilityAttributeValue_forParameter_) {
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
+	} else if (sel == OS.sel_tableView_didClickTableColumn_) {
+		widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_outlineView_didClickTableColumn_) {
+		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
 	}
 	return 0;
 }

@@ -973,6 +973,15 @@ int getCheckColumnWidth () {
 	return 20; //TODO - compute width
 }
 
+TableColumn getColumn (id id) {
+	for (int i = 0; i < columnCount; i++) {
+		if (columns[i].nsColumn.id == id.id) {
+			return columns[i]; 
+		}
+	}
+	return null;
+}
+
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1559,27 +1568,6 @@ public boolean isSelected (int index) {
 boolean isTrim (NSView view) {
 	if (super.isTrim (view)) return true;
 	return view.id == headerView.id;
-}
-
-void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	super.mouseDown (id, sel, theEvent);
-	if (id == headerView.id) {
-		NSEvent nsEvent = new NSEvent (theEvent);
-		NSPoint location = nsEvent.locationInWindow ();
-		location = headerView.convertPoint_fromView_ (location, null);
-		int index = (int)/*64*/headerView.columnAtPoint (location);
-		if (index == -1) return;
-		if (index == 0 && (style & SWT.CHECK) != 0) return;
-		NSArray array = ((NSTableView)view).tableColumns ();
-		int /*long*/ columnId = array.objectAtIndex (index).id;
-		for (int i = 0; i < columnCount; i++) {
-			TableColumn column = columns [i];
-			if (column.nsColumn.id == columnId) {
-				column.postEvent (SWT.Selection);
-				break;
-			}
-		}
-	}
 }
 
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
@@ -2507,6 +2495,53 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	NSNotification notification = new NSNotification (aNotification);
+	NSDictionary userInfo = notification.userInfo ();
+	id nsOldIndex = userInfo.valueForKey (NSString.stringWith ("NSOldColumn")); //$NON-NLS-1$
+	id nsNewIndex = userInfo.valueForKey (NSString.stringWith ("NSNewColumn")); //$NON-NLS-1$
+	int oldIndex = new NSNumber (nsOldIndex).intValue ();
+	int newIndex = new NSNumber (nsNewIndex).intValue ();
+	int startIndex = Math.min (oldIndex, newIndex);
+	int endIndex = Math.max (oldIndex, newIndex);
+	NSTableView tableView = (NSTableView)view;
+	NSArray nsColumns = tableView.tableColumns ();
+	for (int i = startIndex; i <= endIndex; i++) {
+		id columnId = nsColumns.objectAtIndex (i);
+		TableColumn column = getColumn (columnId);
+		if (column != null) {
+			column.sendEvent (SWT.Move);
+			if (isDisposed ()) return;
+		}
+	}
+}
+
+void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	NSNotification notification = new NSNotification (aNotification);
+	NSDictionary userInfo = notification.userInfo ();
+	id columnId = userInfo.valueForKey (NSString.stringWith ("NSTableColumn")); //$NON-NLS-1$
+	TableColumn column = getColumn (columnId);
+	if (column == null) return; /* either CHECK column or firstColumn in 0-column Table */
+
+	column.sendEvent (SWT.Resize);
+	if (isDisposed ()) return;
+
+	NSTableView tableView = (NSTableView)view;
+	int index = (int)/*64*/tableView.columnWithIdentifier (columnId);
+	if (index == -1) return; /* column was disposed in Resize callback */
+
+	NSArray nsColumns = tableView.tableColumns ();
+	int columnCount = (int)/*64*/tableView.numberOfColumns ();
+	for (int i = index + 1; i < columnCount; i++) {
+		columnId = nsColumns.objectAtIndex (i);
+		column = getColumn (columnId);
+		if (column != null) {
+			column.sendEvent (SWT.Move);
+			if (isDisposed ()) return;
+		}
+	}
+}
+
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	if (ignoreSelect) return;
 	NSTableView widget = (NSTableView) view;
@@ -2520,6 +2555,11 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 		event.index = row;
 		postEvent (SWT.Selection, event);
 	}
+}
+
+void tableView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {
+	TableColumn column = getColumn (new id (tableColumn));
+	column.postEvent (SWT.Selection);
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {

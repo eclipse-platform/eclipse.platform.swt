@@ -1008,6 +1008,15 @@ int getCheckColumnWidth () {
 	return 20; //TODO - compute width
 }
 
+TreeColumn getColumn (id id) {
+	for (int i = 0; i < columnCount; i++) {
+		if (columns[i].nsColumn.id == id.id) {
+			return columns[i]; 
+		}
+	}
+	return null;
+}
+
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1573,32 +1582,16 @@ boolean isTrim (NSView view) {
 	return view.id == headerView.id;
 }
 
-void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	super.mouseDown (id, sel, theEvent);
-	if (id == headerView.id) {
-		NSEvent nsEvent = new NSEvent (theEvent);
-		NSPoint location = nsEvent.locationInWindow ();
-		location = headerView.convertPoint_fromView_ (location, null);
-		int index = (int)/*64*/headerView.columnAtPoint (location);
-		if (index == -1) return;
-		if (index == 0 && (style & SWT.CHECK) != 0) return;
-		NSArray array = ((NSOutlineView)view).tableColumns ();
-		int /*long*/ columnId = array.objectAtIndex (index).id;
-		for (int i = 0; i < columnCount; i++) {
-			TreeColumn column = columns [i];
-			if (column.nsColumn.id == columnId) {
-				column.postEvent (SWT.Selection);
-				break;
-			}
-		}
-	}
-}
-
 int /*long*/ outlineView_child_ofItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
 	TreeItem item = _getItem (parent, (int)/*64*/index, true);
 	checkData (item, false);
 	return item.handle.id;
+}
+
+void outlineView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn) {
+	TreeColumn column = getColumn (new id (tableColumn));
+	column.postEvent (SWT.Selection);
 }
 
 int /*long*/ outlineView_objectValueForTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ itemID) {
@@ -1678,6 +1671,53 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 				item.customWidth = event.width;	
 			}
 			if (change != 0) setScrollWidth (item, false, false);
+		}
+	}
+}
+
+void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	NSNotification notification = new NSNotification (aNotification);
+	NSDictionary userInfo = notification.userInfo ();
+	id nsOldIndex = userInfo.valueForKey (NSString.stringWith ("NSOldColumn")); //$NON-NLS-1$
+	id nsNewIndex = userInfo.valueForKey (NSString.stringWith ("NSNewColumn")); //$NON-NLS-1$
+	int oldIndex = new NSNumber (nsOldIndex).intValue ();
+	int newIndex = new NSNumber (nsNewIndex).intValue ();
+	int startIndex = Math.min (oldIndex, newIndex);
+	int endIndex = Math.max (oldIndex, newIndex);
+	NSOutlineView outlineView = (NSOutlineView)view;
+	NSArray nsColumns = outlineView.tableColumns ();
+	for (int i = startIndex; i <= endIndex; i++) {
+		id columnId = nsColumns.objectAtIndex (i);
+		TreeColumn column = getColumn (columnId);
+		if (column != null) {
+			column.sendEvent (SWT.Move);
+			if (isDisposed ()) return;
+		}
+	}
+}
+
+void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	NSNotification notification = new NSNotification (aNotification);
+	NSDictionary userInfo = notification.userInfo ();
+	id columnId = userInfo.valueForKey (NSString.stringWith ("NSTableColumn")); //$NON-NLS-1$
+	TreeColumn column = getColumn (columnId);
+	if (column == null) return; /* either CHECK column or firstColumn in 0-column Tree */
+
+	column.sendEvent (SWT.Resize);
+	if (isDisposed ()) return;
+
+	NSOutlineView outlineView = (NSOutlineView)view;
+	int index = (int)/*64*/outlineView.columnWithIdentifier (columnId);
+	if (index == -1) return; /* column was disposed in Resize callback */
+
+	NSArray nsColumns = outlineView.tableColumns ();
+	int columnCount = (int)/*64*/outlineView.numberOfColumns ();
+	for (int i = index + 1; i < columnCount; i++) {
+		columnId = nsColumns.objectAtIndex (i);
+		column = getColumn (columnId);
+		if (column != null) {
+			column.sendEvent (SWT.Move);
+			if (isDisposed ()) return;
 		}
 	}
 }

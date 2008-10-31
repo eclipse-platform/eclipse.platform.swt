@@ -866,6 +866,9 @@ int /*long*/ outlineView_child_ofItem(int /*long*/ id, int /*long*/ sel, int /*l
 	return 0;
 }
 
+void outlineView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn) {
+}
+
 int /*long*/ outlineView_objectValueForTableColumn_byItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ item) {
 	return 0;
 }
@@ -887,6 +890,12 @@ boolean outlineView_shouldCollapseItem(int /*long*/ id, int /*long*/ sel, int /*
 
 boolean outlineView_shouldExpandItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
 	return false;
+}
+
+void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+}
+
+void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 }
 
 void outlineViewItemDidExpand(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -1370,7 +1379,16 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 	return true;
 }
 
+void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+}
+
+void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+}
+
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+}
+
+void tableView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {

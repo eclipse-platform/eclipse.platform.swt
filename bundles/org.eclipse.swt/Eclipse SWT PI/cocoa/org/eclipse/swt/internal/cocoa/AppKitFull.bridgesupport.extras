@@ -13036,10 +13036,10 @@
       <arg name="item"></arg>
       <retval></retval>
     </method>
-    <method selector="outlineView:didClickTableColumn:">
-      <arg name="outlineView"></arg>
-      <arg name="tableColumn"></arg>
-      <retval></retval>
+    <method selector="outlineView:didClickTableColumn:" swt_gen="true">
+      <arg name="outlineView" swt_gen="true"></arg>
+      <arg name="tableColumn" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="outlineView:didDragTableColumn:">
       <arg name="outlineView"></arg>
@@ -13204,13 +13204,13 @@
       <arg name="pasteboard"></arg>
       <retval></retval>
     </method>
-    <method selector="outlineViewColumnDidMove:">
-      <arg name="notification"></arg>
-      <retval></retval>
+    <method selector="outlineViewColumnDidMove:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="outlineViewColumnDidResize:">
-      <arg name="notification"></arg>
-      <retval></retval>
+    <method selector="outlineViewColumnDidResize:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="outlineViewItemDidCollapse:">
       <arg name="notification"></arg>
@@ -13569,10 +13569,10 @@
       <arg name="row"></arg>
       <retval></retval>
     </method>
-    <method selector="tableView:didClickTableColumn:">
-      <arg name="tableView"></arg>
-      <arg name="tableColumn"></arg>
-      <retval></retval>
+    <method selector="tableView:didClickTableColumn:" swt_gen="true">
+      <arg name="tableView" swt_gen="true"></arg>
+      <arg name="tableColumn" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="tableView:didDragTableColumn:">
       <arg name="tableView"></arg>
@@ -13706,13 +13706,13 @@
       <arg name="pboard"></arg>
       <retval></retval>
     </method>
-    <method selector="tableViewColumnDidMove:">
-      <arg name="notification"></arg>
-      <retval></retval>
+    <method selector="tableViewColumnDidMove:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
-    <method selector="tableViewColumnDidResize:">
-      <arg name="notification"></arg>
-      <retval></retval>
+    <method selector="tableViewColumnDidResize:" swt_gen="true">
+      <arg name="notification" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="tableViewSelectionDidChange:">
       <arg name="notification"></arg>
