@@ -160,7 +160,7 @@ int accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
 int accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
 			NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(ACC.CHILDID_SELF);
 			if (returnValue != null) return returnValue.id;
@@ -187,7 +187,7 @@ boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int 
 int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	id returnValue = null;
 
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
 			returnValue = accessible.internal_accessibilityFocusedUIElement(ACC.CHILDID_SELF);
 		}
@@ -204,7 +204,7 @@ int accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 int accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	id returnValue = null;
 
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell().id == id)) {
+	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
 		if (accessible != null) {
 			returnValue = accessible.internal_accessibilityHitTest(point, ACC.CHILDID_SELF);
 		}

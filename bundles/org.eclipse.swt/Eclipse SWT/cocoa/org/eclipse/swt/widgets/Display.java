@@ -1732,7 +1732,6 @@ int registerCellSubclass(int cellClass, int size, int align, String types) {
 	int cls = OS.objc_allocateClassPair(cellClass, "SWT" + cellClassName, 0);	
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.objc_registerClassPair(cls);
-	NSControl.setCellClass(cls);
 	return cls;
 }
 
@@ -1855,9 +1854,9 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
-//	cls = registerCellSubclass(NSButton.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSButton.setCellClass(cls);
+	cls = registerCellSubclass(NSButton.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSButton.setCellClass(cls);
 
 	className = "SWTTableView";
 	cls = OS.objc_allocateClassPair(OS.class_NSTableView, className, 0);
@@ -1958,9 +1957,9 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls); 
 	
-//	cls = registerCellSubclass(NSSlider.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSSlider.setCellClass(cls);
+	cls = registerCellSubclass(NSSlider.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSSlider.setCellClass(cls);
 
 	className = "SWTPopUpButton";
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
@@ -1971,9 +1970,9 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
-//	cls = registerCellSubclass(NSPopUpButton.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSPopUpButton.setCellClass(cls);
+	cls = registerCellSubclass(NSPopUpButton.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSPopUpButton.setCellClass(cls);
 
 	className = "SWTComboBox";
 	cls = OS.objc_allocateClassPair(OS.class_NSComboBox, className, 0);
@@ -1988,9 +1987,9 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
-//	cls = registerCellSubclass(NSComboBox.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSComboBox.setCellClass(cls);
+	cls = registerCellSubclass(NSComboBox.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSComboBox.setCellClass(cls);
 
 	className = "SWTDatePicker";
 	cls = OS.objc_allocateClassPair(OS.class_NSDatePicker, className, 0);
@@ -2009,9 +2008,9 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
-//	cls = registerCellSubclass(NSImageView.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSImageView.setCellClass(cls);
+	cls = registerCellSubclass(NSImageView.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSImageView.setCellClass(cls);
 
 	className = "SWTStepper";
 	cls = OS.objc_allocateClassPair(OS.class_NSStepper, className, 0);
@@ -2022,9 +2021,9 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
-//	cls = registerCellSubclass(NSStepper.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSStepper.setCellClass(cls);
+	cls = registerCellSubclass(NSStepper.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSStepper.setCellClass(cls);
 
 	className = "SWTScroller";
 	cls = OS.objc_allocateClassPair(OS.class_NSScroller, className, 0);
@@ -2035,10 +2034,6 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
-//	cls = registerCellSubclass(NSScroller.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSScroller.setCellClass(cls);
-
 	className = "SWTMenuItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
@@ -2076,9 +2071,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
-//	cls = registerCellSubclass(NSTextField.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSTextField.setCellClass(cls);
+	cls = registerCellSubclass(NSTextField.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSTextField.setCellClass(cls);
 
 	className = "SWTSearchField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSearchField, className, 0);
@@ -2091,9 +2086,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	OS.objc_registerClassPair(cls);
 	
-//	cls = registerCellSubclass(NSSearchField.cellClass(), size, align, types);
-//	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-//	NSSearchField.setCellClass(cls);
+	cls = registerCellSubclass(NSSearchField.cellClass(), size, align, types);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
+	NSSearchField.setCellClass(cls);
 
 	className = "SWTSecureTextField";
 	cls = OS.objc_allocateClassPair(OS.class_NSSecureTextField, className, 0);
