@@ -345,7 +345,6 @@ void drawWidget (int /*long*/ id, NSRect rect) {
 			path.lineToPoint(pt);
 			path.closePath();
 			NSAffineTransform transform = NSAffineTransform.transform();
-			System.out.println(bounds.height);
 			transform.translateXBy((int)bounds.width - ARROW_WIDTH - INSET, (int)(bounds.height - ARROW_WIDTH / 2) / 2);
 			transform.concat();
 			NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
