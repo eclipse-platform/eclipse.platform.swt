@@ -1994,6 +1994,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 }
 
 void setBackground (float [] color) {
+	super.setBackground (color);
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = null;

@@ -1903,6 +1903,7 @@ public void selectAll () {
 }
 
 void setBackground (float [] color) {
+	super.setBackground (color);
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = null;

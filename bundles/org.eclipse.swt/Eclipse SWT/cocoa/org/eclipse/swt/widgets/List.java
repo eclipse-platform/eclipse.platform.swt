@@ -1011,6 +1011,17 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+void setBackground (float [] color) {
+	super.setBackground (color);
+	NSColor nsColor;
+	if (color == null) {
+		nsColor = null;
+	} else {
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], 1);
+	}
+	((NSTableView) view).setBackgroundColor (nsColor);
+}
+
 void setFont (NSFont font) {
 	super.setFont (font);
 	float ascent = font.ascender ();
@@ -1289,10 +1300,6 @@ int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long
 	}
 	if (font != null) {
 		dict.setObject(font.handle, OS.NSFontAttributeName);
-	}
-	if (background != null) {
-		NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
-		dict.setObject(color, OS.NSBackgroundColorAttributeName);
 	}
 	String text = items[(int)/*64*/rowIndex];
 	int length = text.length();
