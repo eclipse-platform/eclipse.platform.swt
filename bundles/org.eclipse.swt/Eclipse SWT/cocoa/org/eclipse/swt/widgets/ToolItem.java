@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class ToolItem extends Item {
 	NSView view;
-	NSButton button, arrow;
+	NSButton button;
 	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -239,8 +239,8 @@ Point computeSize () {
 			width = DEFAULT_WIDTH;
 			height = DEFAULT_HEIGHT;
 		}
-		if (arrow != null) {
-			width += ARROW_WIDTH;
+		if ((style & SWT.DROP_DOWN) != 0) {
+			width += ARROW_WIDTH + INSET;
 		}
 		width += INSET * 2;
 		height += INSET * 2;
@@ -270,15 +270,6 @@ void createHandle () {
 		button.setTitle(emptyStr);
 		button.setEnabled(parent.getEnabled());
 		widget.addSubview(button);
-		if ((style & SWT.DROP_DOWN) != 0) {
-			arrow = (NSButton)new SWTButton().alloc();
-			arrow.initWithFrame(new NSRect());
-			arrow.setBordered(false);
-			arrow.setTarget(arrow);
-			arrow.setTitle(emptyStr);
-			arrow.setEnabled(parent.getEnabled());
-			widget.addSubview(arrow);
-		}
 		view = widget;
 	}
 }
@@ -317,11 +308,6 @@ void deregister () {
 		display.removeWidget (button);
 		display.removeWidget (button.cell());
 	}
-	
-	if (arrow != null) {
-		display.removeWidget (arrow);
-		display.removeWidget (arrow.cell());
-	}
 }
 
 void destroyWidget() {
@@ -330,50 +316,49 @@ void destroyWidget() {
 }
 
 void drawWidget (int /*long*/ id, NSRect rect) {
-	if (id == view.id && getSelection ()) {
-		NSRect bounds = view.bounds();
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		context.saveGraphicsState();
-		NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
-		NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
-		NSBezierPath.fillRect(bounds);
-		bounds.x += 0.5f;
-		bounds.y += 0.5f;
-		bounds.width -= 1;
-		bounds.height -= 1;
-		NSBezierPath.strokeRect(bounds);
-		context.restoreGraphicsState();
-	}
-	if (arrow != null && id == arrow.id) {
-		NSRect frame = arrow.frame();
-		NSGraphicsContext context = NSGraphicsContext.currentContext();
-		context.saveGraphicsState();
-		NSPoint p1 = new NSPoint();
-		p1.y = (float)Math.ceil(frame.height / 2 - frame.width / 2);
-		NSPoint p2 = new NSPoint();
-		p2.x = frame.width;
-		p2.y = p1.y;
-		NSPoint p3 = new NSPoint();
-		p3.x = frame.width / 2;
-		p3.y = (float)(p2.y + Math.sqrt(Math.pow(frame.width, 2) - Math.pow(frame.width / 2, 2)));
-		NSBezierPath path = NSBezierPath.bezierPath();
-		path.moveToPoint(p1);
-		path.lineToPoint(p2);
-		path.lineToPoint(p3);
-		path.closePath();
-		NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
-		color.set();
-		path.fill();
-		context.restoreGraphicsState();
+	if (id == view.id) {
+		if (getSelection ()) {
+			NSRect bounds = view.bounds();
+			NSGraphicsContext context = NSGraphicsContext.currentContext();
+			context.saveGraphicsState();
+			NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
+			NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
+			NSBezierPath.fillRect(bounds);
+			bounds.x += 0.5f;
+			bounds.y += 0.5f;
+			bounds.width -= 1;
+			bounds.height -= 1;
+			NSBezierPath.strokeRect(bounds);
+			context.restoreGraphicsState();
+		}
+		if ((style & SWT.DROP_DOWN) != 0) {
+			NSRect bounds = view.bounds();
+			NSGraphicsContext context = NSGraphicsContext.currentContext();
+			context.saveGraphicsState();
+			NSBezierPath path = NSBezierPath.bezierPath();
+			NSPoint pt = new NSPoint();
+			path.moveToPoint(pt);
+			pt.x += ARROW_WIDTH;
+			path.lineToPoint(pt);
+			pt.y += ARROW_WIDTH - 1;
+			pt.x -= ARROW_WIDTH / 2f;
+			path.lineToPoint(pt);
+			path.closePath();
+			NSAffineTransform transform = NSAffineTransform.transform();
+			System.out.println(bounds.height);
+			transform.translateXBy((int)bounds.width - ARROW_WIDTH - INSET, (int)(bounds.height - ARROW_WIDTH / 2) / 2);
+			transform.concat();
+			NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
+			color.set();
+			path.fill();
+			context.restoreGraphicsState();
+		}
 	}
 }
 
 void enableWidget(boolean enabled) {
 	if ((style & SWT.SEPARATOR) == 0) {
 		((NSButton)button).setEnabled(enabled);
-		if (arrow != null) {
-			((NSButton)arrow).setEnabled(enabled);
-		}
 	}
 }
 
@@ -569,12 +554,12 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	display.trackingControl = parent;
 	super.mouseDown(id, sel, theEvent);
 	display.trackingControl = null;
-	if (arrow != null && id == arrow.id) {
+	if ((style & SWT.DROP_DOWN) != 0 && id == view.id) {
 		NSRect frame = view.frame();
 		Event event = new Event ();
 		event.detail = SWT.ARROW;
 		event.x = (int)frame.x;
-		event.y = (int)(frame.y + arrow.frame().height);
+		event.y = (int)(frame.y + frame.height);
 		postEvent (SWT.Selection, event);
 	}
 }
@@ -587,32 +572,6 @@ void register () {
 		display.addWidget (button, this);
 		display.addWidget (button.cell(), this);
 	}
-	
-	if (arrow != null) {
-		display.addWidget (arrow, this);
-		display.addWidget (arrow.cell(), this);
-	}
-}
-
-void releaseParent () {
-	super.releaseParent ();
-	setVisible (false);
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	if (view != null) view.release();
-	if (button != null) button.release();
-	if (arrow != null) arrow.release();
-	view = button = arrow = null;
-	parent = null;
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	control = null;
-	toolTipText = null;
-	image = disabledImage = hotImage = null; 
 }
 
 /**
@@ -638,6 +597,26 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
+}
+
+void releaseParent () {
+	super.releaseParent ();
+	setVisible (false);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	if (view != null) view.release();
+	if (button != null) button.release();
+	view = button = null;
+	parent = null;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	control = null;
+	toolTipText = null;
+	image = disabledImage = hotImage = null; 
 }
 
 void selectRadio () {
@@ -671,17 +650,10 @@ void setBounds (int x, int y, int width, int height) {
 	if (button != null) {
 		rect.x = 0;
 		rect.y = 0;
-		rect.width = width - (arrow != null ? ARROW_WIDTH : 0);
+		rect.width = width;
 		rect.height = height;
+		if ((style & SWT.DROP_DOWN) != 0) rect.width -= ARROW_WIDTH + INSET;
 		button.setFrame(rect);
-	}
-	if (arrow != null) {
-		rect = button.frame();
-		NSRect arrowRect = new NSRect();
-		arrowRect.x = width - ARROW_WIDTH;
-		arrowRect.width = ARROW_WIDTH;
-		arrowRect.height = rect.height;
-		arrow.setFrame(arrowRect);
 	}
 }
 
