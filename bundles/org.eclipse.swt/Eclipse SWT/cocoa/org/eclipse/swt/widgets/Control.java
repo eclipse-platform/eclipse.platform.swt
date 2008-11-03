@@ -687,26 +687,14 @@ public Point computeSize (int wHint, int hHint) {
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	checkWidget ();
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
-	if (topView() instanceof NSControl) {
-		NSRect oldRect = topView().frame();
-		((NSControl)topView()).sizeToFit();
-		NSRect newRect = topView().frame();
-		topView().setFrame (oldRect);
-		width = (int) newRect.width;
-		height = (int)newRect.height;
-	}
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
-	if (wHint != SWT.DEFAULT) {
-		width = wHint;
-		width += border * 2;
-	}
-	if (hHint != SWT.DEFAULT) {
-		height = hHint;
-		height += border * 2;
-	}
+	width += border * 2;
+	height += border * 2;
 	return new Point (width, height);
 }
 
