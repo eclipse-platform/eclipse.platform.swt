@@ -38,13 +38,26 @@ public static NSGraphicsContext graphicsContextWithBitmapImageRep(NSBitmapImageR
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
+public static NSGraphicsContext graphicsContextWithGraphicsPort(int /*long*/ graphicsPort, boolean initialFlippedState) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithGraphicsPort_flipped_, graphicsPort, initialFlippedState);
+	return result != 0 ? new NSGraphicsContext(result) : null;
+}
+
 public static NSGraphicsContext graphicsContextWithWindow(NSWindow window) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithWindow_, window != null ? window.id : 0);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
+public int /*long*/ graphicsPort() {
+	return OS.objc_msgSend(this.id, OS.sel_graphicsPort);
+}
+
 public int /*long*/ imageInterpolation() {
 	return OS.objc_msgSend(this.id, OS.sel_imageInterpolation);
+}
+
+public boolean isDrawingToScreen() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isDrawingToScreen);
 }
 
 public void restoreGraphicsState() {

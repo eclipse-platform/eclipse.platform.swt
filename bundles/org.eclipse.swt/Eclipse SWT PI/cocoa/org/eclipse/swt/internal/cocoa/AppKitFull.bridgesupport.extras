@@ -9125,23 +9125,23 @@
       <arg name="bitmapRep" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method class_method="true" selector="graphicsContextWithGraphicsPort:flipped:">
-      <arg name="graphicsPort"></arg>
-      <arg name="initialFlippedState"></arg>
-      <retval></retval>
+    <method class_method="true" selector="graphicsContextWithGraphicsPort:flipped:" swt_gen="true">
+      <arg name="graphicsPort" swt_gen="true"></arg>
+      <arg name="initialFlippedState" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="graphicsContextWithWindow:" swt_gen="true">
       <arg name="window" swt_gen="true"></arg>
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="graphicsPort">
-      <retval></retval>
+    <method selector="graphicsPort" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="imageInterpolation" swt_gen="true">
       <retval swt_gen="true"></retval>
     </method>
-    <method selector="isDrawingToScreen">
-      <retval></retval>
+    <method selector="isDrawingToScreen" swt_gen="true">
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="isFlipped">
       <retval></retval>
