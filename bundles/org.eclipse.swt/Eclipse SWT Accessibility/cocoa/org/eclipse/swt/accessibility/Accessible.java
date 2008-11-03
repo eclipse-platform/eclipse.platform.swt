@@ -1007,7 +1007,6 @@ public class Accessible {
 		// The parameter is an NSNumber with the line number.
 		NSNumber lineNumberObj = new NSNumber(parameter.id);		
 		int lineNumber = lineNumberObj.intValue();
-		System.out.println("Line number = " + lineNumber);
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
 		event.result = null;

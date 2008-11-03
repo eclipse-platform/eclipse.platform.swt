@@ -165,7 +165,6 @@ class SWTAccessibleDelegate extends NSObject {
 	
 	void accessibilitySetValue_forAttribute(id value, NSString attribute) {
 		// This shouldn't be called!
-		System.out.println("Ignoring attribute: " + attribute.getString());
 	}
 	
 	static NSArray retainedAutoreleased(NSArray inObject) {
