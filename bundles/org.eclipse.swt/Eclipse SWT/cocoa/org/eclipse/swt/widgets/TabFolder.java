@@ -135,7 +135,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed);
 	if (wHint == SWT.DEFAULT && items.length > 0) {
 		NSSize minSize = ((NSTabView)view).minimumSize();
-		Rectangle trim = computeTrim (0, 0, (int)Math.ceil (minSize.width), 0);
+		Rectangle trim = computeTrim (0, 0, (int)(0.5f + minSize.width), 0);
 		size.x = Math.max (trim.width, size.x);
 	}
 	return size;
@@ -146,7 +146,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	NSTabView widget = (NSTabView)view;
 	NSRect rect = widget.contentRect ();
 	x -= rect.x; y -= rect.y;
-	width += Math.ceil (rect.x); height += Math.ceil (rect.y);
+	width += (int)(0.5f + rect.x); height += (int)(0.5f + rect.y);
 	return super.computeTrim (x, y, width, height);
 }
 
@@ -204,8 +204,8 @@ public Rectangle getClientArea () {
 	NSRect rect = ((NSTabView)view).contentRect();
 	int x = Math.max (0, (int)rect.x);
 	int y = Math.max (0, (int)rect.y);
-	int width = Math.max (0, (int)Math.ceil (rect.width));
-	int height = Math.max (0, (int)Math.ceil (rect.height));
+	int width = Math.max (0, (int)(0.5f + rect.width));
+	int height = Math.max (0, (int)(0.5f + rect.height));
 	return new Rectangle (x, y, width, height);
 }
 

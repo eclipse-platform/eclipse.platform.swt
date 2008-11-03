@@ -97,7 +97,7 @@ protected void checkSubclass () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
-	int border = (int)Math.ceil (widget.borderWidth ());
+	int border = (int)(0.5f + widget.borderWidth ());
 	NSSize margins = widget.contentViewMargins();
 	NSRect frame = contentView.frame();
 	width += (margins.width + border) * 2;

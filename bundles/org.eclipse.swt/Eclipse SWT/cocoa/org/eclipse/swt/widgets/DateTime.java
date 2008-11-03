@@ -132,8 +132,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	NSControl widget = (NSControl)view;
 	NSSize size = widget.cell ().cellSize ();
-	width = (int)Math.ceil (size.width);
-	height = (int)Math.ceil (size.height);
+	width = (int)(0.5f + size.width);
+	height = (int)(0.5f + size.height);
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;

@@ -180,8 +180,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	NSSize size = ((NSButton)view).cell ().cellSize ();
-	int width = (int)Math.ceil (size.width);
-	int height = (int)Math.ceil (size.height);
+	int width = (int)(0.5f + size.width);
+	int height = (int)(0.5f + size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
@@ -265,13 +265,13 @@ void drawWidget (int /*long*/ id, NSRect rect) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
 		context.saveGraphicsState();
 		NSPoint p1 = new NSPoint();
-		p1.x = (float)Math.floor(-arrowSize / 2);
-		p1.y = (float)Math.floor(-arrowSize / 2);
+		p1.x = -arrowSize / 2;
+		p1.y = -arrowSize / 2;
 		NSPoint p2 = new NSPoint();
-		p2.x = (float)Math.ceil(arrowSize / 2);
+		p2.x = arrowSize / 2;
 		p2.y = p1.y;
 		NSPoint p3 = new NSPoint();
-		p3.y = (float)Math.ceil(arrowSize / 2);
+		p3.y = arrowSize / 2;
 	
 		NSBezierPath path = NSBezierPath.bezierPath();
 		path.moveToPoint(p1);

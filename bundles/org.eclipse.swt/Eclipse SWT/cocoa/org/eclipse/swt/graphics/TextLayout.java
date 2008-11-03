@@ -650,7 +650,7 @@ public Rectangle getBounds(int start, int end) {
 		range.location = layoutManager.glyphIndexForCharacterAtIndex(start);
 		range.length = layoutManager.glyphIndexForCharacterAtIndex(end + 1) - range.location;
 		NSRect rect = layoutManager.boundingRectForGlyphRange(range, textContainer);
-		return new Rectangle((int)rect.x, (int)rect.y, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height));
+		return new Rectangle((int)rect.x, (int)rect.y, (int)(0.5f + rect.width), (int)(0.5f + rect.height));
 	} finally {
 		if (pool != null) pool.release();
 	}

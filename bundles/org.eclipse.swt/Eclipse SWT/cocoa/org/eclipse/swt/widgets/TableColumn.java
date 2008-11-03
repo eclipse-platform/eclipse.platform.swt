@@ -232,12 +232,12 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		NSString string = NSString.stringWith (displayText);
 		attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
 		stringSize = attrString.size ();
-		contentWidth += Math.ceil (stringSize.width);
+		contentWidth += (int)(0.5f + stringSize.width);
 		if (image != null) contentWidth += MARGIN; /* space between image and text */
 	}
 	if (image != null) {
 		imageSize = image.handle.size ();
-		contentWidth += Math.ceil (imageSize.width);
+		contentWidth += (int)(0.5f + imageSize.width);
 	}
 
 	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
@@ -435,12 +435,12 @@ public void pack () {
 		NSAttributedString attrString = ((NSAttributedString)new NSAttributedString ().alloc ()).initWithString (string, dict);
 		NSSize stringSize = attrString.size ();
 		attrString.release ();
-		width += Math.ceil (stringSize.width);
+		width += (int)(0.5f + stringSize.width);
 		if (image != null) width += MARGIN; /* space between image and text */
 	}
 	if (image != null) {
 		NSSize imageSize = image.handle.size ();
-		width += Math.ceil (imageSize.width);
+		width += (int)(0.5f + imageSize.width);
 	}
 	if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 		NSTableHeaderCell headerCell = nsColumn.headerCell ();
@@ -449,7 +449,7 @@ public void pack () {
 		NSSize cellSize = headerCell.cellSizeForBounds (rect);
 		rect.height = cellSize.height;
 		NSRect sortRect = headerCell.sortIndicatorRectForBounds (rect);
-		width += Math.ceil (sortRect.width);
+		width += (int)(0.5f + sortRect.width);
 	}
 
 	/* compute item widths down column */

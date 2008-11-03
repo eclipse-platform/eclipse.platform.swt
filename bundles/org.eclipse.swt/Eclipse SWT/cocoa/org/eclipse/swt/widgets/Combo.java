@@ -339,8 +339,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	NSControl widget = (NSControl)view;
 	NSSize size = widget.cell ().cellSize ();
-	width = (int)Math.ceil (size.width);
-	height = (int)Math.ceil (size.height);
+	width = (int)(0.5f + size.width);
+	height = (int)(0.5f + size.height);
 	/*
 	* Feature in Cocoa.  Attempting to create an NSComboBox with a
 	* height > 27 spews a very long warning message to stdout and
@@ -1253,7 +1253,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	if ((style & SWT.READ_ONLY) == 0) {
 		NSControl widget = (NSControl)view;
 		NSSize size = widget.cell ().cellSize ();
-		height = Math.min (height, (int)Math.ceil (size.height));
+		height = Math.min (height, (int)(0.5f + size.height));
 	}
 	super.setBounds (x, y, width, height, move, resize);
 }

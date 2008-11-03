@@ -180,8 +180,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			} else {
 				size = textView.cell ().cellSize ();
 			}
-			width = (int)Math.ceil (size.width);
-			height = (int)Math.ceil (size.height);
+			width = (int)(0.5f + size.width);
+			height = (int)(0.5f + size.height);
 		}
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
