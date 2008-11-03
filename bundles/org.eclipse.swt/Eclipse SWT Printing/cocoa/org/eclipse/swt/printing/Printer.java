@@ -57,14 +57,19 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	NSArray printers = NSPrinter.printerNames();
-	int count = (int)/*64*/printers.count();
-	PrinterData[] result = new PrinterData[count];
-	for (int i = 0; i < count; i++) {
-		NSString str = new NSString(printers.objectAtIndex(i));
-		result[i] = new PrinterData(DRIVER, str.getString());
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSArray printers = NSPrinter.printerNames();
+		int count = (int)/*64*/printers.count();
+		PrinterData[] result = new PrinterData[count];
+		for (int i = 0; i < count; i++) {
+			NSString str = new NSString(printers.objectAtIndex(i));
+			result[i] = new PrinterData(DRIVER, str.getString());
+		}
+		return result;
+	} finally {
+		pool.release();
 	}
-	return result;
 }
 
 /**
@@ -77,10 +82,15 @@ public static PrinterData[] getPrinterList() {
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
-	NSPrinter printer = NSPrintInfo.defaultPrinter();
-	if (printer == null) return null;
-	NSString str = printer.name();
-	return new PrinterData(DRIVER, str.getString());
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSPrinter printer = NSPrintInfo.defaultPrinter();
+		if (printer == null) return null;
+		NSString str = printer.name();
+		return new PrinterData(DRIVER, str.getString());
+	} finally {
+		pool.release();
+	}
 	
 }
 
@@ -159,14 +169,19 @@ public Printer(PrinterData data) {
  */
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
-	NSSize paperSize = printInfo.paperSize();
-	NSRect bounds = printInfo.imageablePageBounds();
-	Point dpi = getDPI (), screenDPI = getIndependentDPI();
-	x -= (bounds.x * dpi.x / screenDPI.x);
-	y -= (bounds.y * dpi.y / screenDPI.y);
-	width += (paperSize.width - bounds.width) * dpi.x / screenDPI.x;
-	height += (paperSize.height - bounds.height) * dpi.y / screenDPI.y;
-	return new Rectangle(x, y, width, height);
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSSize paperSize = printInfo.paperSize();
+		NSRect bounds = printInfo.imageablePageBounds();
+		Point dpi = getDPI (), screenDPI = getIndependentDPI();
+		x -= (bounds.x * dpi.x / screenDPI.x);
+		y -= (bounds.y * dpi.y / screenDPI.y);
+		width += (paperSize.width - bounds.width) * dpi.x / screenDPI.x;
+		height += (paperSize.height - bounds.height) * dpi.y / screenDPI.y;
+		return new Rectangle(x, y, width, height);
+	} finally {
+		pool.release();
+	}
 }
 
 /**	 
@@ -176,44 +191,49 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  * @param deviceData the device data
  */
 protected void create(DeviceData deviceData) {
-	data = (PrinterData)deviceData;
-	if (data.otherData != null) {
-		NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
-		printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
-	} else {
-		printInfo = NSPrintInfo.sharedPrintInfo();
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		data = (PrinterData)deviceData;
+		if (data.otherData != null) {
+			NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
+			printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
+		} else {
+			printInfo = NSPrintInfo.sharedPrintInfo();
+		}
+		printInfo.retain();
+		printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
+		if (printer != null) {
+			printer.retain();
+			printInfo.setPrinter(printer);
+		}
+		/*
+		* Bug in Cocoa.  For some reason, the output still goes to the printer when
+		* the user chooses the preview button.  The fix is to reset the job disposition.
+		*/
+		NSString job = printInfo.jobDisposition();
+		if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
+			printInfo.setJobDisposition(job);
+		}
+		NSRect rect = new NSRect();
+		window = (NSWindow)new NSWindow().alloc();
+		window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+		String className = "SWTPrinterView"; //$NON-NLS-1$
+		if (OS.objc_lookUpClass(className) == 0) {
+			IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
+			int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+			OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
+			OS.objc_registerClassPair(cls);
+		}
+		view = (NSView)new SWTPrinterView().alloc();
+		view.initWithFrame(rect);
+		window.setContentView(view);
+		operation = NSPrintOperation.printOperationWithView(view, printInfo);
+		operation.retain();
+		operation.setShowsPrintPanel(false);
+		operation.setShowsProgressPanel(false);
+	} finally {
+		pool.release();
 	}
-	printInfo.retain();
-	printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
-	if (printer != null) {
-		printer.retain();
-		printInfo.setPrinter(printer);
-	}
-	/*
-	* Bug in Cocoa.  For some reason, the output still goes to the printer when
-	* the user chooses the preview button.  The fix is to reset the job disposition.
-	*/
-	NSString job = printInfo.jobDisposition();
-	if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
-		printInfo.setJobDisposition(job);
-	}
-	NSRect rect = new NSRect();
-	window = (NSWindow)new NSWindow().alloc();
-	window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
-	String className = "SWTPrinterView"; //$NON-NLS-1$
-	if (OS.objc_lookUpClass(className) == 0) {
-		IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
-		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
-		OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
-		OS.objc_registerClassPair(cls);
-	}
-	view = (NSView)new SWTPrinterView().alloc();
-	view.initWithFrame(rect);
-	window.setContentView(view);
-	operation = NSPrintOperation.printOperationWithView(view, printInfo);
-	operation.retain();
-	operation.setShowsPrintPanel(false);
-	operation.setShowsProgressPanel(false);
 }
 
 /**	 
@@ -222,15 +242,20 @@ protected void create(DeviceData deviceData) {
  * mechanism of the <code>Device</code> class.
  */
 protected void destroy() {
-	if (printer != null) printer.release();
-	if (printInfo != null) printInfo.release();
-	if (view != null) view.release();
-	if (window != null) window.release();
-	if (operation != null) operation.release();
-	printer = null;
-	printInfo = null;
-	view = null;
-	operation = null;
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (printer != null) printer.release();
+		if (printInfo != null) printInfo.release();
+		if (view != null) view.release();
+		if (window != null) window.release();
+		if (operation != null) operation.release();
+		printer = null;
+		printInfo = null;
+		view = null;
+		operation = null;
+	} finally {
+		pool.release();
+	}
 }
 
 /**	 
@@ -248,16 +273,21 @@ protected void destroy() {
  */
 public int /*long*/ internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data != null) {
-		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		data.device = this;
-		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
-		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
-		data.font = getSystemFont ();
-		data.size = printInfo.paperSize();
-		isGCCreated = true;
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (data != null) {
+			if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			data.device = this;
+			data.background = getSystemColor(SWT.COLOR_WHITE).handle;
+			data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
+			data.font = getSystemFont ();
+			data.size = printInfo.paperSize();
+			isGCCreated = true;
+		}
+		return operation.context().id;
+	} finally {
+		pool.release();
 	}
-	return operation.context().id;
 }
 
 protected void init () {
@@ -317,17 +347,22 @@ protected void release () {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
-	if (jobName != null && jobName.length() != 0) {
-		operation.setJobTitle(NSString.stringWith(jobName));
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (jobName != null && jobName.length() != 0) {
+			operation.setJobTitle(NSString.stringWith(jobName));
+		}
+		printInfo.setUpPrintOperationDefaultValues();
+		NSPrintOperation.setCurrentOperation(operation);
+		NSGraphicsContext context = operation.createContext();
+		if (context != null) {
+			view.beginDocument();
+			return true;
+		}
+		return false;
+	} finally {
+		pool.release();
 	}
-	printInfo.setUpPrintOperationDefaultValues();
-	NSPrintOperation.setCurrentOperation(operation);
-	NSGraphicsContext context = operation.createContext();
-	if (context != null) {
-		view.beginDocument();
-		return true;
-	}
-	return false;
 }
 
 /**
@@ -343,10 +378,15 @@ public boolean startJob(String jobName) {
  */
 public void endJob() {
 	checkDevice();
-	view.endDocument();
-	operation.deliverResult();
-	operation.destroyContext();
-	operation.cleanUpOperation();
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		view.endDocument();
+		operation.deliverResult();
+		operation.destroyContext();
+		operation.cleanUpOperation();
+	} finally {
+		pool.release();
+	}
 }
 
 /**
@@ -358,8 +398,13 @@ public void endJob() {
  */
 public void cancelJob() {
 	checkDevice();
-	operation.destroyContext();
-	operation.cleanUpOperation();
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		operation.destroyContext();
+		operation.cleanUpOperation();
+	} finally {
+		pool.release();
+	}
 }
 
 static DeviceData checkNull (PrinterData data) {
@@ -393,19 +438,24 @@ static DeviceData checkNull (PrinterData data) {
  */
 public boolean startPage() {
 	checkDevice();
-	NSSize paperSize = printInfo.paperSize();
-	NSRect rect = new NSRect();
-	rect.width = paperSize.width;
-	rect.height = paperSize.height;
-	view.beginPageInRect(rect, new NSPoint());
-	NSRect imageBounds = printInfo.imageablePageBounds();
-	NSBezierPath.bezierPathWithRect(imageBounds).setClip();
-	NSAffineTransform transform = NSAffineTransform.transform();
-	transform.translateXBy(imageBounds.x, imageBounds.y);
-	Point dpi = getDPI (), screenDPI = getIndependentDPI();
-	transform.scaleXBy(screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
-	transform.concat();
-	return true;
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSSize paperSize = printInfo.paperSize();
+		NSRect rect = new NSRect();
+		rect.width = paperSize.width;
+		rect.height = paperSize.height;
+		view.beginPageInRect(rect, new NSPoint());
+		NSRect imageBounds = printInfo.imageablePageBounds();
+		NSBezierPath.bezierPathWithRect(imageBounds).setClip();
+		NSAffineTransform transform = NSAffineTransform.transform();
+		transform.translateXBy(imageBounds.x, imageBounds.y);
+		Point dpi = getDPI (), screenDPI = getIndependentDPI();
+		transform.scaleXBy(screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
+		transform.concat();
+		return true;
+	} finally {
+		pool.release();
+	}
 }
 
 /**
@@ -421,7 +471,12 @@ public boolean startPage() {
  */
 public void endPage() {
 	checkDevice();
-	view.endPage();
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		view.endPage();
+	} finally {
+		pool.release();
+	}
 }
 
 /**
@@ -437,8 +492,13 @@ public void endPage() {
  */
 public Point getDPI() {
 	checkDevice();
-	//TODO get output resolution
-	return getIndependentDPI();
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		//TODO get output resolution
+		return getIndependentDPI();
+	} finally {
+		pool.release();
+	}
 }
 
 Point getIndependentDPI() {
@@ -462,9 +522,14 @@ Point getIndependentDPI() {
  */
 public Rectangle getBounds() {
 	checkDevice();
-	NSSize size = printInfo.paperSize();
-	Point dpi = getDPI (), screenDPI = getIndependentDPI();
-	return new Rectangle (0, 0, (int)(size.width * dpi.x / screenDPI.x), (int)(size.height * dpi.y / screenDPI.y));
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSSize size = printInfo.paperSize();
+		Point dpi = getDPI (), screenDPI = getIndependentDPI();
+		return new Rectangle (0, 0, (int)(size.width * dpi.x / screenDPI.x), (int)(size.height * dpi.y / screenDPI.y));
+	} finally {
+		pool.release();
+	}
 }
 
 /**
@@ -486,9 +551,14 @@ public Rectangle getBounds() {
  */
 public Rectangle getClientArea() {
 	checkDevice();
-	NSRect rect = printInfo.imageablePageBounds();
-	Point dpi = getDPI (), screenDPI = getIndependentDPI();
-	return new Rectangle(0, 0, (int)(rect.width * dpi.x / screenDPI.x), (int)(rect.height * dpi.y / screenDPI.y));
+	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSRect rect = printInfo.imageablePageBounds();
+		Point dpi = getDPI (), screenDPI = getIndependentDPI();
+		return new Rectangle(0, 0, (int)(rect.width * dpi.x / screenDPI.x), (int)(rect.height * dpi.y / screenDPI.y));
+	} finally {
+		pool.release();
+	}
 }
 
 /**
