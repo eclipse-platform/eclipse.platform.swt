@@ -198,23 +198,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSAttributedString str = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (nsString, dict);
 	NSSize size = str.size ();
 	str.release ();
-	width = (int)/*64*/size.width;
-	height = (int)/*64*/size.height;
+	width = (float)/*64*/size.width;
+	height = (float)/*64*/size.height;
 	NSRect frameRect = textView.frame();
 	NSCell cell = new NSCell (textView.cell ());
 	NSRect cellRect = cell.drawingRectForBounds(frameRect);
 	width += frameRect.width - cellRect.width;
 	height += frameRect.height - cellRect.height;
 	width += GAP;
-	NSRect oldRect = buttonView.frame ();
-	buttonView.sizeToFit();
-	NSRect newRect = buttonView.frame ();
-	buttonView.setFrame (oldRect);
-	width += newRect.width;
-	height = Math.max (height, (int)/*64*/newRect.height);
+	size = buttonView.cell ().cellSize ();
+	width += (int)/*64*/size.width;
+	height = Math.max (height, size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, (int) width, (int) height);
+	Rectangle trim = computeTrim (0, 0, (int)Math.ceil (width), (int)Math.ceil (height));
 	return new Point (trim.width, trim.height);
 }
 
