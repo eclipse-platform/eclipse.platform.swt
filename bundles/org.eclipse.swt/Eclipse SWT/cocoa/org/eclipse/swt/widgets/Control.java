@@ -835,7 +835,7 @@ void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ select
 public boolean dragDetect (Event event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return dragDetect ();
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
 }
 
 /**
@@ -877,17 +877,19 @@ public boolean dragDetect (Event event) {
 public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return dragDetect();
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
 }
 
-boolean dragDetect () {
-	NSApplication application = NSApplication.sharedApplication();
-	NSEvent event = application.nextEventMatchingMask(OS.NSLeftMouseDraggedMask, NSDate.dateWithTimeIntervalSinceNow(0.2), OS.NSDefaultRunLoopMode, false);
-	return (event != null);
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	if (button != 1 || count != 1) return false;
+	if (!dragDetect (x, y, false, null)) return false;
+	return sendDragEvent (button, stateMask, x, y);
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
-	return dragDetect();
+	NSApplication application = NSApplication.sharedApplication();
+	NSEvent event = application.nextEventMatchingMask(OS.NSLeftMouseDraggedMask, NSDate.dateWithTimeIntervalSinceNow(0.2), OS.NSDefaultRunLoopMode, false);
+	return (event != null);
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
@@ -2337,7 +2339,28 @@ boolean sendDragEvent (int button, int stateMask, int x, int y) {
 }
 
 boolean sendDragEvent (NSEvent nsEvent) {
-	return sendMouseEvent(nsEvent, SWT.DragDetect, true);
+	int button = (int)/*64*/nsEvent.buttonNumber();
+	NSPoint windowPoint;
+	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {
+		windowPoint = view.window().convertScreenToBase(NSEvent.mouseLocation()); 
+	} else {
+		windowPoint = nsEvent.locationInWindow();
+	}
+	NSPoint viewPoint = view.convertPoint_fromView_(windowPoint, null);
+	Event event = new Event ();
+	switch (button) {
+		case 0: event.button = 1; break;
+		case 1: event.button = 3; break;
+		case 2: event.button = 2; break;
+		case 3: event.button = 4; break;
+		case 4: event.button = 5; break;
+	}
+
+	event.x = (int)viewPoint.x;
+	event.y = (int)viewPoint.y;
+	setInputState(event, nsEvent, SWT.DragDetect);
+	postEvent (SWT.DragDetect, event);
+	return event.doit;
 }
 
 void sendFocusEvent (int type, boolean post) {

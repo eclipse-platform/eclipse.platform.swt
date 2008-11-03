@@ -3516,8 +3516,11 @@ void applicationSendMouseEvent (NSEvent nsEvent, boolean send) {
 		case OS.NSOtherMouseDown: {
 			Control control = grabControl = findControl(nsEvent, false, true, false);
 			if (control != null) {
-				if (nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect) && control.dragDetect()) {
-					dragging = true;
+				if (nsEvent.clickCount() == 1 && (control.state & Widget.DRAG_DETECT) != 0 && control.hooks (SWT.DragDetect)) {
+					NSPoint windowLoc = nsEvent.locationInWindow();
+					NSPoint viewLoc = control.view.convertPoint_toView_(windowLoc, null);
+					if (control.dragDetect((int)viewLoc.x, (int)viewLoc.y, false, null))
+						dragging = true;
 				}
 				control.sendMouseEvent (nsEvent, SWT.MouseDown, send);
 				if (nsEvent.clickCount() == 2) {
