@@ -72,6 +72,7 @@ public class BidiUtil {
 	// Windows primary language identifiers
 	static final int LANG_ARABIC = 0x01;
 	static final int LANG_HEBREW = 0x0d;
+	static final int LANG_FARSI = 0x29;
 	// code page identifiers
 	static final String CD_PG_HEBREW = "1255"; //$NON-NLS-1$
 	static final String CD_PG_ARABIC = "1256"; //$NON-NLS-1$
@@ -407,11 +408,7 @@ public static int getFontBidiAttributes(GC gc) {
  */
 public static int getKeyboardLanguage() {
 	int /*long*/ layout = OS.GetKeyboardLayout(0);
-	int langID = OS.PRIMARYLANGID(OS.LOWORD(layout));
-	if (langID == LANG_HEBREW) return KEYBOARD_BIDI;
-	if (langID == LANG_ARABIC) return KEYBOARD_BIDI;
-	// return non-bidi for all other languages
-	return KEYBOARD_NON_BIDI;
+	return isBidiLang(layout) ? KEYBOARD_BIDI : KEYBOARD_NON_BIDI;
 }
 /**
  * Return the languages that are installed for the keyboard.  
@@ -426,6 +423,10 @@ static int /*long*/[] getKeyboardLanguageList() {
 	int /*long*/[] list = new int /*long*/[size];
 	System.arraycopy(tempList, 0, list, 0, size);
 	return list;
+}
+static boolean isBidiLang(int /*long*/ lang) {
+	int id = OS.PRIMARYLANGID(OS.LOWORD(lang));
+	return id == LANG_ARABIC || id == LANG_HEBREW || id == LANG_FARSI;
 }
 /**
  * Return whether or not the platform supports a bidi language.  Determine this
@@ -480,8 +481,7 @@ public static boolean isBidiPlatform() {
 public static boolean isKeyboardBidi() {
 	int /*long*/[] list = getKeyboardLanguageList();
 	for (int i=0; i<list.length; i++) {
-		int id = OS.PRIMARYLANGID(OS.LOWORD(list[i]));
-		if ((id == LANG_ARABIC) || (id == LANG_HEBREW)) {
+		if (isBidiLang(list[i])) {
 			return true;
 		}
 	}
@@ -510,31 +510,13 @@ public static void removeLanguageListener (Control control) {
  * 	KEYBOARD_BIDI, KEYBOARD_NON_BIDI.
  */
 public static void setKeyboardLanguage(int language) {
-	// don't switch the keyboard if it doesn't need to be
 	if (language == getKeyboardLanguage()) return;
-	
-	if (language == KEYBOARD_BIDI) {
-		// get the list of active languages
-		int /*long*/[] list = getKeyboardLanguageList();
-		// set to first bidi language
-		for (int i=0; i<list.length; i++) {
-			int id = OS.PRIMARYLANGID(OS.LOWORD(list[i]));
-			if ((id == LANG_ARABIC) || (id == LANG_HEBREW)) {
-				OS.ActivateKeyboardLayout(list[i], 0);
-				return;
-			}
-		}
-	} else {
-		// get the list of active languages
-		int /*long*/[] list = getKeyboardLanguageList();
-		// set to the first non-bidi language (anything not
-		// Hebrew or Arabic)
-		for (int i=0; i<list.length; i++) {
-			int id = OS.PRIMARYLANGID(OS.LOWORD(list[i]));
-			if ((id != LANG_HEBREW) && (id != LANG_ARABIC)) {
-				OS.ActivateKeyboardLayout(list[i], 0);
-				return;
-			}
+	boolean bidi = language == KEYBOARD_BIDI; 
+	int /*long*/[] list = getKeyboardLanguageList();
+	for (int i=0; i<list.length; i++) {
+		if (bidi == isBidiLang(list[i])) {
+			OS.ActivateKeyboardLayout(list[i], 0);
+			return;
 		}
 	}
 }
