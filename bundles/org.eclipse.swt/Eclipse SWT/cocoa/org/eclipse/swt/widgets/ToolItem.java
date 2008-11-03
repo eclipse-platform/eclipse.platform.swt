@@ -229,12 +229,9 @@ Point computeSize () {
 	} else {
 		if (text.length () != 0 || image != null) {
 			NSButton widget = (NSButton)button;
-			NSRect oldFrame = widget.frame();
-			widget.sizeToFit ();
-			NSRect frame = button.frame();
-			width = (int)frame.width;
-			height = (int)frame.height;
-			widget.setFrame(oldFrame);
+			NSSize size = widget.cell().cellSize();
+			width = (int)Math.ceil(size.width);
+			height = (int)Math.ceil(size.height);
 		} else {
 			width = DEFAULT_WIDTH;
 			height = DEFAULT_HEIGHT;
