@@ -219,7 +219,7 @@ NSAttributedString createString() {
 
 void createHandle () {
 	NSButton widget = (NSButton)new SWTButton().alloc();
-	widget.initWithFrame(new NSRect());
+	widget.init();
 	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
 		if ((style & SWT.FLAT) != 0) {

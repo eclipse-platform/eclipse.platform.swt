@@ -388,14 +388,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
-	scrollWidget.initWithFrame(new NSRect ());
+	scrollWidget.init();
 	scrollWidget.setHasHorizontalScroller(true);
 	scrollWidget.setHasVerticalScroller(true);
 	scrollWidget.setAutohidesScrollers(true);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 	
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
-	widget.initWithFrame(new NSRect());
+	widget.init();
 	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	widget.setAllowsColumnReordering (false);
 	widget.setDataSource(widget);

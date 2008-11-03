@@ -431,14 +431,14 @@ void createColumn (TreeItem item, int index) {
 
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView) new SWTScrollView ().alloc ();
-	scrollWidget.initWithFrame (new NSRect ());
+	scrollWidget.init ();
 	scrollWidget.setHasHorizontalScroller (true);
 	scrollWidget.setHasVerticalScroller (true);
 	scrollWidget.setAutohidesScrollers (true);
 	scrollWidget.setBorderType(hasBorder () ? OS.NSBezelBorder : OS.NSNoBorder);
 	
 	NSOutlineView widget = (NSOutlineView) new SWTOutlineView ().alloc ();
-	widget.initWithFrame (new NSRect ());
+	widget.init ();
 	widget.setAllowsMultipleSelection ((style & SWT.MULTI) != 0);
 	widget.setAllowsColumnReordering (false);
 	widget.setAutoresizesOutlineColumn (false);

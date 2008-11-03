@@ -152,10 +152,9 @@ void createHandle () {
 	if (item == null) error (SWT.ERROR_NO_HANDLES);
 	item.retain();
 	item.setHighlightMode(true);	
-	NSRect rect = new NSRect();
 	view = (NSImageView)new SWTImageView().alloc();
 	if (view == null) error (SWT.ERROR_NO_HANDLES);
-	view.initWithFrame(rect);
+	view.init ();
 	item.setView(view);
 }
 

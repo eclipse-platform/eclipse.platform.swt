@@ -369,7 +369,7 @@ void createHandle () {
 		} else {
 			widget = (NSTextField) new SWTTextField ().alloc ();
 		}
-		widget.initWithFrame (new NSRect ());
+		widget.init ();
 		widget.setSelectable (true);
 		widget.setEditable((style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.BORDER) == 0) {
@@ -385,14 +385,14 @@ void createHandle () {
 		view = widget;
 	} else {
 		NSScrollView scrollWidget = (NSScrollView) new SWTScrollView ().alloc ();
-		scrollWidget.initWithFrame (new NSRect ());
+		scrollWidget.init ();
 		scrollWidget.setHasVerticalScroller ((style & SWT.VERTICAL) != 0);
 		scrollWidget.setHasHorizontalScroller ((style & SWT.HORIZONTAL) != 0);
 		scrollWidget.setAutoresizesSubviews (true);
 		if ((style & SWT.BORDER) != 0) scrollWidget.setBorderType (OS.NSBezelBorder);
 		
 		NSTextView widget = (NSTextView) new SWTTextView ().alloc ();
-		widget.initWithFrame (new NSRect ());
+		widget.init ();
 		widget.setEditable ((style & SWT.READ_ONLY) == 0);
 		
 		NSSize size = new NSSize ();

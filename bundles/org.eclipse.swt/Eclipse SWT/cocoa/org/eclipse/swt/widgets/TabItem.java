@@ -263,7 +263,7 @@ public void setControl (Control control) {
 		view = newControl.topView();
 	} else {
 		view = (NSView)new NSView().alloc();
-		view.initWithFrame (new NSRect());
+		view.init ();
 		view.autorelease();
 	}
 	nsItem.setView (view);

@@ -152,7 +152,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle () {
 	NSTabView widget = (NSTabView)new SWTTabView().alloc();
-	widget.initWithFrame (new NSRect());
+	widget.init ();
 	widget.setDelegate(widget);
 	if ((style & SWT.BOTTOM) != 0) {
 		widget.setTabViewType(OS.NSBottomTabsBezelBorder);

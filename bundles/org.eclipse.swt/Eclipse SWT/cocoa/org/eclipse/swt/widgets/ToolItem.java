@@ -248,15 +248,15 @@ Point computeSize () {
 void createHandle () {
 	if ((style & SWT.SEPARATOR) != 0) {
 		NSBox widget = (NSBox)new SWTBox().alloc();
-		widget.initWithFrame(new NSRect());
+		widget.init();
 		widget.setBoxType(OS.NSBoxSeparator);
 		view = widget;
 	} else {
 		NSView widget = (NSView)new SWTView().alloc();
-		widget.initWithFrame(new NSRect());
+		widget.init();
 		parent.contentView().addSubview(widget);
 		button = (NSButton)new SWTButton().alloc();
-		button.initWithFrame(new NSRect());
+		button.init();
 		button.setBordered(false);
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);

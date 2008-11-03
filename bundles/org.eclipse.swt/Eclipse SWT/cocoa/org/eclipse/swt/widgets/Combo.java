@@ -385,7 +385,7 @@ void createHandle () {
 		view = widget;
 	} else {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
-		widget.initWithFrame(new NSRect());
+		widget.init();
 		widget.setDelegate(widget);
 		view = widget;
 	}

@@ -118,10 +118,10 @@ void deregister () {
 
 void createHandle () {
 	NSBox widget = (NSBox)new SWTBox().alloc();
-	widget.initWithFrame(new NSRect());
+	widget.init();
 	widget.setTitlePosition(OS.NSNoTitle);
 	NSView contentWidget = (NSView)new SWTView().alloc();
-	contentWidget.initWithFrame(new NSRect());
+	contentWidget.init();
 //	contentWidget.setDrawsBackground(false);
 	widget.setContentView(contentWidget);
 	contentView = contentWidget;

@@ -248,15 +248,15 @@ public void copy () {
 
 void createHandle () {
 	NSView widget = (NSView)new SWTView().alloc();
-	widget.initWithFrame(new NSRect());
+	widget.init();
 //	widget.setDrawsBackground(false);
 	NSStepper buttonWidget = (NSStepper)new SWTStepper().alloc();
-	buttonWidget.initWithFrame(new NSRect());
+	buttonWidget.init();
 	buttonWidget.setValueWraps((style & SWT.WRAP) != 0);
 	buttonWidget.setTarget(buttonWidget);
 	buttonWidget.setAction(OS.sel_sendSelection);
 	NSTextField textWidget = (NSTextField)new SWTTextField().alloc();
-	textWidget.initWithFrame(new NSRect());
+	textWidget.init();
 //	textWidget.setTarget(widget);
 	textWidget.setEditable((style & SWT.READ_ONLY) == 0);
 	textFormatter = new NSNumberFormatter();

@@ -1658,7 +1658,7 @@ protected void init () {
 	timerDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 	
 	NSTextView textView = (NSTextView)new NSTextView().alloc();
-	textView.initWithFrame (new NSRect ());
+	textView.init ();
 	markedAttributes = textView.markedTextAttributes ();
 	markedAttributes.retain ();
 	textView.release ();
