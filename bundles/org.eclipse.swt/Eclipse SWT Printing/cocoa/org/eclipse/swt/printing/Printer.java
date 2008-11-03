@@ -44,6 +44,7 @@ public final class Printer extends Device {
 	NSPrintOperation operation;
 	NSView view;
 	NSWindow window;
+	NSAutoreleasePool pool;
 	boolean isGCCreated;
 	
 	static Callback IsFlipped;
@@ -191,49 +192,49 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  * @param deviceData the device data
  */
 protected void create(DeviceData deviceData) {
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		data = (PrinterData)deviceData;
-		if (data.otherData != null) {
-			NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
-			printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
-		} else {
-			printInfo = NSPrintInfo.sharedPrintInfo();
-		}
-		printInfo.retain();
-		printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
-		if (printer != null) {
-			printer.retain();
-			printInfo.setPrinter(printer);
-		}
-		/*
-		* Bug in Cocoa.  For some reason, the output still goes to the printer when
-		* the user chooses the preview button.  The fix is to reset the job disposition.
-		*/
-		NSString job = printInfo.jobDisposition();
-		if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
-			printInfo.setJobDisposition(job);
-		}
-		NSRect rect = new NSRect();
-		window = (NSWindow)new NSWindow().alloc();
-		window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
-		String className = "SWTPrinterView"; //$NON-NLS-1$
-		if (OS.objc_lookUpClass(className) == 0) {
-			IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
-			int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
-			OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
-			OS.objc_registerClassPair(cls);
-		}
-		view = (NSView)new SWTPrinterView().alloc();
-		view.initWithFrame(rect);
-		window.setContentView(view);
-		operation = NSPrintOperation.printOperationWithView(view, printInfo);
-		operation.retain();
-		operation.setShowsPrintPanel(false);
-		operation.setShowsProgressPanel(false);
-	} finally {
-		pool.release();
+	NSThread nsthread = NSThread.currentThread();
+	NSMutableDictionary dictionary = nsthread.threadDictionary();
+	NSString key = NSString.stringWith("SWT_NSAutoreleasePool");
+	pool = new NSAutoreleasePool(dictionary.objectForKey(key));
+
+	data = (PrinterData)deviceData;
+	if (data.otherData != null) {
+		NSData nsData = NSData.dataWithBytes(data.otherData, data.otherData.length);
+		printInfo = new NSPrintInfo(NSKeyedUnarchiver.unarchiveObjectWithData(nsData).id);
+	} else {
+		printInfo = NSPrintInfo.sharedPrintInfo();
 	}
+	printInfo.retain();
+	printer = NSPrinter.printerWithName(NSString.stringWith(data.name));
+	if (printer != null) {
+		printer.retain();
+		printInfo.setPrinter(printer);
+	}
+	/*
+	* Bug in Cocoa.  For some reason, the output still goes to the printer when
+	* the user chooses the preview button.  The fix is to reset the job disposition.
+	*/
+	NSString job = printInfo.jobDisposition();
+	if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
+		printInfo.setJobDisposition(job);
+	}
+	NSRect rect = new NSRect();
+	window = (NSWindow)new NSWindow().alloc();
+	window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
+	String className = "SWTPrinterView"; //$NON-NLS-1$
+	if (OS.objc_lookUpClass(className) == 0) {
+		IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
+		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+		OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
+		OS.objc_registerClassPair(cls);
+	}
+	view = (NSView)new SWTPrinterView().alloc();
+	view.initWithFrame(rect);
+	window.setContentView(view);
+	operation = NSPrintOperation.printOperationWithView(view, printInfo);
+	operation.retain();
+	operation.setShowsPrintPanel(false);
+	operation.setShowsProgressPanel(false);
 }
 
 /**	 
@@ -242,20 +243,17 @@ protected void create(DeviceData deviceData) {
  * mechanism of the <code>Device</code> class.
  */
 protected void destroy() {
-	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		if (printer != null) printer.release();
-		if (printInfo != null) printInfo.release();
-		if (view != null) view.release();
-		if (window != null) window.release();
-		if (operation != null) operation.release();
-		printer = null;
-		printInfo = null;
-		view = null;
-		operation = null;
-	} finally {
-		pool.release();
-	}
+	if (printer != null) printer.release();
+	if (printInfo != null) printInfo.release();
+	if (view != null) view.release();
+	if (window != null) window.release();
+	if (operation != null) operation.release();
+	if (pool != null) pool.release();
+	pool = null;
+	printer = null;
+	printInfo = null;
+	view = null;
+	operation = null;
 }
 
 /**	 
