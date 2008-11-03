@@ -6627,22 +6627,22 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 	}
 }
 void redrawLines(int startLine, int lineCount) {
-	// do nothing if redraw range is completely invisible	
+	// do nothing if redraw range is completely invisible
+	int endLine = startLine + lineCount - 1;
 	int partialBottomIndex = getPartialBottomIndex();
-	if (startLine > partialBottomIndex || startLine + lineCount - 1 < topIndex) {
+	int partialTopIndex = getPartialTopIndex();
+	if (startLine > partialBottomIndex || endLine < partialTopIndex) {
 		return;
 	}
 	// only redraw visible lines
-	if (startLine < topIndex) {
-		lineCount -= topIndex - startLine;
-		startLine = topIndex;
+	if (startLine < partialTopIndex) {
+		startLine = partialTopIndex;
 	}
-	if (startLine + lineCount - 1 > partialBottomIndex) {
-		lineCount = partialBottomIndex - startLine + 1;
+	if (endLine > partialBottomIndex) {
+		endLine = partialBottomIndex;;
 	}
-	startLine -= topIndex;
 	int redrawTop = getLinePixel(startLine);
-	int redrawBottom = getLinePixel(startLine + lineCount);
+	int redrawBottom = getLinePixel(endLine + 1);
 	int redrawWidth = clientAreaWidth - leftMargin - rightMargin; 
 	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
 }
