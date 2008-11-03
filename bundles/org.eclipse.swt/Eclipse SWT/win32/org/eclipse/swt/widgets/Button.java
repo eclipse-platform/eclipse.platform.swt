@@ -1363,8 +1363,8 @@ LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 		/*
 		* Feature in Windows.  On Vista only, DrawThemeBackground()
-		* does not mirror the drawing. The fix is switch left by right
-		* and right by left ourselves.
+		* does not mirror the drawing. The fix is switch left to right
+		* and right to left.
 		*/
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 			if ((style & SWT.MIRRORED) != 0) {
