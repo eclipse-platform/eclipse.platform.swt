@@ -2050,6 +2050,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_doCommandBySelector_, proc3, "@::");
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_clickedOnLink_atIndex_, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_dragSelectionWithEvent_offset_slideBack_, proc5, "@:@@@");
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTEditorView";
@@ -3971,6 +3972,10 @@ static int /*long*/ windowDelegateProc(int /*long*/ id, int /*long*/ sel, int /*
 		int /*long*/ result = OS.malloc (NSRange.sizeof);
 		OS.memmove (result, range, NSRange.sizeof);
 		return result;
+	} else if (sel == OS.sel_dragSelectionWithEvent_offset_slideBack_) {
+		NSSize offset = new NSSize();
+		OS.memmove(offset, arg0, NSSize.sizeof);
+		return (widget.dragSelectionWithEvent(id, sel, arg0, arg1, arg2) ? 1 : 0);
 	}
 	return 0;
 }

@@ -1463,4 +1463,7 @@ boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window
 void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
+boolean dragSelectionWithEvent(int id, int sel, int arg0, int arg1, int arg2) {
+	return false;
+}
 }

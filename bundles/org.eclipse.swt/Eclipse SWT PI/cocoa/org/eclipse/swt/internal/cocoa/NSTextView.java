@@ -24,6 +24,14 @@ public NSTextView(id id) {
 	super(id);
 }
 
+public int /*long*/ characterIndexForInsertionAtPoint(NSPoint point) {
+	return OS.objc_msgSend(this.id, OS.sel_characterIndexForInsertionAtPoint_, point);
+}
+
+public boolean dragSelectionWithEvent(NSEvent event, NSSize mouseOffset, boolean slideBack) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_dragSelectionWithEvent_offset_slideBack_, event != null ? event.id : 0, mouseOffset, slideBack);
+}
+
 public NSDictionary markedTextAttributes() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;

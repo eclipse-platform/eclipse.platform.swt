@@ -20352,9 +20352,9 @@
       <arg name="sender"></arg>
       <retval></retval>
     </method>
-    <method selector="characterIndexForInsertionAtPoint:">
-      <arg name="point"></arg>
-      <retval></retval>
+    <method selector="characterIndexForInsertionAtPoint:" swt_gen="true">
+      <arg name="point" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="cleanUpAfterDragOperation">
       <retval></retval>
@@ -20395,11 +20395,11 @@
       <arg name="type"></arg>
       <retval></retval>
     </method>
-    <method selector="dragSelectionWithEvent:offset:slideBack:">
-      <arg name="event"></arg>
-      <arg name="mouseOffset"></arg>
-      <arg name="slideBack"></arg>
-      <retval></retval>
+    <method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true">
+      <arg name="event" swt_gen="true"></arg>
+      <arg name="mouseOffset" swt_gen="true"></arg>
+      <arg name="slideBack" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="drawInsertionPointInRect:color:turnedOn:">
       <arg name="rect"></arg>
@@ -21029,7 +21029,7 @@
       <retval></retval>
     </method>
   </class>
-  <class name="NSToolbar">
+  <class name="NSToolbar" swt_gen="mixed">
     <method selector="allowsUserCustomization">
       <retval></retval>
     </method>
@@ -21051,9 +21051,9 @@
     <method selector="identifier">
       <retval></retval>
     </method>
-    <method selector="initWithIdentifier:">
-      <arg name="identifier"></arg>
-      <retval></retval>
+    <method selector="initWithIdentifier:" swt_gen="true">
+      <arg name="identifier" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="insertItemWithItemIdentifier:atIndex:">
       <arg name="itemIdentifier"></arg>
@@ -21109,9 +21109,9 @@
       <arg name="sizeMode"></arg>
       <retval></retval>
     </method>
-    <method selector="setVisible:">
-      <arg name="shown"></arg>
-      <retval></retval>
+    <method selector="setVisible:" swt_gen="true">
+      <arg name="shown" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="showsBaselineSeparator">
       <retval></retval>
@@ -23489,9 +23489,9 @@
       <arg name="show"></arg>
       <retval></retval>
     </method>
-    <method selector="setShowsToolbarButton:">
-      <arg name="show"></arg>
-      <retval></retval>
+    <method selector="setShowsToolbarButton:" swt_gen="true">
+      <arg name="show" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setTitle:" swt_gen="true">
       <arg name="aString" swt_gen="true"></arg>
@@ -23501,9 +23501,9 @@
       <arg name="filename"></arg>
       <retval></retval>
     </method>
-    <method selector="setToolbar:">
-      <arg name="toolbar"></arg>
-      <retval></retval>
+    <method selector="setToolbar:" swt_gen="true">
+      <arg name="toolbar" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="setViewsNeedDisplay:">
       <arg name="flag"></arg>
@@ -23522,9 +23522,9 @@
     <method selector="showsToolbarButton">
       <retval></retval>
     </method>
-    <method selector="standardWindowButton:">
-      <arg name="b"></arg>
-      <retval></retval>
+    <method selector="standardWindowButton:" swt_gen="true">
+      <arg name="b" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method class_method="true" selector="standardWindowButton:forStyleMask:">
       <arg name="b"></arg>
@@ -23540,9 +23540,9 @@
     <method selector="title">
       <retval></retval>
     </method>
-    <method selector="toggleToolbarShown:">
-      <arg name="sender"></arg>
-      <retval></retval>
+    <method selector="toggleToolbarShown:" swt_gen="true">
+      <arg name="sender" swt_gen="true"></arg>
+      <retval swt_gen="true"></retval>
     </method>
     <method selector="toolbar">
       <retval></retval>

@@ -367,6 +367,7 @@ public static final int /*long*/ class_NSTextView = objc_getClass("NSTextView");
 public static final int /*long*/ class_NSThread = objc_getClass("NSThread");
 public static final int /*long*/ class_NSTimeZone = objc_getClass("NSTimeZone");
 public static final int /*long*/ class_NSTimer = objc_getClass("NSTimer");
+public static final int /*long*/ class_NSToolbar = objc_getClass("NSToolbar");
 public static final int /*long*/ class_NSTypesetter = objc_getClass("NSTypesetter");
 public static final int /*long*/ class_NSURL = objc_getClass("NSURL");
 public static final int /*long*/ class_NSURLDownload = objc_getClass("NSURLDownload");
@@ -535,6 +536,7 @@ public static final int /*long*/ sel_changeFont_ = sel_registerName("changeFont:
 public static final int /*long*/ sel_charCode = sel_registerName("charCode");
 public static final int /*long*/ sel_characterAtIndex_ = sel_registerName("characterAtIndex:");
 public static final int /*long*/ sel_characterIndexForGlyphAtIndex_ = sel_registerName("characterIndexForGlyphAtIndex:");
+public static final int /*long*/ sel_characterIndexForInsertionAtPoint_ = sel_registerName("characterIndexForInsertionAtPoint:");
 public static final int /*long*/ sel_characterIndexForPoint_ = sel_registerName("characterIndexForPoint:");
 public static final int /*long*/ sel_characterIsMember_ = sel_registerName("characterIsMember:");
 public static final int /*long*/ sel_characters = sel_registerName("characters");
@@ -659,6 +661,7 @@ public static final int /*long*/ sel_doubleValue = sel_registerName("doubleValue
 public static final int /*long*/ sel_download = sel_registerName("download");
 public static final int /*long*/ sel_download_decideDestinationWithSuggestedFilename_ = sel_registerName("download:decideDestinationWithSuggestedFilename:");
 public static final int /*long*/ sel_dragImage_at_offset_event_pasteboard_source_slideBack_ = sel_registerName("dragImage:at:offset:event:pasteboard:source:slideBack:");
+public static final int /*long*/ sel_dragSelectionWithEvent_offset_slideBack_ = sel_registerName("dragSelectionWithEvent:offset:slideBack:");
 public static final int /*long*/ sel_draggedImage = sel_registerName("draggedImage");
 public static final int /*long*/ sel_draggedImage_beganAt_ = sel_registerName("draggedImage:beganAt:");
 public static final int /*long*/ sel_draggedImage_endedAt_operation_ = sel_registerName("draggedImage:endedAt:operation:");
@@ -930,6 +933,7 @@ public static final int /*long*/ sel_outlineView_setObjectValue_forTableColumn_b
 public static final int /*long*/ sel_outlineView_shouldCollapseItem_ = sel_registerName("outlineView:shouldCollapseItem:");
 public static final int /*long*/ sel_outlineView_shouldExpandItem_ = sel_registerName("outlineView:shouldExpandItem:");
 public static final int /*long*/ sel_outlineView_willDisplayCell_forTableColumn_item_ = sel_registerName("outlineView:willDisplayCell:forTableColumn:item:");
+public static final int /*long*/ sel_outlineView_writeItems_toPasteboard_ = sel_registerName("outlineView:writeItems:toPasteboard:");
 public static final int /*long*/ sel_outlineViewColumnDidMove_ = sel_registerName("outlineViewColumnDidMove:");
 public static final int /*long*/ sel_outlineViewColumnDidResize_ = sel_registerName("outlineViewColumnDidResize:");
 public static final int /*long*/ sel_outlineViewItemDidExpand_ = sel_registerName("outlineViewItemDidExpand:");
@@ -1196,6 +1200,7 @@ public static final int /*long*/ sel_setSelectedRange_ = sel_registerName("setSe
 public static final int /*long*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
 public static final int /*long*/ sel_setShowsPrintPanel_ = sel_registerName("setShowsPrintPanel:");
 public static final int /*long*/ sel_setShowsProgressPanel_ = sel_registerName("setShowsProgressPanel:");
+public static final int /*long*/ sel_setShowsToolbarButton_ = sel_registerName("setShowsToolbarButton:");
 public static final int /*long*/ sel_setSize_ = sel_registerName("setSize:");
 public static final int /*long*/ sel_setState_ = sel_registerName("setState:");
 public static final int /*long*/ sel_setString_ = sel_registerName("setString:");
@@ -1211,6 +1216,7 @@ public static final int /*long*/ sel_setTitle_ = sel_registerName("setTitle:");
 public static final int /*long*/ sel_setTitleFont_ = sel_registerName("setTitleFont:");
 public static final int /*long*/ sel_setTitlePosition_ = sel_registerName("setTitlePosition:");
 public static final int /*long*/ sel_setToolTip_ = sel_registerName("setToolTip:");
+public static final int /*long*/ sel_setToolbar_ = sel_registerName("setToolbar:");
 public static final int /*long*/ sel_setTransformStruct_ = sel_registerName("setTransformStruct:");
 public static final int /*long*/ sel_setUIDelegate_ = sel_registerName("setUIDelegate:");
 public static final int /*long*/ sel_setURL_ = sel_registerName("setURL:");
@@ -1221,6 +1227,7 @@ public static final int /*long*/ sel_setValue_forKey_ = sel_registerName("setVal
 public static final int /*long*/ sel_setValueWraps_ = sel_registerName("setValueWraps:");
 public static final int /*long*/ sel_setVerticalScroller_ = sel_registerName("setVerticalScroller:");
 public static final int /*long*/ sel_setView_ = sel_registerName("setView:");
+public static final int /*long*/ sel_setVisible_ = sel_registerName("setVisible:");
 public static final int /*long*/ sel_setWidth_ = sel_registerName("setWidth:");
 public static final int /*long*/ sel_setWidthTracksTextView_ = sel_registerName("setWidthTracksTextView:");
 public static final int /*long*/ sel_setWindingRule_ = sel_registerName("setWindingRule:");
@@ -1241,6 +1248,7 @@ public static final int /*long*/ sel_skipDescendents = sel_registerName("skipDes
 public static final int /*long*/ sel_smallSystemFontSize = sel_registerName("smallSystemFontSize");
 public static final int /*long*/ sel_sortIndicatorRectForBounds_ = sel_registerName("sortIndicatorRectForBounds:");
 public static final int /*long*/ sel_standardPreferences = sel_registerName("standardPreferences");
+public static final int /*long*/ sel_standardWindowButton_ = sel_registerName("standardWindowButton:");
 public static final int /*long*/ sel_startAnimation_ = sel_registerName("startAnimation:");
 public static final int /*long*/ sel_state = sel_registerName("state");
 public static final int /*long*/ sel_statusItemWithLength_ = sel_registerName("statusItemWithLength:");
@@ -1302,6 +1310,7 @@ public static final int /*long*/ sel_title = sel_registerName("title");
 public static final int /*long*/ sel_titleCell = sel_registerName("titleCell");
 public static final int /*long*/ sel_titleOfSelectedItem = sel_registerName("titleOfSelectedItem");
 public static final int /*long*/ sel_titleRectForBounds_ = sel_registerName("titleRectForBounds:");
+public static final int /*long*/ sel_toggleToolbarShown_ = sel_registerName("toggleToolbarShown:");
 public static final int /*long*/ sel_transform = sel_registerName("transform");
 public static final int /*long*/ sel_transformPoint_ = sel_registerName("transformPoint:");
 public static final int /*long*/ sel_transformSize_ = sel_registerName("transformSize:");
@@ -3601,6 +3610,11 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSRect arg0);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSSize arg1, boolean arg2);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */

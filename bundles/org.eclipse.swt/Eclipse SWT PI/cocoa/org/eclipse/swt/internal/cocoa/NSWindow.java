@@ -185,12 +185,29 @@ public void setReleasedWhenClosed(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setReleasedWhenClosed_, flag);
 }
 
+public void setShowsToolbarButton(boolean show) {
+	OS.objc_msgSend(this.id, OS.sel_setShowsToolbarButton_, show);
+}
+
 public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
+public void setToolbar(NSToolbar toolbar) {
+	OS.objc_msgSend(this.id, OS.sel_setToolbar_, toolbar != null ? toolbar.id : 0);
+}
+
+public NSButton standardWindowButton(int /*long*/ b) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_standardWindowButton_, b);
+	return result != 0 ? new NSButton(result) : null;
+}
+
 public int /*long*/ styleMask() {
 	return OS.objc_msgSend(this.id, OS.sel_styleMask);
+}
+
+public void toggleToolbarShown(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_toggleToolbarShown_, sender != null ? sender.id : 0);
 }
 
 public int /*long*/ windowNumber() {

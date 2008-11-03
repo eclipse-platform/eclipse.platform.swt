@@ -4793,6 +4793,33 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJJJJJ)(JNIEnv *env, 
 }
 #endif
 
+#if (!defined(NO_objc_1msgSend_1bool__IIILorg_eclipse_swt_internal_cocoa_NSSize_2Z) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJLorg_eclipse_swt_internal_cocoa_NSSize_2Z) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIILorg_eclipse_swt_internal_cocoa_NSSize_2Z)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jboolean arg4)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJLorg_eclipse_swt_internal_cocoa_NSSize_2Z)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jobject arg3, jboolean arg4)
+#endif
+{
+	NSSize _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIILorg_eclipse_swt_internal_cocoa_NSSize_2Z_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJLorg_eclipse_swt_internal_cocoa_NSSize_2Z_FUNC);
+#endif
+	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong, NSSize, jboolean))objc_msgSend_bool)(arg0, arg1, arg2, *lparg3, arg4);
+fail:
+	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIILorg_eclipse_swt_internal_cocoa_NSSize_2Z_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJLorg_eclipse_swt_internal_cocoa_NSSize_2Z_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)

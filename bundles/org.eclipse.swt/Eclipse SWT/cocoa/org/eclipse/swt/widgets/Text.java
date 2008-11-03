@@ -792,8 +792,16 @@ public String getMessage () {
 
 int getPosition (int x, int y) {
 //	checkWidget ();
-	//TODO 
-	return 0;
+	if ((style & SWT.MULTI) != 0) {
+		NSTextView widget = (NSTextView) view;
+		NSPoint viewLocation = new NSPoint();
+		viewLocation.x = x;
+		viewLocation.y = y;
+		return widget.characterIndexForInsertionAtPoint(viewLocation);
+	} else {
+		//TODO 
+		return 0;
+	}
 }
 
 /*public*/ int getPosition (Point point) {
