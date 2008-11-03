@@ -1362,6 +1362,18 @@ LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 			case SWT.RIGHT: iStateId = OS.ABS_RIGHTNORMAL; break;
 		}
 		/*
+		* Feature in Windows.  On Vista only, DrawThemeBackground()
+		* does not mirror the drawing. The fix is switch left by right
+		* and right by left ourselves.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if ((style & SWT.MIRRORED) != 0) {
+				if ((style & (SWT.LEFT | SWT.RIGHT)) != 0) {
+					iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL; 
+				}
+			}
+		}
+		/*
 		* NOTE: The normal, hot, pressed and disabled state is
 		* computed relying on the fact that the increment between
 		* the direction states is invariant (always separated by 4).
