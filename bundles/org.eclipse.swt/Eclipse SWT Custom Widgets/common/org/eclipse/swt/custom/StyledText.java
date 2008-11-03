@@ -5685,7 +5685,6 @@ void handleMouseDown(Event event) {
 		doMouseLocationChange(event.x, event.y, select);
 	} else {
 		if (doubleClickEnabled) {
-			clearSelection(false);
 			int offset = getOffsetAtPoint(event.x, event.y);
 			int lineIndex = content.getLineAtOffset(offset);
 			int lineOffset = content.getOffsetAtLine(lineIndex);
@@ -5701,12 +5700,9 @@ void handleMouseDown(Event event) {
 				start = lineOffset;
 				end = lineEnd;
 			}
-			caretOffset = start;
-			resetSelection();
-			caretOffset = end;
-			showCaret();
-			doMouseSelection();
+			setSelection(start, end - start, true, false);
 			doubleClickSelection = new Point(selection.x, selection.y);
+			showCaret();
 		}
 	}
 }
