@@ -133,7 +133,7 @@ int calculateWidth (int columnIndex, GC gc, boolean callMeasureItem) {
 	Image image = getImage (columnIndex);
 	cell.setImage (image != null ? image.handle : null);
 	NSSize size = cell.cellSize ();
-	int width = (int)(0.5f + size.width);
+	int width = (int)Math.ceil (size.width);
 
 	if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
 		NSTableView tableView = (NSTableView)parent.view;

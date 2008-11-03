@@ -230,8 +230,8 @@ Point computeSize () {
 		if (text.length () != 0 || image != null) {
 			NSButton widget = (NSButton)button;
 			NSSize size = widget.cell().cellSize();
-			width = (int)(0.5f + size.width);
-			height = (int)(0.5f + size.height);
+			width = (int)Math.ceil(size.width);
+			height = (int)Math.ceil(size.height);
 		} else {
 			width = DEFAULT_WIDTH;
 			height = DEFAULT_HEIGHT;

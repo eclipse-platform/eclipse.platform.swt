@@ -982,8 +982,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, int /*long
 		if (isSelected) event.detail |= SWT.SELECTED;
 		event.x = (int)contentRect.x;
 		event.y = (int)contentRect.y;
-		event.width = (int)(0.5f + contentSize.width);
-		event.height = (int)(0.5f + fullRect.height);
+		event.width = (int)Math.ceil (contentSize.width);
+		event.height = (int)Math.ceil (fullRect.height);
 		sendEvent (SWT.PaintItem, event);
 		gc.dispose ();
 	}
@@ -1657,7 +1657,7 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 		event.index = columnIndex;
 		event.x = (int)contentRect.x;
 		event.y = (int)contentRect.y;
-		event.width = (int)(0.5f + contentSize.width);
+		event.width = (int)Math.ceil (contentSize.width);
 		event.height = rowHeight;
 		sendEvent (SWT.MeasureItem, event);
 		gc.dispose ();
@@ -1666,8 +1666,8 @@ void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*lon
 			view.setRowHeight (event.height);
 		}
 		if (columnCount == 0) {
-			int change = event.width - (item.customWidth != -1 ? item.customWidth : (int)(0.5f + contentSize.width));
-			if (item.customWidth != -1 || event.width != (int)(0.5f + contentSize.width)) {
+			int change = event.width - (item.customWidth != -1 ? item.customWidth : (int)Math.ceil (contentSize.width));
+			if (item.customWidth != -1 || event.width != (int)Math.ceil (contentSize.width)) {
 				item.customWidth = event.width;	
 			}
 			if (change != 0) setScrollWidth (item, false, false);
@@ -2082,7 +2082,7 @@ void setFont(NSFont font) {
 	if (!hooks (SWT.MeasureItem)) {
 		float ascent = font.ascender ();
 		float descent = -font.descender () + font.leading ();
-		((NSOutlineView)view).setRowHeight ((int)(0.5f + ascent + descent) + 1);
+		((NSOutlineView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
 	} else {
 		view.setNeedsDisplay (true);
 	}

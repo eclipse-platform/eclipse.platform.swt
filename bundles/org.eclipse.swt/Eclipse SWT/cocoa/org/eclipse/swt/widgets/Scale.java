@@ -117,10 +117,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSSize size = widget.cell().cellSizeForBounds(widget.bounds());
 	int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	if ((style & SWT.HORIZONTAL) != 0) {		
-		height = (int)(0.5f + size.height);
+		height = (int)Math.ceil(size.height);
 		width = height * 10;
 	} else {
-		width = (int)(0.5f + size.width);
+		width = (int)Math.ceil(size.width);
 		height = width * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;

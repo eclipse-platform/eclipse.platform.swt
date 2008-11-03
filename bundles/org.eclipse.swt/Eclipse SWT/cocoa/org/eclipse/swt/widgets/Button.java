@@ -180,8 +180,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	NSSize size = ((NSButton)view).cell ().cellSize ();
-	int width = (int)(0.5f + size.width);
-	int height = (int)(0.5f + size.height);
+	int width = (int)Math.ceil (size.width);
+	int height = (int)Math.ceil (size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
