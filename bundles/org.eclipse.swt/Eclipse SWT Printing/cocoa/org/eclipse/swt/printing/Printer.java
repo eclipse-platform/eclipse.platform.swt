@@ -12,6 +12,7 @@ package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -44,6 +45,8 @@ public final class Printer extends Device {
 	NSView view;
 	NSWindow window;
 	boolean isGCCreated;
+	
+	static Callback IsFlipped;
 
 	static final String DRIVER = "Mac";
 
@@ -197,7 +200,14 @@ protected void create(DeviceData deviceData) {
 	NSRect rect = new NSRect();
 	window = (NSWindow)new NSWindow().alloc();
 	window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
-	view = (NSView)new NSView().alloc();
+	String className = "SWTPrinterView"; //$NON-NLS-1$
+	if (OS.objc_lookUpClass(className) == 0) {
+		IsFlipped = new Callback(getClass(), "isFlipped", 2); //$NON-NLS-1$
+		int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+		OS.class_addMethod(cls, OS.sel_isFlipped, IsFlipped.getAddress(), "@:");
+		OS.objc_registerClassPair(cls);
+	}
+	view = (NSView)new SWTPrinterView().alloc();
 	view.initWithFrame(rect);
 	window.setContentView(view);
 	operation = NSPrintOperation.printOperationWithView(view, printInfo);
@@ -269,6 +279,10 @@ protected void init () {
  */
 public void internal_dispose_GC(int /*long*/ context, GCData data) {
 	if (data != null) isGCCreated = false;
+}
+
+static int /*long*/ isFlipped(int /*long*/ id, int /*long*/ sel) {
+	return 1;
 }
 
 /**	 
@@ -387,8 +401,7 @@ public boolean startPage() {
 	NSRect imageBounds = printInfo.imageablePageBounds();
 	NSBezierPath.bezierPathWithRect(imageBounds).setClip();
 	NSAffineTransform transform = NSAffineTransform.transform();
-	transform.translateXBy(imageBounds.x, rect.height - imageBounds.y);
-	transform.scaleXBy(1, -1);
+	transform.translateXBy(imageBounds.x, imageBounds.y);
 	Point dpi = getDPI (), screenDPI = getIndependentDPI();
 	transform.scaleXBy(screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 	transform.concat();

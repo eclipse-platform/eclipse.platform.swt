@@ -926,7 +926,10 @@ public int /*long*/ internal_new_GC (GCData data) {
 			rep.autorelease();
 		}
 		handle.setCacheMode(OS.NSImageCacheNever);
+		//TODO should the context and flippedContext be retained and released in internal_dispose_GC?
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
+		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
+		context = flippedContext;
 		NSGraphicsContext.setCurrentContext(context);
 		NSAffineTransform transform = NSAffineTransform.transform();
 		NSSize size = handle.size();

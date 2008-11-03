@@ -1378,22 +1378,12 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM | FONT | FOREGROUND_FILL);
 	try {
-		NSAttributedString str = createString(string, flags);
-		if (data.paintRect == null) {
-			handle.saveGraphicsState();
-			NSAffineTransform transform = NSAffineTransform.transform();
-			transform.scaleXBy(1, -1);
-			transform.translateXBy(0, -(str.size().height + 2 * y));
-			transform.concat();
-		}
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;
+		NSAttributedString str = createString(string, flags);
 		str.drawAtPoint(pt);
 		str.release();
-		if (data.paintRect == null) {
-			handle.restoreGraphicsState();
-		}
 	} finally {
 		uncheckGC(pool);
 	}
