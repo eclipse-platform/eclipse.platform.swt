@@ -151,8 +151,6 @@ int accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 			}
 		}
 	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityTitleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
-		return (getText() != null ? NSString.stringWith(getText()).id : NSString.stringWith("").id);
-	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityHelpAttribute)) {
 		String accessibleText = toolTipText;
 		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
 		if (!(accessibleText == null || accessibleText.equals(""))) {
