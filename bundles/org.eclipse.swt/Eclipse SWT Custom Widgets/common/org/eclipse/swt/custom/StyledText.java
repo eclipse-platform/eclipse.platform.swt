@@ -5783,9 +5783,11 @@ void handlePaint(Event event) {
 		int bottom = getLinePixel(lastLine + 1) - 1;
 		gc.drawRectangle(left, top, right - left, bottom - top);
 		gc.setAdvanced(true);
-		gc.setAlpha(100);
-		gc.fillRectangle(left, top, right - left, bottom - top);
-		gc.setAdvanced(false);//TODO in GDP+: CopyArea fails if GC isn't reset 
+		if (gc.getAdvanced()) {
+			gc.setAlpha(100);
+			gc.fillRectangle(left, top, right - left, bottom - top);
+			gc.setAdvanced(false);
+		}
 	}
 	
 	// fill the margin background
