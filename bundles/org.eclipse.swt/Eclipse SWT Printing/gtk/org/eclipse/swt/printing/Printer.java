@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.internal.cairo.Cairo;
+import org.eclipse.swt.printing.PrinterData;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -736,11 +737,11 @@ protected void init() {
 	/* Set values of settings from PrinterData. */
 	setScope(settings, data.scope, data.startPage, data.endPage);
 	//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
-	if (data.printToFile) {
+	if (data.printToFile && data.fileName != null) {
 		byte [] buffer = Converter.wcsToMbcs (null, data.fileName, true);
 		OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
 	}
-	if (data.driver.equals("GtkPrintBackendFile") && data.name.equals("Print to File")) { //$NON-NLS-1$ //$NON-NLS-2$
+	if (data.driver.equals("GtkPrintBackendFile") && data.name.equals("Print to File") && data.fileName != null) { //$NON-NLS-1$ //$NON-NLS-2$
 		byte [] buffer = Converter.wcsToMbcs (null, data.fileName, true);
 		OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
 	}
