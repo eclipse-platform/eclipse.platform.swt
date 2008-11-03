@@ -528,6 +528,7 @@ public static final int /*long*/ sel_cancelTracking = sel_registerName("cancelTr
 public static final int /*long*/ sel_cascadeTopLeftFromPoint_ = sel_registerName("cascadeTopLeftFromPoint:");
 public static final int /*long*/ sel_cell = sel_registerName("cell");
 public static final int /*long*/ sel_cellClass = sel_registerName("cellClass");
+public static final int /*long*/ sel_cellSize = sel_registerName("cellSize");
 public static final int /*long*/ sel_cellSizeForBounds_ = sel_registerName("cellSizeForBounds:");
 public static final int /*long*/ sel_changeColor_ = sel_registerName("changeColor:");
 public static final int /*long*/ sel_changeFont_ = sel_registerName("changeFont:");

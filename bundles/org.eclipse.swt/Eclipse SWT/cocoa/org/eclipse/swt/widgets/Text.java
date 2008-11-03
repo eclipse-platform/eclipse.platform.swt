@@ -297,9 +297,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		NSTextField widget = (NSTextField) view;
-		NSRect rect = new NSRect ();
-		rect.width = rect.height = Float.MAX_VALUE;
-		NSSize size = widget.cell ().cellSizeForBounds (rect);
+		NSSize size = widget.cell ().cellSize ();
 		width = (int)Math.ceil (size.width);
 		height = (int)Math.ceil (size.height);
 	} else {

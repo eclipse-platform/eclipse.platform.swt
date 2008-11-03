@@ -24,6 +24,12 @@ public NSCell(id id) {
 	super(id);
 }
 
+public NSSize cellSize() {
+	NSSize result = new NSSize();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_cellSize);
+	return result;
+}
+
 public NSSize cellSizeForBounds(NSRect aRect) {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_cellSizeForBounds_, aRect);

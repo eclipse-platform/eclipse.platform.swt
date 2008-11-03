@@ -171,10 +171,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = height = 0;
 			}
 		} else {
-			NSRect rect = new NSRect ();
-			rect.width = wHint != SWT.DEFAULT ? wHint : Float.MAX_VALUE;
-			rect.height = hHint != SWT.DEFAULT ? hHint : Float.MAX_VALUE;
-			NSSize size = textView.cell ().cellSizeForBounds (rect);
+			NSSize size = null;
+			if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+				NSRect rect = new NSRect ();
+				rect.width = wHint;
+				rect.height = hHint != SWT.DEFAULT ? hHint : Float.MAX_VALUE;
+				size = textView.cell ().cellSizeForBounds (rect);
+			} else {
+				size = textView.cell ().cellSize ();
+			}
 			width = (int)Math.ceil (size.width);
 			height = (int)Math.ceil (size.height);
 		}

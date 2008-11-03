@@ -239,9 +239,7 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 		cell.setTitle (NSString.stringWith (getText (columnIndex)));
 		Image image = getImage (columnIndex);
 		cell.setImage (image != null ? image.handle : null);
-		NSRect rect = new NSRect ();
-		rect.width = rect.height = Float.MAX_VALUE;
-		NSSize size = cell.cellSizeForBounds (rect);
+		NSSize size = cell.cellSize ();
 		width = (int)Math.ceil (size.width);
 
 		if (callMeasureItem && parent.hooks (SWT.MeasureItem)) {
@@ -251,7 +249,7 @@ int calculateWidth (int columnIndex, GC gc, boolean recurse, boolean callMeasure
 				nsColumnIndex = outlineView.columnWithIdentifier (parent.columns[columnIndex].nsColumn);
 			}
 			int rowIndex = (int)/*64*/outlineView.rowForItem (handle);
-			rect = outlineView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
+			NSRect rect = outlineView.frameOfCellAtColumn (nsColumnIndex, rowIndex);
 			NSRect contentRect = cell.titleRectForBounds (rect);
 			int rowHeight = (int)outlineView.rowHeight ();
 			Event event = new Event ();

@@ -179,7 +179,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int height = hHint != SWT.DEFAULT ? hHint : 23;
 		return new Point (width, height);
 	}
-	return super.computeSize(wHint, hHint, changed);
+	NSSize size = ((NSButton)view).cell ().cellSize ();
+	int width = (int)Math.ceil (size.width);
+	int height = (int)Math.ceil (size.height);
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point (width, height);
 }
 
 NSAttributedString createString() {
