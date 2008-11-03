@@ -726,7 +726,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			if (drawX + run.width >= clip.x) {
 				boolean drawTab = run.tab;
 				TextStyle style = run.style;
-				if (style != null && (style.underline || style.borderStyle != SWT.NONE)) drawTab = false;
+				if (style != null && (style.underline || style.strikeout || style.borderStyle != SWT.NONE)) drawTab = false;
 				if (!drawTab && (!run.lineBreak || run.softBreak) && !(style != null && style.metrics != null)) {
 					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
 					if (gdip) {
