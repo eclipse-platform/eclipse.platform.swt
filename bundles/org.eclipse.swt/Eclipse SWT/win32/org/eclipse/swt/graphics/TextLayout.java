@@ -1284,6 +1284,11 @@ RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, 
 					rect.top -= run.underlineThickness;
 					if (clipRect != null) clipRect.top -= run.underlineThickness;
 				}
+				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom; 
+				if (bottom > lineBottom) {
+					OS.OffsetRect(rect, 0, lineBottom - bottom);
+					if (clipRect != null) OS.OffsetRect(clipRect, 0, lineBottom - bottom);
+				}
 				int /*long*/ brush = OS.CreateSolidBrush(color);
 				OS.FillRect(hdc, rect, brush);
 				if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
@@ -1413,7 +1418,18 @@ RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnde
 				if (style.underlineStyle == UNDERLINE_IME_THICK) {
 					rect.top -= run.underlineThickness;
 				}
+				int bottom = style.underlineStyle == SWT.UNDERLINE_DOUBLE ? rect.bottom + run.underlineThickness * 2 : rect.bottom; 
+				if (bottom > lineBottom) {
+					OS.OffsetRect(rect, 0, lineBottom - bottom);
+				}
 				if (gdipRect != null) {
+					gdipRect.Y = rect.top;
+					if (style.underlineStyle == UNDERLINE_IME_THICK) {
+						gdipRect.Height = run.underlineThickness * 2;
+					}
+					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
+						gdipRect.Height = run.underlineThickness * 3;
+					}
 					gstate = Gdip.Graphics_Save(graphics);
 					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
 				}
