@@ -887,6 +887,7 @@ public Rectangle getBounds() {
 	if (ascent != -1 && descent != -1) {
 		height = Math.max (height, ascent + descent);
 	}
+	height += OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));	
 	return new Rectangle(0, 0, width, height);
 }
 
