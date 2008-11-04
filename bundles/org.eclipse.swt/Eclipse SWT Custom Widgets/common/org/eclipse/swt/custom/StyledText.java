@@ -5319,8 +5319,8 @@ void insertBlockSelectionText(char key, int action) {
 		sendKeyEvent(event);
 	}
 	int x = getPointAtOffset(offset).x;
-	setBlockSelectionLocation(x, blockYLocation - getVerticalScrollOffset());
-	blockXAnchor = blockXLocation;
+	int verticalScrollOffset = getVerticalScrollOffset();
+	setBlockSelectionLocation(x, blockYAnchor - verticalScrollOffset, x, blockYLocation - verticalScrollOffset);
 }
 /**
  * Creates content change listeners and set the default content model.
