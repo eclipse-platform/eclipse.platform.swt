@@ -351,15 +351,15 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
-	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int length = translateOffset(text.length());
-	if (length == 0 && flags == 0) return;
 	NSAutoreleasePool pool = gc.checkGC(GC.CLIPPING | GC.TRANSFORM | GC.FOREGROUND);
 	try {
+		computeRuns();
+		int length = translateOffset(text.length());
+		if (length == 0 && flags == 0) return;
 		gc.handle.saveGraphicsState();
 		float[] fg = gc.data.foreground;
 		NSColor foreground = NSColor.colorWithDeviceRed(fg[0], fg[1], fg[2], fg[3]);

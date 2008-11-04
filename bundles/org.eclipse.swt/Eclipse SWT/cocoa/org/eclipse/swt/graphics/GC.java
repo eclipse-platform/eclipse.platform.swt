@@ -145,15 +145,21 @@ public GC(Drawable drawable) {
  */
 public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	GCData data = new GCData();
-	data.style = checkStyle(style);
-	int /*long*/ contextId = drawable.internal_new_GC(data);
-	Device device = data.device;
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = data.device = device;
-	init(drawable, data, contextId);
-	init();
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		GCData data = new GCData();
+		data.style = checkStyle(style);
+		int /*long*/ contextId = drawable.internal_new_GC(data);
+		Device device = data.device;
+		if (device == null) device = Device.getDevice();
+		if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		this.device = data.device = device;
+		init(drawable, data, contextId);
+		init();
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 static int checkStyle (int style) {
@@ -1954,44 +1960,50 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSRect rect = null;
-	if (data.view != null) {
-		rect = data.view.visibleRect();
-	} else {
-		rect = new NSRect();
-		if (data.image != null) {
-			NSSize size = data.image.handle.size();
-			rect.width = size.width;
-			rect.height = size.height;
-		} else if (data.size != null) {
-			rect.width = data.size.width;
-			rect.height = data.size.height;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		NSRect rect = null;
+		if (data.view != null) {
+			rect = data.view.visibleRect();
+		} else {
+			rect = new NSRect();
+			if (data.image != null) {
+				NSSize size = data.image.handle.size();
+				rect.width = size.width;
+				rect.height = size.height;
+			} else if (data.size != null) {
+				rect.width = data.size.width;
+				rect.height = data.size.height;
+			}
 		}
+		if (data.paintRect != null || data.clipPath != null || data.inverseTransform != null) {
+			if (data.paintRect != null) {
+				OS.NSIntersectionRect(rect, rect, data.paintRect);
+			}
+			if (data.clipPath != null) {
+				NSRect clip = data.clipPath.bounds();
+				OS.NSIntersectionRect(rect, rect, clip);
+			}
+			if (data.inverseTransform != null && rect.width > 0 && rect.height > 0) {
+				NSPoint pt = new NSPoint();
+				pt.x = rect.x;
+				pt.y = rect.y;
+				NSSize size = new NSSize();
+				size.width = rect.width;
+				size.height = rect.height;
+				pt = data.inverseTransform.transformPoint(pt);
+				size =  data.inverseTransform.transformSize(size);
+				rect.x = pt.x;
+				rect.y = pt.y;
+				rect.width = size.width;
+				rect.height = size.height;
+			}
+		}
+		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	} finally {
+		if (pool != null) pool.release();
 	}
-	if (data.paintRect != null || data.clipPath != null || data.inverseTransform != null) {
-		if (data.paintRect != null) {
-			OS.NSIntersectionRect(rect, rect, data.paintRect);
-		}
-		if (data.clipPath != null) {
-			NSRect clip = data.clipPath.bounds();
-			OS.NSIntersectionRect(rect, rect, clip);
-		}
-		if (data.inverseTransform != null && rect.width > 0 && rect.height > 0) {
-			NSPoint pt = new NSPoint();
-			pt.x = rect.x;
-			pt.y = rect.y;
-			NSSize size = new NSSize();
-			size.width = rect.width;
-			size.height = rect.height;
-			pt = data.inverseTransform.transformPoint(pt);
-			size =  data.inverseTransform.transformSize(size);
-			rect.x = pt.x;
-			rect.y = pt.y;
-			rect.width = size.width;
-			rect.height = size.height;
-		}
-	}
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
 
 /** 
@@ -2012,63 +2024,69 @@ public void getClipping(Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	region.subtract(region);
-	NSRect rect = null;
-	if (data.view != null) {
-		rect = data.view.visibleRect();
-	} else {
-		rect = new NSRect();
-		if (data.image != null) {
-			NSSize size = data.image.handle.size();
-			rect.width = size.width;
-			rect.height = size.height;
-		} else if (data.size != null) {
-			rect.width = data.size.width;
-			rect.height = data.size.height;
-		}
-	}
-	region.add((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-	NSRect paintRect = data.paintRect;
-	if (paintRect != null) {
-		region.intersect((int)paintRect.x, (int)paintRect.y, (int)paintRect.width, (int)paintRect.height);
-	}
-	if (data.clipPath != null) {
-		NSBezierPath clip = data.clipPath.bezierPathByFlatteningPath();
-		int count = (int)/*64*/clip.elementCount();
-		int pointCount = 0;
-		Region clipRgn = new Region(device);
-		int[] pointArray = new int[count * 2];
-		int /*long*/ points = OS.malloc(NSPoint.sizeof);
-		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		NSPoint pt = new NSPoint();
-		for (int i = 0; i < count; i++) {
-			int element = (int)/*64*/clip.elementAtIndex(i, points);
-			switch (element) {
-				case OS.NSMoveToBezierPathElement:
-					if (pointCount != 0) clipRgn.add(pointArray, pointCount);
-					pointCount = 0;
-					OS.memmove(pt, points, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
-					break;
-				case OS.NSLineToBezierPathElement:
-					OS.memmove(pt, points, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
-					break;
-				case OS.NSClosePathBezierPathElement:
-					if (pointCount != 0) clipRgn.add(pointArray, pointCount);
-					pointCount = 0;
-					break;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		region.subtract(region);
+		NSRect rect = null;
+		if (data.view != null) {
+			rect = data.view.visibleRect();
+		} else {
+			rect = new NSRect();
+			if (data.image != null) {
+				NSSize size = data.image.handle.size();
+				rect.width = size.width;
+				rect.height = size.height;
+			} else if (data.size != null) {
+				rect.width = data.size.width;
+				rect.height = data.size.height;
 			}
 		}
-		if (pointCount != 0) clipRgn.add(pointArray, pointCount);
-		OS.free(points);
-		region.intersect(clipRgn);
-		clipRgn.dispose();
-	}
-	if (data.inverseTransform != null) {
-		region.convertRgn(data.inverseTransform);
+		region.add((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+		NSRect paintRect = data.paintRect;
+		if (paintRect != null) {
+			region.intersect((int)paintRect.x, (int)paintRect.y, (int)paintRect.width, (int)paintRect.height);
+		}
+		if (data.clipPath != null) {
+			NSBezierPath clip = data.clipPath.bezierPathByFlatteningPath();
+			int count = (int)/*64*/clip.elementCount();
+			int pointCount = 0;
+			Region clipRgn = new Region(device);
+			int[] pointArray = new int[count * 2];
+			int /*long*/ points = OS.malloc(NSPoint.sizeof);
+			if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			NSPoint pt = new NSPoint();
+			for (int i = 0; i < count; i++) {
+				int element = (int)/*64*/clip.elementAtIndex(i, points);
+				switch (element) {
+					case OS.NSMoveToBezierPathElement:
+						if (pointCount != 0) clipRgn.add(pointArray, pointCount);
+						pointCount = 0;
+						OS.memmove(pt, points, NSPoint.sizeof);
+						pointArray[pointCount++] = (int)pt.x;
+						pointArray[pointCount++] = (int)pt.y;
+						break;
+					case OS.NSLineToBezierPathElement:
+						OS.memmove(pt, points, NSPoint.sizeof);
+						pointArray[pointCount++] = (int)pt.x;
+						pointArray[pointCount++] = (int)pt.y;
+						break;
+					case OS.NSClosePathBezierPathElement:
+						if (pointCount != 0) clipRgn.add(pointArray, pointCount);
+						pointCount = 0;
+						break;
+				}
+			}
+			if (pointCount != 0) clipRgn.add(pointArray, pointCount);
+			OS.free(points);
+			region.intersect(clipRgn);
+			clipRgn.dispose();
+		}
+		if (data.inverseTransform != null) {
+			region.convertRgn(data.inverseTransform);
+		}
+	} finally {
+		if (pool != null) pool.release();
 	}
 }
 
@@ -2695,22 +2713,28 @@ public void setBackgroundPattern(Pattern pattern) {
  */
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (width < 0) {
-		x = x + width;
-		width = -width;
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		if (width < 0) {
+			x = x + width;
+			width = -width;
+		}
+		if (height < 0) {
+			y = y + height;
+			height = -height;
+		}
+		NSRect rect = new NSRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+		NSBezierPath path = NSBezierPath.bezierPathWithRect(rect);
+		path.retain();
+		setClipping(path);
+	} finally {
+		if (pool != null) pool.release();
 	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	NSRect rect = new NSRect();
-	rect.x = x;
-	rect.y = y;
-	rect.width = width;
-	rect.height = height;
-	NSBezierPath path = NSBezierPath.bezierPathWithRect(rect);
-	path.retain();
-	setClipping(path);
 }
 
 /**
@@ -2742,7 +2766,13 @@ public void setClipping(int x, int y, int width, int height) {
 public void setClipping(Path path) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setClipping(new NSBezierPath(path.handle.copy().id));
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		setClipping(new NSBezierPath(path.handle.copy().id));
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 /**
@@ -2786,7 +2816,13 @@ public void setClipping(Rectangle rect) {
 public void setClipping(Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	setClipping(region != null ? region.getPath() : null);
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		setClipping(region != null ? region.getPath() : null);
+	} finally {
+		if (pool != null) pool.release();
+	}
 }
 
 void setClipping(NSBezierPath path) {
